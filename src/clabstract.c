@@ -2103,6 +2103,7 @@ sRef checkStateClausesId (uentry ue)
   based on checkSpecClausesId
   called by grammar
 */
+
 sRef checkbufferConstraintClausesId (uentry ue)
 {
   cstring s = uentry_rawName (ue);

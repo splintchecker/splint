@@ -150,7 +150,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
   cppReader_finish (&g_cppState);
   check (fclose (ofile) == 0);
 
-  /* Resotre the original definition table. */
+  /* Restore the original definition table. */
 
   if (!context_getFlag (FLG_SINGLEINCLUDE))
     {

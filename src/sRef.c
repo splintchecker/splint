@@ -3888,6 +3888,13 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
   ** Merge value table states
   */
 
+
+  /*@i3245@*/
+# if 0
+  /*
+  ** This doesn't do anything.  And its broken too...
+  */
+
   valueTable_elements (res->state, key, sv) 
     {
       stateValue os = valueTable_lookup (other->state, key);
@@ -3907,6 +3914,8 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 	DPRINTF (("Val: %d / %s", val, msg));
       */
   } end_valueTable_elements ; 
+# endif
+
 }
 
 static sRefSet

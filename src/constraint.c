@@ -240,7 +240,7 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
   return ret;
 }
 
-constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e)
+constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, /*@exposed@*/ exprNode e)
 {
     
   if (c->generatingExpr == NULL)

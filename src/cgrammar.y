@@ -43,6 +43,7 @@
 
 extern int yylex ();
 extern void swallowMacro (void);
+extern void yyerror (char *);
 
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -53,7 +54,6 @@ extern void swallowMacro (void);
 /*@-matchfields@*/
 
 # define SHOWCSYM FALSE
-void yyerror (char *);
 
 /*
 ** This is necessary, or else when the bison-generated code #include's malloc.h,
@@ -79,6 +79,7 @@ void yyerror (char *);
   qualList tquallist;
   ctype ctyp;
   /*@dependent@*/ sRef sr;
+  /*@only@*/ sRef osr;
 
   /*@only@*/ functionClauseList funcclauselist;
   /*@only@*/ functionClause funcclause;  
@@ -507,23 +508,20 @@ BufConstraintTerm
 
 
 BufConstraintSrefExpr
-: id                              {
-   $$ =
-     checkbufferConstraintClausesId ($1);}
- | NEW_IDENTIFIER                  { $$ = fixStateClausesId ($1); }
-
- | BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
- |  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
-     char *t; int c;
-  t =  cstring_toCharsSafe (exprNode_unparse($3));
+: id                               { $$ = checkbufferConstraintClausesId ($1);}
+| NEW_IDENTIFIER                   { $$ = fixStateClausesId ($1); }
+| BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
+|  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
+  char *t; int c; 
+  t =  cstring_toCharsSafe (exprNode_unparse($3)); /*@i5234 yuck!@*/
   c = atoi( t );
-   $$ = sRef_makeArrayFetchKnown($1, c); }
- | TMULT  BufConstraintSrefExpr               { $$ = sRef_constructPointer ($2); }
- | TLPAREN BufConstraintSrefExpr TRPAREN     { $$ = $2; }  
- |  BufConstraintSrefExpr TDOT newId          { cstring_markOwned ($3);
-					    $$ = sRef_buildField ($1, $3); }
- |  BufConstraintSrefExpr ARROW_OP newId      { cstring_markOwned ($3);
-                                            $$ = sRef_makeArrow ($1, $3); }
+  $$ = sRef_makeArrayFetchKnown($1, c); }
+| TMULT  BufConstraintSrefExpr               { $$ = sRef_constructPointer ($2); }
+| TLPAREN BufConstraintSrefExpr TRPAREN     { $$ = $2; }  
+|  BufConstraintSrefExpr TDOT newId          { cstring_markOwned ($3);
+ $$ = sRef_buildField ($1, $3); }
+|  BufConstraintSrefExpr ARROW_OP newId      { cstring_markOwned ($3);
+ $$ = sRef_makeArrow ($1, $3); }
 
 /*
 | BufConstraintTerm TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }

@@ -4064,8 +4064,8 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	      }
 	    else
 	      {
-		DPRINTF (("Transfer to error: %s", sRef_unparseFull (tref)));
-		BADBRANCH;
+		DPRINTF (("Transfer to error: %s / %s", sRef_unparseFull (tref),
+			  transferType_unparse (transferType)));
 	      }
 	  }
 	else 

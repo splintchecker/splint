@@ -97,7 +97,7 @@ extern bool constraint_search (constraint p_c, constraintExpr p_old);
 
 extern /*@only@*/ constraint makeConstraintParse3 (constraintExpr p_l, lltok p_relOp, constraintExpr p_r);
 
-extern constraint constraint_addGeneratingExpr (/*@returned@*/ constraint p_c, /*@dependent@*/ /*@oberserver@*/ exprNode p_e);
+extern constraint constraint_addGeneratingExpr (/*@returned@*/ constraint p_c, /*@dependent@*/ /*@exposed@*/ exprNode p_e);
 
 extern bool constraint_hasMaxSet(constraint p_c);
 

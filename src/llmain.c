@@ -435,6 +435,7 @@ static void handlePassThroughFlag (char *arg)
   char *quotechar = strchr (curarg, '\"');
   int offset = 0;
   bool open = FALSE;
+  char *freearg = NULL;
 
   while (quotechar != NULL)
     {
@@ -457,6 +458,7 @@ static void handlePassThroughFlag (char *arg)
 	    }
 	}
       
+      llassert (quotechar != NULL);
       *quotechar = '\0';
       offset = (quotechar - arg) + 2;
       
@@ -466,6 +468,7 @@ static void handlePassThroughFlag (char *arg)
 	    (message ("%s\"\'%s", 
 		      cstring_fromChars (arg), 
 		      cstring_fromChars (quotechar + 1))); 
+	  freearg = arg;
 	  open = FALSE;
 	}
       else
@@ -474,6 +477,7 @@ static void handlePassThroughFlag (char *arg)
 	    (message ("%s\'\"%s", 
 		      cstring_fromChars (arg), 
 		      cstring_fromChars (quotechar + 1)));
+	  freearg = arg;
 	  open = TRUE;
 	}
       
@@ -509,6 +513,8 @@ static void handlePassThroughFlag (char *arg)
 	BADBRANCH;
       }
     }
+  
+  sfree (freearg);
 }
 
 void showHerald (void)
@@ -637,6 +643,7 @@ int main (int argc, char *argv[])
   {
     cstring incval = cstring_copy 
       (osd_getEnvironmentVariable (cstring_makeLiteralTemp (INCLUDE_VAR)));
+    cstring oincval = incval;
 
     if (cstring_isDefined (incval))
       {
@@ -684,7 +691,7 @@ int main (int argc, char *argv[])
 	  }
       }
 
-    cstring_free (incval);
+    cstring_free (oincval);
   }
 
   /*
