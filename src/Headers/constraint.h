@@ -86,6 +86,15 @@ constraint constraint_doSRefFixBaseParam (constraint precondition,
 
 cstring  constraint_printDetailed (constraint c);
 
+constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint);
+
+constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
+constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint);
+constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
+
+/*drl add 11/28/2000 */
+constraint constraint_makeSRefWriteSafeInt (sRef s, int ind);
+
 /*@=czechfcns*/
 #warning take this out
 #include "constraintList.h"

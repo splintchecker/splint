@@ -613,14 +613,19 @@ extern bool sRef_isNullTerminated(sRef p_s);
 
 extern bool sRef_isPossiblyNullTerminated(sRef p_s);
 # define sRef_isPossiblyNullTerminated(p_s) \
-   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+   ( sRef_hasBufStateInfo((p_s)) ? ( (p_s)->bufinfo.bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
 extern bool sRef_isNotNullTerminated(sRef p_s);
 # define sRef_isNotNullTerminated(p_s) \
    ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)
-   
+
+     /*drl7x 11/28/00*/
+extern  bool sRef_isFixedArray (sRef p_s);
+
+extern int sRef_getArraySize (sRef p_s);
+
 extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
 /* end modifications */
 

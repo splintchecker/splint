@@ -43,6 +43,19 @@ extern bool lltok_isOr_Op (lltok tok);
 
 extern bool lltok_isNot_Op (lltok tok);
 
+/*drl7x added this function 11/20/00 */
+
+bool lltok_isLt_Op (lltok tok);
+
+bool lltok_isGt_Op (lltok tok);
+  
+bool lltok_isGe_Op (lltok tok);
+
+bool lltok_isLe_Op (lltok tok);
+
+/* end drl7x added */
+
+
 # else
 # error "Multiple include"
 # endif
