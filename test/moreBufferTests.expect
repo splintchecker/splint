@@ -3,5 +3,26 @@ unrecogCall.c: (in function foo)
 unrecogCall.c:8:3: Unrecognized identifier: bar
 strrchr.c: (in function bar)
 strrchr.c:9:9: Variable ot declared but not used
+initialization.c: (in function initialization)
+initialization.c:5:10: Variable g declared but not used
+initialization.c:8:3: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((d @ initialization.c:3:14
+    ) )  >=  ( 2 )  needed to satisfy Requires: :
+    MAXSET ((f @ initialization.c:8:3 ) )  >=  ( 2 ) 
+initialization.c:5:14: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXREAD ((d @ initialization.c:3:14
+    ) )  >=  ( 22 )  needed to satisfy Requires: :
+    MAXREAD ((e @ initialization.c:5:14 ) )  >=  ( 22 ) 
+simplifyTest.c: (in function fooSub)
+simplifyTest.c:3:3: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((s @ simplifyTest.c:3:3 ) )
+     >=  (i @ simplifyTest.c:3:5 )  needed to satisfy Requires: :
+    MAXSET ((s @ simplifyTest.c:3:3 ) )  >=  (i @ simplifyTest.c:3:5 ) 
+simplifyTest.c: (in function fooAdd)
+simplifyTest.c:10:3: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((s @ simplifyTest.c:10:3 )
+    )  >=  ((i @ simplifyTest.c:10:5 ) ) + (( 2 ) ) needed to satisfy Requires:
+    : MAXSET ((s @ simplifyTest.c:10:3 ) )  >=  ((i @ simplifyTest.c:10:5 ) ) +
+    (( 2 ) )
 
-Finished LCLint checking --- 2 code errors found
+Finished LCLint checking --- 7 code errors found

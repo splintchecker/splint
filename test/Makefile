@@ -645,12 +645,11 @@ simplebufferConstraintTests:
 
 moreBufferTests:
 	@cd moreBufferTests; \
-	$(LCLINTR) +functionconstraint unrecogCall.c strrchr.c
+	$(LCLINTR) +functionconstraint +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c
 
 maxset:
 	@cd maxset; \
 	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" maxsetannotations.c; \
-	pwd; \
 	echo $(LCLINTR); \
 	$(LCLINTR) -f .lclintrc -booltype "lltX_bool"  maxsetnoannotations.c
 

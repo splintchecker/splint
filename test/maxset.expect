@@ -1,6 +1,5 @@
 
 Finished LCLint checking --- no code errors found
-/afs/cert.org/usr/dlaroche/LCLintDev/test/maxset
 
 maxsetnoannotations.c: (in function noancopy)
 maxsetnoannotations.c:4:1: Unresolved constraint:
