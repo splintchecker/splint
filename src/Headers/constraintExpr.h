@@ -31,8 +31,6 @@ extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isError (constraintExpr p
 
 void constraintExpr_free ( /*@only@*/ constraintExpr p_expr);
 
-int constraintExpr_getValue (constraintExpr p_expr) /*@*/;
-
 constraintExpr constraintExpr_setFileloc (/*@returned@*/ constraintExpr p_c, fileloc p_loc) /*@modifies p_c@*/;
 
 constraintExpr constraintExpr_copy (constraintExpr p_expr) /*@*/;
@@ -44,13 +42,15 @@ extern cstring constraintExpr_print (constraintExpr p_expr) /*@*/;
 bool constraintExpr_similar (constraintExpr p_expr1, constraintExpr p_expr2) /*@*/;
 bool constraintExpr_same (constraintExpr p_expr1, constraintExpr p_expr2) /*@*/;
 /*@only@*/ constraintExpr constraintExpr_searchandreplace (/*@only@*/ /*@unique@*/ constraintExpr p_c, /*@temp@*/ /*@observer@*/ constraintExpr p_old, /*@temp@*/ /*@observer@*/ constraintExpr p_newExpr ) /*@modifies p_c@*/;
+
 bool constraintExpr_canGetValue (constraintExpr p_expr) /*@*/;
+long constraintExpr_getValue (constraintExpr p_expr) /*@*/;
 
 int constraintExpr_compare (constraintExpr p_expr1, constraintExpr p_expr2) /*@*/;
 
 //constraintExpr constraintExpr_makeValueInt (int i);
 
-/*@only@*/ constraintExpr constraintExpr_makeIntLiteral (int p_i);
+/*@only@*/ constraintExpr constraintExpr_makeIntLiteral (long p_i);
 
 /*@only@*/ constraintExpr constraintExpr_makeValueExpr (/*@exposed@*/ exprNode p_expr);
 

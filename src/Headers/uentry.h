@@ -17,8 +17,7 @@
 
 typedef struct 
 {
-  /*@only@*/ multiVal val;
-	     typeIdSet access;
+  typeIdSet access;
 } *ucinfo;
 
 typedef enum 

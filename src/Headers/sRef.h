@@ -79,7 +79,7 @@ typedef union
   /*@only@*/ fldinfo  field;
              ctype    object;
   /*@observer@*/ cstring fname; /* unconstrained, new */
-  /*@exposed@*/ /*@notnull@*/ sRef     ref;
+  /*@exposed@*/ /*@notnull@*/ sRef ref;
   /*@only@*/ cjinfo   conj;
              speckind   spec;
 } *sinfo;
@@ -97,6 +97,8 @@ struct s_sRef
 
   skind kind;
   ctype type;
+
+  multiVal val; /* Some sRef's have known values */
 
   sstate defstate;
   nstate nullstate;
@@ -670,6 +672,10 @@ extern /*@observer@*/ stateValue sRef_getMetaStateValue (sRef p_s, cstring p_key
 
 extern bool sRef_checkMetaStateValue (sRef p_s, cstring p_key, int p_value) 
    /*@modifies p_s@*/ ;
+
+extern void sRef_setValue (sRef p_s, /*@only@*/ multiVal p_val) /*@modifies p_s@*/ ; 
+extern bool sRef_hasValue (sRef p_s) /*@*/ ;
+extern /*@observer@*/ multiVal sRef_getValue (sRef p_s) /*@*/ ;
 
 extern /*@mayexit@*/ void sRef_checkValid (/*@temp@*/ sRef p_s) /*@modifies stderr@*/ ;
 

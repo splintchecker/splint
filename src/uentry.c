@@ -644,6 +644,12 @@ static /*@only@*/ fileloc setLocation (void)
     }
 }
 
+static void uentry_setConstantValue (uentry ue, /*@only@*/ multiVal val)
+{
+  llassert (uentry_isEitherConstant (ue));
+  sRef_setValue (ue->sref, val);
+}
+
 /*@notnull@*/ uentry uentry_makeEnumConstant (cstring n, ctype t)
 {
   fileloc loc = setLocation ();
@@ -3102,7 +3108,6 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
-  e->info->uconst->val = m;
   e->info->uconst->access = typeIdSet_undefined;
 
   uentry_setSpecDef (e, f);
@@ -3111,6 +3116,8 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
     {
       sRef_setDefNull (e->sref, uentry_whereDeclared (e)); 
     }
+
+  uentry_setConstantValue (e, m);
 
   return (e);
 }
@@ -3130,6 +3137,7 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   ue->whereDeclared = setLocation ();
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
 
+  DPRINTF (("Constant: %s", uentry_unparseFull (ue)));
   return ue;
 }
 
@@ -4131,8 +4139,8 @@ uentry_compare (uentry u1, uentry u2)
       return 0;
     case KENUMCONST:
     case KCONST:
-      return (multiVal_compare (u1->info->uconst->val,
-				u2->info->uconst->val));
+      return (multiVal_compare (uentry_getConstantValue (u1),
+				uentry_getConstantValue (u2)));
     case KSTRUCTTAG: 
     case KUNIONTAG: 
     case KENUMTAG: 
@@ -4251,9 +4259,9 @@ static uentry
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
-  e->info->uconst->val = m;
   e->info->uconst->access = access;
 
+  uentry_setConstantValue (e, m);
   sRef_storeState (e->sref);
 
   return (e);
@@ -5198,7 +5206,7 @@ uentry_dumpAux (uentry v, bool isParam)
       {
 	cstring sdump;
 
-	if (multiVal_isUnknown (v->info->uconst->val)
+	if (multiVal_isUnknown (uentry_getConstantValue (v))
 	    && typeIdSet_isEmpty (uentry_accessType (v))
 	    && (sRef_getNullState (v->sref) == NS_UNKNOWN))
 	  {
@@ -5207,7 +5215,7 @@ uentry_dumpAux (uentry v, bool isParam)
 	else
 	  {
 	    sdump = message ("@%q@%q@%d",
-			     multiVal_dump (v->info->uconst->val),
+			     multiVal_dump (uentry_getConstantValue (v)),
 			     typeIdSet_dump (uentry_accessType (v)),
 			     (int) sRef_getNullState (v->sref));
 	  }
@@ -5322,6 +5330,11 @@ uentry_unparseFull (uentry v)
 	  DPRINTF (("sref: [%p]", v->sref));
 	  DPRINTF (("sref: %s", sRef_unparseDebug (v->sref)));
 	  /* DPRINTF (("sref: %s", sRef_unparseDeep (v->sref)));	   */
+	}
+      else if (uentry_isConstant (v))
+	{
+	  res = message ("%q = %q",
+			 res, multiVal_unparse (uentry_getConstantValue (v)));
 	}
       else
 	{
@@ -5713,9 +5726,8 @@ uentry_getKind (uentry e)
 
 /*@observer@*/ multiVal uentry_getConstantValue (uentry e)
 {
-  llassert (uentry_isEitherConstant (e));
-
-  return (e->info->uconst->val);
+  llassert (uentry_isEitherConstant (e)); 
+  return (sRef_getValue (e->sref));
 }
 
 /*@observer@*/ uentryList
@@ -6498,7 +6510,6 @@ uentry_setSpecDef (/*@special@*/ uentry e, /*@keep@*/ fileloc f)
 static void
 ucinfo_free (/*@only@*/ ucinfo u)
 {
-  multiVal_free (u->val);
   sfree (u);
 }
 
@@ -6541,10 +6552,7 @@ static /*@only@*/ ucinfo
 ucinfo_copy (ucinfo u)
 {
   ucinfo ret = (ucinfo) dmalloc (sizeof (*ret));
-  
-  ret->val = multiVal_copy (u->val);
   ret->access = u->access;
-
   return ret;
 }
 
@@ -8491,7 +8499,8 @@ uentry_mergeConstantValue (uentry ue, /*@only@*/ multiVal m)
   llassert (uentry_isValid (ue));
   llassert (uentry_isEitherConstant (ue));
 
-  uval = ue->info->uconst->val;
+  DPRINTF (("Constant value: %s / %s", uentry_unparse (ue), multiVal_unparse (m)));
+  uval = uentry_getConstantValue (ue);
 
   if (multiVal_isDefined (uval))
     {
@@ -8515,8 +8524,7 @@ uentry_mergeConstantValue (uentry ue, /*@only@*/ multiVal m)
     }
   else
     {
-      ue->info->uconst->val = m;
-      multiVal_free (uval);
+      uentry_setConstantValue (ue, m);
     }
 }
 
@@ -8833,14 +8841,14 @@ uentry_checkConstantConformance (/*@notnull@*/ uentry old,
 				 bool mustConform, 
 				 /*@unused@*/ bool completeConform)
 {
-  multiVal oldVal = old->info->uconst->val;
-  multiVal newVal = unew->info->uconst->val;
+  multiVal oldval = uentry_getConstantValue (old);
+  multiVal newval = uentry_getConstantValue (unew);
   
-  if (multiVal_isDefined (oldVal))
+  if (multiVal_isDefined (oldval))
     {
-      if (multiVal_isDefined (newVal))
+      if (multiVal_isDefined (newval))
 	{
-	  if (!multiVal_equiv (oldVal, newVal))
+	  if (!multiVal_equiv (oldval, newval))
 	    {
 	      if (mustConform
 		  && optgenerror 
@@ -8849,15 +8857,14 @@ uentry_checkConstantConformance (/*@notnull@*/ uentry old,
 			    ekind_capName (unew->ukind),
 			    uentry_getName (unew), 
 			    uentry_isDeclared (old),
-			    multiVal_unparse (newVal)),
+			    multiVal_unparse (newval)),
 		   uentry_whereDeclared (unew)))
 		{
-		  uentry_showWhereLastExtra (old, multiVal_unparse (oldVal));
+		  uentry_showWhereLastExtra (old, multiVal_unparse (oldval));
 		}
 	    }
 	  
-	  unew->info->uconst->val = multiVal_copy (oldVal);
-	  multiVal_free (newVal);
+	  uentry_setConstantValue (unew, multiVal_copy (oldval));
 	}
       else
 	{
@@ -8866,7 +8873,7 @@ uentry_checkConstantConformance (/*@notnull@*/ uentry old,
     }
   else
     {
-      old->info->uconst->val = multiVal_copy (newVal);
+      uentry_setConstantValue (old, multiVal_copy (newval));
     }
 }
 

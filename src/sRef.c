@@ -359,6 +359,7 @@ static /*@dependent@*/ /*@notnull@*/ /*@special@*/ sRef
   s->safe = TRUE;
   s->modified = FALSE;
   s->immut = FALSE;
+  s->val = multiVal_undefined;
 
   s->type = ctype_unknown;
   s->defstate = SS_UNKNOWN;
@@ -2155,6 +2156,7 @@ sRef_closeEnough (sRef s1, sRef s2)
   s is an sRef of a formal paramenter in a function call constraint
   we trys to return a constraint expression derived from the actual parementer of a function call.
 */
+
 /*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ /*@temp@*/ exprNodeList args)
 {
   constraintExpr ce;
@@ -2219,7 +2221,8 @@ sRef_closeEnough (sRef s1, sRef s2)
     default:
       {
 	sRef temp;
-      llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %q for function with arguments %q", sRef_unparse (s), exprNodeList_unparse(args) ) ));
+	llcontbug (message ("Trying to do fixConstraintParam on nonparam, nonglobal: %q for function with arguments %q",
+			    sRef_unparse (s), exprNodeList_unparse(args)));
       temp = sRef_saveCopy(s);
       ce = constraintExpr_makeTermsRef (temp);
 
@@ -2355,8 +2358,7 @@ sRef_undumpGlobal (char **c)
   BADEXIT;
 }
 
-/*@exposed@*/ sRef
-sRef_undump (char **c)
+static /*@exposed@*/ sRef sRef_undumpBody (char **c)
 {
   char p = **c;
 
@@ -2457,8 +2459,21 @@ sRef_undump (char **c)
   BADEXIT;
 }
 
-/*@only@*/ cstring
-sRef_dump (sRef s)
+/*@exposed@*/ sRef sRef_undump (char **c)
+{
+  sRef res = sRef_undumpBody (c);
+
+  if (reader_optCheckChar (c, '='))
+    {
+      multiVal mv = multiVal_undump (c);
+      sRef_setValue (res, mv);
+      reader_checkChar (c, '=');
+    }
+
+  return res;
+}
+
+static /*@only@*/ cstring sRef_dumpBody (sRef s)
 {
   if (sRef_isInvalid (s))
     {
@@ -2526,8 +2541,22 @@ sRef_dump (sRef s)
   BADEXIT;
 }
 
+/*@only@*/ cstring sRef_dump (sRef s)
+{
+  cstring res = sRef_dumpBody (s);
+
+  if (sRef_hasValue (s))
+    {
+      res = message ("%q=%q=", res, multiVal_dump (sRef_getValue (s)));
+    }
+
+  return res;
+}
+
 cstring sRef_dumpGlobal (sRef s)
 {
+  llassert (!sRef_hasValue (s));
+
   if (sRef_isInvalid (s))
     {
       return (cstring_makeLiteral ("-"));
@@ -2941,7 +2970,14 @@ sRef_unparseDebug (sRef s)
     case SK_TYPE:
       return (message ("<type %s>", ctype_unparse (s->type)));
     case SK_CONST:
-      return (message ("<const %s>", ctype_unparse (s->type)));
+      if (sRef_hasValue (s))
+	{
+	  return (message ("<const %s=%q>", ctype_unparse (s->type), multiVal_unparse (sRef_getValue (s))));
+	}
+      else
+	{
+	  return (message ("<const %s>", ctype_unparse (s->type)));
+	}
     case SK_RESULT:
       return (message ("<result %s>", ctype_unparse (s->type)));
     case SK_SPECIAL:
@@ -5693,6 +5729,7 @@ sRef sRef_copy (sRef s)
       t->modified = s->modified;
       t->immut = FALSE; /* Note mutability is not copied. */
       t->type = s->type;
+      t->val = multiVal_copy (s->val);
 
       t->info = sinfo_copy (s);
       t->defstate = s->defstate;
@@ -9866,3 +9903,25 @@ long int sRef_getArraySize (sRef p_s) /*@*/ {
   return (ctype_getArraySize (c) );
 }
 
+void sRef_setValue (sRef s, multiVal val)
+{
+  llassert (sRef_isValid (s));
+  multiVal_free (s->val);
+  s->val = val;
+}
+
+bool sRef_hasValue (sRef s)
+{
+  return (sRef_isValid (s)
+	  && multiVal_isDefined (s->val));
+}
+
+multiVal sRef_getValue (sRef s)
+{
+  if (sRef_isValid (s))
+    {
+      return s->val;
+    }
+
+  return multiVal_undefined;
+}

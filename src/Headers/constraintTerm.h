@@ -6,7 +6,7 @@ typedef union
 {
   /*@exposed@*/ /*@dependent@*/ exprNode expr;
   /*@only@*/  sRef     sref;
-  int      intlit;
+  long intlit;
 } constraintTermValue;
 
 /*@-namechecks@*/
@@ -43,7 +43,7 @@ constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
 bool constraintTerm_similar (constraintTerm term1, constraintTerm term2) /*@*/;
 
 bool constraintTerm_canGetValue (constraintTerm term)/*@*/;
-int constraintTerm_getValue (constraintTerm term) /*@*/;
+long constraintTerm_getValue (constraintTerm term) /*@*/;
 
 fileloc constraintTerm_getFileloc (constraintTerm t) /*@*/;
 
@@ -58,7 +58,7 @@ constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef s) /*@*/
 
 constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fileloc loc) /*@modifies term@*/;
 
-constraintTerm constraintTerm_makeIntLiteral (int i) /*@*/;
+constraintTerm constraintTerm_makeIntLiteral (long i) /*@*/;
 
 bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/;
 cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;

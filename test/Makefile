@@ -10,7 +10,7 @@
 .PHONY:	version help abstptr abstract alias alttypes ansireserved 
 .PHONY: argorder args blocks break cases cast charlit 
 .PHONY: clauses commentchar 
-.PHONY: compdestroy controldepth csyntax czechnames czechoslovaknames 
+.PHONY: compdestroy constannot controldepth csyntax czechnames czechoslovaknames 
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
 .PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
@@ -46,7 +46,7 @@ LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
 
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
-   charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
+   charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
    decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
    init inparam internal iter keep libs linked lintcomments list macros macrosef merge mergestate metastate modifies \
    modtest moduncon mongoincludes mystrncat noeffect null nullret nullassign observer oldstyle \
@@ -236,6 +236,9 @@ compdestroy:
 	$(LCLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
 	$(LCLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
 
+constannot:
+	${LCLINTRN} constannot.c +arraybounds -exportlocal -expect 2
+
 csyntax:
 	$(LCLINTR) +quiet -incondefs csyntax.c -expect 1 
 	$(LCLINTR) +quiet csyntax2.c -expect 2
@@ -421,7 +424,7 @@ mongoincludes:
 	$(LCLINTR) mongoincludes.c -includenest 5 -expect 0
 
 mystrncat:
-	$(LCLINTR) mystrncat.c +arrayBounds +arrayBoundsRead -expect 4 
+	$(LCLINTR) mystrncat.c +arraybounds +arrayboundsread -expect 4 
 
 noeffect:
 	${LCLINT} noeffect.c +allmacros +checks -expect 3
@@ -651,19 +654,19 @@ tests2.4:
 
 sizeoftest:
 	@cd sizeoftest; \
-	$(LCLINTR) +arrayBounds +arrayBoundsRead sizeof.c
+	$(LCLINTR) +arraybounds +arrayboundsread sizeof.c
 
 bufferTest:
 	@cd bufferTest; \
-	$(LCLINTR) +arrayBounds +arrayBoundsRead test4.c test6.c
+	$(LCLINTR) +arraybounds +arrayboundsread test4.c test6.c
 
 simplebufferConstraintTests:
 	@cd simplebufferConstraintTests; \
-	$(LCLINTR) +arrayBounds +arrayBoundsRead m.c  sizeof.c  test3.c  test7.c
+	$(LCLINTR) +arraybounds +arrayboundsread m.c  sizeof.c  test3.c  test7.c
 
 moreBufferTests:
 	@cd moreBufferTests; \
-	$(LCLINTR) +arrayBounds +arrayBoundsRead +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
+	$(LCLINTR) +arraybounds +arrayboundsread +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
 
 maxset:
 	@cd maxset; \
@@ -673,15 +676,15 @@ maxset:
 
 globalbufferannotation:
 	@cd globalbufferannotation; \
-	$(LCLINTR) +arrayBounds +arrayBoundsRead globalvariable.c
+	$(LCLINTR) +arraybounds +arrayboundsread globalvariable.c
 
 strchr:
 	@cd strchr; \
-	$(LCLINTR)  +arrayBounds +arrayBoundsRead  strchr.c
+	$(LCLINTR)  +arraybounds +arrayboundsread  strchr.c
 
 for:
 	@cd for; \
-	$(LCLINTR)  +arrayBounds +arrayBoundsRead  for.c
+	$(LCLINTR)  +arraybounds +arrayboundsread  for.c
 
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e
