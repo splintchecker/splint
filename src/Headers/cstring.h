@@ -20,17 +20,17 @@
 
 /* typedefs in forwardTypes */
 
-extern /*@notnull@*/ cstring cstring_create (int p_n) /*@*/ ;
+extern /*@notnull@*/ cstring cstring_create (int p_n) /*@*/ /*@ensures maxSet(result) == p_n @*/ ;
 extern /*@only@*/ /*@notnull@*/  cstring cstring_newEmpty (void) ;
 extern /*@notnull@*/ cstring cstring_appendChar (/*@only@*/ cstring p_s1, char p_c);
 
-extern cstring cstring_concatLength (/*@only@*/ cstring p_s1, char *p_s2, int p_len) /*@*/ ;
+extern cstring cstring_concatLength (/*@only@*/ cstring p_s1, char *p_s2, int p_len) /*@*/  /*@requires maxSet(p_s2) >= (p_len - 1) @*/;
 
 extern /*@notnull@*/ cstring cstring_prependChar (char p_c, /*@temp@*/ cstring p_s1);
 extern /*@notnull@*/ cstring cstring_prependCharO (char p_c, /*@only@*/ cstring p_s1);
 extern cstring cstring_downcase (cstring p_s) /*@*/ ;
-extern cstring cstring_copy (cstring p_s) /*@*/ ;
-extern cstring cstring_copyLength (char *p_s, int p_len) /*@*/ ;
+extern cstring cstring_copy (cstring p_s) /*@*/  /*@ensures maxSet(result) == maxRead(p_s) /\ maxRead(result) == maxRead(p_s) @*/ ;
+extern cstring cstring_copyLength (char *p_s, int p_len) /*@*/  /*@requires maxSet(p_s) >= (p_len - 1) @*/;
 
 extern int cstring_toPosInt (cstring p_s) /*@*/ ;
 
@@ -44,17 +44,17 @@ typedef enum {
 extern cmpcode cstring_genericEqual (cstring p_s, cstring p_t,
 				     int p_nchars,
 				     bool p_caseinsensitive,
-				     bool p_lookalike) /*@*/ ;
+				     bool p_lookalike) /*@*/   /*@requires maxRead(p_s) >= p_nchars /\ maxRead(p_t) >= p_nchars @*/ ;
 
 /* evans 2001-09-09 - removed conditional compilation on this (for WIN32, OS2) */
 extern void cstring_replaceAll (cstring p_s, char p_old, char p_snew) /*@modifies p_s@*/ ;
 
-extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew);
+extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew) /*@requires maxRead(p_snew) >= 0 /\ maxRead(p_old) >= 0 /\ maxRead(p_old) >= maxRead(p_snew) @*/;
 extern char cstring_firstChar (cstring p_s) /*@*/ ;
 extern char cstring_secondChar (cstring p_s) /*@*/ ;
 extern char cstring_lastChar (cstring p_s) /*@*/ ;
 extern char cstring_getChar (cstring p_s, int p_n);
-extern void cstring_setChar (cstring p_s, int p_n, char p_c);
+extern void cstring_setChar (cstring p_s, int p_n, char p_c) /*@requires maxRead(p_s) >= (p_n - 1) /\ maxSet(p_s) >= (p_n - 1) @*/ ;
 
 # define cstring_secondChar(s) cstring_getChar (s, 2)
 
@@ -62,7 +62,7 @@ extern /*@exposed@*/ /*@notnull@*/ /*@untainted@*/ char *
   cstring_toCharsSafe (/*@temp@*/ /*@exposed@*/ /*@returned@*/ cstring p_s)
      /*@*/ ;
 
-extern int cstring_length (cstring p_s) /*@*/ ;
+     extern int cstring_length (cstring p_s) /*@*/ /*@ensures result == maxRead(p_s) @*/;
 extern bool cstring_contains (/*@unique@*/ cstring p_c, cstring p_sub) /*@*/ ;
 extern bool cstring_containsChar (cstring p_c, char p_ch) /*@*/ ;
 extern bool cstring_equal (cstring p_c1, cstring p_c2) /*@*/ ;
@@ -148,12 +148,12 @@ extern /*@observer@*/ /*@dependent@*/ cstring
 # define cstring_makeLiteral(s) (cstring_copy (cstring_fromChars (s)))
 # define cstring_makeLiteralTemp(s) (cstring_fromChars (s))
 
-extern cstring cstring_capitalize (cstring p_s) /*@*/ ;
-extern cstring cstring_capitalizeFree (/*@only@*/ cstring p_s) /*@modifies p_s@*/ ;
-extern cstring cstring_fill (cstring p_s, int p_n) /*@*/ ;
-extern cstring cstring_prefix (cstring p_s, int p_n) /*@*/ ;
+extern cstring cstring_capitalize (cstring p_s) /*@*/  /*@requires maxSet(p_s) >= 0 @*/ ;
+extern cstring cstring_capitalizeFree (/*@only@*/ cstring p_s) /*@modifies p_s@*/  /*@requires maxSet(p_s) >= 0 /\ maxRead(p_s) >= 0 @*/ ;
+extern cstring cstring_fill (cstring p_s, int p_n) /*@*/ /*@requires p_n >= 0 @*/;
+extern cstring cstring_prefix (cstring p_s, int p_n) /*@*/ /*@requires maxRead(p_s) >= p_n /\ maxSet(p_s) >= p_n @*/ /*@ensures maxRead(result) == p_n /\ maxSet(result) == p_n @*/;
 extern /*@observer@*/ cstring cstring_suffix (cstring p_s, int p_n) /*@*/ ;
-extern cstring cstring_concat (cstring p_s, cstring p_t) /*@*/ ;
+extern cstring cstring_concat (cstring p_s, cstring p_t) /*@*/ /*@requires maxSet(p_s) >= 0 @*/;
 
 extern cstring 
   cstring_concatFree (/*@only@*/ cstring p_s, /*@only@*/ cstring p_t)

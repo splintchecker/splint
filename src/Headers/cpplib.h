@@ -636,5 +636,5 @@ extern bool isIdentifierChar (char) /*@*/ ;
 extern int cppReader_checkMacroName (cppReader *p_pfile, char *p_symname, 
 				     cstring p_usage);
 
-extern struct operation cppReader_parseNumber (cppReader *, char *, int);
+extern struct operation cppReader_parseNumber (cppReader * p_pfile, char * p_start, int p_olen)  /*@requires maxRead(p_start) >= (p_olen - 1) @*/;
 

@@ -6,7 +6,7 @@
 # ifndef RANDOMNUMBERS_H
 # define RANDOMNUMBERS_H
 
-/*@constant int NUM_RANDOM@*/
+/*@constant int NUM_RANDOM=256@*/
 # define NUM_RANDOM 256
 
 extern unsigned int g_randomNumbers[NUM_RANDOM];

@@ -26,7 +26,7 @@ extern void sfree (/*@out@*/ /*@only@*/ /*@null@*/ void *p_x) /*@modifies p_x@*/
 # include "cstring.h"
 # include "bool.h"
 
-extern /*@out@*/ /*@only@*/ void *dimalloc  (size_t p_size, const char *p_name, int p_line);
+extern /*@out@*/ /*@only@*/ void *dimalloc  (size_t p_size, const char *p_name, int p_line) /*@ensures maxSet(result) == (p_size - 1); @*/ ;
 extern /*@only@*/ void *dicalloc  (size_t p_num, size_t p_size, const char *p_name, int p_line);
 extern /*@notnull@*/ /*@out@*/ /*@only@*/ void *
   direalloc (/*@returned@*/ /*@only@*/ /*@out@*/ /*@null@*/ void *p_x, 
@@ -38,8 +38,12 @@ extern /*@only@*/ void *
   /*@releases p_x@*/
   /*@modifies *p_x@*/ ;
 
-extern /*@out@*/ /*@only@*/ void *dmalloc (/*@sef@*/ size_t p_size) /*@*/
-   /*:ensures MaxSet(result) == (p_size - 1):*/ ;
+extern /*@out@*/ /*@only@*/ void *dmalloc  (/*@sef@*/ size_t p_size) /*@*/
+        /*@ensures maxSet(result) == (p_size - 1); @*/ ;
+	  
+
+     /*drl 12/28/01 Work around for self checking */
+#ifndef LINTBUFFERCHECK
 
 # ifdef USEDMALLOC
 # define dmalloc(s)    (malloc(s))
@@ -49,6 +53,8 @@ extern /*@out@*/ /*@only@*/ void *dmalloc (/*@sef@*/ size_t p_size) /*@*/
 # define drealloc(s,l) (direalloc(s, l, __FILE__, __LINE__))
 # endif
 
+#endif
+     
 # include "system_constants.h"
 
 # ifdef USEGC
@@ -89,6 +95,8 @@ typedef /*@dependent@*/ char *d_char;
 
 /*@constant int NOT_FOUND;@*/
 # define NOT_FOUND (-23)
+
+unsigned int int_toNonNegative (int p_x) /*@*/;
 
 # else
 # error "Multiple include"

@@ -93,6 +93,10 @@ void constraintList_dump (/*@observer@*/ constraintList p_c,  FILE * p_f);
 /*@only@*/ constraintList constraintList_undump (FILE * p_f);
 /*@only@*/ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList p_s);
 
+/*drl 1/6/2001: I didn't think these functions were solid enough to include in the   stable  release of splint.*/
+/*drl added 12/30/01 */
+/* / *@only@* / constraintList constraintList_doSRefFixStructConstraint(constraintList p_invars, sRef p_s, ctype p_ct ); */
+
 # else
 # error "Multiple include"
 # endif

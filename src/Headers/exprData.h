@@ -85,7 +85,8 @@ exprData_getIterCallArgs (exprData p_data) /*@*/;
 
 /*static*/ /*@exposed@*/ cstringList exprData_getOffsetName (exprData p_data) /*@*/ ;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getSingle (exprData p_data);
+/*drl 10/18/001 added sef annotation*/
+/*static*/ /*@exposed@*/ exprNode exprData_getSingle (exprData p_data) /*@*/;
 
 /*static*/ /*@only@*/ exprData 
 exprData_makeOp (/*@keep@*/ exprNode p_a, /*@keep@*/ exprNode p_b, /*@keep@*/ lltok p_op);

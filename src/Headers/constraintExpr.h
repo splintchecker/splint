@@ -12,6 +12,8 @@ constraintExprKind;
 
 struct s_constraintExpr {
   constraintExprKind kind;
+  bool ct; /*changed type */
+  ctype origType;
   constraintExprData data;
 };
 
@@ -122,6 +124,11 @@ bool constraintExpr_isTerm (/*@observer@*/ /*@temp@*/ constraintExpr p_c);
 int constraintExpr_getDepth (/*@observer@*/ /*@temp@*/ constraintExpr p_ex);
 
 
+/*drl 1/6/2001: I didn't think these functions were solid enough to include in the   stable  release of splint.*/
+/* drl added 12/30/001*/
+/* extern / *@only@* / constraintExpr constraintExpr_doSRefFixInvarConstraint (/ *@only@* / constraintExpr p_expr, sRef p_s, ctype p_ct); */
+
+   
 #else
 # error "Multiple include"
 #endif

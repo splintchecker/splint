@@ -14,7 +14,7 @@ constraintExprBinaryOpKind;
 typedef enum
 {
   UNARYOP_UNDEFINED,
- MAXSET, MINSET, MAXREAD, MINREAD
+  MAXSET, MINSET, MAXREAD, MINREAD 
  }
 constraintExprUnaryOpKind;
 

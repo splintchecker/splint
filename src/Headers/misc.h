@@ -25,13 +25,12 @@ extern void assertDefined (/*@sef@*/ /*@unused@*/ void *p_x) ;
 
 
 /*@-czechfcns@*/
-extern int size_toInt (size_t p_x) /*@*/ ;
-extern long size_toLong (size_t p_x) /*@*/ ;
-extern size_t size_fromInt (int p_x) /*@*/ ;
-extern int longUnsigned_toInt (long unsigned int p_x) /*@*/ ;
-extern int long_toInt (long p_x) /*@*/ ;
-extern long unsigned longUnsigned_fromInt (int p_x) /*@*/ ;
-extern unsigned int int_toNonNegative (int p_x) /*@*/ ;
+extern int size_toInt (size_t p_x) /*@*/ /*@ensures result==p_x@*/;
+extern long size_toLong (size_t p_x) /*@*/ /*@ensures result==p_x@*/ ;
+extern size_t size_fromInt (int p_x) /*@*/ /*@ensures result==p_x@*/ ;
+extern int longUnsigned_toInt (long unsigned int p_x) /*@*/ /*@ensures result==p_x@*/ ;
+extern int long_toInt (long p_x) /*@*/ /*@ensures result==p_x@*/;
+extern long unsigned longUnsigned_fromInt (int p_x) /*@*/  /*@ensures result==p_x@*/ ;
 /*@=czechfcns@*/
 
 /* string functions */
@@ -47,7 +46,7 @@ extern char *mstring_concat  (const char *p_s1, const char *p_s2) /*@*/ ;
 extern char *mstring_concatFree (/*@only@*/ char *p_s1, /*@only@*/ char *p_s2) /*@modifies *p_s1, *p_s2*/ ;
 extern char *mstring_concatFree1 (/*@only@*/ char *p_s1, const char *p_s2);
 extern char *mstring_append (/*@only@*/ char *p_s1, char p_c);
-extern char *mstring_copy (/*@null@*/ char *p_s1) /*@*/ ;
+extern char *mstring_copy (/*@null@*/ char *p_s1) /*@*/  /*@ensures maxRead(result) == maxRead(p_s1) /\  maxSet(result) == maxSet(p_s1) @*/ ;
 extern bool mstring_equalPrefix (const char *p_c1, const char *p_c2) /*@*/ ;
 extern bool mstring_equal (/*@null@*/ const char *p_s1, /*@null@*/ const char *p_s2) /*@*/ ;
 extern bool mstring_containsChar (/*@unique@*/ const char *p_s, char p_c) /*@*/ ;
@@ -65,7 +64,7 @@ extern /*@nullwhentrue@*/ bool mstring_isEmpty (/*@sef@*/ /*@null@*/ char *p_s) 
 
 extern void mstring_markFree (/*@owned@*/ char *p_s) /*@modifies *p_s;@*/ ;
 
-extern /*@notnull@*/ /*@only@*/ char *mstring_create (int p_n) /*@*/  /*@ensures maxSet(result) == p_n @*/ ;
+extern /*@notnull@*/ /*@only@*/ char *mstring_create (int p_n) /*@*/  /*@ensures maxSet(result) == p_n /\ maxRead(result) == 0 @*/ ;
 extern /*@notnull@*/ /*@only@*/ char *mstring_createEmpty (void) /*@*/ ;
 
 extern void mstring_free (/*@out@*/ /*@only@*/ /*@null@*/ char *p_s);
