@@ -348,6 +348,23 @@ exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src)
   return dst;
 }
 
+constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint)
+{
+  constraint ret = constraint_makeNew();
+  //constraintTerm term;
+
+  e = exprNode_fakeCopy(e);
+  ret->lexpr = constraintExpr_makeValueExpr (e);
+  ret->ar = EQ;
+  ret->post = TRUE;
+  ret->expr =  constraintExpr_makeValueExpr (e);
+  ret->expr =  constraintExpr_makeDecConstraintExpr (ret->expr);
+
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
+  return ret;
+}
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();

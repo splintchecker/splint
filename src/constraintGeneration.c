@@ -1,6 +1,6 @@
 
 /*
-** constraintList.c
+** constraintGeneration.c
 */
 
 //#define DEBUGPRINT 1
@@ -347,69 +347,44 @@ exprNode makeDataTypeConstraints (exprNode e)
   c = constraintList_makeFixedArrayConstraints (e->uses);
   
   e->ensuresConstraints = constraintList_addList (e->ensuresConstraints, c);
-  
-/*   sRefSet_elements (e->uses, el) */
-/*     llassert (el); */
-/*     if (sRef_isFixedArray(el) ) */
-/*       { */
-/* 	int s; */
-/* 	constraint con; */
-/* 	s = sRef_getArraySize(el); */
-/* 	DPRINTF( (message("%s is a fixed array with size %d", */
-/* 			  sRef_unparse(el), s) ) ); */
-/* 	con = constraint_makeSRefWriteSafeInt (el, (s - 1)); */
-/* 	e->ensuresConstraints = constraintList_add(e->ensuresConstraints, */
-/* 						   con); */
-/*       } */
-/*     else */
-/*       { */
-/* 	DPRINTF( (message("%s is not a fixed array", */
-/* 			  sRef_unparse(el)) ) ); */
-/*       } */
-/*   end_sRefSet_elements */
-
+ 
  return e;
 }
 
-
-void forLoopHeuristics( exprNode forPred, exprNode forBody)
+void doFor (exprNode e, exprNode forPred, exprNode forBody)
 {
-  exprNode init, test, inc, t1, t2, t3 ,t4;
-  constraint con;
-  
-  init  =  exprData_getTripleInit (forPred->edata);
-  test =   exprData_getTripleTest (forPred->edata);
-  inc  =   exprData_getTripleInc (forPred->edata);
-  if (exprNode_isError(init) )
-    {
-      return;
-    }
-  if (init->kind == XPR_ASSIGN)
-    {
-      t1 = exprData_getOpA (init->edata);
-      t2 = exprData_getOpB (init->edata);
-      
-      if (! (t1->kind == XPR_VAR) )
-	return;
-    }
-  else
-    return;
-  
-  if (test->kind == XPR_FETCH)
-    {
-      t3 = (exprData_getPairA (test->edata) );
-      t4 = (exprData_getPairB (test->edata) );
-      if (sRef_sameName(t1->sref, t4->sref) )
+  exprNode init, test, inc;
+  //merge the constraints: modle as if statement
+      /* init
+	if (test)
+	   for body
+	   inc        */
+      init  =  exprData_getTripleInit (forPred->edata);
+      test =   exprData_getTripleTest (forPred->edata);
+      inc  =   exprData_getTripleInc (forPred->edata);
+
+      if ( ( (exprNode_isError (test) /*|| (exprNode_isError(init) )*/ ) || (exprNode_isError (inc) ) ) )
 	{
-	  DPRINTF((message ("Found a for loop matching heuristic:%s", exprNode_unparse (forPred) ) ));
-	  con = constraint_makeEnsureLteMaxRead(t1, t3);
-	  forPred->ensuresConstraints = constraintList_add(forPred->ensuresConstraints, con);	  
+	  DPRINTF ((message ("strange for statement:%s, ignoring it", exprNode_unparse(e) ) ) );
+	  return;
+	}
+
+      forLoopHeuristics(e, forPred, forBody);
+      
+      e->requiresConstraints = reflectChanges (forBody->requiresConstraints, test->ensuresConstraints);
+      e->requiresConstraints = reflectChanges (e->requiresConstraints, test->trueEnsuresConstraints);
+      e->requiresConstraints = reflectChanges (e->requiresConstraints, forPred->ensuresConstraints);
+
+      if (!forBody->canBreak)
+	{
+	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, forPred->ensuresConstraints);
+	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, test->falseEnsuresConstraints);
 	}
       else
-	 DPRINTF((message ("Didn't Fid a for loop matching heuristic:%s %s and %s differ", exprNode_unparse (forPred), exprNode_unparse(t1), exprNode_unparse(t3) ) ));
-	return;
-    }
-  
+	{
+	  DPRINTF(("Can break") );
+	}
+      
 }
 
 bool exprNode_multiStatement (exprNode e)
@@ -450,44 +425,23 @@ bool exprNode_multiStatement (exprNode e)
       forPred = exprData_getPairA (data);
       forBody = exprData_getPairB (data);
       
-  
       //first generate the constraints
       exprNode_generateConstraints (forPred);
       exprNode_generateConstraints (forBody);
 
-      
-      //merge the constraints: modle as if statement
-      /* init
-	if (test)
-	   for body
-	   inc        */
-      init  =  exprData_getTripleInit (forPred->edata);
-      test =   exprData_getTripleTest (forPred->edata);
-      inc  =   exprData_getTripleInc (forPred->edata);
 
-      if ( ( (exprNode_isError (test) /*|| (exprNode_isError(init) )*/ ) || (exprNode_isError (inc) ) ) )
-	{
-	  TPRINTF ((message ("strange for statement:%s, ignoring it", exprNode_unparse(e) ) ) );
-	  return ret;
-	}
-	    
-    forLoopHeuristics(forPred, forBody);
-	    
-      test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
-      DPRINTF((message ("The for loop test: %s ensures %s", exprNode_unparse(test), constraintList_print(test->trueEnsuresConstraints) ) ));
-
-      DPRINTF ((message ("The for loop pred: %s ensures %s", exprNode_unparse(forPred), constraintList_print(forPred->ensuresConstraints) ) ));
-      //      e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
-      e->requiresConstraints = reflectChanges (forBody->requiresConstraints, test->ensuresConstraints);
-      e->requiresConstraints = reflectChanges (e->requiresConstraints, test->trueEnsuresConstraints);
-      e->requiresConstraints = reflectChanges (e->requiresConstraints, forPred->ensuresConstraints);
-      e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, forPred->ensuresConstraints);
+      doFor (e, forPred, forBody);
+     
       break;
 
     case XPR_FORPRED:
       //            ret = message ("for (%s; %s; %s)",
       exprNode_generateConstraints (exprData_getTripleInit (data) );
-      exprNode_exprTraverse (exprData_getTripleTest (data),FALSE, FALSE, exprNode_loc(e));
+      test = exprData_getTripleTest (data);
+      exprNode_exprTraverse (test,FALSE, FALSE, exprNode_loc(e));
+      if (!exprNode_isError(test) )
+	test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
+
       exprNode_generateConstraints (exprData_getTripleInc (data));
       break;
     case XPR_IF:
@@ -800,6 +754,10 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       e->requiresConstraints = constraintList_add(e->requiresConstraints, cons);
       cons = constraint_makeEnsureMaxReadAtLeast (t1, t2, sequencePoint);
       e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+
+      cons = constraint_makeEnsureLteMaxRead (t1, t2);
+      e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+	
       //      cons = constraint_makeEnsureMinReadAtMost (t1, t2, sequencePoint);
       // e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
        
@@ -807,33 +765,6 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       exprNode_exprTraverse (exprData_getPairB (data), FALSE, TRUE, sequencePoint);
       
             /*@i325 Should check which is array/index. */
-      break;
-    case XPR_PREOP: 
-      t1 = exprData_getUopNode(data);
-      //lltok_unparse (exprData_getUopTok (data));
-      exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint );
-      /*handle * pointer access */
-
-      /*@ i 325 do ++ and -- */
-      if (lltok_isMult( exprData_getUopTok (data) ) )
-	{
-	  if (definatelv)
-	    {
-	      cons = constraint_makeWriteSafeInt (t1, 0);
-	    }
-	  else
-	    {
-	      cons = constraint_makeReadSafeInt (t1, 0);
-	    }
-  	      e->requiresConstraints = constraintList_add(e->requiresConstraints, cons);
-	}
-      
-      /* ! expr */
-      if (lltok_isNot_Op (exprData_getUopTok (data) ) )
-	{
-	  e->trueEnsuresConstraints  = constraintList_copy (t1->falseEnsuresConstraints);
-	  e->falseEnsuresConstraints = constraintList_copy (t1->trueEnsuresConstraints);
-	}
       break;
       
     case XPR_PARENS: 
@@ -933,6 +864,49 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
     case XPR_NUMLIT:
       cstring_copy (exprData_getLiteral (data));
       break;
+      
+    case XPR_PREOP: 
+      t1 = exprData_getUopNode(data);
+      tok = (exprData_getUopTok (data));
+      //lltok_unparse (exprData_getUopTok (data));
+      exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint );
+      /*handle * pointer access */
+      if (lltok_isInc_Op (tok) )
+	{
+	  DPRINTF(("doing ++(var)"));
+	  t1 = exprData_getUopNode (data);
+	  cons = constraint_makeMaxSetSideEffectPostIncrement (t1, sequencePoint );
+	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
+	}
+      else if (lltok_isDec_Op (tok) )
+	{
+	  DPRINTF(("doing --(var)"));
+	  t1 = exprData_getUopNode (data);
+	  cons = constraint_makeMaxSetSideEffectPostDecrement (t1, sequencePoint );
+	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
+	}
+      
+      if (lltok_isMult( exprData_getUopTok (data) ) )
+	{
+	  if (definatelv)
+	    {
+	      cons = constraint_makeWriteSafeInt (t1, 0);
+	    }
+	  else
+	    {
+	      cons = constraint_makeReadSafeInt (t1, 0);
+	    }
+  	      e->requiresConstraints = constraintList_add(e->requiresConstraints, cons);
+	}
+      
+      /* ! expr */
+      if (lltok_isNot_Op (exprData_getUopTok (data) ) )
+	{
+	  e->trueEnsuresConstraints  = constraintList_copy (t1->falseEnsuresConstraints);
+	  e->falseEnsuresConstraints = constraintList_copy (t1->trueEnsuresConstraints);
+	}
+      break;
+      
     case XPR_POSTOP:
       
       exprNode_exprTraverse (exprData_getUopNode (data), TRUE, definaterv, sequencePoint );
@@ -943,8 +917,13 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 	  t1 = exprData_getUopNode (data);
 	  cons = constraint_makeMaxSetSideEffectPostIncrement (t1, sequencePoint );
 	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
-	  //	  cons = constraint_makeMaxReadSideEffectPostIncrement (t1, sequencePoint );
-	  //e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
+	}
+       if (lltok_isDec_Op (exprData_getUopTok (data) ) )
+	{
+	  DPRINTF(("doing --"));
+	  t1 = exprData_getUopNode (data);
+	  cons = constraint_makeMaxSetSideEffectPostDecrement (t1, sequencePoint );
+	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
 	}
       break;
     default:
@@ -1360,10 +1339,3 @@ DPRINTF( (message (
   return ret;
 }
 
-
-#ifndef exprNode_isError
-#warning wtf
-# define exprNode_isError(e)          ((e) == exprNode_undefined)
-#else
-#warning strange
-#endif

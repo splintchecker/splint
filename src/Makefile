@@ -236,6 +236,9 @@ endif
 	@echo '//  Default Larch path: '$(DEFAULT_LARCHPATH)
 	@echo '//  Default imports directory: '$(DEFAULT_LCLIMPORTDIR)
 	@echo '// '
+	@echo 'Making tags'
+	./maketags
+	@echo '// '
 	@echo '//  Updating version information'
 	@$(MAKE) -e updateversion
 	@echo '//  Updating local constants'

@@ -6755,6 +6755,10 @@ bool sRef_hasName (sRef s)
     }
 }
 
+bool sRef_sameObject (sRef s1, sRef s2)
+{
+  return sRef_sameName(s1, s2);
+}
 bool
 sRef_sameName (sRef s1, sRef s2)
 {

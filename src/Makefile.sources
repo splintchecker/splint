@@ -36,6 +36,7 @@ GENERALSRC = cstring.c fileloc.c message.c source.c \
     environmentTable.c \
     constraintList.c \
     constraintGeneration.c \
+    forjunk.c \
     exprData.c
 
 ###
