@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/splint
 pkgincludedir = $(includedir)/splint
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoheader
+ACLOCAL = aclocal
+AUTOCONF = autoconf
+AUTOMAKE = automake
+AUTOHEADER = autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -61,29 +61,20 @@ host_alias =
 host_triplet = i686-pc-linux-gnu
 target_alias = 
 target_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run tar
-AWK = gawk
 BISON = bison
 CAT = cat
 CC = gcc
 CP = cp
 CPP = gcc -E
-DEPDIR = .deps
 DIFF = diff
-EXEEXT = 
 GREP = grep
-INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 LCLOBJ = $(lcl_OBJECTS)
 LEX = flex
 LN_S = ln -s
 MV = mv
-OBJEXT = o
 PACKAGE = splint
 RM = rm
 VERSION = 3.0.1.4
-am__include = include
-am__quote = 
-install_sh = /net/af9/drl7x/reTmp/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
