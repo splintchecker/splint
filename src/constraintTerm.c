@@ -20,7 +20,8 @@
 
 //#include "constraintExpr.h"
 
-/*@access exprNode @*/
+/*@access exprNode, constraintTermValue @*/
+
 
 static/*@out@*/ constraintTerm new_constraintTermExpr (void)
 {
@@ -80,6 +81,21 @@ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@m
 fileloc constraintTerm_getFileloc (constraintTerm t)
 {
   return (fileloc_copy (t->loc) );
+}
+
+constraintTermType constraintTerm_getKind (constraintTerm t)
+{
+  llassert (constraintTerm_isDefined(t) );
+  
+  return (t->kind);
+}
+
+/*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm t)
+{
+  llassert (constraintTerm_isDefined(t) );
+  llassert (t->kind == SREF);
+
+  return (t->value.sref);
 }
 
 constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e)
@@ -151,7 +167,7 @@ cstring constraintTerm_getName (constraintTerm term)
 }
 
 constraintTerm 
-constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term->value@*/
+constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/
 {
   llassert (term != NULL);
   

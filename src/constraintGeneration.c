@@ -308,11 +308,17 @@ bool exprNode_stmtList  (exprNode e)
   return TRUE;
 }
 
+fileloc testKill (exprNode e)
+{
+  llassert (exprNode_isDefined(e) );
+  return e->loc;
+}
+
 exprNode doIf (exprNode e, exprNode test, exprNode body)
 {
   DPRINTF ((message ("doIf: %s ", exprNode_unparse(e) ) ) );
 
-  llassert(test);
+  llassert(exprNode_isDefined(test) );
   llassert(e);
   llassert(body);
   

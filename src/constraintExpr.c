@@ -101,12 +101,15 @@ constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
       t1 = constraintExpr_getValue (expr1);
       t2 = constraintExpr_getValue (expr2);
       *propagate = FALSE;
+
+      /*@-compdef@*/
       if (constraintExprData_binaryExprGetOp (expr->data) == PLUS )
 	return (constraintExpr_makeIntLiteral ( (t1+t2) ));
       else if (constraintExprData_binaryExprGetOp (expr->data) ==  MINUS)
 	return (constraintExpr_makeIntLiteral ( (t1-t2) ));
       else
 	llassert(FALSE);
+      /*@=compdef@*/
     }
   
   if (constraintExpr_isLit (expr1) )
@@ -115,14 +118,16 @@ constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
       /*handle MINUS case right */
       *propagate = TRUE;
       *literal += constraintExpr_getValue (expr1);
+      /*@-compdef@*/
       return expr2;
+      /*@=compdef@*/
     }
   
-
+  /*@-compdef@*/
   if (constraintExpr_isLit (expr2) )
     {
       *propagate = TRUE;
-      
+          
       if (constraintExprData_binaryExprGetOp (expr->data) == PLUS )
 	*literal += constraintExpr_getValue (expr2);
       else
@@ -130,11 +135,13 @@ constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
       return expr1;
     }
 
+
   
   
   DPRINTF( (message("constraintExpr_propagateConstants returning: %s", constraintExpr_unparse(expr) ) ) );
 
   return expr;
+  /*@=compdef@*/
 }
 
 static constraintExpr constraintExpr_combineConstants ( constraintExpr expr ) /*@modifies@*/
@@ -340,9 +347,15 @@ static constraintExpr constraintExpr_makeUnaryOpConstraintExpr (constraintExpr c
 {
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOp();
-  /*@-uniondef@*/
-  ret->data = constraintExprData_unaryExprSetExpr (ret->data, cexpr);
+
+  /*@-uniondef@*/ 
+  /*@-compdef@*/
+    ret->data = constraintExprData_unaryExprSetExpr (ret->data, cexpr);
+    ret->data = constraintExprData_unaryExprSetOp (ret->data, UNARYOP_UNDEFINED);
+
   return ret;
+
+  /*@=compdef@*/
   /*@=uniondef@*/
 }
 
@@ -1313,7 +1326,7 @@ doFixResultTerm (constraintExpr e, exprNode fcnCall)
   llassert (t != NULL);
 
   ret = e;
-  switch (constrainTerm_getKind(t) )
+  switch (constraintTerm_getKind(t) )
     {
     case EXPRNODE:
       break;
@@ -1321,7 +1334,7 @@ doFixResultTerm (constraintExpr e, exprNode fcnCall)
       break;
       
     case SREF:
-      s = t = constraintTerm_getSRef(t);
+      s = constraintTerm_getSRef(t);
       if (sRef_isResult (s))
 	{
 	  ret = constraintExpr_makeExprNode(fcnCall);
