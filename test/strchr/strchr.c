@@ -1,4 +1,4 @@
-#include "../../lib/ansi.h"
+
 
 void func () {
   char *c;

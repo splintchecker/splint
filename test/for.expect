@@ -1,8 +1,8 @@
 
 for.c: (in function f)
-for.c:13:5: Unresolved constraint:
-    Lclint is unable to resolve Requires: : (i @ for.c:13:7 )   <=  ( 10 ) 
-    needed to satisfy Requires: : MAXSET ((t @ for.c:13:5 ) )  >=  (i @
-    for.c:13:7 ) 
+for.c:13:5: Possible out-of-bounds store.  Unable to resolve constraint:
+    requires: : (i @ for.c:13:7 )   <=  ( 10 ) 
+     needed to satisfy precondition:
+    requires: : maxSet ((t @ for.c:13:5 ) )  >=  (i @ for.c:13:7 ) 
 
 Finished LCLint checking --- 1 code error found

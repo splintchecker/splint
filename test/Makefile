@@ -421,7 +421,7 @@ mongoincludes:
 	$(LCLINTR) mongoincludes.c -includenest 5 -expect 0
 
 mystrncat:
-	$(LCLINTR) mystrncat.c +fcnconstraint -expect 4 
+	$(LCLINTR) mystrncat.c +arrayBounds +arrayBoundsRead -expect 4 
 
 noeffect:
 	${LCLINT} noeffect.c +allmacros +checks -expect 3
@@ -651,19 +651,19 @@ tests2.4:
 
 sizeoftest:
 	@cd sizeoftest; \
-	$(LCLINTR) +functionconstraint sizeof.c
+	$(LCLINTR) +arrayBounds +arrayBoundsRead sizeof.c
 
 bufferTest:
 	@cd bufferTest; \
-	$(LCLINTR) +functionconstraint test4.c test6.c
+	$(LCLINTR) +arrayBounds +arrayBoundsRead test4.c test6.c
 
 simplebufferConstraintTests:
 	@cd simplebufferConstraintTests; \
-	$(LCLINTR) +functionconstraint m.c  sizeof.c  test3.c  test7.c
+	$(LCLINTR) +arrayBounds +arrayBoundsRead m.c  sizeof.c  test3.c  test7.c
 
 moreBufferTests:
 	@cd moreBufferTests; \
-	$(LCLINTR) +functionconstraint +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
+	$(LCLINTR) +arrayBounds +arrayBoundsRead +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
 
 maxset:
 	@cd maxset; \
@@ -673,16 +673,15 @@ maxset:
 
 globalbufferannotation:
 	@cd globalbufferannotation; \
-	$(LCLINTR) +functionconstraint globalvariable.c
-
+	$(LCLINTR) +arrayBounds +arrayBoundsRead globalvariable.c
 
 strchr:
 	@cd strchr; \
-	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" strchr.c
+	$(LCLINTR)  +arrayBounds +arrayBoundsRead  strchr.c
 
 for:
 	@cd for; \
-	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" for.c
+	$(LCLINTR)  +arrayBounds +arrayBoundsRead  for.c
 
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e

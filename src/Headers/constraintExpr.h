@@ -71,7 +71,7 @@ bool constraintExpr_search (/*@observer@*/ /*@temp@*/ constraintExpr p_c, /*@obs
 /*@only@*/ fileloc constraintExpr_getFileloc (constraintExpr p_expr);
 
 
-/*@only@*/ constraintExpr constraintExpr_makeSRefMaxset ( /*@temp@*/ /*@oberver@*/ sRef p_s);
+/*@only@*/ constraintExpr constraintExpr_makeSRefMaxset ( /*@temp@*/ /*@observer@*/ sRef p_s);
 
 /*@only@*/ constraintExpr constraintExpr_makeSRefMaxRead(/*@temp@*/ /*@observer@*/ sRef p_s);
 
