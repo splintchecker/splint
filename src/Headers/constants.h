@@ -206,13 +206,6 @@
 # define MAX_PRAGMA_LEN PRAGMA_LEN_EXPAND
 
 /*
-** Minimum version with compatible libraries.
-*/
-
-/*@constant float SPLINT_LIBVERSION; @*/
-# define SPLINT_LIBVERSION 2.7
-
-/*
 ** Flex doesn't pre-process input, so remember to copy these manually
 ** to cscanner.l.
 */

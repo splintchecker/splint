@@ -16,8 +16,8 @@ typedef int bool;
 
 /*
 ** bool_initMod has no real effect
-** Declared with modifies internalState, so no noeffect errors are 
-** reported when it is called.)
+** Declared with modifies internalState, so no warnings about no effects are 
+** reported when it is called.
 */
 
 extern /*@unused@*/ void bool_initMod (void) /*@modifies internalState@*/ ;

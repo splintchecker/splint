@@ -73,7 +73,6 @@ fileLib_isLCLFile (cstring s)
   /*@noaccess cstring@*/
 }
 
-# ifndef NOLCL
 /*@only@*/ cstring fileLib_removePath (cstring s)
 {
   /*@access cstring@*/
@@ -89,7 +88,6 @@ fileLib_isLCLFile (cstring s)
   else return (mstring_copy (t + 1));
   /*@noaccess cstring@*/
 }
-# endif
 
 /*@only@*/ cstring
 fileLib_removePathFree (/*@only@*/ cstring s)
@@ -224,8 +222,6 @@ cstring fileLib_cleanName (cstring s)
     {
       return cstring_copySegment (s, 2, cstring_length (s) - 1);
     }
-
-
 
   return cstring_copy (s);
 }

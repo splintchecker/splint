@@ -325,7 +325,9 @@ extern /*@exposed@*/ sRef sRef_buildPointer (/*@exposed@*/ sRef p_t)
   /*@modifies p_t@*/ ;
 
 extern /*@exposed@*/ sRef sRef_makeAddress (/*@exposed@*/ sRef p_t);
-extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeUnconstrained (/*@exposed@*/ cstring) /*@*/ ;
+
+/* evans 2002-07-12: the parameter was exposed (but this led to invalid reads, reported by valgrind */
+extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeUnconstrained (/*@temp@*/ cstring) /*@*/ ;
 
 extern /*@falsewhennull@*/ bool sRef_isUnconstrained (sRef p_s) /*@*/ ;
 

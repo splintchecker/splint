@@ -149,7 +149,7 @@ extern void llparseerror (/*@only@*/ cstring p_s)
    /*@modifies g_warningstream@*/ ;
 
 # define llparseerror(p_s) xllparseerror (__FILE__, __LINE__, p_s)
-# ifndef NOLCL
+
 extern /*@noreturn@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_warningstream@*/ ;
 extern /*@noreturn@*/ void lclfatalbug (/*@temp@*/ char *p_msg) /*@modifies g_warningstream@*/ ;
 extern int lclNumberErrors (void) /*@*/ ;
@@ -166,7 +166,6 @@ extern void lclbug (/*@only@*/ cstring p_s);
 extern void lclplainerror (/*@only@*/ cstring p_msg);
 extern bool lclHadError (void);
 extern void lclRedeclarationError (ltoken p_id);
-# endif
 
 extern void llerror_flagWarning (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 

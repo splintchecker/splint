@@ -189,10 +189,6 @@ struct cppReader {
   int lineno;
 
   /*@null@*/ /*@observer@*/ struct tm *timebuf;
-
-#ifdef __cplusplus
-  ~cppReader () { cppCleanup (this); }
-#endif
 };
 
 /*@constant int cppReader_fatalErrorLimit; @*/
@@ -273,7 +269,7 @@ struct cppOptions {
   /* Name of output file, for error messages.  */
   /*@dependent@*/ cstring out_fname;
 
-  struct file_name_map_list *map_list;
+  /*@only@*/ struct file_name_map_list *map_list;
 
   /* Non-0 means -v, so print the full set of include dirs.  */
   bool verbose;
@@ -358,6 +354,7 @@ struct cppOptions {
 
   /* First dir to search */
   /*@owned@*/ struct file_name_list *include;
+
   /* First dir to search for <file> */
   /* This is the first element to use for #include <...>.
      If it is 0, use the entire chain for such includes.  */
@@ -583,7 +580,7 @@ struct file_name_list
 };
 
 extern void cppReader_addIncludeChain (/*@special@*/ cppReader *p_pfile, 
-				       /*@keep@*/ struct file_name_list *p_dir)
+				       /*@only@*/ struct file_name_list *p_dir)
      /*@uses p_pfile->opts, p_pfile->max_include_len@*/
      /*@modifies p_pfile, p_dir@*/ ;
 

@@ -105,6 +105,10 @@ static bool usymtab_isAltDefinitelyNull (sRef p_s) /*@globals utab@*/ ;
 static void refTable_free (/*@only@*/ /*@null@*/ refTable p_x, int p_nentries);
 static ctype usymtab_suFieldsType (uentryList p_f, bool p_isStruct) /*@globals globtab@*/ ;
 
+static void usymtab_freeAux (/*@only@*/ usymtab p_u)
+     /*@globals globtab, utab, filetab@*/
+     /*@modifies p_u@*/ ;
+
 extern int usymtab_getCurrentDepth (void) /*@globals utab@*/ 
 {
   return utab->lexlevel;
@@ -297,7 +301,8 @@ static /*@notnull@*/ /*@special@*/ usymtab
 
   t->mustBreak = FALSE;
   t->exitCode = XK_NEVERESCAPE;
-  
+
+  DPRINTF (("Create usymtab [%p]", t));
   return t;
 }
 
@@ -339,6 +344,13 @@ usymtab_initMod (void)
   oldtab = usymtab_undefined;
 }
 
+void 
+usymtab_destroyMod (void) /*@modifies utab, globtab, filetab@*/ /*@globals killed utab@*/ 
+{
+  DPRINTF (("Destroy usymtab [%p]: %d", utab, utab->nentries));
+  usymtab_freeAux (utab);
+  utab = usymtab_undefined;
+}
 
 void
 usymtab_initGlobalMarker () /*@globals globtab@*/
@@ -1019,7 +1031,6 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
     return (staticEntry ? USYMIDINVALID : eindex);
 }
 
-# ifndef NOLCL
 static void
 usymtab_replaceEntryAux (/*@notnull@*/ usymtab st, /*@only@*/ uentry e)
    /*@globals globtab@*/ /*@modifies st, e@*/
@@ -1048,7 +1059,6 @@ usymtab_replaceEntryAux (/*@notnull@*/ usymtab st, /*@only@*/ uentry e)
       eindex = usymtab_addEntryAux (st, e, FALSE);
     }
 }
-# endif
 
 /*@=deparrays@*/ 
 
@@ -1266,7 +1276,6 @@ usymtab_supAbstractTypeEntry (/*@only@*/ uentry e, bool dodef)
   return (uid);
 }
 
-# ifndef NOLCL
 usymId
 usymtab_supExposedTypeEntry (/*@only@*/ uentry e, bool dodef)
   /*@globals globtab, filetab@*/
@@ -1290,7 +1299,6 @@ usymtab_supExposedTypeEntry (/*@only@*/ uentry e, bool dodef)
 
   return (uid);
 }
-# endif
 
 ctype
 usymtab_supForwardTypeEntry (/*@only@*/ uentry e)
@@ -2009,9 +2017,10 @@ void usymtab_load (FILE *f)
     I'm trying to do this without breaking older libraries*/
   
   /*check for "optional" start buffer constraints message*/
-  if (cstring_compareLit(cstring_fromChars(s), "start_Buffer_Constraints\n") == 0 )
+
+  if (mstring_equalPrefix (s, "start_Buffer_Constraints")) 
     {
-      (void)fgets (s, MAX_DUMP_LINE_LENGTH, f);
+      (void) fgets (s, MAX_DUMP_LINE_LENGTH, f);
     }
   
   while (s != NULL && *s != ';')
@@ -4337,6 +4346,8 @@ usymtab_quietExitScope (fileloc loc)
 {
   usymtab t = utab->env;
 
+  DPRINTF (("Quiet exit scope [%p]", utab));
+
   if (utab->reftable != NULL)
     {
       int i;
@@ -4363,6 +4374,7 @@ usymtab_quietExitScope (fileloc loc)
   t->mustBreak = utab->mustBreak;
   t->exitCode = utab->exitCode;
 
+  DPRINTF (("Free level [%p]", utab));
   usymtab_freeLevel (utab);
 
   utab = t;
@@ -4397,7 +4409,7 @@ void usymtab_exitScope (exprNode expr)
   usymtab lctab = usymtab_undefined;
   bool mustReturn = exprNode_mustEscape (expr);
 
-  DPRINTF (("Exit scope"));
+  DPRINTF (("Exit scope [%p]", utab));
 
   if (utab->kind == US_CBRANCH)
     {
@@ -4893,7 +4905,15 @@ usymtab_addRefEntry (/*@notnull@*/ usymtab s, cstring k)
 	      uentry ue;
 
 	      DPRINTF (("Here: copying %s", uentry_unparse (current)));
-	      ue = uentry_copy (current);
+	      if (uentry_isNonLocal (current))
+		{
+		  ue = uentry_copy (current);
+		}
+	      else
+		{
+		  ue = uentry_copyNoSave (current);
+		}
+
 	      DPRINTF (("Here: copying %s", uentry_unparse (ue)));
 	      usymtab_addEntryQuiet (ut, ue);
 	      DPRINTF (("Okay..."));
@@ -5080,7 +5100,6 @@ uentry usymtab_lookupEither (cstring k)
   return ce;
 }
 
-# ifndef NOLCL
 ctype
 usymtab_lookupType (cstring k)
    /*@globals globtab@*/
@@ -5095,7 +5114,6 @@ usymtab_lookupType (cstring k)
   
   return (uentry_getRealType (usymtab_getTypeEntry (uid)));
 }
-# endif
 
 ctype
 usymtab_lookupAbstractType (cstring k) /*@globals globtab@*/
@@ -5230,7 +5248,6 @@ bool
   return (!(uentry_isUndefined (ce)) && !(uentry_isPriv (ce)));
 }
 
-# ifndef NOLCL
 bool
 usymtab_existsEither (cstring k)
   /*@globals utab@*/
@@ -5248,7 +5265,6 @@ bool
   
   return (uentry_isValid (ce));
 }
-# endif
 
 bool
 usymtab_existsType (cstring k)
@@ -5298,7 +5314,6 @@ usymtab_existsEnumTag (cstring k) /*@globals globtab@*/
   return (!(uentry_isUndefined (ce)) && !(uentry_isPriv (ce)));
 }
 
-# ifndef NOLCL
 bool usymtab_existsVar (cstring k)
    /*@globals utab@*/
 {
@@ -5306,7 +5321,6 @@ bool usymtab_existsVar (cstring k)
 
   return (!(uentry_isUndefined (ce)) && !(uentry_isPriv (ce)) && (uentry_isVar (ce)));
 }
-# endif
 
 /*
 ** destructors
@@ -5334,6 +5348,7 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
 {
   int i;
 
+  DPRINTF (("Free level [%p]", u));
   aliasTable_free (u->aliases);
 
   refTable_free (u->reftable, u->nentries);
@@ -5342,7 +5357,10 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
     {
       for (i = 0; i < u->nentries; i++)
 	{
+	  DPRINTF (("Free complete: %d", i));
+	  DPRINTF (("Uentry: %s", uentry_unparse (u->entries[i])));
 	  uentry_freeComplete (u->entries[i]);
+	  u->entries[i] = uentry_undefined;
 	}
     }
   else
@@ -5350,6 +5368,7 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
       for (i = 0; i < u->nentries; i++)
 	{
 	  uentry_free (u->entries[i]);
+	  u->entries[i] = uentry_undefined;
 	}
     }
 
@@ -5361,11 +5380,11 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
       && u != filetab)
     {
       llassert (!cstringTable_isDefined (u->htable));
-      sfree (u);
     }
 
-/*@-mustfree@*/
-} /*@=mustfree@*/
+  sfree (u); /* evans 2002-07-12: was inside if */
+  /*:!!mustfree@*/
+} /*!@=mustfree@*/
 
 static void
 usymtab_freeAux (/*@only@*/ usymtab u)
@@ -5388,6 +5407,7 @@ void usymtab_free ()
 {
   dbgfree = TRUE;
   usymtab_freeAux (utab);
+  utab = usymtab_undefined;
 }
 
 static int usymtab_lexicalLevel (void) /*@globals utab@*/
@@ -5410,7 +5430,6 @@ bool usymtab_inFunctionScope () /*@globals utab@*/
   return (utab->lexlevel == functionScope);
 }
 
-# ifndef NOLCL
 void
 usymtab_replaceEntry (uentry s)
   /*@globals utab, globtab@*/
@@ -5418,7 +5437,6 @@ usymtab_replaceEntry (uentry s)
 {
   usymtab_replaceEntryAux (utab, s);
 }
-# endif
 
 bool
 usymtab_matchForwardStruct (usymId u1, usymId u2)

@@ -1294,7 +1294,7 @@ static flaglist flags =
     "warnmissingglobs",
     FLG_WARNMISSINGGLOBALS,
     "global variable used in modifies clause is not listed in globals list",
-    "A global variable is used in the modifies clause, but it not listed in "
+    "A global variable is used in the modifies clause, but it is not listed in "
     "the globals list.  The variable will be added to the globals list.",
     0, 0
   },
@@ -3810,7 +3810,7 @@ static flaglist flags =
     FK_TYPEEQ, FK_POINTER, plainFlag,
     "zeroptr",
     FLG_ZEROPTR,
-    "tread 0 as a pointer",
+    "treat 0 as a pointer",
     NULL, 0, 0
   },
   {

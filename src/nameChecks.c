@@ -1542,7 +1542,4 @@ void checkParamNames (uentry ue)
     }
 }
 
-
-
-
 /*@i523 POSIX p. 527 - applications should not declare any symbols that end _MAX @*/

@@ -76,11 +76,12 @@ inputStream_free (/*@null@*/ /*@only@*/ inputStream s)
 }
 
 extern /*@only@*/ inputStream 
-  inputStream_create (cstring name, cstring suffix, bool echo)
+inputStream_create (cstring name, cstring suffix, bool echo)
 {
   char *ps;
   inputStream s = (inputStream) dmalloc (sizeof (*s));
-  
+  cstring oname;
+
   s->name = name;
   s->file = NULL;
 
@@ -100,7 +101,9 @@ extern /*@only@*/ inputStream
       s->name = cstring_concatFree1 (s->name, suffix);
     }
 
+  oname = s->name;
   s->name = fileLib_cleanName (s->name);
+  cstring_free (oname); /* evans 2002-07-12: why no error without this?! */
 
   s->lineNo = 0;
   s->charNo = 0;
@@ -109,8 +112,9 @@ extern /*@only@*/ inputStream
   s->fromString = FALSE;
   s->stringSource = NULL;
   s->stringSourceTail = NULL;
-  
-  /*@i3254@*/ return s;
+  s->buffer[0] = '\0';
+
+  return s;
 }
 
 extern /*@only@*/ inputStream 

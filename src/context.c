@@ -36,10 +36,7 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 
-# ifndef NOLCL
 # include "usymtab_interface.h"
-# endif
-
 # include "exprChecks.h"
 # include "filelocStack.h"
 # include "llmain.h"
@@ -53,7 +50,7 @@ extern /*@external@*/ int mtdebug;
 typedef struct
 { 
   cstring file; 
-  typeIdSet daccess ; 
+  typeIdSet daccess; 
 } maccesst;
 
 typedef enum { 
@@ -476,14 +473,12 @@ context_exitMTfile (void)
   gc.kind = CX_GLOBAL;
 }
 
-# ifndef NOLCL
 void
 context_enterLCLfile (void)
 {
   gc.kind = CX_LCL;
   gc.facct = typeIdSet_emptySet ();
 }
-# endif
 
 static void
 addModuleAccess (/*@only@*/ cstring fname, typeIdSet mods)
@@ -540,7 +535,6 @@ insertModuleAccess (cstring fname, typeId t)
     addModuleAccess (cstring_copy (fname), typeIdSet_single (t));
 }
 
-# ifndef NOLCL
 void
 context_exitLCLfile (void)
 {
@@ -557,7 +551,6 @@ context_exitLCLfile (void)
   gc.kind = CX_GLOBAL;
   gc.facct = typeIdSet_emptySet ();
 }
-# endif
 
 void
 context_dumpModuleAccess (FILE *fout)
@@ -4330,17 +4323,29 @@ void
 context_destroyMod (void) 
    /*@globals killed gc@*/
 {
+  int i;
   setCodePoint ();
   ctype_destroyMod ();
+  /*
   setCodePoint ();
   usymtab_free ();
   setCodePoint ();
+  */
+
   fileTable_free (gc.ftab);
-  filelocStack_free (gc.locstack);
-  setCodePoint ();
   gc.ftab = fileTable_undefined;
 
+  filelocStack_free (gc.locstack);
+  setCodePoint ();
+
   macrocache_free (gc.mc);
+
+  /* evans 2002-07-12: not reported because of reldef */
+  for (i = 0; i < gc.nmods; i++)
+    {
+      cstring_free (gc.moduleaccess[i].file);
+    }
+
   sfree (gc.moduleaccess);
   setCodePoint ();
 
@@ -4361,6 +4366,8 @@ context_destroyMod (void)
   globSet_free (gc.globs_used);
   metaStateTable_free (gc.stateTable);
   annotationTable_free (gc.annotTable);
+
+  
 }
 
 /*
@@ -4392,12 +4399,10 @@ bool context_msgStrictOps (void)
   return gc.flags [FLG_STRICTOPS];
 }
 
-# ifndef NOLCL
 bool context_msgLh (void)           
 {
   return gc.flags [FLG_DOLH];
 }
-# endif
 
 void context_pushLoc (void) 
 {
@@ -4457,12 +4462,10 @@ int context_getExpect (void)
   return (context_getValue (FLG_EXPECT));
 }
 
-# ifndef NOLCL
 int context_getLCLExpect (void)
 {
   return (context_getValue (FLG_LCLEXPECT));
 }
-# endif
 
 int context_getLimit (void)
 {
@@ -4564,7 +4567,6 @@ cstring context_getMerge (void)
   return context_getString (FLG_MERGE);
 }
 
-# ifndef NOLCL
 bool context_inLCLLib (void)
 {   
   return (gc.kind == CX_LCLLIB);
@@ -4584,7 +4586,6 @@ void context_leaveImport (void)
 { 
   gc.inimport = FALSE;
 }
-# endif
 
 bool context_inMacro (void) 
 {
@@ -4613,7 +4614,6 @@ int context_getSpecLinesProcessed (void)
   return (gc.speclinesprocessed);
 }
 
-# ifndef NOLCL
 void context_processedSpecLine (void)
 {
   gc.speclinesprocessed++;
@@ -4622,8 +4622,8 @@ void context_processedSpecLine (void)
 void context_resetSpecLines (void)    
 {
   gc.speclinesprocessed = 0;
+
 }
-# endif
 
 bool context_inGlobalContext (void)
 {

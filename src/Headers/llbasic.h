@@ -8,10 +8,7 @@
 # define LLBASIC_H
 
 # include "basic.h"
-
-# ifndef NOLCL
 # include "llglobals.h"
-# endif
 
 # else
 # error "Multiple include"

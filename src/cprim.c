@@ -109,8 +109,16 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
       if (context_getFlag (FLG_MATCHANYINTEGRAL)
 	  || context_getFlag (FLG_IGNOREQUALS))
 	{
-	  return (cprim_isAnyInt (c2)
-		  || (cprim_isAnyChar (c2) && context_msgCharInt ()));
+	  if (context_getFlag (FLG_IGNORESIGNS)) 
+	    {
+	      return (cprim_isAnyUnsignedInt (c2)
+		      || (cprim_isUnsignedChar (c2) && context_msgCharInt ()));
+	    }
+	  else
+	    {
+	      return (cprim_isAnyInt (c2)
+		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
+	    }
 	}
       else if (context_getFlag (FLG_LONGUNSIGNEDUNSIGNEDINTEGRAL))
 	{

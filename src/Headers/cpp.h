@@ -46,7 +46,8 @@ extern /*@only@*/ cstring cppReader_getIncludePath (void) ;
 extern int cppProcess (/*@dependent@*/ cstring p_infile,
 		       /*@dependent@*/ cstring p_outfile);
 extern void cppAddIncludeDir (cstring);
-extern void cppReader_initMod (void);
+extern void cppReader_initMod (void) /*@modifies internalState@*/ ;
+extern void cppReader_destroyMod (void) /*@modifies internalState@*/ ;
 extern void cppDoDefine (cstring);
 extern void cppDoUndefine (cstring);
 extern void cppReader_saveDefinitions (void);

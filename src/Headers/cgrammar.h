@@ -11,7 +11,6 @@
 extern bool g_expectingTypeName ;
 extern /*@dependent@*/ /*@observer@*/ uentry coerceId (cstring p_cn);
 extern /*@observer@*/ uentry coerceIterId (cstring p_cn);
-extern /*@observer@*/ cstring LastIdentifier (void);
 /*@=declundef@*/
 
 /* #ifndef NCGRAM2

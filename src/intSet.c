@@ -131,7 +131,6 @@ intSet_member (intSet s, int el)
   return FALSE;
 }
 
-# ifndef NOLCL
 /*@only@*/ cstring
 intSet_unparseText (intSet s)
 {
@@ -151,7 +150,6 @@ intSet_unparseText (intSet s)
 
   return st;
 }
-# endif
 
 /*@only@*/ cstring
 intSet_unparse (intSet s)

@@ -360,6 +360,7 @@ static void cttable_load (FILE *f)
   /*@modifies cttab, f @*/
 {
   char *s = mstring_create (MAX_DUMP_LINE_LENGTH);
+  char *os = s;
   ctentry cte;
 
   cttable_reset ();
@@ -383,7 +384,7 @@ static void cttable_load (FILE *f)
     {
       ctype ct;
 
-  /*drl bee: tcf*/      cte = ctentry_undump (s);
+      /*drl bee: tcf*/      cte = ctentry_undump (s);
       ct = cttable_addFull (cte);
 
       DPRINTF (("Type: %d: %s", ct, ctype_unparse (ct)));
@@ -394,10 +395,10 @@ static void cttable_load (FILE *f)
 	  ctype_recordConj (ct);
 	}
 
-      (void) reader_readLine (f, s, MAX_DUMP_LINE_LENGTH);
+      s = reader_readLine (f, s, MAX_DUMP_LINE_LENGTH);
     }
 
-  sfree (s);
+  sfree (os);
 
   /*
   DPRINTF (("Done loading cttable: "));

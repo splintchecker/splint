@@ -89,6 +89,12 @@ void cppReader_initMod ()
   /*@-compdef@*/ /* g_cppState is not yet innitialized */
 } /*@=compdef@*/
 
+void cppReader_destroyMod () 
+  /*@globals killed g_cppState@*/
+{
+  cppCleanup (&g_cppState);
+}
+
 void cppReader_initialize ()
 {
   cpplib_initializeReader (&g_cppState);

@@ -45,8 +45,6 @@ Finished checking --- 8 code warnings, as expected
 specclauses3.c:7:6: Special clause accesses field of non-struct or union result
                        (int): *(result).name
 specclauses3.c: (in function badResult)
-specclauses3.c:12:10: Undefined storage <const <any>>->name corresponds to
-                         storage result->name listed in defines clause: NULL
 specclauses3.c:12:10: Null storage returned as non-null: NULL
 specclauses3.c: (in function createName2)
 specclauses3.c:29:10: Undefined storage res->name corresponds to storage
@@ -57,7 +55,7 @@ specclauses3.c: (in function createName4)
 specclauses3.c:55:10: Unallocated storage res->name corresponds to storage
                          result->name listed in allocates clause: res
 
-Finished checking --- 6 code warnings, as expected
+Finished checking --- 5 code warnings, as expected
 
 specclauses4.c: (in function usename)
 specclauses4.c:13:4: Dereference of null pointer *name: **name
@@ -80,6 +78,6 @@ specclauses5.c:43:10: Non-observer storage r->name corresponds to storage
 specclauses5.c: (in function createrecordx)
 specclauses5.c:49:10: Observer storage r->name reachable from unqualified
                          return value
-   specclauses5.c:48:27: Storage r->name becomes observer
+   specclauses5.c:48:14: Storage r->name becomes observer
 
 Finished checking --- 3 code warnings, as expected

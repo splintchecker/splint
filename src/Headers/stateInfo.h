@@ -9,12 +9,15 @@
 # ifndef STATEINFO_H
 # define STATEINFO_H
 
-typedef /*@null@*/ struct
+typedef /*@null@*/ struct s_stateInfo *stateInfo ;
+
+
+/*@null@*/ struct s_stateInfo
 {
   /*@only@*/ fileloc  loc;
   /*@observer@*/ sRef ref;
-  /*@observer@*/ uentry ue;
-} *stateInfo;
+  /*@null@*/ stateInfo previous;
+} ;
 
 /*@constant null stateInfo stateInfo_undefined@*/
 # define stateInfo_undefined (NULL)
@@ -39,6 +42,8 @@ extern /*@only@*/ stateInfo stateInfo_makeRefLoc (/*@exposed@*/ sRef p_ref, file
 
 extern /*@observer@*/ fileloc stateInfo_getLoc (stateInfo p_info) ;
 extern /*@only@*/ cstring stateInfo_unparse (stateInfo p_s) /*@*/ ;
+
+extern void stateInfo_display (stateInfo p_s, /*@only@*/ cstring p_sname) /*@modifies g_errorstream@*/ ;
 
 # else
 # error "Multiple include"

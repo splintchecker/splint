@@ -6,10 +6,6 @@
 # ifndef ABSTRACT_H
 # define ABSTRACT_H
 
-# ifdef NOLCL
-# error "Bad include"
-# endif
-
 /*
 **  These two are needed in symtable.c
 */

@@ -47,10 +47,8 @@ extern /*@only@*/ cstring qualList_unparse (qualList p_s) /*@*/ ;
 extern void qualList_free (/*@only@*/ qualList p_s) ;
 extern qualList qualList_appendList (/*@returned@*/ qualList p_s, qualList p_t);
 
-# ifndef NOLCL
 extern qualList qualList_copy (qualList p_s);
 extern /*@only@*/ cstring qualList_toCComments (qualList p_s);
-# endif
 
 extern void qualList_clear (qualList p_q);
 

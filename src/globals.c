@@ -30,10 +30,8 @@
 
 fileloc g_currentloc;
 
-# ifndef NOLCL
 symtable g_symtab;
 /*@only@*/ lsymbolSet g_currentImports = lsymbolSet_undefined;
-# endif
 
 cstring g_codeFile = cstring_undefined;
 int g_codeLine = 0;
@@ -55,10 +53,8 @@ FILE *g_errorstream = NULL;
 
 /*@observer@*/ char *g_localSpecPath = ".";
 
-# ifndef NOLCL
 /*@only@*/ cstring g_currentSpec;
 /*@only@*/ char *g_currentSpecName;
-# endif
 
 void printCodePoint (void)
 {

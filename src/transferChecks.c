@@ -1724,7 +1724,8 @@ transferChecks_return (exprNode fexp, uentry rval)
 	      DPRINTF (("el: %s / %s", sRef_unparse (el),
 			sRef_unparse (base)));
 	      
-	      if (sRef_isResult (base))
+	      if (sRef_isResult (base) 
+		  && !sRef_isDefinitelyNull (fref)) /* evans 2002-07-22: don't report allocation errors for null results */
 		{
 		  sRef sr = sRef_fixBase (el, fref);
 		  

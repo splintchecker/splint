@@ -118,7 +118,7 @@ typedef struct
 
 typedef struct 
 {
-  typeIdSet   access;
+  typeIdSet access;
 } *ueinfo ;
 
 typedef union
@@ -365,7 +365,6 @@ extern /*@observer@*/ stateClauseList uentry_getStateClauseList (uentry p_ue) /*
 extern void uentry_showWhereLastExtra (uentry p_spec, /*@only@*/ cstring p_extra) 
    /*@modifies g_warningstream@*/ ;
 
-# ifndef NOLCL
 extern void uentry_setRefCounted (uentry p_e);
 
 extern /*@notnull@*/ /*@only@*/ uentry uentry_makeUnnamedVariable (ctype p_t);
@@ -395,7 +394,6 @@ extern /*@notnull@*/ uentry
   uentry_makeSpecFunction (cstring p_n, ctype p_t,
 			   typeIdSet p_access, /*@only@*/ globSet p_globs, 
 			   /*@only@*/ sRefSet p_mods, /*@keep@*/ fileloc p_f);
-# endif
 
 extern /*@notnull@*/ uentry
   uentry_makeEnumConstant (cstring p_n, ctype p_t) /*@*/ ;
@@ -463,10 +461,8 @@ extern /*@notnull@*/ uentry
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeVariableLoc (cstring p_n, ctype p_t);
 
-# ifndef NOLCL
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeVariableParam (cstring p_n, ctype p_t, fileloc p_loc);
-# endif
 
 extern /*@notnull@*/ /*@only@*/ 
 uentry uentry_makeVariableSrefParam (cstring p_n, ctype p_t, /*@only@*/ fileloc p_loc,
@@ -530,6 +526,7 @@ extern void uentry_showWhereDeclared (uentry p_spec) /*@modifies g_warningstream
 
 extern /*@notnull@*/ /*@only@*/ uentry uentry_makeIdVariable (idDecl p_t) /*@*/ ;
 extern uentry uentry_copy (uentry p_e) /*@*/ ;
+extern uentry uentry_copyNoSave (uentry p_e) /*@*/ ; /* for use for uentries that do not live beyond function exits */
 extern void uentry_freeComplete (/*@only@*/ uentry p_e) ;
 extern void uentry_clearDefined (uentry p_e) /*@modifies p_e@*/;
 extern /*@observer@*/ cstring uentry_specDeclName (uentry p_u) /*@*/ ;
@@ -579,7 +576,7 @@ extern int uentry_xcompareuses (uentry *p_p1, uentry *p_p2) /*@*/ ;
 extern /*@observer@*/ cstring uentry_specOrDefName (uentry p_u) /*@*/ ;
 extern void uentry_copyState (uentry p_res, uentry p_other);
 extern bool uentry_sameKind (uentry p_u1, uentry p_u2);
-extern /*@exposed@*/ sRef uentry_returnedRef (uentry p_u, exprNodeList p_args);
+extern /*@exposed@*/ sRef uentry_returnedRef (uentry p_u, exprNodeList p_args, fileloc p_loc);
 extern bool uentry_isReturned (uentry p_u);
 extern bool uentry_isRefCountedDatatype (uentry p_e);
 extern sstate uentry_getDefState (uentry p_u);

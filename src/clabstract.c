@@ -31,10 +31,7 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 # include "cgrammar.h"
-
-# ifndef NOLCL
 # include "usymtab_interface.h"
-# endif
 
 # include "structNames.h"
 # include "nameChecks.h"

@@ -36,10 +36,7 @@ extern fileloc fileloc_create (fileId p_fid, int p_line, int p_col) /*@*/ ;
 extern bool fileloc_isSystemFile (fileloc p_f1) /*@*/ ;
 extern bool fileloc_isXHFile (fileloc p_f1) /*@*/ ;
 
-# ifndef NOLCL
 extern fileloc fileloc_createSpec (fileId p_fid, int p_line, int p_col) /*@*/ ;
-# endif
-
 extern fileloc fileloc_createLib (cstring p_ln) /*@*/ ;
 extern fileloc fileloc_createRc (cstring p_name) /*@*/ ;
 extern fileloc fileloc_decColumn (fileloc p_f, int p_x) /*@*/ ;
@@ -47,11 +44,9 @@ extern void fileloc_subColumn (fileloc p_f, int p_x) /*@modifies p_f@*/ ;
 extern fileloc fileloc_getBuiltin (void) /*@*/ ;
 extern /*@observer@*/ fileloc fileloc_observeBuiltin (void) /*@*/ ;
 extern fileloc fileloc_createBuiltin (void) /*@*/ ;
-
-# ifndef NOLCL
 extern fileloc fileloc_createImport (cstring p_fname, int p_lineno) /*@*/ ;
-# endif
 
+extern void fileloc_destroyMod (void) /*@modifies internalState@*/ ;
 extern bool fileloc_isSpecialFile (fileloc p_f) /*@*/ ;
 extern bool fileloc_sameBaseFile (fileloc p_f1, fileloc p_f2) /*@*/ ;
 extern /*@observer@*/ cstring fileloc_filename (fileloc p_f) /*@*/ ;
@@ -95,9 +90,7 @@ extern bool fileloc_isInvalid (/*@sef@*/ /*@null@*/ fileloc p_f) /*@*/ ;
 
 extern bool fileloc_isLib (fileloc p_f) /*@*/ ;
 
-# ifndef NOLCL
 extern fileloc fileloc_fromTok (ltoken p_t) /*@*/ ;
-# endif
 
 /*@constant int UNKNOWN_LINE; @*/
 # define UNKNOWN_LINE (0)
@@ -114,11 +107,9 @@ extern /*@unused@*/ bool fileloc_columnDefined (/*@sef@*/ fileloc p_f) /*@*/ ;
 # define fileloc_columnDefined(f) \
   (fileloc_isValid (f) && (f)->column != UNKNOWN_COLUMN)
 
-# ifndef NOLCL
 extern void fileloc_setColumnUndefined (/*@sef@*/ fileloc p_f) /*@modifies p_f@*/;
 # define fileloc_setColumnUndefined(f) \
   (fileloc_isDefined(f) ? (f)->column = UNKNOWN_COLUMN : UNKNOWN_COLUMN)
-# endif
 
 extern /*@falsewhennull@*/ bool fileloc_isValid (/*@sef@*/ fileloc p_f);
 # define fileloc_isValid(f) \

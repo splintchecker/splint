@@ -48,10 +48,8 @@ extern int g_prevCodeLine;
 
 extern /*@observer@*/ char *g_localSpecPath;
 
-# ifndef NOLCL
 extern /*@only@*/ cstring g_currentSpec;
 extern /*@null@*/ /*@only@*/ char *g_currentSpecName;
-# endif
 
 extern void setCodePoint (void);
 # define setCodePoint() \
@@ -106,13 +104,11 @@ extern void setColumn (int p_n)
    /*@modifies g_currentloc; @*/ ;
 # define setColumn(n)                 (fileloc_setColumn(g_currentloc, n))
 
-# ifndef NOLCL
 extern void setSpecFileId (fileId p_s)
    /*@globals fileloc g_currentloc; @*/ 
    /*@modifies g_currentloc; @*/ ;
 # define setSpecFileId(s) \
   (fileloc_reallyFree (g_currentloc), g_currentloc = fileloc_createSpec (s, 1, 1))
-# endif
 
 extern void setFileLine (fileId p_s, int p_line)
    /*@globals fileloc g_currentloc; @*/ 

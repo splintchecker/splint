@@ -108,7 +108,6 @@ qualList qualList_appendList (qualList s, qualList t)
   return s;
 }
 
-# ifndef NOLCL
 qualList qualList_copy (qualList s)
 {
   qualList t = qualList_new ();
@@ -120,7 +119,6 @@ qualList qualList_copy (qualList s)
 
   return t;
 }
-# endif
 
 /*@only@*/ cstring
 qualList_unparse (qualList s)
@@ -144,7 +142,6 @@ qualList_unparse (qualList s)
    return st;
 }
 
-# ifndef NOLCL
 /*@only@*/ cstring
 qualList_toCComments (qualList s)
 {
@@ -166,7 +163,6 @@ qualList_toCComments (qualList s)
 
    return st;
 }
-# endif
 
 bool
 qualList_hasAliasQualifier (qualList s)

@@ -348,17 +348,15 @@ extern            exprNode exprNode_iterExpr (/*@returned@*/ exprNode p_e);
 extern exprNode exprNode_iterNewId (/*@only@*/ cstring p_s);
 extern exprNode 
   exprNode_iterStart (/*@observer@*/ uentry p_name, /*@only@*/ exprNodeList p_alist);
-extern exprNode 
-  exprNode_numLiteral (ctype p_c, /*@temp@*/ cstring p_t, 
-		       /*@only@*/ fileloc p_loc, long p_val); 
+extern exprNode exprNode_numLiteral (ctype p_c, /*@temp@*/ cstring p_t, 
+				     /*@only@*/ fileloc p_loc, long p_val) /*@*/ ; 
 extern void exprNode_initMod (void) /*@modifies internalState@*/ ;
 extern exprNode exprNode_for (/*@keep@*/ exprNode p_inc, /*@keep@*/ exprNode p_body);
 extern exprNode 
   exprNode_forPred (/*@only@*/ exprNode p_init, 
 		    /*@only@*/ exprNode p_test, /*@only@*/ exprNode p_inc);
-extern exprNode 
-  exprNode_floatLiteral (double p_d, ctype p_ct, 
-			 cstring p_text, /*@only@*/ fileloc p_loc);
+extern exprNode exprNode_floatLiteral (double p_d, ctype p_ct, 
+				       cstring p_text, /*@only@*/ fileloc p_loc) /*@*/ ;
 extern /*@notnull@*/ exprNode exprNode_createId (/*@observer@*/ uentry p_c);
 extern /*@notnull@*/ exprNode exprNode_makeConstantString (/*@temp@*/ cstring p_c, /*@only@*/ fileloc p_loc) /*@*/ ;
 extern exprNode exprNode_cast (/*@only@*/ lltok p_tok, /*@only@*/ exprNode p_e, /*@only@*/ qtype p_q);

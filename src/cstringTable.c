@@ -49,7 +49,7 @@ static /*@nullwhentrue@*/ bool hbucket_isNull (/*@null@*/ hbucket h)
   return (h == hbucket_undefined); 
 }
 
-static hentry hentry_create (/*@keep@*/ cstring key, int val)
+static hentry hentry_create (/*@only@*/ cstring key, int val)
 {
   hentry h = (hentry) dmalloc (sizeof (*h));
 
@@ -148,7 +148,7 @@ hbucket_add (/*@notnull@*/ hbucket h, /*@only@*/ hentry e)
     }
   
   llassert (e->val != HBUCKET_DNE);
- /*drl bee: si*/ h->entries[h->size] = e;
+  /*drl bee: si*/ h->entries[h->size] = e;
   h->size++;
   h->nspace--;
 }
@@ -186,7 +186,14 @@ void hbucket_free (/*@only@*/ hbucket h)
 {
   if (!hbucket_isNull (h))
     {
-      /*@i32@*/ sfree (h->entries);
+      int i;
+      /* evans 2002-07-12: added this to free entries (splint warning had been suppressed) */
+      for (i = 0; i < h->size; i++)
+	{
+	  hentry_free (h->entries[i]);
+	}
+
+      sfree (h->entries);
       sfree (h);
     }
 }
@@ -200,7 +207,7 @@ cstringTable_free (/*@only@*/ cstringTable h)
 
   for (i = 0; i < h->size; i++)
     {
- /*drl bee: si*/     hbucket_free (h->buckets[i]);
+      /*drl bee: si*/ hbucket_free (h->buckets[i]);
     }
 
   sfree (h->buckets);
@@ -256,7 +263,7 @@ cstringTable_hashValue (/*@notnull@*/ cstringTable h, cstring key)
 
   for (p = cstring_toCharsSafe (key); *p != '\0'; p++)
     {
-    /*drl bee: nm*/    hash_value = (hash_value << 1) ^ g_randomNumbers[*p % 256];
+      /*drl bee: nm*/ hash_value = (hash_value << 1) ^ g_randomNumbers[*p % 256];
     }
 
   return (hash_value % h->size);
@@ -430,8 +437,8 @@ cstringTable_insert (cstringTable h, cstring key, int value)
       cstringTable_rehash (h);
     }
   
-  e = hentry_create (key, value);
   hindex = cstringTable_hashValue (h, key);
+  e = hentry_create (key, value);
 
   /*drl bee: si*/  hb = h->buckets[hindex];
   
@@ -473,7 +480,7 @@ cstringTable_update (cstringTable h, cstring key, int newval)
 	{
 	  /*drl bee: si*/  if (cstring_equal (hb->entries[i]->key, key))
 	    {
-	  /*drl bee: si*/      hb->entries[i]->val = newval;
+	      /*drl bee: si*/      hb->entries[i]->val = newval;
 	      return;
 	    }
 	}
@@ -491,7 +498,7 @@ cstringTable_replaceKey (cstringTable h, cstring oldkey, /*@only@*/ cstring newk
 {
   hbucket hb;
   llassert (cstringTable_isDefined (h));
-
+  
   hb = cstringTable_hash (h, oldkey);
   llassert (cstring_equal (oldkey, newkey));
 
@@ -503,7 +510,7 @@ cstringTable_replaceKey (cstringTable h, cstring oldkey, /*@only@*/ cstring newk
 	{
 	  /*drl bee: si*/  if (cstring_equal (hb->entries[i]->key, oldkey))
 	    {
-	  /*drl bee: si*/      hb->entries[i]->key = newkey;
+	      /*drl bee: si*/ hb->entries[i]->key = newkey;
 	      return;
 	    }
 	}
@@ -531,7 +538,7 @@ cstringTable_remove (cstringTable h, cstring key)
 	      if (i < hb->size - 1)
 		{
 		  /*drl bee: si*/
-  /*drl bee: si*/  hb->entries[i] = hb->entries[hb->size - 1];
+		  hb->entries[i] = hb->entries[hb->size - 1];
 		}
 	      
 	      hb->size--;

@@ -9,6 +9,13 @@
 # ifndef VERSION_H
 # define VERSION_H
 
+/*
+** Minimum version with compatible libraries.
+*/
+
+/*@constant float SPLINT_LIBVERSION; @*/
+# define SPLINT_LIBVERSION 3.0
+
 /*@constant observer char *SPLINT_MAINTAINER; @*/
 # define SPLINT_MAINTAINER "splint-bug@splint.org"
 

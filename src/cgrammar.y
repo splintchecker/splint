@@ -47,7 +47,6 @@
 /*@=allmacros@*/
 
 extern int yylex ();
-extern void swallowMacro (void);
 extern void yyerror (char *);
 
 # include "splintMacros.nf"
@@ -336,20 +335,21 @@ externalDef
  | iterDecl       { uentry_clearDecl (); } 
  | macroDef       { uentry_clearDecl (); } 
  | initializer    { uentry_checkDecl (); exprNode_free ($1); }
- | TSEMI          { uentry_clearDecl (); /* evans 2002-02-08: okay to have a null statement */ }  
+ | TSEMI          { uentry_clearDecl (); lltok_free ($1); /* evans 2002-02-08: okay to have a null statement */ }  
  | error          { uentry_clearDecl (); } 
 
 constantDecl
  : QCONSTANT completeTypeSpecifier NotType namedDecl NotType optSemi IsType QENDMACRO
-   { checkConstant ($2, $4); }
+   { checkConstant ($2, $4); lltok_free2 ($1, $8); }
  | QCONSTANT completeTypeSpecifier NotType namedDecl NotType TASSIGN IsType init optDeclarators optSemi QENDMACRO
-   { checkValueConstant ($2, $4, $8) ; }
+   { checkValueConstant ($2, $4, $8); lltok_free3 ($1, $6, $11); }
 
 fcnDecl
  : QFUNCTION { context_enterFunctionHeader (); } plainFcn optSemi QENDMACRO 
    { 
      declareStaticFunction ($3); context_quietExitFunction (); 
      context_exitFunctionHeader (); 
+     lltok_free2 ($1, $5); /*!*/
    }
 
 plainFcn
@@ -370,9 +370,9 @@ plainNamedDecl
 namedDeclBase
  : newId { $$ = idDecl_create ($1, qtype_unknown ()); }
  | IsType TLPAREN NotType namedDecl IsType TRPAREN
-   { $$ = idDecl_expectFunction ($4); }
+   { $$ = idDecl_expectFunction ($4); lltok_free2 ($2, $6); }
  | namedDeclBase TLSQBR TRSQBR 
-   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); }
+   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); lltok_free2 ($2, $3); }
  | namedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    {
      exprNode_findValue ($4);
@@ -387,6 +387,8 @@ namedDeclBase
        {
 	 $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); 
        }
+
+     lltok_free2 ($2, $5);
    }
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); }
@@ -400,6 +402,7 @@ namedDeclBase
      context_popLoc ();
      /*drl 7/25/01 added*/
      setImplictfcnConstraints();
+     lltok_free2 ($3, $4);
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } 
@@ -409,14 +412,17 @@ namedDeclBase
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      idDecl_addClauses ($$, $7);
      context_popLoc (); 
+     lltok_free2 ($3, $5);
    }
 
 plainNamedDeclBase
  : newId { $$ = idDecl_create ($1, qtype_unknown ()); }
  | IsType TLPAREN NotType plainNamedDecl IsType TRPAREN
-   { $$ = idDecl_expectFunction ($4); }
+   { $$ = idDecl_expectFunction ($4); lltok_free2 ($2, $6); }
  | plainNamedDeclBase TLSQBR TRSQBR 
-   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); }
+   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); 
+     lltok_free2 ($2, $3); 
+   }
  | plainNamedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    { 
      int value;
@@ -432,6 +438,7 @@ plainNamedDeclBase
        }
 
      $$ = idDecl_replaceCtype ($1, ctype_makeInnerFixedArray (idDecl_getCtype ($1), value));
+     lltok_free2 ($2, $5);
    }
  | plainNamedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); }
@@ -443,6 +450,7 @@ plainNamedDeclBase
      $$ = idDecl_replaceCtype ($1, ct);
      idDecl_addClauses ($$, $6);
      context_popLoc (); 
+     lltok_free2 ($3, $4);
    }
  | plainNamedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } 
@@ -452,38 +460,46 @@ plainNamedDeclBase
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      idDecl_addClauses ($$, $7);
      context_popLoc (); 
+     lltok_free ($3);
+     /*!! lltok_free2 ($3, $5); */
    }
 
 iterDecl
  : QITER newId TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } functionClausesPlain
    { clearCurrentParams (); } optSemi QENDMACRO
-   { declareCIter ($2, $4); }
+   { declareCIter ($2, $4); 
+     lltok_free3 ($1, $3, $5); 
+   }
 
 macroDef
- : LLMACRO macroBody TENDMACRO     { exprNode_checkMacroBody ($2); }
- | LLMACROITER iterBody TENDMACRO  { exprNode_checkIterBody ($2); }
- | LLMACROEND endBody TENDMACRO    { exprNode_checkIterEnd ($2); }
- | LLMACRO TENDMACRO /* no stmt */ { exprChecks_checkEmptyMacroBody (); } 
+ : LLMACRO macroBody TENDMACRO     { exprNode_checkMacroBody ($2); lltok_free2 ($1, $3); }
+ | LLMACROITER iterBody TENDMACRO  { exprNode_checkIterBody ($2); lltok_free2 ($1, $3); }
+ | LLMACROEND endBody TENDMACRO    { exprNode_checkIterEnd ($2); lltok_free2 ($1, $3);}
+ | LLMACRO TENDMACRO /* no stmt */ { exprChecks_checkEmptyMacroBody (); lltok_free2 ($1, $2); } 
 
 fcnDefHdr
  : fcnDefHdrAux { clabstract_declareFunction ($1); }
 
 metaStateConstraint
  : metaStateSpecifier TASSIGN metaStateExpression 
-   { $$ = metaStateConstraint_create ($1, $3); }
+   { $$ = metaStateConstraint_create ($1, $3); lltok_free ($2); }
 
 metaStateSpecifier
   : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
     { cscanner_clearExpectingMetaStateName ();
-      $$ = metaStateSpecifier_create ($1, $4); }
+      $$ = metaStateSpecifier_create ($1, $4); 
+      lltok_free ($3); 
+    }
   | CTOK_ELIPSIS { cscanner_expectingMetaStateName (); } TCOLON metaStateName
     { cscanner_clearExpectingMetaStateName ();
-      $$ = metaStateSpecifier_createElipsis ($4); }
+      $$ = metaStateSpecifier_createElipsis ($4); 
+      lltok_free2 ($1, $3);
+    }
 
 metaStateExpression
 : metaStateSpecifier { $$ = metaStateExpression_create ($1); }
-| metaStateSpecifier TBAR metaStateExpression { $$ = metaStateExpression_createMerge ($1, $3); }
+| metaStateSpecifier TBAR metaStateExpression { $$ = metaStateExpression_createMerge ($1, $3); lltok_free ($2); }
 
 metaStateName
 : METASTATE_NAME
@@ -831,29 +847,30 @@ unaryExpr
  | offsetofExpr    { $$ = $1; }
 
 fieldDesignator
- : fieldDesignator TDOT newId         { $$ = cstringList_add ($1, $3); }
- | fieldDesignator TLSQBR expr TRSQBR { $$ = $1; }
+ : fieldDesignator TDOT newId         { $$ = cstringList_add ($1, $3); lltok_free ($2); }
+ | fieldDesignator TLSQBR expr TRSQBR { $$ = $1; lltok_free2 ($2, $4); }
    /* evans 2002-07-02: offsetof designators can use array indexes */
  | newId                              { $$ = cstringList_single ($1); }
 
 offsetofExpr
  : COFFSETOF IsType TLPAREN typeExpression NotType TCOMMA fieldDesignator TRPAREN IsType
-   { $$ = exprNode_offsetof ($4, $7); }
+   { $$ = exprNode_offsetof ($4, $7); 
+     lltok_free3 ($1, $3, $6); lltok_free ($8); }
 
 sizeofExpr
  : IsType { context_setProtectVars (); } 
    sizeofExprAux { context_sizeofReleaseVars (); $$ = $3; }
 
 sizeofExprAux 
- : CSIZEOF TLPAREN typeExpression TRPAREN { $$ = exprNode_sizeofType ($3); } 
- | CSIZEOF unaryExpr                      { $$ = exprNode_sizeofExpr ($2); }
- | CALIGNOF TLPAREN typeExpression TRPAREN { $$ = exprNode_alignofType ($3); } 
- | CALIGNOF unaryExpr                      { $$ = exprNode_alignofExpr ($2); }
+ : CSIZEOF TLPAREN typeExpression TRPAREN { $$ = exprNode_sizeofType ($3); lltok_free3 ($1, $2, $4); } 
+ | CSIZEOF unaryExpr                      { $$ = exprNode_sizeofExpr ($2); lltok_free ($1); }
+ | CALIGNOF TLPAREN typeExpression TRPAREN { $$ = exprNode_alignofType ($3); lltok_free3 ($1, $2, $4); } 
+ | CALIGNOF unaryExpr                      { $$ = exprNode_alignofExpr ($2); lltok_free ($1); }
  
 castExpr
  : unaryExpr 
  | TLPAREN typeExpression TRPAREN castExpr 
-   { $$ = exprNode_cast ($1, $4, $2); } 
+   { $$ = exprNode_cast ($1, $4, $2); lltok_free ($3); } 
  
 timesExpr
  : castExpr 
@@ -1027,8 +1044,8 @@ optDeclarators
 
 init
  : assignExpr                      
- | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); }
- | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); }
+ | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); lltok_free ($3); }
+ | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); lltok_free2 ($3, $4); }
  | designation init                { $$ = exprNode_undefined; }
 
 /*
@@ -1365,7 +1382,7 @@ optNamedDecl
    { 
      qtype qt = qtype_unknown ();
      qtype_adjustPointers ($1, qt);
-     $$ = idDecl_create (cstring_copy (LastIdentifier ()), qt);
+     $$ = idDecl_create (cstring_copy (cscanner_observeLastIdentifier ()), qt);
    }
  | pointers optNamedDecl 
    { $$ = $2; qtype_adjustPointers ($1, idDecl_getTyp ($$)); }
@@ -1734,7 +1751,7 @@ iterArgExpr
 			}
 		      else
 			{
-			  $$ = exprNode_iterNewId (cstring_copy (LastIdentifier ()));
+			  $$ = exprNode_iterNewId (cstring_copy (cscanner_observeLastIdentifier ()));
 			}
 		    }
   | NEW_IDENTIFIER  { $$ = exprNode_iterNewId ($1); }
@@ -1946,7 +1963,7 @@ void yyerror (/*@unused@*/ char *s)
 	    }
 	}
 
-      swallowMacro ();
+      cscanner_swallowMacro ();
       context_exitAllClausesQuiet ();
     }
   else

@@ -1,9 +1,7 @@
 # ifndef FORWARDTYPES_H
 # define FORWARDTYPES_H
 
-# ifndef NOLCL
 # include "lclForwardTypes.h"
-# endif
 
 abst_typedef /*@null@*/ struct s_sRef *sRef;
 abst_typedef /*@null@*/ struct s_uentry *uentry;

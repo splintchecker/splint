@@ -80,6 +80,7 @@ MV = @MV@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RM = @RM@
+SED = @SED@
 VERSION = @VERSION@
 am__include = @am__include@
 am__quote = @am__quote@
@@ -89,17 +90,18 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 
 DIFFFLAGS = 
 
-
 # -u show context
 
 #drl 3/27/2002 get the test suit to print a warning when splint is built under /usr/
+
+#SPLINT    =  valgrind --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=no $(top_builddir)/src/splint$(EXEEXT)
 SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
 ### These are shell-specific
 
 ### This is horrible!  Can't we make top_builddir absolute?
+#SPLINTNEST = valgrind --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=no ../$(top_builddir)/src/splint$(EXEEXT)
 SPLINTNEST = ../$(top_builddir)/src/splint$(EXEEXT)
-
 SPLINTPNEST = @$(SPLINTNEST) -nof
 SPLINTP = @$(SPLINT) -nof
 
@@ -1557,7 +1559,7 @@ slovaknames:
 specclauses:
 	-$(SPLINTR) specclauses.c -expect 6
 	-$(SPLINTR) specclauses2.c -expect 8
-	-$(SPLINTR) specclauses3.c -expect 6
+	-$(SPLINTR) specclauses3.c -expect 5
 	-$(SPLINTR) specclauses4.c -expect 3
 	-$(SPLINTR) specclauses5.c -expect 3
 

@@ -79,15 +79,14 @@ extern /*@observer@*/  cstring osd_getHomeDir (void) /*@*/ ;
 
 extern /*@observer@*/ cstring osd_getEnvironmentVariable (cstring) ;
 
-# ifndef NOLCL
 /*@constant int CALL_SUCCESS@*/
 # define CALL_SUCCESS 0
 extern int osd_system (cstring p_cmd) /*@modifies fileSystem@*/ ;
-# endif
 
 extern cstring osd_absolutePath (cstring p_cwd, cstring p_filename) /*@*/ ;
-extern cstring osd_outputPath (cstring p_filename) /*@*/ ;
+extern /*@only@*/ cstring osd_outputPath (cstring p_filename) /*@*/ ;
 extern void osd_initMod (void) /*@modifies internalState@*/ ;
+extern void osd_destroyMod (void) /*@modifies internalState@*/ ;
 
 extern bool osd_equalCanonicalPrefix (cstring p_dirpath, cstring p_prefixpath) /*@*/ ;
 

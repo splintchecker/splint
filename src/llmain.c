@@ -53,7 +53,6 @@
 # include "osd.h"
 # include "help.h"
 
-# ifndef NOLCL
 # include "gram.h"
 # include "lclscan.h"
 # include "scanline.h"
@@ -68,7 +67,6 @@
 # include "lclinit.h"
 # include "lh.h"
 # include "imports.h"
-# endif
 
 # include "Headers/version.h" /* Visual C++ finds the wrong version.h */
 # include "lcllib.h"
@@ -99,8 +97,6 @@ static fileIdList preprocessFiles (fileIdList, bool)
   /*@modifies fileSystem@*/ ;
 
 static void warnSysFiles(fileIdList p_files) /*@modifies fileSystem@*/;
-
-# ifndef NOLCL
 
 static
 void lslCleanup (void)
@@ -257,7 +253,6 @@ lslProcess (fileIdList lclfiles)
     g_currentSpec = cstring_undefined;
     g_currentSpecName = NULL;
 }
-# endif
 
 static void handlePassThroughFlag (char *arg)
 {
@@ -372,15 +367,6 @@ void showHerald (void)
 # endif
 
 int main (int argc, char *argv[])
-# ifdef NOLCL
-  /*@globals killed undef g_currentloc,
-	     killed undef yyin,
-                    undef g_warningstream, g_messagestream, g_errorstream;
-   @*/
-  /*@modifies g_currentloc, fileSystem,
-	      yyin; 
-  @*/
-# else
   /*@globals killed undef g_currentloc,
 	     killed       g_localSpecPath,  
 	     killed undef g_currentSpec,
@@ -391,14 +377,13 @@ int main (int argc, char *argv[])
   /*@modifies g_currentloc, g_localSpecPath, g_currentSpec, g_currentSpecName, 
               fileSystem, yyin; 
   @*/
-# endif
 {
   bool first_time = TRUE;
   bool expsuccess;
   inputStream sourceFile = inputStream_undefined;
  
   fileIdList dercfiles;
-  cstringSList passThroughArgs = cstringSList_undefined;
+  cstringList passThroughArgs = cstringList_undefined;
   fileIdList cfiles, xfiles, lclfiles, mtfiles;
   clock_t before, lcltime, libtime, pptime, cptime, rstime;
   int i = 0;
@@ -415,10 +400,11 @@ int main (int argc, char *argv[])
   (void) signal (SIGSEGV, llinterrupt); 
 
   flags_initMod ();
+  qual_initMod ();
   clabstract_initMod ();
   typeIdSet_initMod ();
-  cppReader_initMod ();
   osd_initMod ();
+  cppReader_initMod ();
 
   setCodePoint ();
   
@@ -745,11 +731,7 @@ int main (int argc, char *argv[])
 
   if (anylcl)
     {
-# ifdef NOLCL
-      llfatalerror (cstring_makeLiteral ("This version of Splint does not handle LCL files."));
-# else
       lslProcess (lclfiles);
-# endif
     }
 
   usymtab_initGlobalMarker ();
@@ -766,13 +748,13 @@ int main (int argc, char *argv[])
   
   DPRINTF (("Pass through: %s", cstringSList_unparse (passThroughArgs)));
   
-  cstringSList_elements (passThroughArgs, thisarg)
+  cstringList_elements (passThroughArgs, thisarg)
     {
       handlePassThroughFlag (cstring_toCharsSafe (thisarg));
     } 
-  end_cstringSList_elements;
+  end_cstringList_elements;
 
-  cstringSList_free (passThroughArgs);
+  cstringList_free (passThroughArgs);
 
   cleanupMessages ();
 
@@ -878,8 +860,11 @@ int main (int argc, char *argv[])
 		    
 	  (void) inputStream_close (sourceFile);
 	}      
+
+      inputStream_free (sourceFile); /* evans 2002-07-12: why no warning without this?!! */
     } end_fileIdList_elements;
 
+  fileIdList_free (dercfiles); /* evans 2002-07-12: why no warning without this?!! */
   cptime = clock ();
   
   /* process any leftover macros */
@@ -953,16 +938,13 @@ int main (int argc, char *argv[])
   {
     bool isQuiet = context_getFlag (FLG_QUIET);
     cstring specErrors = cstring_undefined;
-# ifndef NOLCL
     int nspecErrors = lclNumberErrors ();
-# endif
     
     expsuccess = TRUE;
 
     if (context_neednl ())
       fprintf (g_warningstream, "\n");
     
-# ifndef NOLCL
     if (nspecErrors > 0)
       {
 	if (nspecErrors == context_getLCLExpect ())
@@ -997,7 +979,6 @@ int main (int argc, char *argv[])
 	      expsuccess = FALSE;
 	    }
 	}
-# endif
 
       if (context_anyErrors ())
 	{
@@ -1097,17 +1078,29 @@ int main (int argc, char *argv[])
 	  specmsg = message ("%d spec, ", specLines);
 	}
       
+      /* The clock might wrap around, not platform-independent easy way to deal with this... */
+      if (ttime > 0)
+	{
 # ifndef CLOCKS_PER_SEC
-      lldiagmsg (message ("%s%d source lines in %d time steps (steps/sec unknown)\n", 
-			  specmsg,
-			  context_getLinesProcessed (), 
-			  (int) ttime));
+	  lldiagmsg (message ("%s%d source lines in %d time steps (steps/sec unknown)\n", 
+			      specmsg,
+			      context_getLinesProcessed (), 
+			      (int) ttime));
 # else
-      lldiagmsg (message ("%s%d source lines in %f s.\n", 
-			  specmsg,
-			  context_getLinesProcessed (), 
-			  (double) ttime / CLOCKS_PER_SEC));
+	  lldiagmsg (message ("%s%d source lines in %f s.\n", 
+			      specmsg,
+			      context_getLinesProcessed (), 
+			      (double) ttime / CLOCKS_PER_SEC));
+	  DPRINTF (("Time: %ld [%ld - %ld]", ttime, rstime, before));
 # endif
+	}
+      else
+	{
+	  lldiagmsg (message ("%s%d source lines\n", 
+			      specmsg,
+			      context_getLinesProcessed ()));
+	}
+
     }
   else
     {
@@ -1259,13 +1252,16 @@ llexit (int status)
 
   if (status != LLFAILURE)
     {
+      usymtab_destroyMod ();
       context_destroyMod ();
       exprNode_destroyMod ();
-      
+      cppReader_destroyMod ();
       sRef_destroyMod ();
       uentry_destroyMod ();
       typeIdSet_destroyMod ();
-      
+      qual_destroyMod ();
+      osd_destroyMod ();
+      fileloc_destroyMod ();
 # ifdef USEDMALLOC
       dmalloc_shutdown ();
 # endif
@@ -1331,12 +1327,11 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 	  fileIdList_add (dfiles, dfile);
 	}
     } end_fileIdList_elements; 
-    
-    return dfiles;
+  
+  return dfiles;
 }
 
 /* This should be in an lclUtils.c file... */
-# ifndef NOLCL
 char *specFullName (char *specfile, /*@out@*/ char **inpath)
 {
   /* extract the path and the specname associated with the given file */
@@ -1405,7 +1400,6 @@ char *specFullName (char *specfile, /*@out@*/ char **inpath)
 
   return specname;
 }
-# endif
 
 void warnSysFiles(fileIdList files)
 {

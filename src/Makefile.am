@@ -251,7 +251,7 @@ COMMONSRC =  $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(DER_FILES) $(HEADERSRC)
 
 #files to run Splint on
-LINTSRC = $(COMMONSRC) $(SPLINTSRC)
+LINTSRC = $(COMMONSRC) $(SPLINTSRC) cscanner.c cgrammar.c
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
@@ -302,10 +302,10 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  echo '* Expect 154 shift/reduce conflicts and 115 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
-	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
+	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
 	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
-	  $(CAT) bison.head cgrammar.tab.h bison.reset >Headers/cgrammar_tokens.h; \
+	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
 	fi
 
@@ -346,7 +346,7 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 
 cscanner.c: cscanner.l
 	$(LEX) $(LFLAGS) cscanner.l 
-	$(CAT) flex.head @LEX_OUTPUT_ROOT@.c flex.reset > cscanner.c
+	$(CAT) flex.head @LEX_OUTPUT_ROOT@.c flex.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g'  | $(SED) 's/lsllex/cgrammar_lsllex/g' > cscanner.c
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
@@ -376,6 +376,10 @@ lintnew: splintme
 
 splintme: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
+
+valsplint:
+	valgrind -v --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=yes ./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
+
 
 splintsome: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude lcllib.c  -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +partial

@@ -7,10 +7,6 @@
 ** ltoken.h
 */
 
-# ifdef NOLCL
-# error "Bad include"
-# endif
-
 # ifndef LTOKEN_H
 # define LTOKEN_H
 

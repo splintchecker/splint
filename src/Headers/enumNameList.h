@@ -8,10 +8,8 @@
 
 typedef cstring enumName ;
 
-# ifndef NOLCL
 extern /*@only@*/ enumName enumName_create (/*@only@*/ cstring p_s) /*@*/ ;
 # define enumName_create(s)  (s)
-# endif
 
 typedef /*@only@*/ enumName o_enumName;
 

@@ -30,7 +30,7 @@
 # include "splintMacros.nf"
 # include "basic.h"
 
-static qual qual_createPlainAux (int i)
+static qual qual_createPlainAux (int i) /*@*/ 
 {
   qual res = (qual) dmalloc (sizeof (*res));
   res->kind = (quenum) i;
@@ -40,22 +40,47 @@ static qual qual_createPlainAux (int i)
   return res;
 }
 
+static qual qtable[QU_LAST];
+static bool isinit = FALSE;
+
+extern void qual_initMod (void)
+{
+  int i = (int) QU_UNKNOWN;
+  llassert (!isinit);
+
+  while (i < (int) QU_LAST) {
+    qtable[i] = qual_createPlainAux (i);
+    i++;
+  }
+  
+  isinit = TRUE;
+}
+
+static void qual_free (qual p_q) ;
+
+extern void qual_destroyMod (void)
+{
+  if (isinit)
+    {
+      int i = (int) QU_UNKNOWN;
+      isinit = FALSE;
+
+      while (i < (int) QU_LAST) {
+	qual_free (qtable[i]);
+	i++;
+      }
+    }
+}
+
+static void qual_free (qual q)
+{
+  llassert (!isinit);
+  sfree (q);
+}
+
 extern qual qual_createPlain (quenum q)
 {
-  static bool isinit = FALSE;
-  static qual qtable[QU_LAST];
-
-  if (!isinit) {
-    int i = (int) QU_UNKNOWN;
-
-    while (i < (int) QU_LAST) {
-      qtable[i] = qual_createPlainAux (i);
-      i++;
-    }
-
-    isinit = TRUE;
-  }
-
+  llassert (isinit);
   llassert (q != QU_USERANNOT && q < QU_LAST);
   return qtable[(int) q];
 }
@@ -186,18 +211,10 @@ extern annotationInfo qual_getAnnotationInfo (qual q)
   return q->info;
 }
 
-/* Cannot call qual_create after this... */
-
-# if 0
-static void qual_free (qual q)
-{
-  llassert (FALSE);
-  sfree (q);
-}
-# endif
-
 extern cstring qual_dump (qual q)
 {
+  llassert (isinit);
+
   if (q->kind == QU_USERANNOT)
     {
       return message ("%d.%s",
@@ -214,6 +231,7 @@ extern cstring qual_dump (qual q)
 extern qual qual_undump (char **s)
 {
   quenum q = (quenum) reader_getInt (s); 
+  llassert (isinit);
 
   if (q == QU_USERANNOT)
     {

@@ -66,10 +66,8 @@ static void checkVarConformance (/*@notnull@*/ uentry p_old,
 				 bool p_mustConform, bool p_completeConform) 
    /*@modifies p_old, p_unew@*/;
 
-# ifndef NOLCL
 static void uentry_setHasMods (uentry p_ue) /*@modifies p_ue@*/;
 static void uentry_setHasGlobs (uentry p_ue) /*@modifies p_ue@*/;
-# endif
 
 static void uentry_reallyFree (/*@notnull@*/ /*@only@*/ uentry p_e);
 
@@ -687,7 +685,6 @@ static void uentry_setConstantValue (uentry ue, /*@only@*/ multiVal val)
   return ue;
 }
 
-# ifndef NOLCL
 /*@notnull@*/ uentry uentry_makeSpecEnumConstant (cstring n, ctype t, fileloc loc)
 {
   uentry ue = uentry_makeConstant (n, t, loc);
@@ -695,7 +692,6 @@ static void uentry_setConstantValue (uentry ue, /*@only@*/ multiVal val)
   ue->ukind = KENUMCONST;
   return ue;
 }
-# endif
 
 /*@notnull@*/ uentry uentry_makeVariableLoc (cstring n, ctype t)
 {
@@ -1336,7 +1332,6 @@ uentry_makeVariableParamAux (cstring n, ctype t, /*@dependent@*/ sRef s,
   return (e);
 }
 
-# ifndef NOLCL
 void
 uentry_setRefCounted (uentry e)
 {
@@ -1346,7 +1341,6 @@ uentry_setRefCounted (uentry e)
       sRef_storeState (e->sref);
     }
 }
-# endif
 
 void
 uentry_setStatic (uentry c)
@@ -3130,12 +3124,10 @@ uentry_isSpecialFunction (uentry ue)
     }
 }
 
-# ifndef NOLCL
 /*@notnull@*/ uentry uentry_makeVariableParam (cstring n, ctype t, fileloc loc)
 {
   return (uentry_makeVariableParamAux (n, t, sRef_makeType (t), fileloc_copy (loc), SS_DEFINED));
 }
-# endif
 
 /*
 ** constants
@@ -3684,7 +3676,6 @@ void uentry_addAccessType (uentry ue, typeId tid)
 				  FALSE, FALSE));
 }
 
-# ifndef NOLCL
 /*@notnull@*/ uentry 
   uentry_makePrivFunction2 (cstring n, ctype t, 
 			    typeIdSet access, 
@@ -3713,7 +3704,6 @@ void uentry_addAccessType (uentry ue, typeId tid)
   reflectImplicitFunctionQualifiers (ue, TRUE);
   return (ue);
 }
-# endif
 
 uentry uentry_makeExpandedMacro (cstring s, fileloc f)
 {
@@ -3752,7 +3742,6 @@ bool uentry_isForward (uentry e)
   return FALSE;
 }
 
-# ifndef NOLCL
 /*@notnull@*/ uentry 
 uentry_makeTypeListFunction (cstring n, typeIdSet access, fileloc f)
 {
@@ -3773,7 +3762,6 @@ uentry_makeUnspecFunction (cstring n, ctype t,
   reflectImplicitFunctionQualifiers (ue, TRUE);
   return ue;
 }
-# endif
 
 /*
 ** datatypes
@@ -4000,7 +3988,6 @@ uentry_makeUnionTag (cstring n, ctype t, fileloc loc)
   return (ret);
 }
 
-# ifndef NOLCL
 uentry
 uentry_makeEnumTag (cstring n, ctype t, fileloc loc)
 {
@@ -4010,7 +3997,6 @@ uentry_makeEnumTag (cstring n, ctype t, fileloc loc)
   cstring_free (ename);
   return ret;
 }
-# endif
 
 uentry
 uentry_makeUnionTagLoc (cstring n, ctype t)
@@ -4470,7 +4456,6 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abstract,
   return (e);
 }
 
-# ifndef NOLCL
 static void uentry_setHasGlobs (uentry ue)
 {
   llassert (uentry_isFunction (ue));
@@ -4484,7 +4469,6 @@ static void uentry_setHasMods (uentry ue)
 
   ue->info->fcn->hasMods = TRUE;
 }
-# endif
 
 bool uentry_hasGlobs (uentry ue)
 {
@@ -5742,27 +5726,35 @@ uentry_getGlobs (uentry l)
       return globSet_undefined;
     }
 
-  if (l->ukind != KFCN)
+  if (uentry_isFunction (l))
     {
-      if (l->ukind != KITER && l->ukind != KENDITER)
-	{
-	  if (l->ukind == KVAR)
-	    {
-	      llbug (message ("Bad call to uentry_getGlobs (var): %q (%s)", 
-			      uentry_unparse (l), 
-			      ekind_unparse (l->ukind)));
-	    }
-	  else
-	    {
-	      llbug (message ("Bad call to uentry_getGlobs: %q (%s)", 
-			      uentry_unparse (l), 
-			      ekind_unparse (l->ukind)));
-	    }
-	}
+      return l->info->fcn->globs;
+    }
+  else if (uentry_isIter (l))
+    {
+      return l->info->iter->globs;
+    }
+  else if (uentry_isEndIter (l))
+    {
       return globSet_undefined;
     }
+  else
+    {
+      if (l->ukind == KVAR)
+	{
+	  llcontbug (message ("Bad call to uentry_getGlobs (var): %q (%s)", 
+			      uentry_unparse (l), 
+			      ekind_unparse (l->ukind)));
+	}
+      else
+	{
+	  llcontbug (message ("Bad call to uentry_getGlobs: %q (%s)", 
+			      uentry_unparse (l), 
+			      ekind_unparse (l->ukind)));
+	}
 
-  return l->info->fcn->globs;
+      return globSet_undefined;
+    }
 }
 
 /*@observer@*/ sRefSet
@@ -5776,7 +5768,22 @@ uentry_getMods (uentry l)
       return sRefSet_undefined; 
     }
 
-  return l->info->fcn->mods;
+  if (uentry_isFunction (l))
+    {
+      return l->info->fcn->mods;
+    }
+  else if (uentry_isIter (l))
+    {
+      return l->info->iter->mods;
+    }
+  else if (uentry_isEndIter (l))
+    {
+      return sRefSet_undefined;
+    }
+  else
+    {
+      BADBRANCH;
+    }
 }
 
 ekind
@@ -6797,7 +6804,7 @@ uentry_reallyFree (/*@notnull@*/ /*@only@*/ uentry e)
 
   nuentries--;
   sfree (e);
-  }
+}
 
 extern void uentry_markOwned (/*@owned@*/ uentry u)
 {
@@ -9900,10 +9907,10 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
   unew->info = uinfo_copy (old->info, old->ukind);
 }
 
-
-uentry
-uentry_copy (uentry e)
+static uentry
+uentry_copyAux (uentry e, bool saveCopy)
 {
+  
   if (uentry_isValid (e))
     {
       uentry enew = uentry_alloc ();
@@ -9916,7 +9923,15 @@ uentry_copy (uentry e)
       enew->whereDefined = fileloc_copy (e->whereDefined);
       enew->whereDeclared = fileloc_copy (e->whereDeclared);
       
-      enew->sref = sRef_saveCopy (e->sref); /* Memory leak! */
+      if (saveCopy)
+	{
+	  enew->sref = sRef_saveCopy (e->sref); /* Memory leak! */
+	}
+      else
+	{
+	  enew->sref = sRef_copy (e->sref);
+	}
+      
       enew->used = e->used;
       enew->lset = FALSE;
       enew->isPrivate = e->isPrivate;
@@ -9937,6 +9952,18 @@ uentry_copy (uentry e)
     {
       return uentry_undefined;
     }
+}
+
+uentry
+uentry_copy (uentry e)
+{
+  return uentry_copyAux (e, TRUE);
+}
+
+uentry
+uentry_copyNoSave (uentry e)
+{
+  return uentry_copyAux (e, FALSE);
 }
 
 void
@@ -10840,7 +10867,7 @@ bool uentry_isReturned (uentry u)
 }
 # endif
 
-/*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args)
+/*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args, fileloc loc)
 {
   llassert (uentry_isRealFunction (u));
 
@@ -10850,7 +10877,7 @@ bool uentry_isReturned (uentry u)
       sRef res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
 
       DPRINTF (("Returned: %s", sRef_unparseFull (res)));
-      sRef_setAllocated (res, g_currentloc);
+      sRef_setAllocated (res, loc);
 
       DPRINTF (("ensures clause: %s / %s", uentry_unparse (u), 
 		stateClauseList_unparse (clauses)));
@@ -10875,7 +10902,7 @@ bool uentry_isReturned (uentry u)
 		      if (modf != NULL)
 			{
 			  sRef sr = sRef_fixBase (el, res);
-			  modf (sr, g_currentloc);
+			  modf (sr, loc);
 			}
 		    }
 		  else
@@ -10915,19 +10942,25 @@ bool uentry_isReturned (uentry u)
 		      
 		      usymtab_addForceMustAlias (tcref, tref); /* evans 2001-05-27 */
 
+		      if (sRef_isNew (tcref))
+			{
+			  /* tcref->kind = SK_OBJECT; */ /*!! Not new anymore */
+			}
+
 		      if (sRef_isDead (tcref))
 			{
-			  sRef_setDefined (tcref, g_currentloc);
-			  sRef_setOnly (tcref, g_currentloc);
+			  sRef_setDefined (tcref, loc);
+			  sRef_setOnly (tcref, loc);
 			}
 		      
 		      if (sRef_isRefCounted (tcref))
 			{
 			  /* could be a new ref now (but only if its returned) */
-			  sRef_setAliasKindComplete (tcref, AK_ERROR, g_currentloc);
+			  sRef_setAliasKindComplete (tcref, AK_ERROR, loc);
 			}
 		      
 		      sRef_makeSafe (tcref);
+		      DPRINTF (("Returns tcref / %s", sRef_unparseFull (tcref)));
 		      prefs = sRefSet_insert (prefs, tcref);
 		    }
 		}
@@ -10952,7 +10985,7 @@ bool uentry_isReturned (uentry u)
 	  
 	  if (nstate_isKnown (n))
 	    {
-	      sRef_setNullState (res, n, g_currentloc);
+	      sRef_setNullState (res, n, loc);
 	    }
 	}
       else
@@ -10969,7 +11002,7 @@ bool uentry_isReturned (uentry u)
 	  
 	  if (sRef_isRefCounted (res))
 	    {
-	      sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
+	      sRef_setAliasKind (res, AK_NEWREF, loc);
 	    }
 	}
       
@@ -10980,7 +11013,7 @@ bool uentry_isReturned (uentry u)
 	  
 	  if (ctype_isAbstract (ct))
 	    {
-	      sRef_setNotNull (res, g_currentloc);
+	      sRef_setNotNull (res, loc);
 	    }
 	  else
 	    {
@@ -10990,18 +11023,18 @@ bool uentry_isReturned (uentry u)
 		}
 	      else
 		{
-		  sRef_setNotNull (res, g_currentloc);
+		  sRef_setNotNull (res, loc);
 		}
 	    }
 	}
       
       if (sRef_isRefCounted (res))
 	{
-	  sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
+	  sRef_setAliasKind (res, AK_NEWREF, loc);
 	}
       else if (sRef_isKillRef (res))
 	{
-	  sRef_setAliasKind (res, AK_REFCOUNTED, g_currentloc);
+	  sRef_setAliasKind (res, AK_REFCOUNTED, loc);
 	}
       else
 	{
@@ -11014,11 +11047,18 @@ bool uentry_isReturned (uentry u)
 	{
 	  sRef_setAliasKind (res, 
 			     alkind_fixImplicit (ak),
-			     g_currentloc);
+			     loc);
 	}
       
       sRefSet_free (prefs);
-      
+
+      /*
+      if (sRef_isOnly (res))
+	{
+	  sRef_setFresh (res, loc);
+	}
+      */
+
       DPRINTF (("Returns ref: %s", sRef_unparseFull (res)));
       return res;
     }

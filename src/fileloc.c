@@ -38,7 +38,29 @@
 # include "osd.h"
 # include "portab.h"
 
-static /*@only@*/ fileloc fileloc_createPrim (flkind p_kind, fileId p_fid, int p_line, int p_col);
+static /*@only@*/ fileloc fileloc_createPrim (flkind p_kind, fileId p_fid, int p_line, int p_col) /*@*/ ;
+
+/*
+** builtin locs are never free'd
+*/
+
+static /*@owned@*/ fileloc s_builtinLoc = fileloc_undefined;
+static /*@owned@*/ fileloc s_externalLoc = fileloc_undefined;
+
+void fileloc_destroyMod ()
+{
+  if (fileloc_isDefined (s_builtinLoc))
+    {
+      sfree (s_builtinLoc);
+      s_builtinLoc = fileloc_undefined;
+    }
+
+  if (fileloc_isDefined (s_externalLoc))
+    {
+      sfree (s_externalLoc);
+      s_externalLoc = fileloc_undefined;
+    }
+}
 
 static flkind fileId_kind (fileId s)
 {
@@ -291,7 +313,6 @@ fileloc_notAfter (fileloc f1, fileloc f2)
   /*@noaccess fileId@*/
 }
 
-# ifndef NOLCL
 bool
 fileloc_isStandardLibrary (fileloc f)
 {
@@ -304,7 +325,6 @@ fileloc_isStandardLibrary (fileloc f)
 	  || cstring_equalLit (s, LLPOSIXSTRICTLIBS_NAME)
 	  || cstring_equalLit (s, LLPOSIXLIBS_NAME));
 }
-# endif
 
 bool
 fileloc_sameFileAndLine (fileloc f1, fileloc f2)
@@ -430,7 +450,6 @@ fileloc_almostSameFile (fileloc f1, fileloc f2)
     }
 }
 
-# ifndef NOLCL
 /*@only@*/ fileloc
 fileloc_fromTok (ltoken t) 
 {
@@ -447,7 +466,6 @@ fileloc_fromTok (ltoken t)
   
   return (fl);
 }
-# endif
 
 /*@only@*/ fileloc
 fileloc_createLib (cstring ln)
@@ -482,14 +500,12 @@ fileloc fileloc_createExternal (void)
 
 fileloc fileloc_getExternal (void)
 {
-  static /*@owned@*/ fileloc res = fileloc_undefined;
-
-  if (res == fileloc_undefined) 
+  if (s_externalLoc == fileloc_undefined) 
     {
-      res = fileloc_createPrim (FL_EXTERNAL, fileId_invalid, 0, 0);
+      s_externalLoc = fileloc_createPrim (FL_EXTERNAL, fileId_invalid, 0, 0);
     }
 
-  return res;
+  return s_externalLoc;
 }
 
 fileloc fileloc_observeBuiltin ()
@@ -541,13 +557,20 @@ fileloc_makePreprocPrevious (fileloc loc)
   return (fileloc_createPrim (FL_PREPROC, fileId_invalid, 0, 0));
 }
 
+/* We pretend the result is only, because fileloc_free doesn't free it! */
 /*@only@*/ fileloc
 fileloc_createBuiltin ()
 {
-  return (fileloc_createPrim (FL_BUILTIN, fileId_invalid, 0, 0)); 
+  if (fileloc_isUndefined (s_builtinLoc))
+    {
+      s_builtinLoc = fileloc_createPrim (FL_BUILTIN, fileId_invalid, 0, 0); 
+    }
+
+  /*@-globstate@*/ /*@-retalias@*/ 
+  return s_builtinLoc;
+  /*@=globstate@*/ /*@=retalias@*/ 
 }
 
-# ifndef NOLCL
 /*@only@*/ fileloc
 fileloc_createImport (cstring fname, int lineno)
 {
@@ -560,7 +583,6 @@ fileloc_createImport (cstring fname, int lineno)
 
   return (fileloc_createPrim (FL_IMPORT, fid, lineno, 0));
 }
-# endif
 
 static /*@only@*/ fileloc
 fileloc_createPrim (flkind kind, fileId fid, int line, int col)
@@ -576,13 +598,11 @@ fileloc_createPrim (flkind kind, fileId fid, int line, int col)
   return (f);
 }
 
-# ifndef NOLCL
 /*@only@*/ fileloc
 fileloc_createSpec (fileId fid, int line, int col)
 {
   return (fileloc_createPrim (FL_SPEC, fid, line, col));
 }
-# endif
 
 fileloc fileloc_create (fileId fid, int line, int col)
 {

@@ -532,7 +532,7 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
     }       
 }
 
-void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
+void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
 {
   fileloc loc;
   constraintTermValue value;
@@ -552,8 +552,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       
     case EXPRNODE:
       u = exprNode_getUentry(t->value.expr);
-      fprintf(f, "%s\n", cstring_toCharsSafe( uentry_rawName (u) )
-	      );
+      fprintf (f, "%s\n", cstring_toCharsSafe (uentry_rawName (u)));
       break;
       
     case SREF:
@@ -566,7 +565,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	  {
 	    fprintf(f, "Result\n");
 	  }
-	else if (sRef_isParam (s ) )
+	else if (sRef_isParam (s))
 	  {
 	    int param;
 	    ctype ct;
@@ -588,7 +587,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	else
 	  {
 	    u = sRef_getUentry(s);
-	    fprintf(f, "%s\n", cstring_toCharsSafe(uentry_rawName (u) ) );
+	    fprintf (f, "%s\n", cstring_toCharsSafe (uentry_rawName (u)));
 	  }
 	
       }

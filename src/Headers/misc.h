@@ -12,9 +12,7 @@
 # ifndef MISC_H
 # define MISC_H
 
-# ifndef NOLCL
 # include "lclMisc.h"
-# endif
 
 extern void assertSet (/*@special@*/ /*@sef@*/ /*@unused@*/ void *p_x) 
    /*@sets p_x, *p_x@*/ ;

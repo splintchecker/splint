@@ -99,7 +99,7 @@ typedef union
   constraintList conL;
   constraintExpr conE;
   /* drl */  
-} YYSTYPE;
+} cgrammar_YYSTYPE;
 #define	BADTOK	257
 #define	SKIPTOK	258
 #define	CTOK_ELIPSIS	259
@@ -294,7 +294,7 @@ typedef union
 #define	METASTATE_NAME	448
 
 
-extern YYSTYPE yylval;
+extern cgrammar_YYSTYPE yylval;
 /*
 ** Resets all flags in bison.head
 */

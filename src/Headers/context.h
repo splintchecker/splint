@@ -104,7 +104,6 @@ extern /*@dependent@*/ /*@observer@*/ cstring context_tmpdir (void);
 extern void context_enterMTfile (void) /*@modifies internalState@*/ ;
 extern void context_exitMTfile (void) /*@modifies internalState@*/ ;
 
-# ifndef NOLCL
 extern void context_enterLCLfile (void);
 extern void context_exitLCLfile (void);
 extern void context_enterImport (void) ;
@@ -115,7 +114,6 @@ extern bool context_msgLh (void) /*@*/ ;
 extern bool context_inLCLLib (void) /*@globals internalState@*/ ;
 extern bool context_inImport (void) /*@globals internalState@*/ ;
 extern void context_resetSpecLines (void) /*@modifies internalState@*/ ;
-# endif
 
 extern void context_exitMacroCache (void);
 extern void context_enterSuppressRegion (fileloc);

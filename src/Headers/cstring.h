@@ -84,9 +84,7 @@ extern bool cstring_equalLit (cstring p_c1, char *p_c2) /*@*/ ;
 extern int cstring_compare (cstring p_c1, cstring p_c2) /*@*/ ;
 extern int cstring_xcompare (cstring *p_c1, cstring *p_c2) /*@*/ ;
 
-# ifndef NOLCL
 extern bool cstring_hasNonAlphaNumBar (cstring p_s) /*@*/ ;
-# endif
 
 extern cstring cstring_elide (cstring p_s, size_t p_len) /*@*/ ;
 
@@ -127,13 +125,11 @@ extern cstring
 extern cstring cstring_fromCharsNew (/*:untainted@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define cstring_fromCharsNew(s) cstring_copy(cstring_fromChars(s))
 
-# ifndef NOLCL
 extern /*@exposed@*/ /*@notnull@*/ /*@untainted@*/
   char *cstring_toCharsSafeO (/*@only@*/ /*@exposed@*/ /*@returned@*/ cstring p_s);
 /*@-mustfree@*/
 # define cstring_toCharsSafeO(s) cstring_toCharsSafe(s)
 /*@=mustfree@*/
-# endif
 
 extern void cstring_free (/*@only@*/ cstring p_s);
 
@@ -180,13 +176,11 @@ extern cstring
   cstring_concatFree1 (/*@only@*/ cstring p_s, cstring p_t) 
   /*@modifies p_s@*/ ;
 
-# ifndef NOLCL
 extern cstring 
   cstring_concatChars (/*@only@*/ cstring p_s, char *p_t)
   /*@modifies p_s@*/ ;
 
 extern lsymbol cstring_toSymbol (/*@only@*/ cstring p_s) /*@*/ ;
-# endif
 
 extern void cstring_markOwned (/*@owned@*/ cstring p_s) /*@modifies p_s@*/ ;
 

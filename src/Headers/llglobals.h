@@ -6,10 +6,6 @@
 # ifndef LLGLOBALS_H
 # define LLGLOBALS_H
 
-# ifdef NOLCL
-# error "Bad include"
-# endif
-
 extern /*@only@*/ lsymbolSet g_currentImports;
 extern /*@only@*/ symtable g_symtab;
 

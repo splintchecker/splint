@@ -42,10 +42,7 @@
 static void printIndentMessage (FILE *p_stream, /*@only@*/ cstring p_sc, int p_indent)
    /*@modifies *p_stream@*/ ;
 
-# ifndef NOLCL
 static int lclerrors = 0;
-# endif
-
 static size_t lastfileloclen = 10;
 static /*@only@*/ cstring lastmsg = cstring_undefined;
 static int mcount = 0;
@@ -118,7 +115,7 @@ void closeMessage (void)
       && context_getFlag (FLG_SHOWSCAN))
     {
       llflush ();
-      displayScanOpen (cstring_makeLiteral ("< more preprocessing ."));
+      displayScanOpen (cstring_makeLiteral ("more preprocessing ."));
       llassertprotect (!s_needsPrepare);
       s_needsPrepare = TRUE;
     }
@@ -665,7 +662,20 @@ llgentypeerroraux (char *srcFile, int srcLine,
     {
       if (!bool_equal (ctype_isSigned (ut1), ctype_isSigned (ut2)))
 	{
-	  hcode = FLG_IGNORESIGNS;
+	  if (ctype_isArbitraryIntegral (ctype_realType (ut1))
+	      && !ctype_isArbitraryIntegral (ctype_realType (ut2)))
+	    {
+	      hcode = FLG_MATCHANYINTEGRAL;
+	    }
+	  else if (ctype_isArbitraryIntegral (ctype_realType (ut2))
+		   && !ctype_isArbitraryIntegral (ctype_realType (ut1)))
+	    {
+	      hcode = FLG_MATCHANYINTEGRAL;
+	    }
+	  else
+	    {
+	      hcode = FLG_IGNORESIGNS;
+	    }
 	}
       else
 	{
@@ -837,8 +847,17 @@ llgentypeerroraux (char *srcFile, int srcLine,
 	  if (hcode != INVALID_FLAG && hcode != ocode)
 	    {
 	      code = hcode;
-	      llshowhint (code);
 
+	      if (context_flagOn (code, fl))
+		{
+		  /* The flag is alreay set, something buggy in the flag code */
+		  llcontbug (message ("No hint available, flag %s is already set.",
+				      flagcode_unparse (code)));
+		}
+	      else
+		{
+		  llshowhint (code);
+		}
 	    }
 	  else
 	    {
@@ -1331,7 +1350,6 @@ xllfatalbug (char *srcFile, int srcLine, /*@only@*/ cstring s)
   llexit (LLFAILURE);
 }
 
-# ifndef NOLCL
 void
 lclfatalbug (char *msg)
 {
@@ -1342,7 +1360,6 @@ lclfatalbug (char *msg)
   printBugReport ();
   llexit (LLFAILURE);
 }
-# endif
 
 void
 checkParseError (void)
@@ -1426,7 +1443,6 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
   inbug = FALSE;
 }
 
-# ifndef NOLCL
 void
 lclbug (/*@only@*/ cstring s)
 {
@@ -1437,7 +1453,6 @@ lclbug (/*@only@*/ cstring s)
   fprintf (g_errorstream, "       (attempting to continue, results may be incorrect)\n");
   closeMessage ();
 }
-# endif
 
 void
 xllfatalerror (char *srcFile, int srcLine, cstring s)
@@ -1461,7 +1476,6 @@ xllfatalerrorLoc (char *srcFile, int srcLine, /*@only@*/ cstring s)
   llexit (LLFAILURE);
 }
 
-# ifndef NOLCL
 bool
 lclHadError (void)
 {
@@ -1563,7 +1577,6 @@ lclRedeclarationError (ltoken id)
       lclerror (id, message ("Identifier redeclared: %s", s));
     }
 }
-# endif
 
 void genppllerror (flagcode code, /*@only@*/ cstring s)
 {

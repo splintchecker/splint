@@ -37,6 +37,7 @@ AC_CHECK_PROG(CAT, cat, cat, cat-is-missing)
 AC_CHECK_PROG(RM, rm, rm, rm-is-missing)
 AC_CHECK_PROG(MV, mv, mv, mv-is-missing)
 AC_CHECK_PROG(CP, cp, cp, cp-is-missing)
+AC_CHECK_PROG(SED, sed, sed, sed-is-missing)
 
 dnl Checks for header files.
 dnl Currently all disable, as the source files don't care about the results
@@ -137,8 +138,10 @@ GCC_INCLUDE_DIR=/usr/include
   AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "$GCC_INCLUDE_DIR",
                      [system include directory])
 else
-  AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "/usr/include", [system include directory])
+GCC_INCLUDE_DIR=/usr/include
+AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "$GCC_INCLUDE_DIR", [system include directory])
 fi
+
 AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR2, "$myprefix/include",
                    [alternate include directory])
 

@@ -192,7 +192,6 @@ ftentry_create (/*@keep@*/ cstring tn, bool temp, fileType typ, fileId der)
     }
   
   t->fname = tn;
-  
   t->basename = cstring_undefined;
   t->ftemp = temp;
   t->ftype = typ;
@@ -226,7 +225,7 @@ fileTable_create ()
   ft->nopen = 0;
   ft->nopenspace = FTBASESIZE;
   ft->openelements = (foentry *) dmalloc (FTBASESIZE * sizeof (*ft->openelements));
-  
+
   return (ft);
 }
 
@@ -288,13 +287,17 @@ fileTable_internAddEntry (fileTable ft, /*@only@*/ ftentry e)
     {
       cstring sd = cstring_downcase (e->fname);
       cstringTable_insert (ft->htable, sd, ft->nentries);
-      cstring_free (e->fname);
     }
   else
     {
-      cstringTable_insert (ft->htable, e->fname, ft->nentries); 
+      cstringTable_insert (ft->htable, cstring_copy (e->fname), ft->nentries); 
     }
 
+  /* evans 2002-07-12:
+     Before, there was no cstring_copy above, and e->fname was free'd in the if branch.
+     Splint should have caught this, and produced a warning for this assignment.
+     Why not?
+  */
   ft->elements[ft->nentries] = e;
 
   ft->nentries++;
@@ -485,7 +488,6 @@ fileTable_addXHFile (fileTable ft, cstring name)
   return (fileTable_addFilePrim (ft, name, FALSE, FILE_XH, fileId_invalid));
 }
 
-# ifndef NOLCL
 fileId
 fileTable_addImportFile (fileTable ft, cstring name)
 {
@@ -497,11 +499,8 @@ fileTable_addLCLFile (fileTable ft, cstring name)
 {
   return (fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid));
 }
-# endif
 
-# ifndef NOLCL
 static int tmpcounter = 0;
-# endif
 
 fileId
 fileTable_addMacrosFile (fileTable ft)
@@ -563,7 +562,6 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
   return res;
 }
 
-# ifndef NOLCL
 fileId
 fileTable_addltemp (fileTable ft)
 {
@@ -610,7 +608,6 @@ fileTable_addltemp (fileTable ft)
   cstring_free (newname);
   return (ret);
 }
-# endif
 
 bool
 fileTable_exists (fileTable ft, cstring s)
@@ -879,6 +876,7 @@ fileTable_free (/*@only@*/ fileTable f)
   
   cstringTable_free (f->htable);
   sfree (f->elements);
+  sfree (f->openelements); /*!! why didn't splint report this? */
   sfree (f);
 }
 

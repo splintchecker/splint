@@ -727,7 +727,6 @@ cstring_concatFree1 (cstring s, cstring t)
   return res;
 }
 
-# ifndef NOLCL
 /*@only@*/ cstring 
 cstring_concatChars (cstring s, char *t)
 {
@@ -735,7 +734,6 @@ cstring_concatChars (cstring s, char *t)
   cstring_free (s);
   return res;
 }
-# endif
 
 /*@only@*/ cstring 
 cstring_concatLength (cstring s1, char *s2, size_t len) /*@requires maxSet(s2) >= (len - 1) @*/
@@ -793,7 +791,6 @@ cstring_prependChar (char c, /*@temp@*/ cstring s1)
   return s;
 }
 
-# ifndef NOLCL
 bool
 cstring_hasNonAlphaNumBar (cstring s)
 {
@@ -813,7 +810,6 @@ cstring_hasNonAlphaNumBar (cstring s)
     }
   return FALSE;
 }
-# endif
 
 /*@only@*/ /*@notnull@*/ cstring 
 cstring_create (size_t n)
@@ -836,7 +832,6 @@ cstring_copySegment (cstring s, size_t findex, size_t tindex)
   return res;
 }
 
-# ifndef NOLCL
 lsymbol cstring_toSymbol (cstring s)
 {
   lsymbol res = lsymbol_fromString (s);
@@ -844,7 +839,6 @@ lsymbol cstring_toSymbol (cstring s)
   cstring_free (s);
   return res;
 }
-# endif
 
 cstring cstring_bsearch (cstring key, char **table, int nentries)
 {

@@ -13,6 +13,7 @@ DIFFFLAGS =
 
 ## Set up the splint commands
 
+#SPLINT    =  valgrind --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=no $(top_builddir)/src/splint$(EXEEXT)
 SPLINT    =  $(top_builddir)/src/splint$(EXEEXT)
 
 ### These are shell-specific
@@ -20,8 +21,8 @@ SPLINT    =  $(top_builddir)/src/splint$(EXEEXT)
 ## unexport LCLIMPORTDIR
 
 ### This is horrible!  Can't we make top_builddir absolute?
+#SPLINTNEST = valgrind --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=no ../$(top_builddir)/src/splint$(EXEEXT)
 SPLINTNEST = ../$(top_builddir)/src/splint$(EXEEXT)
-
 SPLINTPNEST = @$(SPLINTNEST) -nof
 SPLINTP   = @$(SPLINT) -nof
 
@@ -48,7 +49,7 @@ UNITTESTS = \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
-  returned sharing shifts slovaknames \
+  returned sharing shifts sizesigns slovaknames \
   specclauses \
   special stack staticarray strings \
   stringliteral \
@@ -723,6 +724,13 @@ shifts:
 	-$(SPLINTR) shifts.c -shiftimplementation -expect 3
 	-$(SPLINTR) shifts.c -shiftnegative -expect 1
 
+### evans - added 2002-08-17: check warnings with arbitrary integral types
+sizesigns:
+	-$(SPLINTR) +strict sizesigns.c
+	-$(SPLINTR) +strict +ignoresigns sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
+
 .PHONY: slovaknames
 slovaknames:
 	-$(SPLINTR) +hints slovaknames.c -expect 1
@@ -731,11 +739,15 @@ slovaknames:
 	-$(SPLINTR) +hints +slovak -slovakvars slovaknames.c -expect 2
 	-$(SPLINTR) +hints +slovak -accessslovak slovaknames.c -expect 7
 
+##
+## evans 2002-07-22: 1 less warning for specclauses3.c because of NULL result
+##
+
 .PHONY: specclauses
 specclauses:
 	-$(SPLINTR) specclauses.c -expect 6
 	-$(SPLINTR) specclauses2.c -expect 8
-	-$(SPLINTR) specclauses3.c -expect 6
+	-$(SPLINTR) specclauses3.c -expect 5
 	-$(SPLINTR) specclauses4.c -expect 3
 	-$(SPLINTR) specclauses5.c -expect 3
 
@@ -1557,6 +1569,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
                 utypes.expect widestrings.expect  widestrings.c  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
                 loopexec.c looptesteffect.c mergenull.c shifts.c \
+		sizesigns.c sizesigns.expect \ 
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \

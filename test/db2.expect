@@ -9,10 +9,10 @@ eref.c:29: Unqualified storage eref_Pool.status passed as only param:
               realloc (eref_Pool.status, ...)
 eref.c:45: Storage eref_Pool.status reachable from global is only (should be
               unqualified)
-   eref.c:30: Storage eref_Pool.status becomes only
+   eref.c:29: Storage eref_Pool.status becomes only
 eref.c:45: Storage eref_Pool.conts reachable from global is only (should be
               unqualified)
-   eref.c:20: Storage eref_Pool.conts becomes only
+   eref.c:19: Storage eref_Pool.conts becomes only
 eref.c: (in function eref_initMod)
 eref.c:84: Storage eref_Pool.conts reachable from global is fresh (should be
               unqualified)

@@ -19,6 +19,8 @@ typedef /*@abstract@*/ struct
 extern lltok lltok_create  (int p_tok, /*@only@*/ fileloc p_loc) /*@modifies nothing@*/ ;
 extern /*@observer@*/ cstring lltok_unparse (lltok p_tok) /*@*/ ;
 extern void lltok_free (/*@only@*/ lltok p_t) ;
+extern void lltok_free2 (/*@only@*/ lltok p_t1, /*@only@*/ lltok p_t2) ;
+extern void lltok_free3 (/*@only@*/ lltok p_t1, /*@only@*/ lltok p_t2, /*@only@*/ lltok p_t3) ;
 
 extern /*@dependent@*/ /*@exposed@*/ fileloc lltok_getLoc (lltok p_t) /*@*/ ;
 extern int lltok_getTok (lltok p_t) /*@*/ ;

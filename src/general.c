@@ -187,7 +187,6 @@ void *direalloc (/*@out@*/ /*@null@*/ void *x, size_t size,
 
 /*@=mustdefine@*/
 
-# ifndef NOLCL
 char *FormatInt (int i)
 {
   char temp[255]; /* assume the integer has at most 254 digits */
@@ -199,9 +198,7 @@ char *FormatInt (int i)
 
   return (outs);
 }
-# endif
 
-# ifndef NOLCL
 bool firstWord (char *s, char *w)
 {
   llassert (s != NULL);
@@ -214,7 +211,6 @@ bool firstWord (char *s, char *w)
     }
   return TRUE;
 }
-# endif
 
 void mstring_markFree (char *s)
 {

@@ -822,11 +822,11 @@ cppReader_getIncludePath ()
 }
 
 void
-cppReader_addIncludeChain (cppReader *pfile, struct file_name_list *dir)
+cppReader_addIncludeChain (cppReader *pfile, /*@only@*/ struct file_name_list *dir)
 {
   struct cppOptions *opts = CPPOPTIONS (pfile);
 
-  if (dir == 0)
+  if (dir == NULL)
     {
       return;
     }
@@ -960,7 +960,7 @@ cppReader_nullUnderflow (/*@unused@*/ cppReader *pfile)
 
 void
 cppReader_nullCleanup (/*@unused@*/ cppBuffer *pbuf,
-	      /*@unused@*/ cppReader *pfile)
+		       /*@unused@*/ cppReader *pfile)
 {
   ;
 }
@@ -2242,7 +2242,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	if (!is_idstart[(int) *bp])
 	  {
 	    cppReader_pedwarnLit (pfile,
-			    cstring_makeLiteralTemp ("invalid character in macro parameter name"));
+			    cstring_makeLiteralTemp ("Invalid character in macro parameter name"));
 	  }
 
 	/* Find the end of the arg name.  */
@@ -3106,7 +3106,7 @@ update_position (cppBuffer *pbuf)
 
 void
 cppBuffer_getLineAndColumn (/*@null@*/ cppBuffer *pbuf, /*@out@*/ int *linep,
-			 /*@null@*/ /*@out@*/ int *colp)
+			    /*@null@*/ /*@out@*/ int *colp)
 {
   int dummy;
 
@@ -6748,8 +6748,8 @@ static cstring read_filename_string (int ch, /*:open:*/ FILE *f)
 
 struct file_name_map_list
 {
-  struct file_name_map_list *map_list_next;
-  cstring map_list_name;
+  /*@only@*/ struct file_name_map_list *map_list_next;
+  /*@only@*/ cstring map_list_name;
   /*@null@*/ struct file_name_map *map_list_map;
 };
 
@@ -7060,7 +7060,7 @@ finclude (cppReader *pfile, int f,
   else if (S_ISDIR (st_mode))
     {
       cppReader_error (pfile,
-		       message ("Directory specified in #include: %s", fname));
+		       message ("Directory specified where file is expected: %s", fname));
       check (close (f) == 0);
       return 0;
     }
@@ -7157,8 +7157,12 @@ cppReader_finish (/*@unused@*/ cppReader *pfile)
    This is the cppReader 'finalizer' or 'destructor' (in C++ terminology).  */
 
 void
-cppCleanup (cppReader *pfile)
+cppCleanup (/*@special@*/ cppReader *pfile) 
+     /*@uses pfile@*/
+     /*@releases pfile@*/
 {
+  DPRINTF (("cppCleanup!"));
+
   while (CPPBUFFER (pfile) != cppReader_nullBuffer (pfile))
     {
       (void) cppReader_popBuffer (pfile);
@@ -7187,6 +7191,25 @@ cppCleanup (cppReader *pfile)
       sfree (temp);
     }
 
+  /* evans 2002-07-12 */
+  while (pfile->opts->map_list != NULL)
+    {
+      struct file_name_map_list *temp = pfile->opts->map_list;
+      pfile->opts->map_list = pfile->opts->map_list->map_list_next;
+      cstring_free (temp->map_list_name);
+      sfree (temp);
+    }
+
+  while (pfile->opts->include != NULL)
+    {
+      struct file_name_list *temp = pfile->opts->include;
+      pfile->opts->include = pfile->opts->include->next;
+      /* cstring_free (temp->fname); */
+      sfree (temp);
+    }
+
+  sfree (pfile->opts);
+  pfile->opts = NULL;
   cppReader_hashCleanup ();
 }
 
@@ -7506,6 +7529,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 
   cppReader_appendIncludeChain (pfile, opts->before_system,
 				opts->last_before_system);
+
   opts->first_system_include = opts->before_system;
 
   /* Unless -fnostdinc,
@@ -7552,11 +7576,12 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	      nlist->c_system_include_path = !p->cxx_aware;
 	      nlist->got_name_map = 0;
 
-	      cppReader_addIncludeChain (pfile, nlist);
 	      if (opts->first_system_include == 0)
 		{
 		  opts->first_system_include = nlist;
 		}
+
+	      cppReader_addIncludeChain (pfile, nlist);
 	    }
 	}
       }
@@ -7577,12 +7602,12 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	    nlist->got_name_map = 0;
 	    nlist->next = NULL;
 
-	    cppReader_addIncludeChain (pfile, nlist);
-
-	    if (opts->first_system_include == 0)
+	    if (opts->first_system_include == NULL)
 	      {
-		opts->first_system_include = nlist;
+          opts->first_system_include = nlist;
 	      }
+      
+	    cppReader_addIncludeChain (pfile, nlist);
 	  }
       }
     sfree (default_prefix);
@@ -7592,7 +7617,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
   cppReader_appendIncludeChain (pfile, opts->after_include,
 				opts->last_after_include);
 
-  if (opts->first_system_include == 0)
+  if (opts->first_system_include == NULL)
     {
       opts->first_system_include = opts->after_include;
     }

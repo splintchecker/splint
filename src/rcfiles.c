@@ -30,11 +30,11 @@
 # include "rcfiles.h"
 
 
-static void rcfiles_loadFile (FILE *p_rcfile, cstringSList *p_passThroughArgs)
+static void rcfiles_loadFile (FILE *p_rcfile, cstringList *p_passThroughArgs)
    /*@modifies *p_passThroughArgs, p_rcfile@*/
    /*@ensures closed p_rcfile@*/ ;
 
-bool rcfiles_read (cstring fname, cstringSList *passThroughArgs, bool report)
+bool rcfiles_read (cstring fname, cstringList *passThroughArgs, bool report)
 {
   bool res = FALSE;
 
@@ -80,7 +80,7 @@ bool rcfiles_read (cstring fname, cstringSList *passThroughArgs, bool report)
   return res;
 }
 
-static void rcfiles_loadFile (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
+static void rcfiles_loadFile (/*:open:*/ FILE *rcfile, cstringList *passThroughArgs)
    /*@modifies rcfile@*/
    /*@ensures closed rcfile@*/
 {
@@ -173,7 +173,7 @@ static void rcfiles_loadFile (/*:open:*/ FILE *rcfile, cstringSList *passThrough
 	    }
 	  
 	  *s = c;
-	  DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
+	  DPRINTF (("Pass through: %s", cstringList_unparse (*passThroughArgs)));
 	  
 	  while ((c == ' ') || (c == '\t'))
 	    {

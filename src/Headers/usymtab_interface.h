@@ -6,10 +6,6 @@
 # ifndef USYMTAB_INTERFACE_H
 # define USYMTAB_INTERFACE_H
 
-# ifdef NOLCL
-# error "Bad include"
-# endif
-
 extern void doDeclareConstant (constDeclarationNode, bool);
 extern void doDeclareVar      (varDeclarationNode, bool);
 extern void doDeclareType     (typeNode, bool);

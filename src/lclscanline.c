@@ -775,11 +775,11 @@ ScanCString (void)
 	    }
 	  else if (currentChar == '\n')
 	    {
-	      LocalUserError ("unterminated C string");
+	      LocalUserError ("Unterminated C string");
 	    }
 	  else
 	    {
-	      LocalUserError ("invalid character in C string");
+	      LocalUserError ("Invalid character in C string");
 	    }
 	}
       LCLMOVECHAR ();		/* discard closing quote */
@@ -822,11 +822,11 @@ ScanCChar (void)
 	    }
 	  else if (currentChar == '\n')
 	    {
-	      LocalUserError ("unterminated C character constant");
+	      LocalUserError ("Unterminated C character constant");
 	    }
 	  else
 	    {
-	      LocalUserError ("invalid character in C character");
+	      LocalUserError ("Invalid character in C character");
 	    }
 	}
       LCLMOVECHAR ();		/* discard closing quote */
@@ -834,7 +834,7 @@ ScanCChar (void)
     }
   else
     {
-      LocalUserError ("invalid C character");
+      LocalUserError ("Invalid C character");
     }
 
 

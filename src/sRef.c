@@ -1070,6 +1070,7 @@ sRef_getUentry (sRef s)
 	    return sRef_getUentry (s->info->conj->b);
 	  }
       }
+    case SK_FIELD: /* evans 2002-07-17: added case for SK_FIELD */
     case SK_UNKNOWN:
     case SK_SPECIAL:
       return uentry_undefined;
@@ -3177,7 +3178,7 @@ sRef_unparseNoArgs (sRef s)
 
   s->kind = SK_UNCONSTRAINED;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
-  s->info->fname = fname;
+  s->info->fname = cstring_copy (fname); /* evans 2002-07-12: this was exposed, causing memory errors */
 
   return (s);
 }
@@ -5705,6 +5706,7 @@ void sRef_setFresh (sRef s, fileloc loc)
       sRef_checkMutable (s);
       s->aliaskind = AK_FRESH;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      DPRINTF (("SetFresh: %s", sRef_unparseFull (s)));
     }
 }
 
@@ -6077,6 +6079,8 @@ void sRef_free (/*@only@*/ sRef s)
       DPRINTF (("Free sref: [%p]", s));
 
       sRef_checkValid (s);
+      
+      multiVal_free (s->val); /* evans 2002-07-12 */
 
       stateInfo_free (s->expinfo);
       stateInfo_free (s->aliasinfo);
@@ -6086,7 +6090,7 @@ void sRef_free (/*@only@*/ sRef s)
       sRefSet_free (s->deriv);
       s->deriv = sRefSet_undefined;
 
-      /*@i43@*/ /* valueTable_free (s->state); */
+      valueTable_free (s->state); 
       sinfo_free (s);
       
       
@@ -7749,8 +7753,7 @@ sRef_showRefKilled (sRef s)
 {
   if (sRef_hasStateInfoLoc (s))
     {
-      llgenindentmsg (message ("Storage %q released", 
-			       sRef_unparse (s)), sRef_getStateInfoLoc (s));
+      stateInfo_display (s->definfo, sRef_unparse (s));
     }
 }
 
@@ -8867,6 +8870,16 @@ static void
     {
       res->aliaskind = AK_KEPT;
     }
+  else if ((ares == AK_OWNED && aother == AK_ONLY)
+	   || (aother == AK_OWNED && ares == AK_ONLY))
+    {
+      res->aliaskind = AK_OWNED;
+
+      if (aother == AK_OWNED)
+	{
+	  res->aliasinfo = stateInfo_update (res->aliasinfo, other->aliasinfo);
+	}
+    }
   else
     {
       hasError = TRUE;
@@ -9216,11 +9229,13 @@ static /*@null@*/ sinfo sinfo_copy (/*@notnull@*/ sRef s)
       ret = (sinfo) dmalloc (sizeof (*ret));
       ret->spec = s->info->spec;
       break;
+
     case SK_UNCONSTRAINED:
     case SK_NEW:
       ret = (sinfo) dmalloc (sizeof (*ret));
       ret->fname = s->info->fname;
       break;
+
     case SK_RESULT:
     case SK_CONST:
     case SK_TYPE:

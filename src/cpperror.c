@@ -215,7 +215,7 @@ cppReader_getLoc (cppReader *pfile)
 {
   cppBuffer *ip = cppReader_fileBuffer (pfile);
 
-  if (ip != NULL)
+  if (ip != NULL && ip->buf != NULL)
     {
       int line, col;
       cstring fname = ip->nominal_fname;

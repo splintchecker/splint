@@ -76,6 +76,7 @@ RM              = rm -f
 MV              = mv -f
 CP              = cp
 CAT             = cat
+SED		= sed
 
 MAKEDEPEND      = makedepend
 LASTBACKUP      = lastbackup

@@ -124,20 +124,16 @@ extern /*@observer@*/ uentry usymtab_lookupStructTag (cstring p_k)
 extern /*@observer@*/ uentry usymtab_lookupEither (cstring p_k)
    /*@globals internalState@*/ ;
 
-# ifndef NOLCL
 extern ctype usymtab_lookupType (cstring p_k)
    /*@globals internalState@*/ ;
-# endif
 
 extern bool usymtab_isDefinitelyNull (sRef p_s)
    /*@globals internalState@*/ ;
 extern bool usymtab_isDefinitelyNullDeep (sRef p_s)
    /*@globals internalState@*/ ;
 
-# ifndef NOLCL
 extern usymId usymtab_supExposedTypeEntry (/*@only@*/ uentry p_e, bool p_dodef)
    /*@modifies internalState, p_e@*/ ;
-# endif
 
 extern ctype usymtab_supTypeEntry (/*@only@*/ uentry p_e)
    /*@modifies internalState, p_e@*/ ;
@@ -154,10 +150,8 @@ extern /*@observer@*/ uentry usymtab_getGlobalEntry (usymId p_uid)
 extern bool usymtab_exists (cstring p_k)
    /*@globals internalState@*/ ;
 
-# ifndef NOLCL
 extern bool usymtab_existsVar (cstring p_k)
    /*@globals internalState@*/ ;
-# endif
 
 extern bool usymtab_existsGlob (cstring p_k)
    /*@globals internalState@*/ ;
@@ -165,10 +159,8 @@ extern bool usymtab_existsGlob (cstring p_k)
 extern bool usymtab_existsType (cstring p_k)
    /*@globals internalState@*/ ;
 
-# ifndef NOLCL
 extern bool usymtab_existsEither (cstring p_k)
    /*@globals internalState@*/ ;
-# endif
 
 extern bool usymtab_existsTypeEither (cstring p_k)
    /*@globals internalState@*/ ;
@@ -179,10 +171,8 @@ extern usymId usymtab_getTypeId (cstring p_k) /*@globals internalState@*/ ;
 extern void usymtab_supEntry (/*@only@*/ uentry p_e)
   /*@modifies internalState, p_e@*/ ;
 
-# ifndef NOLCL
 extern void usymtab_replaceEntry (/*@only@*/ uentry p_s)
   /*@modifies internalState, p_s@*/ ;
-# endif
 
 extern void usymtab_supEntrySref (/*@only@*/ uentry p_e)
   /*@modifies internalState, p_e@*/ ;
@@ -318,9 +308,7 @@ extern void usymtab_printGuards (void) /*@globals internalState@*/ /*@modifies *
 extern void usymtab_quietPlainExitScope (void) /*@modifies internalState@*/ ;
 extern void usymtab_printComplete (void) /*@globals internalState@*/ /*@modifies *stdout@*/ ;
 
-# ifndef NOLCL
 extern bool usymtab_existsGlobEither (cstring p_k) /*@globals internalState@*/ ;
-# endif
 
 extern bool usymtab_isBoolType (usymId p_uid) /*@globals internalState@*/ ;
 extern /*@only@*/ cstring 

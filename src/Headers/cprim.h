@@ -93,8 +93,13 @@ extern bool cprim_isAnyChar (/*@sef@*/ cprim p_c);
 extern bool cprim_isAnyInt (/*@sef@*/ cprim p_c);
 extern bool cprim_isAnyReal (/*@sef@*/ cprim p_c);
 
-# define cprim_isAnyInt(c) ((c) >= CTX_INT && (c) <= CTX_SIGNEDINTEGRAL)
-# define cprim_isAnyReal(c) ((c) >= CTX_FLOAT && (c) <= CTX_LDOUBLE)
+# define cprim_isAnyInt(c)         ((c) >= CTX_INT && (c) <= CTX_SIGNEDINTEGRAL)
+
+extern bool cprim_isAnyUnsignedInt (/*@sef@*/ cprim p_c);
+# define cprim_isAnyUnsignedInt(c) ((c) == CTX_UINT || (c) == CTX_USINT \
+				    || (c) == CTX_ULINT || (c) == CTX_ULLINT \
+				    || (c) == CTX_UNSIGNEDINTEGRAL)
+# define cprim_isAnyReal(c)        ((c) >= CTX_FLOAT && (c) <= CTX_LDOUBLE)
 
 /*@constant int CTX_LAST;@*/
 # define CTX_LAST CTX_LDOUBLE

@@ -39,12 +39,10 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
+# include "version.h"
 
-# ifndef NOLCL
 # include "gram.h"
-
 # include "lclscan.h"
-# endif
 
 # include "lcllib.h"
 # include "llmain.h"

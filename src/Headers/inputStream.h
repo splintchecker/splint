@@ -13,7 +13,7 @@
 # define STUBMAXRECORDSIZE 800
 
 struct s_inputStream {
-  cstring name;
+  /*@only@*/ cstring name;
   /*:open:*/ /*@dependent@*/ /*@null@*/ FILE *file;
   char buffer[STUBMAXRECORDSIZE+1];
   int lineNo;
@@ -37,8 +37,10 @@ extern /*@nullwhentrue@*/ bool inputStream_isUndefined (/*@null@*/ inputStream p
 extern void inputStream_free (/*@null@*/ /*@only@*/ inputStream p_s);
 extern bool inputStream_close (inputStream p_s) 
    /*@modifies p_s, fileSystem@*/ ; 
-extern inputStream
+
+extern /*@only@*/ inputStream
   inputStream_create (/*@only@*/ cstring p_name, cstring p_suffix, bool p_echo) /*@*/ ;
+
 extern inputStream inputStream_fromString (cstring p_name, cstring p_str) /*@*/ ;
 extern /*@dependent@*/ /*@null@*/ char *inputStream_nextLine(inputStream p_s) 
    /*@modifies p_s@*/ ;

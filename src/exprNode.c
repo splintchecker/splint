@@ -29,6 +29,7 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "cgrammar.h"
+# include "cscanner.h"
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
@@ -218,13 +219,14 @@ exprNode_destroyMod (void)
 {
   if (initMod)
     {
-      uentry_free (regArg);
-      uentry_free (outArg);
-      uentry_free (outStringArg);
+      /* evans 2002-07-12: changed uentry_free to uentry_freeComplete */
+      uentry_freeComplete (regArg);
+      uentry_freeComplete (outArg);
+      uentry_freeComplete (outStringArg);
       
       exprNode_free (s_mustExitNode);
       initMod = FALSE;
-    /*@-branchstate@*/ 
+      /*@-branchstate@*/ 
     } 
   /*@=branchstate@*/
 }
@@ -1033,7 +1035,7 @@ exprNode_fromIdentifier (/*@observer@*/ uentry c)
 
   if (context_justPopped ()) /* watch out! c could be dead */
     { 
-      uentry ce = usymtab_lookupSafe (LastIdentifier ());
+      uentry ce = usymtab_lookupSafe (cscanner_observeLastIdentifier ());
 
       if (uentry_isValid (ce)) 
         {
@@ -3777,7 +3779,7 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
       /* f->typ is already set to the return type */
 
       DPRINTF (("Function: %s", uentry_unparseFull (le)));
-      ret->sref = uentry_returnedRef (le, args);
+      ret->sref = uentry_returnedRef (le, args, exprNode_loc (f));
       DPRINTF (("Returned: %s / %s",
 		uentry_unparseFull (le),
 		sRef_unparseFull (ret->sref)));
@@ -3895,6 +3897,7 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
   reflectEnsuresClause (ret, le, f, args);
   setCodePoint ();
 
+  DPRINTF (("Here: %s", sRef_unparseFull (ret->sref)));
   return (ret);
 }
 
@@ -4989,11 +4992,14 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
 
   ret->sref = sRef_copy (e->sref);
   
+  DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
+
   if (!sRef_isConst (e->sref))
     {
       usymtab_addForceMustAlias (ret->sref, e->sref);
     }
   
+  DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
   sRef_setTypeFull (ret->sref, c);
   DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
 
@@ -5007,7 +5013,18 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
 
   if (ctype_isVoid (c)) /* cast to void is always okay --- discard value */
     {
-      ;
+      /* evans 2002-07-19: added this warning */
+      DPRINTF (("Checking: %s / %s", exprNode_unparse (ret), sRef_unparseFull (ret->sref)));
+      if (sRef_isFresh (ret->sref))
+	{
+	  voptgenerror 
+	    (FLG_MUSTFREEFRESH,
+	     message ("New fresh storage %q(type %s) cast to void (not released): %s",
+		      sRef_unparseOpt (ret->sref),
+		      ctype_unparse (exprNode_getType (ret)),
+		      exprNode_unparse (ret)),
+	     exprNode_loc (ret));
+	}
     }
   else if (ctype_isRealAP (c)) /* casting to array or pointer */
     {

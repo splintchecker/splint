@@ -453,8 +453,6 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
 # endif
 }
 
-# ifndef NOLCL
-
 # ifdef WIN32
 extern /*@external@*/ int _flushall (void) /*@modifies fileSystem@*/ ;
 # endif
@@ -473,7 +471,6 @@ int osd_system (cstring cmd)
   res = system (cstring_toCharsSafe (cmd));
   return res;
 }
-# endif
 
 # ifndef unlink
 /* This should be defined by unistd.h */
@@ -888,6 +885,12 @@ void osd_initMod (void)
   osd_setWorkingDirectory ();
 }
 
+void osd_destroyMod (void)
+{
+  cstring_free (osd_cwd);
+  osd_cwd = cstring_undefined;
+}
+
 cstring osd_absolutePath (cstring cwd, cstring filename)
 {
 # if defined (UNIX) || defined (OS2)
@@ -1046,7 +1049,8 @@ cstring osd_outputPath (cstring filename)
 
   /*@access cstring@*/
   path_p = filename;
-  rel_buf_p = rel_buffer = (char *) dmalloc (filename_len);
+  rel_buffer = (char *) dmalloc (filename_len);
+  rel_buf_p = rel_buffer;
   *rel_buf_p = '\0';
 
   llassert (cwd_p != NULL);
@@ -1061,10 +1065,14 @@ cstring osd_outputPath (cstring filename)
   if ((*cwd_p == '\0') && (*path_p == '\0' || osd_isConnectChar (*path_p)))  /* whole pwd matched */
     {
       if (*path_p == '\0')             /* input *is* the current path! */
-	return cstring_makeLiteral (".");
+	{
+	  cstring_free (rel_buffer);
+	  return cstring_makeLiteral (".");
+	}
       else
 	{
 	  /*@i324 ! splint didn't report an errors for: return ++path_p; */
+	  cstring_free (rel_buffer);
 	  return cstring_fromCharsNew (path_p + 1);
 	}
     }
@@ -1079,7 +1087,8 @@ cstring osd_outputPath (cstring filename)
         {
           --cwd_p;
           --path_p;
-          while (!osd_isConnectChar (*cwd_p))         /* backup to last slash */
+
+          while (cwd_p >= osd_cwd && !osd_isConnectChar (*cwd_p)) /* backup to last slash */
             {
               --cwd_p;
               --path_p;
@@ -1100,6 +1109,8 @@ cstring osd_outputPath (cstring filename)
          Reject it if longer than the input.  */
       if (unmatched_slash_count * 3 + strlen (path_p) >= filename_len)
 	{
+	  cstring_free (rel_buffer);
+	  /* fprintf (stderr, "Returning filename: %s [%p]\n", filename); */
 	  return cstring_copy (filename);
 	}
 # endif
@@ -1121,6 +1132,7 @@ cstring osd_outputPath (cstring filename)
         }
       
       /* Then tack on the unmatched part of the desired file's name.  */
+
       do
         {
           if (rel_buffer + filename_len <= rel_buf_p)
@@ -1138,6 +1150,7 @@ cstring osd_outputPath (cstring filename)
       if (osd_isConnectChar (*(rel_buf_p-1)))
         *--rel_buf_p = '\0';
 
+      /* fprintf (stderr, "Returning buffer: %s [%p]\n", rel_buffer, rel_buffer); */
       return rel_buffer;
     }
   /*@noaccess cstring@*/

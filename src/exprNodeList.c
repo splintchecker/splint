@@ -43,7 +43,7 @@ exprNodeList_new ()
     dmalloc (sizeof (*s->elements) * exprNodeListBASESIZE);
   s->current = 0;
 
-    return (s);
+  return (s);
 }
 
 static void

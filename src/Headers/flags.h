@@ -111,7 +111,7 @@ flags_processFlags (bool p_inCommandLine,
 		    fileIdList p_cfiles,
 		    fileIdList p_lclfiles,
 		    fileIdList p_mtfiles,
-		    cstringSList *p_passThroughArgs,
+		    cstringList *p_passThroughArgs,
 		    int p_argc, /*@null@*/ char **p_argv)
      /*@requires maxRead(p_argv) >= (p_argc - 1) @*/
      /* returns true if normal, false if execution should exit */ ;

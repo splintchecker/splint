@@ -7,12 +7,6 @@
 # define LLMAIN_H
 
 extern int main (int p_argc, char *p_argv[])
-# ifdef NOLCL
-  /*@globals killed undef g_currentloc,
-	     killed undef yyin,
-                    undef g_warningstream;@*/
-  /*@modifies g_currentloc, fileSystem, internalState, yyin;@*/
-# else
   /*@globals killed undef g_currentloc,
 	     killed undef g_currentSpec,
 	     killed undef g_currentSpecName,
@@ -23,7 +17,6 @@ extern int main (int p_argc, char *p_argv[])
   /*@modifies g_currentloc, g_currentSpec, g_currentSpecName,
 	      yyin, internalState, fileSystem; 
   @*/ 
-# endif
   ;
 
 extern /*@noreturn@*/ void llexit (int p_status);      
@@ -34,10 +27,8 @@ extern void showHerald (void);
 extern int yyparse (void);
 extern void yyrestart (/*@dependent@*/ FILE *);
 
-# ifndef NOLCL
 extern int ylparse (void);
 extern int lslparse (void);
-# endif
 
 extern /*:open:*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/

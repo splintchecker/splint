@@ -38,11 +38,9 @@ extern /*@exposed@*/ qualList qtype_getQuals (/*@sef@*/ qtype p_q);
 extern void qtype_setType (/*@sef@*/ qtype p_q, ctype p_c);
 # define qtype_setType(q, c) (qtype_isDefined(q) ? (q)->type = (c) : (c))
 
-# ifndef NOLCL
 extern qtype qtype_addQualList (/*@returned@*/ qtype p_qt, qualList p_ql);
 extern qtype qtype_mergeImplicitAlt (/*@returned@*/ qtype p_q1, /*@only@*/ qtype p_q2);
 extern /*@only@*/ qtype qtype_copy (qtype p_q);
-# endif
 
 extern /*@notnull@*/ qtype qtype_create (ctype p_c) /*@*/ ;
 extern /*@only@*/ qtype qtype_unknown(void) /*@*/ ;

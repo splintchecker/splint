@@ -5,9 +5,7 @@
 # ifndef SYSTEM_CONSTANTS_H
 # define SYSTEM_CONSTANTS_H
 
-# ifndef NOLCL
 # include "lcl_constants.h"
-# endif
 
 /* exit codes */
 

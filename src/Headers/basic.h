@@ -30,6 +30,8 @@
 # include "fileloc.h"
 # include "globals.h"
 # include "cpp.h"
+# include "cstringSList.h"
+# include "cstringList.h"
 # include "flag_codes.h"
 # include "flags.h"
 # include "flagSpec.h"
@@ -41,15 +43,11 @@
 # include "warnClause.h"
 # include "functionClause.h"
 # include "functionClauseList.h"
-# include "cstringSList.h"
-# include "cstringList.h"
 # include "llerror.h" 
 # include "fileLib.h"
 # include "inputStream.h"
 # include "qualList.h"
 # include "pointers.h"
-
-# ifndef NOLCL
 # include "code.h"
 # include "mapping.h"
 # include "sort.h"
@@ -59,8 +57,6 @@
 # include "lsymbol.h"
 # include "abstract.h"
 # include "symtable.h"
-# endif
-
 # include "exprNodeList.h"
 # include "cprim.h"
 # include "cstringTable.h"

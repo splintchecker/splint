@@ -271,3 +271,16 @@ void lltok_free (lltok t)
   sfree (t);
 }
 
+void lltok_free2 (lltok t1, lltok t2) 
+{
+  lltok_free (t1);
+  lltok_free (t2);
+}
+
+void lltok_free3 (lltok t1, lltok t2, lltok t3) 
+{
+  lltok_free (t1);
+  lltok_free (t2);
+  lltok_free (t3);
+}
+

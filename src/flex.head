@@ -52,6 +52,7 @@
 /*@-protoparammatch@*/
 /*@-casebreak@*/
 /*@-retvalother@*/
+/*@-exportheader@*/
 
 /*drl added 11/27/2001*/
 

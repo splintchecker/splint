@@ -25,7 +25,7 @@ typedef enum { FILE_NORMAL, FILE_LSLTEMP, FILE_NODELETE,
   bool     ftemp     BOOLBITS;
   bool     fsystem   BOOLBITS;
   bool     fspecial  BOOLBITS;
-  cstring  fname;
+  /*@only@*/ cstring fname;
   cstring  basename;
   fileType ftype;
   fileId   fder;
@@ -51,7 +51,7 @@ abst_typedef /*@null@*/ struct
 
   int nopen;
   int nopenspace;
-  /*@reldef@*/ /*@only@*/ foentry *openelements;
+  /*@reldef@*/ /*@only@*/ foentry *openelements; /* evans 2002-07-12: removed reldef */
 } *fileTable ;
 
 /*@constant null fileTable fileTable_undefined; @*/
@@ -80,13 +80,10 @@ extern fileId fileTable_addXHFile (fileTable p_ft, cstring p_name)
 extern fileId fileTable_addLibraryFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
 
-# ifndef NOLCL
 extern fileId fileTable_addLCLFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
 
 extern fileId fileTable_addltemp (fileTable p_ft);
-
-# endif
 
 extern /*@notnull@*/ /*@only@*/ fileTable fileTable_create (void) /*@*/ ;
 extern fileId fileTable_lookup (fileTable p_ft, cstring p_s) /*@*/ ;
@@ -95,10 +92,8 @@ extern fileId fileTable_addCTempFile (fileTable p_ft, fileId p_fid)
 extern fileId fileTable_addFileOnly (fileTable p_ft, /*@only@*/ cstring p_name)
    /*@modifies p_ft@*/ ;
 
-# ifndef NOLCL
 extern fileId fileTable_addImportFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
-# endif
 
 extern fileId fileTable_addMacrosFile (fileTable p_ft)
    /*@modifies p_ft@*/ ;

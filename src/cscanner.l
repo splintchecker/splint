@@ -92,7 +92,7 @@ static char savechar = '\0';
 /*@notfunction@*/
 # define yyinput() (incColumn (), getc (yyin))
 
-static /*@owned@*/ cstring lastidprocessed = cstring_undefined;
+static /*@owned@*/ cstring s_lastidprocessed = cstring_undefined;
 static int lminput (void);
 static int tokLength = 0;
 static bool inSpecPart = FALSE;
@@ -107,9 +107,9 @@ static long processDec (void);
 static long processHex (void);
 static long processOctal (void);
 static int processIdentifier (/*@only@*/ cstring)
-   /*@globals undef lastidprocessed@*/ ;
+   /*@globals s_lastidprocessed@*/ ;
 static bool processHashIdentifier (/*@only@*/ cstring)
-   /*@globals undef lastidprocessed@*/ ;
+   /*@globals s_lastidprocessed@*/ ;
 
 static int processSpec (int);
 static bool handleSpecial (char *);
@@ -588,6 +588,58 @@ L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext));
 		}
 %%
 
+/*
+** Resets flags set by flex.head.
+*/
+
+/*@=allmacros@*/
+/*@=pred@*/
+/*@=globstate@*/
+/*@=null@*/
+/*@=boolint@*/
+/*@=charint@*/
+/*@=macrospec@*/
+/*@=macroredef@*/
+/*@=exitarg@*/
+/*@=compdef@*/
+/*@=uniondef@*/
+/*@=ignorequals@*/
+/*@=noreturn@*/
+/*@=mustfree@*/
+/*@=compdestroy@*/
+/*@=branchstate@*/
+/*@=unreachable@*/
+/*@=varuse@*/
+/*@=fcnuse@*/
+/*@=exportlocal@*/
+/*@=evalorderuncon@*/
+/*@=exportheader@*/
+/*@=redecl@*/
+/*@=loopswitchbreak@*/
+/*@=switchswitchbreak@*/
+/*@=sizeoftype@*/
+/*@=czechfcns@*/
+/*@=noparams@*/
+/*@=ansireserved@*/
+/*@=ifblock@*/
+/*@=whileblock@*/
+/*@=forblock@*/
+/*@=elseifcomplete@*/
+/*@=ptrnegate@*/
+/*@=onlytrans@*/
+/*@=temptrans@*/
+/*@=immediatetrans@*/
+/*@=namechecks@*/
+/*@=matchanyintegral@*/
+/*@=statictrans@*/
+/*@=compmempass@*/
+/*@=forempty@*/
+/*@=evalorder@*/
+/*@=retalias@*/
+/*@=redecl@*/
+/*@=retvalother@*/
+/*@=exportheader@*/
+
 struct skeyword
 {
   /*@null@*/ /*@observer@*/ char *name;
@@ -599,7 +651,7 @@ struct skeyword
 ** grammar proper.
 */
 
-struct skeyword s_parsetable[] = {
+static struct skeyword s_parsetable[] = {
   { "modifies", QMODIFIES } ,
   { "globals", QGLOBALS } ,
   { "alt", QALT } ,
@@ -628,7 +680,7 @@ struct skeyword s_parsetable[] = {
 ** token-specific text.
 */
 
-struct skeyword s_keytable[] = {
+static struct skeyword s_keytable[] = {
   { "anytype", QANYTYPE } ,
   { "integraltype", QINTEGRALTYPE } ,
   { "unsignedintegraltype", QUNSIGNEDINTEGRALTYPE } ,
@@ -718,7 +770,7 @@ static bool isArtificial (cstring s)
 	  || cstring_equalLit (s, "alt"));
 }
 
-void swallowMacro (void)
+void cscanner_swallowMacro (void)
 {
   int i;
   bool skipnext = FALSE;
@@ -726,7 +778,6 @@ void swallowMacro (void)
   while ((i = lminput ()) != EOF)
     {
       char c = (char) i;
-      
       
       if (c == '\\')
 	{
@@ -743,6 +794,10 @@ void swallowMacro (void)
 	      reader_checkUngetc (i, yyin);
 	      return;
 	    }
+	}
+      else
+	{
+	  ;
 	}
     }
 
@@ -859,10 +914,12 @@ static int tokenMacroCode (cstring s)
 	      setArgsUsed ();
 	      return SKIPTOK;
 	    }
-	  
-	  return s_keytable[i].token;
+	  else
+	    {
+	      return s_keytable[i].token;
+	    }
 	}
-      
+
       i++;
     }
   
@@ -915,6 +972,10 @@ static int returnInt (ctype ct, long i)
 	{
 	  c = context_typeofOne ();
 	}
+      else
+	{
+	  ;
+	}
     }
   
   yylval.expr = exprNode_numLiteral (c, cstring_fromChars (yytext), 
@@ -943,7 +1004,7 @@ static int ninput ()
   return c;
 }
 
-static char macro_nextChar ()
+static char macro_nextChar (void)
 {
   static bool in_quote = FALSE, in_escape = FALSE, in_char = FALSE;
   int ic;
@@ -1040,6 +1101,11 @@ static char macro_nextChar ()
           lmsavechar (c2);
 	}
     }
+  else
+    {
+      ;
+    }
+
   return c;
 }
 
@@ -1047,7 +1113,7 @@ static char macro_nextChar ()
 ** keeps semantic comments
 */
 
-static char macro_nextCharC ()
+static char macro_nextCharC (void)
 {
   static bool in_quote = FALSE, in_escape = FALSE, in_char = FALSE;
   char c;
@@ -1128,6 +1194,11 @@ static char macro_nextCharC ()
 	  lmsavechar (c2);
 	}
     }
+  else /* normal character */
+    {
+      ;
+    }
+
   return c;
 }
 
@@ -1136,7 +1207,7 @@ static char macro_nextCharC ()
 ** returns first non-whitespace character
 */
 
-static char skip_whitespace ()
+static char skip_whitespace (void)
 {
   char c;
 
@@ -1166,7 +1237,7 @@ static void handleMacro ()
     {
       int i;
 
-      for (i = 0; i < ((c - '0') + 1); i++)
+      for (i = 0; i < (((int) (c - '0')) + 1); i++)
 	{
 	  mac = cstring_appendChar (mac, ' ');
 	}
@@ -1247,13 +1318,13 @@ static bool processMacro (void)
 	    {
 	      c = macro_nextChar ();
 	    }
-	  unput (c);
+	  unput ((int) c);
 	}
 
       if (c == '\n')
 	{
 	  emptyMacro = TRUE;
-	  unput (c);
+	  unput ((int) c);
 	}
 
       c = oldc;
@@ -1377,6 +1448,10 @@ static bool processMacro (void)
 				  fileloc_unparse (oloc)),
 				 loc);
 			    }
+			  else
+			    {
+			      /* No warning */
+			    }
 			}
 
 		      context_enterConstantMacro (e2);	      
@@ -1454,7 +1529,7 @@ static bool processMacro (void)
 				  "typedef should be used instead."),
 			 g_currentloc);
 
-		      swallowMacro ();
+		      cscanner_swallowMacro ();
 		      /* Must exit scope (not sure why a new scope was entered?) */
 		      usymtab_quietExitScope (g_currentloc);
 		      uentry_setDefined (e2, g_currentloc);
@@ -1707,13 +1782,12 @@ static bool processMacro (void)
 
 static bool handleSpecial (char *yyt)
 {
-  char *l = mstring_create (MAX_NAME_LENGTH);
+  char *l; /* !!  = mstring_create (MAX_NAME_LENGTH); */
   int lineno = 0;
   char c;
   char *ol;
   cstring olc;
-
-  int len_yyt;
+  size_t len_yyt;
 
   len_yyt = strlen (yyt +1) ;
 
@@ -1733,7 +1807,7 @@ static bool handleSpecial (char *yyt)
   
   if (cstring_equalPrefixLit (olc, "pragma"))
     {
-      char *pname = mstring_create (longUnsigned_fromInt (MAX_PRAGMA_LEN));
+      char *pname = mstring_create (size_fromInt (MAX_PRAGMA_LEN));
       char *opname = pname;
       char *ptr = ol + 6; /* pragma is six characters, plus space */
       int len = 0;
@@ -1919,7 +1993,7 @@ static bool handleSpecial (char *yyt)
   return FALSE;
 }
   
-static int handleLlSpecial ()
+static int handleLlSpecial (void)
 { 
   bool hasnl = FALSE;
   int ic; 
@@ -1947,7 +2021,7 @@ static int handleLlSpecial ()
     {
       ic = ninput ();
 
-      llassert (ic == AFTER_COMMENT_MARKER[1]);
+      llassert (ic == (int) AFTER_COMMENT_MARKER[1]);
             
       if (*s == '\0')
 	{
@@ -1980,7 +2054,7 @@ static int handleLlSpecial ()
       charsread++;
 
       while (((ic = ninput ()) != 0) && (ic != EOF)
-	     && (ic != AFTER_COMMENT_MARKER[0]))
+	     && (ic != (int) AFTER_COMMENT_MARKER[0]))
 	{
 	  c = (char) ic;
 
@@ -2004,7 +2078,7 @@ static int handleLlSpecial ()
 
   DPRINTF (("Read: %s / %s", s, fileloc_unparse (g_currentloc)));
 
-  if (ic == AFTER_COMMENT_MARKER[0]) 
+  if (ic == (int) AFTER_COMMENT_MARKER[0]) 
     {
       int nc = ninput ();
       llassert ((char) nc ==  AFTER_COMMENT_MARKER[1]);
@@ -2124,7 +2198,10 @@ static int handleLlSpecial ()
 			      rest++; 
 			      s++;
 			    }
-			  
+			  s--; /* evans 2002-07-12: this was previously only in the else branch.
+				  Leads to an invalid read on the true branch.
+			       */
+
 			  sfree (orest);
 			  
 			  if (cstring_isUndefined (extra))
@@ -2134,11 +2211,10 @@ static int handleLlSpecial ()
 				 message
 				 ("Flag %s (in semantic comment) must be followed by an argument",
 				  flagcode_unparse (fflag)));
+
 			    }
 			  else
 			    {
-			      s--;
-			      
 			      if (flagcode_hasNumber (fflag))
 				{
 				  setValueFlag (fflag, extra);
@@ -2153,6 +2229,7 @@ static int handleLlSpecial ()
 				}
 			      else
 				{
+				  cstring_free (extra);
 				  BADEXIT;
 				}
 			    }
@@ -2206,7 +2283,7 @@ static int handleLlSpecial ()
 
       if (macrocode != BADTOK)
 	{
-	  tokLength = hasnl ? 0 : mstring_length (t);
+	  tokLength = hasnl ? 0 : size_toInt (mstring_length (t));
 	  
 	  sfree (t);
 	  sfree (os);
@@ -2295,7 +2372,7 @@ static int handleLlSpecial ()
 	      while (lc >= '0' && lc <= '9')
 		{
 		  val *= 10;
-		  val += lc - '0';
+		  val += (int) (lc - '0');
 		  lc = *(++tt);
 		}
 	    }
@@ -2324,7 +2401,7 @@ static int handleLlSpecial ()
 	  
 	  while (TRUE)
 	    {
-	      while ((c = *s) && (c == ' ' || c == '\t' || c == '\n'))
+	      while (((c = *s) != '\0') && (c == ' ' || c == '\t' || c == '\n'))
 		{
 		  s++;
 		}
@@ -2402,7 +2479,7 @@ static int handleLlSpecial ()
 	  
 	  while (TRUE)
 	    {
-	      while ((lc = *s) && (lc == ' ' || lc == '\t' || lc == '\n')) 
+	      while (((lc = *s) != '\0') && (lc == ' ' || lc == '\t' || lc == '\n')) 
 		{
 		  s++;
 		}
@@ -2506,7 +2583,7 @@ static int handleLlSpecial ()
 
 static /*@only@*/ cstring makeIdentifier (char *s)
 {
-  char *c = mstring_create (size_toInt (strlen (s)) + 1);
+  char *c = mstring_create (strlen (s) + 1);
   cstring id = cstring_fromChars (c);
 
   while (isalnum (*s) || (*s == '_') || (*s == '$')) 
@@ -2559,9 +2636,26 @@ static /*@only@*/ cstring makeIdentifier (char *s)
   return (usymtab_lookup (cn));
 }
 
-/*@observer@*/ cstring LastIdentifier ()
+/*
+** Need to keep this in case there is a declaration that isn't processed until
+** the scope exits.  Would be good to rearrange the symbol table so this doesn't
+** happen, and save all the cstring copying.
+*/
+
+/*@observer@*/ cstring cscanner_observeLastIdentifier ()
 {
-  return (lastidprocessed);
+  cstring res = s_lastidprocessed;
+  return res;
+}
+
+static void cscanner_setLastIdentifier (/*@keep@*/ cstring id) /*@modifies s_lastidprocessed@*/
+{
+  if (cstring_isDefined (s_lastidprocessed))
+    {
+      cstring_free (s_lastidprocessed); 
+    }
+
+  s_lastidprocessed = id;
 }
 
 static int processIdentifier (cstring id)
@@ -2574,7 +2668,7 @@ static int processIdentifier (cstring id)
     }
 
   context_clearJustPopped ();
-  lastidprocessed = id; 
+  cscanner_setLastIdentifier (id);
 
   if (context_inFunctionHeader ())
     {
@@ -2694,22 +2788,23 @@ static int processIdentifier (cstring id)
 
 	  while ((ic = input ()) != EOF)
 	    {
-	      		      
+	      char cc = (char) ic;
+
 	      if (inescape)
 		{
 		  inescape = FALSE;
 		}
-	      else if (ic == '\\')
+	      else if (cc == '\\')
 		{
 		  inescape = TRUE;
 		}
-	      else if (ic == '\"')
+	      else if (cc == '\"')
 		{
 		  inquote = !inquote;
 		}
 	      else if (!inquote)
 		{
-		  if (ic == '(')
+		  if (cc == '(')
 		    {
 		      if (!useparens)
 			{
@@ -2724,7 +2819,7 @@ static int processIdentifier (cstring id)
 			  depth++;
 			}
 		    }
-		  else if (ic == '{')
+		  else if (cc == '{')
 		    {
 		      if (!usebraces)
 			{
@@ -2739,17 +2834,17 @@ static int processIdentifier (cstring id)
 			  depth++;
 			}
 		    }
-		  else if (ic == ')' && useparens)
+		  else if (cc == ')' && useparens)
 		    {
 		      depth--;
 		      if (depth == 0) break;
 		    }
-		  else if (ic == '}' && usebraces)
+		  else if (cc == '}' && usebraces)
 		    {
 		      depth--;
 		      if (depth == 0) break;
 		    }
-		  else if (ic == '}' 
+		  else if (cc == '}' 
 			   && !usebraces && !useparens
 			   && cstring_equalLit (id, "__asm"))
 		    {
@@ -2761,9 +2856,17 @@ static int processIdentifier (cstring id)
 		      */ 
 		      return TRBRACE;
 		    }
+		  else
+		    {
+		      ;
+		    }
+		}
+	      else
+		{
+		  ;
 		}
 
-	      if (ic == '\n')
+	      if (cc == '\n')
 		{
 		  context_incLineno ();
 
@@ -2775,8 +2878,8 @@ static int processIdentifier (cstring id)
 		}
 	    }
 	  
-	  llassert ((useparens && ic == ')')
-		    || (usebraces && ic == '}')
+	  llassert ((useparens && ic == (int) ')')
+		    || (usebraces && ic == (int) '}')
 		    || (!useparens && !usebraces));
 
 	  return BADTOK;
@@ -2787,6 +2890,10 @@ static int processIdentifier (cstring id)
 	       || cstring_equalLit (id, "__inline__"))
 	{
 	  tok = QINLINE;
+	}
+      else
+	{
+	  ;
 	}
       
       if (tok != BADTOK)
@@ -2811,7 +2918,7 @@ static int processIdentifier (cstring id)
     }
   else if (uentry_isUndefined (le))
     {
-      yylval.cname = id;
+      yylval.cname = cstring_copy (id);
 
       /* avoid parse errors for certain system built ins */
 
@@ -2827,7 +2934,7 @@ static int processIdentifier (cstring id)
     {
       if (uentry_isDatatype (le))
 	{
-	  yylval.cname = id;
+	  yylval.cname = cstring_copy (id);
 	  return (NEW_IDENTIFIER);
 	}
       else
@@ -2840,7 +2947,7 @@ static int processIdentifier (cstring id)
     {
       if (!g_expectingTypeName)
 	{
-	  yylval.cname = id;
+	  yylval.cname = cstring_copy (id);
 
 	  return (NEW_IDENTIFIER);
 	}
@@ -2870,8 +2977,8 @@ static bool processHashIdentifier (/*@only@*/ cstring id)
       
       context_clearJustPopped ();
 
-      lastidprocessed = id; 
       le = usymtab_lookupSafe (id);
+      cscanner_setLastIdentifier (id);
 
       if (uentry_isParam (le) || uentry_isRefParam (le))
 	{
@@ -2894,7 +3001,7 @@ static bool processHashIdentifier (/*@only@*/ cstring id)
 }
 
 
-static /*@only@*/ exprNode processString ()
+static /*@only@*/ exprNode processString (void)
 {
   exprNode res;
   fileloc loc;
@@ -2904,7 +3011,7 @@ static /*@only@*/ exprNode processString ()
   if (nl == NULL)
     {
       loc = fileloc_copy (g_currentloc);
-      addColumn (cstring_length (ns));
+      addColumn (size_toInt (cstring_length (ns)));
     }
   else
     {
@@ -2945,7 +3052,7 @@ static /*@only@*/ exprNode processWideString ()
   if (nl == NULL)
     {
       loc = fileloc_copy (g_currentloc);
-      addColumn (cstring_length (ns));
+      addColumn (size_toInt (cstring_length (ns)));
     }
   else
     {

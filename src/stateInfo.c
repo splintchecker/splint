@@ -43,7 +43,7 @@ void stateInfo_free (/*@only@*/ stateInfo a)
 {
   if (old == NULL) 
     {
-      old = stateInfo_copy (newinfo);
+      return stateInfo_copy (newinfo);
     }
   else if (newinfo == NULL)
     {
@@ -52,12 +52,10 @@ void stateInfo_free (/*@only@*/ stateInfo a)
     }
   else
     {
-      old->loc = fileloc_update (old->loc, newinfo->loc);
-      old->ref = newinfo->ref;
-      old->ue = newinfo->ue;
+      stateInfo snew = stateInfo_makeRefLoc (newinfo->ref, newinfo->loc);
+      snew->previous = old;
+      return snew;
     }
-
-  return old;
 }
 
 /*@only@*/ stateInfo stateInfo_updateLoc (/*@only@*/ stateInfo old, fileloc loc)
@@ -69,7 +67,6 @@ void stateInfo_free (/*@only@*/ stateInfo a)
   else
     {
       old->loc = fileloc_update (old->loc, loc);
-      old->ue = uentry_undefined;
       old->ref = sRef_undefined;
     }
 
@@ -86,7 +83,6 @@ void stateInfo_free (/*@only@*/ stateInfo a)
   else
     {
       old->loc = fileloc_update (old->loc, loc);
-      old->ue = uentry_undefined;
       old->ref = ref;
     }
 
@@ -104,8 +100,8 @@ void stateInfo_free (/*@only@*/ stateInfo a)
       stateInfo ret = (stateInfo) dmalloc (sizeof (*ret));
       
       ret->loc = fileloc_copy (a->loc); /*< should report bug without copy! >*/
-      ret->ue = a->ue;
       ret->ref = a->ref;
+      ret->previous = stateInfo_copy (a->previous); 
 
       return ret;
     }
@@ -123,41 +119,68 @@ stateInfo_makeLoc (fileloc loc)
   stateInfo ret = (stateInfo) dmalloc (sizeof (*ret));
 
   ret->loc = fileloc_copy (loc); /* don't need to copy! */
-  ret->ue = uentry_undefined;
   ret->ref = sRef_undefined;
-  
+  ret->previous = stateInfo_undefined;
+
   return ret;
 }
 
 /*@only@*/ stateInfo
 stateInfo_makeRefLoc (/*@exposed@*/ sRef ref, fileloc loc)
+     /*@post:isnull result->previous@*/
 {
   stateInfo ret = (stateInfo) dmalloc (sizeof (*ret));
 
   ret->loc = fileloc_copy (loc);
   ret->ref = ref;
-  ret->ue  = uentry_undefined;
-  
+  ret->previous = stateInfo_undefined;
+
   return ret;
 }
 
 /*@only@*/ cstring
 stateInfo_unparse (stateInfo s)
 {
-    if (stateInfo_isDefined (s) && 
-	fileloc_isDefined (s->loc)) {
-	return fileloc_unparse (s->loc);
-    } else {
+    if (stateInfo_isDefined (s) && fileloc_isDefined (s->loc)) 
+      {
+	if (stateInfo_isDefined (s->previous)) {
+	  return message ("%q; %q", fileloc_unparse (s->loc), stateInfo_unparse (s->previous));
+	} else {
+	  return fileloc_unparse (s->loc);
+	}
+      } 
+    else 
+      {
 	return cstring_makeLiteral ("<no info>");
-    }
+      }
 }
 
 fileloc stateInfo_getLoc (stateInfo info)
 {
-    if (stateInfo_isDefined (info)) {
+    if (stateInfo_isDefined (info)) 
+      {
 	return info->loc;
-    }
-
+      }
+    
     return fileloc_undefined;
 }
+
+void stateInfo_display (stateInfo s, cstring sname)
+{
+  while (stateInfo_isDefined (s))
+    {
+      cstring msg = message ("Storage %s ", sname);
+
+      if (sRef_isValid (s->ref)) {
+	msg = message ("%q through alias %q ", msg, sRef_unparse (s->ref));
+      }
+
+      msg = message ("%qreleased", msg); /* For now, just used for release...need to make this work. */
+      llgenindentmsg (msg, s->loc);
+      s = s->previous;
+    }
+
+  cstring_free (sname);
+}
+
 

@@ -67,7 +67,6 @@ qtype qtype_addQual (qtype qt, qual q)
   return qt;
 }
 
-# ifndef NOLCL
 qtype qtype_addQualList (/*@returned@*/ qtype qt, qualList ql)
 {
   if (qtype_isDefined (qt))
@@ -77,7 +76,6 @@ qtype qtype_addQualList (/*@returned@*/ qtype qt, qualList ql)
 
   return qt;
 }
-# endif
 
 static void checkAltQuals (qtype q)
 {
@@ -105,7 +103,6 @@ static void checkAltQuals (qtype q)
     }
 }
 
-# ifndef NOLCL
 qtype qtype_mergeImplicitAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 {
   if (qtype_isDefined (q1) && qtype_isDefined (q2))
@@ -121,7 +118,6 @@ qtype qtype_mergeImplicitAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
   qtype_free (q2);
   return q1;
 }
-# endif
 
 qtype qtype_mergeAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 {
@@ -221,7 +217,6 @@ void qtype_adjustPointers (pointers n, qtype q)
   pointers_free (n);
 }
 
-# ifndef NOLCL
 qtype qtype_copy (qtype q)
 {
   if (qtype_isDefined (q))
@@ -237,4 +232,3 @@ qtype qtype_copy (qtype q)
       return qtype_undefined;
     }
 }
-# endif

@@ -159,6 +159,9 @@ extern bool qual_isSharing (/*@sef@*/ qual) /*@*/ ;
 
 extern /*@observer@*/ annotationInfo qual_getAnnotationInfo (qual) /*@*/ ;
 
+extern void qual_initMod (void) /*@modifies internalState@*/ ;
+extern void qual_destroyMod (void) /*@modifies internalState@*/ ;
+
 # define qual_isUnknown(q)    ((q)->kind == QU_UNKNOWN)
 # define qual_isTrueNull(q)   ((q)->kind == QU_TRUENULL)
 # define qual_isFalseNull(q)  ((q)->kind == QU_FALSENULL)

@@ -1642,7 +1642,7 @@ flags_processFlags (bool inCommandLine,
 		    fileIdList cfiles,
 		    fileIdList lclfiles,
 		    fileIdList mtfiles,
-		    cstringSList *passThroughArgs,
+		    cstringList *passThroughArgs,
 		    int argc, char **argv)
 {
   int i;
@@ -1696,8 +1696,8 @@ flags_processFlags (bool inCommandLine,
 	      ** Following space is optional, don't include the -
 	      */
 	      
-	      *passThroughArgs = cstringSList_add (*passThroughArgs, 
-						   cstring_fromChars (thisarg + 1));
+	      *passThroughArgs = cstringList_add (*passThroughArgs, 
+						  cstring_fromCharsNew (thisarg + 1));
 	    }
 	  else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
 	    {
@@ -1799,12 +1799,10 @@ flags_processFlags (bool inCommandLine,
 			    }
 			  else if (opt == FLG_INIT)
 			    {
-# ifndef NOLCL
 			      lslinit_setInitFile (inputStream_create 
 						   (arg, 
 						    cstring_makeLiteralTemp (LCLINIT_SUFFIX),
 						    FALSE));
-# endif
 			      break;
 			    }
 			  else
@@ -1922,4 +1920,6 @@ flags_processFlags (bool inCommandLine,
 			g_currentloc);
 	}
     }
+
+  cstringSList_free (fl); /* evans 2002-07-12: why wasn't this reported!?? */
 }

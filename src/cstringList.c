@@ -266,8 +266,17 @@ cstringList_free (cstringList s)
 {
   if (cstringList_isDefined (s))
     {
+      int i;
+
       DPRINTF (("cstringList free: [%p] %s",
 		s, cstringList_unparse (s)));
+
+      /* evans 2002-07-12: this was missing, not detected because of reldef */
+      for (i = 0; i < s->nelements; i++)
+	{
+	  cstring_free (s->elements[i]);
+	}
+
       sfree (s->elements);
       sfree (s);
     }

@@ -39,9 +39,7 @@ extern /*@unused@*/ bool intSet_member (intSet p_s, int p_el);
 extern /*@only@*/ /*@unused@*/ cstring intSet_unparse (intSet p_s);
 extern void intSet_free (/*@only@*/ intSet p_s);
 
-# ifndef NOLCL
 extern /*@only@*/ cstring intSet_unparseText (intSet p_s);
-# endif
 
 /*@constant int intSetBASESIZE;@*/
 # define intSetBASESIZE SMALLBASESIZE
