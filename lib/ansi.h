@@ -470,6 +470,8 @@ extern int getc (/*@sef@*/ FILE *stream)
 extern int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ ;
 
 extern /*@null@*/ char *gets (/*@out@*/ char *s) 
+   /*@warn bufferoverflowhigh
+           "Use of gets leads to a buffer overflow vulnerability.  Use fgets instead."@*/
    /*@globals stdin@*/ /*@modifies fileSystem, *s, *stdin, errno@*/ ;
 
 extern int putc (int /*@alt char@*/ c, /*@sef@*/ FILE *stream)
@@ -855,11 +857,11 @@ extern void /*@alt void * @*/
   */
   /* removed returned */
 extern void /*@alt char * @*/
-  strcpy (/*@unique@*/ /*@out@*/ /*returned*/ char *s1, char *s2) 
+  strcpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2) 
      /*@modifies *s1@*/ /*@requires MaxSet(s1) >= MaxRead(s2) @*/ /*@ensures MaxRead(s1) == MaxRead (s2) /\ MaxRead(result) == MaxRead(s2) /\ MaxSet(result) == MaxSet(s1); @*/;
 
 extern void /*@alt char * @*/
-  strncpy (/*@unique@*/ /*@out@*/ /*returned*/ char *s1, char *s2, size_t n) 
+  strncpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2, size_t n) 
   /*@modifies *s1@*/      /*@requires MaxSet(s1) >= ( n - 1 ); @*/ /*@ensures MaxRead (s2) >= MaxRead(s1) /\ MaxRead (s1) <= n; @*/; 
 
 extern void /*@alt char * @*/
