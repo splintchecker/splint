@@ -34,6 +34,9 @@
  * - added include of new header portab.h.
  * - changed '/' to macro.
  * - added DOS / OS/2 specific stuff in osd_getPath.
+ * Herbert 06/12/2000:
+ * - added OS/2 specific includes before osd_getPid()
+ * - handle files like in WIN32 for OS/2 in osd_fileExists()
  */
 
 /*@-allmacros*/
@@ -155,11 +158,7 @@ osd_getPath (char *path, char *file, char **returnPath)
     *fullPath == '\0' || 
     (*file == CONNECTCHAR || (file[0] != '\0' && file[1] == ':')))
 # else
-# ifdef WIN32
-	(*file == CONNECTCHAR || (file[0] != '\0' && file[1] == ':')))
-# else
-    (*file == CONNECTCHAR))
-# endif
+     (*file == CONNECTCHAR))
 # endif
     {
      /* No path specified. Look for it in the current directory.	    */
@@ -272,7 +271,7 @@ osd_fileExists (char *filespec)
   struct stat buf;
   return (stat (filespec, &buf) == 0);
 # else
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
   FILE *test = fopen (filespec, "r");
   if (test != NULL) 
   {
@@ -451,18 +450,20 @@ int osd_unlink (const char *fname)
   return res;
 }
 
-# ifdef WIN32
+# if defined (WIN32) || (defined(OS2) && defined(__IBMC__))
 # include <process.h>
+# elif defined OS2
+# include <unistd.h>
 # endif
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 int
 # else
 int /* pid_t */
 # endif
 osd_getPid ()
 {
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   int pid = _getpid ();
 # else
   pid_t pid = getpid ();

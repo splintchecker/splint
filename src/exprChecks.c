@@ -65,7 +65,7 @@ exprNode_checkStatement (exprNode e)
 	{ 
 	  if (ctype_isKnown (e->typ))
 	    {
-	      if (ctype_isBool (ctype_realishType (e->typ)))
+	      if (ctype_isManifestBool (ctype_realishType (e->typ)))
 		{
 		  hasError = optgenerror 
 		    (FLG_RETVALBOOL,
@@ -648,20 +648,40 @@ void exprNode_checkMacroBody (/*@only@*/ exprNode e)
 
 	  uentry_setDefined (hdr, e->loc);
 	  
-	  if (!(exprNode_matchType (ctype_realType (t), e)))
+	  if (!(exprNode_matchType (t, e)))
 	    {
-	      if (optgenerror 
-		  (FLG_INCONDEFS,
-		   message
-		   ("Constant %q specified as %s, but defined as %s: %s",
-		    uentry_getName (hdr),
-		    ctype_unparse (t),
-		    ctype_unparse (e->typ),
-		    exprNode_unparse (e)),
-		   e->loc))
+	      cstring uname = uentry_getName (hdr);
+
+	      if (cstring_equal (uname, context_getTrueName ())
+		  || cstring_equal (uname, context_getFalseName ()))
 		{
-		  uentry_showWhereSpecified (hdr);
+		  /* 
+		  ** We need to do something special to allow FALSE and TRUE
+		  ** to be defined without reporting errors.  This is a tad
+		  ** bogus, but otherwise lots of things would break.
+		  */
+
+
+		  llassert (ctype_isManifestBool (t));
+		  /* Should also check type of e is a reasonable (?) bool type. */
 		}
+	      else 
+		{
+		  if (optgenerror 
+		      (FLG_INCONDEFS,
+		       message
+		       ("Constant %q specified as %s, but defined as %s: %s",
+			uentry_getName (hdr),
+			ctype_unparse (t),
+			ctype_unparse (e->typ),
+			exprNode_unparse (e)),
+		       e->loc))
+		    {
+		      uentry_showWhereSpecified (hdr);
+		    }
+		}
+
+	      cstring_free (uname);
 	    }
 	  else
 	    {

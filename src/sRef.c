@@ -3472,7 +3472,7 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 	  res->definfo = alinfo_update (res->definfo, other->definfo);
 	  sRef_clearDerived (other);
 	  sRef_clearDerived (res);
-	  	}
+	}
       else if (res->defstate == SS_DEAD 
 	       && ((sRef_isOnly (other) && sRef_definitelyNull (other))
 		   || (other->defstate == SS_UNDEFINED
@@ -3487,7 +3487,7 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 	    {
 	      res->defstate = SS_DEAD;
 	    }
-
+	  
 	  sRef_clearDerived (other);
 	  sRef_clearDerived (res);
 	}
@@ -5978,7 +5978,8 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       
       if (ctype_isMutable (s->type) 
 	  && !ctype_isPointer (arr->type) 
-	  && !alkind_isStatic (arr->aliaskind))
+	  && !alkind_isStatic (arr->aliaskind)
+	  && !alkind_isStack (arr->aliaskind)) /* evs - 2000-06-20: don't pass stack allocation to members */
 	{
 	  s->aliaskind = arr->aliaskind;
 	}

@@ -78,7 +78,6 @@
 # include "portab.h"
 # include "cpp.h"
 # include <time.h>
-#include <assert.h>
 
 extern /*@external@*/ int yydebug;
 
@@ -561,6 +560,7 @@ int main (int argc, char *argv[])
   bool first_time = TRUE;
   bool showhelp = FALSE;
   bool allhelp = TRUE;
+  bool expsuccess;
   tsource *sourceFile = (tsource *) 0;
  
   fileIdList dercfiles;
@@ -576,15 +576,6 @@ int main (int argc, char *argv[])
   (void) signal (SIGINT, interrupt);
   (void) signal (SIGSEGV, interrupt); 
 
-   printf("Recompile worked!!\n");
-	  #ifndef YYDEBUG
-	  #define YYDEBUG 1
-	  #endif
-	  
-	#if YYDEBUG
-             yydebug = 1;
-         #endif
-	     
   cfiles = fileIdList_create ();
   lclfiles = fileIdList_create ();
 
@@ -1303,47 +1294,52 @@ int main (int argc, char *argv[])
       summarizeErrors (); 
     }
 
-  if (!context_getFlag (FLG_QUIET))
-    {
-      cstring specErrors = cstring_undefined;
+  
+  {
+    bool isQuiet = context_getFlag (FLG_QUIET);
+    cstring specErrors = cstring_undefined;
 # ifndef NOLCL
-      int nspecErrors = lclNumberErrors ();
+    int nspecErrors = lclNumberErrors ();
 # endif
+    
+    expsuccess = TRUE;
 
-      if (context_neednl ())
-	fprintf (g_msgstream, "\n");
+    if (context_neednl ())
+      fprintf (g_msgstream, "\n");
     
 # ifndef NOLCL
-      if (nspecErrors > 0)
-	{
-	  if (nspecErrors == context_getLCLExpect ())
-	    {
-	      specErrors = 
-		message ("%d spec error%p found, as expected\n       ", 
-			 nspecErrors);
-	    }
-	  else
-	    {
-	      if (context_getLCLExpect () > 0)
-		{
-		  specErrors = 
-		    message ("%d spec error%p found, expected %d\n       ", 
-			     nspecErrors,
-			     (int) context_getLCLExpect ());
-		}
-	      else
-		{
-		  specErrors = message ("%d spec error%p found\n       ",
-					nspecErrors);
-		}
-	    }
-	}
-      else
+    if (nspecErrors > 0)
+      {
+	if (nspecErrors == context_getLCLExpect ())
+	  {
+	    specErrors = 
+	      message ("%d spec error%p found, as expected\n       ", 
+		       nspecErrors);
+	  }
+	else
+	  {
+	    if (context_getLCLExpect () > 0)
+	      {
+		specErrors = 
+		  message ("%d spec error%p found, expected %d\n       ", 
+			   nspecErrors,
+			   (int) context_getLCLExpect ());
+	      }
+	    else
+	      {
+		specErrors = message ("%d spec error%p found\n       ",
+				      nspecErrors);
+		expsuccess = FALSE;
+	      }
+	  }
+      }
+    else
 	{
 	  if (context_getLCLExpect () > 0)
 	    {
 	      specErrors = message ("No spec errors found, expected %d\n       ", 
 				    (int) context_getLCLExpect ());
+	      expsuccess = FALSE;
 	    }
 	}
 # endif
@@ -1352,25 +1348,36 @@ int main (int argc, char *argv[])
 	{
 	  if (context_numErrors () == context_getExpect ())
 	    {
-	      llmsg (message ("Finished LCLint checking --- "
-			      "%s%d code error%p found, as expected",
-			      specErrors, context_numErrors ()));
+	      if (!isQuiet) {
+		llmsg (message ("Finished LCLint checking --- "
+				"%s%d code error%p found, as expected",
+				specErrors, context_numErrors ()));
+	      }
 	    }
 	  else
 	    {
 	      if (context_getExpect () > 0)
 		{
-		  llmsg (message 
-			 ("Finished LCLint checking --- "
-			  "%s%d code error%p found, expected %d",
-			  specErrors, context_numErrors (), 
-			  (int) context_getExpect ()));
+		  if (!isQuiet) {
+		    llmsg (message 
+			   ("Finished LCLint checking --- "
+			    "%s%d code error%p found, expected %d",
+			    specErrors, context_numErrors (), 
+			    (int) context_getExpect ()));
+		  }
+
+		  expsuccess = FALSE;
 		}
 	      else
 		{
-		  llmsg (message ("Finished LCLint checking --- "
-				  "%s%d code error%p found", 
-				  specErrors, context_numErrors ()));
+		  
+		  if (!isQuiet) {
+		    llmsg (message ("Finished LCLint checking --- "
+				    "%s%d code error%p found", 
+				    specErrors, context_numErrors ()));
+		  }
+
+		  expsuccess = FALSE;
 		}
 	    }
 	}
@@ -1378,42 +1385,50 @@ int main (int argc, char *argv[])
 	{
 	  if (context_getExpect () > 0)
 	    {
-	      llmsg (message
-		     ("Finished LCLint checking --- "
-		      "%sno code errors found, expected %d", 
-		      specErrors,
-		      (int) context_getExpect ()));
+	      if (!isQuiet) {
+		llmsg (message
+		       ("Finished LCLint checking --- "
+			"%sno code errors found, expected %d", 
+			specErrors,
+			(int) context_getExpect ()));
+	      }
+
+	      expsuccess = FALSE;
 	    }
 	  else
 	    {
 	      if (context_getLinesProcessed () > 0)
 		{
-		  llmsg (message ("Finished LCLint checking --- %sno code errors found", 
-				      specErrors));
+		  if (!isQuiet) {
+		    llmsg (message ("Finished LCLint checking --- %sno code errors found", 
+				    specErrors));
+		  }
 		}
 	      else
 		{
-		  llmsg (message ("Finished LCLint checking --- %sno code processed", 
-				      specErrors));
+		  if (!isQuiet) {
+		    llmsg (message ("Finished LCLint checking --- %sno code processed", 
+				    specErrors));
+		  }
 		}
 	    }
 	}
 
       cstring_free (specErrors);
-    }
-
+  }
+  
   if (context_getFlag (FLG_STATS))
     {
       clock_t ttime = clock () - before;
       int specLines = context_getSpecLinesProcessed ();
-
+      
       rstime = clock ();
-
+      
       if (specLines > 0)
 	{
 	  fprintf (g_msgstream, "%d spec, ", specLines);
 	}
-
+      
 # ifndef CLOCKS_PER_SEC
       fprintf (g_msgstream, "%d source lines in %ld time steps (steps/sec unknown)\n", 
 	       context_getLinesProcessed (), 
@@ -1432,11 +1447,11 @@ int main (int argc, char *argv[])
   if (context_getFlag (FLG_TIMEDIST))
     {
       clock_t ttime = clock () - before;
-
+      
       if (ttime > 0)
 	{
 	  char *msg = (char *) dmalloc (256 * sizeof (*msg));
-
+	  
 	  if (anylcl)
 	    {
 	      sprintf (msg, 
@@ -1458,12 +1473,12 @@ int main (int argc, char *argv[])
 		       (100.0 * (double) (cptime - pptime) / ttime),
 		       (100.0 * (double) (rstime - cptime) / ttime));
 	    }
-
+	  
 	  llgenindentmsgnoloc (cstring_fromCharsO (msg));
 	}
     }
 
-  llexit (LLSUCCESS);
+  llexit (expsuccess ? LLSUCCESS : LLFAILURE);
 }
 
 /*
@@ -1991,9 +2006,8 @@ cleanupFiles (void)
 /*@exits@*/ void
 llexit (int status)
 {
-  /*take this out*/
-  printf("Tempory debuging deliberltly Dumbing core\n");
-  assert(0);
+  DPRINTF (("llexit: %d", status));
+
 # ifdef WIN32
   if (status == LLFAILURE) 
     {

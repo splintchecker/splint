@@ -114,7 +114,7 @@ static /*@notnull@*/ /*@only@*/ ctbase ctbase_createEnum (/*@keep@*/ cstring p_e
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_createUnknown (void);
 static bool ctbase_match (ctbase p_c1, ctbase p_c2) /*@modifies nothing@*/;
 static bool ctbase_matchDef (ctbase p_c1, ctbase p_c2) /*@modifies nothing@*/;
-static bool ctbase_genMatch (ctbase p_c1, ctbase p_c2, bool p_force, bool p_arg, bool p_def);
+static bool ctbase_genMatch (ctbase p_c1, ctbase p_c2, bool p_force, bool p_arg, bool p_def, bool p_deep);
 static bool ctbase_isAbstract (/*@notnull@*/ ctbase p_c) /*@*/ ;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_makePointer (ctype p_b) /*@*/ ;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_makeArray (ctype p_b) /*@*/ ;
@@ -283,7 +283,7 @@ static /*@notnull@*/ /*@only@*/ ctbase
 static ctype ctbase_getConjA (/*@notnull@*/ ctbase p_c) /*@*/ ;
 static ctype ctbase_getConjB (/*@notnull@*/ ctbase p_c) /*@*/ ;
 static bool ctbase_isExplicitConj (/*@notnull@*/ ctbase p_c) /*@*/ ;
-static bool ctbase_forceMatch (ctbase p_c1, ctbase p_c2);
+static bool ctbase_forceMatch (ctbase p_c1, ctbase p_c2) /*@modifies p_c1, p_c2@*/ ;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_expectFunction (ctype p_c);
 static bool ctbase_isVoidPointer(/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
 static bool ctbase_isUnion (/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
@@ -1158,7 +1158,7 @@ ctbase_expectFunction (ctype c)
 }
 
 static bool
-ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
+ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep)
 {
   ctuid c1tid, c2tid;
   
@@ -1172,23 +1172,26 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
   c1 = ctbase_realType (c1);
   c2 = ctbase_realType (c2);
   
+  DPRINTF (("Matching: %s / %s", ctbase_unparse (c1),
+	    ctbase_unparse (c2)));
+  
   c1tid = c1->type;
   c2tid = c2->type;
   
   if (c1tid == CT_CONJ)
     {
       return (ctbase_genMatch (ctype_getCtbase (c1->contents.conj->a), c2,
-			       force, arg, def)
+			       force, arg, def, deep)
 	      || ctbase_genMatch (ctype_getCtbase (c1->contents.conj->b), c2,
-				  force, arg, def));
+				  force, arg, def, deep));
     }
   
   if (c2tid == CT_CONJ)
     {
       return (ctbase_genMatch (c1, ctype_getCtbase (c2->contents.conj->a),
-			       force, arg, def)
+			       force, arg, def, deep)
 	      || ctbase_genMatch (c1, ctype_getCtbase (c2->contents.conj->b),
-				  force, arg, def));
+				  force, arg, def, deep));
     }
 
   /*
@@ -1216,7 +1219,7 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 
 	  return (ctbase_genMatch (ctype_getCtbase (c1->contents.farray->base),
 				   ctype_getCtbase (c2->contents.base),
-				   force, arg, def));
+				   force, arg, def, deep));
 	}
 
 
@@ -1232,11 +1235,11 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 
 	  return (ctbase_genMatch (ctype_getCtbase (c1->contents.base),
 				   ctype_getCtbase (c2->contents.farray->base),
-				   force, arg, def));
+				   force, arg, def, deep));
 	}
       
-      /* in most cases, bool and int are matched if FLG_BOOLINT */
-      
+      /* evs 2000-07-25: Bool's may match user/abstract types */
+
       if ((c1tid == CT_BOOL 
 	   && (c2tid == CT_PRIM && cprim_isInt (c2->contents.prim))) ||
 	  (c2tid == CT_BOOL 
@@ -1244,6 +1247,18 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 	{
 	  return (context_msgBoolInt ());
 	}
+
+      if ((c1tid == CT_BOOL && (c2tid == CT_ABST || c2tid == CT_USER))) {
+	ctype t2c = c2->contents.base;
+
+	return (ctype_isBool (t2c));
+      }
+
+      if ((c2tid == CT_BOOL && (c1tid == CT_ABST || c1tid == CT_USER))) {
+	ctype t1c = c1->contents.base;
+
+	return (ctype_isBool (t1c));
+      }
 
       if ((c1tid == CT_ENUM
 	   && (c2tid == CT_PRIM && cprim_isInt (c2->contents.prim))) ||
@@ -1352,7 +1367,11 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
     case CT_UNKNOWN:
       return (TRUE);
     case CT_PRIM:
-      return (cprim_closeEnough (c1->contents.prim, c2->contents.prim));
+      if (deep) {
+	return (cprim_closeEnoughDeep (c1->contents.prim, c2->contents.prim));
+      } else {
+	return (cprim_closeEnough (c1->contents.prim, c2->contents.prim));
+      }
     case CT_BOOL:
       return (TRUE);
     case CT_ABST:
@@ -1388,9 +1407,9 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 	    {
 	      return FALSE;
 	    }
-	  
+
 	  return (ctype_genMatch (c1->contents.base,
-				  c2->contents.base, force, arg, def));
+				  c2->contents.base, force, arg, def, TRUE));
 	}
     case CT_FIXEDARRAY:
       if (ctype_isVoid (c1->contents.farray->base) 
@@ -1398,20 +1417,24 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 	return TRUE;
       return (ctype_genMatch (c1->contents.farray->base, 
 			      c2->contents.farray->base, 
-			      force, arg, def));
+			      force, arg, def, deep));
     case CT_ARRAY:
       if (ctype_isVoid (c1->contents.base) || ctype_isVoid (c2->contents.base))
 	return TRUE;
-      return (ctype_genMatch (c1->contents.base, c2->contents.base, force, arg, def));
+      return (ctype_genMatch (c1->contents.base, c2->contents.base, force, arg, def, TRUE));
     case CT_FCN:
       return (ctype_genMatch (c1->contents.fcn->rval, 
 			      c2->contents.fcn->rval, 
-			      force, arg, def) 
+			      force, arg, def, TRUE) 
 	      && uentryList_matchParams (c1->contents.fcn->params, 
 					 c2->contents.fcn->params, 
 					 force, TRUE));
     case CT_STRUCT:
     case CT_UNION:
+      DPRINTF (("Struct: %s / %s",
+		c1->contents.su->name,
+		c2->contents.su->name));
+
       if (!cstring_isEmpty (c1->contents.su->name))
 	{
 	  return (cstring_equal (c1->contents.su->name, c2->contents.su->name));
@@ -1438,31 +1461,27 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def)
 */
 
 static bool
-ctbase_forceMatch (ctbase c1, ctbase c2)
+ctbase_forceMatch (ctbase c1, ctbase c2) /*@modifies c1, c2@*/
 {
- /*
- ** modifies c1, c2
- */
-
-  return (ctbase_genMatch (c1, c2, TRUE, FALSE, FALSE));
+  return (ctbase_genMatch (c1, c2, TRUE, FALSE, FALSE, FALSE));
 }
 
 static bool
 ctbase_match (ctbase c1, ctbase c2) /*@modifies nothing@*/
 {
-  return (ctbase_genMatch (c1, c2, FALSE, FALSE, FALSE));
+  return (ctbase_genMatch (c1, c2, FALSE, FALSE, FALSE, FALSE));
 }
 
 static bool
 ctbase_matchDef (ctbase c1, ctbase c2) /*@modifies nothing@*/
 {
-  return (ctbase_genMatch (c1, c2, FALSE, FALSE, TRUE));
+  return (ctbase_genMatch (c1, c2, FALSE, FALSE, TRUE, FALSE));
 }
 
 static bool
 ctbase_matchArg (ctbase c1, ctbase c2)
 {
-  return (ctbase_genMatch (c1, c2, FALSE, TRUE, FALSE));
+  return (ctbase_genMatch (c1, c2, FALSE, TRUE, FALSE, FALSE));
 }
 
 static /*@out@*/ /*@only@*/ /*@notnull@*/ ctbase 
@@ -2306,6 +2325,21 @@ ctbase_compare (ctbase c1, ctbase c2, bool strict)
       return (ctype_compare (c1->contents.base, c2->contents.base));
     case CT_STRUCT:
     case CT_UNION:
+      /* evs 2000-07-28: this block was missing! */
+      if (strict) {
+	int ncmp = cstring_compare (c1->contents.su->name,
+				    c2->contents.su->name);
+
+	if (ncmp != 0) {
+	  if (isFakeTag (c1->contents.su->name) 
+	      && isFakeTag (c2->contents.su->name)) {
+	    ; /* If they are both fake struct tags, don't require match. */
+	  } else {
+	    return ncmp;
+	  }
+	}
+      }
+
       return (uentryList_compareFields (c1->contents.su->fields,
 					c2->contents.su->fields));
     case CT_CONJ:

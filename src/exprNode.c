@@ -407,6 +407,8 @@ static /*@notnull@*/ /*@special@*/ exprNode
   e->canBreak = FALSE;
   e->mustBreak = FALSE;
   e->isJumpPoint = FALSE;
+  e->environment =  environmentTable_undefined;
+  e->constraints =  constraintList_undefined;
   return (e);
 }
 
@@ -748,7 +750,7 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
   sRef_setLen(e->sref, strlen((char *)multiVal_forceString(e->val)));
   sRef_setSize(e->sref, strlen((char *)multiVal_forceString(e->val)));
 
-   if (context_getFlag (FLG_READONLYSTRINGS))
+  if (context_getFlag (FLG_READONLYSTRINGS))
     {
       sRef_setAliasKind (e->sref, AK_STATIC, fileloc_undefined);
       sRef_setExKind (e->sref, XO_OBSERVER, loc);
@@ -1308,6 +1310,12 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
               modtype = ctype_lint; /* long */
               key = *(++code);
 	      fileloc_incColumn (formatloc);
+
+	      if (key == 'l' || key == 'L') { 
+		modtype = ctype_llint; /* long long */
+		key = *(++code);
+		fileloc_incColumn (formatloc);
+	      }
             }
 	  else
 	    {
@@ -1583,6 +1591,12 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 
               key = *(++code);
 	      fileloc_incColumn (formatloc);
+
+	      if (key == 'l' || key == 'L') { 
+		modtype = ctype_llint; /* long long */
+		key = *(++code);
+		fileloc_incColumn (formatloc);
+	      }
             }
 	  else
 	    {
@@ -1657,7 +1671,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			    case 'f': 
 			      /* printf is double, scanf is float! */
 
-			      			      if (modifier == 'l') 
+			      if (modifier == 'l') 
 				{
 				  expecttype = ctype_makePointer (ctype_double);
 				}
@@ -2306,9 +2320,13 @@ static int
 			*/
 		      
 		      f->guards = guardSet_union (f->guards, a->guards);
+		      
+		      DPRINTF (("match arg: %s / %s", ctype_unparse (ct), ctype_unparse (a->typ)));
 
 		      if (!(exprNode_matchArgType (ct, a)))
 			{
+			  DPRINTF (("Args mismatch!"));
+
 			  if (ctype_isVoidPointer (ct) 
 			      && (ctype_isPointer (a->typ) 
 				  && (ctype_isRealAbstract (ctype_baseArrayPtr (a->typ)))))
@@ -3593,6 +3611,10 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
   /* if (ctype_isZero (t)) e->typ = ctype_int; */
 
   exprNode_checkModify (e, ret);
+
+  /* added 7/11/2000 D.L */
+  
+  updateEnvironmentForPostOp (e);
 
 	/* start modifications */
 	/* added by Seejo on 4/16/2000 */
@@ -5015,9 +5037,10 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	default: {
 	    llfatalbug 
 	      (cstring_makeLiteral 
-	       ("There has been a problem in the parser. This usually results "
-		"from using an old version of bison (1.25) to build LCLint. "
-		"Please upgrade your bison implementation to version 1.28."));
+	       ("There has been a problem in the parser. This is due to a bug "
+		"in either lclint, bison or gcc version 2.95 optimizations, "
+		"but it has not been confirmed.  Please try rebuidling LCLint "
+		"without the -O<n> option."));
 	  }
 	}
     }
@@ -5746,7 +5769,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
     }
 
   exprNode_mergeUSs (ret, e2);
-  
+  ret = exprNode_mergeEnvironments (ret, e1, e2);
   usymtab_setExitCode (ret->exitCode);
   
   if (ret->mustBreak)
@@ -5755,6 +5778,25 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
     }
 
   return ret;
+}
+
+exprNode exprNode_mergeEnvironments (exprNode ret, exprNode e1, exprNode e2)
+{
+ if (exprNode_isDefined (e1) && exprNode_isDefined (e2) )
+   {
+     ret->environment = environmentTable_mergeEnvironments (e1->environment, e2->environment);
+     return ret;
+   }
+ if (exprNode_isUndefined(e1) && exprNode_isUndefined(e2) )
+   {
+     ret->environment = environmentTable_undefined;
+   }
+ else
+   {
+     ret->environment = exprNode_isUndefined (e1) ? environmentTable_copy(e2->environment)
+       : environmentTable_copy (e1->environment);
+     return ret;
+   }
 }
 
 exprNode exprNode_createTok (/*@only@*/ lltok t)
@@ -6383,6 +6425,12 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
 {
   exprNode ret;
   bool emptyErr = FALSE;
+    char *s;
+   s = exprNode_generateConstraints (t);
+    // printf("pred: %s\n", s);
+  s = exprNode_generateConstraints (b);
+  //printf ("body: %s\n", s);
+  //constraintList_print(b->constraints);
   
   if (context_maybeSet (FLG_WHILEEMPTY))
     {
@@ -8082,6 +8130,7 @@ static /*@observer@*/ cstring exprNode_rootVarName (exprNode e)
   return ret;
 }
 
+
 static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
 {
   cstring ret;
@@ -9703,6 +9752,7 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
     {
       updateAliases (e1, e2); 
     }
+  updateEnvironment (e1, e2);
 }
 
 static void 
@@ -9782,6 +9832,53 @@ static void updateAliases (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
     }
 }
 
+exprNode
+exprNode_updateForPostOp ( /*@notnull@*/ /*@returned@*/  exprNode e1)
+{
+  e1->environment = environmentTable_postOpvar (e1->environment, e1->sref);
+  return e1;
+}
+
+void updateEnvironmentForPostOp (/*@notnull@*/ exprNode e1)
+{
+  sRef s1 = e1->sref;
+  //  printf("doing updateEnvironmentForPostOp\n");
+  e1 =  exprNode_updateForPostOp (e1);
+  /*do in exprNode update exprnode*/
+  usymtab_postopVar (s1);
+}
+
+void updateEnvironment (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
+{
+  //  printf("doing updateEnvironment\n");
+   if (!context_inProtectVars ())
+    {
+      /*
+      ** depends on types of e1 and e2
+      */
+      
+      sRef s1 = e1->sref;
+      sRef s2 = e2->sref;
+      ctype t1 = exprNode_getType (e1);
+      //  printf(" for %s = %s \n", sRef_unparse(s1),  sRef_unparse(s2) );
+      // printf("type is %d\n", t1);
+      if (multiVal_isInt( e2->val) )
+	{
+	  int val =  multiVal_forceInt(e2->val);
+	  //  printf("value is %d \n", val);
+	  usymtab_addExactValue( s1, val);
+	  environmentTable_addExactValue (e1->environment, s1, val);
+	}
+      
+      /* handle pointer sRefs, record fields, arrays, etc... */
+     }
+   else
+     {
+       //       printf("context_inProtectVars\n");
+     }
+   
+}
+			       
 exprNode exprNode_updateLocation (/*@returned@*/ exprNode e, /*@temp@*/ fileloc loc)
 {
   if (exprNode_isDefined (e))
@@ -9907,4 +10004,18 @@ static void checkUniqueParams (exprNode fcn,
     } end_exprNodeList_elements;
 }
 
+long exprNode_getLongValue (exprNode e) {
+  long value;
 
+  if (exprNode_hasValue (e) 
+      && multiVal_isInt (exprNode_getValue (e)))
+    {
+      value = multiVal_forceInt (exprNode_getValue (e));
+    }
+  else
+    {
+      value = 0;
+    }
+  
+  return value;
+}

@@ -122,6 +122,8 @@ sRefTest specialClause_getPreTestFunction (specialClause cl)
 
 sRefTest specialClause_getPostTestFunction (specialClause cl)
 {
+  llassert (specialClause_isAfter (cl));
+
   switch (cl->kind)
     {
     case SP_USES:

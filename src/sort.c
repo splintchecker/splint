@@ -2239,6 +2239,7 @@ sortTag_toSymbol (char *kind, ltoken tagid, /*@out@*/ bool *isNew)
     }
 }
 
+/*@constant int MAX_SORT_DEPTH@*/
 # define MAX_SORT_DEPTH 10
 
 static sort

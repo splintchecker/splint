@@ -266,7 +266,7 @@ static const short yycheck[] = {     3,
 #define YYPURE 1
 
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "/gnu/share/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -459,7 +459,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/lib/bison.simple"
+#line 196 "/gnu/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -932,7 +932,7 @@ case 38:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/lib/bison.simple"
+#line 498 "/gnu/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1137,8 +1137,13 @@ extern char *yytext;
 
 void lslerror (char *s) 
 {
-  lclplainerror (message ("An error has occurred in parsing LSL signature: %s", 
-			  cstring_fromChars (s)));
+  llfatalbug 
+    (cstring_makeLiteral 
+     ("There has been a problem parsing an LSL signature. This is believed to "
+      "result from a problem with gcc version 2.95 optimizations, "
+      "but it has not been confirmed.  Please try rebuidling LCLint "
+      "without the -O<n> option."));
+
 }
 
 static void yyprint (FILE *file, int type, YYSTYPE value)

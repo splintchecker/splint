@@ -34,6 +34,7 @@
 
 static void ctype_recordConj (ctype p_c);
 
+
 /*
 ** ctbase file
 */
@@ -113,6 +114,7 @@ ctype_loadTable (FILE *f)
 void
 ctype_dumpTable (FILE *f)
 {
+  DPRINTF (("Dumping cttable!"));
   cttable_dump (f);
 }
 
@@ -172,11 +174,11 @@ ctype_realType (ctype c)
       r = uentry_getRealType (usymtab_getTypeEntry (ctype_typeId (c)));
     }
   
-  if (ctype_isDirectBool (r))
+  if (ctype_isManifestBool (r))
     {
-            if (context_canAccessBool ())      
+      if (context_canAccessBool ())      
 	{
-	  r = ctype_int;
+	  r = context_boolImplementationType ();
 	}
     }
   
@@ -209,7 +211,7 @@ ctype_realishType (ctype c)
 {
   if (ctype_isUA (c))
     {
-      if (ctype_isUserBool (c))
+      if (ctype_isManifestBool (c))
 	{
 	  return ctype_bool;
 	}
@@ -460,6 +462,13 @@ ctype_compare (ctype c1, ctype c2)
   ctentry ce1;
   ctentry ce2;
 
+  /* Can't get entries for special ctypes (elips marker) */
+
+  if (ctype_isElips (c1) || ctype_isElips (c2)
+      || ctype_isMissingParamsMarker (c1) || ctype_isMissingParamsMarker (c2)) {
+    return int_compare (c1, c2);
+  }
+
   ce1 = ctype_getCtentry (c1);
   ce2 = ctype_getCtentry (c2);
 
@@ -639,11 +648,53 @@ ctype_isSignedChar (ctype c)
   return ((c == ctype_unknown) || (cprim_isSignedChar (ctype_toCprim (c))));
 }
 
+/*
+** Returns true if c matches the name -booltype <bool>
+*/
+
+bool
+ctype_isManifestBool (ctype c)
+{
+  /*
+  ** Changed the meaning of ctype_isBool - evs 2000-07-24
+  ** The old meaning was very convoluted!
+  **
+  ** c is a bool if:
+  **       c == CTX_BOOL - its a direct bool
+  **       c is a user/abstract type matching the bool name
+  **            (should never occur?)
+  */
+
+  if (ctype_isDirectBool (c)) {
+    return TRUE;
+  } else if (ctype_isUA (c)) {
+    return ctype_isUserBool (c);
+  } else {
+    return FALSE;
+  }
+}
+
 bool
 ctype_isBool (ctype c)
 {
-  /*@unchecked@*/ static typeId boolType = typeId_invalid;
+  /*
+  ** Changed the meaning of ctype_isBool - evs 2000-07-24
+  ** The old meaning was very convoluted!
+  **
+  ** c is a bool if:
+  **       its a manifest bool
+  **       +boolint and ctype_isInt (c)
+  */
 
+  if (ctype_isManifestBool (c)) {
+    return TRUE;
+  } else if (context_msgBoolInt ()) {
+    return ctype_isInt (c);
+  } else {
+    return FALSE;
+  }
+
+# if 0
   if (context_getFlag (FLG_ABSTRACTBOOL))
     {
       if (typeId_isInvalid (boolType))
@@ -664,6 +715,7 @@ ctype_isBool (ctype c)
   return ((c == CTX_UNKNOWN) || (c == CTX_BOOL)
 	  || (context_msgBoolInt ()
 	      && (c == CTX_INT || (c == CTX_CHAR && context_msgCharInt ()))));
+# endif
 }
 
 bool
@@ -1077,12 +1129,12 @@ ctype_makeConj (ctype c1, ctype c2)
     }
   else
     {
-      if (ctype_isUserBool (c1))
+      if (ctype_isManifestBool (c1))
 	{
 	  c1 = ctype_bool;
 	}
       
-      if (ctype_isUserBool (c2))
+      if (ctype_isManifestBool (c2))
 	{
 	  c2 = ctype_bool;
 	}
@@ -1294,7 +1346,11 @@ ctype_createStruct (/*@only@*/ cstring n, /*@only@*/ uentryList f)
 {
   ctype ct;
 
+  DPRINTF (("Creating a struct: %s / %s",
+	    n, uentryList_unparse (f)));
+
   ct = cttable_addComplex (ctbase_createStruct (n, f));
+  DPRINTF (("ct: %s", ctype_unparse (ct)));
   return (ct);
 }
 
@@ -1332,9 +1388,11 @@ static bool
 }
 
 bool
-ctype_genMatch (ctype c1, ctype c2, bool force, bool arg, bool def)
+ctype_genMatch (ctype c1, ctype c2, bool force, bool arg, bool def, bool deep)
 {
   bool match;
+
+  DPRINTF (("Gen match: %s / %s arg: %s", ctype_unparse (c1), ctype_unparse (c2), bool_unparse (arg)));
 
   if (quickMatch (c1, c2))
     {
@@ -1347,7 +1405,7 @@ ctype_genMatch (ctype c1, ctype c2, bool force, bool arg, bool def)
     }
   else
     {
-      match = ctbase_genMatch (ctype_getCtbase (c1), ctype_getCtbase (c2), force, arg, def);
+      match = ctbase_genMatch (ctype_getCtbase (c1), ctype_getCtbase (c2), force, arg, def, deep);
       return (match);
     }
 }
@@ -1377,6 +1435,8 @@ ctype_almostEqual (ctype c1, ctype c2)
 bool
 ctype_matchDef (ctype c1, ctype c2)
 {
+  DPRINTF (("Match def: %s / %s", ctype_unparse (c1), ctype_unparse (c2)));
+
   if (quickMatch (c1, c2))
     return TRUE;
 
@@ -1423,7 +1483,10 @@ ctype_forceMatch (ctype c1, ctype c2)
   if (ctype_isElips (c2))
     return FALSE;
 
+  /*@-modobserver@*/
+  /* The call forceMatch may modify the observer params, but, we don't care. */
   return (ctbase_forceMatch (ctype_getCtbase (c1), ctype_getCtbase (c2)));
+  /*@=modobserver@*/
 }
 
 bool
@@ -1618,6 +1681,8 @@ ctype_undump (char **c)
 cstring
 ctype_dump (ctype c)
 {
+  DPRINTF (("Ctype dump: %s", ctype_unparse (c)));
+
   if (c < 0)
     {
       /* Handle invalid types in a kludgey way. */
@@ -1638,6 +1703,7 @@ ctype_dump (ctype c)
       cstring_free (tname);
     }
 
+  DPRINTF (("Returning: %d", c));
   return (message ("%d", c));
 }
 
@@ -2025,6 +2091,10 @@ ctype ctype_combine (ctype dominant, ctype modifier)
 	  if (dominant == ctype_lint) return ctype_ulint;
 	  if (dominant == ctype_sint) return ctype_usint;
 	  if (dominant == ctype_char) return ctype_uchar;
+
+	  /* evs 2000-07-28: added this line */
+	  if (dominant == ctype_llint) return ctype_ullint;
+
 	  if ((dominant == ctype_uint) || dominant == ctype_uchar)
 	    {
 	      voptgenerror (FLG_DUPLICATEQUALS, 

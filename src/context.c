@@ -946,6 +946,7 @@ context_setMode (cstring s)
 	  FLG_FIRSTCASE,
 	  FLG_NESTEDEXTERN, 
 	  FLG_NUMLITERAL,
+	  FLG_ZEROBOOL,
 	  /* memchecks flags */
 	  FLG_NULLDEREF, 
 	  FLG_NULLSTATE, FLG_NULLASSIGN,
@@ -1009,6 +1010,7 @@ context_setMode (cstring s)
 	  FLG_LONGUNSIGNEDUNSIGNEDINTEGRAL,
 	  FLG_NUMLITERAL,
 	  FLG_CHARINTLITERAL,
+	  FLG_ZEROBOOL,
 	  INVALID_FLAG 
 	  } ;
 
@@ -1291,13 +1293,14 @@ context_addFileAccessType (typeId t)
     {
       gc.acct = typeIdSet_insert (gc.acct, t);
     }
-
-    gc.facct = typeIdSet_insert (gc.facct, t);
-
-    base = fileloc_getBase (g_currentloc);
+  
+  gc.facct = typeIdSet_insert (gc.facct, t);
+  
+  base = fileloc_getBase (g_currentloc);
   insertModuleAccess (base, t);
-
-  }
+  DPRINTF (("Add file access: %s / %s", typeIdSet_unparse (gc.facct),
+	    typeIdSet_unparse (gc.acct)));
+}
 
 void
 context_removeFileAccessType (typeId t)
@@ -1645,7 +1648,10 @@ context_enterFunction (/*@exposed@*/ uentry e)
     {
       gc.acct = gc.facct;
     }
-  
+
+  DPRINTF (("Enter function: %s / %s", uentry_unparse (e), 
+	    typeIdSet_unparse (gc.acct)));
+
   gc.showfunction = context_getFlag (FLG_SHOWFUNC);
   
   gc.globs = uentry_getGlobs (e);
@@ -2189,8 +2195,7 @@ context_returnFunction (void)
 
 void
 context_exitFunction (void)
-{
-    
+{    
   if (!context_inFunction () && !context_inMacroConstant () 
       && !context_inMacroUnknown () 
       && !context_inIterDef () && !context_inIterEnd ())
@@ -2320,22 +2325,58 @@ context_addBoolAccess (void)
   addModuleAccess (cstring_makeLiteral ("types"), boolt); 
 }
 
+# if 0
+bool
+context_canAccessBool (void)
+{
+  return TRUE;
+}
+# endif
+
+/*
+  static typeId boolType = typeId_invalid;
+
+  if (typeId_isInvalid (boolType))
+    { 
+      boolType = usymtab_getTypeId (context_getBoolName ());
+    }
+
+  if (typeId_isInvalid (boolType)) {
+    return FALSE;
+  } else {
+    return (typeIdSet_member (gc.acct, boolType));
+  }
+}
+*/
+
+/* evs 2000-07-25: old version - replaced */
+
+ctype
+context_boolImplementationType () {
+  /* For now, this is bogus! */
+  return ctype_int;
+}
+
 bool
 context_canAccessBool (void)
 {
   static typeId boolType = typeId_invalid;
 
-  
-  if (context_getFlag (FLG_ABSTRACTBOOL))
-    {
-      if (typeId_isInvalid (boolType))
-	{ 
-	  boolType = usymtab_getTypeId (context_getBoolName ());
-	}
-      return (typeIdSet_member (gc.acct, boolType));
+  if (typeId_isInvalid (boolType))
+    { 
+      boolType = usymtab_getTypeId (context_getBoolName ());
     }
 
-  return FALSE;
+  if (!typeId_isInvalid (boolType))
+    { 
+      return context_hasAccess (boolType);
+    }
+  else 
+    {
+      ;
+    }
+
+  return FALSE; 
 }
 
 void
@@ -2707,10 +2748,9 @@ context_typeofZero (void)
       ct = ctype_makeConj (ct, ctype_voidPointer);
     }
   
-  if (!context_getFlag (FLG_ABSTRACTBOOL))
-    {
-      ct = ctype_makeConj (ct, ctype_bool);
-    }
+  if (context_getFlag (FLG_ZEROBOOL)) {
+    ct = ctype_makeConj (ct, ctype_bool); 
+  }
 
   return ct;
 }
@@ -2936,14 +2976,16 @@ void setModuleAccess (void)
     {
       cstring baseName = fileloc_getBase (g_currentloc);
       
-      DPRINTF (("Access: %s", baseName));
-
       if (context_getFlag (FLG_ACCESSFILE))
 	{
 	  if (usymtab_existsType (baseName))
 	    {
 	      gc.facct = typeIdSet_insert (gc.facct, 
 					   usymtab_getTypeId (baseName));
+	    }
+	  else 
+	    {
+	      ;
 	    }
 	}
       
@@ -2974,11 +3016,11 @@ void setModuleAccess (void)
       gc.acct = gc.facct;
       gc.inheader = FALSE;
     }
-      
+  
   /* 17 Jan 1995: forgot to clear nacct */
   
-    gc.nacct = typeIdSet_emptySet ();
-  }
+  gc.nacct = typeIdSet_emptySet ();
+}
 
 static void
 context_enterFileAux (void)
@@ -3055,8 +3097,11 @@ context_processMacros (void)
 	  (cstring_toCharsSafe (fileName (currentFile ())))));
       
       gc.inmacrocache = TRUE;
-      
-            lastfl = macrocache_processFileElements (gc.mc, cbase);
+
+      DPRINTF (("Processing macros: %s", cbase));
+      lastfl = macrocache_processFileElements (gc.mc, cbase);
+      DPRINTF (("Processing macros: %s", fileloc_unparse (lastfl)));
+
       cstring_free (cbase);
       
       if (fileloc_isDefined (lastfl))
@@ -3273,7 +3318,7 @@ context_userSetFlag (flagcode f, bool b)
       gc.library = f;
     }
   
-    gc.setGlobally[f] = TRUE;
+  gc.setGlobally[f] = TRUE;
   context_setFlag (f, b);
 }
 
@@ -4085,7 +4130,10 @@ bool context_isMacroMissingParams (void)
   return (gc.macroMissingParams);
 }
 
-
+void context_showFilelocStack (void) 
+{
+  filelocStack_printIncludes (gc.locstack);
+}
 
 
 

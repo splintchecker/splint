@@ -747,7 +747,7 @@ static bool checkCzechName (uentry ue, flagcode czechflag, bool report)
 			}
 		    }
 		}
-	      else if (ctype_isBool (ct))
+	      else if (ctype_isManifestBool (ct))
 		{
 		  if (context_canAccessBool ())
 		    {
@@ -995,7 +995,7 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 			}
 		    }
 		}
-	      else if (ctype_isBool (ct))
+	      else if (ctype_isManifestBool (ct))
 		{
 		  if (context_canAccessBool ())
 		    {

@@ -55,8 +55,30 @@ cprim_fromInt (int i)
 **    (if RELAXQUALS, c1 must be "bigger" than c2)
 */
 
+static bool cprim_closeEnoughAux (cprim p_c1, cprim p_c2, bool p_deep);
+
+bool
+cprim_closeEnoughDeep (cprim c1, cprim c2) 
+{
+  /*
+  ** If * c2 is passed as * c1
+  ** Comparison is slightly different since it is safe to pass int as long,
+  ** but not to pass int * as long *!
+  **
+  ** For deep comparisons, +relaxquals does not permit the long/int break.
+  */
+
+  return cprim_closeEnoughAux (c1, c2, TRUE);
+}
+
 bool
 cprim_closeEnough (cprim c1, cprim c2)
+{
+  return cprim_closeEnoughAux (c1, c2, FALSE);
+}
+
+static bool
+cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 {
   if (c1 == c2) return TRUE;
 
@@ -265,7 +287,7 @@ cprim_closeEnough (cprim c1, cprim c2)
 	    }
 	}
 
-      if (context_getFlag (FLG_RELAXQUALS))
+      if (!deep && context_getFlag (FLG_RELAXQUALS))
 	{
 	  switch (c1)
 	    {

@@ -176,14 +176,14 @@ void cppAddIncludeDir (cstring dir)
 
   dirtmp->next = 0;		/* New one goes on the end */
   dirtmp->control_macro = 0;
-  dirtmp->c_system_include_path = 0;
+  dirtmp->c_system_include_path = FALSE;
   
   /* This copy is necessary...but shouldn't be? */
   /*@-onlytrans@*/
   dirtmp->fname = cstring_copy (dir);
   /*@=onlytrans@*/
   
-  dirtmp->got_name_map = 0;
+  dirtmp->got_name_map = FALSE;
   cppReader_addIncludeChain (&g_cppState, dirtmp);
 }
 

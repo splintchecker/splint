@@ -706,6 +706,11 @@ canonicalizeFlag (cstring s)
 flagcode
 identifyFlag (cstring s)
 {
+  if (cstring_length (s) == 0) {
+    /* evs 2000-06-25: A malformed flag. */
+    return INVALID_FLAG;
+  }
+
   if (cstring_firstChar (s) == 'I')
     {
       return FLG_INCLUDEPATH; /* no space after -I */
@@ -891,6 +896,15 @@ identifyFlag (cstring s)
 	 ("staticmods flag is obsolete.  You probably "
 	  "want impcheckmodstatics.  For more information, "
 	  "see lclint -help impcheckmodstatics"));
+      
+      return SKIP_FLAG;
+    }
+
+  if (cstring_equalLit (s, "bool"))
+    {
+      flagWarning
+	(cstring_makeLiteralTemp ("bool flag is obsolete.  It never really "
+				  "made sense in the first place."));
       
       return SKIP_FLAG;
     }
@@ -1131,7 +1145,7 @@ extern int flagcode_valueIndex (flagcode f)
 	{
 	  return i;
 	}
-          }
+    }
 
   BADEXIT;
 }

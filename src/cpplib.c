@@ -48,6 +48,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  You are forbidden to forbid anyone else to use, share and improve
  what you give them.   Help stamp out software-hoarding!  */
 
+/*
+ * Herbert 06/12/2000:
+ * - OS2 drive specs like WIN32
+ * - Includes for IBMs OS/2 compiler
+ */
+
 # include <ctype.h>
 # include <stdio.h>
 # include <signal.h>
@@ -57,7 +63,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 # include <string.h>
 
-# ifndef WIN32
+# if !(defined (WIN32) || defined (OS2) && defined (__IBMC__))
 # include <unistd.h>
 # endif
 
@@ -65,7 +71,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <sys/stat.h>
 # include <fcntl.h>
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 # include <io.h>
 # include <sys/utime.h>		/* for __DATE__ and __TIME__ */
 # include <time.h>
@@ -330,7 +336,7 @@ static int cppReader_handleDirective (cppReader *p_pfile);
 
 static void cppReader_scanBuffer (cppReader *p_pfile);
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 
 /*
 ** WIN32 (at least the VC++ include files) does not define mode_t.
@@ -1354,7 +1360,7 @@ done_a_directive:
     return 1;
   } else {
     llassert (kt->func != NULL);
-    (void) (*kt->func) (pfile, kt, pfile->token_buffer + after_ident, line_end);
+    (void) (kt->func) (pfile, kt, pfile->token_buffer + after_ident, line_end);
     return 1;
   }
 }
@@ -1662,7 +1668,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
 	      {
 		endpat->next = tpat;
 		/*@-branchstate@*/
-	      } /*:=branchstate@*/
+	      } /*@=branchstate@*/ /* evs 2000 was =branchstate */
 
 	    endpat = tpat;
 
@@ -2188,7 +2194,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       
       hn = cppReader_installMacro (mdef.symnam, mdef.symlen, mdef.defn, hashcode);
       /*@-branchstate@*/
-    } /*:=branchstate@*/
+    } /*@=branchstate@*/
 
   return 0;
 
@@ -2408,7 +2414,7 @@ cppBuffer_lineAndColumn (/*@null@*/ cppBuffer *pbuf, /*@out@*/ int *linep,
     {
       colp = &dummy;
       /*@-branchstate@*/
-    } /*:=branchstate@*/
+    } /*@=branchstate@*/
 
   if (pbuf != NULL)
     {
@@ -2953,7 +2959,8 @@ cppReader_installBuiltinType (/*@observer@*/ char *name, ctype ctyp,
 			      int ivalue,
 			      /*@only@*/ /*@null@*/ char *value, int hash)
 {
-  cstring sname = cstring_fromCharsNew (name);
+  cstring sname = cstring_fromChars (name);
+  /* evs 2000 07 10 - removed a memory leak, detected by lclint */
 
   llassert (usymtab_inGlobalScope ());
 
@@ -2963,10 +2970,6 @@ cppReader_installBuiltinType (/*@observer@*/ char *name, ctype ctyp,
 				       NO, NO,
 				       fileloc_createBuiltin ());
       usymtab_addGlobalEntry (ue);
-    }
-  else
-    {
-      cstring_free (sname);
     }
 
   (void) cppReader_install (name, len, type, ivalue, value, hash);
@@ -3704,7 +3707,6 @@ do_include (cppReader *pfile, struct directive *keyword,
   int angle_brackets = 0;	/* 0 for "...", 1 for <...> */
   f= -1;			/* JF we iz paranoid! */
 
-
   pfile->parsing_include_directive++;
   token = get_directive_token (pfile);
   pfile->parsing_include_directive--;
@@ -3745,6 +3747,7 @@ do_include (cppReader *pfile, struct directive *keyword,
 		     and put it in front of the search list.  */
 		  dsp[0].next = search_start;
 		  search_start = dsp;
+
 #ifndef VMS
 		  ep = strrchr (nam, CONNECTCHAR);
 #else				/* VMS */
@@ -3760,7 +3763,10 @@ do_include (cppReader *pfile, struct directive *keyword,
 		      n = ep - nam;
 		      save = nam[n];
 		      nam[n] = '\0';
-		      dsp[0].fname = cstring_fromChars (nam);
+
+		      /*@-onlytrans@*/ /* This looks like a memory leak... */ 
+		      dsp[0].fname = cstring_fromCharsNew (nam); /* evs 2000-07-20: was fromChars */
+		      /*@=onlytrans@*/
 		      nam[n] = save;
 
 		      if (n + INCLUDE_LEN_FUDGE > pfile->max_include_len)
@@ -3863,6 +3869,8 @@ do_include (cppReader *pfile, struct directive *keyword,
 
   flen = fend - fbeg;
 
+  DPRINTF (("fbeg: %s", fbeg));
+
   if (flen == 0)
     {
       cppReader_error (pfile,
@@ -3883,7 +3891,7 @@ do_include (cppReader *pfile, struct directive *keyword,
   /* If specified file name is absolute, just open it.  */
 
   if (osd_isConnectChar (*fbeg)
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
       || (*(fbeg + 1) == ':')
 # endif
       )
@@ -3921,6 +3929,7 @@ do_include (cppReader *pfile, struct directive *keyword,
 	      
 	      fname = cstring_copy (searchptr->fname);
 	      fname = cstring_appendChar (fname, CONNECTCHAR);
+	      DPRINTF (("Here: %s", fname));
 	    }
 	  else
 	    {
@@ -3928,6 +3937,9 @@ do_include (cppReader *pfile, struct directive *keyword,
 	    }
 	  
 	  fname = cstring_concatLength (fname, fbeg, flen);
+
+	  DPRINTF (("fname: %s", fname));
+	  
 #ifdef VMS
 	  /* Change this 1/2 Unix 1/2 VMS file specification into a
 	     full VMS file specification */
@@ -3953,7 +3965,9 @@ do_include (cppReader *pfile, struct directive *keyword,
 	      cstring_free (fname);
 	      return 0;
 	    }
-	  
+
+	  DPRINTF (("Trying: %s", fname));
+
 	  f = open_include_file (pfile, fname, searchptr);
 	  
 	  if (f == IMPORT_FOUND)
@@ -4048,7 +4062,7 @@ do_include (cppReader *pfile, struct directive *keyword,
 	pfile->system_include_depth--;
       }
     /*@-branchstate@*/
-  } /*:=branchstate@*/
+  } /*@=branchstate@*/ 
 
   return 0;
 }
@@ -4815,7 +4829,9 @@ beg_of_line:
 		  sfree (temp);
 		  /*@switchbreak@*/ break;
 		default: ;
+		  /*@-branchstate@*/ 
 		}
+	      /*@=branchstate@*/
 	      break;
 	    }
 	  
@@ -5771,10 +5787,10 @@ static cstring read_filename_string (int ch, FILE *f)
 	      len *= 2;
 	      alloc = drealloc (alloc, len + 1);
 	      set = alloc + len / 2;
-	    }
+	      /*@-branchstate@*/ }
 
 	  *set++ = ch;
-	}
+	} /*@=branchstate@*/
     }
   *set = '\0';
   check (ungetc (ch, f) != EOF);
@@ -6267,7 +6283,7 @@ static int safe_read (int desc, char *ptr, int len)
 
   while (left > 0)
     {
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 	  /*@-compdef@*/ /* ptr is an out parameter */
       int nchars = _read (desc, ptr, (unsigned) left);
 	  /*@=compdef@*/
@@ -6535,7 +6551,7 @@ void cppReader_initializeReader (cppReader *pfile)
 	      sizeof (include_defaults_array));
 
       sfree (nstore);
-    }
+      /*@-branchstate@*/ } /*@=branchstate@*/
   }
 
   cppReader_appendIncludeChain (pfile, opts->before_system,
@@ -7387,7 +7403,7 @@ static bool cpp_skipIncludeFile (cstring fname)
     {
       fname = cstring_fromChars (removePreDirs (cstring_toCharsSafe (fname)));
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
       cstring_replaceAll (fname, '\\', '/');
 # endif
 

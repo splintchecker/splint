@@ -254,9 +254,13 @@ extern char *yytext;
 
 void lslerror (char *s) 
 {
-  lclplainerror 
-    (message ("An error has occurred in parsing LSL signature: %s", 
-	      cstring_fromChars (s)));
+  llfatalbug 
+    (cstring_makeLiteral 
+     ("There has been a problem parsing an LSL signature. This is believed to "
+      "result from a problem with gcc version 2.95 optimizations, "
+      "but it has not been confirmed.  Please try rebuidling LCLint "
+      "without the -O<n> option."));
+
 }
 
 static void yyprint (FILE *file, int type, YYSTYPE value)

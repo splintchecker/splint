@@ -508,6 +508,8 @@ declareEnumList (enumNameList el, ctype c, fileloc loc)
 	      
 	      boolnames = TRUE;
 	      uentry_setType (ue, ctype_bool);
+	      DPRINTF (("Set type: %s / %s",
+			uentry_unparse (ue), ctype_unparse (ctype_bool)));
 	    }
 	  else 
 	    {
@@ -536,7 +538,7 @@ declareEnumList (enumNameList el, ctype c, fileloc loc)
 		  if (cstring_equal (e, context_getFalseName ())
 		      || cstring_equal (e, context_getTrueName ()))
 		    {
-		      ;
+		      DPRINTF (("Here we are!"));
 		    }
 		  else
 		    {
@@ -1658,6 +1660,7 @@ ctype declareStruct (cstring id, /*@only@*/ uentryList f)
   int num = uentryList_size (f);
 
   ct = ctype_createStruct (cstring_copy (id), f);
+  DPRINTF (("Declare struct: %s [%d]", ctype_unparse (ct), ct));
   ue = uentry_makeStructTagLoc (id, ct);
 
   if (context_maybeSet (FLG_NUMSTRUCTFIELDS))

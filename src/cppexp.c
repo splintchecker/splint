@@ -449,7 +449,7 @@ struct operation cppReader_lex (cppReader *pfile)
       op.op = 0;
       return op;
     case CPP_POP:
-      if (cppReader_getBufferSafe (pfile)->fname != NULL)
+      if (cstring_isDefined (cppReader_getBufferSafe (pfile)->fname))
 	{
 	  op.op = 0;
 	  return op;
@@ -595,7 +595,7 @@ struct operation cppReader_lex (cppReader *pfile)
         }
 
       /* This is always a signed type.  */
-      op.unsignedp = 0;
+      op.unsignedp = FALSE;
       op.op = CPPEXP_CHAR;
     
       return op;
@@ -864,7 +864,7 @@ right_shift (long a, bool unsignedp, unsigned long b)
 
 /*@notfunction@*/
 #define COMPARE(OP) \
-  top->unsignedp = 0;\
+  top->unsignedp = FALSE;\
   top->value = ((unsigned1 || unsigned2) \
                  ? (unsigned long) v1 OP (unsigned long) v2 \
                  : ((long) v1 OP (long) v2)) ? 1 : 0
@@ -913,7 +913,7 @@ cppReader_parseExpression (cppReader *pfile)
       switch (op.op)
 	{
 	case NAME:
-	  top->value = 0, top->unsignedp = 0;
+	  top->value = 0, top->unsignedp = FALSE;
 	  goto set_value;
 	case CPPEXP_INT:
 	case CPPEXP_CHAR:
@@ -1110,7 +1110,7 @@ cppReader_parseExpression (cppReader *pfile)
 		}
 
 	      top->value = (v2 == 0) ? 1 : 0;
-	      top->unsignedp = 0;
+	      top->unsignedp = FALSE;
 	      top->flags |= HAVE_VALUE;
 	      /*@switchbreak@*/ break;
 	    case '~':
@@ -1130,11 +1130,11 @@ cppReader_parseExpression (cppReader *pfile)
 	    case GEQ:  COMPARE(>=); /*@switchbreak@*/ break;
 	    case CPP_EQUALTOK:
 	      top->value = (v1 == v2) ? 1 : 0;
-	      top->unsignedp = 0;
+	      top->unsignedp = FALSE;
 	      /*@switchbreak@*/ break;
 	    case NOTEQUAL:
 	      top->value = (v1 != v2) ? 1 : 0;
-	      top->unsignedp = 0;
+	      top->unsignedp = FALSE;
 	      /*@switchbreak@*/ break;
 	    case LSH:
 	      if (skip_evaluation != 0)
@@ -1170,7 +1170,7 @@ cppReader_parseExpression (cppReader *pfile)
 	    case '|':  LOGICAL(|); /*@switchbreak@*/ break;
 	    case ANDAND:
 	      top->value = ((v1 != 0) && (v2 != 0)) ? 1 : 0;
-	      top->unsignedp = 0;
+	      top->unsignedp = FALSE;
 
 	      if (v1 == 0)
 		{
@@ -1179,7 +1179,7 @@ cppReader_parseExpression (cppReader *pfile)
 	      /*@switchbreak@*/ break;
 	    case OROR:
 	      top->value = ((v1 != 0) || (v2 != 0)) ? 1 : 0;
-	      top->unsignedp = 0;
+	      top->unsignedp = FALSE;
 	      if (v1 != 0)
 		{
 		  skip_evaluation--;

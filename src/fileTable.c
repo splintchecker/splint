@@ -170,7 +170,7 @@ ftentry_create (/*@keep@*/ cstring tn, bool temp, fileType typ, fileId der)
   t->fsystem = FALSE;
   t->fspecial = FALSE;
 
-      return t;
+  return t;
 }
 
 static void
@@ -229,7 +229,6 @@ fileTable_internAddEntry (fileTable ft, /*@only@*/ ftentry e)
   ft->elements[ft->nentries] = e;
 
   ft->nentries++;
-
   return (ft->nentries - 1);
 }
 
@@ -262,7 +261,7 @@ fileTable_addFilePrim (fileTable ft, /*@only@*/ cstring name,
   else
     {
       ftentry e = ftentry_create (name, temp, typ, der);
-      
+
       if (der == fileId_invalid)
 	{
 	  llassert (cstring_isUndefined (e->basename));
@@ -324,7 +323,6 @@ fileTable_addFileOnly (fileTable ft, /*@only@*/ cstring name)
 fileId
 fileTable_addHeaderFile (fileTable ft, cstring name)
 {
-  DPRINTF (("Add header: %s", name));
   return (fileTable_addFilePrim (ft, cstring_copy (name), FALSE, 
 				 FILE_HEADER, fileId_invalid));
 }

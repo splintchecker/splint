@@ -207,7 +207,7 @@ bool uentryList_matchParams (uentryList p1, uentryList p2, bool force, bool arg)
     {
       if (!ctype_genMatch (uentry_getType (p1->elements[i]), 
 			   uentry_getType (p2->elements[i]), 
-			   force, arg, FALSE))
+			   force, arg, FALSE, FALSE))
 	{
 	  return FALSE;
 	}
@@ -778,7 +778,8 @@ uentryList_showFieldDifference (uentryList p1, uentryList p2)
 	}
       else 
 	{
-	  if (!ctype_match (uentry_getType (cp1), uentry_getType (cp2)))
+	  /* evs 2000-07-25 was ctype_match, should match uentryList_matchFields */
+	  if (!ctype_almostEqual (uentry_getType (cp1), uentry_getType (cp2)))
 	    {
 	      llgenindentmsg 
 		(message ("Field %s %rdeclared as %s, %s as %s",

@@ -28,18 +28,19 @@
 # include "lclintMacros.nf"
 # include "basic.h"
 
-# ifdef SANITIZER
-# include "sgrammar.h"
-# include "sgrammar_tokens.h"
-# else
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-# endif
 
 bool
 lltok_isSemi (lltok tok)
 {
   return (tok.tok == TSEMI);
+}
+
+bool
+lltok_isMult (lltok tok)
+{
+  return (tok.tok == TMULT);
 }
 
 cstring

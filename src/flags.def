@@ -3,8 +3,9 @@
 ** flags.def
 **
 ** This file is used to generate the flag header files.
+**
+** Don't forget to regenerate flag_codes.gen. (lost the Makefile...bleech!)
 */
-
 		 	     /* spec   idem   global  mode  args */
 /*@-namechecks@*/
 /*@notfunction@*/
@@ -52,6 +53,7 @@
 */
 
 static flaglist flags = {	
+  /* Deprecated 
 {	
   FK_ABSTRACT, FK_BOOL, plainFlag,
   "bool",
@@ -59,6 +61,7 @@ static flaglist flags = {
   "boolean type is abstract",
   NULL, 0, 0
   },
+  */
 {
   FK_BOOL, FK_HELP, plainFlag,
   "likelybool",
@@ -1358,7 +1361,7 @@ static flaglist flags = {
   FK_IGNORERET, FK_BOOL, modeFlag,
   "retvalbool",
   FLG_RETVALBOOL,
-  "return value of type bool ignored",
+  "return value of manifest type bool ignored",
   "Result returned by function call is not used. If this is intended, "
 	"can cast result to (void) to eliminate message.",
   0, 0
@@ -3295,6 +3298,13 @@ NULL, NULL,
   "zeroptr",
   FLG_ZEROPTR,
   "0 is treated as a pointer",
+  NULL, 0, 0
+  },
+{
+  FK_TYPEEQ, FK_BOOL, modeFlag,
+  "zerobool",
+  FLG_ZEROBOOL,
+  "0 is treated as a boolean",
   NULL, 0, 0
   },
 {

@@ -166,6 +166,7 @@ void checkandsetBufState(idDecl id, exprNode is);
 %token <tok> QSETBUFFERSIZE
 %token <tok> QSETSTRINGLENGTH
 
+%token <tok> QTESTINRANGE
 
 /* identifiers, literals */
 %token <entry> IDENTIFIER
@@ -287,19 +288,7 @@ namedDeclBase
    { $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); }
  | namedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    { 
-     int value;
-
-     if (exprNode_hasValue ($4) 
-	 && multiVal_isInt (exprNode_getValue ($4)))
-       {
-	 value = (int) multiVal_forceInt (exprNode_getValue ($4));
-       }
-     else
-       {
-	 value = 0;
-       }
-
-     $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), value));
+     $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), exprNode_getLongValue ($4)));
    }
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); 
@@ -1146,9 +1135,11 @@ abstractDeclBase
  : IsType TLPAREN NotType abstractDecl TRPAREN 
    { $$ = ctype_expectFunction ($4); }
  | TLSQBR TRSQBR { $$ = ctype_makeArray (ctype_unknown); }
- | TLSQBR constantExpr TRSQBR { $$ = ctype_makeArray (ctype_unknown); }
+ | TLSQBR constantExpr TRSQBR 
+   { $$ = ctype_makeFixedArray (ctype_unknown, exprNode_getLongValue ($2)); }
  | abstractDeclBase TLSQBR TRSQBR { $$ = ctype_makeArray ($1); }
- | abstractDeclBase TLSQBR constantExpr TRSQBR { $$ = ctype_makeArray ($1); }
+ | abstractDeclBase TLSQBR constantExpr TRSQBR 
+   { $$ = ctype_makeFixedArray ($1, exprNode_getLongValue ($3)); }
  | IsType TLPAREN TRPAREN 
    { $$ = ctype_makeFunction (ctype_unknown, uentryList_makeMissingParams ()); }
  | IsType TLPAREN paramTypeList TRPAREN 
@@ -1179,7 +1170,8 @@ lclintassertion
   }
  | QSETSTRINGLENGTH id CCONSTANT QENDMACRO { printf(" QSETSTRINGLENGTH id CCONSTANT HEllo World\n");  uentry_setStringLength($2, $3); $$ = exprNode_createTok ($4);
   }
-
+ | QTESTINRANGE id CCONSTANT QENDMACRO {printf(" QTESTINRANGE\n");  uentry_testInRange($2, $3); $$ = exprNode_createTok ($4);
+  }
 
 /* | QSETBUFFERSIZE id id  {$$ = $2; printf(" QSETBUFFERSIZE id id HEllo World\n");} */
 
@@ -1268,8 +1260,8 @@ stmtErr
  | error { $$ = exprNode_makeError (); }
 
 labeledStmt
- : newId TCOLON      { $$ = exprNode_labelMarker ($1); printf("labeldStmt: newid TCOLON");}
- | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); printf("labeldStmt: QNOTREACHED stmt");}
+ : newId TCOLON      { $$ = exprNode_labelMarker ($1); }
+ | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); }
 
 /* Note that we can semantically check that the object to the case is
  indeed constant. In this case, we may not want to go through this effort */
@@ -1349,8 +1341,8 @@ initializerList
  | initializerList initializer { $$ = exprNode_concat ($1, $2); }
 
 stmtList
- : stmt { $$ = $1; printf("stmt\n"); }
- | stmtList stmt { $$ = exprNode_concat ($1, $2); printf("StmTList stmt\n"); }
+ : stmt { $$ = $1; }
+ | stmtList stmt { $$ = exprNode_concat ($1, $2); }
  
 expressionStmt 
  : TSEMI { $$ = exprNode_createTok ($1); }

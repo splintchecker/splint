@@ -126,6 +126,10 @@ ctype_getCtentry (ctype c)
     llcontbuglit ("ctype_getCtentry: ctype invalid (ctype_undefined)");
   else if (c == CTK_DNE)
     llcontbuglit ("ctype_getCtentry: ctype dne");
+  else if (c == CTK_ELIPS) 
+    llcontbuglit ("ctype_getCtentry: ctype elipsis");
+  else if (c == CTK_MISSINGPARAMS) 
+    llcontbuglit ("ctype_getCtentry: ctype missing params");
   else
     llbug (message ("ctype_getCtentry: ctype out of range: %d", c));
 
@@ -176,6 +180,8 @@ ctentry_isInteresting (ctentry c)
 static /*@only@*/ cstring
 ctentry_dump (ctentry c)
 {
+  DPRINTF (("Dumping: %s", ctentry_unparse (c)));
+
   if (c->ptr == ctype_dne
       && c->array == ctype_dne
       && c->base == ctype_dne)
@@ -411,7 +417,7 @@ cttable_dump (FILE *fout)
       fprintf (stderr, " >\n< Continuing dump ");
     }
   
-  }
+}
 
 /*
 ** load cttable from init file
@@ -587,13 +593,14 @@ cttable_addComplex (/*@only@*/ /*@notnull@*/ ctbase cnew)
 	{
 	  ctbase ctb;
 	  
-	  
 	  ctb = ctype_getCtbase (i);
 
 	  if (ctbase_isDefined (ctb) && ctbase_equivStrict (cnew, ctb))
 	    {
+	      DPRINTF (("EQUIV!! %s / %s",
+			ctbase_unparse (cnew),
+			ctbase_unparse (ctb)));
 	      ctbase_free (cnew);
-
 	      return i;
 	    }
 	}

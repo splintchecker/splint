@@ -1141,7 +1141,7 @@ uentry_fixupSref (uentry ue)
 void uentry_setSpecialClauses (uentry ue, specialClauses clauses)
 {
   llassert (uentry_isFunction (ue));
-  llassert (ue->info->fcn->specclauses == NULL);
+  llassert (!specialClauses_isDefined (ue->info->fcn->specclauses));
 
   ue->info->fcn->specclauses = clauses;
   specialClauses_checkAll (ue);
@@ -2499,16 +2499,24 @@ uentry_isSpecialFunction (uentry ue)
   while (ctype_isFixedArray (base)) {
     base = ctype_baseArrayPtr (base);
   }
-
+  
   if (ctype_isIncompleteArray (base)) {
     base = ctype_baseArrayPtr (base);
 
     if (ctype_isArray (base)) {
-      (void) optgenerror (FLG_INCOMPLETETYPE, 
-			  message ("Function parameter %q is incomplete type (inner array must have bounds): %s",
-				   uentry_getName (ue),
-				   ctype_unparse (ct)),
-			  uentry_whereLast (ue));
+      if (!uentry_hasName (ue)) {
+	(void) optgenerror (FLG_INCOMPLETETYPE, 
+			    message ("Unnamed function parameter %d is incomplete type (inner array must have bounds): %s",
+				     i + 1,
+				     ctype_unparse (ct)),
+			    uentry_whereLast (ue));
+      } else {
+	(void) optgenerror (FLG_INCOMPLETETYPE, 
+			    message ("Function parameter %q is incomplete type (inner array must have bounds): %s",
+				     uentry_getName (ue),
+				     ctype_unparse (ct)),
+			    uentry_whereLast (ue));
+      }
     }
   }
 
@@ -3052,6 +3060,9 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 {
   uentry e = uentry_alloc ();
 
+  DPRINTF (("Make datatype: %s / %s",
+	    n, ctype_unparse (t)));
+
   /* e->shallowCopy = FALSE; */
   e->ukind = KDATATYPE;
   e->uname = cstring_copy (n);
@@ -3227,6 +3238,8 @@ static /*@only@*/ /*@notnull@*/ uentry
       uentry_setDefined (e, fl);
     }
 
+  DPRINTF (("Make tag: %s / %s [%d]", uentry_unparseFull (e),
+	    ctype_unparse (t), t));
   return (e);  
 }
 
@@ -3744,7 +3757,7 @@ bool uentry_hasGlobs (uentry ue)
 
 bool uentry_hasSpecialClauses (uentry ue)
 {
-  return (uentry_isFunction (ue) && (ue->info->fcn->specclauses != NULL));
+  return (uentry_isFunction (ue) && specialClauses_isDefined (ue->info->fcn->specclauses));
 }
 
 specialClauses uentry_getSpecialClauses (uentry ue)
@@ -4281,6 +4294,8 @@ uentry_dumpAux (uentry v, bool isParam)
 {
   llassert (uentry_isValid (v));
 
+  DPRINTF (("Dumping entry: %s", uentry_unparseFull (v)));
+
   switch (v->ukind)
     {
     case KINVALID: 
@@ -4297,6 +4312,8 @@ uentry_dumpAux (uentry v, bool isParam)
 	alkind alk = sRef_getAliasKind (v->sref);
 	exkind exk = sRef_getExKind (v->sref);
 	chkind chk = v->info->var->checked;
+
+	DPRINTF (("Dumping var"));
 
 	if (dss == SS_UNKNOWN
 	    && nst == NS_UNKNOWN
@@ -5521,12 +5538,20 @@ uentry_getAbstractType (uentry e)
       return ctype_unknown;
     }
 
+  /*
+  ** Sadly, a kludge...
+  */
+
+  if (ctype_isUserBool (e->info->datatype->type)) {
+    return ctype_bool;
+  }
+
   return e->info->datatype->type;
 }
 
 ctype uentry_getRealType (uentry e)
 {
-  ctype   ct;
+  ctype ct;
   typeId uid = USYMIDINVALID;
 
   if (uentry_isInvalid (e))
@@ -5544,6 +5569,11 @@ ctype uentry_getRealType (uentry e)
   if (uentry_isAbstractType (e))
     {
       ct = uentry_getAbstractType (e);      
+
+      if (ctype_isManifestBool (ct)) {
+	return ct;
+      }
+
       llassert (ctype_isUA (ct));
       
       uid = ctype_typeId (ct);
@@ -5556,7 +5586,11 @@ ctype uentry_getRealType (uentry e)
 
   ct = uentry_getType (e);
 
-  if (ctype_isUserBool (ct)) return ct;
+  /* if (ctype_isUserBool (ct)) return ct; */
+
+  if (ctype_isManifestBool (ct)) {
+    return ctype_bool;
+  }
   
   if (ctype_isUA (ct))
     {
@@ -5570,7 +5604,11 @@ ctype uentry_getRealType (uentry e)
 	}
       else
 	{
-	  return uentry_getRealType (usymtab_getTypeEntry (iid));
+	  /* evs 2000-07-25: possible infinite recursion ? */
+	  uentry ue2 = usymtab_getTypeEntry (iid);
+	  llassertprint (ue2 != e, ("Bad recursion: %s", uentry_unparseFull (e)));
+
+	  return uentry_getRealType (ue2);
 	}
     }
   else
@@ -5606,8 +5644,13 @@ ctype uentry_getForceRealType (uentry e)
     }
   
   ct = uentry_getType (e);
-  
-  if (ctype_isUserBool (ct)) return ct;
+
+  /* evs 2000-07-25 */
+  /* if (ctype_isUserBool (ct)) return ct; */
+
+  if (ctype_isManifestBool (ct)) {
+    return ctype_bool;
+  }
   
   if (ctype_isUA (ct))
     {
@@ -7484,9 +7527,9 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   checkGlobalsConformance (old, unew, mustConform, completeConform);
   checkModifiesConformance (old, unew, mustConform, completeConform);
 
-  if (unew->info->fcn->specclauses != NULL)
+  if (specialClauses_isDefined (unew->info->fcn->specclauses))
     {
-      if (old->info->fcn->specclauses == NULL)
+      if (!specialClauses_isDefined (old->info->fcn->specclauses))
 	{
 	  if (optgenerror
 	      (FLG_INCONDEFS,
@@ -7642,6 +7685,7 @@ bool checkTypeConformance (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 		}
 	      else
 		{
+		  DPRINTF (("YABA!"));
 		  if (optgenerror 
 		      (FLG_INCONDEFS,
 		       message ("%s %q %rdeclared with inconsistent type: %t",
@@ -7673,13 +7717,18 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
 {
   if (ctype_isDefined (unew->info->datatype->type))
     {
+      /*
+      ** bool is hard coded here, since it is built into LCL.
+      ** For now, we're stuck with LCL's types.
+      */
+
       if (ctype_isDirectBool (old->utype) &&
 	  cstring_equalLit (unew->uname, "bool"))
 	{
-	  if (!context_getFlag (FLG_ABSTRACTBOOL))
-	    {
+	  /* if (!context_getFlag (FLG_ABSTRACTBOOL))
+	     evs 2000-07-25: removed
+	  */
 	      unew->utype = ctype_bool;
-	    }
 	}
       
       if (ctype_isUnknown (old->info->datatype->type))
@@ -7688,8 +7737,15 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
 	}
       else
 	{
+	  DPRINTF (("Old: %s / New: %s",
+		    uentry_unparseFull (old),
+		    uentry_unparseFull (unew)));
+	  DPRINTF (("Types: %s / %s",
+		    ctype_unparse (old->info->datatype->type),
+		    ctype_unparse (unew->info->datatype->type)));
+
 	  if (ctype_matchDef (old->info->datatype->type,
-			   unew->info->datatype->type))
+			      unew->info->datatype->type))
 	    {
 	      ;
 	    }
@@ -8060,6 +8116,10 @@ uentry_checkConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 
   if (uentry_isDatatype (old) && uentry_isDatatype (unew))
     {
+      DPRINTF (("Check datatype: %s / %s",
+		uentry_unparseFull (old),
+		uentry_unparseFull (unew)));
+
       uentry_checkDatatypeConformance (old, unew, mustConform, completeConform);
     }
 
@@ -9463,6 +9523,15 @@ void uentry_checkName (uentry ue)
 }
 
 /* new start modifications */
+
+void uentry_testInRange (uentry p_e, uentry cconstant)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->sref != NULL) {
+      	int index = atoi(exprNode_unparse(cconstant) );
+	 usymtab_testInRange (p_e->sref, index);
+    }//end if
+  }//endif
+}
 
 void uentry_setStringLength (uentry p_e, uentry cconstant)  {
 if( uentry_isValid(p_e) ) {

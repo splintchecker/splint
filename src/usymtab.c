@@ -325,21 +325,12 @@ usymtab_initBool ()
   if (context_getFlag (FLG_NOLIB))
     {
       ctype boolt = ctype_bool;
+      /* evs 2000-07-24: bool is now treated as abstract (always) */
 
-      if (context_getFlag (FLG_ABSTRACTBOOL))
-	{
-	  uentry boolentry = uentry_makeBoolDatatype (YES);
-	  
-	  usymtab_supGlobalEntry (boolentry);
-	  context_addBoolAccess ();
-	}
-      else
-	{
-	  uentry boolentry = uentry_makeBoolDatatype (NO);
-	  
-	  usymtab_supGlobalEntry (boolentry);
-	}
-      
+      uentry boolentry = uentry_makeBoolDatatype (YES);
+      usymtab_supGlobalEntry (boolentry);
+      context_addBoolAccess ();
+
       /*
       ** We supply values 0 and 1 for the constants, so things like
       ** while (TRUE) can be interpreted correctly.
@@ -623,8 +614,6 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
   cstring ename = uentry_rawName (e);
   bool staticEntry = FALSE;
   int eindex;
-
-  DPRINTF (("Sup entry aux: %s", uentry_unparseFull (e)));
 
   /* static tags in global scope */
   if (st->lexlevel == fileScope 
@@ -1058,16 +1047,16 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
   /*@modifies globtab@*/
 {
   usymId uid;
-
+  
   if (uentry_isAbstractDatatype (e))
     {
-            uid = usymtab_supAbstractTypeEntry (e, FALSE);
+      uid = usymtab_supAbstractTypeEntry (e, FALSE);
     }
   else
     {
-            uid = usymtab_supEntryAux (globtab, e, FALSE);
+      uid = usymtab_supEntryAux (globtab, e, FALSE);
     }
-
+  
   if (sRef_modInFunction ())
     {
       recordFunctionType (globtab->entries[uid]);
@@ -1082,13 +1071,11 @@ usymtab_supAbstractTypeEntry (/*@only@*/ uentry e, bool dodef)
   /*@modifies globtab, e@*/
 {
   usymId uid;
-
   uid = usymtab_supEntryAux (globtab, e, FALSE);
 
   if (dodef)
     {
       uentry ue = usymtab_getTypeEntry (uid);
-
       uentry_setDatatype (ue, uid);
     }
 
@@ -1258,7 +1245,10 @@ usymtab_getTypeId (cstring k) /*@globals globtab@*/
   usymId uid = usymtab_getIndex (globtab, k);
 
   if (uid == NOT_FOUND) return USYMIDINVALID;
-  if (!(uentry_isDatatype (usymtab_getTypeEntry (uid)))) return USYMIDINVALID;
+
+  if (!(uentry_isDatatype (usymtab_getTypeEntry (uid)))) {
+    return USYMIDINVALID;
+  }
 
   return uid;
 }
@@ -3537,59 +3527,56 @@ void usymtab_checkFinalScope (bool isReturn)
 
 	  specialClauses_elements (clauses, cl)
 	    {
-	      sRefTest tst = specialClause_getPostTestFunction (cl);
-	      sRefSet rfs = specialClause_getRefs (cl);
-
-	      
-	      sRefSet_elements (rfs, el)
-		{
-		  sRef base = sRef_getRootBase (el);
-
-		  if (sRef_isResult (base))
+	      if (specialClause_isAfter (cl)) 
+		{ /* evs - 2000 07 10 - added this */
+		  sRefTest tst = specialClause_getPostTestFunction (cl);
+		  sRefSet rfs = specialClause_getRefs (cl);
+		  
+		  sRefSet_elements (rfs, el)
 		    {
-		      ; 
-		    }
-		  else if (sRef_isParam (base))
-		    {
-		      sRef sr = sRef_updateSref (base);
-
-		      sr = sRef_fixBase (el, sr);
-
+		      sRef base = sRef_getRootBase (el);
 		      
-		      if (tst != NULL && !tst (sr))
+		      if (sRef_isResult (base))
 			{
-			  if (optgenerror 
-			      (specialClause_postErrorCode (cl),
-			       message ("%s storage %qcorresponds to "
-					"storage listed in %q clause",
-					specialClause_postErrorString (cl, sr),
-					sRef_unparseOpt (sr),
-					specialClause_unparseKind (cl)),
-			       g_currentloc))
-			    {
-			      sRefShower ss = specialClause_getPostTestShower (cl);
-
-			      if (ss != NULL)
-				{
-				  ss (sr);
-				}
-			    }
-			  
-			  			}
-		    }
-		  else
-		    {
-		      if (sRef_isMeaningful (el))
-			{
-			  BADBRANCH;
+			  ; 
 			}
-		    }
-		} end_sRefSet_elements ;
-
+		      else if (sRef_isParam (base))
+			{
+			  sRef sr = sRef_updateSref (base);
+			  sr = sRef_fixBase (el, sr);
+			  
+			  if (tst != NULL && !tst (sr))
+			    {
+			      if (optgenerror 
+				  (specialClause_postErrorCode (cl),
+				   message ("%s storage %qcorresponds to "
+					    "storage listed in %q clause",
+					    specialClause_postErrorString (cl, sr),
+					    sRef_unparseOpt (sr),
+					    specialClause_unparseKind (cl)),
+				   g_currentloc))
+				{
+				  sRefShower ss = specialClause_getPostTestShower (cl);
+				  
+				  if (ss != NULL)
+				    {
+				      ss (sr);
+				    }
+				}  
+			    }
+			}
+		      else
+			{
+			  if (sRef_isMeaningful (el))
+			    {
+			      BADBRANCH;
+			    }
+			}
+		    } end_sRefSet_elements ;
+		}
 	    } end_specialClauses_elements ;
 	}
-
-
+      
       /*
       ** check parameters on return
       */
@@ -3715,9 +3702,29 @@ void usymtab_exitScope (exprNode expr)
 	}
     }
   
-  llassertprint (utab->kind != US_TBRANCH && utab->kind != US_FBRANCH
-		 && utab->kind != US_CBRANCH && utab->kind != US_SWITCH,
-		 ("exitScope: in branch: %s", usymtab_unparseStack()));
+  if (utab->kind == US_TBRANCH || utab->kind == US_FBRANCH
+      || utab->kind == US_CBRANCH || utab->kind == US_SWITCH) {
+   
+    if (context_inMacro ()) {
+      /* evs 2000-07-25 */
+      /* Unparseable macro may end inside nested scope.  Deal with it. */
+      
+      llerror (FLG_SYNTAX, message ("Problem parsing macro body of %s (unbalanced scopes).  Attempting to recover, recommend /*@notfunction@*/ before macro definition.", 
+				    context_inFunctionName ()));
+      
+      while (utab->kind == US_TBRANCH
+	     || utab->kind == US_FBRANCH
+	     || utab->kind == US_CBRANCH
+	     || utab->kind == US_SWITCH) 
+	{
+	  utab = utab->env;
+	  llassert (utab != GLOBAL_ENV);
+	}
+    } else {
+      llcontbug (("exitScope: in branch: %s", usymtab_unparseStack ()));
+      /*@-branchstate@*/ 
+    } /*@=branchstate@*/
+  }
 
   /*
   ** check all variables in scope were used
@@ -4903,6 +4910,21 @@ usymtab_typeName (/*@notnull@*/ usymtab t)
   BADEXIT;
 }
 
+void usymtab_testInRange (sRef s, int index)
+{
+  environmentTable_testInRange (utab->environment, s, index);
+}
+void usymtab_postopVar (sRef sr)
+{
+  environmentTable_postOpvar (utab->environment, sr);
+  
+}
+/* doesn't do much check here assumes checking is done before call*/
+void usymtab_addExactValue(sRef s1, int val)
+{
+  utab->environment = environmentTable_addExactValue (utab->environment, s1, val);
+}
+  
 void usymtab_addMustAlias (sRef s, sRef al)
   /*@modifies utab@*/
 {

@@ -469,6 +469,14 @@ static bool
   ctype ut1 = t1;
   ctype ut2 = t2;
 
+  DPRINTF (("Type error: %s / %s : %s / %s",
+	    exprNode_unparse (e1), exprNode_unparse (e2),
+	    ctype_unparse (t1), ctype_unparse (t2)));
+  
+  DPRINTF (("Bool: %s / %s",
+	    bool_unparse (ctype_isBool (t1)),
+	    bool_unparse (ctype_isBool (t2))));
+
   /* 
   ** Set the flag using the underlying types that didn't match.
   */
@@ -493,8 +501,9 @@ static bool
     {
       hcode = FLG_NUMLITERAL;
     }
-  else if ((ctype_isDirectBool (ut1) && ctype_isInt (ut2))
-	   || (ctype_isInt (ut1) && ctype_isDirectBool (ut2)))
+  else if ((ctype_isManifestBool (ut1) && ctype_isInt (ut2))
+	   || (ctype_isInt (ut1) && ctype_isManifestBool (ut2)))
+    /* evs 2000-07-24: was ctype_isDirectBool */
     {
       hcode = FLG_BOOLINT;
     }
@@ -1539,7 +1548,6 @@ bool llnoptgenerror (flagcode o, /*@only@*/ cstring s, fileloc loc)
   flagcode_recordSuppressed (o);
   return FALSE;
 }
-
 
 void llparseerror (cstring s)
 {

@@ -62,13 +62,8 @@ ULSuffix                ({U}{L}|{L}{U})
 # include "lclintMacros.nf"
 # include "basic.h"
 
-# ifdef SANITIZER
-# include "sgrammar.h"
-# include "sgrammar_tokens.h"
-# else
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-# endif
 
 # include "fileIdList.h"
 # include "portab.h"
@@ -569,6 +564,7 @@ struct skeyword s_parsetable[] = {
   { "post", QPOSTCLAUSE } ,
   {"setBufferSize", QSETBUFFERSIZE},
   {"setStringLength", QSETSTRINGLENGTH},
+  {"testinRange", QTESTINRANGE},
   { NULL, BADTOK }
 } ;
 
@@ -613,6 +609,7 @@ struct skeyword s_keytable[] = {
   { "relnull", QRELNULL } ,
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
+  { "testInRange", QTESTINRANGE},
   { "reldef", QRELDEF } ,
   { "observer", QOBSERVER } ,
   { "exits", QEXITS } ,
@@ -1951,7 +1948,7 @@ static int handleLlSpecial ()
 	    {
 	      cstring flagname = thisflag;
 	      flagcode fflag = identifyFlag (flagname);
-
+		
 	      if (flagcode_isSkip (fflag))
 		{
 		  ;
@@ -1994,7 +1991,7 @@ static int handleLlSpecial ()
 	      else
 		{
 		  context_fileSetFlag (fflag, set);
-
+		  
 		  if (flagcode_hasArgument (fflag))
 		    {
 		      if (ynm_isMaybe (set))
@@ -2034,7 +2031,7 @@ static int handleLlSpecial ()
 			    }
 			  
 			  sfree (orest);
-
+			  
 			  if (cstring_isUndefined (extra))
 			    {
 			      llerror 
@@ -2066,7 +2063,8 @@ static int handleLlSpecial ()
 	    }
 	  else
 	    {
-	      	    }
+	      ;
+	    }
 
 	  *s = c;
 	  while ((c == ' ') || (c == '\t') || (c == '\n'))
@@ -2233,8 +2231,7 @@ static int handleLlSpecial ()
 		  if (usymtab_existsType (tname))
 		    {
 		      usymId uid = usymtab_getTypeId (tname);
-
-		      		      context_addFileAccessType (uid);
+		      context_addFileAccessType (uid);
 		    }
 		  else
 		    {
@@ -2786,6 +2783,22 @@ long processHex ()
       tval = (int) c - (int) 'A' + 10;
     } else if (c >= 'a' && c <= 'f') {
       tval = (int) c - (int) 'a' + 10;
+    } else if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
+      index++;
+      while (yytext[index] != '\0') {
+	if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
+	  ;
+	} else {
+	  voptgenerror
+	    (FLG_SYNTAX, 
+	     message ("Invalid character (%c) following specifier in hex constant: %s",
+		      c, cstring_fromChars (yytext)),
+	     g_currentloc);
+	}
+	index++;
+      }
+
+      break;
     } else {
       voptgenerror
 	(FLG_SYNTAX, 

@@ -25,6 +25,12 @@
 ** cstring.c
 */
 
+/*
+ * Herbert 06/12/2000
+ * - use drive spec specials with OS2 like with WIN32
+ * - cstring_replaceAll () needed in cpplib.c
+ */
+
 # include "lclintMacros.nf"
 # include "basic.h"
 # include "osd.h"
@@ -182,7 +188,7 @@ bool cstring_containsChar (cstring c, char ch)
 ** Replaces all occurances of old in s with new.
 */
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
 void cstring_replaceAll (cstring s, char old, char snew)
 {
   
@@ -443,7 +449,7 @@ bool cstring_equalCanonicalPrefix (cstring c1, char *c2)
       return (strlen (c2) == 0);
     }
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
   /*
   ** If one has a drive specification, but the other doesn't, skip it.
   */
@@ -940,3 +946,5 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   return cstring_undefined;
 }
     
+
+
