@@ -822,6 +822,8 @@ int main (int argc, char *argv[])
   **  will be <tmpprefix>.<file>.c)
   */
 
+  /* Why was this here?  It is always a bug... */
+# if 0
   {
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
     int nfiles = /*@-unrecog@*/ _fcloseall (); /*@=unrecog@*/
@@ -832,6 +834,7 @@ int main (int argc, char *argv[])
       }
 # endif
   }
+# endif
 
   DPRINTF (("Initializing..."));
 
