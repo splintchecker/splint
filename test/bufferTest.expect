@@ -1,3 +1,20 @@
-gmake[2]: Entering directory `/a/apollo/af9/drl7x/re/LCLintDev/test'
-gmake[2]: `bufferTest' is up to date.
-gmake[2]: Leaving directory `/a/apollo/af9/drl7x/re/LCLintDev/test'
+
+test4.c: (in function t)
+test4.c:6:3: Variable g used before definition
+test4.c:15:2: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((g @ test4.c:6:3 ) )  >=  (
+    100 )  needed to satisy Requires: : MAXSET ((g @ test4.c:6:3 ) )  >=  ( 100
+    ) 
+test6.c:2:6: Function t defined more than once
+   test4.c:15:1: Previous definition of t
+test6.c: (in function t)
+test6.c:5:4: Variable g used before definition
+test6.c:7:2: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((g @ test6.c:5:4 ) )  >=  (
+    1 )  needed to satisy Requires: : MAXSET ((g @ test6.c:6:3 ) )  >=  ( 0 ) 
+test6.c:7:2: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXREAD ((g @ test6.c:5:4 ) )  >= 
+    ( 2 )  needed to satisy Requires: : MAXREAD ((g @ test6.c:6:10 ) )  >=  ( 1
+    ) 
+
+Finished LCLint checking --- 6 code errors found
