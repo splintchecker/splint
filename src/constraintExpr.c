@@ -481,12 +481,13 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 	 ret = constraintExpr_parseMakeBinaryOp (ce1, tok, ce2);	 
        }
 
-     
-     /*@i333*/
-     /* uncomment this block to activate the cheesy heuristic
-	for handling sizeof expressions
+
+        /* define this block to activate the cheesy heuristic
+	for handling sizeof expressions*/
+#if 0     
+
 	
-     / *
+     /*
        drl 8-11-001
        
        We handle expressions containing sizeof with the rule
@@ -494,7 +495,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 
        This is the total wronge way to do this but...
        it may be better than nothing
-     * /
+     */
 
      
       
@@ -513,7 +514,8 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 	   ret =  oldconstraintExpr_makeTermExprNode (e);
 	   }
        }
-     */
+#endif
+     
      else
         ret = oldconstraintExpr_makeTermExprNode (e);
    
@@ -553,7 +555,6 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    case XPR_COMMA:
      t = exprData_getPairA(data);
      ret = constraintExpr_makeExprNode(t);
-     /*@i3434*/ /* drl: I'm not sure if this is right.  I'm adding a break to quiet Splint */
      break;
    default:
      ret = oldconstraintExpr_makeTermExprNode (e);
@@ -1480,10 +1481,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
   DPRINTF ((message ("Doing constraintExpr_simplify:%s", constraintExpr_unparse (c) ) ) );  
   
 
-  /*@i22*/
   
-  /* drl: I think this is an Splint bug */
-
   llassert ( constraintExpr_isDefined (c) );
   if (constraintExpr_isUndefined (c) )
     {
@@ -2538,7 +2536,7 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 		}
 	      if (ctype_match (ctype_makePointer(ct2),ct) )
 		{
-		  /* sloopy way to do this... */ /*@i22*/
+		  /*a bit of a sloopy way to do this but... */
 		  		  constraintExpr_free(e);
 		  return constraintExpr_makeExprNode(t1);
 		}
@@ -2556,7 +2554,6 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 
 static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, ctype ct)
 {
-  /*@i333*/
   DPRINTF(( (message("simpleDiv got %s ", constraintExpr_unparse(e) ) )
 	    ));
 
