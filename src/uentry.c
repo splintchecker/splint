@@ -1057,14 +1057,18 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 
 	  if (uentry_hasGlobs (ue))
 	    {
-	      voptgenerror 
+	      vgenhinterror 
 		(FLG_SYNTAX,
 		 message
 		 ("Multiple globals clauses for %q: %q",
 		  uentry_getName (ue),
 		  globalsClause_unparse (glc)),
+		 cstring_makeLiteral ("Only one globals clause may be used. The second globals clause is ignored."),
 		 globalsClause_getLoc (glc));
-	      uentry_setGlobals (ue, globalsClause_takeGlobs (glc)); /*@i32@*/
+
+	      /*		
+		uentry_setGlobals (ue, globalsClause_takeGlobs (glc)); 
+	      */
 	    }
 	  else
 	    {

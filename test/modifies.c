@@ -4,7 +4,8 @@ static int mstat;
 static /*@unused@*/ int internalState;
 
 int f3 (int p[]) 
-   /*@modifies internalState, fileSystem;@*/ ; /* 1. Modifies list uses ... */
+   /*@modifies 
+     internalState, fileSystem;@*/ ; /* 1. Modifies list uses ... */
 
 int f4 (int p[]) 
    /*@modifies p[3];@*/;

@@ -167,8 +167,8 @@ globSet_undump (char **s)
 /*@only@*/ cstring
 globSet_unparse (globSet ll)
 {
-  return (sRefSet_unparseFull (ll));
-  /* return (sRefSet_unparsePlain (ll)); */
+  /* return (sRefSet_unparseFull (ll)); */
+  return (sRefSet_unparsePlain (ll)); 
 }
 
 int 

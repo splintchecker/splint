@@ -1,5 +1,5 @@
 /*
-** satndard.h --- ISO C99 Standard Library for Splint.
+** standard.h --- ISO C99 Standard Library for Splint.
 **
 ** Process with -DSTRICT to get strict library.
 */
@@ -196,41 +196,167 @@ struct lconv *localeconv (void) /*@*/ ;
 
 /*
 ** math.h
+**
+** evans 2002-07-03: updated from ISO C99 (http://www.vmunix.com/~gabor/c/draft.html)
 */
+
+typedef float float_t;
+typedef double double_t;
 
 /*@constant double HUGE_VAL; @*/
+/*@constant float HUGE_VALF; @*/
+/*@constant long double HUGE_VALL; @*/
+
+/*@constant float INFINITY; @*/
+
+/*@constant float NAN; @*/
+  /*:warn implementationoptional "NAN is defined if and only if the implementation supports quiet float type NaNs.":*/ ;
+
+/*@constant int FP_INFINITE;@*/
+/*@constant int FP_NAN;@*/
+/*@constant int FP_NORMAL;@*/
+/*@constant int FP_SUBNORMAL;@*/
+/*@constant int FP_ZERO;@*/
+
+/*@constant int FP_ILOGB0;@*/
+/*@constant int FP_ILOGBNAN;@*/
+
+/*@constant int DECIMAL_DIG;@*/
+
+/* Defined for specs only - this type is any real type */
+typedef float /*@alt double, long double@*/ s_real_t;
+
+int fpclassify (/*@sef@*/ s_real_t) /*@*/ ;
+int signbit (/*@sef@*/ s_real_t) /*@*/ ;
+int isfinite (/*@sef@*/ s_real_t) /*@*/ ;
+int isnormal (/*@sef@*/ s_real_t) /*@*/ ;
+int isnan (/*@sef@*/ s_real_t) /*@*/ ;
+int isinf (/*@sef@*/ s_real_t) /*@*/ ;
 
 /*
-** math functions that may have a range error modify errno 
+** math functions that may have a range error modify errno (implementation defined).
 */
 
-double sin (double x) /*@*/ ;
-double cos (double x) /*@*/ ;
-double tan (double x) /*@*/ ;
-double asin (double x) /*@modifies errno@*/ ;
 double acos (double x) /*@modifies errno@*/ ;
+double asin (double x) /*@modifies errno@*/ ;
 double atan (double x) /*@*/ ;
 double atan2 (double y, double x) /*@*/ ;
-double sinh (double x) /*@*/ ;
+
+double cos (double x) /*@*/ ;
+double sin (double x) /*@*/ ;
+double tan (double x) /*@*/ ;
+
 double cosh (double x) /*@modifies errno@*/ ;
+double sinh (double x) /*@modifies errno@*/ ;
 double tanh (double x) /*@*/ ;
 
+double acosh (double x) /*@modifies errno@*/ ;
+double asinh (double x) /*@modifies errno@*/ ;
+double atanh (double x) /*@modifies errno@*/ ;
+
 double exp (double x) /*@modifies errno@*/ ;
-double ldexp (double x, int n) /*@modifies errno@*/ ;
 double frexp (double x, /*@out@*/ int *xp) /*@modifies *xp;@*/ ;
+double ldexp (double x, int n) /*@modifies errno@*/ ;
 
 double log (double x) /*@modifies errno@*/ ;
 double log10 (double x) /*@modifies errno@*/ ;
 
+double modf (double x, /*@out@*/ double *ip) /*@modifies *ip;@*/ ;
+
+double exp2 (double x) /*@modifies errno@*/ ;
+double expm1 (double x) /*@modifies errno@*/ ;
+double log1p (double x) /*@modifies errno@*/ ;
+double log2 (double x) /*@modifies errno@*/ ;
+double logb (double x) /*@modifies errno@*/ ;
+
+double scalbn (double x, int n) /*@modifies errno@*/ ;
+double scalbln (double x, long int n) /*@modifies errno@*/ ;
+long double scalblnl(long double x, long int n) /*@modifies errno@*/ ;
+
+int ilogb (double x) /*@modifies errno@*/ ;
+int ilogbf (float x) /*@modifies errno@*/ ;
+int ilogbl (long double x) /*@modifies errno@*/ ;
+
+double fabs (double x) /*@*/ ;
+float fabsf (float x) /*@*/ ;
+long double fabsl (long double x) /*@*/ ;
+
 double pow (double x, double y) /*@modifies errno@*/ ;
+float powf(float x, float y) /*@modifies errno@*/ ;
+long double powl(long double x, long double y) /*@modifies errno@*/ ;
+
 double sqrt (double x) /*@modifies errno@*/ ;
+float sqrtf(float x) /*@modifies errno@*/ ;
+long double sqrtl (long double x) /*@modifies errno@*/ ;
+
+double cbrt (double x) /*@*/ ;
+float cbrtf (float x) /*@*/ ;
+long double cbrtl (long double x) /*@*/ ;
+
+double hypot (double x, double y) /*@modifies errno@*/ ;
+float hypotf (float x, float y) /*@modifies errno@*/ ;
+long double hypotl (long double x, long double y) /*@modifies errno@*/ ;
+
+double erf (double x) /*@*/ ;
+double erfc (double x) /*@*/ ;
+float erff (float x) /*@*/ ;
+long double erfl (long double x) /*@*/ ;
+float erfcf (float x) /*@*/ ;
+long double erfcl (long double x) /*@*/ ;
+
+double gamma (double x) /*@modifies errno@*/ ;
+float gammaf(float x) /*@modifies errno@*/ ;
+long double gammal (long double x) /*@modifies errno@*/ ;
+double lgamma (double x) /*@modifies errno@*/ ;
+float lgammaf (float x)  /*@modifies errno@*/ ;
+long double lgammal (long double x)  /*@modifies errno@*/ ;
 
 double ceil (double x) /*@*/ ;
-double floor (double x) /*@*/ ;
-double fabs (double x) /*@*/ ;
+float ceilf(float x) /*@*/ ;
+long double ceill(long double x) /*@*/ ;
 
-double modf (double x, /*@out@*/ double *ip) /*@modifies *ip;@*/ ;
+double floor (double x) /*@*/ ;
+float floorf (float x) /*@*/ ;
+long double floorl (long double x) /*@*/ ;
+
+double nearbyint (double x) /*@*/ ;
+float nearbyintf (float x) /*@*/ ; 
+long double nearbyintl (long double x) /*@*/ ;
+
+double rint (double x) /*@*/;
+float rintf (float x) /*@*/ ;
+long double rintl (long double x) /*@*/ ;
+long int lrint (double x) /*@modifies errno@*/ ;
+long int lrintf (float x) /*@modifies errno@*/ ;
+long int lrintl (long double x) /*@modifies errno@*/ ;
+long long llrint (double x) /*@modifies errno@*/ ;
+long long llrintf(float x)  /*@modifies errno@*/ ;
+long long llrintl(long double x) /*@modifies errno@*/ ;
+
+double round (double x) /*@*/ ;
+long int lround (double x) /*@modifies errno@*/ ;
+long long llround (double x) /*@modifies errno@*/ ;
+
+double trunc (double x) /*@*/ ; 
 double fmod (double x, double y) /*@*/ ;
+double remainder (double x, double y) /*@*/ ;
+double remquo (double x, double y, /*@out@*/ int *quo) /*@modifies *quo@*/ ;
+double copysign (double x, double y) /*@*/ ;
+double nan (/*@nullterminated@*/ const char *tagp) /*@*/ ;
+double nextafter (double x, double y) /*@*/ ;
+double nextafterx (double x, long double y) /*@*/ ;
+
+double fdim (double x, double y) /*@modifies errno@*/ ;
+double fmax (double x, double y) /*@*/ ;
+double fmin (double x, double y) /*@*/ ;
+double fma (double x, double y, double z) /*@*/ ;
+
+int isgreater (s_real_t x, s_real_t y) /*@*/ ;
+int isgreaterequal (s_real_t x, s_real_t y) /*@*/ ;
+int isless (s_real_t x, s_real_t y) /*@*/ ;
+int islessequal (s_real_t x, s_real_t y) /*@*/ ;
+int islessgreater (s_real_t x, s_real_t y) /*@*/ ;
+int isunordered (s_real_t x, s_real_t y) /*@*/ ;
 
 /*
 ** These functions are optional in iso C.  An implementation does not
@@ -343,11 +469,12 @@ void va_end (va_list va) /*@modifies va;@*/ ;
 typedef /*@abstract@*/ /*@mutable@*/ void *FILE;
 typedef /*@abstract@*/ /*@mutable@*/ void *fpos_t;
 
-/*@constant int _IOFBF; @*/
-/*@constant int _IOLBF; @*/
-/*@constant int _IONBF; @*/
+/*@constant size_t _IOFBF; @*/
+/*@constant size_t _IOLBF; @*/
+/*@constant size_t _IONBF; @*/
 
-/*@constant int BUFSIZ; @*/
+/*@constant size_t BUFSIZ; @*/ /* evans 2002-02-27 change suggested by Walter Briscoe */
+
 /*@constant int EOF; @*/
 
 /*@constant int FOPEN_MAX; @*/
@@ -374,27 +501,34 @@ typedef /*@abstract@*/ /*@mutable@*/ void *fpos_t;
 int remove (char *filename) /*@modifies fileSystem, errno@*/ ;
 int rename (char *old, char *new) /*@modifies fileSystem, errno@*/ ;
 
-/*@null@*/ FILE *tmpfile (void) /*@modifies fileSystem@*/ ;
+/*@dependent@*/ /*@null@*/ FILE *tmpfile (void)
+   /*@modifies fileSystem, errno@*/ ;
+
 /*@observer@*/ char *
   tmpnam (/*@out@*/ /*@null@*/ /*@returned@*/ char *s) 
   /*@modifies *s, internalState@*/ ;
 
-int fclose (FILE *stream) /*@modifies *stream, errno, fileSystem;@*/ ;
+int fclose (FILE *stream) 
+   /*@modifies *stream, errno, fileSystem;@*/ ;
+
 int fflush (/*@null@*/ FILE *stream) 
    /*@modifies *stream, errno, fileSystem;@*/ ;
 
 /*@null@*/ /*@dependent@*/ FILE *fopen (char *filename, char *mode) 
    /*@modifies fileSystem@*/ ;         
 
-/*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
+/*@dependent@*/ /*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
   /*@modifies *stream, fileSystem, errno@*/ ;
 
-  extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
-   /*@modifies fileSystem, *stream, *buf@*/ ;
+void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
+     /*@modifies fileSystem, *stream, *buf@*/ 
+     /*:errorcode != 0*/ ;
+     /*:requires maxSet(buf) >= (BUFSIZ - 1):*/ ;
 
-   extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
-		    int mode, size_t size)
-   /*@modifies fileSystem, *stream, *buf@*/ ;
+int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
+	     int mode, size_t size)
+      /*@modifies fileSystem, *stream, *buf@*/
+     /*@requires maxSet(buf) >= (size - 1) @*/ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
@@ -408,7 +542,7 @@ int /*@alt void@*/ fprintf (FILE *stream, char *format, ...)
 
 /*@scanflike@*/ 
 int fscanf (FILE *stream, char *format, ...)
-   /*@modifies fileSystem, *stream@*/ ;
+   /*@modifies fileSystem, *stream, errno@*/ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
@@ -425,20 +559,29 @@ int /*@alt void@*/ printf (char *format, ...)
 /*@scanflike@*/
 int scanf(char *format, ...)
    /*@globals stdin@*/
-   /*@modifies fileSystem, *stdin@*/ ;
+   /*@modifies fileSystem, *stdin, errno@*/ ;
+   /*drl added errno 09-19-2001 */ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
 int sprintf (/*@out@*/ char *s, char *format, ...) 
+   /*@warn bufferoverflowhigh "Buffer overflow possible with sprintf.  Recommend using snprintf instead"@*/
    /*@modifies *s@*/ ;
 # else
 /*@printflike@*/ 
 int /*@alt void@*/ sprintf (/*@out@*/ char *s, char *format, ...) 
+   /*@warn bufferoverflowhigh "Buffer overflow possible with sprintf.  Recommend using snprintf instead"@*/
    /*@modifies *s@*/ ;
 # endif
 
+/* evans 2002-07-09: snprintf added to standard.h (from unix.h) */
+/*@printflike@*/
+int snprintf (/*@out@*/ char * restrict s, size_t n, const char * restrict format, ...)
+   /*@modifies s@*/
+   /*@requires maxSet(s) >= (n - 1)@*/ ;
+
 /*@scanflike@*/ 
-int sscanf (/*@out@*/ char *s, char *format, ...) /*@*/ ;
+int sscanf (/*@out@*/ char *s, char *format, ...) /*@modifies errno@*/ ;
    /* modifies extra arguments */
 
 int vprintf (const char *format, va_list arg)
@@ -453,7 +596,7 @@ int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
      /*@modifies str@*/ ;
 
 int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
-     /*@requires maxSet(str) >= size@*/
+     /*@requires maxSet(str) >= (size - 1)@*/ /* drl - this was size, size-1 in stdio.h */
      /*@modifies str@*/ ;
 
 int fgetc (FILE *stream) 
@@ -475,9 +618,9 @@ int fputs (char *s, FILE *stream)
 
 /* note use of sef --- stream may be evaluated more than once */
 int getc (/*@sef@*/ FILE *stream)
-  /*@modifies fileSystem, *stream@*/ ;
+  /*@modifies fileSystem, *stream, errno@*/ ;
 
-int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ ;
+int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin, errno@*/ ;
 
 /*@null@*/ char *gets (/*@out@*/ char *s) 
    /*@warn bufferoverflowhigh
@@ -486,29 +629,36 @@ int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ ;
 
 int putc (int /*@alt char@*/ c, /*@sef@*/ FILE *stream)
    /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stream;@*/ ;
+   /*@modifies fileSystem, *stream, errno;@*/ ;
 
 int putchar (int /*@alt char@*/ c)
    /*:errorcode EOF:*/
-   /*@globals stdout@*/ /*@modifies fileSystem, *stdout@*/ ; 
+   /*@globals stdout@*/ 
+   /*@modifies fileSystem, *stdout, errno@*/ ; 
 
 int puts (const char *s)
    /*:errorcode EOF:*/
    /*@globals stdout@*/
-   /*@modifies fileSystem, *stdout@*/ ; 
+   /*@modifies fileSystem, *stdout, errno@*/ ; 
 
 int ungetc (int /*@alt char@*/ c, FILE *stream)
-  /*@modifies fileSystem, *stream, errno@*/ ;
+  /*@modifies fileSystem, *stream@*/ ;
+      /*drl REMOVED errno 09-19-2001*/
 
 size_t 
   fread (/*@out@*/ void *ptr, size_t size, size_t nobj, FILE *stream)
-  /*@modifies fileSystem, *ptr, *stream, errno@*/ ;
+  /*@modifies fileSystem, *ptr, *stream, errno@*/ 
+  /*requires maxSet(ptr) >= (size - 1) @*/
+  /*@ensures maxRead(ptr) == (size - 1) @*/ ;
 
 size_t fwrite (void *ptr, size_t size, size_t nobj, FILE *stream)
-  /*@modifies fileSystem, *stream, errno@*/ ;
+  /*@modifies fileSystem, *stream, errno@*/ 
+  /*@requires maxRead(ptr) >= size @*/ ;
 
 int fgetpos (FILE *stream, /*@out@*/ fpos_t *pos)
-  /*@modifies *pos, errno@*/ ;
+   /*@modifies *pos, errno@*/
+   /*@requires maxSet(pos) >= 0@*/
+   /*@ensures maxRead(pos) >= 0 @*/;
 
 int fseek (FILE *stream, long int offset, int whence)
    /*:errorcode -1:*/
@@ -524,6 +674,7 @@ void rewind (FILE *stream) /*@modifies *stream@*/ ;
 void clearerr (FILE *stream) /*@modifies *stream@*/ ;
 
 int feof (FILE *stream) /*@modifies errno@*/ ;
+
 int ferror (FILE *stream) /*@modifies errno@*/ ;
 
 void perror (/*@null@*/ char *s) 
@@ -880,7 +1031,9 @@ void /*@alt char * @*/
 
 void /*@alt char * @*/
   strncpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2, size_t n) 
-  /*@modifies *s1@*/      /*@requires maxSet(s1) >= ( n - 1 ); @*/ /*@ensures maxRead (s2) >= maxRead(s1) /\ maxRead (s1) <= n; @*/; 
+     /*@modifies *s1@*/ 
+     /*@requires maxSet(s1) >= ( n - 1 ); @*/
+     /*@ensures maxRead (s2) >= maxRead(s1) /\ maxRead (s1) <= n; @*/ ; 
 
 void /*@alt char * @*/
   strcat (/*@unique@*/ /*@returned@*/ char *s1, char *s2) 
@@ -927,7 +1080,7 @@ size_t strcspn (char *s1, char *s2) /*@*/ ;
 size_t strspn (char *s, char *t) /*@*/ ;
 
 /*@null@*/ /*@exposed@*/  char *
-  strstr (/*@returned@*/ /*@unique@*/ char *s, char *t) /*@*/
+  strstr (/*@returned@*/ const char *s, const char *t) /*@*/
        /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 /\ maxRead(result) >= maxRead(t) /\ maxSet(result) >= maxRead(t)@*/ ;
 
 /*@null@*/ /*@exposed@*/ char *
