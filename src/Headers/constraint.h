@@ -136,6 +136,7 @@ extern void exprNode_forLoopHeuristics( /*@dependent@*/ exprNode p_e, /*@depende
 
 int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * p_c1, /*@observer@*/ /*@temp@*/ constraint * p_c2) /*@*/;
 
+bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 /*@=czechfcns*/
 ////drl possible problem : warning take this out
