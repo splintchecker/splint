@@ -373,7 +373,9 @@ namedDeclBase
      
      $$ = idDecl_replaceCtype ($1, ct);
      idDecl_addClauses ($$, $6);
-     context_popLoc (); 
+     context_popLoc ();
+     /*drl 7/25/01 added*/
+     setImplictfcnConstraints();
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } 

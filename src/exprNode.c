@@ -10658,3 +10658,8 @@ exprNode exprNode_createNew(ctype c)
 
   return ret;
 }
+
+bool exprNode_isInitBlock (exprNode e)
+{
+  return (exprNode_isDefined(e) && e->kind == XPR_INITBLOCK);
+}

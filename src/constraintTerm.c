@@ -73,6 +73,51 @@ bool constraintTerm_isIntLiteral (constraintTerm term)
   return FALSE;
 }
 
+
+bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
+{
+  llassert (c != NULL);
+  if (c->kind == EXPRNODE)
+    {
+      
+      if (exprNode_isInitBlock(c->value.expr) )
+	{
+	  return TRUE;
+	}
+    }
+  return FALSE;
+}
+
+
+int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
+{
+
+  exprNodeList  list;
+  int ret;
+  llassert (c != NULL);
+  llassert (constraintTerm_isInitBlock (c) );
+  llassert (c->kind == EXPRNODE);
+
+  llassert(exprNode_isDefined(c->value.expr) );
+
+  if (exprNode_isUndefined(c->value.expr) )
+    {
+      return 1;
+    }
+
+  if (c->value.expr->edata == exprData_undefined)
+    {
+      return 1;
+    }
+  list = exprData_getArgs(c->value.expr->edata);
+
+  ret = exprNodeList_size(list);
+
+  return ret;  
+}
+
+
+
 bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/
 {
   llassert (c != NULL);
@@ -85,6 +130,8 @@ bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/
     }
   return FALSE;
 }
+
+
 
 cstring constraintTerm_getStringLiteral (constraintTerm c)
 {
@@ -347,7 +394,7 @@ long constraintTerm_getValue (constraintTerm term)
       BADBRANCH;
     }
 
-  BADBRANCH;
+  BADEXIT;
 }
 
 /* same and similar are similar but not the same*/

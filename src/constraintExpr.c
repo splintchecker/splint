@@ -1173,7 +1173,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
   
   llassert (c->kind == unaryExpr);
 
-  DPRINTF ( (message ("Doing constraintExpr_simplifyunaryExpr:%s", constraintExpr_unparse (c) ) ) );
+  DPRINTF ((message ("Doing constraintExpr_simplifyunaryExpr:%s", constraintExpr_unparse (c) ) ) );
   
   if ( (constraintExprData_unaryExprGetOp (c->data) != MAXSET) &&
        (constraintExprData_unaryExprGetOp (c->data) != MAXREAD) )
@@ -1214,6 +1214,27 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 	    }
 	  BADEXIT;
 	}
+
+      // slight Kludge to hanlde var [] = { , , };
+      // type syntax  I don't think this is sounds but it should be good
+      // enough.  The C stanrad is very confusing about initialization
+      // -- DRL 7/25/01
+      
+      if (constraintTerm_isInitBlock(cterm) )
+	{
+	  constraintExpr temp;
+	  int len;
+
+	  len = constraintTerm_getInitBlockLength(cterm);
+
+	  temp = constraintExpr_makeIntLiteral (len );
+	  
+	  constraintExpr_free(c);
+	  DPRINTF(( message("Changed too %q", constraintExpr_print(temp)
+			    ) ));
+	  return temp;
+	}
+      
       return c;
     }
   
