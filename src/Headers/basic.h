@@ -7,6 +7,10 @@
 # ifndef BASIC_H
 # define BASIC_H
 
+# ifdef HAVE_CONFIG_H
+# include "config.h"
+# endif
+
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
@@ -101,7 +105,6 @@
 
 # include "context.h"
 # include "constants.h"
-# include "local_constants.h"
 
 # else
 # error "Multiple include"

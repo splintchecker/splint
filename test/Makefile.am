@@ -1,99 +1,24 @@
-# Makefile.in generated automatically by automake 1.5 from Makefile.am.
-
-# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
-# Free Software Foundation, Inc.
-# This Makefile.in is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
-# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-# PARTICULAR PURPOSE.
-
-
-
-SHELL = /bin/sh
-
-srcdir = .
-top_srcdir = ..
-
-prefix = /usr/local
-exec_prefix = ${prefix}
-
-bindir = ${exec_prefix}/bin
-sbindir = ${exec_prefix}/sbin
-libexecdir = ${exec_prefix}/libexec
-datadir = ${prefix}/share
-sysconfdir = ${prefix}/etc
-sharedstatedir = ${prefix}/com
-localstatedir = ${prefix}/var
-libdir = ${exec_prefix}/lib
-infodir = ${prefix}/info
-mandir = ${prefix}/man
-includedir = ${prefix}/include
-oldincludedir = /usr/include
-pkgdatadir = $(datadir)/lclint
-pkglibdir = $(libdir)/lclint
-pkgincludedir = $(includedir)/lclint
-top_builddir = ..
-
-ACLOCAL = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoheader
-
-INSTALL = /usr/bin/install -c
-INSTALL_PROGRAM = ${INSTALL}
-INSTALL_DATA = ${INSTALL} -m 644
-INSTALL_SCRIPT = ${INSTALL}
-INSTALL_HEADER = $(INSTALL_DATA)
-transform = s,x,x,
-NORMAL_INSTALL = :
-PRE_INSTALL = :
-POST_INSTALL = :
-NORMAL_UNINSTALL = :
-PRE_UNINSTALL = :
-POST_UNINSTALL = :
-host_alias = 
-host_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run tar
-AWK = gawk
-BISON = bison
-CAT = cat
-CC = gcc
-CP = cp
-CPP = gcc -E
-CXX = g++
-DEPDIR = .deps
-DIFF = diff
-EXEEXT = 
-GREP = grep
-INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LCLOBJ = $(lcl_OBJECTS)
-LEX = flex
-LN_S = ln -s
-MV = mv
-OBJEXT = o
-PACKAGE = lclint
-RM = rm
-VERSION = 3.0.0.19
-am__include = include
-am__quote = 
-install_sh = /net/af10/evans/LCLintDev/config/install-sh
+## This file currently uses GNU Make features; those should really be replaced
+## by configure-time handling.
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
+## Use this to configure diff output
 DIFFFLAGS = -u
 
-LCLINT = $(top_builddir)/bin/lclint$(EXEEXT)
-LCLINTP = @$(LCLINT)
+## Set up the lclint commands
+
+LCLINT    = $(top_builddir)/bin/lclint$(EXEEXT)
+LCLINTP   = @$(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
 # depend on local settings.
-LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
-LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
+LCLINTRN  = $(LCLINTP) -nof -hints -booltype "bool"
+LCLINTR   = $(LCLINTRN) -exportlocal +debugfcnconstraint
 
+## Currently disabled tests:
+##  fileio tainted mergestate nullret nullassign warnuse metastate \
+##  nullret nullassign warnuse
 
 ###
 ### !!! 
@@ -102,6 +27,7 @@ LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
 ###   tests2.2 tests2.2a tests2.4 tests2.5 
 ###   simplebufferConstraintTests moreBufferTests globalbufferannotation \
 ###   maxset strchr for
+
 UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder \
   args blocks break cases cast charlit clauses commentchar compdestroy \
@@ -114,7 +40,6 @@ UNITTESTS = \
   returned sharing slovaknames specclauses special stack staticarray strings \
   structassign typequals ud ulstypes union unreachable unsignedcompare \
   unused ullint void
-
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 INTEGTESTS = db1 db2 db3
@@ -123,141 +48,6 @@ INTEGEXPECTS = $(addsuffix .expect, $(INTEGTESTS))
 LCLINTTESTS = $(UNITTESTS) $(INTEGTESTS)
 
 QUICKTESTS = db3
-
-CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "$(LCLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:"
-
-
-#!!!!
-#	@echo ""
-#	@echo "Integration tests:"
-#	@echo ""
-#	@for TEST in $(INTEGTESTS); do \
-#	   echo "Checking $$TEST..."; \
-#	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
-#	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
-#               echo "*** FAIL ***"; \
-#	 done
-
-###
-### Bugs fixed and new features since version 2.1b
-###
-SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses tests2.2 tests2.4 tests2.5 db1 db2 db3
-subdir = test
-mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
-DIST_SOURCES =
-DIST_COMMON = Makefile.am Makefile.in
-all: all-am
-
-.SUFFIXES:
-.SUFFIXES: .c .diff .expect
-$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
-	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  test/Makefile
-Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
-	cd $(top_builddir) && \
-	  CONFIG_HEADERS= CONFIG_LINKS= \
-	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
-uninstall-info-am:
-tags: TAGS
-TAGS:
-
-
-DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-
-top_distdir = ..
-distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
-
-distdir: $(DISTFILES)
-	@for file in $(DISTFILES); do \
-	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
-	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
-	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
-	    $(mkinstalldirs) "$(distdir)/$$dir"; \
-	  fi; \
-	  if test -d $$d/$$file; then \
-	    cp -pR $$d/$$file $(distdir) \
-	    || exit 1; \
-	  else \
-	    test -f $(distdir)/$$file \
-	    || cp -p $$d/$$file $(distdir)/$$file \
-	    || exit 1; \
-	  fi; \
-	done
-check-am: all-am
-check: check-am
-all-am: Makefile
-
-installdirs:
-
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
-
-install-am: all-am
-	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
-
-installcheck: installcheck-am
-install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-	  `test -z '$(STRIP)' || \
-	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
-mostlyclean-generic:
-
-clean-generic:
-
-distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
-
-maintainer-clean-generic:
-	@echo "This command is intended for maintainers to use"
-	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
-
-clean-am: clean-generic clean-local mostlyclean-am
-
-distclean: distclean-am
-
-distclean-am: clean-am distclean-generic
-
-dvi: dvi-am
-
-dvi-am:
-
-info: info-am
-
-info-am:
-
-install-data-am:
-
-install-exec-am:
-
-install-info: install-info-am
-
-install-man:
-
-installcheck-am:
-
-maintainer-clean: maintainer-clean-am
-
-maintainer-clean-am: distclean-am maintainer-clean-generic
-
-mostlyclean: mostlyclean-am
-
-mostlyclean-am: mostlyclean-generic
-
-uninstall-am: uninstall-info-am
-
-.PHONY: all all-am check check-am clean clean-generic clean-local \
-	distclean distclean-generic distdir dvi dvi-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic uninstall uninstall-am uninstall-info-am
-
 
 .PHONY: all check
 all check: fulltest
@@ -283,10 +73,23 @@ clean-local:
 	-cd db2; $(MAKE) clean
 	-cd db3; $(MAKE) clean
 
+## All tests need lclint to be built
+
 $(LCLINTTESTS): $(LCLINT)
 
 $(LCLINT):
 	cd $(top_builddir)/src; $(MAKE)
+
+## This is a kludgey way of processing the output to make it match exactly
+## The last matcher is the most annoying, as it can differ (the first two are
+##  pretty much fixed); usually, you'll have 'make[1]:', but on DOS it is
+##  'make.exe[1]:' (it might even be 'c:/path/to/make.exe[1]:', but that's
+##  not supported).
+## The tests should really be re-done as shell-scripts or something... maybe
+##  autotest could be used once it's finished.
+CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "$(LCLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:"
+
+## Not real C code
 
 .c.expect:
 	$(MAKE) $* |& $(CLEANOUTPUT) >$*.expect && cat $*.expect
@@ -329,6 +132,21 @@ fulltest:
 	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
                echo "*** FAIL ***"; \
 	 done
+
+#!!!!
+#	@echo ""
+#	@echo "Integration tests:"
+#	@echo ""
+#	@for TEST in $(INTEGTESTS); do \
+#	   echo "Checking $$TEST..."; \
+#	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
+#	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
+#               echo "*** FAIL ***"; \
+#	 done
+
+## Rules for tests start here
+
+SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses
 
 .PHONY: abstptr
 abstptr:
@@ -572,6 +390,7 @@ init:
 	$(LCLINTR) init.c -expect 14
 	$(LCLINTRN) init.c +checks -exportlocal -exportheadervar -expect 17
 
+
 .PHONY: inparam
 inparam:
 	$(LCLINTR) inparam.c -expect 2
@@ -625,6 +444,7 @@ macros:
 	$(LCLINTR) macros -expect 17 
 	$(LCLINTR) macros.c +allmacros -expect 34
 	$(LCLINTR) macros.c +fcnmacros -expect 31
+
 
 .PHONY: macrosef
 macrosef:
@@ -691,6 +511,7 @@ nullret:
 nullassign:
 	$(LCLINTR) nullassign.c -expect 2
 	$(LCLINTR) -nullassign nullassign.c -expect 1
+
 
 #
 # Before 2.4, expected one more because error was reported both as 
@@ -862,6 +683,7 @@ unreachable:
 unsignedcompare:
 	${LCLINTR} +posixlib unsignedcompare.c -expect 4
 
+
 ###
 ### 2001-06-08 evans: 2 new errors after fixing ansireserved name checks
 ###
@@ -901,6 +723,12 @@ linked:
 freearray:
 	${LCLINTR} freearray.c -expect 1
 
+###
+### Bugs fixed and new features since version 2.1b
+###
+
+SUBDIRTESTS += tests2.2
+
 .PHONY: tests2.2a
 tests2.2a:
 	@cd tests2.2a ; \
@@ -921,6 +749,8 @@ tests2.2a:
 	$(LCLINTR) isalpha.c -expect 1 ; \
 	$(LCLINTR) dobb.c ; \
 	$(LCLINTR) popik.c -expect 11
+
+SUBDIRTESTS += tests2.4
 
 .PHONY: sizeotest
 sizeoftest:
@@ -962,9 +792,17 @@ strchr:
 for:
 	@cd for; $(LCLINTR) +arraybounds +arrayboundsread for.c
 
+SUBDIRTESTS += tests2.5
+
+## Integration Tests
+
+## evans 2000-12-22
+## db2: 2 errors are no longer reported, since eref is immutable.
+## Need to clarify what it means for an object to be immutable;
+## there should be 2 types with different storage requirements.
+
+SUBDIRTESTS += db1 db2 db3
+
 .PHONY: $(SUBDIRTESTS)
 $(SUBDIRTESTS):
 	cd $@; $(MAKE) LCLINT="$(LCLINTRN)"
-# Tell versions [3.59,3.63) of GNU make to not export all variables.
-# Otherwise a system limit (for SysV at least) may be exceeded.
-.NOEXPORT:

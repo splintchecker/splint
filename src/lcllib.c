@@ -42,8 +42,6 @@
 # include "lclscan.h"
 # endif
 
-
-# include "herald.h"
 # include "lcllib.h"
 # include "llmain.h"
 # include "portab.h"

@@ -42,7 +42,6 @@
 # include "lclintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
-# include "herald.h"
 # include "lh.h"
 # include "llmain.h"
 

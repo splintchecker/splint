@@ -240,6 +240,8 @@ Finished LCLint checking --- no code processed
    indentspaces                
    infloops                    
    infloopsuncon               
+   initallelements             
+   initsize                    
    internalglobs               
    internalglobsnoglobs        
    internalnamecaseinsensitive 
@@ -435,6 +437,9 @@ Finished LCLint checking --- no code processed
    strictops                   
    strictusereleased           
    stringliterallen            
+   stringliteralnoroom         
+   stringliteralsmaller        
+   stringliteraltoolong        
    structimponly               
    supcounts                   
    superuser                   
@@ -988,6 +993,12 @@ syntax --- syntax error in parsing
 trytorecover --- try to recover from parse error
 type --- type mismatch
 fullinitblock --- initializer sets all fields
+initallelements --- initializer defines all array elements
+initsize --- initializer defines extra array elements
+stringliteraltoolong --- string literal too long for character array
+stringliteralnoroom --- string literal leaves no room for null terminator
+stringliteralsmaller --- string literal is smaller than the char array it is
+assigned to
 enummembers --- enum members must be int values
 maintype --- type of main does not match expected type
 formattype --- type-mismatch in parameter corresponding to format code in a

@@ -70,7 +70,6 @@
 # endif
 
 # include "version.h"
-# include "herald.h"
 # include "fileIdList.h"
 # include "lcllib.h"
 # include "cgrammar.h"

@@ -548,21 +548,11 @@ extern void cppReader_skipRestOfLine (cppReader *p_pfile);
 
 # include <stdlib.h>
 
-# ifdef WIN32
 /*@constant observer char *GCC_INCLUDE_DIR;@*/
-# define GCC_INCLUDE_DIR NULL
-# else
-/*@constant observer char *GCC_INCLUDE_DIR;@*/
-# define GCC_INCLUDE_DIR "/usr/lib/gcc-lib/i386-linux/2.7.2.1/include"
-# endif
+/* This is defined by config.h now. */
 
-# ifdef WIN32
 /*@constant observer char *GCC_INCLUDE_DIR2@*/
-# define GCC_INCLUDE_DIR2 NULL
-# else
-/*@constant observer char *GCC_INCLUDE_DIR2@*/
-# define GCC_INCLUDE_DIR2 "/usr/include"
-# endif
+/* This is defined by config.h now. */
 
 struct file_name_list
 {
