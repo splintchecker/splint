@@ -116,6 +116,9 @@ extern bool constraint_same (constraint p_c1, constraint p_c2) ;
 
 /*@only@*/ cstring  constraint_printOr (constraint p_c) /*@*/;
 extern void constraint_printErrorPostCondition (constraint p_c, fileloc p_loc) ;
+
+extern cstring constraint_printLocation (/*@observer@*/ /*@temp@*/ constraint p_c) /*@*/; /*drl add 8-11-001*/
+
 extern constraint constraint_setFcnPre (/*@returned@*/ constraint p_c) ;
 extern constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint p_c, /*@dependent@*/ /*@observer@*/ exprNode p_e) ;
 
@@ -134,7 +137,7 @@ void constraint_dump (/*@observer@*/ constraint p_c,  FILE * p_f);
 
 extern void exprNode_forLoopHeuristics( /*@dependent@*/ exprNode p_e, /*@dependent@*/ exprNode p_forPred, /*@dependent@*/ exprNode p_forBody);
 
-int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * p_c1, /*@observer@*/ /*@temp@*/ constraint * p_c2) /*@*/;
+int constraint_compare (/*@observer@*/ /*@temp@*/ const constraint * p_c1, /*@observer@*/ /*@temp@*/ const constraint * p_c2) /*@*/;
 
 bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint p_c);
 
