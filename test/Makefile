@@ -120,7 +120,7 @@ UNITTESTS = \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
   macros macrosef merge mergenull modifies modtest moduncon \
-  mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
+  mongoincludes mystrncat noeffect null observer oldstyle  outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts slovaknames \
   specclauses \
@@ -377,6 +377,7 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./nullret.c \
               ./observer.c \
               ./oldstyle.c \
+              ./oldstyle2.c \
               ./outglob.c \
               ./outparam.c \
               ./postnotnull.c \
@@ -1391,7 +1392,7 @@ observer:
 
 .PHONY: oldstyle
 oldstyle:
-	-$(SPLINTR) oldstyle -expect 3
+	-$(SPLINTR) oldstyle oldstyle2.c -expect 5
 
 .PHONY: outglob
 outglob:

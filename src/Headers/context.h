@@ -346,7 +346,7 @@ extern int context_getBugsLimit (void) /*@*/ ;
 extern bool hasInvariants (ctype p_ct);
 
 /*drl 1/6/2001: I didn't think these functions were solid enough to include in the
-  stable  release of splint.  I coomented them out so that they won't break anything
+  stable  release of splint.  I commented them out so that they won't break anything
   but didn't delete them because they will be fixed and included later
 */
 
@@ -361,7 +361,9 @@ extern bool hasInvariants (ctype p_ct);
 ctype context_setLastStruct (/*@returned@*/ ctype p_s) /*@modifies internalState@*/;
 ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies internalState@*/;
 
+/*drl added 2/4/2002*/
 
+  bool context_inOldSytleScope(void);
 # else
 # error "Multiple include"
 # endif

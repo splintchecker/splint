@@ -513,6 +513,9 @@ void cstring_free (/*@only@*/ cstring s)
 {
   if (cstring_isDefined (s)) 
     {
+      /*drl 2/3/2002*/
+      s[0] = '\0';
+      
       sfree (s);
     }
 }

@@ -1864,6 +1864,14 @@ context_enterFunction (/*@exposed@*/ uentry e)
   sRef_enterFunctionScope ();
 }
 
+bool context_inOldSytleScope(void)
+{
+  if (gc.kind == CX_OLDSTYLESCOPE)
+    return TRUE;
+  else
+    return FALSE;
+}
+
 void
 context_enterOldStyleScope (void)
 {

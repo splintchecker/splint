@@ -7035,6 +7035,9 @@ checkSwitchExpr (exprNode test, /*@dependent@*/ exprNode e, /*@out@*/ bool *allp
 
   exprNodeSList_elements (el, current)
     {
+      
+      DPRINTF ((message("checkSwitchExpr current = %s ", exprNode_unparse(current) ) ));
+      
       if (exprNode_isDefined (current))
 	{
 	  switch (current->kind)
