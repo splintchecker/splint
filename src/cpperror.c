@@ -254,8 +254,15 @@ cppReader_getLoc (cppReader *pfile)
       cstring fname = ip->nominal_fname;
       fileId fid = fileTable_lookup (context_fileTable (), fname);
 
-      llassert (fileId_isValid (fid));
-	  
+      if (!fileId_isValid (fid))
+	{
+	  /* evans 2002-02-09
+	  ** filename used in #line comment is new
+	  */
+
+	  fid = fileTable_addFile (context_fileTable (), fname);
+	}
+
       cppBuffer_lineAndColumn (ip, &line, &col);
       
       return fileloc_create (fid, line, col);
