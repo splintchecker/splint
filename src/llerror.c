@@ -141,10 +141,22 @@ llmsg (/*@only@*/ cstring s)
 void
 lldiagmsg (/*@only@*/ cstring s)
 {
+  static bool inmsg = FALSE;
+
+  if (inmsg)
+    {
+      fprintf (stderr, "Recursive message call detected: %s\n", cstring_toCharsSafe (s));
+      llexit (LLFAILURE);
+    }
+
+  inmsg = TRUE;
+
   context_setNeednl ();
   prepareMessage ();
   printMessage (stderr, s);
   closeMessage ();
+
+  inmsg = FALSE;
 }
 
 void

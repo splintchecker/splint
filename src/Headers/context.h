@@ -91,6 +91,7 @@ extern void context_hideShowscan (void);
 extern void context_unhideShowscan (void);
 
 extern void context_setMode (cstring p_s);
+extern void context_setModeNoWarn (cstring p_s);
 extern void context_exitAllClauses (void);
 extern void context_exitAllClausesQuiet (void);
 extern bool context_inHeader (void);

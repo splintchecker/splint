@@ -504,18 +504,23 @@ printFlagManual (void)
       {
 	if (flagcode_hasString (f.code)) 
 	  {
-	    flagname = message ("%s <%s [%s]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
-				context_getString (f.code));
+	    flagname = message ("%s <%s>", cstring_fromChars (f.flag), argcode_unparse (f.argtype));
+
+	    if (cstring_isDefined (context_getString (f.code)))
+	      {
+		flagname = message ("%q [%s]", flagname,
+				    context_getString (f.code));
+	      }
 	  }
 	else if (f.argtype == ARG_CHAR)
 	  {
-	    flagname = message ("%s <%s [%c]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+	    flagname = message ("%s <%s> [%c]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
 				(char) context_getValue (f.code));
 	  }
 	else 
 	  {
 	    llassert (f.argtype == ARG_NUMBER);
-	    flagname = message ("%s <%s [%d]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+	    flagname = message ("%s <%s> [%d]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
 				context_getValue (f.code));
 	  }
       }
@@ -523,10 +528,6 @@ printFlagManual (void)
     if (f.isIdem)
       {
 	flagtype = message("%q<->", flagtype);
-      }
-    else
-      {
-	flagtype = message("%q<+->", flagtype);
       }
     
     if (f.isGlobal)
@@ -662,7 +663,7 @@ static cstring getFlagModeSettings (flagcode flag)
   
   allModes (mname)
     {
-      context_setMode (cstring_fromChars (mname));
+      context_setModeNoWarn (cstring_fromChars (mname));
       
       res = message ("%q%s", res, cstring_makeLiteralTemp (context_getFlag (flag) ? "+" : "-"));
     } end_allModes;

@@ -676,9 +676,8 @@ context_resetModeFlags (void)
 	{
 	  context_setFlag (code, FALSE);
 	}
-    } end_allFlagCodes;
-
-  }
+    } end_allFlagCodes;  
+}
 
 /*
 ** resetAllFlags
@@ -704,6 +703,8 @@ conext_resetAllCounters (void)
 void
 context_resetAllFlags (void) 
 {
+  DPRINTF (("******** Reset all flags"));
+
   allFlagCodes (code)
     {
       gc.flags[code] = FALSE;
@@ -747,13 +748,15 @@ context_resetAllFlags (void)
 	    }
 	  /*@=loopswitchbreak@*/	  
 
+	  DPRINTF (("Set value: [%s] / %d",  flagcode_unparse (code), val));
 	  context_setValue (code, val);
+	  DPRINTF (("Set value: [%s] / %d",  flagcode_unparse (code), context_getValue (code)));
+	  llassert (context_getValue (code) == val);
 	}
       else if (flagcode_hasChar (code))
 	{
 	  llassert (code == FLG_COMMENTCHAR);
 	  context_setCommentMarkerChar (DEFAULT_COMMENTCHAR);
-	  break;
 	}
       else if (flagcode_hasString (code))
 	{
@@ -926,8 +929,22 @@ context_resetAllFlags (void)
 			  flagcode_unparse (modeflags[i]))); } \
       else { context_setFlag (modeflags[i], TRUE); }  i++; }}
 
+static void context_setModeAux (cstring p_s, bool p_warn) ;
+
 void
 context_setMode (cstring s)
+{
+  context_setModeAux (s, TRUE);
+}
+
+void
+context_setModeNoWarn (cstring s)
+{
+  context_setModeAux (s, FALSE);
+}
+
+void
+context_setModeAux (cstring s, bool warn)
 {
   intSet setflags = intSet_new ();
   
@@ -968,11 +985,14 @@ context_setMode (cstring s)
 	    }
 	} end_intSet_elements ;
       
-      voptgenerror (FLG_WARNFLAGS,
-		    message ("Setting mode %s after setting mode flags will "
-			     "override set values of flags: %s",
-			     s, rflags),
-		    g_currentloc);
+      if (warn)
+	{
+	  voptgenerror (FLG_WARNFLAGS,
+			message ("Setting mode %s after setting mode flags will "
+				 "override set values of flags: %s",
+				 s, rflags),
+			g_currentloc);
+	}
 
       cstring_free (rflags);
     }
@@ -2770,7 +2790,8 @@ context_setValue (flagcode flag, int val)
     default:
       break;
     }
-    
+
+  DPRINTF (("Set value [%s] %d = %d", flagcode_unparse (flag), index, val));
   gc.values[index] = val;
 }
 
@@ -2787,6 +2808,7 @@ context_getValue (flagcode flag)
   int index = flagcode_valueIndex (flag);
 
   llassert (index >= 0 && index <= NUMVALUEFLAGS);
+  DPRINTF (("Get value [%s] %d = %d", flagcode_unparse (flag), index, gc.values[index]));
   return (gc.values[index]);
 }
 
@@ -2986,16 +3008,18 @@ void context_initMod (void)
     {
       gc.setGlobally[code] = FALSE;
       gc.setLocally[code] = FALSE;
-    } end_allFlagCodes ;
-
+    } 
+  end_allFlagCodes ;
+  
   usymtab_initMod ();
 
   context_resetAllFlags ();
+
   assertSet (gc.flags); /* Can't use global in defines */
   assertSet (gc.saveflags);
   assertSet (gc.values);
   assertSet (gc.strings);
-
+  
   conext_resetAllCounters ();
   assertSet (gc.counters);
 

@@ -19,13 +19,13 @@
 #define LCL_COMPILE "Compiled using gcc -g -O2 on Linux paisley 2.4.9-12 #1 Tue Oct 30 18:33:49 EST 2001 i686 unknown by evans"
 
 /* Splint's version number */
-#define LCL_PARSE_VERSION "Splint 3.0.0.20"
+#define LCL_PARSE_VERSION "Splint 3.0.0.21"
 
 /* Define to disable support LCL files */
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.0.20 --- 02 Jan 2002"
+#define SPLINT_VERSION "Splint 3.0.0.21 --- 05 Jan 2002"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "/usr/local/include"
