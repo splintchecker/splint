@@ -1206,10 +1206,12 @@ typedef /*@unsignedintegraltype@*/ uint_fast16_t;
 typedef /*@unsignedintegraltype@*/ uint_fast32_t;
 typedef /*@unsignedintegraltype@*/ uint_fast64_t;
 
-typedef int *intptr_t
+/* Corrections to intptr_t and uintptr_t decparations provided by David Sanderson */
+
+typedef /*@signedintegraltype@*/ intptr_t
    /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide."@*/ ;
 
-typedef unsigned int *uintptr_t
+typedef /*@unsignedintegraltype@*/ uintptr_t
    /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide."@*/ ;
 
 typedef /*@signedintegraltype@*/ intmax_t;
