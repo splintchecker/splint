@@ -647,6 +647,10 @@ static /*@dependent@*/ /*@notnull@*/ /*@special@*/ sRef
   s->type = ctype_unknown;
   s->defstate = SS_UNKNOWN;
 
+  /* start modifications */
+  s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+  /* end modifications */
+
   s->aliaskind = AK_UNKNOWN;
   s->oaliaskind = AK_UNKNOWN;
 
@@ -4981,6 +4985,27 @@ void sRef_setNullState (sRef s, nstate n, fileloc loc)
     }
 }
 
+void sRef_setNullTerminatedStateInnerComplete (sRef s, struct _bbufinfo b, fileloc loc) {
+   
+  switch (b.bufstate) {
+     case BB_NULLTERMINATED:
+	  sRef_setNullTerminatedState (s);
+          sRef_setLen (s, b.len);
+          break;
+     case BB_POSSIBLYNULLTERMINATED:
+          sRef_setPossiblyNullTerminatedState(s);
+          break;
+     case BB_NOTNULLTERMINATED:
+          sRef_setNotNullTerminatedState (s);
+          break;
+  }
+  sRef_setSize (s, b.size);
+
+  /* PL: TO BE DONE : Aliases are not modified right now, have to be similar to
+   * setNullStateInnerComplete.
+   */
+}
+
 void sRef_setNullStateInnerComplete (sRef s, nstate n, fileloc loc)
 {
   sRef_setNullState (s, n, loc);
@@ -5291,6 +5316,12 @@ sRef sRef_copy (sRef s)
       t->defstate = s->defstate;
 
       t->nullstate = s->nullstate;
+ 
+      /* start modifications */
+      t->bufinfo.bufstate = s->bufinfo.bufstate;
+      t->bufinfo.len = s->bufinfo.len;
+      t->bufinfo.size = s->bufinfo.size;
+      /* end modifications */
 
       t->aliaskind = s->aliaskind;
       t->oaliaskind = s->oaliaskind;
@@ -6538,6 +6569,12 @@ sRef_copyState (sRef s1, sRef s2)
       
       s1->nullstate = s2->nullstate;
       s1->nullinfo = alinfo_update (s1->nullinfo, s2->nullinfo);
+      
+      /* start modifications */
+      s1->bufinfo.bufstate = s2->bufinfo.bufstate;
+      s1->bufinfo.len = s2->bufinfo.len;
+      s1->bufinfo.size = s2->bufinfo.size;
+      /* end modifications */
 
       s1->aliaskind = s2->aliaskind;
       s1->aliasinfo = alinfo_update (s1->aliasinfo, s2->aliasinfo);
@@ -6571,6 +6608,10 @@ sRef_makeNew (ctype ct, sRef t, cstring name)
   s->info = (sinfo) dmalloc (sizeof (*s->info));
   s->info->fname = name;
 
+  /* start modifications */
+  s->bufinfo.bufstate = t->bufinfo.bufstate;
+  /* end modifications */
+
     return s;
 }
 
@@ -6585,6 +6626,9 @@ sRef_makeType (ctype ct)
   s->defstate = SS_UNKNOWN; 
   s->aliaskind = AK_UNKNOWN;
   s->nullstate = NS_UNKNOWN;
+  /* start modification */
+  s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+  /* end modification */
 
     
   if (ctype_isUA (ct))
@@ -6615,6 +6659,9 @@ sRef_makeConst (ctype ct)
   s->defstate = SS_UNKNOWN;
   s->aliaskind = AK_UNKNOWN;
   s->nullstate = NS_UNKNOWN;
+  /* start modification */
+  s->bufinfo.bufstate = BB_NULLTERMINATED;
+  /* end modification */
 
   
   if (ctype_isUA (ct))
@@ -8759,6 +8806,23 @@ cstring sRef_nullMessage (sRef s)
   BADEXIT;
 }
 
+cstring sRef_ntMessage (sRef s)
+{
+  llassert (sRef_isValid (s));
+
+  switch (s->nullstate)
+    {
+    case NS_DEFNULL:
+    case NS_CONSTNULL:
+      return (cstring_makeLiteralTemp ("not nullterminated"));
+    default:
+      return (cstring_makeLiteralTemp ("possibly non-nullterminated"));
+    }
+  BADEXIT;
+}
+
+
+
 sRef sRef_fixResultType (/*@returned@*/ sRef s, ctype typ, uentry ue)
 {
   sRef tmp = sRef_undefined;
@@ -8965,8 +9029,63 @@ extern bool sRef_isNotNull (sRef s)
 			      || s->nullstate == NS_NOTNULL));
 }
 
+/* start modifications */
+struct _bbufinfo sRef_getNullTerminatedState (sRef p_s) {
+   struct _bbufinfo BUFSTATE_UNKNOWN;
+   BUFSTATE_UNKNOWN.bufstate = BB_NOTNULLTERMINATED;
+   BUFSTATE_UNKNOWN.size = 0;
+
+   if (sRef_isValid(p_s))
+      return p_s->bufinfo;
+   return BUFSTATE_UNKNOWN; 
+}
+
+void sRef_setNullTerminatedState(sRef p_s) {
+   if(sRef_isValid (p_s)) {
+      p_s->bufinfo.bufstate = BB_NULLTERMINATED;
+   } else {
+      llfatalbug( message("sRef_setNT passed a invalid sRef\n"));
+   }
+}
 
 
+void sRef_setPossiblyNullTerminatedState(sRef p_s) {
+   if( sRef_isValid (p_s)) {
+      p_s->bufinfo.bufstate = BB_POSSIBLYNULLTERMINATED;
+   } else {
+      llfatalbug( message("sRef_setPossNT passed a invalid sRef\n"));
+   }
+}
 
+void sRef_setNotNullTerminatedState(sRef p_s) {
+   if( sRef_isValid (p_s)) {
+      p_s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+   } else {
+      llfatalbug( message("sRef_unsetNT passed a invalid sRef\n"));
+   }
+}
 
+void sRef_setLen(sRef p_s, int len) {
+   if( sRef_isValid (p_s) && sRef_isNullTerminated(p_s)) {
+      p_s->bufinfo.len = len;
+   } else {
+      llfatalbug( message("sRef_setLen passed a invalid sRef\n"));
+   }
+}
+    
 
+void sRef_setSize(sRef p_s, int size) {
+   if( sRef_isValid(p_s)) {
+       p_s->bufinfo.size = size;
+   } else {
+      llfatalbug( message("sRef_setSize passed a invalid sRef\n"));
+   }
+}
+
+void sRef_resetLen(sRef p_s) {
+	if (sRef_isValid (p_s)) {
+		p_s->bufinfo.len = 0;
+	} else {
+		llfatalbug (message ("sRef_setLen passed an invalid sRef\n"));
+	}
+}

@@ -69,6 +69,7 @@ void yyerror (char *s);
 # undef realloc
 # endif
 
+void checkandsetBufState(idDecl id, exprNode is);
 %}
 
 %union
@@ -160,6 +161,7 @@ void yyerror (char *s);
 %token <tok> QREFCOUNTED QREFS QNEWREF QTEMPREF QKILLREF QRELDEF
 %token <ctyp> CGCHAR CBOOL CINT CGFLOAT CDOUBLE CVOID 
 %token <tok> QANYTYPE QINTEGRALTYPE QUNSIGNEDINTEGRALTYPE QSIGNEDINTEGRALTYPE
+%token <tok> QNULLTERMINATED
 
 /* identifiers, literals */
 %token <entry> IDENTIFIER
@@ -620,7 +622,7 @@ specClauseList
 primaryExpr
  : id { $$ = exprNode_fromIdentifier ($1); }
  | NEW_IDENTIFIER { $$ = exprNode_fromUIO ($1); } 
- | CCONSTANT
+ | CCONSTANT      { $$ = $1; }
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  | TYPE_NAME_OR_ID { $$ = exprNode_fromIdentifier (coerceId ($1)); } 
  | QEXTENSION { $$ = exprNode_makeError (); }
@@ -836,7 +838,7 @@ optDeclarators
  | optDeclarators TCOMMA NotType namedInitializer { $$ = exprNode_concat ($1, $4); }
 
 init
- : assignExpr                      
+ : assignExpr                      { $$ = $1; }
  | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); }
  | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); }
 
@@ -905,6 +907,7 @@ typeQualifier
  | QRELDEF IsType      { $$ = qual_createRelDef (); }
  | QNEWREF IsType      { $$ = qual_createNewRef (); }
  | QTEMPREF IsType     { $$ = qual_createTempRef (); }
+ | QNULLTERMINATED IsType { $$ = qual_createNullTerminated (); }
 
 typeModifier
  : QSHORT            { $$ = qual_createShort (); }
@@ -1598,15 +1601,11 @@ void yyerror (/*@unused@*/ char *s)
     }
 }
 
+void printState (idDecl t) {
+ cstring id = idDecl_getName (t);
+ uentry ue = usymtab_lookupSafe (id);
 
-
-
-
-
-
-
-
-
-
-
-
+ sRef s = uentry_getSref (ue);
+ 
+ printf("State = %d\n", s->bufinfo.bufstate);
+}

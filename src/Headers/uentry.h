@@ -46,13 +46,29 @@ typedef enum
   CH_CHECKEDSTRICT
 } chkind;
 
+/* start modifications */
+typedef enum _bbufstate {
+  BB_POSSIBLYNULLTERMINATED, /* buffer is possibly nullterm(can't decide statically) */
+  BB_NULLTERMINATED, /*buffer is known to be nullterminated */
+  BB_NOTNULLTERMINATED /* buffer is known to be not nullterm */
+} bbufstate;
+
+typedef struct _bbufinfo {
+  bbufstate bufstate; /* state of the buffer */
+  int size;	      /* size of the buffer allocated */
+  int len;	      /* len of the buffer VALID ONLY IF state is NULLTERM */
+} *bbufinfo ;
+
 typedef struct _uvinfo
 {
   vkind   kind;      /* kind (parameter, specified) */
   chkind  checked;   /* how is it checked */
   sstate  defstate;
   nstate  nullstate;
+  bbufinfo bufinfo; /* is valid only if the entry is a variable and (a pointer
+		       or array) */
 } *uvinfo ;
+/* end modifications */
 
 typedef struct _udinfo
 {
@@ -564,6 +580,36 @@ extern void uentry_setCheckedStrict (uentry p_ue) /*@modifies p_ue@*/ ;
 extern bool uentry_hasAccessType (uentry p_e);
 
 extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fileloc p_loc);
+
+
+/* start modifications */
+/* functions for making modification to null-term info */
+extern void uentry_setNullTerminatedState (uentry p_e);
+extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
+extern void uentry_setNotNullTerminated (uentry p_e);
+extern void uentry_setSize(uentry p_e, int size);
+extern void uentry_setLen(uentry p_e, int len);
+
+extern bool uentry_hasBufStateInfo (uentry p_ue);
+# define uentry_hasBufStateInfo(p_ue) \
+  (((p_ue)->info->var->bufinfo != NULL) ? TRUE : FALSE)
+
+extern bool uentry_isNullTerminated(uentry p_ue);
+# define uentry_isNullTerminated(p_ue) \
+   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+               == BB_NULLTERMINATED) : FALSE)
+
+extern bool uentry_isPossiblyNullTerminated(uentry p_ue);
+# define uentry_isPossiblyNullTerminated(p_ue) \
+   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+               == BB_POSSIBLYNULLTERMINATED) : FALSE)
+
+extern bool uentry_isNotNullTerminated(uentry p_ue);
+# define uentry_isNotNullTerminated(p_ue) \
+   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+               == BB_NOTNULLTERMINATED) : FALSE)
+
+/* end modifications */
 
 # ifdef DOANNOTS
 typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,

@@ -146,6 +146,25 @@ transferNullMessage (transferKind transferType) /*@*/
   BADEXIT;
 }
 
+static /*@observer@*/ cstring
+transferNTMessage (transferKind transferType) /*@*/
+{
+  switch (transferType)
+    {
+    case TT_FCNRETURN:
+      return (cstring_makeLiteralTemp ("returned as nullterminated"));
+    case TT_DOASSIGN:
+    case TT_FIELDASSIGN:
+      return (cstring_makeLiteralTemp ("assigned to nullterminated"));
+    case TT_GLOBINIT:
+      return (cstring_makeLiteralTemp ("initialized to nullterminated"));
+    case TT_FCNPASS:
+      return (cstring_makeLiteralTemp ("passed as nullterminated param"));
+    BADDEFAULT;
+    }
+  BADEXIT;
+}
+
 static /*@dependent@*/ exprNode atFunction = exprNode_undefined;
 static int atArgNo = 0;
 static int atNumArgs = 0;
@@ -2009,6 +2028,7 @@ checkAssignTransfer (exprNode lhs, exprNode rhs)
   sRef srhs = exprNode_getSref (rhs);
   sRef base = sRef_getBaseSafe (slhs);
   nstate ns;
+  struct _bbufinfo bs;
 
   DPRINTF (("Check assign: %s = %s", exprNode_unparse (lhs),
 	    exprNode_unparse (rhs)));
@@ -2059,6 +2079,9 @@ checkAssignTransfer (exprNode lhs, exprNode rhs)
       sRef_setExKind (slhs, sRef_getExKind (srhs), exprNode_loc (rhs));
     }
 
+  /* We put the function to transfer NT states */
+  bs = sRef_getNullTerminatedState (srhs);
+  sRef_setNullTerminatedStateInnerComplete (slhs, bs, exprNode_loc (rhs));
   DPRINTF (("Done transfer: %s", sRef_unparseFull (slhs)));
 }
 
@@ -2960,6 +2983,16 @@ checkTransferAux (exprNode fexp, sRef fref, bool ffix,
   
   setCodePoint ();
 
+  /*start modification David Larochelle */
+
+    if (!ffix && !tfix)
+    {
+      setCodePoint ();
+      checkTransferNullTerminatedAux (fref, fexp, ffix, tref, texp, tfix, 
+			    loc, transferType);
+    }
+    /*end modification */
+    
   if (!ffix && !tfix)
     {
       setCodePoint ();
@@ -3724,5 +3757,146 @@ bool canLoseLocalReference (sRef sr, fileloc loc)
 
   return gotone;
 }
+
+
+/*start modification */
+
+/*added by David Larochelle 4/13/2000*/
+
+/*this is modeled after checkTransferNullAux */
+
+ static void
+checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
+				/*@unused@*/ bool ffix,
+		      sRef tref, exprNode texp, /*@unused@*/ bool tfix,
+		      fileloc loc, transferKind transferType)
+{
+  alkind tkind = sRef_getAliasKind (tref);
+  ctype ttyp = ctype_realType (sRef_getType (tref));
+
+/* DEBUG
+  printf  ("checking for fexp-%s\n", exprNode_unparse(fexp));
+  printf  ("checking for texp-%s\n", exprNode_unparse(texp));
+*/
+
+  if (ctype_isUnknown (ttyp))
+    {
+      ttyp = exprNode_getType (texp);
+      
+      if (ctype_isUnknown (ttyp))
+	{
+	  ttyp = exprNode_getType (fexp);
+
+	  if (ctype_isUnknown (ttyp))
+	    {
+	      ttyp = sRef_getType (fref);
+	    }
+	}
+    }
+
+  if (ctype_isFunction (ttyp) && (transferType == TT_FCNRETURN))
+    {
+      ttyp = ctype_returnValue (ttyp);
+    }
+
+  /*
+  ** check for null terminated (don't need to check aliases??)
+  */
+
+  if (!sRef_isNullTerminated (fref) 
+      && !usymtab_isGuarded (fref) 
+      && ctype_isRealAP (ttyp))
+    {
+      if (!alkind_isLocal (tkind) && !alkind_isFresh (tkind)
+	  //this should be perhapsNullTerminated but I didn't want to write
+	  && (sRef_isPossiblyNullTerminated (tref) ||
+                           sRef_isNullTerminated (tref))
+	  && !(transferType == TT_DOASSIGN))
+	{
+	  if (transferType == TT_GLOBINIT)
+	    {
+	      printf("-----------------------------------NULLTERMINATED ERROR1\n");
+              if (sRef_isPossiblyNullTerminated (fref)) {
+	        if (lloptgenerror
+		  (FLG_NULLTERMINATEDWARNING, 
+		  message ("%s %q initialized to %s value: %q",
+			    sRef_getScopeName (tref),
+			    sRef_unparse (tref),
+			    sRef_ntMessage (fref),
+			    generateText (fexp, texp, tref, transferType)),
+		   loc))
+		{
+
+		  printf ("NULLTERMINATED REFERENCE ERROR\n");
+		  // printf ("First way\n");
+		}
+ 
+              } else {
+	      
+	        if (lloptgenerror
+		  (FLG_NULLTERMINATED, 
+		  message ("%s %q initialized to %s value: %q",
+			    sRef_getScopeName (tref),
+			    sRef_unparse (tref),
+			    sRef_ntMessage (fref),
+			    generateText (fexp, texp, tref, transferType)),
+		   loc))
+		{
+
+		  printf ("NULLTERMINATED REFERENCE ERROR\n");
+		  // printf ("First way\n");
+		}
+ 
+	        printf("-----------------------------\n\n");
+
+              }
+	    }
+	  else
+	    {
+	      printf("****************************NULLTERMINATED ERROR2\n");
+	      //		  ((transferType == TT_FCNPASS) ? FLG_NULLPASS : FLG_NULLRET,
+
+              if (sRef_isPossiblyNullTerminated (fref))
+	      {
+	        if (lloptgenerror
+		  (FLG_NULLTERMINATEDWARNING, 
+		  message ("%q storage %q%s: %q",
+			   cstring_capitalize (sRef_ntMessage (fref)),
+			   sRef_unparseOpt (fref),
+			   transferNTMessage (transferType), 
+			   generateText (fexp, texp, tref, transferType)),
+		   loc))
+		{
+
+		  printf ("NULLTERMINATED REFERENCE ERROR\n");
+		  // printf ("First way\n");
+		}
+ 
+              } else {
+	        if (lloptgenerror
+		  ((transferType == TT_FCNPASS) ? FLG_NULLTERMINATED: FLG_NULLTERMINATED,
+		  message ("%q storage %q%s: %q",
+			   cstring_capitalize (sRef_ntMessage (fref)),
+			   sRef_unparseOpt (fref),
+			   transferNTMessage (transferType), 
+			   generateText (fexp, texp, tref, transferType)),
+		   loc))
+		{
+		  //  sRef_showNullInfo (fref);
+		  // sRef_setNullError (fref);
+		  printf ("SYMBOL REFERENCED IS NOT NULLTERMINATED!\n");
+
+		}
+	        printf("*******************************=\n\n");
+             }
+	    }
+	}
+      else
+	{
+	  ;
+	}
+    }  
+}
+/* end modification */
 
 

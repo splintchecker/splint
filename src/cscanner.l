@@ -306,6 +306,7 @@ static void setTokLengthT (size_t len)
 "yield"                 { return (processSpec (QYIELD)); }
 "undef"                 { return (processSpec (QUNDEF)); }
 "killed"                { return (processSpec (QKILLED)); }
+"nullterminated"        { return (processSpec (QNULLTERMINATED));}
 {Letter}({Letter}|{Digit})* { int tok; 
 			      context_saveLocation (); 
 			      setTokLength (longUnsigned_toInt (mstring_length (yytext))); 
@@ -607,6 +608,7 @@ struct skeyword s_keytable[] = {
   { "killref", QKILLREF } ,
   { "null", QNULL } ,
   { "relnull", QRELNULL } ,
+  { "nullterminated", QNULLTERMINATED }, 
   { "reldef", QRELDEF } ,
   { "observer", QOBSERVER } ,
   { "exits", QEXITS } ,

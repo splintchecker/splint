@@ -57,6 +57,15 @@ extern void qualList_clear (qualList p_q);
 extern bool qualList_hasAliasQualifier (qualList p_s);
 extern bool qualList_hasExposureQualifier (qualList p_s);
 
+/* start modifications */
+extern bool qualList_hasNullTerminatedQualifier(qualList p_s);
+extern bool qualList_hasBufQualifiers(qualList p_s);
+
+# define qualList_hasBufQualifiers(p_s) \
+  (qualList_hasNullTerminatedQualifier(p_s))
+
+/* end modification/s */
+
 # else
 # error "Multiple include"
 # endif

@@ -25,7 +25,7 @@ typedef enum _quals {
   QU_OUT, QU_IN,
   QU_ONLY, QU_IMPONLY,
   QU_TEMP, QU_SHARED, QU_KEEP, QU_KEPT, QU_PARTIAL, QU_SPECIAL,
-  QU_NULL, QU_RELNULL, 
+  QU_NULL, QU_RELNULL, QU_NULLTERMINATED,
   QU_EXPOSED, QU_RETURNED, QU_OBSERVER, QU_UNIQUE,
   QU_OWNED, QU_DEPENDENT, QU_RELDEF,
   QU_YIELD, 
@@ -50,7 +50,7 @@ typedef enum _quals {
 **        QSHORT QLONG QSIGNED QUNSIGNED
 **    augmented LCL qualifiers: 
 **        QOUT QONLY QTEMP QSHARED QUNIQUE QYIELD
-**        QEXITS QMAYEXIT
+**        QEXITS QMAYEXIT QNULLTERMINATED
 */
 
 extern qual qual_fromInt (int p_q) /*@*/ ;
@@ -128,6 +128,10 @@ extern bool qual_isGlobalQual (/*@sef@*/ qual) /*@*/ ;
 extern bool qual_isImplied (/*@sef@*/ qual) /*@*/ ;   
 extern bool qual_isExQual (/*@sef@*/ qual) /*@*/ ;	
 extern bool qual_isAliasQual (/*@sef@*/ qual) /*@*/ ; 
+/* start modifications */
+extern bool qual_isNullTerminated (qual) /*@*/ ;
+extern bool qual_isBufQualifier (qual) /*@*/ ;
+/* end modifications */
 
 # define qual_isUnknown(q)    ((q) == QU_UNKNOWN)
 # define qual_isTrueNull(q)   ((q) == QU_TRUENULL)
@@ -187,6 +191,7 @@ extern bool qual_isAliasQual (/*@sef@*/ qual) /*@*/ ;
 # define qual_isUnchecked(q)     ((q) == QU_UNCHECKED)
 # define qual_isUndef(q)      ((q) == QU_UNDEF)
 # define qual_isKilled(q)     ((q) == QU_KILLED)
+# define qual_isNullTerminated(q) ((q) == QU_NULLTERMINATED)
 
 extern qual qual_createTrueNull (void) /*@*/ ;   
 extern qual qual_createFalseNull (void) /*@*/ ;  
@@ -245,6 +250,7 @@ extern qual qual_createUnchecked (void) /*@*/ ;
 extern qual qual_createCheckedStrict (void) /*@*/ ;     
 extern qual qual_createUndef (void) /*@*/ ;
 extern qual qual_createKilled (void) /*@*/ ;
+extern qual qual_createNullTerminated (void) /*@*/ ;
 
 # ifndef NOLCL
 extern qual qual_createUnknown (void) /*@*/ ;
@@ -316,6 +322,7 @@ extern qual qual_createMessageLike (void) /*@*/ ;
 # define qual_createUnchecked()   (QU_UNCHECKED)
 # define qual_createUndef()       (QU_UNDEF)
 # define qual_createKilled()      (QU_KILLED)
+# define qual_createNullTerminated() (QU_NULLTERMINATED)
 
 extern bool qual_isGlobCheck (/*@sef@*/ qual p_q) /*@*/ ;
 # define qual_isGlobCheck(q) \
@@ -342,6 +349,15 @@ extern bool qual_isGlobCheck (/*@sef@*/ qual p_q) /*@*/ ;
 # define qual_isAllocQual(q) \
   (qual_isOut (q) || qual_isIn (q) || qual_isSpecial (q) \
    || qual_isPartial (q) || qual_isRelDef (q))
+
+/* start modifications */
+/* This is used to check if we the qualifier matches any of the
+len/size/nullterminated types */
+
+# define qual_isBufQualifier(q) \
+  (qual_isNullTerminated(q))
+
+/* end of modification/s */
 
 # define qual_isGlobalQual(q) \
   (qual_isUndef(q) || qual_isKilled (q))

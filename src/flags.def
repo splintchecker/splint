@@ -2757,6 +2757,22 @@ NULL, NULL,
   0, 0
   },
 {
+  FK_NT, FK_MEMORY, modeFlag,
+  "nullterminated",
+  FLG_NULLTERMINATED,
+  "misuse of nullterminated allocation",
+  "A possibly non-nullterminated string/memory is used/referenced as a nullterminated one,  ",
+  0, 0
+},
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "nullterminated",
+  FLG_NULLTERMINATEDWARNING,
+  "misuse of nullterminated allocation",
+  "WARNING:A user annotated non-nullterminated buffer is used/referenced as a nullterminated one,  ",
+  0, 0
+},
+{
   FK_NULL, FK_MEMORY, modeFlag,
   "nullderef",
   FLG_NULLDEREF,

@@ -737,8 +737,18 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
   e->val = multiVal_makeString (cstring_fromCharsO (s));
   e->edata = exprData_makeLiteral (t);
   e->sref = sRef_makeType (ctype_string);
+  /* Start modifications */
+  /* This expr is null terminated, so we set the len and size */
+  sRef_setNullTerminatedState(e->sref);
+  /*
+  TPRINTF("Len is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
+  TPRINTF("Size is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
+  TPRINTF("State is set to: %d\n\n", e->sref->bufinfo.bufstate);
+  */
+  sRef_setLen(e->sref, strlen((char *)multiVal_forceString(e->val)));
+  sRef_setSize(e->sref, strlen((char *)multiVal_forceString(e->val)));
 
-  if (context_getFlag (FLG_READONLYSTRINGS))
+   if (context_getFlag (FLG_READONLYSTRINGS))
     {
       sRef_setAliasKind (e->sref, AK_STATIC, fileloc_undefined);
       sRef_setExKind (e->sref, XO_OBSERVER, loc);
@@ -3584,6 +3594,50 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 
   exprNode_checkModify (e, ret);
 
+	/* start modifications */
+	/* added by Seejo on 4/16/2000 */
+
+	/* Arithmetic operations on pointers wil modify the size/len/null terminated 
+		 status */
+	if ((sRef_isPossiblyNullTerminated (e->sref)) || (sRef_isNullTerminated(e->sref))) {
+
+		ret->sref = sRef_copy (e->sref);
+
+		/* Operator : ++ */
+		if (lltok_getTok (op) == INC_OP) {
+			if (sRef_getSize(e->sref) > 0) {
+
+				sRef_setSize (ret->sref, sRef_getSize(e->sref) - 1);
+				
+				if (sRef_getLen(e->sref) == 1) { /* i.e. the first character is \0 */
+					/* Assumption: there is only 1 \0 in the buffer */
+					/* This will not be correct if there are 2 \0's in the buffer */
+					sRef_setNotNullTerminatedState(ret->sref);
+					sRef_resetLen(ret->sref);
+				} else {
+					sRef_setNullTerminatedState(ret->sref);
+					sRef_setLen (ret->sref, sRef_getLen(e->sref) - 1);
+				}
+				if (sRef_isNullTerminated (ret->sref))
+					printf ("ret->sref is Null Terminated\n");
+				else if (sRef_isPossiblyNullTerminated (ret->sref))
+					printf ("ret->sref is Possibly Null Terminated\n");
+				else if (sRef_isNotNullTerminated (ret->sref))
+					printf ("ret->sref is Not Null Terminated\n");
+			}
+		}
+
+		/* Operator : -- */
+		if (lltok_getTok (op) == DEC_OP) {
+			if (sRef_getSize(e->sref) >= 0) {
+				sRef_setSize (ret->sref, sRef_getSize(e->sref) + 1);
+				sRef_setLen (ret->sref, sRef_getLen(e->sref) + 1);
+			}
+		}
+	}
+
+	/* end modifications */
+
   return ret;
 }
 
@@ -3666,7 +3720,45 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 	    }
 	  ret->typ = ctype_int;
 	}
-      
+
+  	/* start modifications */
+	/* added by Seejo on 4/16/2000 */
+
+	/* Arithmetic operations on pointers wil modify the size/len/null terminated 
+		 status */
+	if ((sRef_isPossiblyNullTerminated (e->sref)) || (sRef_isNullTerminated(e->sref))) {
+
+		ret->sref = sRef_copy (e->sref);
+
+		/* Operator : ++ */
+		if (lltok_getTok (op) == INC_OP) {
+			if (sRef_getSize(e->sref) > 0) {
+
+				sRef_setSize (ret->sref, sRef_getSize(e->sref) - 1);
+
+				if (sRef_getLen(e->sref) == 1) { /* i.e. the first character is \0 */
+					/* Assumption: there is only 1 \0 in the buffer */
+					/* This will not be correct if there are 2 \0's in the buffer */
+					sRef_setNotNullTerminatedState(ret->sref);
+					sRef_resetLen (ret->sref);
+				} else {
+					sRef_setNullTerminatedState(ret->sref);
+					sRef_setLen (ret->sref, sRef_getLen(e->sref) - 1);
+				}
+			}
+		}
+
+		/* Operator : -- */
+		if (lltok_getTok (op) == DEC_OP) {
+			if (sRef_getSize(e->sref) >= 0) {
+				sRef_setSize (ret->sref, sRef_getSize(e->sref) + 1);
+				sRef_setLen (ret->sref, sRef_getLen(e->sref) + 1);
+			}
+		}
+	}
+
+	/* end modifications */    
+
       checkMod = TRUE;
       break;
       
@@ -4496,6 +4588,47 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 
 	      ret->sref = sRef_copy (e1->sref);
 
+     	 /* start modifications */
+	     /* added by Seejo on 4/16/2000 */
+
+  	    /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+			status */
+ 	    if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
+				//if (sRef_isKnown (e->sref)) {
+				//ret->sref = sRef_makeAddress (e->sref);
+				//}
+
+			 int val = (int) multiVal_forceInt (e2->val);
+
+			/* Operator : + or += */
+		    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+				if (sRef_getSize(e1->sref) >= val) {/* Incrementing the pointer by 
+																           val should not result in a 
+																		   size < 0 (size = 0 is ok !) */
+					
+					sRef_setSize (ret->sref, sRef_getSize(e1->sref) - val);
+					
+					if (sRef_getLen(e1->sref) == val) { /* i.e. the character at posn val is \0 */
+						sRef_setNotNullTerminatedState(ret->sref);
+						sRef_resetLen (ret->sref);
+					} else {
+						sRef_setNullTerminatedState(ret->sref);
+						sRef_setLen (ret->sref, sRef_getLen(e1->sref) - val);
+					}
+				}
+			}
+			
+			/* Operator : - or -= */
+			 if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+				if (sRef_getSize(e1->sref) >= 0) {
+					sRef_setSize (ret->sref, sRef_getSize(e1->sref) + val);
+					sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
+				}
+			}
+		 }
+			
+	     /* end modifications */  
+
 	      sRef_setNullError (ret->sref);
 
 	      /*
@@ -4537,6 +4670,48 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 		}
 
 	      ret->sref = sRef_copy (e2->sref);
+
+		  /* start modifications */
+		  /* added by Seejo on 4/16/2000 */
+
+		  /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+				 status */
+
+ 	    if ((sRef_isPossiblyNullTerminated (e2->sref)) || (sRef_isNullTerminated(e2->sref))) {
+				//if (sRef_isKnown (e->sref)) {
+				//ret->sref = sRef_makeAddress (e->sref);
+				//}
+
+			 int val = (int) multiVal_forceInt (e1->val);
+
+			/* Operator : + or += */
+		    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+				if (sRef_getSize(e2->sref) >= val) {/* Incrementing the pointer by 
+																           val should not result in a 
+																		   size < 0 (size = 0 is ok !) */
+					
+					sRef_setSize (ret->sref, sRef_getSize(e2->sref) - val);
+					
+					if (sRef_getLen(e2->sref) == val) { /* i.e. the character at posn val is \0 */
+						sRef_setNotNullTerminatedState(ret->sref);
+						sRef_resetLen (ret->sref);
+					} else {
+						sRef_setNullTerminatedState(ret->sref);
+						sRef_setLen (ret->sref, sRef_getLen(e2->sref) - val);
+					}
+				}
+			}
+			
+			/* Operator : - or -= */
+			 if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+				if (sRef_getSize(e2->sref) >= 0) {
+					sRef_setSize (ret->sref, sRef_getSize(e2->sref) + val);
+					sRef_setLen (ret->sref, sRef_getLen(e2->sref) + val);
+				}
+			}
+		 }
+
+ 	    /* end modifications */
 
 	      sRef_setNullError (ret->sref);
 

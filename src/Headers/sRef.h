@@ -104,6 +104,10 @@ struct _sRef
   sstate defstate;
   nstate nullstate;
 
+  /* start modifications: We keep a track of the buf state(nullterm info)*/
+  struct _bbufinfo bufinfo;
+  /* end modifications */
+
   alkind aliaskind;
   alkind oaliaskind;
   
@@ -579,6 +583,45 @@ extern bool sRef_hasName (sRef p_s) /*@*/ ;
 extern void sRef_free (/*@only@*/ sRef p_s);
 
 extern void sRef_setObserver (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
+
+/* start modifications */
+/* functions for making modification to null-term info */
+extern void sRef_setNullTerminatedStateInnerComplete(sRef s, struct _bbufinfo b, fileloc loc);
+extern struct _bbufinfo sRef_getNullTerminatedState(sRef s);
+extern void sRef_setNullTerminatedState (sRef p_s);
+extern void sRef_setPossiblyNullTerminatedState (sRef p_s);
+extern void sRef_setNotNullTerminatedState (sRef p_s);
+extern void sRef_setSize(sRef p_s, int size);
+extern void sRef_setLen(sRef p_s, int len);
+
+extern int sRef_getSize(sRef p_s);
+#define sRef_getSize(p_s) \
+   (p_s->bufinfo.size)
+
+extern int sRef_getLen(sRef p_s);
+#define sRef_getLen(p_s) \
+   (p_s->bufinfo.len)
+
+extern void sRef_hasBufStateInfo(sRef p_s);
+# define sRef_hasBufStateInfo(p_s) \
+    (sRef_isValid(p_s)) 
+ 
+extern bool sRef_isNullTerminated(sRef p_s);
+# define sRef_isNullTerminated(p_s) \
+   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+               == BB_NULLTERMINATED) : FALSE)
+
+extern bool sRef_isPossiblyNullTerminated(sRef p_s);
+# define sRef_isPossiblyNullTerminated(p_s) \
+   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+               == BB_POSSIBLYNULLTERMINATED) : FALSE)
+
+extern bool sRef_isNotNullTerminated(sRef p_s);
+# define sRef_isNotNullTerminated(p_s) \
+   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+               == BB_NOTNULLTERMINATED) : FALSE)
+
+/* end modifications */
 
 # else
 # error "Multiple include"

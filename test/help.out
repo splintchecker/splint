@@ -313,6 +313,8 @@ Finished LCLint checking --- no code processed
    nullptrarith                
    nullret                     
    nullstate                   
+   nullterminated              
+   nullterminated              
    numenummembers              
    numliteral                  
    numstructfields             
@@ -886,6 +888,8 @@ includenest --- set maximum number of nested #include files
 ansilimits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers)
 null --- misuses of null pointer
+nullterminated --- misuse of nullterminated allocation
+nullterminated --- misuse of nullterminated allocation
 nullderef --- possible dereferencce of null pointer
 fcnderef --- dereferencce of a function type
 nullpass --- possibly null pointer passed as formal with no null annotation

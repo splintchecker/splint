@@ -199,6 +199,20 @@ qualList_free (/*@only@*/ qualList s)
     }
 }
 
+/* start modifications */
+/*
+requires: p is defined
+returns: true if qual is present in qualList
+modifies: none
+*/
+bool qualList_hasNullTerminatedQualifier(qualList q) {
+    qualList_elements(q, qu) {
+      if( qual_equal(qu, QU_NULLTERMINATED) ) return TRUE;
+    } end_qualList_elements ;
+   
+  return FALSE;
+}
 
+/* end modification/s */        
 
 

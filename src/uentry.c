@@ -2052,6 +2052,63 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 			  qual_unparse (qel), uentry_unparse (ue)));	      
 	    }
 	}
+      /* start modifications */
+
+      else if( qual_isBufQualifier(qel) ) {
+        ctype ct = ctype_realType(uentry_getType(ue));
+
+        if( ctype_isArray(ct) || ctype_isPointer(ct) ) {
+
+            if( uentry_hasBufStateInfo(ue) )  {
+
+                if( qual_isNullTerminated(qel) ) {  /* handle Nullterm */
+                    
+                   if (uentry_isAnyParam(ue) || uentry_isReturned (ue)) {
+                                               /* If formal func param */
+                       uentry_setNullTerminatedState(ue); 
+                       uentry_setLen (ue, 1);
+                       uentry_setSize (ue, 1);
+
+                       sRef_setNullTerminatedState(uentry_getSref(ue));
+                       sRef_setLen (uentry_getSref(ue), 1);
+                       sRef_setSize (uentry_getSref(ue), 1);
+                   } else {
+                       uentry_setPossiblyNullTerminatedState(ue); 
+
+                       sRef_setPossiblyNullTerminatedState(uentry_getSref(ue));
+                   }
+
+                } 
+                /* put other BufState Qualifiers here */
+            } else { 
+	      llfatalbug(message("INTERNAL Error: we have a NULL BufState \
+			struct for identifier %s\n", uentry_getName(ue) ) );
+            }
+         } else if (ctype_isFunction (ct)) { /* We have to handle function */
+
+            sRef retSref = uentry_getSref (ue);
+            ctype retType = sRef_getType (retSref);
+
+            if (ctype_isPointer (retType) || ctype_isArray (retType)) {
+	       sRef_setNullTerminatedState (retSref);
+
+            } else {
+              
+	 	llerror 
+	          (FLG_SYNTAX,
+		       message ("Qualifier %s used on non-pointer on \
+                            function return: %q", qual_unparse (qel),
+                                                    uentry_unparse (ue)));
+             }
+         }
+              
+         else  {
+	 	llerror 
+	          (FLG_SYNTAX,
+		       message ("Qualifier %s used on non-pointer: %q",
+			  qual_unparse (qel), uentry_unparse (ue)));	      
+	 }
+      }/* end else if */    
       else if (qual_isAllocQual (qel)) /* out, partial, reldef, special, etc. */
 	{
 	  ctype realType = ctype_realType (ue->utype);
@@ -2677,6 +2734,20 @@ static /*@only@*/ /*@notnull@*/
 
   e->info->var->defstate = sRef_getDefState (e->sref);  
   e->info->var->nullstate = sRef_getNullState (e->sref);
+
+/* start modifications */
+/* This function sets the uentry for a pointer or array variable declaration,
+   it allocates memory and sets the fields. We check if the type of the variable
+   is a pointer or array and allocate a `bbufinfo' struct accordingly */
+
+  if( ctype_isArray (t) || ctype_isPointer(t)) {
+     e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
+     e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
+     s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+  } else {
+     e->info->var->bufinfo = NULL;
+  }/* end else */
+/* end modification */
 
   return (e);
 }
@@ -9392,5 +9463,108 @@ void uentry_checkName (uentry ue)
 }
 
 
+/* start modifications */
+/*
+requires: p_e is defined, is a ptr/array variable 
+modifies: p_e
+effects: sets the state of the variable
+*/
+
+void uentry_setPossiblyNullTerminatedState (uentry p_e)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->info != NULL) {
+      if( p_e->info->var != NULL) {
+         p_e->info->var->bufinfo->bufstate = BB_POSSIBLYNULLTERMINATED;
+         p_e->sref->bufinfo.bufstate = BB_POSSIBLYNULLTERMINATED;
+         return;
+      }/* End if */
+    }/* End if */
+  }/* End if */
+
+  fprintf(stderr, "uentry:Error in setPossiblyNullTerminatedState\n");
+}
+
+/*
+requires: p_e is defined, is a ptr/array variable 
+modifies: p_e
+effects: sets the size of the buffer
+*/
+
+void uentry_setNullTerminatedState (uentry p_e)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->info != NULL) {
+      if( p_e->info->var != NULL) {
+        p_e->info->var->bufinfo->bufstate = BB_NULLTERMINATED;
+        p_e->sref->bufinfo.bufstate = BB_NULLTERMINATED;
+        return;
+      }//End if
+    }//End if
+  }//End if
+
+  fprintf(stderr, "uentry:Error in setNullTerminatedState\n");
+}
+
+
+/*
+requires: p_e is defined, is a ptr/array variable 
+modifies: p_e
+effects: sets the state of the variable
+*/
+
+void uentry_setNotNullTerminatedState (uentry p_e)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->info != NULL) {
+      if( p_e->info->var != NULL) {
+        p_e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
+        p_e->sref->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+        return;
+      }//End if
+    }//End if
+  }//End if
+
+  fprintf(stderr, "uentry:Error in setNotNullTerminatedState\n");
+}
+
+
+/*
+requires: p_e is defined, is a ptr/array variable 
+modifies: p_e
+effects: sets the size of the buffer
+*/
+
+void uentry_setSize (uentry p_e, int size)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->info != NULL) {
+      if( p_e->info->var != NULL) {
+        p_e->info->var->bufinfo->size = size;
+        p_e->sref->bufinfo.size = size;
+        return;
+      }//End if
+    }//End if
+  }//End if
+
+  fprintf(stderr, "uentry:Error in setSize\n");
+}
+
+
+/*
+requires: p_e is defined, is a ptr/array variable 
+modifies: p_e
+effects: sets the length of the buffer
+*/
+
+void uentry_setLen (uentry p_e, int len)  {
+  if( uentry_isValid(p_e) ) {
+    if( p_e->info != NULL) {
+      if( p_e->info->var != NULL) {
+        p_e->info->var->bufinfo->len = len;
+        p_e->sref->bufinfo.len = len;
+        return;
+      }//End if
+    }//End if
+  }//End if
+
+  fprintf(stderr, "uentry:Error in setLen\n");
+}
 
 

@@ -698,8 +698,8 @@
 374@-@-@0@0@0@0@376#ldiv_t
 *1 (Constant)
 0@i0@0@6#NULL
-2$#NDEBUG
 2@i1@0@0#TRUE
+2$#NDEBUG
 2@i0@0@6#FALSE
 3$#UCHAR_MAX#UCHAR_MIN
 4$#CHAR_MAX#CHAR_MIN#SCHAR_MAX#SCHAR_MIN
@@ -770,8 +770,8 @@
 278$@0@s3@1@s3,tp1$@0#putc
 366$@1@@1@s0$@0#abs
 205@6@0@5@0@0$$@0#raise
-215$@0@s3,g113@0@0@1@s3,g113$@0#remove
 282$@1@g125@0@0,s3@1@s3,tg125$@0#puts
+215$@0@s3,g113@0@0@1@s3,g113$@0#remove
 311$@1@@1@s0$@0#atoi
 351$@0@s3@1@s3$@0#system
 485$@1@@1@s0$@0#wctob
@@ -783,8 +783,8 @@
 346$@0@s1@1@s1$@0#atexit
 407$@1@@1@s0$@0#mbsinit
 280$@1@g125@0@0,s3@1@s3,tg125$@0#putchar
-323$@0@s1@1@s1$@0#rand
 273$@1@g124@0@0,s3@1@s3,tg124$@0#getchar
+323$@0@s1@1@s1$@0#rand
 319$@0@g113@0@0@1@tp1,g113$@0#strtol
 479$@0@@1@tp1$@0#wcstol
 373$@1@@1@s0$@0#labs

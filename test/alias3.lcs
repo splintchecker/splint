@@ -45,18 +45,19 @@
 %LCLsort ___ualias30u_Union_Ptr_Obj obj __ualias30u_Union_Ptr nil
 %LCLSortTableEnd
 %LCLSymbolTable
+%LCLop min :int, int -> int
 %LCLop max :int, int -> int
 %LCLop 0 : -> int
 %LCLop 0 : -> double
 %LCLop 1 : -> int
 %LCLop 1 : -> double
-%LCLop __ < __  :int, int -> bool
-%LCLop __ < __  :double, double -> bool
 %LCLop if __ then __ else __  :bool, bool, bool -> bool
 %LCLop if __ then __ else __  :bool, int, int -> int
 %LCLop if __ then __ else __  :bool, double, double -> double
 %LCLop if __ then __ else __  :bool, _char_Vec, _char_Vec -> _char_Vec
 %LCLop if __ then __ else __  :bool, char, char -> char
+%LCLop __ < __  :int, int -> bool
+%LCLop __ < __  :double, double -> bool
 %LCLop empty : -> _char_Vec
 %LCLop __ > __  :int, int -> bool
 %LCLop __ > __  :double, double -> bool
@@ -69,8 +70,8 @@
 %LCLop len :_char_Vec -> int
 %LCLop prefix :_char_Vec, int -> _char_Vec
 %LCLop __ / __  :double, double -> double
-%LCLop removePrefix :_char_Vec, int -> _char_Vec
 %LCLop __ \implies __  :bool, bool -> bool
+%LCLop removePrefix :_char_Vec, int -> _char_Vec
 %LCLop substring :_char_Vec, int, int -> _char_Vec
 %LCLop __ || __  :_char_Vec, _char_Vec -> _char_Vec
 %LCLop tail :_char_Vec -> _char_Vec
@@ -108,24 +109,22 @@
 %LCLop __ \neq __  :_char_Vec, _char_Vec -> bool
 %LCLop __ \neq __  :char, char -> bool
 %LCLop { __ } :char -> _char_Vec
+%LCLop [__, __] :__int_Obj_Ptr, int -> _salias30s_Struct_Tuple
 %LCLop __ \select a :_salias30s_Struct_Tuple -> int
 %LCLop __ \select a :_salias30s_Struct -> _int_Obj
 %LCLop __ \select a :_ualias30u_Union_UnionVal -> int
 %LCLop __ \select a :_ualias30u_Union -> _int_Obj
-%LCLop [__, __] :__int_Obj_Ptr, int -> _salias30s_Struct_Tuple
-%LCLop __ \select b :_salias30s_Struct_Tuple -> __int_Obj_Ptr
-%LCLop __ \select b :_salias30s_Struct -> ___int_Obj_Ptr_Obj
-%LCLop __ |- __  :_char_Vec, char -> _char_Vec
 %LCLop __ [] :__char_Obj_Ptr -> __char_Obj_Arr
 %LCLop __ [] :__int_Obj_Ptr -> __int_Obj_Arr
 %LCLop __ [] :__salias30s_Struct_Ptr -> __salias30s_Struct_Arr
 %LCLop __ [] :____int_Obj_Ptr_Obj_Ptr -> ____int_Obj_Ptr_Obj_Arr
 %LCLop __ [] :__ualias30u_Union_Ptr -> __ualias30u_Union_Arr
+%LCLop __ \select b :_salias30s_Struct_Tuple -> __int_Obj_Ptr
+%LCLop __ \select b :_salias30s_Struct -> ___int_Obj_Ptr_Obj
+%LCLop __ |- __  :_char_Vec, char -> _char_Vec
 %LCLop __ \field_arrow a :__salias30s_Struct_Ptr -> _int_Obj
 %LCLop __ \field_arrow a :__ualias30u_Union_Ptr -> int
 %LCLop __ \field_arrow a :__ualias30u_Union_Ptr -> _int_Obj
-%LCLop __ \field_arrow b :__salias30s_Struct_Ptr -> ___int_Obj_Ptr_Obj
-%LCLop __ -| __  :char, _char_Vec -> _char_Vec
 %LCLop __ [__] :_char_Vec, int -> char
 %LCLop __ [__] :__char_Obj_Arr, int -> _char_Obj
 %LCLop __ [__] :_int_Vec, int -> int
@@ -136,6 +135,8 @@
 %LCLop __ [__] :____int_Obj_Ptr_Obj_Arr, int -> ___int_Obj_Ptr_Obj
 %LCLop __ [__] :__ualias30u_Union_UnionVal_Vec, int -> _ualias30u_Union_UnionVal
 %LCLop __ [__] :__ualias30u_Union_Arr, int -> _ualias30u_Union
+%LCLop __ \field_arrow b :__salias30s_Struct_Ptr -> ___int_Obj_Ptr_Obj
+%LCLop __ -| __  :char, _char_Vec -> _char_Vec
 %LCLop __ \leq __  :int, int -> bool
 %LCLop __ \leq __  :double, double -> bool
 %LCLop __ \geq __  :int, int -> bool
@@ -206,7 +207,6 @@
 %LCLop abs :double -> double
 %LCLop div :int, int -> int
 %LCLop mod :int, int -> int
-%LCLop min :int, int -> int
 %LCLtype float float exposed
 %LCLtype bool bool immutable
 %LCLconst FALSE bool

@@ -264,6 +264,7 @@ bool g_inTypeDef = FALSE;
 %token <ltok> LLT_RELNULL
 %token <ltok> LLT_RELDEF
 %token <ltok> LLT_KILLREF
+%token <ltok> LLT_NULLTERMINATED
 %token <ltok> LLT_TEMPREF
 %token <ltok> LLT_NEWREF
 %token <ltok> LLT_PRIVATE
@@ -859,6 +860,7 @@ specialQualifier
  | LLT_RETURNED  { $$ = qual_createReturned (); }
  | LLT_EXPOSED   { $$ = qual_createExposed (); }
  | LLT_PARTIAL   { $$ = qual_createPartial (); }
+ | LLT_NULLTERMINATED { $$ = qual_createNullTerminated () ; }
  | LLT_UNDEF { $$ = qual_createUndef (); }
  | LLT_KILLED { $$ = qual_createKilled (); }
 

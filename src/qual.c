@@ -84,6 +84,7 @@ cstring qual_unparse (qual q)
     case QU_NULL:       return cstring_makeLiteralTemp ("null");
     case QU_RELNULL:    return cstring_makeLiteralTemp ("relnull");
     case QU_NOTNULL:    return cstring_makeLiteralTemp ("notnull");
+    case QU_NULLTERMINATED: return cstring_makeLiteralTemp ("nullterminated");
     case QU_RETURNED:   return cstring_makeLiteralTemp ("  returned");
     case QU_EXPOSED:    return cstring_makeLiteralTemp ("exposed");
     case QU_EXITS:      return cstring_makeLiteralTemp ("exits");

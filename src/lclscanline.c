@@ -1853,6 +1853,7 @@ LCLScanLineInit (void)
   (void) LCLReserveToken (LLT_NEWREF, "newref");
   (void) LCLReserveToken (LLT_TEMPREF, "tempref");
   (void) LCLReserveToken (LLT_KILLREF, "killref");
+  (void) LCLReserveToken (LLT_NULLTERMINATED, "nullterminated");
   (void) LCLReserveToken (LLT_EXITS, "exits");
   (void) LCLReserveToken (LLT_MAYEXIT, "mayexit");
   (void) LCLReserveToken (LLT_TRUEEXIT, "trueexit");
