@@ -6441,8 +6441,12 @@ ctype uentry_getRealType (uentry e)
     {
       return ctype_unknown;
     }
-
-  llassertprint (uentry_isDatatype (e), ("not datatype: %s", uentry_unparse (e)));
+  
+  if (!uentry_isDatatype (e))
+    {
+      /* This shouldn't happen, except when types are redeclared in strange ways */
+      return ctype_unknown;
+    }
 
   if (uentry_isAnyTag (e))
     {
@@ -8303,6 +8307,29 @@ void uentry_checkMatchParam (uentry u1, uentry u2, int paramno, exprNode e)
     }
 }
 
+static void uentry_convertIntoFunction (/*@notnull@*/ uentry old)
+{
+  /*
+  ** Convert old into a function
+  */
+  
+  old->ukind = KFCN;
+  old->utype = ctype_unknown;
+  old->info->fcn = (ufinfo) dmalloc (sizeof (*old->info->fcn));
+  old->info->fcn->hasMods = FALSE;
+  old->info->fcn->hasGlobs = FALSE;
+  old->info->fcn->exitCode = XK_UNKNOWN;
+  old->info->fcn->nullPred = qual_createUnknown ();
+  old->info->fcn->specialCode = SPC_NONE;
+  old->info->fcn->access = typeIdSet_undefined;
+  old->info->fcn->globs = globSet_undefined;
+  old->info->fcn->defparams = uentryList_undefined;
+  old->info->fcn->mods = sRefSet_undefined;
+  old->info->fcn->specclauses = NULL;
+  old->info->fcn->preconditions = NULL;
+  old->info->fcn->postconditions = NULL;
+}
+
 static void
 checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 			  /*@notnull@*/ uentry unew, 
@@ -8332,8 +8359,26 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   
   if (ctype_isKnown (oldType))
     {
-      llassert (ctype_isFunction (oldType));
-      oldRetType = ctype_getReturnType (oldType);
+      if (ctype_isFunction (oldType))
+	{
+	  oldRetType = ctype_getReturnType (oldType);
+	}
+      else
+	{
+	  if (optgenerror 
+	      (FLG_INCONDEFS,
+	       message ("%s %q declared as function, but previously declared as %s",
+			ekind_capName (unew->ukind),
+			uentry_getName (unew),
+			ekind_unparseLong (old->ukind)),
+	       uentry_whereDeclared (unew)))
+	    {
+	      uentry_showWhereLast (old);
+	    }
+
+	  uentry_convertIntoFunction (old);
+	  return;
+	}
     }
 
   if (ctype_isKnown (newType))
@@ -9591,7 +9636,22 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 	  uentry_convertVarFunction (old);
 	}
 
-      llassert (uentry_isFunction (old));
+      if (!uentry_isFunction (old))
+	{
+	  if (optgenerror 
+	      (FLG_INCONDEFS,
+	       message ("%s %q declared as function, but previously declared as %s",
+			ekind_capName (unew->ukind),
+			uentry_getName (unew),
+			ekind_unparseLong (old->ukind)),
+	       uentry_whereDeclared (unew)))
+	    {
+	      uentry_showWhereLast (old);
+	    }
+
+	  uentry_convertIntoFunction (old);
+	  return;
+	}
     }
 
   DPRINTF (("uentry merge: %s / %s",
