@@ -1017,7 +1017,6 @@ exprNode_fromIdentifier (/*@observer@*/ uentry c)
     }
 
   ret = exprNode_fromIdentifierAux (c);
-  
   return ret;
 }
 
@@ -3759,8 +3758,7 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
 ** this is yucky!  should keep the uentry as part of exprNode!
 */
 
-/*@observer@*/ uentry
-exprNode_getUentry (exprNode e)
+uentry exprNode_getUentry (exprNode e)
 {
   if (exprNode_isError (e))
     {
@@ -8001,6 +7999,7 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
 
   exprData_free (ret->edata, ret->kind); 
   ret->edata = exprData_undefined;
+
   ret->exitCode = XK_NEVERESCAPE;
   ret->mustBreak = FALSE;
   ret->kind = XPR_INIT;
@@ -8789,6 +8788,9 @@ static /*@observer@*/ cstring exprNode_rootVarName (exprNode e)
     case XPR_VAR:
       ret = exprData_getId (data);
       break;
+    case XPR_INIT:
+      ret = idDecl_getName (exprData_getInitId (data));
+      break;
     case XPR_LABEL:
     case XPR_TOK:
     case XPR_ITERCALL:
@@ -8830,7 +8832,6 @@ static /*@observer@*/ cstring exprNode_rootVarName (exprNode e)
     case XPR_BLOCK:
     case XPR_STMT:
     case XPR_STMTLIST:
-    case XPR_INIT:
     case XPR_FACCESS:
     case XPR_ARROW:
     case XPR_NODE:

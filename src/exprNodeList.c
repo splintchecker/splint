@@ -131,6 +131,7 @@ exprNode exprNodeList_getN (exprNodeList s, int n)
   s->elements[0] = e;
   s->current = 0;
 
+  DPRINTF (("List: %s", exprNode_unparse (e)));
   return (s);
 }
 

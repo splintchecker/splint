@@ -110,7 +110,7 @@ extern void yyerror (char *);
   /*@only@*/ uentry oentry;
   /*@only@*/ exprNode expr;
   /*@only@*/ enumNameList enumnamelist;
-  /*@only@*/ exprNodeList alist;
+  /*@only@*/ exprNodeList exprlist;
   /*@only@*/ sRefSet srset; 
   /*@only@*/ cstringList cstringlist;
 
@@ -217,7 +217,7 @@ extern void yyerror (char *);
 
 %type <globsclause> globalsClause globalsClausePlain
 %type <modsclause> modifiesClause modifiesClausePlain nomodsClause
-%type <warnclause> warnClause warnClausePlain
+%type <warnclause> warnClause warnClausePlain optWarnClause
 %type <funcclause> conditionClause conditionClausePlain
 %type <stateclause> stateClause stateClausePlain
 %type <msconstraint> metaStateConstraint 
@@ -254,8 +254,8 @@ extern void yyerror (char *);
 %type <ntyplist> structNamedDeclList
 
 %type <entrylist> genericParamList paramTypeList paramList idList paramIdList
-%type <alist> argumentExprList iterArgList
-%type <alist> initList
+%type <exprlist> argumentExprList iterArgList
+%type <exprlist> initList namedInitializerList namedInitializerListAux
 %type <flist> structDeclList structDecl
 %type <srset> locModifies modList specClauseList optSpecClauseList
 %type <sr>    mExpr modListExpr specClauseListExpr
@@ -615,6 +615,10 @@ flagSpec
 flagId
  : NEW_IDENTIFIER
 
+optWarnClause
+ : warnClause
+ | /* empty */ { $$ = warnClause_undefined; }
+
 warnClause
  : warnClausePlain QENDMACRO { $$ = $1; }
 
@@ -963,7 +967,8 @@ namedInitializer
 
 typeDecl
  : CTYPEDEF completeTypeSpecifier { setProcessingTypedef ($2); } 
-   NotType namedInitializerList IsType TSEMI { unsetProcessingTypedef (); } 
+   NotType namedInitializerList IsType optWarnClause TSEMI 
+   { clabstract_declareType ($5, $7); }
  | CTYPEDEF completeTypeSpecifier IsType TSEMI { /* in the ANSI grammar, semantics unclear */ }
  | CTYPEDEF namedInitializerList IsType TSEMI { /* in the ANSI grammar, semantics unclear */ } 
 
@@ -974,11 +979,11 @@ PushType
  : { g_expectingTypeName = TRUE; context_pushLoc (); }
 
 namedInitializerList
- :  namedInitializerListAux IsType { ; }
+ :  namedInitializerListAux IsType { $$ = $1; }
 
 namedInitializerListAux
- : namedInitializer { ; }
- | namedInitializerList TCOMMA NotType namedInitializer { ; }
+ : namedInitializer { $$ = exprNodeList_singleton ($1); }
+ | namedInitializerList TCOMMA NotType namedInitializer { $$ = exprNodeList_push ($1, $4); }
 
 optDeclarators
  : /* empty */      { $$ = exprNode_makeError (); }

@@ -3718,5 +3718,13 @@ static flaglist flags =
     "Call to function restricted to superusers.",
     0, 0
   },
+  {
+    FK_WARNUSE, FK_SECURITY, modeFlag,
+    "implementationoptional",
+    FLG_IMPLEMENTATIONOPTIONAL,
+    "declarator is implementation optional (ISO99 does not require an implementation to provide it)",
+    "Use of a declarator that is implementation optional, not requires by ISO99.",
+    0, 0
+  }, 
 
 } ;

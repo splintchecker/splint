@@ -1171,7 +1171,7 @@ setGenericParamList (/*@dependent@*/ uentryList pm)
 }
 
 void
-setProcessingTypedef (/*@only@*/ qtype q)
+setProcessingTypedef (qtype q)
 {
   ProcessingTypedef = TRUE;
 
@@ -1247,6 +1247,40 @@ checkDoneParams ()
       oldStyleDeclareFunction (saveFunction);
       saveFunction = uentry_undefined;
     }
+}
+
+void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClause warn)
+{
+  llassert (ProcessingTypedef);
+
+  if (warnClause_isDefined (warn))
+    {
+      exprNodeList_elements (decls, el)
+	{
+	  uentry ue = exprNode_getUentry (el);
+	  cstring uname = uentry_getName (ue);
+
+	  DPRINTF (("Entry: %s", exprNode_unparse (el)));
+
+	  /*
+	  ** Need to lookup again to make sure we have the right one...
+	  */
+
+	  ue = usymtab_lookupGlob (uname);
+
+	  llassert (uentry_isValid (ue));
+	  llassert (uentry_isDatatype (ue));
+
+	  DPRINTF (("Warning for %s: %s",
+		    uentry_unparse (ue), warnClause_unparse (warn)));
+
+	  uentry_addWarning (ue, warnClause_copy (warn));
+	} end_exprNodeList_elements;
+    }
+
+  warnClause_free (warn);
+  exprNodeList_free (decls);
+  unsetProcessingTypedef ();
 }
 
 void

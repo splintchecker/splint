@@ -975,12 +975,112 @@ extern size_t strftime (/*@out@*/ char *s, size_t smax,
   /*@modifies *s@*/ ;
 
 /*
-** inttypes.h
+** ISO c99: 7.18 Integer types <stdint.h>
 */
 
-typedef	char int8_t;
-typedef	short int int16_t;
-typedef	int int32_t;
-typedef	unsigned char u_int8_t;
-typedef	unsigned short int u_int16_t;
-typedef	unsigned int u_int32_t;
+/*
+** These types are OPTIONAL.  Provide warnings on use.
+*/
+
+typedef /*@integraltype@*/ int8_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider int_least8_t instead."@*/ ;
+
+typedef /*@integraltype@*/ int16_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider int_least16_t instead."@*/ ;
+
+typedef /*@integraltype@*/ int32_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider int_least32_t instead."@*/ ;
+
+typedef /*@integraltype@*/ int64_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider int_least64_t instead."@*/ ;
+
+typedef /*@unsignedintegraltype@*/ uint8_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider uint_least8_t instead."@*/ ;
+
+typedef /*@unsignedintegraltype@*/ uint16_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider uint_least16_t instead."@*/ ;
+
+typedef /*@unsignedintegraltype@*/ uint32_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider uint_least32_t instead."@*/ ;
+
+typedef /*@unsignedintegraltype@*/ uint64_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide. Consider uint_least64_t instead."@*/ ;
+
+typedef /*@integraltype@*/ int_least8_t;
+typedef /*@integraltype@*/ int_least16_t;
+typedef /*@integraltype@*/ int_least32_t;
+typedef /*@integraltype@*/ int_least64_t;
+
+typedef /*@unsignedintegraltype@*/ uint_least8_t;
+typedef /*@unsignedintegraltype@*/ uint_least16_t;
+typedef /*@unsignedintegraltype@*/ uint_least32_t;
+typedef /*@unsignedintegraltype@*/ uint_least64_t;
+
+typedef /*@integraltype@*/ int_fast8_t;
+typedef /*@integraltype@*/ int_fast16_t;
+typedef /*@integraltype@*/ int_fast32_t;
+typedef /*@integraltype@*/ int_fast64_t;
+
+typedef /*@unsignedintegraltype@*/ uint_fast8_t;
+typedef /*@unsignedintegraltype@*/ uint_fast16_t;
+typedef /*@unsignedintegraltype@*/ uint_fast32_t;
+typedef /*@unsignedintegraltype@*/ uint_fast64_t;
+
+typedef int *intptr_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide."@*/ ;
+
+typedef unsigned int *uintptr_t
+   /*@warn implementationoptional "ISO99 specifies as optional type, implementation need not provide."@*/ ;
+
+typedef /*@signedintegraltype@*/ intmax_t;
+typedef /*@unsignedintegraltype@*/ uintmax_t;
+
+/*@i534 types here? */
+
+/*@constant int INT8_MIN@*/
+/*@constant int INT16_MIN@*/
+/*@constant int INT32_MIN@*/
+/*@constant int INT64_MIN@*/
+
+/*@constant int INT8_MAX@*/
+/*@constant int INT16_MAX@*/
+/*@constant int INT32_MAX@*/
+/*@constant int INT64_MAX@*/
+
+/*@constant int UINT8_MIN@*/
+/*@constant int UINT16_MIN@*/
+/*@constant int UINT32_MIN@*/
+/*@constant int UINT64_MIN@*/
+
+/*@constant int INT_LEAST8_MIN@*/
+/*@constant int INT_LEAST16_MIN@*/
+/*@constant int INT_LEAST32_MIN@*/
+/*@constant int INT_LEAST64_MIN@*/
+
+/*@constant int INT_LEAST8_MAX@*/
+/*@constant int INT_LEAST16_MAX@*/
+/*@constant int INT_LEAST32_MAX@*/
+/*@constant int INT_LEAST64_MAX@*/
+
+/*@constant int UINT_LEAST8_MAX@*/
+/*@constant int UINT_LEAST16_MAX@*/
+/*@constant int UINT_LEAST32_MAX@*/
+/*@constant int UINT_LEAST64_MAX@*/
+
+/*@constant int INT_FAST8_MIN@*/
+/*@constant int INT_FAST16_MIN@*/
+/*@constant int INT_FAST32_MIN@*/
+/*@constant int INT_FAST64_MIN@*/
+
+/*@constant int INT_FAST8_MAX@*/
+/*@constant int INT_FAST16_MAX@*/
+/*@constant int INT_FAST32_MAX@*/
+/*@constant int INT_FAST64_MAX@*/
+
+/*@constant int UINT_FAST8_MAX@*/
+/*@constant int UINT_FAST16_MAX@*/
+/*@constant int UINT_FAST32_MAX@*/
+/*@constant int UINT_FAST64_MAX@*/
+
+/*@constant size_t INTPTR_MIN@*/
+/*@constant size_t INTPTR_MAX@*/
