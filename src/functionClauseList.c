@@ -188,12 +188,12 @@ functionClauseList_ImplictConstraints (functionClauseList s)
 		{
 		  constraintList implCons = getImplicitFcnConstraints ();
 
-		  TPRINTF((message("functionClauseList_ImplictConstraints adding the implict constraints: %s to %s",
+		  DPRINTF((message("functionClauseList_ImplictConstraints adding the implict constraints: %s to %s",
 				   constraintList_print(implCons), constraintList_print( con->constraint.buffer) ) ));
 		  
 		  con->constraint.buffer  = constraintList_addList ( con->constraint.buffer, constraintList_copy(implCons));
 
-		  TPRINTF((message("functionClauseList_ImplictConstraints the new constraint is %s",
+		  DPRINTF((message("functionClauseList_ImplictConstraints the new constraint is %s",
 				   constraintList_print( con->constraint.buffer) ) ));
 
 		  

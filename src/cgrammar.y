@@ -402,7 +402,7 @@ namedDeclBase
      /*drl 7/25/01 added*/
      setImplictfcnConstraints();
 
-     functionClauseList_ImplictConstraints($6);
+     /*     functionClauseList_ImplictConstraints($6); */
 
      idDecl_addClauses ($$, $6);
      context_popLoc ();
@@ -413,7 +413,7 @@ namedDeclBase
    functionClauses
    {
      setImplictfcnConstraints ();
-        functionClauseList_ImplictConstraints($7);
+     /*        functionClauseList_ImplictConstraints($7);*/
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      idDecl_addClauses ($$, $7);

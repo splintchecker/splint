@@ -3542,7 +3542,7 @@ case 26:
      /*drl 7/25/01 added*/
      setImplictfcnConstraints();
 
-     functionClauseList_ImplictConstraints(yyvsp[0].funcclauselist);
+     /*     functionClauseList_ImplictConstraints($6); */
 
      idDecl_addClauses (yyval.ntyp, yyvsp[0].funcclauselist);
      context_popLoc ();
@@ -3555,7 +3555,7 @@ case 27:
 case 28:
 {
      setImplictfcnConstraints ();
-        functionClauseList_ImplictConstraints(yyvsp[0].funcclauselist);
+     /*        functionClauseList_ImplictConstraints($7);*/
      clearCurrentParams ();
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-6].ntyp, ctype_makeFunction (idDecl_getCtype (yyvsp[-6].ntyp), yyvsp[-3].entrylist));
      idDecl_addClauses (yyval.ntyp, yyvsp[0].funcclauselist);
