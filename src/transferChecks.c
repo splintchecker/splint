@@ -4002,7 +4002,7 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
   valueTable tvalues = sRef_getValueTable (tref);
 
   DPRINTF (("Metastate transfer: from %s", exprNode_unparse (fexp)));
-
+  
   DPRINTF (("Metastate transfer: %s => %s",
 	    sRef_unparseFull (fref),
 	    sRef_unparseFull (tref)));

@@ -686,18 +686,31 @@ void sRef_clearGlobalScope ()
 }
 
 static bool oldInFunction = FALSE;
+static int nestedScope = 0;
 
 void sRef_setGlobalScopeSafe ()
 {
-  oldInFunction = inFunction;
-  DPRINTF (("leave function"));
+  if (nestedScope == 0)
+    {
+      oldInFunction = inFunction;
+    }
+  
+  nestedScope++;
+  DPRINTF (("leave function safe"));
   inFunction = FALSE;
 }
 
 void sRef_clearGlobalScopeSafe ()
 {
-    inFunction = oldInFunction;
-    DPRINTF (("clear function: %s", bool_unparse (inFunction)));
+  nestedScope--;
+  llassert (nestedScope >= 0);
+  
+  if (nestedScope == 0)
+    {
+      inFunction = oldInFunction;
+    }
+
+  DPRINTF (("clear function: %s", bool_unparse (inFunction)));
 }
 
 void sRef_enterFunctionScope ()
@@ -709,8 +722,7 @@ void sRef_enterFunctionScope ()
 }
 
 void sRef_exitFunctionScope ()
-{
-  
+{  
   if (inFunction)
     {
       DPRINTF (("Exit function scope."));

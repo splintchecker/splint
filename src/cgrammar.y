@@ -1180,8 +1180,8 @@ suSpc
    TRBRACE 
    { $$ = declareUnnamedStruct ($7); }
  | NotType CUNION IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
-   CreateStructInnerScope 
-   structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
+   CreateStructInnerScope structDeclList DeleteStructInnerScope 
+   { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    { $$ = declareUnnamedUnion ($7); } 
  | NotType CSTRUCT IsType TLBRACE TRBRACE

@@ -51,11 +51,6 @@
 ** right values are available in the right place.
 */
 
-/*drl*/
-/*@only@*/ static  constraintList fcnConstraints = NULL;
-
-/*end drl*/
-
 /*drl */
 static /*@only@*/   constraintList implicitFcnConstraints = NULL;
 
