@@ -910,6 +910,8 @@ help:
 	-@$(SPLINTP) +boolint +boolint 
 	-@$(SPLINTP) -help flags alpha
 	-@$(SPLINTP) -help flags all
+	-@$(SPLINTP) -help flags full
+	-@$(SPLINTP) -help flags manual
 
 .PHONY: clean-local
 clean-local:

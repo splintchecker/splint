@@ -212,11 +212,11 @@ void cstring_replaceAll (cstring s, char old, char snew)
           }
 }
 
-void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew) /*@requires maxRead(snew) >= 0 /\ maxRead(old) >= 0 /\ maxRead(old) >= maxRead(snew) @*/
+void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew) 
+   /*@requires maxRead(snew) >= 0 /\ maxRead(old) >= 0 /\ maxRead(old) >= maxRead(snew) @*/
 {
-  
   llassert (strlen (old) >= strlen (snew));
-
+  
   if (cstring_isDefined (s))
     {
       char *sp = strstr (s, old);
@@ -225,12 +225,15 @@ void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew) /*@requi
 	{
 	  int lendiff = size_toInt (strlen (old) - strlen (snew));
 	  char *tsnew = snew;
-	  
+
+	  llassert (lendiff >= 0);
+
 	  while (*tsnew != '\0')
 	    {
+	      llassert (*sp != '\0');
 	      *sp++ = *tsnew++;
 	    }
-
+	  
 	  if (lendiff > 0)
 	    {
 	      while (*(sp + lendiff) != '\0')

@@ -49,7 +49,10 @@ extern cmpcode cstring_genericEqual (cstring p_s, cstring p_t,
 /* evans 2001-09-09 - removed conditional compilation on this (for WIN32, OS2) */
 extern void cstring_replaceAll (cstring p_s, char p_old, char p_snew) /*@modifies p_s@*/ ;
 
-extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew) /*@requires maxRead(p_snew) >= 0 /\ maxRead(p_old) >= 0 /\ maxRead(p_old) >= maxRead(p_snew) @*/;
+extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew) 
+   /*@modifies p_s@*/
+   /*@requires maxRead(p_snew) >= 0 /\ maxRead(p_old) >= 0 /\ maxRead(p_old) >= maxRead(p_snew) @*/;
+
 extern char cstring_firstChar (cstring p_s) /*@*/ ;
 extern char cstring_secondChar (cstring p_s) /*@*/ ;
 extern char cstring_lastChar (cstring p_s) /*@*/ ;

@@ -902,10 +902,11 @@ flagcode_unparse (flagcode code)
 **    length        -> len
 */
 
-static void
+static /*@only@*/ cstring
 canonicalizeFlag (cstring s)
 {
   int i = 0;
+  cstring res = cstring_copy (s);
   static bn_mstring transform[] = 
     { 
       "function", "fcn",
@@ -936,15 +937,16 @@ canonicalizeFlag (cstring s)
   /*drl bee: ia*/
   while ((current = transform[i]) != NULL)
     {
-      if (cstring_containsLit (s, current))
+      if (cstring_containsLit (res, current))
 	{
-	  cstring_replaceLit (s, current, transform[i+1]);
+	  cstring_replaceLit (res, current, transform[i+1]);
 	}
       i += 2;
     }
 
   /* remove whitespace, -'s, and _'s */
-  cstring_stripChars (s, " -_");
+  cstring_stripChars (res, " -_");
+  return res;
 }
 
 flagcode
@@ -962,6 +964,9 @@ flags_identifyFlagQuiet (cstring s)
 static flagcode
 flags_identifyFlagAux (cstring s, bool quiet)
 {
+  cstring cflag;
+  flagcode res;
+
   if (cstring_length (s) == 0) {
     /* evs 2000-06-25: A malformed flag. */
     return INVALID_FLAG;
@@ -987,229 +992,216 @@ flags_identifyFlagAux (cstring s, bool quiet)
       return FLG_UNDEFINE;    /* no space after -D */
     }
 
-  canonicalizeFlag (s);
+  cflag = canonicalizeFlag (s);
+  res = INVALID_FLAG;
 
   allFlags (f)
     {
-      if (cstring_equal (cstring_fromChars (f.flag), s))
+      if (cstring_equal (cstring_fromChars (f.flag), cflag))
 	{
-	  return (f.code);
+	  res = f.code;
+	  break;
 	}
     } end_allFlags;
-
-  /*
-  ** Synonyms
-  */
-
-  if (cstring_equalLit (s, "pred"))
-    {
-      return FLG_PREDBOOL;
-    }
-
-  if (cstring_equalLit (s, "modobserverstrict"))
-    {
-      return FLG_MODOBSERVERUNCON;
-    }
-
-  if (cstring_equalLit (s, "czechnames"))
-    {
-      return FLG_CZECH;
-    }
-
-  if (cstring_equalLit (s, "slovaknames"))
-    {
-      return FLG_SLOVAK;
-    }
-
-  if (cstring_equalLit (s, "czechoslovaknames"))
-    {
-      return FLG_CZECHOSLOVAK;
-    }
-
-  if (cstring_equalLit (s, "globunspec")
-	   || cstring_equalLit (s, "globuncon"))
-    {
-      return FLG_GLOBUNSPEC;
-    }
-
-  if (cstring_equalLit (s, "modglobsunspec")
-	   || cstring_equalLit (s, "modglobsuncon")
-	   || cstring_equalLit (s, "modglobsnomods"))
-    {
-      return FLG_MODGLOBSUNSPEC;
-    }
-
-  if (cstring_equalLit (s, "export"))
-    {
-      return FLG_EXPORTANY;
-    }
-
-  if (cstring_equalLit (s, "macrospec"))
-    {
-      return FLG_MACRODECL;
-    }
   
-  if (cstring_equalLit (s, "ansireservedlocal"))
+  if (res == INVALID_FLAG)
     {
-      return FLG_ANSIRESERVEDLOCAL;
-    }
-
-  if (cstring_equalLit (s, "warnposix"))
-    {
-      return FLG_WARNPOSIX;
-    }
-
-  if (cstring_equalLit (s, "defuse"))
-    {
-      return FLG_USEDEF;
-    }
-
-  if (cstring_equalLit (s, "macroundef"))
-    {
-      return FLG_MACROUNDEF;
-    }
-
-  if (cstring_equalLit (s, "showcol"))
-    {
-      return FLG_SHOWCOL;
-    }
-
-  if (cstring_equalLit (s, "intbool"))
-    {
-      return FLG_BOOLINT;
-    }
-
-  if (cstring_equalLit (s, "intchar"))
-    {
-      return FLG_CHARINT;
-    }
-
-  if (cstring_equalLit (s, "intenum"))
-    {
-      return FLG_ENUMINT;
-    }
-
-  /*
-  ** Backwards compatibility for our American friends...
-  */
-
-  if (cstring_equalLit (s, "ansilib"))
-    {
-      return FLG_ANSILIB;
-    }
-
-  if (cstring_equalLit (s, "ansistrictlib"))
-    {
-      return FLG_STRICTLIB;
-    }
-
-  if (cstring_equalLit (s, "skipansiheaders"))
-    {
-      return FLG_SKIPANSIHEADERS;
-    }
-
-  if (cstring_equalLit (s, "ansireserved"))
-    {
-      return FLG_ANSIRESERVED;
-    }
-
-  if (cstring_equalLit (s, "ansireservedinternal"))
-    {
-      return FLG_ANSIRESERVEDLOCAL;
-    }
-
-  /*
-  ** Obsolete Flags
-  */
-  
-  if (cstring_equalLit (s, "accessunspec"))
-    {
-      if (!quiet) 
+      /*
+      ** Synonyms
+      */
+      
+      if (cstring_equalLit (cflag, "pred"))
 	{
-	  llerror_flagWarning 
-	    (cstring_makeLiteral
-	     ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
-	      "accessfunction to provide more precise control of accessibility "
-	      "of representations.  For more information, "
-	      "see splint -help accessmodule"));
+	  res = FLG_PREDBOOL;
+	}
+      else if (cstring_equalLit (cflag, "modobserverstrict"))
+	{
+	  res = FLG_MODOBSERVERUNCON;
+	}
+      else if (cstring_equalLit (cflag, "czechnames"))
+	{
+	  res = FLG_CZECH;
+	}
+      else if (cstring_equalLit (cflag, "slovaknames"))
+	{
+	  res = FLG_SLOVAK;
+	}
+      else if (cstring_equalLit (cflag, "czechoslovaknames"))
+	{
+	  res = FLG_CZECHOSLOVAK;
+	}
+      else if (cstring_equalLit (cflag, "globunspec")
+	       || cstring_equalLit (cflag, "globuncon"))
+	{
+	  res = FLG_GLOBUNSPEC;
+	}
+      else if (cstring_equalLit (cflag, "modglobsunspec")
+	       || cstring_equalLit (cflag, "modglobsuncon")
+	       || cstring_equalLit (cflag, "modglobsnomods"))
+	{
+	  res = FLG_MODGLOBSUNSPEC;
+	}
+      else if (cstring_equalLit (cflag, "export"))
+	{
+	  res = FLG_EXPORTANY;
+	}
+      else if (cstring_equalLit (cflag, "macrospec"))
+	{
+	  res = FLG_MACRODECL;
+	}
+      else if (cstring_equalLit (cflag, "ansireservedlocal"))
+	{
+	  res = FLG_ANSIRESERVEDLOCAL;
+	}
+      else if (cstring_equalLit (cflag, "warnposix"))
+	{
+	  res = FLG_WARNPOSIX;
+	}
+      else if (cstring_equalLit (cflag, "defuse"))
+	{
+	  res = FLG_USEDEF;
+	}
+      else if (cstring_equalLit (cflag, "macroundef"))
+	{
+	  res = FLG_MACROUNDEF;
+	}
+      else if (cstring_equalLit (cflag, "showcol"))
+	{
+	  res = FLG_SHOWCOL;
+	}
+      else if (cstring_equalLit (cflag, "intbool"))
+	{
+	  res = FLG_BOOLINT;
+	}
+      else if (cstring_equalLit (cflag, "intchar"))
+	{
+	  res = FLG_CHARINT;
+	}
+      else if (cstring_equalLit (cflag, "intenum"))
+	{
+	  res = FLG_ENUMINT;
+	}
+      /*
+      ** Backwards compatibility for our American friends...
+      */
+      
+      else if (cstring_equalLit (cflag, "ansilib"))
+	{
+	  res = FLG_ANSILIB;
+	}
+      else if (cstring_equalLit (cflag, "ansistrictlib"))
+	{
+	  res = FLG_STRICTLIB;
+	}
+      else if (cstring_equalLit (cflag, "skipansiheaders"))
+	{
+	  res = FLG_SKIPANSIHEADERS;
+	}
+      else if (cstring_equalLit (cflag, "ansireserved"))
+	{
+	  res = FLG_ANSIRESERVED;
+	}
+      else if (cstring_equalLit (cflag, "ansireservedinternal"))
+	{
+	  res = FLG_ANSIRESERVEDLOCAL;
 	}
       
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "ansilimits"))
-    {
+      /*
+      ** Obsolete Flags
+      */
+      
+      else if (cstring_equalLit (cflag, "accessunspec"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning 
+		(cstring_makeLiteral
+		 ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
+		  "accessfunction to provide more precise control of accessibility "
+		  "of representations.  For more information, "
+		  "see splint -help accessmodule"));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "ansilimits"))
+	{
 	  llerror_flagWarning 
 	    (cstring_makeLiteral
 	     ("ansilimits flag is no longer supported.  It has been replaced by ansi89limits and "
 	      "iso99limits to select either the lower translation limits imposed by the ANSI89 "
 	      "standard or the typically higher limits prescribed by ISO C99."));
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "staticmods"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning 
+		(cstring_makeLiteral
+		 ("staticmods flag is obsolete.  You probably "
+		  "want impcheckmodstatics.  For more information, "
+		  "see splint -help impcheckmodstatics"));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "bool"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning
+		(cstring_makeLiteral ("bool flag is obsolete.  It never really "
+				      "made sense in the first place."));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "shiftsigned"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning
+		(cstring_makeLiteral ("shiftsigned flag is obsolete.  You probably "
+				      "want bitwisesigned, shiftnegative or shiftsize."));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "ansi"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning
+		(cstring_makeLiteral ("ansi flag is obsolete.  You probably "
+				      "want noparams and/or oldstyle."));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else if (cstring_equalLit (cflag, "stdio"))
+	{
+	  if (!quiet) 
+	    {
+	      llerror_flagWarning 
+		(cstring_makeLiteral
+		 ("stdio flag is obsolete.  You may "
+		  "want strictlib or one of the gloabls "
+		  "checking flags.  For more information, "
+		  "see splint -help strictlib or splint -help flags globals"));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+      else
+	{
+	  res = INVALID_FLAG;
+	}
+    }
 
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "staticmods"))
-    {
-      if (!quiet) 
-	{
-	  llerror_flagWarning 
-	    (cstring_makeLiteral
-	     ("staticmods flag is obsolete.  You probably "
-	      "want impcheckmodstatics.  For more information, "
-	      "see splint -help impcheckmodstatics"));
-	}
-
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "bool"))
-    {
-      if (!quiet) 
-	{
-	  llerror_flagWarning
-	    (cstring_makeLiteral ("bool flag is obsolete.  It never really "
-				  "made sense in the first place."));
-	}
-      
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "shiftsigned"))
-    {
-      if (!quiet) 
-	{
-	  llerror_flagWarning
-	    (cstring_makeLiteral ("shiftsigned flag is obsolete.  You probably "
-				  "want bitwisesigned, shiftnegative or shiftsize."));
-	}
-      
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "ansi"))
-    {
-      if (!quiet) 
-	{
-	  llerror_flagWarning
-	    (cstring_makeLiteral ("ansi flag is obsolete.  You probably "
-				  "want noparams and/or oldstyle."));
-	}
-      
-      return SKIP_FLAG;
-    }
-  else if (cstring_equalLit (s, "stdio"))
-    {
-      if (!quiet) 
-	{
-	  llerror_flagWarning 
-	    (cstring_makeLiteral
-	     ("stdio flag is obsolete.  You may "
-	      "want strictlib or one of the gloabls "
-	      "checking flags.  For more information, "
-	      "see splint -help strictlib or splint -help flags globals"));
-	}
-      
-      return SKIP_FLAG;
-    }
-  else
-    {
-      return INVALID_FLAG;
-    }
+  cstring_free (cflag);
+  return res;
 }
 
 void setValueFlag (flagcode opt, cstring arg)
