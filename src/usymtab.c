@@ -350,7 +350,8 @@ usymtab_destroyMod (void) /*@modifies utab, globtab, filetab@*/ /*@globals kille
   DPRINTF (("Destroy usymtab [%p]: %d", utab, utab->nentries));
   usymtab_freeAux (utab);
   utab = usymtab_undefined;
-}
+  /*@-globstate@*/ 
+} /*@=globstate@*/
 
 void
 usymtab_initGlobalMarker () /*@globals globtab@*/
@@ -5408,7 +5409,7 @@ void usymtab_free ()
   dbgfree = TRUE;
   usymtab_freeAux (utab);
   utab = usymtab_undefined;
-}
+/*@i523@*/ }
 
 static int usymtab_lexicalLevel (void) /*@globals utab@*/
 {

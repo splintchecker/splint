@@ -1305,7 +1305,7 @@ cppReader_parseExpression (cppReader *pfile)
 	{
 	  struct operation *new_stack;
 	  size_t old_size = size_fromInt ((char *) limit - (char *) stack);
-	  size_t new_size = 2 * old_size;
+	  size_t new_size = (size_t) (2 * old_size);
 
 	  if (stack != init_stack)
 	    {

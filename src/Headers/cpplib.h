@@ -222,8 +222,7 @@ cpplib_createDefinition (/*@dependent@*/ cstring p_def, fileloc p_loc,
 
 extern void cpplib_reserve (/*@sef@*/ cppReader *, /*@sef@*/ size_t);
 #define cpplib_reserve(PFILE, N) \
-  (cpplib_getWritten (PFILE) + (N) > (PFILE)->token_buffer_size \
-   && (cppReader_growBuffer (PFILE, (N)), 0))
+  (((cpplib_getWritten (PFILE) + (N) > (PFILE)->token_buffer_size)) ? cppReader_growBuffer (PFILE, (N)) : (void) 0)
 
 /* Append string STR (of length N) to PFILE's output buffer.
    Assume there is enough space. */

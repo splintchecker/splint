@@ -46,6 +46,7 @@ int g_prevCodeLine = 0;
 FILE *g_warningstream = NULL;
 FILE *g_messagestream = NULL;
 FILE *g_errorstream = NULL;
+FILE *g_csvstream = NULL;
 
 /*
 ** These were in llmain.c.  Most should not be globals...

@@ -30,7 +30,7 @@ typedef enum
 # define NUMVALUEFLAGS       14
 
 /*@constant int NUMSTRINGFLAGS; @*/
-# define NUMSTRINGFLAGS      27
+# define NUMSTRINGFLAGS      28
 
 /*@iter allFlagCodes (yield flagcode f); @*/
 # define allFlagCodes(m_code) \

@@ -9,6 +9,7 @@
 
 # ifdef HAVE_CONFIG_H
 # ifdef WIN32
+
 /* Win32 uses its own hand-generated config file */
 # include "../../winconfig.h"
 # else 

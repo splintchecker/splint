@@ -48,8 +48,8 @@ annotationInfo_create (/*@only@*/ cstring p_name,
 		       /*@only@*/ mtContextNode p_context,
 		       int p_value, /*@only@*/ fileloc p_loc) /*@*/ ;
 
-extern /*@observer@*/ cstring annotationInfo_unparse (annotationInfo p_ainfo);
-extern /*@observer@*/ fileloc annotationInfo_getLoc (annotationInfo p_ainfo) /*@*/ ;
+extern /*@observer@*/ cstring annotationInfo_unparse (annotationInfo p_a);
+extern /*@observer@*/ fileloc annotationInfo_getLoc (annotationInfo p_a) /*@*/ ;
 
 extern void annotationInfo_free (/*@only@*/ annotationInfo) ;
 

@@ -243,6 +243,7 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	      || (cprim_isAnyChar (c2) && context_msgCharInt ())) {
 	    return TRUE;
 	  }
+	  /*@fallthrough@*/ 
 	default:
 	  ;
 	}

@@ -49,12 +49,20 @@ static int mcount = 0;
 static /*@only@*/ cstring saveOneMessage = cstring_undefined;
 static /*@only@*/ fileloc lastparseerror = fileloc_undefined;
 static /*@only@*/ fileloc lastbug = fileloc_undefined;
-static bool llgenerrorreal (char *p_srcFile, int p_srcLine, 
-			    /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
+static bool llgenerrorreal (flagcode p_code, 
+			    char *p_srcFile, int p_srcLine, 
+			    /*@only@*/ cstring p_s,
+			    /*@temp@*/ cstring p_addtext,
+			    fileloc p_fl, bool p_iserror, bool p_indent)
                  /*@modifies g_warningstream@*/ ;
-static bool llgenerroraux (char *p_srcFile, int p_srcLine, 
-			   /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
+static bool llgenerroraux (flagcode p_code, char *p_srcFile, int p_srcLine, 
+			   /*@only@*/ cstring p_s,
+			   /*@temp@*/ cstring p_addtext,
+			   fileloc p_fl, bool p_iserror, bool p_indent)
                  /*@modifies g_warningstream@*/ ;
+
+static void generateCSV (flagcode p_code, cstring p_s, cstring p_addtext, fileloc p_fl) 
+     /*@modifies g_csvstream@*/ ;
 
 static void printError (FILE *p_stream, /*@only@*/ cstring p_sc)
    /*@globals lastfileloclen @*/
@@ -842,12 +850,15 @@ llgentypeerroraux (char *srcFile, int srcLine,
     }
   else
     {
-      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
+      if (hcode != INVALID_FLAG && hcode != ocode)
 	{
-	  if (hcode != INVALID_FLAG && hcode != ocode)
+	  code = hcode;
+	}
+      
+      if (llgenerroraux (ocode, srcFile, srcLine, s, flagcodeHint (code), fl, TRUE, FALSE))
+	{
+	  if (code != ocode) 
 	    {
-	      code = hcode;
-
 	      if (context_flagOn (code, fl))
 		{
 		  /* The flag is alreay set, something buggy in the flag code */
@@ -858,7 +869,7 @@ llgentypeerroraux (char *srcFile, int srcLine,
 		{
 		  llshowhint (code);
 		}
-	    }
+	  } 
 	  else
 	    {
 	      llsuppresshint ('-', code);
@@ -899,7 +910,7 @@ xllgenformattypeerror (char *srcFile, int srcLine,
 bool
 xllgenerror (char *srcFile, int srcLine, flagcode o, /*@only@*/ cstring s, fileloc fl)
 {
-  if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
+  if (llgenerroraux (o, srcFile, srcLine, s, flagcodeHint (o), fl, TRUE, FALSE))
     {
       llnosuppresshint (o);
       flagcode_recordError (o);
@@ -920,7 +931,7 @@ xllgenhinterror (char *srcFile, int srcLine,
 {
   if (!context_suppressFlagMsg (o, fl))
     {
-      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
+      if (llgenerroraux (o, srcFile, srcLine, s, hint, fl, TRUE, FALSE))
 	{
 	  flagcode_recordError (o);
 
@@ -950,14 +961,17 @@ xllgenhinterror (char *srcFile, int srcLine,
 }
 
 static bool
-llrealerror (char *srcFile, int srcLine, /*@only@*/ cstring s, fileloc fl)
+llrealerror (flagcode code, char *srcFile, int srcLine, /*@only@*/ cstring s, /*@temp@*/ cstring addtext, fileloc fl)
 {
-  return (llgenerrorreal (srcFile, srcLine, s, fl, TRUE, FALSE));
+  return (llgenerrorreal (code, srcFile, srcLine, s, addtext, fl, TRUE, FALSE));
 }
 
 static bool
-llgenerroraux (char *srcFile, int srcLine,
-	       /*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
+llgenerroraux (flagcode code,
+	       char *srcFile, int srcLine,
+	       /*@only@*/ cstring s, 
+	       cstring addtext,
+	       fileloc fl, bool iserror, bool indent)
 {
   if (context_inSuppressZone (fl))
     {
@@ -965,7 +979,7 @@ llgenerroraux (char *srcFile, int srcLine,
       return FALSE;
     }
   
-  if (llgenerrorreal (srcFile, srcLine, s, fl, iserror, indent)) {
+  if (llgenerrorreal (code, srcFile, srcLine, s, addtext, fl, iserror, indent)) {
     return TRUE;
   } else {
     return FALSE;
@@ -978,7 +992,7 @@ xllforceerror (char *srcFile, int srcLine,
 {
   flagcode_recordError (code);
 
-  if (llgenerrorreal (srcFile, srcLine, s, fl, TRUE, FALSE)) {
+  if (llgenerrorreal (code, srcFile, srcLine, s, cstring_undefined, fl, TRUE, FALSE)) {
     closeMessage ();
     return TRUE;
   } else {
@@ -986,9 +1000,34 @@ xllforceerror (char *srcFile, int srcLine,
   }
 }
 
+static void generateCSV (flagcode code, cstring s, cstring addtext, fileloc fl)
+{
+
+  if (g_csvstream != NULL) {
+    /* Warning, Flag Code, Flag Name, Priority, File, Line, Column, Warning Text, Additional Text */
+    fprintf (g_csvstream, "%d,%d,%s,%d,%s,%d,%d,\"%s\"",
+	     context_numErrors (),
+	     (int) code, /* flag code */
+	     cstring_toCharsSafe (flagcode_unparse (code)), /* flag name */
+	     flagcode_priority (code), /* priority */
+	     cstring_toCharsSafe (fileloc_outputFilename (fl)),
+	     fileloc_lineno (fl),
+	     fileloc_column (fl),
+	     cstring_toCharsSafe (s));
+
+    if (cstring_isDefined (addtext)) {
+      fprintf (g_csvstream, ",\"%s\"\n", cstring_toCharsSafe (addtext));
+    } else {
+      fprintf (g_csvstream, "\n");
+    }
+  }
+}
+
 static bool
-llgenerrorreal (char *srcFile, int srcLine, 
-		/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
+llgenerrorreal (flagcode code, char *srcFile, int srcLine, 
+		/*@only@*/ cstring s, 
+		cstring addtext,
+		fileloc fl, bool iserror, bool indent)
 {
   cstring flstring;
 
@@ -1148,6 +1187,8 @@ llgenerrorreal (char *srcFile, int srcLine,
   flstring = fileloc_unparse (fl);
   lastfileloclen = cstring_length (flstring);
 
+  generateCSV (code, s, addtext, fl);
+
   if (indent)
     {
       printError (g_warningstream, message ("   %q: %q", flstring, s));
@@ -1158,6 +1199,7 @@ llgenerrorreal (char *srcFile, int srcLine,
     }
 
   showSourceLoc (srcFile, srcLine);
+	     
   return TRUE;
 }
 
@@ -1624,6 +1666,7 @@ void genppllerrorhint (flagcode code, /*@only@*/ cstring s,
     {
       if (context_getFlag (code))
 	{
+	  generateCSV (code, s, hint, g_currentloc);
 	  prepareMessage ();
 	  context_clearPreprocessing ();
 	  llerror (code, s);
@@ -1711,7 +1754,7 @@ bool xlloptgenerror (char *srcFile, int srcLine,
 {
   DPRINTF (("xllopt: %s", s));
 
-  if (llrealerror (srcFile, srcLine, s, loc))
+  if (llrealerror (o, srcFile, srcLine, s, flagcodeHint (o), loc))
     {
       DPRINTF (("Here we are!"));
       llsuppresshint ('-', o);
@@ -1744,7 +1787,7 @@ bool xoptgenerror2 (char *srcFile, int srcLine,
 	}
       else
 	{
-	  if (llrealerror (srcFile, srcLine, s, loc))
+	  if (llrealerror (f1, srcFile, srcLine, s, flagcodeHint (f1), loc))
 	    {
 	      llsuppresshint2 ('-', f1, f2);
 	      flagcode_recordError (f2);
@@ -1779,7 +1822,7 @@ bool xoptgenerror2n (char *srcFile, int srcLine,
 	}
       else
 	{
-	  if (llrealerror (srcFile, srcLine, s, loc))
+	  if (llrealerror (f1, srcFile, srcLine, s, flagcodeHint (f2), loc))
 	    {
 	      llsuppresshint ('+', f2);
 	      flagcode_recordError (f2);
@@ -1796,7 +1839,7 @@ bool xoptgenerror2n (char *srcFile, int srcLine,
 bool xllnoptgenerror (char *srcFile, int srcLine,
 		      flagcode o, /*@only@*/ cstring s, fileloc loc)
 {
-  if (llrealerror (srcFile, srcLine, s, loc))
+  if (llrealerror (o, srcFile, srcLine, s, flagcodeHint (o), loc))
     {
       llsuppresshint ('+', o);
       flagcode_recordError (o);
@@ -1867,19 +1910,23 @@ void xllparseerror (char *srcFile, int srcLine, cstring s)
 }
 
 bool xfsgenerror (char *srcFile, int srcLine,
-		   flagSpec fs, /*@only@*/ cstring s, fileloc fl) 
+		  flagSpec fs, /*@only@*/ cstring s, fileloc fl) 
 {
   if (flagSpec_isOn (fs, fl))
     {
-      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
+      flagcode firston = flagSpec_getFirstOn (fs, fl);
+
+      if (llgenerroraux (firston, srcFile, srcLine, s, 
+			 flagcodeHint (firston),
+			 fl, TRUE, FALSE))
 	{
-	  llsuppresshint ('-', flagSpec_getFirstOn (fs, fl));
-	  flagcode_recordError (flagSpec_getFirstOn (fs, fl));
+	  llsuppresshint ('-', firston);
+	  flagcode_recordError (firston);
 	  return TRUE;
 	}
       else
 	{
-	  flagcode_recordSuppressed (flagSpec_getFirstOn (fs, fl));
+	  flagcode_recordSuppressed (firston);
 	  return FALSE;
 	}
     }

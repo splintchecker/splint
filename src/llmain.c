@@ -673,7 +673,29 @@ int main (int argc, char *argv[])
 		      argc - 1, argv + 1);
 
   showHerald (); 
-  
+
+  if (context_getFlag (FLG_CSV)) {
+    cstring fname = context_getString (FLG_CSV);
+
+    if (cstring_isDefined (fname)) {
+      if (osd_fileExists (fname) && !context_getFlag (FLG_CSVOVERWRITE)) {
+	lldiagmsg (message ("Specified CSV output file already exists (use +csvoverwrite to automatically overwrite): %s",
+			    fname));
+      } else {
+	g_csvstream = fopen (cstring_toCharsSafe (fname), "w");
+	
+	DPRINTF (("Creating: %s", fname));
+	if (g_csvstream == NULL) {
+	  lldiagmsg (message ("Cannot open file for CSV output: %s", fname));
+	} else {
+	  displayScan (message ("Starting CSV output file: %s", context_getString (FLG_CSV)));
+	  fprintf (g_csvstream, 
+		   "Warning, Flag Code, Flag Name, Priority, File, Line, Column, Warning Text, Additional Text\n");
+	}
+      }
+    }
+  }
+
 # ifdef DOANNOTS
   initAnnots ();
 # endif
@@ -928,12 +950,16 @@ int main (int argc, char *argv[])
 # endif
 
   cleanupFiles ();
-
+  
+  if (g_csvstream != NULL) {
+    displayScan (message ("Closing CSV file: %s", context_getString (FLG_CSV)));
+    check (fclose (g_csvstream) == 0);
+  }
+  
   if (context_getFlag (FLG_SHOWSUMMARY))
     {
       summarizeErrors (); 
     }
-
   
   {
     bool isQuiet = context_getFlag (FLG_QUIET);

@@ -2242,7 +2242,7 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
 	preconditions = constraintList_makeNew();
     }
   
-  // drl remember to remove this code before you make a pslint release.
+  /*@i523@ drl remember to remove this code before you make a splint release. */
   /*
   if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
     {

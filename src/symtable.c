@@ -1043,7 +1043,7 @@ parseLine (char *line, inputStream srce, mapping map)
 	  llassert (lineptr != NULL);
 	  lineptr = strchr (lineptr + 1, ' ');	/* go past namestr */
 	  llassert (lineptr != NULL);
-	  col = 5 + lineptr - line;	/* 5 for initial "%LCL "*/
+	  col = 5 + ((int) (lineptr - line));	/* 5 for initial "%LCL "*/
 
 	  lclbug (message ("%q: Imported files contains unknown base sort",
 			   fileloc_unparseRawCol (importfile, inputStream_thisLineNumber (srce), col)));
@@ -1107,7 +1107,7 @@ parseLine (char *line, inputStream srce, mapping map)
       llassert (lineptr != NULL);
       lineptr = strchr (lineptr + 1, ' ');	/* go past namestr */
       llassert (lineptr != NULL);
-      col = 5 + lineptr - line;	/* 5 for initial "%LCL "*/
+      col = 5 + ((int) (lineptr - line));	/* 5 for initial "%LCL "*/
 
       if (sort_isNoSort (bsort))
 	{
@@ -1158,7 +1158,7 @@ parseLine (char *line, inputStream srce, mapping map)
       lineptr = strchr (lineptr + 1, ' ');	/* go past namestr */
       llassert (lineptr != NULL);
       
-      col = 5 + lineptr - line;	/* 5 for initial "%LCL "*/
+      col = 5 + ((int) (lineptr - line));	/* 5 for initial "%LCL "*/
 
       if (sort_isNoSort (bsort))
 	{
@@ -1340,7 +1340,7 @@ parseLine (char *line, inputStream srce, mapping map)
       lineptr = strchr (lineptr + 1, ' ');	/* go past namestr */
       llassert (lineptr != NULL);
 
-      col = 5 + lineptr - line;	/* 5 for initial "%LCL "*/
+      col = 5 + ((int) (lineptr - line));	/* 5 for initial "%LCL "*/
       if (sort_isNoSort (bsort))
 	{
 	  lclplainerror (message ("%q: unknown base sort\n",
@@ -2093,7 +2093,7 @@ domainMatches (ltokenList domain, sortSetList argSorts)
 
 /*@only@*/ lslOpSet
   symtable_opsWithLegalDomain (symtable tab, /*@temp@*/ /*@null@*/ nameNode n,
-			       sortSetList argSorts, sort qual)
+			       sortSetList argSorts, sort q)
 {
  /* handles nil qual */
   lslOpSet ops = lslOpSet_new ();
@@ -2114,7 +2114,7 @@ domainMatches (ltokenList domain, sortSetList argSorts)
 	    {
 	      rangeSort = sigNode_rangeSort (sig);
 	      
-	      if ((qual == 0) || (sort_equal (rangeSort, qual)))
+	      if ((q == NULL) || (sort_equal (rangeSort, q)))
 		{
 		  if (domainMatches (sig->domain, argSorts))
 		    {

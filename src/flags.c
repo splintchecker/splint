@@ -1671,7 +1671,7 @@ flags_processFlags (bool inCommandLine,
 	  cstring flagname = cstring_fromChars (thisarg + 1); /* skip '-' or '+' */
 	  flagcode opt = flags_identifyFlag (flagname);
 
-	  DPRINTF (("Flag: %s", flagcode_unparse (opt)));
+	  DPRINTF (("Flag [%s]: %s", flagname, flagcode_unparse (opt)));
 	  
 	  if (flagcode_isInvalid (opt))
 	    {
@@ -1958,4 +1958,13 @@ flags_processFlags (bool inCommandLine,
     }
 
   cstringSList_free (fl); /* evans 2002-07-12: why wasn't this reported!?? */
+}
+
+int flagcode_priority (/*@unused@*/ flagcode code)
+{
+  /*
+  ** For now, we do a really simple prioritization: all are 1
+  */
+
+  return 1;
 }

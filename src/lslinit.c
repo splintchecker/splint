@@ -37,6 +37,8 @@
 # include "syntable.h"
 # include "lslinit.h"
 # include "lclinit.h"
+# include "lclscan.h"
+# include "lclscanline.h"
 
 /* needed to parse init files */
 # include "shift.h"

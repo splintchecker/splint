@@ -54,7 +54,7 @@
 /*@notfunction@*/
 # define globalExtraArgFlag     FALSE, FALSE, TRUE,  FALSE, ARG_SPECIAL
 /*@notfunction@*/
-# define globalFileFlag         FALSE, FALSE, TRUE,  FALSE, ARG_FILE
+# define globalFileFlag         FALSE, TRUE,  TRUE,  FALSE, ARG_FILE
 /*@=namechecks@*/
 
 /*
@@ -3275,6 +3275,20 @@ static flaglist flags =
     "showloadloc",
     FLG_SHOWLOADLOC,
     "show location information for load files",
+    NULL, 0, 0
+  },
+  {
+    FK_FORMAT, FK_DISPLAY, globalFileFlag,
+    "csv",
+    FLG_CSV,
+    "produce comma-separated values (CSV) warnings output file",
+    NULL, 0, 0
+  },
+  {
+    FK_FORMAT, FK_DISPLAY, plainFlag,
+    "csvoverwrite",
+    FLG_CSVOVERWRITE,
+    "overwrite exisiting CVS output file",
     NULL, 0, 0
   },
   {

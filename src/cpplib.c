@@ -7609,7 +7609,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	    nlist->got_name_map = 0;
 	    nlist->next = NULL;
 
-	    if (opts->first_system_include == NULL)
+	    /*@i2523@*/ if (opts->first_system_include == NULL)
 	      {
 		opts->first_system_include = nlist;
 	      }
@@ -7624,7 +7624,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
   cppReader_appendIncludeChain (pfile, opts->after_include,
 				opts->last_after_include);
 
-  if (opts->first_system_include == NULL)
+  /*@i523@*/ if (opts->first_system_include == NULL)
     {
       opts->first_system_include = opts->after_include;
     }

@@ -183,7 +183,7 @@ extern void varInfo_free (/*@only@*/ varInfo p_v);
 
 extern /*@only@*/ lslOpSet 
   symtable_opsWithLegalDomain (symtable p_tab, /*@temp@*/ /*@null@*/ nameNode p_n, 
-			       sortSetList p_argSorts, sort p_qual);
+			       sortSetList p_argSorts, sort p_q);
 extern /*@observer@*/ sigNodeSet 
   symtable_possibleOps (symtable p_tab, nameNode p_n);
 extern bool symtable_opExistsWithArity(symtable p_tab, nameNode p_n, int p_arity);

@@ -40,9 +40,16 @@ typedef enum
   XPERCENT, XCTYPE, XPLURAL, XREPREFIX, XFILELOC, XPOINTER
 } ccode;
 
-/* char *s, anytype v */
+/*@function void GETPRINTF (char *p_s, anytype p_v) modifies strbuf@*/
+
 /*@notfunction@*/
+# ifndef WIN32
+  /* ISO requires this, but not all implementations (e.g., Microsoft's) provide it */
 # define GETPRINTF(s,v) (snprintf (strbuf, 64, s, v), mstring_copy (strbuf))
+# else
+  /* MS provides _snprintf instead */
+# define GETPRINTF(s,v) (_snprintf (strbuf, 64, s, v), mstring_copy (strbuf))
+# endif
 
 /*
 ** returns control code indicated by *c, and

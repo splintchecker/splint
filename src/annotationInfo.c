@@ -43,26 +43,26 @@ annotationInfo annotationInfo_create (cstring name,
   return res;
 }
 
-void annotationInfo_free (annotationInfo ainfo)
+void annotationInfo_free (annotationInfo a)
 {
-  if (annotationInfo_isDefined (ainfo))
+  if (annotationInfo_isDefined (a))
     {
-      cstring_free (ainfo->name);
-      fileloc_free (ainfo->loc);
-      mtContextNode_free (ainfo->context); /* evans 2002-01-03 */
-      sfree (ainfo);
+      cstring_free (a->name);
+      fileloc_free (a->loc);
+      mtContextNode_free (a->context); /* evans 2002-01-03 */
+      sfree (a);
     }
 }
 
-cstring annotationInfo_getName (annotationInfo ainfo)
+cstring annotationInfo_getName (annotationInfo a)
 {
-  llassert (annotationInfo_isDefined (ainfo));
-  return ainfo->name;
+  llassert (annotationInfo_isDefined (a));
+  return a->name;
 }
 
-/*@observer@*/ cstring annotationInfo_unparse (annotationInfo ainfo)
+/*@observer@*/ cstring annotationInfo_unparse (annotationInfo a)
 {
-  return annotationInfo_getName (ainfo);
+  return annotationInfo_getName (a);
 }
 
 /*@observer@*/ metaStateInfo annotationInfo_getState (annotationInfo a) /*@*/ 
@@ -71,10 +71,10 @@ cstring annotationInfo_getName (annotationInfo ainfo)
   return a->state;
 }
 
-/*@observer@*/ fileloc annotationInfo_getLoc (annotationInfo ainfo) /*@*/ 
+/*@observer@*/ fileloc annotationInfo_getLoc (annotationInfo a) /*@*/ 
 {
-  llassert (annotationInfo_isDefined (ainfo));
-  return ainfo->loc;
+  llassert (annotationInfo_isDefined (a));
+  return a->loc;
 }
 
 int annotationInfo_getValue (annotationInfo a) /*@*/ 
@@ -146,21 +146,21 @@ bool annotationInfo_matchesContextRef (annotationInfo a, sRef sr)
     }
 }
 
-cstring annotationInfo_dump (annotationInfo ainfo)
+cstring annotationInfo_dump (annotationInfo a)
 {
-  llassert (annotationInfo_isDefined (ainfo));
-  return ainfo->name;
+  llassert (annotationInfo_isDefined (a));
+  return a->name;
 }
 
 /*@observer@*/ annotationInfo annotationInfo_undump (char **s)
 {
   cstring mname = reader_readUntil (s, '.');
-  annotationInfo ainfo;
+  annotationInfo a;
   
   llassert (cstring_isDefined (mname));
-  ainfo = context_lookupAnnotation (mname);
+  a = context_lookupAnnotation (mname);
 
-  if (annotationInfo_isUndefined (ainfo))
+  if (annotationInfo_isUndefined (a))
     {
       llfatalerrorLoc
 	(message ("Library uses undefined annotation %s.  Must use same -mts flags as when library was created.",
@@ -169,7 +169,7 @@ cstring annotationInfo_dump (annotationInfo ainfo)
   else
     {
       cstring_free (mname);
-      return ainfo;
+      return a;
     }
 
   BADBRANCHRET (annotationInfo_undefined);

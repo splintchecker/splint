@@ -1011,7 +1011,11 @@ fileTable_addOpen (fileTable ft, /*@observer@*/ FILE *f, /*@only@*/ cstring fnam
 
 FILE *fileTable_createFile (fileTable ft, cstring fname)
 {
-  int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+# ifdef WIN32
+   int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL); /* not supported by VS.net: , S_IRUSR | S_IWUSR); */
+# else
+   int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+# endif
 
   if (fdesc == -1)
     {

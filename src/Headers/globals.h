@@ -21,6 +21,9 @@ extern /*@owned@*/ fileloc g_currentloc;
 /* stream for error messages */
 /*@unchecked@*/ extern /*@relnull@*/ /*@dependent@*/ /*:open:*/ FILE *g_errorstream; 
 
+/* stream for error messages */
+/*@unchecked@*/ extern /*@null@*/ /*@dependent@*/ /*:open:*/ FILE *g_csvstream; 
+
 /*@-ansireserved@*/
 /* This macro is defined by flex. */
 /*@constant external int ECHO@*/

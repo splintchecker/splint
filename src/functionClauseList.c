@@ -198,7 +198,7 @@ functionClauseList_getImplictConstraints (functionClauseList s)
 	      else
 		{
 		  llassert (FALSE);
-		  // fix this
+		  /*@i2523 fix this */
 		}
 	    }
 	}

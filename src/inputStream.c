@@ -103,7 +103,7 @@ inputStream_create (cstring name, cstring suffix, bool echo)
 
   oname = s->name;
   s->name = fileLib_cleanName (s->name);
-  cstring_free (oname); /* evans 2002-07-12: why no error without this?! */
+  /*@i523@*/ cstring_free (oname); /* evans 2002-07-12: why no error without this?! */
 
   s->lineNo = 0;
   s->charNo = 0;
@@ -114,7 +114,7 @@ inputStream_create (cstring name, cstring suffix, bool echo)
   s->stringSourceTail = NULL;
   s->buffer[0] = '\0';
 
-  return s;
+  /*@i523@*/ return s;
 }
 
 extern /*@only@*/ inputStream 

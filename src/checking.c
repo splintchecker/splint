@@ -41,7 +41,7 @@
 
 static /*@only@*/ cstring printBadArgs (sortSetList p_args);
 static /*@only@*/ sortSet 
-  standardOperators (/*@null@*/ nameNode p_n, sortSetList p_argSorts, sort p_qual);
+  standardOperators (/*@null@*/ nameNode p_n, sortSetList p_argSorts, sort p_q);
 static bool isStandardOperator (/*@null@*/ nameNode p_n);
 static void assignSorts (termNode p_t, sort p_s);
 
@@ -543,7 +543,7 @@ static bool isStandardOperator (/*@null@*/ nameNode n)
 }
 
 static /*@only@*/ sortSet
-standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sort qual)
+standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sort q)
 {
   sortSet argSet;
   sortSet ret = sortSet_new ();
