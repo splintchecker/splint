@@ -29,12 +29,22 @@
 # include "llbasic.h"
 
 extern 
-stateValue stateValue_create (int value, stateInfo info) {
+/*@notnull@*/ stateValue stateValue_create (int value, stateInfo info) {
   stateValue sv = (stateValue) dmalloc (sizeof (*sv));
   
   sv->value = value;
   sv->info = info;
+  sv->implicit = FALSE;
+  return sv;
+}
+
+extern 
+/*@notnull@*/ stateValue stateValue_createImplicit (int value, stateInfo info) {
+  stateValue sv = (stateValue) dmalloc (sizeof (*sv));
   
+  sv->value = value;
+  sv->info = info;
+  sv->implicit = TRUE;
   return sv;
 }
 
@@ -42,6 +52,7 @@ stateValue stateValue_copy (stateValue s) {
   stateValue res;
   llassert (stateValue_isDefined (s));
   res = stateValue_create (s->value, stateInfo_copy (s->info));
+  res->implicit = s->implicit;
   return res;
 }
 
@@ -115,25 +126,39 @@ void stateValue_show (stateValue s, metaStateInfo msinfo)
 	  if (fileloc_isDefined (info->loc))
 	    {
 	      llgenindentmsg (message 
-			      ("State becomes %s",
-			       metaStateInfo_unparseValue (msinfo,
-							   stateValue_getValue (s))),
+			      ("State becomes %q",
+			       stateValue_unparseValue (s, msinfo)),
 			      info->loc);
 	    }
 	}
     }
 }
 
-/*@observer@*/ cstring stateValue_unparseValue (stateValue s, metaStateInfo msinfo)
+/*@only@*/ cstring stateValue_unparseValue (stateValue s, metaStateInfo msinfo)
 {
-  return metaStateInfo_unparseValue (msinfo,
-				     stateValue_getValue (s));
+  if (stateValue_isImplicit (s))
+    {
+      return message ("implicitly %s",
+		      metaStateInfo_unparseValue (msinfo,
+						  stateValue_getValue (s)));
+    }
+  else
+    {
+      return cstring_copy (metaStateInfo_unparseValue (msinfo,
+						       stateValue_getValue (s)));
+    }
 }
 
 int stateValue_getValue (stateValue s)
 {
   llassert (stateValue_isDefined (s));
   return s->value;
+}
+
+bool stateValue_isImplicit (stateValue s)
+{
+  llassert (stateValue_isDefined (s));
+  return s->implicit;
 }
 
 stateInfo stateValue_getInfo (stateValue s)

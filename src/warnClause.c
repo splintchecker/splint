@@ -106,8 +106,17 @@ warnClause_dump (warnClause wc)
   cstring st = cstring_undefined;
 
   llassert (!cstring_containsChar (warnClause_getMessage (wc), '#'));
-  
-  st = message ("%q#%s#", flagSpec_dump (wc->flag), warnClause_getMessage (wc));
+
+  if (warnClause_hasMessage (wc))
+    {
+      llassert (cstring_firstChar (warnClause_getMessage (wc)) != '.');
+      st = message ("%q#%s#", flagSpec_dump (wc->flag), warnClause_getMessage (wc));
+    }
+  else
+    {
+      st = message ("%q#.#", flagSpec_dump (wc->flag));
+    }
+
   return st;
 }
 
@@ -118,10 +127,24 @@ warnClause_undump (char **s)
   cstring msg;
   exprNode emsg;
 
+  DPRINTF (("Undump: %s", *s));
   flag = flagSpec_undump (s);
+  DPRINTF (("Here: %s", *s));
   reader_checkChar (s, '#');
-  msg = reader_readUntil (s, '#');
+  DPRINTF (("Here: %s", *s));
+
+  if (reader_optCheckChar (s, '.'))
+    {
+      msg = cstring_undefined;
+    }
+  else
+    {
+      msg = reader_readUntil (s, '#');
+    }
+  
+  DPRINTF (("Here: %s", *s));
   reader_checkChar (s, '#');
+
   emsg = exprNode_rawStringLiteral (msg, fileloc_copy (g_currentloc));
   
   return warnClause_createAux (fileloc_copy (g_currentloc), flag, emsg);

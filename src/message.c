@@ -37,7 +37,7 @@ typedef enum
 {
   XINVALID, 
   XCHAR, XSTRING, XSTRINGFREE, XTSTRINGFREE, XINT, XFLOAT, XBOOL, XUENTRY,
-  XPERCENT, XCTYPE, XPLURAL, XREPREFIX, XFILELOC
+  XPERCENT, XCTYPE, XPLURAL, XREPREFIX, XFILELOC, XPOINTER
 } ccode;
 
 /* char *s, anytype v */
@@ -99,6 +99,8 @@ static ccode identify_control (char **s)
       return (XBOOL);
     case 't':
       return (XCTYPE);
+    case 'p':
+      return (XPOINTER);
     case 'l':
       return (XFILELOC);
     case '&':
@@ -249,6 +251,10 @@ message (/*@temp@*/ char *fmt, ...)
 	      ret = mstring_concatFree1 (ret, cstring_toCharsSafe 
 				   (ctype_unparse (va_arg (pvar, ctype)))); 
 	      break;
+	    case XPOINTER:
+	      ret = mstring_concatFree (ret, GETPRINTF ("%p", va_arg (pvar, void *)));
+	      break;
+
 	    case XFILELOC:
 	      ret = mstring_concatFree (ret, cstring_toCharsSafe 
 				   (fileloc_unparse (va_arg (pvar, fileloc))));

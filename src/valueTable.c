@@ -57,9 +57,8 @@ cstring valueTable_unparse (valueTable h)
 
   valueTable_elements (h, key, val) {
     DPRINTF (("Using key: %s", key));
-    res = message ("%q%s: %s [%q]; ", res, key, 
-		   metaStateInfo_unparseValue (context_lookupMetaStateInfo (key), 
-					       stateValue_getValue (val)),
+    res = message ("%q%s: %q [%q]; ", res, key, 
+		   stateValue_unparseValue (val, context_lookupMetaStateInfo (key)),
 		   stateValue_unparse (val));
   } end_valueTable_elements ;
   

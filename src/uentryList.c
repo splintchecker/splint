@@ -347,8 +347,9 @@ uentryList_isVoid (uentryList cl)
 {
   if (cl != NULL && cl->nelements == 1)
     {
-      return (ctype_isVoid (uentry_getType (cl->elements[0])));
+      return (ctype_isVoid (ctype_realType (uentry_getType (cl->elements[0]))));
     }
+
   return FALSE;
 }
 
@@ -668,7 +669,7 @@ uentryList_size (uentryList s)
 {
   if (uentryList_isUndefined (s)) return 0;
 
-  if (s->nelements == 1 && ctype_isVoid (uentry_getType (s->elements[0])))
+  if (uentryList_isVoid (s))
     return 0;
   
   return s->nelements;

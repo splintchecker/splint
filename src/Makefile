@@ -418,7 +418,7 @@ lintm:
 
 test:
 	cp lclint ../bin/lclint
-	cd ..; ${MAKE} test
+	cd ../test ; ${MAKE} test
 
 libs:
 	cd ../lib ; ${MAKE} 

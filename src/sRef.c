@@ -7572,7 +7572,7 @@ sRef_showMetaStateInfo (sRef s, cstring key)
     {
       llgenindentmsg 
 	(message ("Meta state %qbecomes %s", sRef_unparseOpt (s), 
-		  metaStateInfo_unparseValue (minfo, stateValue_getValue (val))),
+		  stateValue_unparseValue (val, minfo)),
 	 stateValue_getLoc (val));
     }
 }
@@ -9581,8 +9581,17 @@ void sRef_setMetaStateValue (sRef s, cstring key, int value, fileloc loc)
 	{
 	  DPRINTF (("Updating state: %s: %s %d / %s", sRef_unparse (s), key, value,
 		    fileloc_unparse (loc)));
-	  valueTable_update 
-	    (s->state, key, stateValue_create (value, stateInfo_makeLoc (loc)));
+	  if (valueTable_contains (s->state, key))
+	    {
+	      valueTable_update 
+		(s->state, key, stateValue_create (value, stateInfo_makeLoc (loc)));
+	    }
+	  else
+	    {
+	      valueTable_insert 
+		(s->state, cstring_copy (key), stateValue_create (value, stateInfo_makeLoc (loc)));
+	    }
+
 	  DPRINTF (("After: %s", sRef_unparseFull (s)));
 	}
     }
@@ -9623,7 +9632,7 @@ bool sRef_checkMetaStateValue (sRef s, cstring key, int value)
 	  stateValue val;
 	  
 	  val = valueTable_lookup (s->state, key);
-	  llassert (stateValue_isDefined (val));
+	  /* Okay if its not defined, just returns stateValue_undefined */
 	  return val;
 	}
       else
@@ -9778,12 +9787,4 @@ long int sRef_getArraySize (sRef p_s) /*@*/ {
 
   return (ctype_getArraySize (c) );
 }
-
-
-
-
-
-
-
-
 

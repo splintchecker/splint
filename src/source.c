@@ -50,7 +50,7 @@
 # include "portab.h"
 
 extern bool
-tsource_close (tsource *s)
+inputStream_close (inputStream s)
 {
   if (s->file != NULL)
     {
@@ -63,21 +63,22 @@ tsource_close (tsource *s)
 }
 
 extern void
-tsource_free (/*@null@*/ /*@only@*/ tsource *s)
+inputStream_free (/*@null@*/ /*@only@*/ inputStream s)
 {
   if (s != NULL)
     {
       sfree (s->name);
       sfree (s->stringSource);
+      sfree (s->curLine);
       sfree (s);
     }
 }
 
-extern /*@only@*/ tsource *
-  tsource_create (char *name, char *suffix, bool echo)
+extern /*@only@*/ inputStream 
+  inputStream_create (char *name, char *suffix, bool echo)
 {
   char *ps;
-  tsource *s = (tsource *) dmalloc (sizeof (*s));
+  inputStream s = (inputStream) dmalloc (sizeof (*s));
   
   s->name = (char *) dmalloc (strlen (name) + strlen (suffix) + 1);
   s->file = 0;
@@ -95,22 +96,21 @@ extern /*@only@*/ tsource *
       strcat (s->name, suffix);
     }
 
-  
-
   s->lineNo = 0;
+  s->charNo = 0;
+  s->curLine = NULL;
   s->echo = echo;
   s->fromString = FALSE;
   s->stringSource = NULL;
   s->stringSourceTail = NULL;
   
-
   return s;
 }
 
-extern /*@only@*/ tsource *
-tsource_fromString (char *name, char *str)
+extern /*@only@*/ inputStream 
+inputStream_fromString (char *name, char *str)
 {
-  tsource *s = (tsource *) dmalloc (sizeof (*s));
+  inputStream s = (inputStream) dmalloc (sizeof (*s));
 
   s->name = mstring_copy (name);
   s->stringSource = mstring_copy (str);
@@ -119,15 +119,73 @@ tsource_fromString (char *name, char *str)
   s->echo = FALSE;
   s->fromString = TRUE;
   s->lineNo = 0;
+  s->charNo = 0;
+  s->curLine = NULL;
 
-    return s;
+  return s;
 }
 
+extern int inputStream_nextChar (inputStream s)
+{
+  int res = inputStream_peekChar (s);
+
+  if (res != EOF) 
+    {
+      if (res == '\n')
+	{
+	  s->curLine = NULL;
+	  s->charNo = 0;
+	}
+      else
+	{
+	  s->charNo++;
+	}
+    }
+
+  TPRINTF (("Next char: %c [%d]", res, res));
+  return res;
+}
+
+extern int inputStream_peekNChar (inputStream s, int n)
+     /* Doesn't work across lines! */
+{
+  llassert (s->curLine != NULL);
+  llassert (s->charNo + n < strlen (s->curLine));
+  return ((int) s->curLine [s->charNo + n]);
+}
+
+extern int inputStream_peekChar (inputStream s)
+{  
+  if (s->curLine == NULL)
+    {
+      s->curLine = NULL;
+      s->curLine = inputStream_nextLine (s);
+      s->charNo = 0;
+    }
+
+  if (s->curLine == NULL)  
+    {
+      return EOF;
+    }
+ 
+  llassert (s->charNo <= strlen (s->curLine));
+
+  if (s->curLine[s->charNo] == '\0') 
+    {
+      return '\n';
+    }
+ 
+  return ((int) s->curLine [s->charNo]);
+} 
+
 extern /*@dependent@*/ /*@null@*/ 
-char *tsource_nextLine (tsource *s)
+char *inputStream_nextLine (inputStream s)
 {
   char *currentLine;
   int len;
+
+  llassert (s->curLine == NULL);
+  s->charNo = 0;
 
   if (s->fromString)
     {
@@ -186,12 +244,13 @@ char *tsource_nextLine (tsource *s)
 	    }
 	}
     }
+
   /* if (s->echo) slo_echoLine (currentLine);		only needed in LCL */
-    return currentLine;
+  return currentLine;
 }
 
 extern bool
-tsource_open (tsource *s)
+inputStream_open (inputStream s)
 {
   if (s->fromString)
     {
@@ -220,7 +279,7 @@ tsource_open (tsource *s)
 **	result = false
 */
 
-extern bool tsource_getPath (char *path, tsource *s)
+extern bool inputStream_getPath (char *path, inputStream s)
 {
   char *returnPath;
   filestatus status;		/* return status of osd_getEnvPath.*/
@@ -229,7 +288,7 @@ extern bool tsource_getPath (char *path, tsource *s)
  /* Check if requires met. */
   if (path == NULL || s == NULL || s->name == NULL)
     {
-      llbugexitlit ("tsource_getPath: invalid parameter");
+      llbugexitlit ("inputStream_getPath: invalid parameter");
     }
 
   status = osd_getPath (path, s->name, &returnPath);
@@ -254,7 +313,7 @@ extern bool tsource_getPath (char *path, tsource *s)
   else
     {
       rVal = FALSE;
-      llbuglit ("tsource_getPath: invalid return status");
+      llbuglit ("inputStream_getPath: invalid return status");
     }
   return rVal;
 }

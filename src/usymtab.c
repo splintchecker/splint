@@ -3816,10 +3816,10 @@ void usymtab_checkFinalScope (bool isReturn)
 			if (optgenerror 
 			    (FLG_STATETRANSFER,
 			     message
-			     ("%s loses reference %q in invalid state %s (%s)",
+			     ("%s loses reference %q in invalid state %q (%s)",
 			      cstring_makeLiteralTemp (isReturn ? "Return" : "Scope exit"),
 			      uentry_getName (ce),
-			      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
+			      stateValue_unparseValue (fval, minfo),
 			      msg),
 			     g_currentloc))
 			  {
@@ -4094,7 +4094,7 @@ void usymtab_checkFinalScope (bool isReturn)
 				  if (optgenerror 
 				      (FLG_STATETRANSFER,
 				       message
-				       ("Ensures clause not satisfied%q (state is %s): %q",
+				       ("Ensures clause not satisfied%q (state is %q): %q",
 					sRef_isGlobalMarker (sr) 
 					? message ("") 
 					: message (" by %q", sRef_unparse (sr)),

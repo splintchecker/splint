@@ -170,6 +170,11 @@ ctype_realType (ctype c)
 {
   ctype r = c;
 
+  if (ctype_isElips (c) || ctype_isMissingParamsMarker (c))
+    {
+      return c;
+    }
+
   if (ctype_isUA (c))
     {
       r = uentry_getRealType (usymtab_getTypeEntry (ctype_typeId (c)));

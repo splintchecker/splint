@@ -1623,7 +1623,7 @@ checkReturnTransfer (exprNode fexp, uentry rval)
 		      if (optgenerror 
 			  (FLG_STATETRANSFER,
 			   message ("Result state %q does not satisfy ensures "
-				    "clause: %q (state is %s, should be %s): %s",
+				    "clause: %q (state is %q, should be %s): %s",
 				    sRef_unparse (sr),
 				    stateClause_unparse (cl),
 				    stateValue_unparseValue (sRef_getMetaStateValue (sr, key),
@@ -3973,10 +3973,10 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		if (optgenerror 
 		    (FLG_STATETRANSFER,
 		     message
-		     ("Invalid transfer from %s %x to %s",
-		      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
+		     ("Invalid transfer from %q %x to %q",
+		      stateValue_unparseValue (fval, minfo),
 		      sRef_unparse (fref),
-		      metaStateInfo_unparseValue (minfo, stateValue_getValue (tval))),
+		      stateValue_unparseValue (tval, minfo)),
 		     loc))
 		  {
 		    sRef_showMetaStateInfo (fref, fkey);
@@ -4080,15 +4080,15 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Invalid transfer from %s %x to %s (%s): %q",
-			  metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
+			 ("Invalid transfer from %q %x to %q (%s): %q",
+			  stateValue_unparseValue (fval, minfo),
 			  sRef_unparse (fref),
-			  metaStateInfo_unparseValue (minfo, stateValue_getValue (tval)),
+			  stateValue_unparseValue (tval, minfo),
 			  msg,
 			  transferErrorExcerpt (transferType, fexp, texp)),
 			 loc))
 		      {
-			sRef_showAliasInfo (fref);
+			sRef_showMetaStateInfo (fref, fkey);
 		      }
 		    else
 		      {
