@@ -505,6 +505,7 @@ Finished checking --- no code processed
    warnmissingglobsnoglobs     
    warnposixheaders            
    warnrc                      
+   warnsysfiles                
    warnunixlib                 
    warnuse                     
    whichlib                    
