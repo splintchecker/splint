@@ -34,16 +34,16 @@ Instructions:
   
 <li> 
 Download
-<a href="http://www.splint.org/downloads/splint-3.0.1.1.src.tgz"><em>http://www.splint.org/downloads/splint-3.0.1.1.src.tgz</em></a>.
+<a href="http://www.splint.org/downloads/splint-3.0.1.5.src.tgz"><em>http://www.splint.org/downloads/splint-3.0.1.5.tgz</em></a>.
  
 </a> (the latest stable release).  
 <p>
 Copy this package to the directory where you want to build Spint.  When
-the tar file is extracted, it will create a splint-3.0.1.1 subdirectory. 
+the tar file is extracted, it will create a splint-3.0.1.5 subdirectory. 
 <p>
-<li><tt>tar xzf splint-3.0.1.1.src.tgz</tt> (extract files from the archive)
+<li><tt>tar xzf splint-3.0.1.5.src.tgz</tt> (extract files from the archive)
 <p>
-<li><tt>cd splint-3.0.1.1</tt> (enter the extracted directory)
+<li><tt>cd splint-3.0.1.5</tt> (enter the extracted directory)
 <p>
 <li><tt>configure</tt>
   <blockquote>
@@ -71,10 +71,10 @@ If the build was successful, it then runs the test
 suite.  You should see:
 <blockquote>
 <pre>
-Testing splint 3.0.1.1...
+Testing splint 3.0.1.5...
 
 Version Info:
-Splint 3.0.1.1 --- 08 Jan 2002
+Splint 3.0.1.5 --- 08 Jan 2002
 
 Maintainer: splint-bug@cs.virginia.edu
 
@@ -93,10 +93,13 @@ Checking db3...
 Examine the test output. If there are errors, send a bug report to <a
 href="mailto:splint-bug@cs.virginia.edu"><em>splint-bug@cs.virginia.edu</em></a>.
 </blockquote>
+<blockquote>
+Note: If possible do not built splint in a directory under /usr/.  If the test suite is run in a directory under /usr/ for example /usr/src/, it will report errors even if Splint was built correctly.
+</blockquote>
 <p>
 </ol>
 
-The remaining steps are only necessary ff you want to install the Splint
+The remaining steps are only necessary if you want to install the Splint
 binary and libraries in a different directory (set when you ran
 configure).
 <p>
@@ -109,17 +112,17 @@ configure).
 <blockquote>
 <tt>LARCH_PATH</tt> - path to search for splint libraries and
 initializations files. If you are using the standard directories, this
-should be <tt>.:<em>base-directory</em>/splint-3.0.1/lib</tt>.
+should be <tt>.:<em>base-directory</em>/splint-3.0.1.5/lib</tt>.
 <p>
 <tt>LCLIMPORTDIR</tt> - directory containing lcl imports files. If you are using
-the standard directories, this is <tt><em>base-directory</em>/splint-3.0.1/imports</tt>.
+the standard directories, this is <tt><em>base-directory</em>/splint-3.0.1.5/imports</tt>.
 </blockquote>
 Put the commands to set these variables (the actual commands will depend
 on the shell you are using) in one of your initialization dotfiles
 (usually <tt>~/.environment</tt>). 
 <p>
 Set up your <tt>PATH</tt> to include the directory containing
-<tt>splint-3.0.1/bin/splint</tt>, or move the binary to a directory on
+<tt>splint-3.0.1.5/bin/splint</tt>, or move the binary to a directory on
 your command path.
 <p>
 </blockquote>
