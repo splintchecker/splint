@@ -583,6 +583,8 @@ extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fil
 
 
 /* start modifications */
+//extern void uentry_setBufferSize (uentry p_e, exprNode cconstant);
+
 /* functions for making modification to null-term info */
 extern void uentry_setNullTerminatedState (uentry p_e);
 extern void uentry_setPossiblyNullTerminatedState (uentry p_e);

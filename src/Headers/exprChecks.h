@@ -27,4 +27,5 @@ extern void exprNode_checkPred (cstring p_c, exprNode p_e);
 extern void exprNode_checkReturn (exprNode p_e);
 extern void exprNode_checkStatement (exprNode p_e);
 extern void exprChecks_checkUsedGlobs (globSet p_decl, globSet p_used);
-
+/* start modifications */
+extern void uentry_setBufferSize (uentry p_e, uentry cconstant);

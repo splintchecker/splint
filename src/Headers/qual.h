@@ -26,6 +26,7 @@ typedef enum _quals {
   QU_ONLY, QU_IMPONLY,
   QU_TEMP, QU_SHARED, QU_KEEP, QU_KEPT, QU_PARTIAL, QU_SPECIAL,
   QU_NULL, QU_RELNULL, QU_NULLTERMINATED,
+  QU_SETBUFFERSIZE,
   QU_EXPOSED, QU_RETURNED, QU_OBSERVER, QU_UNIQUE,
   QU_OWNED, QU_DEPENDENT, QU_RELDEF,
   QU_YIELD, 
@@ -323,6 +324,7 @@ extern qual qual_createMessageLike (void) /*@*/ ;
 # define qual_createUndef()       (QU_UNDEF)
 # define qual_createKilled()      (QU_KILLED)
 # define qual_createNullTerminated() (QU_NULLTERMINATED)
+# define qual_createSetBufferSize() (QU_SETBUFFERSIZE)
 
 extern bool qual_isGlobCheck (/*@sef@*/ qual p_q) /*@*/ ;
 # define qual_isGlobCheck(q) \
