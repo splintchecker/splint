@@ -446,6 +446,9 @@ extern void free (/*@notnull@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ 
 /*@constant int NET_RT_MAXID@*/
 
 
+/*moved this to before socket.h to get splint to parse the header*/
+typedef /*@unsignedintegraltype@*/ sa_family_t;
+
 
 /*
 ** sys/socket.h
@@ -554,7 +557,16 @@ int bind (int s, const struct sockaddr *name, int namelen)
 int connect (int s, const struct sockaddr *name, int namelen)
   /*@modifies errno, internalState@*/;
 
-int getpeername (int s, /*@out@*/ struct sockaddr *restrict name, socklen_t *restrict namelen)
+  /*drl splint doesn't handle restrict yet*/
+int getpeername (int s, /*@out@*/ struct sockaddr *
+#if 0
+		 restrict
+#endif
+		 name, socklen_t *
+#if 0		 
+		 restrict
+#endif
+		 namelen)
    /*@modifies *name, *namelen, errno@*/;
 	
 #ifdef STRICT
