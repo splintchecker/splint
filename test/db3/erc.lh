@@ -1,0 +1,17 @@
+/* Output from LCLint 2.5m */
+
+# include "bool.h"
+# include "eref.h"
+
+
+extern /*@only@*/ erc erc_create (void);
+extern void erc_clear (erc  /* c */);
+extern void erc_insert (erc  /* c */, eref  /* er */);
+extern bool /*@alt void@*/ erc_delete (erc  /* c */, eref  /* er */);
+extern bool erc_member (eref  /* er */, erc  /* c */);
+extern eref erc_choose (erc  /* c */);
+extern int erc_size (erc  /* c */);
+extern void erc_join (erc  /* c1 */, erc  /* c2 */);
+extern /*@only@*/ char *erc_sprint (erc  /* c */);
+extern void erc_final (/*@only@*/ erc  /* c */);
+extern void erc_initMod (void);

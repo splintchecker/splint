@@ -1,0 +1,30 @@
+/* Output from LCLint 2.5m */
+
+# include <stdio.h>
+# include "bool.h"
+
+
+# ifndef EXPOSED_TYPE_gender
+typedef enum {MALE, FEMALE, GENDER_UNKNOWN} gender;
+# endif
+
+
+# ifndef EXPOSED_TYPE_job
+typedef enum {MGR, NONMGR, JOB_UNKNOWN} job;
+# endif
+
+
+# ifndef EXPOSED_TYPE_employee
+typedef struct {
+    int ssNum;
+    char name[maxEmployeeName];
+    int salary;
+    gender gen;
+    job j;
+    } employee;
+# endif
+
+extern void employee_sprint (/*@out@*/ char  /* s */[], employee  /* e */);
+extern bool employee_equal (employee * /* e1 */, employee * /* e2 */);
+extern bool employee_setName (employee * /* e */, /*@unique@*/ char  /* na */[]);
+extern void employee_initMod (void);

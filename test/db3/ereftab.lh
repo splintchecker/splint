@@ -1,0 +1,12 @@
+/* Output from LCLint 2.5m */
+
+# include "bool.h"
+# include "employee.h"
+# include "eref.h"
+
+
+extern /*@only@*/ ereftab ereftab_create (void);
+extern void ereftab_insert (ereftab  /* t */, employee  /* e */, eref  /* er */);
+extern bool ereftab_delete (ereftab  /* t */, eref  /* er */);
+extern eref ereftab_lookup (employee  /* e */, ereftab  /* t */);
+extern void ereftab_initMod (void);

@@ -1,0 +1,20 @@
+
+Warning: setting +typeuse redundant with current value
+exports.h:1:13: Type exported, but not specified: myint
+exports.h:3:12: Variable exported, but not specified: glob
+exports.h:5:12: Function exported, but not specified: f
+exports.h:1:13: Type myint declared but not used
+exports.h:3:12: Variable glob declared but not used
+   exports.c:3:5: Definition of glob
+exports.h:5:12: Function f declared but not used
+   exports.c:8:1: Definition of f
+
+Finished LCLint checking --- 6 code errors found, as expected
+
+exports.h:1:13: Type exported, but not specified: myint
+exports.h:3:12: Variable exported, but not specified: glob
+exports.h:5:12: Function exported, but not specified: f
+
+Finished LCLint checking --- 3 code errors found, as expected
+
+Finished LCLint checking --- no code errors found

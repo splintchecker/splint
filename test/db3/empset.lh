@@ -1,0 +1,21 @@
+/* Output from LCLint 2.5m */
+
+# include "bool.h"
+# include "employee.h"
+
+
+extern /*@only@*/ empset empset_create (void);
+extern void empset_final (/*@only@*/ empset  /* s */);
+extern void empset_clear (empset  /* s */);
+extern bool /*@alt void@*/ empset_insert (empset  /* s */, employee  /* e */);
+extern void empset_insertUnique (empset  /* s */, employee  /* e */);
+extern bool /*@alt void@*/ empset_delete (empset  /* s */, employee  /* e */);
+extern /*@only@*/ empset empset_union (empset  /* s1 */, empset  /* s2 */);
+extern /*@only@*/ empset empset_disjointUnion (empset  /* s1 */, empset  /* s2 */);
+extern void empset_intersect (empset  /* s1 */, empset  /* s2 */);
+extern int empset_size (empset  /* s */);
+extern bool empset_member (employee  /* e */, empset  /* s */);
+extern bool empset_subset (empset  /* s1 */, empset  /* s2 */);
+extern employee empset_choose (empset  /* s */);
+extern /*@only@*/ char *empset_sprint (empset  /* s */);
+extern void empset_initMod (void);

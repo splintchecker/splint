@@ -1,0 +1,78 @@
+			   LCLint Version 2.5m
+			      23 May 2000
+
+			      David Evans
+			 evans@cs.virginia.edu
+
+
+LCLint Documentation
+====================
+
+For documentation on LCLint, please see http://lclint.cs.virginia.edu.
+
+Build Instructions
+==================
+
+To build LCLint you need:
+
+   o a (hopefully ANSI-conforming) C compiler. On most modern Unix systems,
+     cc will work fine. For older or less standard systems, gcc is
+     recommended.
+   o gmake, the GNU make utility. If you don't have gmake installed on your
+     system, download it from prep.ai.mit.edu.
+   o standard Unix tools: gzip, tar
+
+1. Download the LCLint source package (lclint.src.tar.gz).
+
+   Copy this package to the directory where you want to build LCLint.  When
+   the tar file is extracted, it will create an lclint-2.5m subdirectory.
+
+2. Uncompress the package:
+      gzip -d lclint.src.tar.gz 
+
+3. Extract files from the tar archive:
+      tar xf lclint.src.tar
+
+4. Run: configure
+  
+   This will create a Makefile with settings for your system. If you 
+   want to install LCLint or associated libraries different
+   directories, edit the Makefile.
+
+5. Run: gmake
+
+   It is best to do this in an emacs shell or a buffered terminal,
+   so you can scroll through the output.
+
+6. Set environment variables
+
+   LARCH_PATH - path to search for lclint libraries and
+   initializations files. If you are using the standard directories, this
+   should be .:<base-directory>/lclint-2.5m/lib.
+
+   LCLIMPORTDIR - directory containing lcl imports files. If you are using
+   the standard directories, this is <base-directory>/lclint-2.5m/imports.
+
+   Put the commands to set these variables (the actual commands will depend
+   on the shell you are using) in one of your initialization dotfiles
+   (usually ~/.environment). 
+
+   Set up your PATH to include the directory containing
+   lclint-2.5m/bin/lclint, or move the binary to a directory on
+   your command path.
+
+7. Run: gmake test
+
+   Examine the test output. If there are errors, send a bug
+   report to lclint-bug@cs.virginia.edu
+
+To subscribe to announcements of new lclint releases, send a message to
+majordomo@virginia.edu containing the body:
+
+subscribe lclint-announce
+
+To participate in discussions related to lclint, send a message to
+majordomo@virginia.edu containing the body:
+
+subscribe lclint-interest
+		      

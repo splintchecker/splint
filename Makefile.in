@@ -1,0 +1,256 @@
+###
+### Makefile for building and installing LCLint 2.5
+###
+### Updated for LCLint 2.5:  23 May 2000
+### Updated for LCLint 2.4:  12 April 1998
+### Updated for LCLint 2.2:  25 August 1996
+### Updated for LCLint 2.1a: 17 April 1996
+### Updated for LCLint 2.0:  24 February 1996
+### Updated for LCLint 1.4:  29 January 1995
+### Original for LCLint 1.0: 20 February 1994
+###
+
+###
+### This makefile assumes the gnu version of make is available.
+###
+### Run: make 		to build LCLint.
+###      make install   to install.
+###
+###
+### These constants will be compiled into the lclint binary.  
+###
+### They may be overridden by environment variables, but these
+### constants set the default values when no environment variables
+### are set.
+###
+
+### Command to run C preprocessor:
+
+DEFAULT_CPPCMD  = @CPP@
+
+### Directory containing system include files:
+
+SYSTEM_LIBDIR   = "/usr/include"
+
+###
+### Select installation directories:
+###
+### The LIBDIR and IMPORTSDIR are compiled into the binary to 
+### select the default LARCH_PATH and LCLIMPORTDIR, which can 
+### also be overridden by environment variables.
+### 
+
+### directory for lclint libraries
+LIBDIR     = @installdir@/lib
+
+### directory for lclint standard imports
+IMPORTSDIR = @installdir@/imports
+
+### directory for lclint binary
+INSTALLDIR = @installdir@/bin
+
+### this should be the complete path for the directory where this
+### Makefile is, with no trailing / or spaces.
+
+BASEDIR = @cwdir@
+
+###
+### Then, run:
+###
+###	make
+###
+### I recommend doing this in an emacs shell (or buffered terminal) so
+### you can scroll through the output.
+###
+### This should (hopefully) work on most systems without further changes.
+###
+### If you do not have gcc, set CC = cc (or some other compiler)
+### later in this file. 
+###
+### It should:
+###     o build lclint
+###     o put lclint in BASEDIR/bin/lclint
+###
+### If you have installed the test suite, then do:
+###
+###	make test
+###
+### to verify lclint.
+###
+
+###
+### shell --- should work with /bin/sh or similar shells too.
+###
+
+SHELL  = /bin/csh
+
+###
+### If you wish to install lclint in some other directory, set these 
+### variables, and do 
+###
+###	make install
+###
+
+### installation command
+INSTALL      = @INSTALL@
+INSTALLFLAGS =           
+
+### this works with nfs, change to whatever is needed to make
+### a file executable on your system
+
+MAKEEXE = chmod 755
+
+###
+### end of installation variables
+###
+
+###
+### compiler --- gcc is recommended, but lclint has been compiled
+###              without changes using cc on several platforms.
+###
+
+CC = @CC@ @DEFS@
+
+###
+### optimizing compiler --- add optimization flags here
+### 
+
+CCOPT = $(CC) @OPT@
+
+###
+### link flags --- this links the lex or flex library
+###
+
+LINKFLAGS = @LINKLEX@
+
+###
+### do you have bison and/or flex?
+### (Note: yacc will probably not work; lex might work but is not recommended.)
+###
+
+BISON     = @BISON@
+FLEX      = @FLEX@
+
+###
+### is the test suite available? (must be full path here)
+###
+
+TESTDIR   = $(BASEDIR)/test
+
+### 
+### if this Makefile is used with one of the
+### standard installation packages, no changes should be 
+### necessary below this line.
+###
+
+.PHONY: install dobinaries dolibraries doimports test 
+
+###
+### set this to a different directory
+### to install binaries elsewhere
+###
+
+RELEASEDIR      = $(BASEDIR)/bin
+
+all: bin/lclint 
+lclint: bin/lclint
+
+bin/lclint: 
+	@echo 'Building lclint from source'
+ifeq ($(SHELL), /bin/csh)
+	cd src ; setenv CC '$(CC)' ; setenv CCOPT '$(CCOPT)'; \
+        setenv BISON '$(BISON)' ; setenv FLEX '$(FLEX)' ; \
+        setenv DEFAULT_CPPCMD '"$(DEFAULT_CPPCMD)"' ; \
+	setenv SYSTEM_LIBDIR '$(SYSTEM_LIBDIR)' ; \
+	setenv LINKFLAGS '$(LINKFLAGS)' ; \
+	setenv DEFAULT_LARCHPATH '".:$(LIBDIR)"' ; \
+	setenv DEFAULT_LCLIMPORTDIR '"$(IMPORTSDIR)"' ; \
+	$(MAKE) -e
+else
+	cd src ; CC='$(CC)'; export CC; CCOPT='$(CCOPT)'; \
+	BISON='$(BISON)' ; export BISON; FLEX='$(FLEX)'; export FLEX; \
+        DEFAULT_CPPCMD='$(DEFAULT_CPPCMD)' ; export DEFAULT_CPPCMD ;\
+	SYSTEM_LIBDIR='$(SYSTEM_LIBDIR)' ; export SYSTEM_LIBDIR ;\
+	DEFAULT_LARCHPATH='".:$(LIBDIR)/"' ; export DEFAULT_LARCHPATH ;\
+	LINKFLAGS='$(LINKFLAGS)'; export LINK_FLAGS; \
+	DEFAULT_LCLIMPORTDIR='"$(IMPORTSDIR)"' ; export DEFAULT_LCLIMPORTDIR ;\
+	$(MAKE) -e 
+endif
+	@echo '// '
+	@echo '//  Run: '$(MAKE)' test to check'
+	@echo '// '
+	mv src/lclint bin/lclint
+
+test:
+ifeq ($(SHELL), /bin/csh)
+	cd $(TESTDIR) ; setenv LCLINT $(RELEASEDIR)/lclint ; $(MAKE) -e
+else
+	cd $(TESTDIR) ; LCLINT=$(RELEASEDIR)/lclint ; export LCLINT ; $(MAKE) -e
+endif
+
+clean:
+	cd src; $(MAKE) clean
+	rm bin/lclint	
+
+###
+### locations of standard LCLint files
+###
+### this should NOT have to be edited if you use the standard
+###    installation package
+
+CP  = cp
+
+LCLINTBINDIR = $(BASEDIR)/bin
+LCLINTBIN  = lclint
+
+LCLINTLIB = $(BASEDIR)/lib
+LCLINTIMPORTS = $(BASEDIR)/imports
+
+###
+### uses recursive make calls directly, so installation
+### will continue even if there are errors!
+###
+
+install: 
+	@echo '// '
+	@echo '// Doing lclint installation'
+	@echo '// '
+	@echo ' '
+	-@$(MAKE) dobinaries 
+	@echo ' '
+	-@$(MAKE) dolibraries 
+	@echo ' '
+	-@$(MAKE) doimports 
+	@echo ' '
+	@echo '// Installation complete.'
+
+dobinaries:
+	@echo '//  Installing binaries in '$(INSTALLDIR)
+	cd $(LCLINTBINDIR); $(INSTALL) $(INSTALLFLAGS) lclint $(INSTALLDIR)
+	@echo '//  Installed: lclint in '$(INSTALLDIR) 
+
+dolibraries:
+	@echo '//  Installing libraries in '$(LIBDIR)
+	@echo "    (This will complain if the directory already exists, don't worry about it.)"
+	-mkdir $(LIBDIR)
+	$(CP) $(LCLINTLIB)/* $(LIBDIR)
+	@echo '//  Installed libraries.'
+
+doimports:
+	@echo '//  Installing imports in '$(IMPORTSDIR)
+	@echo "    (This will complain if the directory already exists, don't worry about it.)"
+	-mkdir $(IMPORTSDIR)
+	$(CP) $(LCLINTIMPORTS)/* $(IMPORTSDIR)
+	@echo '//  Installed imports.'
+
+
+
+
+
+
+
+
+
+
+
+

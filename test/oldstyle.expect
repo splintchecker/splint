@@ -1,0 +1,10 @@
+
+oldstyle.c: (in function f1)
+oldstyle.c:5:8: Dereference of non-pointer (int): *y
+oldstyle.c:10:5: Function f2 declared with 1 arg, specified with 2
+   oldstyle.lcl:2: Specification of f2
+oldstyle.c:15:12: Parameter 2, y, of function f3 has inconsistent type:
+                     declared char, specified char *
+   oldstyle.lcl:4:1: Specification of y: char *
+
+Finished LCLint checking --- 3 code errors found, as expected

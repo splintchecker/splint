@@ -1,0 +1,9 @@
+/* local_constants.h - created automatically by gmake localconstants */
+/*@constant observer char *DEFAULT_CPPCMD;@*/
+# define DEFAULT_CPPCMD   
+/*@constant observer char *SYSTEM_LIBDIR;@*/
+# define SYSTEM_LIBDIR 
+/*@constant observer char *DEFAULT_LARCHPATH;@*/
+# define DEFAULT_LARCHPATH 
+/*@constant observer char *DEFAULT_LCLIMPORTDIR;@*/
+# define DEFAULT_LCLIMPORTDIR 

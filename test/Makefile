@@ -1,0 +1,603 @@
+##################################################
+###                                            ###
+### Makefile for LCLint testing                ###
+###                                            ### 
+### designed for use with GNU make             ### 
+###                                            ###
+##################################################
+
+.PHONY: all fulltest quicktest funcpointer cast abstract
+.PHONY:	version help abstptr abstract alias alttypes ansireserved 
+.PHONY: argorder args blocks break cases cast charlit 
+.PHONY: clauses commentchar 
+.PHONY: compdestroy controldepth csyntax czechnames czechoslovaknames 
+.PHONY: decl enum exports external fields flags funcpointer glob globals 
+.PHONY: impabstract init inparam internal iter keep libs lintcomments 
+.PHONY: list macros macrosef merge modifies modtest moduncon mongoincludes 
+.PHONY: null observer oldstyle outglob outparam preds prefixes printflike rc 
+.PHONY: refcounts release repexpose sharing slovaknames special
+.PHONY: specclauses stack staticarray
+.PHONY: strings structassign
+.PHONY: typequals ud ulstypes union unreachable unused 
+.PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4
+.PHONY: all test fulltest expects quicktest
+
+.SUFFIXES: .out .expect .c .lcl .h .lh .diff
+
+SHELL = /bin/csh -f
+
+# Command to run lclint
+LCLINT  = lclint
+LCLINTP = $(LCLINT)
+
+# Make sure .lclintrc files are not used so test results do not
+# depend on local settings.
+LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
+LCLINTR = $(LCLINTRN) -exportlocal
+
+UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4
+
+UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
+
+INTEGTESTS = db1 db2 db3
+INTEGEXPECTS  = $(addsuffix .expect, $(INTEGTESTS))
+
+LCLINTTESTS = $(UNITTESTS) $(INTEGTESTS)
+
+all: fulltest
+test: fulltest
+
+GREP = grep
+DIFF = diff
+CLEANOUTPUT = $(GREP) -v "LCLint 2." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e"
+
+### not real .c
+
+.c.expect:
+	$(MAKE) -e $(*) |& $(CLEANOUTPUT) > $(*).expect ; \
+	cat $(*).expect
+
+.c.diff:
+	$(MAKE) -e $(*) |& $(CLEANOUTPUT) > $(*).out ; \
+        diff $(*).expect $(*).out
+
+expects:
+	echo "Saving old expects: " ; \
+        more *.expect | cat > expects-`date +"%y-%m-%d-%H"`
+	@$(foreach test, $(UNITTESTS),  \
+	   echo "Making "$(test)".expect: " ; \
+           $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).expect ; \
+	   cat $(test).expect ; ) 
+	@echo "Integration Tests"	
+	@$(foreach test, $(INTEGTESTS),  \
+	   echo "Making "$(test)".expect: "; \
+           $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).expect ; \
+	   cat $(test).expect ; ) 
+
+fulltest:
+	@echo ''
+	@echo 'Testing '$(LCLINTP)
+	@echo ''
+	@echo 'Version:'
+	@echo ''
+	@$(LCLINTP) -help version
+	@$(LCLINTP) -help vars
+	@echo ''
+	@echo "Unit Tests:"
+	@echo ''
+	@$(foreach test, $(UNITTESTS),  \
+	   echo "Checking "$(test)"... " ; \
+           $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).out ; \
+	   $(DIFF) $(test).expect $(test).out ; \
+	   if ($$status) echo "*** FAIL ***" ; \
+	   ) 
+	@echo ''
+	@echo "Integration Tests"	
+	@echo ''
+	@$(foreach test, $(INTEGTESTS),  \
+	   echo "Checking "$(test)"... "; \
+           $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).out ; \
+	   $(DIFF) $(test).expect $(test).out ; )
+
+quicktest: $(LCLINTTESTS)
+
+###
+### Unit Tests
+###
+
+version:
+	-$(LCLINTP) -help version
+
+help:
+	-@$(LCLINTP)
+	-@setenv LARCH_PATH "/dev/null"; $(LCLINTP) empty.lcl
+	-@$(LCLINTP) -help
+	-@$(LCLINTP) -asdf
+	-@$(LCLINTP) +boolint +boolint 
+	-@$(LCLINTP) -help flags alpha
+	-@$(LCLINTP) -help flags all
+
+abstptr:
+	$(LCLINTR) abstptr -expect 9
+	$(LCLINTR) abstptr +voidabstract -expect 6
+
+abstract:
+	$(LCLINTR) abst_t.lcl commentcmd.c -expect 15
+
+alias:
+	$(LCLINTR) +lh mut
+	$(LCLINTR) mut alias +globalias -expect 19
+	$(LCLINTR) mut alias2 +globalias -expect 17
+	$(LCLINTR) +lh alias3 -expect 14 
+	$(LCLINTR) +lh alias4 +boolint
+	$(LCLINTR) alias4 -pred +retalias -expect 6
+	$(LCLINTR) +lh alias5 +memchecks -null -specundef -expect 5
+
+alttypes:
+	$(LCLINTR) alttypes.c -expect 2
+
+ansireserved:
+	$(LCLINTR) ansireserved.c +ansireserved -nolib -expect 8
+	$(LCLINTR) ansireserved.c +ansireserved +ansireservedlocal -nolib -expect 11
+	$(LCLINTRN) ansireserved.c +checks -exportlocal -exportheadervar -exportheader -expect 9
+
+argorder:
+	$(LCLINTR) argorder.c -expect 4
+	$(LCLINTR) argorder2  -expect 5
+	$(LCLINTR) argorder3.c -expect 8
+	$(LCLINTR) argorder4 -expect 9
+	$(LCLINTR) argorder4 -evalorder -expect 1
+	$(LCLINTR) argorder5.c +evalorderuncon -expect 3
+
+args:
+	$(LCLINTR) args -noeffect -expect 12
+
+blocks:
+	$(LCLINTR) blocks.c -expect 4
+	$(LCLINTR) blocks.c +ifblock +elseifcomplete -expect 7
+	$(LCLINTR) blocks.c -ifempty +whileempty +whileblock -expect 3
+	$(LCLINTR) blocks.c -ifempty +forempty +forblock -expect 3
+	$(LCLINTR) blocks.c +allempty -expect 6
+	$(LCLINTRN) blocks.c +strict -exportlocal +partial -exportheader -expect 11
+
+break:
+	$(LCLINTR) break.c -expect 4
+	$(LCLINTR) break.c +deepbreak -expect 6
+	$(LCLINTR) break.c +deepbreak -looploopbreak -expect 5
+
+cases: 
+	$(LCLINTR) cases.c -expect 5
+	$(LCLINTR) cases2.c -expect 2
+	$(LCLINTRN) cases2.c +checks -exportlocal -exportheader -expect 3
+	$(LCLINTRN) cases2.c +checks -exportlocal -exportheader -branchstate -expect 3
+
+cast:
+	$(LCLINTR) cast -accessmodule -expect 20
+	$(LCLINTRN) cast2.c +checks -exportlocal -exportheader -expect 3
+
+charlit:
+	$(LCLINTR) +hints charlit.c -expect 4
+	$(LCLINTR) +hints -numliteral charlit.c -expect 5
+	$(LCLINTR) +hints charlit.c +charintliteral +ignoresigns
+
+clauses: 
+	$(LCLINTR) clauses.c +memchecks -expect 4
+	$(LCLINTR) clauses2.c +memchecks 
+	$(LCLINTR) clauses3.c +memchecks -expect 2
+	$(LCLINTR) clauses3.c +memchecks +unixlib -expect 3
+
+commentchar:
+	$(LCLINTR) commentchar.c -expect 4
+	$(LCLINTR) -commentchar '#' commentchar.c -expect 4
+
+controldepth:
+	$(LCLINTR) +hints -controlnestdepth 2 controldepth.c -expect 2
+	$(LCLINTR) +hints -controlnestdepth 1 controldepth.c -expect 2
+
+compdestroy:
+	$(LCLINTRN) compdestroy.c +checks -exportlocal -exportheader -expect 1
+	$(LCLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
+	$(LCLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
+	$(LCLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+
+csyntax:
+	$(LCLINTR) +quiet -incondefs csyntax.c 
+	$(LCLINTR) +quiet csyntax2.c
+	$(LCLINTR) +quiet csyntax3.c
+	$(LCLINTR) +quiet -incondefs csyntax4.c
+	$(LCLINTR) +quiet csyntax5.c
+	$(LCLINTR) +quiet csyntax6.c
+	$(LCLINTR) +quiet csyntax7.c
+	$(LCLINTR) +quiet csyntax8.c
+	$(LCLINTR) +quiet csyntax9.c
+	$(LCLINTR) +quiet csyntax10.c
+	$(LCLINTR) +quiet csyntax11.c
+	$(LCLINTR) +quiet csyntax12.c
+	$(LCLINTR) +quiet csyntax13.c
+	$(LCLINTR) +quiet csyntax14.c
+	$(LCLINTR) +quiet csyntax15.c
+	$(LCLINTR) +quiet csyntax16.c
+	$(LCLINTR) +quiet csyntax17.c
+
+czechnames:
+	$(LCLINTR) czechnames.c
+	$(LCLINTR) +hints +czech czechnames.c -expect 2
+	$(LCLINTR) +hints +czech -czechvars czechnames.c -expect 1
+	$(LCLINTR) +hints +czech -accessczech czechnames.c -expect 6
+
+czechoslovaknames:
+	$(LCLINTR) +hints +czechoslovak czechnames.c -expect 1
+	$(LCLINTR) +hints +czechoslovak slovaknames.c -expect 1
+	$(LCLINTR) +hints +czechoslovak +slovakvars slovaknames.c -expect 2
+
+#
+# Was expect 3 before 2.4.  Earlier versions did not handle implicit
+# function pointers correctly.
+#
+
+decl:
+	$(LCLINTR) decl.c -expect 2
+	$(LCLINTRN) decl.c +strict -exportlocal -expect 5
+	$(LCLINTR) decl2 -expect 4
+
+enum:
+	$(LCLINTR) enum -expect 16
+	$(LCLINTR) enum -misscase -expect 14
+
+exports:
+	$(LCLINTR) exports.c +exporttype +exportvar +exportfcn +topuse +typeuse -expect 6
+	$(LCLINTR) exports.c +exportany -expect 3
+	$(LCLINTR) exports.c
+
+external:
+	$(LCLINTR) external.c +partial
+	$(LCLINTR) external.c +partial +distinctexternalnames -expect 2
+	$(LCLINTR) external.c -nolib +partial -externalnamelength 3 -expect 3
+	$(LCLINTR) external.c -nolib +partial -externalnamelength 3 +externalnamecaseinsensitive -expect 3
+	$(LCLINTR) external.c +partial -externalnamelength 3 -expect 4
+
+fields:
+	$(LCLINTR) fields.c +memchecks -expect 6
+	$(LCLINTR) fields2.c +memchecks -expect 5
+	$(LCLINTR) fields3.c +memchecks
+
+flags:
+	$(LCLINTR) flags.c -expect 8
+	$(LCLINTR) +nocomments flags.c -expect 2
+
+# two new errors (invalid lhs)
+
+funcpointer:
+	$(LCLINTR) +memchecks +noparams funcpointer.c -expect 18
+
+glob:
+	$(LCLINTR) glob -expect 4
+	$(LCLINTR) glob -globuse -expect 3
+	$(LCLINTR) glob +globunspec -expect 6
+
+globals:
+	$(LCLINTR) -modifies globals.c -expect 5
+	$(LCLINTR) -modifies globals.c +allglobals -expect 6
+	$(LCLINTR) -modifies globals.c +impcheckedglobals -expect 6
+	$(LCLINTR) -modifies globals.c -globals -checkstrictglobals -expect 2
+	$(LCLINTR) -modifies globals.c +globunspec -expect 6
+	$(LCLINTR) -modifies globals.c +globunspec +allglobals -expect 8
+
+impabstract:
+	$(LCLINTR) -accessfile impabstract.c 
+	$(LCLINTR) -accessfile +hints +impabstract impabstract.c -expect 2
+	$(LCLINTR) -accessfile +hints +impabstract impabstract -expect 2
+
+init:
+	$(LCLINTR) init.c -expect 12
+	$(LCLINTRN) init.c +checks -exportlocal -exportheadervar -expect 15
+
+inparam:
+	$(LCLINTR) inparam.c -expect 2
+	$(LCLINTR) +impouts inparam.c -expect 1
+
+internal:
+	$(LCLINTR) internal.c -expect 1
+	$(LCLINTR) internal.c +distinctinternalnames -expect 2
+	$(LCLINTR) internal.c -internalnamelen 28 -expect 3
+	$(LCLINTR) internal.c +internalnamecaseinsensitive -expect 3
+	$(LCLINTR) internal.c +internalnamecaseinsensitive +internalnamelookalike -expect 11
+
+iter:
+	$(LCLINTR) iter -expect 14 -lclexpect 1
+	$(LCLINTR) iter2.c -expect 12
+
+keep:
+	$(LCLINTR) keep.c +memchecks -expect 6
+
+#
+# 2 new errors found (fixed spec of signal)
+#
+
+libs:
+	$(LCLINTR) libs.c +longunsignedunsignedintegral -expect 15
+	$(LCLINTR) libs.c -expect 19
+	$(LCLINTR) libs.c +globunspec +modunspec -expect 22
+	$(LCLINTR) libs.c +strictlib +globunspec +modunspec -expect 39
+
+lintcomments:
+	$(LCLINTR) lintcomments.c -expect 4
+	$(LCLINTR) lintcomments.c -warnlintcomments -expect 1
+	$(LCLINTR) lintcomments.c -lintcomments -expect 4
+
+list:
+	$(LCLINTR) list.c -expect 3
+
+macros:
+	$(LCLINTR) macros -expect 17 
+	$(LCLINTR) macros.c +allmacros -expect 34
+	$(LCLINTR) macros.c +fcnmacros -expect 31
+
+
+macrosef:
+	$(LCLINTR) macrosef -expect 4
+	$(LCLINTR) macrosef.c +allmacros -expect 3
+	$(LCLINTR) macrosef.c +allmacros +sefuncon -expect 4
+
+merge:
+	$(LCLINTRN) merge.c +checks -exportlocal -exportheadervar -exportheader -expect 3
+
+modifies:
+	$(LCLINTR) modifies.c modclient.c +impcheckedstatics +mustmod -expect 7
+
+modtest:
+	$(LCLINTR) modtest -expect 10
+	$(LCLINTR) modtest +modunspec -expect 13
+	$(LCLINTR) modtest +mustmod -expect 14
+
+moduncon:
+	$(LCLINTR) moduncon.c +moduncon -memchecks -expect 4
+	$(LCLINTRN) moduncon.c +strict -exportlocal -expect 22
+
+mongoincludes:
+	$(LCLINTR) mongoincludes.c -includenest 1 -expect 19
+	$(LCLINTR) mongoincludes.c -includenest 2 -expect 10
+	$(LCLINTR) mongoincludes.c -includenest 3 -expect 4
+	$(LCLINTR) mongoincludes.c -includenest 4 -expect 1
+	$(LCLINTR) mongoincludes.c -includenest 5 -expect 0
+
+null: 
+	$(LCLINTR) null1.c -expect 14
+	$(LCLINTR) null1.c -null -expect 4
+	$(LCLINTR) null2.c -expect 10
+	$(LCLINTR) null3.c -expect 15
+	$(LCLINTR) null3.c -warnunixlib +unixlib -expect 16
+	$(LCLINTR) null4.c -expect 1
+	$(LCLINTR) null5.c -expect 4
+	$(LCLINTR) null6 -expect 4
+	$(LCLINTR) +quiet null6.lcl -dump null6
+	$(LCLINTR) null6.c -load null6 -expect 4
+
+#
+# Before 2.4, expected one more because error was reported both as 
+# dependent and observer.
+#
+
+observer:
+	$(LCLINTRN) observer +checks -exportlocal -exportheader -expect 9
+	$(LCLINTRN) observer.c +checks -exportlocal -exportheader -expect 8
+	$(LCLINTR) observer.c -expect 7
+
+oldstyle:
+	$(LCLINTR) oldstyle -expect 3
+
+outglob:
+	$(LCLINTR) outglob -expect 10
+
+outparam:
+	$(LCLINTR) outparam -expect 12
+
+preds:
+	$(LCLINTR) +hints preds.c -expect 6
+	$(LCLINTRN) +hints preds.c -weak -expect 1
+	$(LCLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 8
+
+prefixes:
+	$(LCLINTR) prefixes.c +partial
+	$(LCLINTRN) prefixes.c +allmacros +checks -exportlocal +partial -exportheader -exportheadervar -expect 4
+	$(LCLINTR) prefixes.c -typeprefix "T" -expect 2
+	$(LCLINTR) prefixes.c -typeprefix "^" -expect 1
+	$(LCLINTR) prefixes.c -typeprefix "^*" -expect 2
+	$(LCLINTR) prefixes.c -typeprefix "^%*" -expect 2
+	$(LCLINTR) prefixes.c -typeprefix "^~*" -expect 2
+	$(LCLINTR) prefixes.c -typeprefix "^" +typeprefixexclude -expect 7
+	$(LCLINTR) prefixes.c -filestaticprefix "^^" -expect 4
+	$(LCLINTR) prefixes.c -filestaticprefix "^#" -expect 5
+	$(LCLINTR) prefixes.c -filestaticprefix "^?&x" -expect 5
+	$(LCLINTR) prefixes.c -globalprefix "G" -expect 1
+	$(LCLINTR) prefixes.c -globalprefix "&G?_^" -expect 1
+	$(LCLINTR) prefixes.c -externalprefix "G" -expect 5
+	$(LCLINTR) prefixes.c -typeprefix "T" -externalprefix "G" -expect 4
+	$(LCLINTR) prefixes.c -localprefix "?*" +localprefixexclude -expect 13
+
+printflike:
+	$(LCLINTR) printflike.c -expect 6
+	$(LCLINTR) printflike.c -warnlintcomments -expect 5
+
+rc:
+	-$(LCLINTR) -DMYSTERY='"a flag\"wicked cool"' rc.c -expect 1
+	-$(LCLINTR) -DMYSTERY=12 rc.c -expect 1
+	-$(LCLINTR) -f rc1.lclintrc rc.c
+	-$(LCLINTR) -UMYSTERY -f rc1.lclintrc rc.c -expect 1
+	-$(LCLINTR) -f rc3.lclintrc rc.c -expect 1
+
+refcounts:
+	$(LCLINTR) refcounts.c -expect 7 
+
+release:
+	$(LCLINTR) release.c +memchecks -expect 1
+
+repexpose:
+	$(LCLINTR) +lh repexpose +memchecks -expect 12
+	$(LCLINTR) repexpose +memchecks +retalias -expect 15
+	$(LCLINTRN) repexpose +checks -exportlocal -expect 27
+
+sharing: 
+	$(LCLINTR) sharing1.c -expect 21
+	$(LCLINTR) sharing3.c -expect  3
+	$(LCLINTR) sharing4.c -expect 13
+	$(LCLINTR) sharing4.c -paramimptemp -expect 12
+	$(LCLINTR) sharing5.c -expect 6
+
+slovaknames:
+	$(LCLINTR) +hints slovaknames.c -expect 1
+	$(LCLINTR) +hints slovaknames.c +accessslovak 
+	$(LCLINTR) +hints +slovak slovaknames.c -expect 3
+	$(LCLINTR) +hints +slovak -slovakvars slovaknames.c -expect 2
+	$(LCLINTR) +hints +slovak -accessslovak slovaknames.c -expect 7
+
+specclauses:
+	$(LCLINTR) specclauses.c -expect 6
+	$(LCLINTR) specclauses2.c -expect 8
+	$(LCLINTR) specclauses3.c -expect 6
+	$(LCLINTR) specclauses4.c -expect 3
+	$(LCLINTR) specclauses5.c -expect 3
+
+special:
+	$(LCLINTR) special -expect 20
+	$(LCLINTR) special -relaxquals -expect 22
+
+stack:
+	$(LCLINTR) stack.c -expect 5
+	$(LCLINTR) stack.c -stackref
+
+staticarray:
+	$(LCLINTR) staticarray.c -expect 3
+
+strings:
+	$(LCLINTR) strings.c -expect 3
+	$(LCLINTR) -readonlystrings -expect 1 strings.c
+	$(LCLINTR) +modobserverstrict -maintype -expect 4 strings.c
+
+structassign:
+	$(LCLINTR) structassign.c -expect 4
+
+typequals:
+	$(LCLINTR) typequals.c tq.lcl -expect 5
+	$(LCLINTR) typequals.c -expect 2
+
+ud:
+	$(LCLINTR) ud.c -expect 9
+	$(LCLINTR) ud2 -specundef -expect 3
+
+ulstypes:
+	$(LCLINTR) ulstypes.c -expect 8
+	$(LCLINTR) ulstypes.c +ignorequals 
+	$(LCLINTRN) ulstypes.c +strict -exportheader -exportheadervar -expect 28
+
+union:
+	$(LCLINTR) +memchecks union.c -expect 8
+
+unreachable:
+	$(LCLINTR) unreachable.c -expect 5
+	$(LCLINTR) -unreachable unreachable.c -expect 2
+	$(LCLINTR) switch.c -expect 4
+
+unused:
+	$(LCLINTRN) unused.c +checks -exportlocal -expect 3
+	$(LCLINTRN) unused.c +checks -exportlocal +topuse -expect 6
+
+###
+### Bugs fixed and new features since version 2.1b
+###
+
+tests2.2:
+	@cd tests2.2 ; \
+	$(LCLINTR) boolops.c -expect 1 ; \
+        $(LCLINTR) bool.lcl booldef.c -expect 1 ; \
+	$(LCLINTR) boolenum.c -booltype BOOLEAN -expect 1 ; \
+        $(LCLINTR) break.c -expect 1 ; \
+        $(LCLINTR) bstring.c -expect 2 ; \
+        $(LCLINTR) decl.c -expect 1 ; \
+        $(LCLINTR) enumbool.c -expect 2 ; \
+        $(LCLINTR) enumbool.c -booltrue "true" -boolfalse "false" ; \
+	$(LCLINTR) extension.c ; \
+	$(LCLINTR) -gnuextensions extension.c ; \
+	$(LCLINTR) modarray.c ; \
+	$(LCLINTR) nestext.c -expect 1 ; \
+	$(LCLINTR) offsetof.c ; \
+	$(LCLINTR) sizeofarray.c -expect 3 ; \
+	$(LCLINTR) rex.c -expect 1 ; \
+	$(LCLINTR) struct.c -expect 1
+
+tests2.2a:
+	@cd tests2.2a ; \
+	$(LCLINTR) erik.c -expect 1 ; \
+	$(LCLINTR) boolcomp.c -expect 5 ; \
+	$(LCLINTR) boolenum.c ; \
+	$(LCLINTR) addassign.c -expect 1; \
+	$(LCLINTR) toralf.c -expect 5 ; \
+	$(LCLINTR) fred.c -booltype Bool ; \
+	$(LCLINTR) sizeof.c ; \
+	$(LCLINTR) arrayparam.c -expect 5 ; \
+	$(LCLINTR) notreached.c ; \
+	$(LCLINTR) duff.c -casebreak -expect 1 ; \
+	$(LCLINTR) obviousloop.c -expect 4 ; \
+	$(LCLINTR) bitops.c +bitwisesigned -expect 11 ; \
+	$(LCLINTR) bitops.c -expect 5 ; \
+	$(LCLINTR) isalpha.c +strictlib -expect 1 ; \
+	$(LCLINTR) isalpha.c -expect 1 ; \
+	$(LCLINTR) dobb.c ; \
+	$(LCLINTR) popik.c -expect 11
+
+tests2.4:
+	@cd tests2.4 ; \
+	$(LCLINTR) emptycase.c ; \
+	$(LCLINTR) enumtest.c ; \
+	$(LCLINTR) duffs.c ; \
+	$(LCLINTR) bitfields.c ; \
+	$(LCLINTR) bug1.c ; \
+	$(LCLINTR) bug2.c -expect 5 ; \
+	$(LCLINTR) bug3.c ; \
+	$(LCLINTR) test0.c ; \
+	$(LCLINTR) test1.c ; \
+	$(LCLINTR) test2.c ; \
+	$(LCLINTR) hexconstants.c -expect 1 ; \
+	$(LCLINTR) +checks hexconstants.c -expect 4 ; \
+	$(LCLINTR) innercomment.c ; \
+	$(LCLINTR) nothing.c ; \
+	$(LCLINTR) offsetof.c -expect 2 ; \
+	$(LCLINTR) komazi.c ; \
+	$(LCLINTR) print.c ; \
+	$(LCLINTR) syslog.c -warnunixlib +unixlib ; \
+	$(LCLINTR) error.c -expect 1 ; \
+	$(LCLINTR) ulrich.c ; \
+	$(LCLINTR) cpptest.c '-D__P(x)=x' ; \
+	$(LCLINTR) longlong.c -expect 4; \
+	$(LCLINTR) subdir/main.c subdir/main.lcl ; \
+	$(LCLINTR) fink.c ; \
+	$(LCLINTR) driverstub.c ; \
+	$(LCLINTR) alignof.c -expect 2 ; \
+	$(LCLINTR) -D DBL_MANT_DIG=25 source.c
+
+###
+### Integration Tests
+###
+
+db1:
+	setenv LCLINT '$(LCLINTRN)'; cd db1; $(MAKE) -e test
+
+db2:
+	setenv LCLINT '$(LCLINTRN)'; cd db2; $(MAKE) -e test
+
+db3:
+	setenv LCLINT '$(LCLINTRN)'; cd db3; $(MAKE) -e test
+
+###
+### More integration tests are used locally.  If you are developing 
+### LCLint send mail to evs@larch.lcs.mit.edu to obtain extra 
+### integration test cases.
+
+clean:
+	-rm -f *~ #*# *.o *.lcs a.out 
+	-cd db1 ; $(MAKE) clean
+	-cd db2 ; $(MAKE) clean
+	-cd db3 ; $(MAKE) clean
+
+
+

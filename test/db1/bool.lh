@@ -1,0 +1,4 @@
+/* Output from LCLint 2.5m */
+# include "bool.h"
+
+

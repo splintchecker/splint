@@ -1,0 +1,26 @@
+
+Finished LCLint checking --- no code errors found
+
+impabstract.c: (in function f)
+impabstract.c:11:7: Left operand of < is abstract type (mint): m < 2
+  An abstraction barrier is broken. If necessary, use /*@access <type>@*/ to
+  allow access to an abstract type. (-abstract will suppress message)
+impabstract.c:13:14: Return value type mint does not match declared type int: m
+  Underlying types match, but mint is an abstract type that is not accessible
+  here.
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+impabstract.c:2:28: Mutable abstract type cint declared without pointer
+                       indirection: int (violates assignment semantics)
+  LCL semantics requires that a mutable type exhibits sharing semantics. In
+  order for objects to be shared a indirection is necessary in the
+  representation. A mutable type may be represented by a pointer or an abstract
+  mutable type. Handles into static data are fine, too, but will generate this
+  error message unless it is suppressed. (-mutrep will suppress message)
+impabstract.c:2:28: Datatype cint inconsistently declared as concrete type
+  A function, variable or constant is redefined with a different type.
+  (-incondefs will suppress message)
+   impabstract.lcl:2:1: Specification of cint
+
+Finished LCLint checking --- 2 code errors found, as expected

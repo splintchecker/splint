@@ -1,0 +1,985 @@
+
+Source files are .c, .h and .lcl files.  If there is no suffix,
+   LCLint will look for <file>.c and <file>.lcl.
+
+Use lclint -help <topic or flag name> for more information
+
+Topics:
+
+   annotations (describes source-code annotations)
+   comments (describes control comments)
+   flags (describes flag categories)
+   flags <category> (describes flags in category)
+   flags all (short description of all flags)
+   flags alpha (list all flags alphabetically)
+   flags full (full description of all flags)
+   mail (information on mailing lists)
+   modes (show mode settings)
+   parseerrors (help on handling parser errors)
+   prefixcodes (character codes in namespace prefixes)
+   references (sources for more information)
+   vars (environment variables)
+   version (information on compilation, maintainer)
+
+
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+Continuing without LCL init file: lclinit.lci
+Continuing without LSL init file: lslinit.lsi
+Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
+variable.
+
+Source files are .c, .h and .lcl files.  If there is no suffix,
+   LCLint will look for <file>.c and <file>.lcl.
+
+Use lclint -help <topic or flag name> for more information
+
+Topics:
+
+   annotations (describes source-code annotations)
+   comments (describes control comments)
+   flags (describes flag categories)
+   flags <category> (describes flags in category)
+   flags all (short description of all flags)
+   flags alpha (list all flags alphabetically)
+   flags full (full description of all flags)
+   mail (information on mailing lists)
+   modes (show mode settings)
+   parseerrors (help on handling parser errors)
+   prefixcodes (character codes in namespace prefixes)
+   references (sources for more information)
+   vars (environment variables)
+   version (information on compilation, maintainer)
+
+
+Unrecognized option: asdf
+
+
+Finished LCLint checking --- no code processed
+
+Warning: setting +boolint redundant with current value
+
+Finished LCLint checking --- no code processed
+
+   D<initializer>              
+   I<directory>                
+   S<directory>                
+   U<initializer>              
+   abstract                    
+   accessall                   
+   accessczech                 
+   accessczechoslovak          
+   accessfile                  
+   accessmodule                
+   accessslovak                
+   aliasunique                 
+   allblock                    
+   allempty                    
+   allglobs                    
+   allimponly                  
+   allmacros                   
+   ansilib                     
+   ansilimits                  
+   ansireserved                
+   ansireservedinternal        
+   assignexpose                
+   badflag                     
+   bitwisesigned               
+   bool                        
+   boolcompare                 
+   boolfalse                   
+   boolint                     
+   boolops                     
+   booltrue                    
+   booltype                    
+   branchstate                 
+   casebreak                   
+   castexpose                  
+   castfcnptr                  
+   charindex                   
+   charint                     
+   charintliteral              
+   charunsignedchar            
+   checkedglobalias            
+   checkmodglobalias           
+   checkstrictglobalias        
+   checkstrictglobs            
+   codeimponly                 
+   commentchar                 
+   compdef                     
+   compdestroy                 
+   compmempass                 
+   constmacros                 
+   constprefix                 
+   constprefixexclude          
+   constuse                    
+   continuecomment             
+   controlnestdepth            
+   cppnames                    
+   czech                       
+   czechconsts                 
+   czechfcns                   
+   czechmacros                 
+   czechoslovak                
+   czechoslovakconsts          
+   czechoslovakfcns            
+   czechoslovakmacros          
+   czechoslovaktypes           
+   czechoslovakvars            
+   czechtypes                  
+   czechvars                   
+   declundef                   
+   deepbreak                   
+   deparrays                   
+   dependenttrans              
+   distinctexternalnames       
+   distinctinternalnames       
+   dump                        
+   duplicatequals              
+   elseifcomplete              
+   enumindex                   
+   enumint                     
+   enummembers                 
+   enummemuse                  
+   enumprefix                  
+   enumprefixexclude           
+   evalorder                   
+   evalorderuncon              
+   exitarg                     
+   expect                      
+   exportany                   
+   exportconst                 
+   exportfcn                   
+   exportheader                
+   exportheadervar             
+   exportiter                  
+   exportlocal                 
+   exportmacro                 
+   exporttype                  
+   exportvar                   
+   exposetrans                 
+   externalnamecaseinsensitive 
+   externalnamelen             
+   externalprefix              
+   externalprefixexclude       
+   f                           
+   fcnderef                    
+   fcnmacros                   
+   fcnuse                      
+   fielduse                    
+   filestaticprefix            
+   filestaticprefixexclude     
+   firstcase                   
+   fixedformalarray            
+   floatdouble                 
+   forblock                    
+   forcehints                  
+   forempty                    
+   formalarray                 
+   formatcode                  
+   formattype                  
+   forwarddecl                 
+   freshtrans                  
+   fullinitblock               
+   globalias                   
+   globalprefix                
+   globalprefixexclude         
+   globimponly                 
+   globnoglobs                 
+   globs                       
+   globsimpmodsnothing         
+   globstate                   
+   globuse                     
+   gnuextensions               
+   hasyield                    
+   help                        
+   hints                       
+   i                           
+   ifblock                     
+   ifempty                     
+   ignorequals                 
+   ignoresigns                 
+   immediatetrans              
+   impabstract                 
+   impcheckedglobs             
+   impcheckedspecglobs         
+   impcheckedstatics           
+   impcheckedstrictglobs       
+   impcheckedstrictspecglobs   
+   impcheckedstrictstatics     
+   impcheckmodglobs            
+   impcheckmodinternals        
+   impcheckmodspecglobs        
+   impcheckmodstatics          
+   impconj                     
+   impouts                     
+   imptype                     
+   includenest                 
+   incompletetype              
+   incondefs                   
+   incondefslib                
+   infloops                    
+   infloopsuncon               
+   internalglobs               
+   internalglobsnoglobs        
+   internalnamecaseinsensitive 
+   internalnamelen             
+   internalnamelookalike       
+   iterprefix                  
+   iterprefixexclude           
+   keeptrans                   
+   kepttrans                   
+   larchpath                   
+   lclexpect                   
+   lclimportdir                
+   lcs                         
+   lh                          
+   libmacros                   
+   likelybool                  
+   limit                       
+   linelen                     
+   lintcomments                
+   load                        
+   localprefix                 
+   localprefixexclude          
+   longintegral                
+   longsignedintegral          
+   longunsignedintegral        
+   longunsignedunsignedintegral
+   loopexec                    
+   looploopbreak               
+   looploopcontinue            
+   loopswitchbreak             
+   macroassign                 
+   macroconstdecl              
+   macrodecl                   
+   macroempty                  
+   macrofcndecl                
+   macromatchname              
+   macroparams                 
+   macroparens                 
+   macroredef                  
+   macrostmt                   
+   macrounrecog                
+   macrovarprefix              
+   macrovarprefixexclude       
+   maintype                    
+   matchanyintegral            
+   matchfields                 
+   mayaliasunique              
+   memchecks                   
+   memimp                      
+   memtrans                    
+   misscase                    
+   modfilesys                  
+   modglobs                    
+   modglobsnomods              
+   modglobsunchecked           
+   modinternalstrict           
+   modnomods                   
+   modobserver                 
+   modobserveruncon            
+   mods                        
+   modsimpnoglobs              
+   modstrictglobsnomods        
+   moduncon                    
+   modunconnomods              
+   modunspec                   
+   mustdefine                  
+   mustfree                    
+   mustmod                     
+   mustnotalias                
+   mutrep                      
+   namechecks                  
+   needspec                    
+   nestcomment                 
+   nestedextern                
+   neverinclude                
+   newdecl                     
+   newreftrans                 
+   nextlinemacros              
+   noaccess                    
+   nocomments                  
+   noeffect                    
+   noeffectuncon               
+   nof                         
+   nolib                       
+   noparams                    
+   noret                       
+   null                        
+   nullassign                  
+   nullderef                   
+   nullpass                    
+   nullptrarith                
+   nullret                     
+   nullstate                   
+   numenummembers              
+   numliteral                  
+   numstructfields             
+   observertrans               
+   oldstyle                    
+   onlytrans                   
+   onlyunqglobaltrans          
+   overload                    
+   ownedtrans                  
+   paramimptemp                
+   paramuse                    
+   parenfileformat             
+   partial                     
+   passunknown                 
+   posixlib                    
+   posixstrictlib              
+   predassign                  
+   predbool                    
+   predboolint                 
+   predboolothers              
+   predboolptr                 
+   protoparammatch             
+   protoparamname              
+   protoparamprefix            
+   protoparamprefixexclude     
+   ptrarith                    
+   ptrcompare                  
+   ptrnegate                   
+   quiet                       
+   readonlystrings             
+   readonlytrans               
+   realcompare                 
+   redecl                      
+   redef                       
+   refcounttrans               
+   relaxquals                  
+   relaxtypes                  
+   repeatunrecog               
+   repexpose                   
+   retalias                    
+   retexpose                   
+   retimponly                  
+   retval                      
+   retvalbool                  
+   retvalint                   
+   retvalother                 
+   sefparams                   
+   sefuncon                    
+   shadow                      
+   sharedtrans                 
+   shiftsigned                 
+   showallconjs                
+   showalluses                 
+   showcolumn                  
+   showfunc                    
+   showscan                    
+   showsummary                 
+   singleinclude               
+   sizeofformalarray           
+   sizeoftype                  
+   skipansiheaders             
+   skipposixheaders            
+   skipsysheaders              
+   slovak                      
+   slovakconsts                
+   slovakfcns                  
+   slovakmacros                
+   slovaktypes                 
+   slovakvars                  
+   specglobimponly             
+   specimponly                 
+   specmacros                  
+   specretimponly              
+   specstructimponly           
+   specundecl                  
+   specundef                   
+   stackref                    
+   staticinittrans             
+   statictrans                 
+   stats                       
+   strictbranchstate           
+   strictdestroy               
+   strictlib                   
+   strictops                   
+   strictusereleased           
+   stringliterallen            
+   structimponly               
+   supcounts                   
+   switchloopbreak             
+   switchswitchbreak           
+   syntax                      
+   sysdirerrors                
+   sysdirexpandmacros          
+   sysdirs                     
+   sysunrecog                  
+   tagprefix                   
+   tagprefixexclude            
+   temptrans                   
+   timedist                    
+   tmpcomments                 
+   tmpdir                      
+   topuse                      
+   trytorecover                
+   type                        
+   typeprefix                  
+   typeprefixexclude           
+   typeuse                     
+   uncheckedglobalias          
+   uncheckedmacroprefix        
+   uncheckedmacroprefixexclude 
+   uniondef                    
+   unixlib                     
+   unixstrictlib               
+   unqualifiedinittrans        
+   unqualifiedtrans            
+   unreachable                 
+   unrecog                     
+   unrecogcomments             
+   unusedspecial               
+   usedef                      
+   usereleased                 
+   usestderr                   
+   usevarargs                  
+   varuse                      
+   voidabstract                
+   warnflags                   
+   warnlintcomments            
+   warnmissingglobs            
+   warnmissingglobsnoglobs     
+   warnposixheaders            
+   warnunixlib                 
+   whichlib                    
+   whileblock                  
+   whileempty                  
+
+
+bool --- boolean type is abstract
+likelybool --- type name is probably a boolean type but does not match default
+boolean type name, "bool", and alternate name is not set
+impabstract --- assume user type definitions are abstract (unless
+/*@concrete@*/ is used)
+accessall --- set accessmodule, accessfile and accessczech
+accessmodule --- allow access to abstract types in definition module
+accessfile --- allow access to abstract types by file name convention
+accessczech --- allow access to abstract types by czech naming convention
+accessslovak --- allow access to abstract types by slovak naming convention
+accessczechoslovak --- allow access to abstract types by czechoslovak naming
+convention
+abstract --- data abstraction barriers
+mutrep --- representation of mutable type has sharing semantics
+globalias --- function returns with global aliasing external state (sets
+checkstrictglobalias, checkedglobalias, checkmodglobalias and
+uncheckedglobalias)
+checkstrictglobalias --- function returns with a checkstrict global aliasing
+external state
+checkedglobalias --- function returns with a checked global aliasing external
+state
+checkmodglobalias --- function returns with a checkmod global aliasing external
+state
+uncheckedglobalias --- function returns with an unchecked global aliasing
+external state
+aliasunique --- unique parameter is aliased
+mayaliasunique --- unique parameter may be aliased
+mustnotalias --- temp storage aliased at return point or scope exit
+retalias --- function returns alias to parameter or global
+noparams --- function declaration has no parameter list
+oldstyle --- old style function definition
+gnuextensions --- support some gnu (gcc) language extensions
+usevarargs --- non-standard <varargs.h> included
+warnposixheaders --- a POSIX header is included, but the POSIX library is not
+used
+exitarg --- argument to exit has implementation defined behavior
+evalorder --- code has unspecified or implementation-dependent behavior because
+of order of evaluation
+evalorderuncon --- code involving call to unspecified function has undefined or
+implementation-dependent behavior
+boolfalse --- set name of boolean false (default FALSE)
+booltype --- set name of boolean type (default bool)
+booltrue --- set name of boolean true (default TRUE)
+noaccess --- ignore access comments
+nocomments --- ignore all stylized comments
+unrecogcomments --- stylized comment is unrecognized
+continuecomment --- line continuation marker (\) in comment before */ on same
+line
+nestcomment --- comment begins inside comment
+tmpcomments --- interpret t comments (ignore errors in lines marked with
+/*@t<n>@*/
+lintcomments --- interpret traditional lint comments (/*FALLTHROUGH*/,
+/*NOTREACHED*/)
+warnlintcomments --- print a warning and suggest an alternative when a
+traditional lint comment is used
+declundef --- function or variable declared but never defined
+specundef --- function or variable specified but never defined
+specundecl --- function or variable specified but never declared in a source
+file
+loopexec --- assume all loops execute at least once
+infloops --- likely infinite loop is detected
+infloopsuncon --- likely infinite loop is detected (may result from
+unconstrained function)
+deepbreak --- break inside nested while or for or switch
+looploopbreak --- break inside nested while or for
+switchloopbreak --- break in loop inside switch
+loopswitchbreak --- break in switch inside loop
+switchswitchbreak --- break in switch inside switch
+looploopcontinue --- continue inside nested loop
+unreachable --- unreachable code detected
+whileempty --- a while statement has no body
+whileblock --- the body of a while statement is not a block
+forempty --- a for statement has no body
+forblock --- the body of a for statement is not a block
+ifempty --- an if statement has no body
+ifblock --- the body of an if statement is not a block
+allempty --- an if, while or for statement has no body (sets ifempty,
+whileempty and forempty
+allblock --- the body of an if, while or for statement is not a block (sets
+ifblock, whileblock and forblock)
+elseifcomplete --- if ... else if chains must have final else
+noret --- path with no return detected in non-void function
+casebreak --- non-empty case in a switch without preceding break
+misscase --- switch on enum type missing case for some value
+firstcase --- first statement in switch is not a case
+shadow --- declaration reuses name visible in outer scope
+incondefslib --- function, variable or constant defined in a library is
+redefined with inconsistent type
+overload --- library function overloaded
+nestedextern --- an extern declaration is inside a function scope
+redecl --- function or variable redeclared
+redef --- function or variable redefined
+incondefs --- function, variable or constant redefined with inconsistent type
+imptype --- variable declaration has unknown (implicitly int) type
+matchfields --- struct or enum type redefined with inconsistent fields or
+members
+usedef --- use before definition
+impouts --- pointer parameters to unspecified functions may be implicit out
+parameters
+tmpdir --- set directory for writing temp files
+larchpath --- set path for searching for library files (overrides LARCH_PATH
+environment variable)
+lclimportdir --- set directory to search for LCL import files (overrides
+LCLIMPORTDIR)
+sysdirs --- set directories for system files (default /usr/include). Separate
+directories with colons (e.g., "/usr/include:/usr/local/lib"). Flag settings
+propagate to files in a system directory. If -sysdirerrors is set, no errors
+are reported for files in system directories.
+skipansiheaders --- prevent inclusion of header files in a system directory
+with names that match standard ANSI headers. The symbolic information in the
+standard library is used instead.  Flag in effect only if a library including
+the ANSI library is loaded.  The ANSI headers are:
+assert, ctype, errno, float, limits, locale, math, setjmp, signal, stdarg,
+stddef, stdio, stdlib, strings, string, time, and wchar.
+skipposixheaders --- prevent inclusion of header files in a system directory
+with names that match standard POSIX headers. The symbolic information in the
+posix library is used instead.  The POSIX headers are:
+dirent, fcntl, grp, pwd, termios, sys/stat, sys/times, sys/types, sys/utsname,
+sys/wait, unistd, and utime.
+sysdirerrors --- report errors in files in system directories (set by -sysdirs)
+sysdirexpandmacros --- expand macros in system directories regardless of other
+settings, except for macros corresponding to names defined in a load library
+I<directory> --- add to C include path
+S<directory> --- add to spec path
+quiet --- suppress herald and error count
+usestderr --- send error messages to standard error (instead of standard out)
+showsummary --- show summary of all errors reported and suppressed
+showscan --- show file names are they are processed
+stats --- display lines processed and time
+timedist --- display time distribution
+showalluses --- show sorted list of uses of all globals
+noeffect --- statement with no effect
+noeffectuncon --- statement with no effect (except possibly through call to
+unconstrained function)
+exportany --- variable, function or type exported but not specified
+exportfcn --- function exported but not specified
+exportmacro --- expanded macro exported but not specified
+exporttype --- type definition exported but not specified
+exportvar --- variable exported but not specified
+exportconst --- constant exported but not specified
+exportiter --- constant exported but not specified
+repexpose --- abstract representation is exposed (sets assignexpose, retexpose,
+and castexpose)
+retexpose --- abstract representation is exposed (return values only)
+assignexpose --- abstract representation is exposed (assignments only)
+castexpose --- abstract representation is exposed through a cast
+linelen --- set length of messages (number of chars)
+showcolumn --- show column number where error is found
+parenfileformat --- show column number where error is found
+showfunc --- show name of function containing error
+showallconjs --- show all possible types
+impconj --- make all alternate types implicit (useful for making system
+libraries
+expect --- expect <int> code errors
+lclexpect --- expect <int> spec errors
+partial --- check as partial system (-specundef, -declundef, -exportlocal,
+don't check macros in headers without corresponding .c files)
+globs --- undocumented use of a checked global variable
+globuse --- global listed for a function not used
+internalglobs --- use of internalState
+internalglobsnoglobs --- use of internalState (in function with no globals
+list)
+warnmissingglobs --- global variable used in modifies clause is not listed in
+globals list
+warnmissingglobsnoglobs --- global variable used in modifies clause in a
+function with no globals list
+globnoglobs --- use of checked global in a function with no globals list or
+specification
+allglobs --- report use and modification errors for globals not annotated with
+unchecked
+checkstrictglobs --- report use and modification errors for checkedstrict
+globals
+impcheckedspecglobs --- assume checked qualifier for unqualified global
+declarations in .lcl files
+impcheckmodspecglobs --- assume checkmod qualifier for unqualified global
+declarations in .lcl files
+impcheckedstrictspecglobs --- assume checkmod qualifier for unqualified global
+declarations in .lcl files
+impcheckedglobs --- assume checked qualifier for unqualified global
+declarations
+impcheckmodglobs --- assume checkmod qualifier for unqualified global
+declarations
+impcheckedstrictglobs --- assume checkedstrict qualifier for unqualified global
+declarations
+impcheckedstatics --- assume checked qualifier for unqualified file static
+declarations
+impcheckmodstatics --- assume checkmod qualifier for unqualified file static
+declarations
+impcheckmodinternals --- assume checkmod qualifier for unqualified local static
+declarations (for internal state modifications)
+impcheckedstrictstatics --- assume checkedstrict qualifier for unqualified file
+static declarations
+modglobs --- undocumented modification of a checked global variable
+modglobsnomods --- undocumented modification of a checked global variable in a
+function declared with no modifies clause
+modstrictglobsnomods --- undocumented modification of a strict checked global
+variable in a function declared with no modifies clause
+modglobsunchecked --- undocumented modification of an unchecked checked global
+variable
+lh --- generate .lh files
+lcs --- generate .lcs files
+singleinclude --- optimize header inclusion to eliminate redundant includes
+neverinclude --- optimize header inclusion to not include any header files
+skipsysheaders --- do not include header files in system directories (set by
+-sysdirs)
+warnflags --- warn when command line sets flag to default value in mode
+warnunixlib --- warn when the unix library is used
+badflag --- a flag is not recognized or used in an incorrect way
+forcehints --- provide hints for all errors reported
+help --- -help <flags> will describe flags
+hints --- provide hints on using lclint (hint only reported for first related
+error)
+retval --- return value ignored (sets retvalint, retvalbool and retvalother)
+retvalother --- return value of type other than bool or int ignored
+retvalbool --- return value of type bool ignored
+retvalint --- return value of type int ignored
+f --- load options file (default ~/.lclintrc not loaded)
+i --- set LCL initilization file
+nof --- do not read options file
+needspec --- information in specifications is not also included in syntactic
+comments
+newdecl --- report new global declarations in source files
+hasyield --- iter declaration has no yield parameters
+dump --- save state for merging (default suffix .lcd)
+load --- load state from dump file (default suffix .lcd)
+nolib --- do not load standard library
+ansilib --- use ANSI (ISO) standard library
+strictlib --- interpret standard library strictly
+unixlib --- use UNIX (sort-of) standard library
+unixstrictlib --- use strict version of UNIX (sort-of) library
+posixlib --- use POSIX standard library
+posixstrictlib --- use strict POSIX standard library
+whichlib --- show standard library filename
+commentchar --- set marker character for syntactic comments (default is '@')
+allmacros --- sets fcnmacros and constmacros
+libmacros --- check all macros with declarations in library as functions
+specmacros --- check all macros corresponding to specified functions or
+constants
+fcnmacros --- check all macros with parameter lists as functions
+constmacros --- check all macros without parameter lists as constants
+macromatchname --- macro definition does not match iter or constant declaration
+nextlinemacros --- the line after a constant or iter declaration must be a
+macro definition
+macrostmt --- macro definition is syntactically not equivalent to function
+macroempty --- macro definition for is empty
+macroparams --- macro parameter not used exactly once
+macroassign --- assignment to a macro parameter
+sefparams --- a parameter with side-effects is passed as a sef parameter
+sefuncon --- a parameter with unconstrained side-effects is passed as a sef
+parameter
+macroparens --- macro parameter used without parentheses (in potentially
+dangerous context)
+macrodecl --- macro without prototype or specification (sets macrofcndecl and
+macroconstdecl)
+macrofcndecl --- parameterized macro without prototype or specification
+macroconstdecl --- non-parameterized macro without prototype or specification
+macroredef --- macro redefined
+macrounrecog --- unrecognized identifier in macro
+stackref --- external reference to stack-allocated storage is created
+usereleased --- storage used after release
+strictusereleased --- element used after it may have been released
+compdef --- parameter, return value or global completely defined
+compmempass --- actual parameter matches alias kind of formal parameter
+completely 
+mustdefine --- out storage not defined before return or scope exit
+uniondef --- at least one field of a union must be defined
+memimp --- memory errors for unqualified storage
+paramimptemp --- assume unannotated parameter is temp
+allimponly --- sets globimponly, retimponly, structimponly, specglobimponly,
+specretimponly and specstructimponly
+codeimponly --- sets globimponly, retimponly and structimponly
+specimponly --- sets specglobimponly, specretimponly and specstructimponly
+globimponly --- assume unannotated global storage is only
+retimponly --- assume unannotated returned storage is only
+structimponly --- assume unannotated structure field is only
+specglobimponly --- assume unannotated global storage is only
+specretimponly --- assume unannotated returned storage is only
+specstructimponly --- assume unannotated structure field is only
+deparrays --- array elements are dependent storage
+compdestroy --- all only references derivable from void pointer out only
+parameter are released
+strictdestroy --- report complete destruction errors for array elements that
+may have been released
+mustfree --- only storage not released before return or scope exit
+branchstate --- storage has inconsistent states of alternate paths through a
+branch
+strictbranchstate --- storage through array fetch has inconsistent states of
+alternate paths through a branch
+memchecks --- sets all dynamic memory checking flags (memimplicit, mustfree,
+mustdefine, mustnotalias, null, memtrans)
+memtrans --- memory transfer errors (sets all *trans flags)
+exposetrans --- exposure transfer errors
+observertrans --- observer transfer errors
+dependenttrans --- dependent transfer errors
+newreftrans --- new reference transfer to reference counted reference
+onlytrans --- only storage transferred to non-only reference (memory leak)
+onlyunqglobaltrans --- only storage transferred to an unqualified global or
+static reference (memory leak)
+ownedtrans --- owned storage transferred to non-owned reference (memory leak)
+freshtrans --- fresh storage transferred to non-only reference (memory leak)
+sharedtrans --- shared storage transferred to non-shared reference
+temptrans --- temp storage transferred to non-temporary reference
+kepttrans --- kept storage transferred to non-temporary reference
+keeptrans --- keep storage transferred inconsistently
+immediatetrans --- an immediate address (result of &) is transferred
+inconsistently
+refcounttrans --- reference counted storage is transferred in an inconsistent
+way
+statictrans --- static storage is transferred in an inconsistent way
+unqualifiedtrans --- unqualified storage is transferred in an inconsistent way
+staticinittrans --- static storage is used as an initial value in an
+inconsistent way
+unqualifiedinittrans --- unqualified storage is used as an initial value in an
+inconsistent way
+readonlystrings --- string literals are read-only (error if one is modified or
+released)
+readonlytrans --- report memory transfer errors for initializations to
+read-only string literals
+passunknown --- passing a value as an un-annotated parameter clears its
+annotation
+mods --- unspecified modification of caller-visible state
+mustmod --- specified modification is not detected
+modobserver --- possible modification of observer storage
+modobserveruncon --- possible modification of observer storage through
+unconstrained call
+modinternalstrict --- possible modification of internal storage through
+function call
+modfilesys --- report undocumented file system modifications (applies to
+unspecified functions if modnomods is set)
+modunspec --- modification in unspecified functions (sets modnomods,
+modglobunspec and modstrictglobsunspec)
+modnomods --- modification in a function with no modifies clause
+moduncon --- possible modification through a call to an unconstrained function
+modunconnomods --- possible modification through a call to an unconstrained
+function in a function with no modifies clause
+globsimpmodsnothing --- functions declared with a globals list but no modifies
+clause are assumed to modify nothing
+modsimpnoglobs --- functions declared with a modifies clause but no globals
+list are assumed to use no globals
+namechecks --- controls name checking without changing other settings
+czech --- czech naming convention (sets accessczech, czechfunctions, czechvars,
+czechconstants, czechenums, and czechmacros)
+czechfcns --- czech naming convention violated in a function or iterator
+declaration
+czechvars --- czech naming convention violated in a variable declaration
+czechmacros --- czech naming convention violated in an expanded macro name
+czechconsts --- czech naming convention violated in a constant declaration
+czechtypes --- czech naming convention violated in a user-defined type
+definition
+slovak --- slovak naming convention violated
+slovakfcns --- slovak naming convention violated in a function or iterator
+declaration
+slovakmacros --- slovak naming convention violated in an expanded macro name
+slovakvars --- slovak naming convention violated in a variable declaration
+slovakconsts --- slovak naming convention violated in a constant declaration
+slovaktypes --- slovak naming convention violated in a use-defined type
+definition
+czechoslovak --- czech or slovak naming convention violated
+czechoslovakfcns --- czechoslovak naming convention violated in a function or
+iterator declaration
+czechoslovakmacros --- czechoslovak naming convention violated in an expanded
+macro name
+czechoslovakvars --- czechoslovak naming convention violated in a variable
+declaration
+czechoslovakconsts --- czechoslovak naming convention violated in a constant
+declaration
+czechoslovaktypes --- czechoslovak naming convention violated in a user-defined
+type definition
+ansireserved --- external name conflicts with name reserved for system or
+standard library
+cppnames --- external or internal name is a C++ keyword or reserved word
+ansireservedinternal --- internal name conflicts with name reserved for system
+or standard library
+distinctexternalnames --- external name is not distinguishable from another
+external name using the number of significant characters
+externalnamelen --- set the number of significant characters in an external
+name
+externalnamecaseinsensitive --- alphabetic comparisons for external names are
+case-insensitive
+distinctinternalnames --- internal name is not distinguishable from another
+internal name using the number of significant characters
+internalnamelen --- set the number of significant characters in an internal
+name
+internalnamecaseinsensitive --- set whether case is significant an internal
+names (-internalnamecaseinsensitive means case is significant)
+internalnamelookalike --- lookalike characters match in internal names
+macrovarprefix --- set namespace prefix for variables declared in a macro body
+macrovarprefixexclude --- the macrovarprefix may not be used for non-macro
+variables
+tagprefix --- set namespace prefix for struct, union and enum tags
+tagprefixexclude --- the tagprefix may not be used for non-tag identifiers
+enumprefix --- set namespace prefix for enum members
+enumprefixexclude --- the enumprefix may not be used for non-enum member
+identifiers
+filestaticprefix --- set namespace prefix for file static declarations
+filestaticprefixexclude --- the filestaticprefix may not be used for
+identifiers that are not file static
+globalprefix --- set namespace prefix for global variables
+globalprefixexclude --- the globalprefix may not be used for non-global
+identifiers
+typeprefix --- set namespace prefix for user-defined types
+typeprefixexclude --- the typeprefix may not be used for identifiers that are
+not type names
+externalprefix --- set namespace prefix for external identifiers
+externalprefixexclude --- the externalprefix may not be used for non-external
+identifiers
+localprefix --- set namespace prefix for local variables
+localprefixexclude --- the localprefix may not be used for non-local
+identifiers
+uncheckedmacroprefix --- set namespace prefix for unchecked macros
+uncheckedmacroprefixexclude --- the uncheckmacroprefix may not be used for
+identifiers that are not unchecked macros
+constprefix --- set namespace prefix for constants
+constprefixexclude --- the constprefix may not be used for non-constant
+identifiers
+iterprefix --- set namespace prefix for iterators
+iterprefixexclude --- the iterprefix may not be used for non-iter identifiers
+protoparamprefix --- set namespace prefix for parameters in function prototype
+declarations
+protoparamname --- a parameter in a function prototype has a name
+protoparammatch --- the name of a parameter in a function prototype and
+corresponding declaration must match (after removing the protoparamprefix
+protoparamprefixexclude --- the protoparamprefix may not be used for
+non-declaraction parameter identifiers
+controlnestdepth --- set maximum nesting depth of compound statements,
+iteration control structures, and selection control structures (ANSI minimum is
+15)
+stringliterallen --- set maximum length of string literals (ANSI minimum is
+509)
+numstructfields --- set maximum number of fields in a struct or union (ANSI
+minimum is 127)
+numenummembers --- set maximum number of members of an enum (ANSI minimum is
+127)
+includenest --- set maximum number of nested #include files
+ansilimits --- check for violations of standard limits (controlnestdepth,
+stringliterallen, includenest, numstructfields, numenummembers)
+null --- misuses of null pointer
+nullderef --- possible dereferencce of null pointer
+fcnderef --- dereferencce of a function type
+nullpass --- possibly null pointer passed as formal with no null annotation
+nullret --- possibly null pointer returned as result with no null annotation
+nullstate --- possibly null pointer reachable from a reference with no null
+annotation
+nullassign --- inconsistent assignment or initialization involving null pointer
+boolcompare --- comparison between bools (dangerous because of multiple TRUE
+values)
+realcompare --- dangerous comparison between reals (dangerous because of
+inexact floating point representations)
+ptrarith --- arithmetic involving pointer and integer
+nullptrarith --- arithmetic involving possibly null pointer and integer
+ptrcompare --- comparison between pointer and number
+strictops --- primitive operation does not type check strictly
+bitwisesigned --- a bitwise logical operator does not have unsigned operands
+shiftsigned --- a shift operator does not have unsigned operands
+boolops --- primitive operation (!, && or ||) does not has a boolean argument
+ptrnegate --- allow ! to be used on pointer operand
+sizeoftype --- sizeof operator has a type argument
+sizeofformalarray --- sizeof operator has an array formal parameter argument
+fixedformalarray --- formal parameter of type array is declared with size
+incompletetype --- formal parameter has an incomplete type
+formalarray --- formal parameter is an array
+predassign --- condition test (if, while or for) is an assignment
+predbool --- type of condition test (if, while or for) not bool (sets
+predboolint, predboolptr and predboolothers)
+predboolint --- type of condition test (if, while or for) is an integral type
+predboolothers --- type of condition test (if, while or for) not bool, int or
+pointer
+predboolptr --- type of condition test (if, while or for) is a pointer
+D<initializer> --- passed to pre-processor
+U<initializer> --- passed to pre-processor
+globstate --- returns with global in inconsistent state (null or undefined)
+supcounts --- The number of errors detected does not match number in
+/*@i<n>@*/.
+limit --- limit <int> consecutive repeated errors
+syntax --- syntax error in parsing
+trytorecover --- try to recover from parse error
+type --- type mismatch
+fullinitblock --- initializer sets all fields
+enummembers --- enum members must be int values
+maintype --- type of main does not match expected type
+formattype --- type-mismatch in parameter corresponding to format code in a
+printf or scanf-like function
+formatcode --- invalid format code in format string for printf or scanf-like
+function
+forwarddecl --- forward declarations of pointers to abstract representation
+match abstract type
+voidabstract --- void * matches pointers to abstract types, casting ok
+(dangerous)
+castfcnptr --- a pointer to a function is cast to a pointer to void (or vice
+versa)
+charindex --- char can be used to index arrays
+enumindex --- enum can be used to index arrays
+boolint --- bool and int are equivalent
+charint --- char and int are equivalent
+enumint --- enum and int are equivalent
+floatdouble --- float and double are equivalent
+ignorequals --- ignore type qualifiers (long, short, unsigned)
+duplicatequals --- report duplicate type qualifiers (e.g., long long)
+ignoresigns --- ignore signs in type comparisons (unsigned matches signed)
+numliteral --- int literals can be reals
+charintliteral --- character constants (e.g., 'a') can be used as ints
+relaxquals --- report qualifier mismatches only if dangerous
+relaxtypes --- allow all numeric types to match
+charunsignedchar --- allow char and unsigned char types to match
+matchanyintegral --- allow any intergral type to match an arbitrary integral
+type (e.g., dev_t)
+longunsignedintegral --- allow long unsigned type to match an arbitrary
+integral type (e.g., dev_t)
+longintegral --- allow long type to match an arbitrary integral type (e.g.,
+dev_t)
+longunsignedunsignedintegral --- allow long unsigned type to match an arbitrary
+unsigned integral type (e.g., size_t)
+longsignedintegral --- allow long type to match an arbitrary signed integral
+type (e.g., ssize_t)
+zeroptr --- 0 is treated as a pointer
+repeatunrecog --- do not suppress repeated unrecognized identifier messages
+(instead of only reporting the first error)
+sysunrecog --- report unrecognized identifiers with system (__) prefix
+unrecog --- unrecognized identifier
+topuse --- declaration at top level not used
+exportlocal --- a declaration is exported but not used outside this module
+exportheader --- a declaration is exported but does not appear in a header file
+exportheadervar --- a variable declaration is exported but does not appear in a
+header file
+fielduse --- field of structure type not used
+enummemuse --- member of an enum type not used
+constuse --- constant declared but not used
+fcnuse --- function declared but not used
+paramuse --- function parameter not used 
+typeuse --- type declared but not used
+varuse --- variable declared but not used
+unusedspecial --- unused declaration in special file (corresponding to .l or .y
+file)
+

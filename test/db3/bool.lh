@@ -1,0 +1,8 @@
+/* Output from LCLint 2.5m */
+# include "bool.h"
+
+
+extern void bool_initMod (void);
+extern /*@observer@*/ char *bool_unparse (bool  /* b */);
+extern bool bool_not (bool  /* b */);
+extern bool bool_equal (bool  /* b1 */, bool  /* b2 */);
