@@ -103,6 +103,8 @@ constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall);
 
 constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer);
 
+constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint);
+bool constraint_search (constraint c, constraintExpr old);
 /*@=czechfcns*/
 //#warning take this out
 #include "constraintList.h"
