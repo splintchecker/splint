@@ -1930,9 +1930,12 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			      
 			    case 'i': 
 			    case 'd':
+			      expecttype = ctype_makePointer (ctype_combine (ctype_int, modtype));
+			      /*@switchbreak@*/ break;
+
 			    case 'x':
 			    case 'X': /* unsigned int */
-			      expecttype = ctype_makePointer (ctype_combine (ctype_int, modtype));
+			      expecttype = ctype_makePointer (ctype_combine (ctype_uint, modtype));
 			      /*@switchbreak@*/ break;
 			      
 			    case 'e':
@@ -2591,7 +2594,7 @@ static int
 		      f->guards = guardSet_union (f->guards, a->guards);
 		      
 		      DPRINTF (("match arg: %s / %s", ctype_unparse (ct), ctype_unparse (a->typ)));
-
+		      
 		      if (!(exprNode_matchArgType (ct, a)))
 			{
 			  DPRINTF (("Args mismatch!"));

@@ -81,7 +81,7 @@ static bool
 cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 {
   if (c1 == c2) return TRUE;
-
+  
   DPRINTF (("cprim close: %s / %s", cprim_unparse (c1), cprim_unparse (c2)));
 
   if (c1 == CTX_ANYINTEGRAL)
@@ -108,8 +108,13 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 
   if (c1 == CTX_UNSIGNEDINTEGRAL)
     {
-      if (context_getFlag (FLG_MATCHANYINTEGRAL)
-	  || context_getFlag (FLG_IGNOREQUALS))
+      /* We allow signed ints to match any integral if matchanyintegral is set */
+      if (context_getFlag (FLG_MATCHANYINTEGRAL)) {
+	return (cprim_isAnyInt (c2)
+		|| (cprim_isAnyChar (c2) && context_msgCharInt ()));
+      }
+      
+      if (context_getFlag (FLG_IGNOREQUALS))
 	{
 	  if (context_getFlag (FLG_IGNORESIGNS)) 
 	    {
@@ -134,8 +139,13 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 
   if (c1 == CTX_SIGNEDINTEGRAL)
     {
-      if (context_getFlag (FLG_MATCHANYINTEGRAL)
-	  || context_getFlag (FLG_IGNOREQUALS))
+      /* We allow signed ints to match any integral if matchanyintegral is set */
+      if (context_getFlag (FLG_MATCHANYINTEGRAL)) {
+	return (cprim_isAnyInt (c2)
+		|| (cprim_isAnyChar (c2) && context_msgCharInt ()));
+      }
+
+      if (context_getFlag (FLG_IGNOREQUALS))
 	{
 	  return (cprim_isAnyInt (c2)
 		  || (cprim_isAnyChar (c2) && context_msgCharInt ()));
