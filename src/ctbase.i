@@ -1167,7 +1167,7 @@ ctbase_expectFunction (ctype c)
 }
 
 static bool
-ctbase_isExpectFunction (ctbase ct)
+ctbase_isExpectFunction (ctbase ct) /*@*/
 {
   return (ct->type == CT_EXPFCN);
 }

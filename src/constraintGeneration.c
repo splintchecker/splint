@@ -42,6 +42,8 @@
 
 static bool exprNode_handleError(/*@dependent@*/ exprNode p_e);
 
+static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode p_e);
+
 static bool exprNode_isMultiStatement(/*@dependent@*/ exprNode p_e);
 static void  exprNode_multiStatement (/*@dependent@*/ exprNode p_e);
 
@@ -116,7 +118,7 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@dependent@*/ exprNode e)
   if (exprNode_isUnhandled (e) )
     {
       DPRINTF((message("Warning ignoring %s", exprNode_unparse (e) ) ) );
-        return FALSE;
+      return FALSE;
     }
 
   DPRINTF((message ("exprNode_generateConstraints Analysising %s at %s", exprNode_unparse( e),
@@ -128,13 +130,16 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@dependent@*/ exprNode e)
     }
   else
     {
-      fileloc loc;
+/*        fileloc loc; */
       
-      loc = exprNode_getNextSequencePoint(e); 
-      exprNode_exprTraverse(e, FALSE, FALSE, loc);
+/*        loc = exprNode_getNextSequencePoint(e);  */
+/*        exprNode_exprTraverse(e, FALSE, FALSE, loc); */
       
-      fileloc_free(loc);
+/*        fileloc_free(loc); */
+
+      exprNode_stmt(e);
       return FALSE;
+      
     }
   
   {
@@ -213,6 +218,22 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
       constraintList_free(tempList);
       return; 
     }
+
+  /*drl 2/13/002 patched bug so return statement will be checked*/
+  /*return is a stmt not not expression ...*/
+  if (e->kind == XPR_RETURN)
+    {
+      constraintList tempList;
+      
+      loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
+      
+      exprNode_exprTraverse (exprData_getSingle (e->edata), FALSE, TRUE, loc);
+      fileloc_free(loc);
+      
+      tempList = e->requiresConstraints;
+      e->requiresConstraints = exprNode_traversRequiresConstraints(e);
+      constraintList_free(tempList);
+    }
   
   if (e->kind != XPR_STMT)
     {
@@ -224,9 +245,15 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
 	{
 	  exprNode_multiStatement (e); /* evans 2001-08-21: spurious return removed */
 	}
-
-      DPRINTF((message ("Ignoring non-statement %s", exprNode_unparse(e) ) ) );
-      return; 
+      else
+	{
+	  loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
+	  
+	  exprNode_exprTraverse (e, FALSE, TRUE, loc);
+	  fileloc_free(loc);
+	  
+	  }
+	  return; 
     }
  
   DPRINTF (("Stmt") );
@@ -2175,7 +2202,7 @@ we'll include it in a production release when its stable...
 
   ctype ct, rt;
   
-  TPRINTF((
+  DPRINTF((
 	   message("doing findStructs: %s", exprNodeList_unparse(arglist) )
 	   ));
 
