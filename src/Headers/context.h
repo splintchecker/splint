@@ -297,6 +297,10 @@ extern clause context_nextBreakClause (void);
 extern bool context_anyErrors (void) /*@globals internalState@*/ ;
 extern void context_hasError (void) /*@modifies internalState@*/ ;
 extern int context_numErrors (void) /*@globals internalState@*/ ;
+
+extern void context_recordBug (void) /*@modifies internalState@*/ ;
+extern int context_numBugs (void) /*@globals internalState@*/ ;
+
 extern bool context_neednl (void);
 extern void context_setNeednl (void);
 

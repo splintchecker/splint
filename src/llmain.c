@@ -1087,6 +1087,13 @@ int main (int argc, char *argv[])
 	}
 
       cstring_free (specErrors);
+  
+      if (context_numBugs () > 0) {
+	expsuccess = FALSE;
+	if (!isQuiet) {
+	  llmsg (message ("   %d internal bugs reported", context_numBugs ()));
+	}
+      }
   }
   
   if (context_getFlag (FLG_STATS))
@@ -1094,7 +1101,7 @@ int main (int argc, char *argv[])
       clock_t ttime = clock () - before;
       int specLines = context_getSpecLinesProcessed ();
       cstring specmsg = cstring_undefined;
-
+      
       rstime = clock ();
       
       if (specLines > 0)

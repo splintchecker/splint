@@ -88,7 +88,7 @@ fileloc_decColumn (fileloc f, int x)
 
   if (x > 0 && fileloc_isDefined (ret))
     {
-      llassertprint (ret->column > x, ("decColumn: %d", x));
+      llassertprint (ret->column > x, ("decColumn %s: %d", fileloc_unparse (f), x));
       ret->column -= x;
     }
 

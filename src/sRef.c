@@ -951,7 +951,9 @@ sRef_updateSref (sRef s)
 	uentry ue = sRef_getUentry (s);
 
 	/* must be raw name!  (need the marker) */
-	ue = usymtab_lookupSafe (uentry_rawName (ue));
+	/* Must be in the correct scope! */
+
+	ue = usymtab_lookupSafeScope (uentry_rawName (ue), sRef_lexLevel (s));
 	
 	if (uentry_isUndefined (ue))
 	  {
@@ -8427,7 +8429,7 @@ sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
   
   aliases = usymtab_allAliases (s);
 
-  DPRINTF (("All aliases: %s", sRefSet_unparseFull (aliases)));
+  DPRINTF (("All aliases: %s --> %s", sRef_unparseFull (s), sRefSet_unparseFull (aliases)));
 
   (*predf)(s, loc);
 
@@ -8435,7 +8437,9 @@ sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
     {
       if (sRef_isReasonable (current))
 	{
+	  DPRINTF (("Update: %s", sRef_unparseFull (current)));
 	  current = sRef_updateSref (current);
+	  DPRINTF (("Updated ==> %s", sRef_unparseFull (current)));
 	  ((*predf)(current, loc));
 	  DPRINTF (("Killed: %s", sRef_unparseFull (current)));
 	}

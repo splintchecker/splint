@@ -128,6 +128,10 @@ extern /*@exposed@*/ uentry usymtab_supReturnTypeEntry (/*@only@*/ uentry p_e)
 extern /*@observer@*/ uentry usymtab_lookupSafe (cstring p_k)
    /*@globals internalState@*/ ;
 
+extern /*@observer@*/ uentry
+  usymtab_lookupSafeScope (cstring p_k, int p_lexlevel)
+     /*@globals internalState@*/ ;
+
 extern /*@observer@*/ uentry usymtab_getGlobalEntry (usymId p_uid)
   /*@globals internalState@*/ ;
 

@@ -130,9 +130,12 @@ multiVal multiVal_invert (multiVal m)
 
 long multiVal_forceInt (multiVal m)
 {
-  llassert (multiVal_isInt (m));
-
-  return m->value.ival;
+  if (multiVal_isInt (m)) {
+    return m->value.ival;
+  } else {
+    llcontbug (message ("Multival is not int: %s", multiVal_unparse (m)));
+    return 0;
+  }
 }
 
 char multiVal_forceChar (multiVal m)

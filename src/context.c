@@ -102,6 +102,7 @@ static struct
   clause inclause;
 
   int numerrors;
+  int numbugs;
 
   filelocStack locstack;
   fileTable ftab;
@@ -3054,6 +3055,18 @@ context_resetErrors (void)
   gc.numerrors = 0;
 }
 
+void
+context_recordBug (void)
+{
+  gc.numbugs++;
+}
+
+int
+context_numBugs (void)
+{
+  return gc.numbugs;
+}
+
 void context_initMod (void)
    /*@globals undef gc; @*/
 {
@@ -3064,6 +3077,7 @@ void context_initMod (void)
 
   gc.instandardlib = FALSE;
   gc.numerrors = 0;
+  gc.numbugs = 0;
   gc.neednl = FALSE;
   gc.linesprocessed = 0;
   gc.speclinesprocessed = 0;

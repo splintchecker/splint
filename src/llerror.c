@@ -1486,6 +1486,8 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
   static int numbugs = 0;
   static bool inbug = FALSE;
 
+  context_recordBug ();
+
   if (inbug)
     {
       cstring temps = fileloc_unparseRaw (file, line);

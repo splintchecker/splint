@@ -165,6 +165,9 @@ extern void yyerror (char *);
 /* additional tokens introduced by splint pre-processor. */
 %token <tok> LLMACRO LLMACROITER LLMACROEND TENDMACRO
 
+/* For debugging purposes */
+%token <tok> QDREVEALSTATE
+
 /* break comments: */
 %token <tok> QSWITCHBREAK QLOOPBREAK QINNERBREAK QSAFEBREAK
 %token <tok> QINNERCONTINUE
@@ -302,7 +305,7 @@ extern void yyerror (char *);
 %type <expr> orIterExpr conditionalIterExpr assignIterExpr iterArgExpr
 %type <expr> expr optExpr constantExpr
 %type <expr> init macroBody iterBody endBody partialIterStmt iterSelectionStmt
-%type <expr> stmt stmtList fcnBody iterStmt iterDefStmt iterDefStmtList
+%type <expr> stmt stmtList fcnBody iterStmt iterDefStmt iterDefStmtList debugStmt
 %type <expr> labeledStmt caseStmt defaultStmt 
 %type <expr> compoundStmt compoundStmtAux compoundStmtRest compoundStmtAuxErr
 %type <expr> expressionStmt selectionStmt iterationStmt jumpStmt iterDefIterationStmt 
@@ -1700,8 +1703,12 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
+ | debugStmt
 ;
 
+debugStmt
+ : QDREVEALSTATE TLPAREN expr TRPAREN { exprNode_revealState ($3); $$ = exprNode_undefined; }
+;
 
 iterBody
  : iterDefStmtList { $$ = $1; }
@@ -1791,6 +1798,7 @@ stmtErr
  | iterationStmtErr
  | TLPAREN stmtErr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  | jumpStmt 
+ | debugStmt
  | error { $$ = exprNode_makeError (); }
 ;
 

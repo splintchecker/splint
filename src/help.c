@@ -286,17 +286,15 @@ printMail (void)
   llmsglit ("");
   llmsglit ("There are two mailing lists associated with Splint: ");
   llmsglit ("");
-  llmsglit ("   lclint-announce@virginia.edu");
+  llmsglit ("   splint-announce@cs.virginia.edu");
   llmsglit ("");
   llmsglit ("      Reserved for announcements of new releases and bug fixes.");
-  llmsglit ("      To subscribe, send a message to majordomo@virginia.edu with body: ");
-  llmsglit ("           subscribe lclint-announce");
   llmsglit ("");
-  llmsglit ("   lclint-interest@virginia.edu");
+  llmsglit ("   splint-discuss@virginia.edu");
   llmsglit ("");
   llmsglit ("      Informal discussions on the use and development of Splint.");
-  llmsglit ("      To subscribe, send a message to majordomo@virginia.edu with body: ");
-  llmsglit ("           subscribe lclint-interest");
+  llmsglit ("");
+  llmsglit ("To subscribe or view archives, visit http://www.splint.org/lists.html");
 }
 
 static void

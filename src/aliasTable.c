@@ -51,8 +51,8 @@ aliasTable_newEmpty (void)
   
   s->nelements = 0;
   s->nspace = aliasTableBASESIZE;
-  s->keys     = (sRef *) dmalloc (sizeof (*s->keys) * aliasTableBASESIZE);
-  s->values   = (sRefSet *) dmalloc (sizeof (*s->values) * aliasTableBASESIZE);
+  s->keys = (sRef *) dmalloc (sizeof (*s->keys) * aliasTableBASESIZE);
+  s->values = (sRefSet *) dmalloc (sizeof (*s->values) * aliasTableBASESIZE);
   
   return (s);
 }
@@ -94,6 +94,9 @@ static int aliasTable_lookupRefs (/*@notnull@*/ aliasTable s, sRef sr)
     {
       if (sRef_same (sr, s->keys[i])) 
 	{
+	  DPRINTF (("sRef match: %s / %s",
+		    sRef_unparseFull (sr),
+		    sRef_unparseFull (s->keys[i])));
 	  return i;
 	}
     }

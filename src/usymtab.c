@@ -5038,6 +5038,35 @@ usymtab_lookupQuietNoAlt (usymtab s, cstring k)
   return (usymtab_lookupAux (utab, k));
 }
 
+/*@dependent@*/ /*@observer@*/ uentry
+  usymtab_lookupSafeScope (cstring k, int lexlevel)
+  /*@globals utab@*/
+{
+  /*
+  ** This is necessary to deal with shadowed variables that are referenced
+  ** through aliases inside the shadowed scope.  It would be better if
+  ** lookup could take an sRef as a parameter.
+  */
+
+  usymtab tab = utab;
+
+  while (tab != GLOBAL_ENV && tab->lexlevel > lexlevel) {
+    uentry ret = usymtab_lookupAux (tab, k);
+    
+    if (uentry_isValid (ret)) {
+      sRef sr = uentry_getSref (ret);
+      
+      if (sRef_isCvar (sr) && sRef_lexLevel (sr) > lexlevel) {
+	tab = usymtab_dropEnv (tab);
+      } else {
+	return ret;
+      }
+    }
+  }
+
+  return uentry_undefined;
+}
+
 uentry
   usymtab_lookupExpose (cstring k)
   /*@globals utab@*/

@@ -3417,6 +3417,12 @@ checkTransferAux (exprNode fexp, /*@exposed@*/ sRef fref, bool ffix,
   bool isfcnpass = (transferType == TT_FCNPASS);
   bool isfcnreturn = (transferType == TT_FCNRETURN);
 
+  DPRINTF (("Check transfer: %s [%s] => %s [%s]",
+	    exprNode_unparse (fexp),
+	    sRef_unparseFull (fref),
+	    exprNode_unparse (texp),
+	    sRef_unparseFull (tref)));
+
   setCodePoint ();
 
   if (!ffix && !tfix)
@@ -4452,7 +4458,9 @@ bool transferChecks_canLoseReference (/*@dependent@*/ sRef sr, fileloc loc)
 {
   bool gotone = FALSE;
   sRefSet ab = usymtab_aliasedBy (sr); /* yes, really mean aliasedBy */
-    
+
+  DPRINTF (("Aliased by: %s", sRefSet_unparse (ab)));
+
   /*
   ** if there is a local variable that aliases sr, then there is no
   ** error.  Make the local an only.

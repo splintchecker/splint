@@ -72,7 +72,7 @@ extern /*@noreturnwhenfalse@*/ void llassertfatal (/*@sef@*/ bool p_test);
 
 extern void llmsg (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 
-extern void lldiagmsg (/*@only@*/ cstring p_s) /*@modifies stderr@*/ ;
+extern void lldiagmsg (/*@only@*/ cstring p_s) /*@modifies g_messagestream@*/ ;
 extern void llmsgplain (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 extern void llhint (/*@only@*/ cstring p_s) 
    /*@globals g_currentloc, g_warningstream;@*/ 

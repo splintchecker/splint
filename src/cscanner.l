@@ -411,6 +411,7 @@ L'(\\.|[^\\'])+'       { cscannerHelp_setTokLengthT (mstring_length (yytext));
 "@.Z"           { cscannerHelp_setTokLength (3); usymtab_printComplete (); }
 "@.T"           { cscannerHelp_setTokLength (3); usymtab_printTypes (); }
 "@.K"           { cscannerHelp_setTokLength (3); lldiagmsg (usymtab_unparseStack ()); }
+"@.R"           { cscannerHelp_setTokLength (3); return cscannerHelp_returnToken (QDREVEALSTATE); }
 "@.M"           { cscannerHelp_setTokLength (3); 
 		  lldiagmsg (message ("Can modify: %q", 
 				  sRefSet_unparse (context_modList ()))); 

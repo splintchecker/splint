@@ -2682,7 +2682,12 @@ void cscannerHelp_advanceLine (void)
 
 int cscannerHelp_returnToken (int t)
 {
-  yylval.tok = lltok_create (t, fileloc_decColumn (g_currentloc, s_tokLength)); 
+  if (s_tokLength > fileloc_column (g_currentloc)) {
+    yylval.tok = lltok_create (t, fileloc_copy (g_currentloc));
+  } else {
+    yylval.tok = lltok_create (t, fileloc_decColumn (g_currentloc, s_tokLength)); 
+  }
+
   s_tokLength = 0; 
   s_lastWasString = FALSE; 
   return (t); 
