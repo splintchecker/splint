@@ -8095,7 +8095,7 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
   if (exprNode_isDefined (val) && val->kind == XPR_INITBLOCK)
     {
       exprNodeList vals = exprData_getArgs (val->edata);
-
+      
       DPRINTF (("Check one init: %s", exprNodeList_unparse (vals)));
       DPRINTF (("Type: %s", ctype_unparse (t1)));
 
@@ -8108,6 +8108,9 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 	    {
 	      int nelements = long_toInt (ctype_getArraySize (t1));
 	      
+	      DPRINTF (("Checked array: %s / %d",
+			ctype_unparse (t1), nelements));
+
 	      if (exprNode_isStringLiteral (val))
 		{
 		  exprNode_checkStringLiteralLength (t1, val);

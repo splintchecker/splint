@@ -37,7 +37,7 @@ SPLINTRNEST   = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args blocks break cases cast charlit clauses commentchar compdestroy \
+  args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
@@ -215,6 +215,11 @@ argorder:
 .PHONY: args
 args:
 	-$(SPLINTR) args -noeffect -expect 12
+
+.PHONY: arraydims
+arraydims:
+	-$(SPLINTR) arraydims.c -varuse -expect 2
+	-$(SPLINTR) arraydims.c -initsize -varuse
 
 .PHONY: blocks
 blocks:

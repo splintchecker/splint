@@ -196,7 +196,6 @@ extern void yyerror (char *);
 %token <ctyp> CGCHAR CBOOL CINT CGFLOAT CDOUBLE CVOID 
 %token <tok> QANYTYPE QINTEGRALTYPE QUNSIGNEDINTEGRALTYPE QSIGNEDINTEGRALTYPE
 
-%type <typequal> nullterminatedQualifier
 %token <tok> QNULLTERMINATED
 %token <tok> QSETBUFFERSIZE
 %token <tok> QSETSTRINGLENGTH
@@ -377,7 +376,8 @@ namedDeclBase
      exprNode_findValue($4);
      if (exprNode_hasValue ($4)) 
        {
-	 $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), exprNode_getLongValue ($4)));
+	 $$ = idDecl_replaceCtype ($1, ctype_makeInnerFixedArray (idDecl_getCtype ($1), 
+								  exprNode_getLongValue ($4)));
        } 
      else
        {
@@ -1037,9 +1037,6 @@ storageSpecifier
  | QAUTO     { $$ = qual_createAuto (); }
  | QREGISTER { $$ = qual_createRegister (); }
 
-nullterminatedQualifier:
- QNULLTERMINATED IsType { $$ = qual_createNullTerminated (); }
-
 stateClause
  : stateClausePlain QENDMACRO { $$ = $1; }
 
@@ -1435,7 +1432,7 @@ abstractDeclBase
    { $$ = ctype_makeFixedArray (ctype_unknown, exprNode_getLongValue ($2)); }
  | abstractDeclBase TLSQBR TRSQBR { $$ = ctype_makeArray ($1); }
  | abstractDeclBase TLSQBR constantExpr TRSQBR 
-   { $$ = ctype_makeFixedArray ($1, exprNode_getLongValue ($3)); }
+   { $$ = ctype_makeInnerFixedArray ($1, exprNode_getLongValue ($3)); }
  | IsType TLPAREN TRPAREN 
    { $$ = ctype_makeFunction (ctype_unknown, uentryList_makeMissingParams ()); }
  | IsType TLPAREN paramTypeList TRPAREN 

@@ -175,6 +175,7 @@ idDecl_replaceCtype (/*@returned@*/ idDecl d, ctype c)
 {
   llassert (idDecl_isDefined (d));
 
+  DPRINTF (("Replace type: %s / %s", idDecl_unparse (d), ctype_unparse (c)));
   qtype_setType (d->typ, c);
   return d;
 }

@@ -492,7 +492,8 @@ ctbase_unparse (ctbase c)
 	  return (message ("%t *", c->contents.base));
 	}
     case CT_FIXEDARRAY:
-      return (message ("%t [%d]", c->contents.farray->base, 
+      return (message ("%t [%d]", 
+		       c->contents.farray->base, 
 		       (int) c->contents.farray->size));
     case CT_ARRAY:
       return (message ("%t []", c->contents.base));

@@ -258,6 +258,7 @@ extern ctype ctype_getBaseType (ctype p_c) /*@*/ ;
 
 extern ctype ctype_makeArray (ctype p_c);
 extern ctype ctype_makeFixedArray (ctype p_c, long p_size);
+extern ctype ctype_makeInnerFixedArray (ctype p_c, long p_size);
 extern ctype ctype_makeConj (ctype p_c1, ctype p_c2);
 extern ctype ctype_makeParamsFunction (ctype p_base, /*@only@*/ uentryList p_p);
 extern ctype ctype_makeFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
