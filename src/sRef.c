@@ -2049,7 +2049,7 @@ constraintExpr sRef_fixConstraintParam ( sRef s, exprNodeList args)
   constraintExpr ce;
 
   if (sRef_isInvalid (s))
-    llfatalbug(("Invalid sRef"));
+    llfatalbug((message("Invalid sRef")));
 
   switch (s->kind)
     {
@@ -2066,7 +2066,7 @@ constraintExpr sRef_fixConstraintParam ( sRef s, exprNodeList args)
 			      s->info->field->field));
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
-    }
+      }
     case SK_PTR:
       {
 	sRef temp;
@@ -2086,22 +2086,15 @@ constraintExpr sRef_fixConstraintParam ( sRef s, exprNodeList args)
        ce = constraintExpr_makeTermsRef (s);
        return ce;
     case SK_PARAM:
-      if (exprNodeList_size (args) > s->info->paramno)
+      llassert(exprNodeList_size (args) > s->info->paramno);
 	{
 	  exprNode e = exprNodeList_nth (args, s->info->paramno);
-	  
-	  if (exprNode_isError (e))
-	    {
-	      llassert (FALSE);
-	    }
-	  
+
+	  llassert( !(exprNode_isError (e)) );
 	  ce = constraintExpr_makeExprNode (e);
+	  return ce;
 	}
-      else
-	{
-	  llassert(FALSE);
-	}
-      return ce;
+
     default:
       llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %s for function with arguments %s", sRef_unparse (s), exprNodeList_unparse(args) ) ));
       ce = constraintExpr_makeTermsRef (s);
@@ -9171,13 +9164,13 @@ void sRef_resetLen(sRef p_s) {
 
 /*drl7x 11/28/2000 */
 
-bool sRef_isFixedArray (sRef p_s) {
+bool sRef_isFixedArray (sRef p_s) /*@*/ {
   ctype c;
   c = sRef_getType (p_s);
   return ( ctype_isFixedArray (c) );
 }
 
-int sRef_getArraySize (sRef p_s) {
+long int sRef_getArraySize (sRef p_s) /*@*/ {
   ctype c;
   llassert (sRef_isFixedArray(p_s) );
 

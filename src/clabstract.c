@@ -52,9 +52,9 @@
 */
 
 /*drl*/
-static  constraintList fcnConstraints = NULL;
+/*@only@*/ static  constraintList fcnConstraints = NULL;
 
-static constraintList fcnEnsuresConstraints = NULL;
+/*@only@*/ static constraintList fcnEnsuresConstraints = NULL;
 /*end drl*/
 
 //static  constraintList fcnPreConditions = NULL;
@@ -2160,7 +2160,7 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
-  return uentry_getSref (ue);
+  return sRef_copy( uentry_getSref (ue) );
 }
 
 void checkModifiesId (uentry ue)

@@ -80,3 +80,8 @@
 -boolfalse FALSE
 
 +numliteral
+-predboolothers
+-temptrans
+-branchstate
+-onlytrans
+-retalias

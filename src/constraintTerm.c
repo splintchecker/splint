@@ -31,7 +31,7 @@ constraintTerm new_constraintTermExpr (void)
 
 bool constraintTerm_isIntLiteral (constraintTerm term)
 {
-  llassert(term);
+  llassert(term != NULL);
   
   if (term->kind == INTLITERAL)
     return TRUE;
@@ -39,9 +39,9 @@ bool constraintTerm_isIntLiteral (constraintTerm term)
   return FALSE;
 }
 
-bool constraintTerm_isStringLiteral (constraintTerm c)
+bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/
 {
-  llassert (c);
+  llassert (c != NULL);
   if (c->kind == EXPRNODE)
     {
       if (exprNode_knownStringValue(c->value.expr) )
@@ -54,14 +54,14 @@ bool constraintTerm_isStringLiteral (constraintTerm c)
 
 cstring constraintTerm_getStringLiteral (constraintTerm c)
 {
-  llassert (c);
+  llassert (c != NULL);
   llassert (constraintTerm_isStringLiteral (c) );
   llassert (c->kind == EXPRNODE);
   
-  return ( multiVal_forceString (exprNode_getValue (c->value.expr) ) );
+  return (cstring_copy ( multiVal_forceString (exprNode_getValue (c->value.expr) ) ) );
 }
 
-constraintTerm constraintTerm_simplify (constraintTerm term)
+constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term)
 {
   if (term->kind == EXPRNODE)
     {
@@ -69,7 +69,7 @@ constraintTerm constraintTerm_simplify (constraintTerm term)
 	{
 	  long int temp;
 	  temp  = exprNode_getLongValue (term->value.expr);
-	  term->value.intlit = temp;
+	  term->value.intlit = (int)temp;
 	  term->kind = INTLITERAL;
 	}
     }
@@ -91,7 +91,7 @@ constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e)
   return ret;
 }
 
-constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s)
+/*@only@*/ constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_undefined;
@@ -111,9 +111,9 @@ constraintTerm constraintTerm_copy (constraintTerm term)
   return ret;
 }
 
-constraintTerm constraintTerm_setFileloc (constraintTerm term, fileloc loc)
+constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fileloc loc)
 {
-  llassert(term);
+  llassert(term != NULL);
   term->loc = fileloc_copy(loc);
   return term;
 }
@@ -331,7 +331,7 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
 
 sRef constraintTerm_getsRef (constraintTerm t)
 {
-  llassert (t);
+  llassert (t != NULL);
   if (t->kind == EXPRNODE)
     {
       return t->value.expr->sref;
@@ -339,7 +339,7 @@ sRef constraintTerm_getsRef (constraintTerm t)
 
   if (t->kind == SREF)
     {
-      return t->value.sref;
+      /*@i34*/  return t->value.sref;
     }
 
   return sRef_undefined;

@@ -24,14 +24,11 @@
 
 
 
-
-constraintExpr constraintExpr_parseMakeBinaryOp (constraintExpr expr1, lltok op, constraintExpr expr2);
-
 constraintExpr constraintExpr_makeMaxSetConstraintExpr (constraintExpr c);
 
 bool constraintExpr_isLit (constraintExpr expr)
 {
-  llassert (expr);
+  llassert (expr != NULL);
   
   if (expr->kind == term)
     {
@@ -64,7 +61,7 @@ constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
   *propagate = FALSE;
   *literal = 0;
 
-  llassert (expr);
+  llassert (expr != NULL);
   
   // we simplify unaryExpr else where
   if (expr->kind == unaryExpr)
@@ -154,8 +151,8 @@ constraintExpr constraintExpr_combineConstants (constraintExpr expr )
    BPRINTF ( (message ("After combine %s", constraintExpr_unparse(expr) ) ) );
   return expr;
 }
-
-constraintExpr constraintExpr_alloc (void)
+/*@special@*/
+constraintExpr constraintExpr_alloc (void) /*@post:isnull result->data@*/
 {
   constraintExpr ret;
   ret = dmalloc (sizeof (*ret) );
@@ -196,7 +193,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
  lltok tok;
  
  
- llassert (e);
+ llassert (e != NULL);
  
  data = e->edata;
 
@@ -209,7 +206,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
       {
 	int size;
 
-	size = sRef_getArraySize(s);
+	size = (int) sRef_getArraySize(s);
 	ret = constraintExpr_makeIntLiteral (size);
       }
      else
@@ -290,7 +287,7 @@ constraintExpr constraintExpr_makeTermsRef (sRef s)
   return ret;
 }
 
-constraintExpr constraintExpr_makeUnaryOp (void)
+constraintExpr constraintExpr_makeUnaryOp (void) /*@allocates result->data@*/
 {
   constraintExpr ret;
   ret = constraintExpr_alloc();
@@ -356,7 +353,7 @@ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr)
       ret->data = constraintExprData_unaryExprSetOp (ret->data, MAXREAD);
       break;
     default:
-      llfatalbug("Unhandled Operation in Constraint");
+      llfatalbug(message("Unhandled Operation in Constraint") );
     }
   return ret;
 }
@@ -368,7 +365,7 @@ constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr)
 
   ret = constraintExpr_makeMaxSetConstraintExpr (ret);
 
-  llassert (ret);
+  llassert (ret != NULL);
   return ret;
 }
 
@@ -540,9 +537,11 @@ cstring constraintExprBinaryOpKind_print (constraintExprBinaryOpKind op)
       return message("+");
     case MINUS:
       return message("-");
+
+    default:
+      llassert(FALSE);
+      return message ("<binary OP Unknown>");
     }
-  llassert(FALSE);
-  return message ("<binary OP Unknown>");
 }
 
 bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2)
@@ -561,7 +560,7 @@ bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2)
     case term:
       return constraintTerm_similar (constraintExprData_termGetTerm(expr1->data),
 				  constraintExprData_termGetTerm(expr2->data) );
-      break;
+      /*@noreached@*/ break;
       
     case unaryExpr:
       if (constraintExprData_unaryExprGetOp (expr1->data) != constraintExprData_unaryExprGetOp (expr2->data) )
@@ -612,7 +611,7 @@ bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2)
     case term:
       return constraintTerm_similar (constraintExprData_termGetTerm(expr1->data),
 				  constraintExprData_termGetTerm(expr2->data) );
-      break;
+      /*@notreached@*/ break;
       
     case unaryExpr:
       if (constraintExprData_unaryExprGetOp (expr1->data) != constraintExprData_unaryExprGetOp (expr2->data) )
@@ -637,7 +636,7 @@ bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2)
 	return FALSE;
       else
 	return TRUE;
-      break;
+      /*@notreached@*/ break;
       
     default:
       llassert(FALSE);
@@ -772,7 +771,7 @@ constraintExpr constraintExpr_setFileloc (constraintExpr c, fileloc loc)
   constraintTerm t;
   constraintExpr temp;
 
-  llassert(c);
+  llassert(c != NULL);
   
   switch (c->kind)
     {
@@ -1139,12 +1138,12 @@ constraintExpr constraintExpr_doFixResult (/*@returned@*/  constraintExpr expr, 
   return expr;
 }
 
-cstring constraintExpr_print (constraintExpr expr)
+cstring constraintExpr_print (constraintExpr expr) /*@*/
 {
   return constraintExpr_unparse(expr);
 }
 
-bool constraintExpr_hasMaxSet (constraintExpr expr) 
+bool constraintExpr_hasMaxSet (constraintExpr expr) /*@*/
 {
   cstring t;
 

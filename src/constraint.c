@@ -19,7 +19,7 @@
 /*@-fcnuse*/
 /*@-assignexpose*/
 
-constraint constraint_makeNew (void);
+/*@notnull@*/ constraint constraint_makeNew (void);
 
 
 constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant)
@@ -44,7 +44,7 @@ constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant)
   else if (relOp.tok == EQ_OP)
     ret->ar = EQ;
   else
-  llfatalbug("Unsupported relational operator");
+    llfatalbug(message ("Unsupported relational operator") );
 
 
   t =  cstring_toCharsSafe (exprNode_unparse(cconstant));
@@ -65,7 +65,7 @@ constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconsta
   int c;
   constraint ret;
   ret = constraint_makeNew();
-  llassert (l);
+  llassert (l!=NULL);
   if (!l)
     return ret;
  
@@ -80,7 +80,7 @@ constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconsta
   else if (relOp.tok == EQ_OP)
     ret->ar = EQ;
   else
-  llfatalbug("Unsupported relational operator");
+  llfatalbug(message("Unsupported relational operator") );
 
 
   t =  cstring_toCharsSafe (exprNode_unparse(cconstant));
@@ -99,7 +99,7 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
 {
   constraint ret;
   ret = constraint_makeNew();
-  llassert (l);
+  llassert (l !=NULL);
   if (!l)
     return ret;
  
@@ -114,7 +114,7 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
   else if (relOp.tok == EQ_OP)
     ret->ar = EQ;
   else
-  llfatalbug("Unsupported relational operator");
+  llfatalbug( message("Unsupported relational operator") );
 
   ret->expr = constraintExpr_copy (r);
 
@@ -133,7 +133,7 @@ constraint constraint_copy (constraint c)
   ret->ar = c->ar;
   ret->expr =  constraintExpr_copy (c->expr);
   ret->post = c->post;
-  ret->generatingExpr = c->generatingExpr;
+  ret->generatingExpr = exprNode_fakeCopy(c->generatingExpr);
   
   /*@i33 fix this*/
   if (c->orig != NULL)
@@ -156,7 +156,7 @@ void constraint_overWrite (constraint c1, constraint c2)
     c1->orig = constraint_copy (c2->orig);
   else
     c1->orig = NULL;
-  c1->generatingExpr = c2->generatingExpr;
+  c1->generatingExpr = exprNode_fakeCopy (c2->generatingExpr );
 }
 
 bool constraint_resolve (/*@unused@*/ constraint c)
@@ -166,7 +166,7 @@ bool constraint_resolve (/*@unused@*/ constraint c)
 
 
 
-constraint constraint_makeNew (void)
+/*@notnull@*/ constraint constraint_makeNew (void)
 {
   constraint ret;
   ret = dmalloc(sizeof (*ret) );
@@ -176,7 +176,7 @@ constraint constraint_makeNew (void)
   ret->post = FALSE;
   ret->orig = NULL;
   ret->generatingExpr = NULL;
-  /*@i23*/return ret;
+  return ret;
 }
 
 constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e)
@@ -184,7 +184,7 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
     
   if (c->generatingExpr == NULL)
     {
-      c->generatingExpr = e;
+      c->generatingExpr = exprNode_fakeCopy(e);
       DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_print(c), exprNode_unparse(e) )  ));
     }
   else
@@ -214,7 +214,7 @@ static bool checkForMaxSet (constraint c)
 
 bool constraint_hasMaxSet(constraint c)
 {
-  if (c->orig)
+  if (c->orig != NULL)
     {
       if (checkForMaxSet(c->orig) )
 	return TRUE;
@@ -440,7 +440,7 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
 // }
 
 
-cstring arithType_print (arithType ar)
+cstring arithType_print (arithType ar) /*@*/
 {
   cstring st = cstring_undefined;
   switch (ar)
@@ -483,8 +483,9 @@ void constraint_printError (constraint c, fileloc loc)
   errorLoc = loc;
 
   if (constraint_getFileloc(c) )
-    errorLoc = constraint_getFileloc(c);
-  
+    /*@-branchstate@*/
+      errorLoc = constraint_getFileloc(c);
+  /*@=branchstate@*/
   
   if (c->post)
     {
@@ -504,7 +505,7 @@ cstring  constraint_printDetailed (constraint c)
 
   if (!c->post)
     {
-    if (c->orig)  
+    if (c->orig != NULL)  
       st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisfy %s", constraint_print (c), constraint_print(c->orig) );
     else
       st = message ("Unresolved constraint:\nLclint is unable to resolve %s", constraint_print (c));
@@ -512,7 +513,7 @@ cstring  constraint_printDetailed (constraint c)
     }
   else
     {
-      if (c->orig)
+      if (c->orig != NULL)
 	st = message ("Block Post condition:\nThis function block has the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
       else
 	st = message ("Block Post condition:\nThis function block has the post condition %s", constraint_print (c));	
@@ -540,7 +541,7 @@ cstring  constraint_print (constraint c) /*@*/
 {
   cstring st = cstring_undefined;
   cstring type = cstring_undefined;
-  llassert (c);
+  llassert (c !=NULL);
   if (c->post)
     {
       type = cstring_makeLiteral ("Ensures: ");
@@ -558,7 +559,7 @@ cstring  constraint_print (constraint c) /*@*/
   return st;
 }
 
-constraint constraint_doSRefFixBaseParam (constraint precondition,
+/*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,
 						   exprNodeList arglist)
 {
   precondition->lexpr = constraintExpr_doSRefFixBaseParam (precondition->lexpr,
@@ -603,7 +604,7 @@ constraint constraint_doSRefFixConstraintParam (constraint precondition,
 //   return FALSE;
 // }
 
-constraint constraint_preserveOrig (constraint c)
+/*@only@*/ constraint constraint_preserveOrig (/*@returned@*/ /*@only@*/ constraint c) /*@modifies c @*/
 {
   c->orig = constraint_copy (c);
   return c;

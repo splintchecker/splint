@@ -259,7 +259,7 @@ void checkandsetBufState(idDecl id, exprNode is);
 %type <tquallist> optGlobQuals
 %type <qtyp> completeType completeTypeSpecifier optCompleteType
 %type <qtyp> completeTypeSpecifierAux altType typeExpression 
-%type <expr> lclintassertion
+/*%type <expr> lclintassertion*/
 
 %start file
 
@@ -1322,10 +1322,9 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
-/*  | tst1 */
- | lclintassertion {$$ = $1; printf ("Doing stmt lclintassertion\n"); }
+/* | lclintassertion {$$ = $1; printf ("Doing stmt lclintassertion\n"); }*/
 
-
+/*
 lclintassertion
  : QSETBUFFERSIZE id CCONSTANT QENDMACRO { printf(" QSETBUFFERSIZE id CCONSTANT HEllo World\n");  uentry_setBufferSize($2, $3); $$ = exprNode_createTok ($4);
   }

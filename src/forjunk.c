@@ -146,7 +146,7 @@ constraintExpr getForTimes ( exprNode forPred, exprNode forBody)
    
   constraintList_elements (ltCon, el) 
     {
-      constraintList_elements(incCon, el2);
+      constraintList_elements(incCon, el2)
       {
 	if ( increments(el2, el->lexpr) )
 	  {

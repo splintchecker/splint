@@ -9730,7 +9730,7 @@ void uentry_checkName (uentry ue)
 }
 
 /* new start modifications */
-
+/*
 void uentry_testInRange (uentry p_e, uentry cconstant)  {
   if( uentry_isValid(p_e) ) {
     if( sRef_isValid (p_e->sref) ) {
@@ -9741,6 +9741,7 @@ void uentry_testInRange (uentry p_e, uentry cconstant)  {
     }//end if
   }//endif
 }
+*/
 
 void uentry_setStringLength (uentry p_e, uentry cconstant)  {
 if( uentry_isValid(p_e) ) {

@@ -3609,7 +3609,7 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 
   /* added 7/11/2000 D.L */
   
-  updateEnvironmentForPostOp (e);
+  //  updateEnvironmentForPostOp (e);
 
 	/* start modifications */
 	/* added by Seejo on 4/16/2000 */
@@ -5774,7 +5774,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
     }
 
   exprNode_mergeUSs (ret, e2);
-  ret = exprNode_mergeEnvironments (ret, e1, e2);
+  // ret = exprNode_mergeEnvironments (ret, e1, e2);
   usymtab_setExitCode (ret->exitCode);
   
   if (ret->mustBreak)
@@ -9739,7 +9739,7 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
     {
       updateAliases (e1, e2); 
     }
-  updateEnvironment (e1, e2);
+  //  updateEnvironment (e1, e2);
 }
 
 static void 
