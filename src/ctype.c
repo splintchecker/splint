@@ -1725,13 +1725,6 @@ bool ctype_isIncompleteArray (ctype c)
   return (ctype_isArray (c) && !ctype_isFixedArray (c));
 }
 
-bool ctype_isFixedArray (ctype c)
-{
-  if (ctype_isElips (c)) return FALSE;
-
-  return (ctbase_isFixedArray (ctype_getCtbaseSafe (c)));
-}
-
 bool
 ctype_isArrayPtr (ctype c)
 {
@@ -2673,6 +2666,15 @@ ctype_getCtentry (ctype c)
   /*@=enumint@*/
 }
 
+
+bool ctype_isFixedArray (ctype c)
+{
+  if (ctype_isElips (c)) return FALSE;
+
+  return (ctbase_isFixedArray (ctype_getCtbaseSafe (c)));
+}
+
+
 /*drl 11/28/2000 */
 /* requires that the type is an fixed array */
 /* return the size of the array */
@@ -2680,13 +2682,12 @@ ctype_getCtentry (ctype c)
 long int ctype_getArraySize (ctype c)
 {
   long int size;
-  ctentry cte = ctype_getCtentry (c);
+
   ctbase ctb;
 
   llassert (ctype_isFixedArray (c));
-  llassert ((ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind (cte) == CTK_ARRAY));
 
-  ctb = cte->ctbase;
+  ctb = ctype_getCtbaseSafe(c);
   size = ctbase_getArraySize (ctb);
 
   DPRINTF ((message ("ctype_getArraySize: got fixed array size of %s / %d ",

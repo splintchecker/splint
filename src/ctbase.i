@@ -2502,10 +2502,16 @@ ctbase_almostEqual (ctbase c1, ctbase c2)
 
 long int ctbase_getArraySize (ctbase ctb)
 {
+  /*drl 1/25/2002 fixed discover by Jim Francis */
+  ctbase r;
+
+  
   llassert (ctbase_isDefined (ctb) );
+  r = ctbase_realType (ctb);
+  llassert (ctbase_isFixedArray(r) );
+
   
-  llassert (ctbase_isFixedArray(ctb) );
-  
-  return (ctb->contents.farray->size);
+
+  return (r->contents.farray->size);
 
 }

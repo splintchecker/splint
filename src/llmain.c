@@ -114,7 +114,7 @@ static /*@only@*/ /*@null@*/ inputStream initFile = inputStream_undefined;
 static fileIdList preprocessFiles (fileIdList, bool)
   /*@modifies fileSystem@*/ ;
 
-static void warnSysFiles(fileIdList files) /*@modifies fileSystem@*/;
+static void warnSysFiles(fileIdList p_files) /*@modifies fileSystem@*/;
 
 # ifndef NOLCL
 

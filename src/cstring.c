@@ -935,7 +935,7 @@ static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
 	      retPtr++;
 	    }
 	  
-	  // Handle Octal escapes 
+	  /* Handle Octal escapes  */
 	  else if (*ptr >= '0' && *ptr <= '9' )
 	    {
 	      int total;

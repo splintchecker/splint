@@ -1057,14 +1057,11 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 
   if (ctype_isFixedArray (t1))
     {
-      cstring escapedS;
+
       int nelements = long_toInt (ctype_getArraySize (t1));
       
       llassert (multiVal_isString (mval));
       slit = multiVal_forceString (mval);
-      //      escapedS = cstring_expandEscapes(slit );
-      //      len = cstring_length (escapedS );
-      //      cstring_free(escapedS);
       
       len = cstring_lengthExpandEscapes (slit);
       
