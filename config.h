@@ -25,7 +25,7 @@
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.0.20 --- 30 Dec 2001"
+#define SPLINT_VERSION "Splint 3.0.0.20 --- 31 Dec 2001"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "/usr/local/include"

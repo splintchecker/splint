@@ -1,6 +1,6 @@
 /*
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -5372,7 +5372,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 		 status */
 	      if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
 		int val;
-		/*drl 1-4-2001
+		/*drl 1-4-2002
 		  added ugly fixed to stop
 		  program from crashing on point + int +int
 		  one day I'll fix this or ask Seejo wtf the codes supposed to do. */

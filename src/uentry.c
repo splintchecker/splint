@@ -1,6 +1,6 @@
 /*
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -1613,7 +1613,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
       
       if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	{
-	  /* drl 11-29-2001
+	  /* drl 11-29-2002
 	     I changed this so it didn't appear as a Splint bug
 	     among other things this gets triggered when there is
 	     a function with two requires clauses.  Now Splint

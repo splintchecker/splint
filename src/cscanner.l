@@ -2028,7 +2028,7 @@ static int handleLlSpecial ()
 	    {
 	      cstring flagname = thisflag;
 	      flagcode fflag = identifyFlag (flagname);
-		
+	      
 	      if (flagcode_isSkip (fflag))
 		{
 		  ;

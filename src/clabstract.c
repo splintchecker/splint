@@ -1,6 +1,6 @@
 /*
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -493,7 +493,7 @@ declareEnumList (enumNameList el, ctype c, fileloc loc)
 
 static /*@dependent@*/ uentryList currentParamList;
 
-/*drl added 3-28-2001*/
+/*drl added 3-28-2002*/
 /* this function takes a list of paramentar and generates a list
    of constraints.
    Currently the only constraints gnerated are MaxSet(p) >= 0 for all pointers

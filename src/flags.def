@@ -286,7 +286,7 @@ static flaglist flags =
     FLG_EVALORDERUNCON,
     "code involving call to unspecified function has undefined or implementation-dependent behavior",
     "Code involving a call to function with no modifies or globals clause "
-    "may have undefined or implementation-dependent behavior (LCLint assumes the "
+    "may have undefined or implementation-dependent behavior (Splint assumes the "
     "unconstrained call may modify any reachable state or use any global). Add a "
     "specification for the function.", 
     0, 0
@@ -391,9 +391,9 @@ static flaglist flags =
     "print a warning and suggest an alternative when a traditional lint "
     "comment is used",
     "A traditional lint comment is used. Some traditional lint comments "
-    "are interpreted by LCLint to enable easier checking of legacy "
+    "are interpreted by Splint to enable easier checking of legacy "
     "code. It is preferable to replace these comments with the "
-    "suggested LCLint alternative.",
+    "suggested Splint alternative.",
     0, 0
   },
   {
@@ -1562,7 +1562,7 @@ static flaglist flags =
     FLG_COMMENTCHAR,
     "set marker character for syntactic comments (default is '@')",
     "Set the marker character for syntactic comments. Comments beginning "
-    "with /*<char> are interpreted by lclint, where <char> is the "
+    "with /*<char> are interpreted by Splint, where <char> is the "
     "comment marker character.",
     0, 0
   },
@@ -1881,9 +1881,9 @@ static flaglist flags =
     "deparrays",
     FLG_DEPARRAYS,
     "array elements are dependent storage",
-    "When an element is fetched from an array, lclint analysis is "
+    "When an element is fetched from an array, Splint analysis is "
     "not able to determine if the same element is reused. "
-    "If +deparrays, lclint will mark local storage assigned from "
+    "If +deparrays, Splint will mark local storage assigned from "
     "array fetches as dependent.", 
     0, 0
   },
@@ -1895,7 +1895,7 @@ static flaglist flags =
     "A storage leak due to incomplete deallocation of a structure or deep "
     "pointer is suspected. Unshared storage that is reachable from "
     "a reference that is being deallocated has not yet been deallocated. "
-    "LCLint assumes when an object is passed "
+    "Splint assumes when an object is passed "
     "as an out only void pointer that the outer object will be "
     "deallocated, but the inner objects will not.",
     0, 0
@@ -2830,7 +2830,7 @@ static flaglist flags =
     "fcnpost",
     FLG_FUNCTIONPOST,
     "Function has the post condition",
-    "LCLint has determined that the following statement is true after the function,  ",
+    "Splint has determined that the following statement is true after the function,  ",
     0, 0
   },
   
@@ -2839,7 +2839,7 @@ static flaglist flags =
     "parenconstraint",
     FLG_PARENCONSTRAINT,
     "parenthesize constraint term",
-    "This flag is for debugging.  This flag causes LCLint to fully parentheses constraints,  ",
+    "This flag is for debugging.  This flag causes Splint to fully parentheses constraints,  ",
     0, 0
   },
 
@@ -2848,7 +2848,7 @@ static flaglist flags =
     "debugfcnconstraint",
     FLG_DEBUGFUNCTIONCONSTRAINT,
     "debuging constraint flas",
-    "This flag is for debuging.  It causes lclint to perform buffer overflow checking even if the errors would be surpressed.  Normally buffer overflow checking will only be performed if the errors would be printed. ",
+    "This flag is for debuging.  It causes Splint to perform buffer overflow checking even if the errors would be surpressed.  Normally buffer overflow checking will only be performed if the errors would be printed. ",
     0, 0
   },
   
@@ -2857,7 +2857,7 @@ static flaglist flags =
     "arraybounds",
     FLG_ARRAYBOUNDS,
     "Possible out-of-bounds store.  Unable to resolve constraint:",
-    "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
+    "Splint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
     0, 0
   },
   {
@@ -2865,7 +2865,7 @@ static flaglist flags =
     "arrayboundsread",
     FLG_ARRAYBOUNDSREAD,
     "Possible out-of-bounds read.  Unable to resolve constraint:",
-    "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
+    "Splint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
     0, 0
   },
 
@@ -2874,7 +2874,7 @@ static flaglist flags =
     "fcnconstraint",
     FLG_FUNCTIONCONSTRAINT,
     "unresolved constraint",
-    "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
+    "Splint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
     0, 0
   },
   /*drl7x added 6/18/01 */    
@@ -2883,7 +2883,7 @@ static flaglist flags =
     "checkpost",
     FLG_CHECKPOST,
     "unable to verify ensures annotation",
-    "LCLint was unable to determine that the function satisfies a post condition given in an ensures annotation,  ",
+    "Splint was unable to determine that the function satisfies a post condition given in an ensures annotation,  ",
     0, 0
   },
 
@@ -2992,7 +2992,7 @@ static flaglist flags =
     "Two bool values are compared directly using a C primitive. This "
     "may produce unexpected results since all non-zero values are "
     "considered TRUE, so different TRUE values may not be equal. "
-    "The file bool.h (included in lclint/lib) provides bool_equal "
+    "The file bool.h (included in splint/lib) provides bool_equal "
     "for safe bool comparisons.", 0, 0
   },
   {
@@ -3213,7 +3213,7 @@ static flaglist flags =
     "syntax",
     FLG_SYNTAX,
     "syntax error in parsing",
-    "Code cannot be parsed.  For help on parse errors, see lclint -help parseerrors.", 
+    "Code cannot be parsed.  For help on parse errors, see splint -help parseerrors.", 
     0, 0
   },
   {
@@ -3531,7 +3531,7 @@ static flaglist flags =
     FLG_SYSTEMUNRECOG,
     "report unrecognized identifiers with system (__) prefix",
     "Identifier used in code has not been declared. (Message repeated for "
-    "future uses in this file.)  Use +gnuextensions to make lclint "
+    "future uses in this file.)  Use +gnuextensions to make Splint "
     "recognize some keywords that are gnu extensions.",
     0, 0
   },

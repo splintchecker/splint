@@ -1,6 +1,6 @@
 /*
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -1511,7 +1511,7 @@ static bool
 	  return FALSE;
 	}
       
-      if (/*! evs-2001-03-24 sRef_isAnyDefined (fref) || */
+      if (/*! evs-2002-03-24 sRef_isAnyDefined (fref) || */
 	  sRef_isDead (fref)
 	  || (sRef_isPdefined (fref) 
 	      && sRefSet_isEmpty (sRef_derivedFields (fref)))) 
