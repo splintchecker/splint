@@ -953,7 +953,8 @@ static mstring doMergeString (cstring s)
 	      retPtr++;
 	      *retPtr = '\0';
 	      BADEXIT;
-	      return ret;
+
+	      /*@notreached@*/ return ret;
 	    }
 	  else
 	    {
@@ -969,7 +970,7 @@ static mstring doMergeString (cstring s)
       ptr++;
       
     }/* end while */
-  retPtr = '\0';
+  *retPtr = '\0';
   return ret;
 }
 
@@ -1111,7 +1112,8 @@ static mstring doExpandEscapes (cstring s, /*@out@*/ size_t *len)
   /* add the null character */
   *retPtr = '\0';
 
-  *len = retPtr - ret;
+  llassert(  (retPtr-ret) >= 0 );
+  *len = (size_t)(retPtr - ret);
   return ret;
 }
 
