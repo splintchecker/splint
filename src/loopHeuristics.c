@@ -41,8 +41,6 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-# include "exprDataQuite.i"
-
 /*@access constraint, exprNode @*/  /* !!! NO! */
 
 /*@access constraintExpr @*/ /* !!! NO! */

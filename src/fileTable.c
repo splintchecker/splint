@@ -317,6 +317,17 @@ fileTable_addFilePrim (fileTable ft, /*@temp@*/ cstring name,
 
 	  e->basename = fileLib_removePathFree (fileLib_removeAnyExtension (absname));
 	  e->fsystem = context_isSystemDir (absname);
+
+	  /*
+	  ** evans 2002-03-15: change suggested by Jim Zelenka
+	  **                   support relative paths for system directories
+	  */
+
+	  if (!e->fsystem)
+	    {
+	      e->fsystem = context_isSystemDir (name);
+	    }
+
 	  e->fspecial = context_isSpecialFile (absname);
 
 	  if (e->fspecial)

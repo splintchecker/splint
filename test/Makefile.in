@@ -118,7 +118,7 @@ UNITTESTS = \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
-  linked lintcomments list loopexec \
+  linked lintcomments list loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
@@ -768,11 +768,11 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./moreBufferTests2/Makefile \
               ./fileio/eof.mts ./fileio/file.mts ./fileio/filerw.mts ./mergestate/tainted.mts ./mergestate/taintednm.mts ./metastate/file.mts ./metastate/nullterminated.mts ./metastate/sockets.mts ./tainted/tainted-bad.mts ./tainted/tainted.mts ./fileio/file.xh ./fileio/filerw.xh ./mergestate/tainted.xh ./mergestate/taintednm.xh ./metastate/file.xh ./tainted/tainted.xh \
                 db2.old-expect   union.pp warnuse.old-expect \
-               ./tests2.5/badcomment  ./tests2.5/boolbad  ./tests2.5/booltest   ./tests2.5/uconstants  loopexec.expect mergenull.expect shifts.expect \
+               ./tests2.5/badcomment  ./tests2.5/boolbad  ./tests2.5/booltest   ./tests2.5/uconstants  loopexec.expect mergenull.expect shifts.expect looptesteffect.expect \
                 unioninit.expect  unioninit.c utypes.c \
                 utypes.expect widestrings.expect  widestrings.c  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
-                loopexec.c mergenull.c shifts.c \
+                loopexec.c looptesteffect.c mergenull.c shifts.c \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
@@ -1317,6 +1317,10 @@ list:
 loopexec:
 	-$(SPLINTR) loopexec.c -expect 1
 	-$(SPLINTR) loopexec.c -obviousloopexec -expect 3
+
+.PHONY: looptesteffect
+looptesteffect:
+	-$(SPLINTR) looptesteffect.c -expect 1
 
 .PHONY: macros
 macros:

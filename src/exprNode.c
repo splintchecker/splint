@@ -9076,9 +9076,47 @@ static /*@only@*/ exprNode exprNode_effect (exprNode e)
 				     exprNode_effect (exprData_getPairB (data)));
 	  break;
 	case XPR_OP:
-	  ret = exprNode_op (exprNode_effect (exprData_getOpA (data)), 
-			     exprNode_effect (exprData_getOpB (data)), 
-			     exprData_getOpTok (data));
+	  /*
+	  ** evans 2002-03-15: for && and ||, need to do the guards also
+	  **                   this is what cgrammar.y does - should be
+	  **                   able to avoid duplication, but need to
+	  **                   time with grammar productions.
+	  */
+
+	  DPRINTF (("Effect: %s", exprNode_unparse (e)));
+
+	  if (lltok_getTok (exprData_getOpTok (data)) == AND_OP)
+	    {
+	      exprNode e1 = exprNode_effect (exprData_getOpA (data));
+	      exprNode e2;
+	      exprNode_produceGuards (e1);
+	      context_enterAndClause (e1);
+	      e2 = exprNode_effect (exprData_getOpB (data));
+
+	      ret = exprNode_op (e1, e2,
+				 exprData_getOpTok (data));
+
+	      context_exitAndClause (ret, e2);
+	    }
+	  else if (lltok_getTok (exprData_getOpTok (data)) == OR_OP)
+	    {
+	      exprNode e1 = exprNode_effect (exprData_getOpA (data));
+	      exprNode e2;
+	      exprNode_produceGuards (e1);
+	      context_enterOrClause (e1);
+	      e2 = exprNode_effect (exprData_getOpB (data));
+
+	      ret = exprNode_op (e1, e2,
+				 exprData_getOpTok (data));
+
+	      context_exitOrClause (ret, e2);
+	    }
+	  else
+	    {
+	      ret = exprNode_op (exprNode_effect (exprData_getOpA (data)), 
+				 exprNode_effect (exprData_getOpB (data)), 
+				 exprData_getOpTok (data));
+	    }
 	  break;
 	  
 	case XPR_POSTOP:
