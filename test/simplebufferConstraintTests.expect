@@ -17,11 +17,11 @@ test3.c:9:3: Unresolved constraint:
 test7.c:2:6: Function t defined more than once
    m.c:11:1: Previous definition of t
 test7.c: (in function t)
-test7.c:6:3: Unresolved constraint:
-    Lclint is unable to resolve Requires: : MAXSET ((g @ test7.c:4:3 ) )  >=  (
-    4 )  needed to satisfy Requires: : MAXSET ((g @ test7.c:6:3 ) )  >=  ( 2 ) 
 test7.c:8:3: Unresolved constraint:
     Lclint is unable to resolve Requires: : MAXSET ((j @ test7.c:8:3 ) )  >=  (
     0 )  needed to satisfy Requires: : MAXSET ((j @ test7.c:8:3 ) )  >=  ( 0 ) 
+test7.c:6:3: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((g @ test7.c:4:3 ) )  >=  (
+    4 )  needed to satisfy Requires: : MAXSET ((g @ test7.c:6:3 ) )  >=  ( 2 ) 
 
 Finished LCLint checking --- 7 code errors found
