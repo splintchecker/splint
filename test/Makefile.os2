@@ -8,32 +8,6 @@
 
 SHELL = cmd.exe
 
-.PHONY: all fulltest quicktest funcpointer cast abstract
-.PHONY:	version help abstptr abstract alias alttypes ansireserved 
-.PHONY: argorder blocks break cases cast charlit 
-.PHONY: clauses commentchar 
-.PHONY: compdestroy constannot controldepth csyntax czechnames czechoslovaknames 
-.PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
-.PHONY: impabstract init inparam internal iter keep libs lintcomments 
-.PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
-.PHONY: noeffect null observer oldstyle outglob outparam postnotnull preds prefixes printflike rc 
-.PHONY: refcounts release repexpose returned sharing slovaknames special
-.PHONY: specclauses stack staticarray 
-.PHONY: strings structassign nullret
-.PHONY: tainted typequals ud ulstypes union unreachable unused ullint unsignedcompare void
-.PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
-.PHONY: all test fulltest expects quicktest
-.PHONY: warnuse metastate
-.PHONY: linked freearray
-.PHONY: sizeoftest
-.PHONY: bufferTest
-.PHONY: simplebufferConstraintTests
-.PHONY: moreBufferTests
-.PHONY: maxset
-.PHONY: globalbufferannotation
-.PHONY: strchr
-.PHONY: for
-
 .SUFFIXES: .out .expect .c .lcl .h .lh .diff
 
 # -u show context
@@ -56,14 +30,15 @@ SPLINTRNEST = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 ###
 ### rcfiles not included becuase file names will not match exactly
 ###
+
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
-  constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  args arraydims arrayinit arraylit blocks break cases cast charlit clauses commentchar compdestroy \
+  compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
-  linked lintcomments list loopexec \
+  linked lintcomments list loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
@@ -71,7 +46,8 @@ UNITTESTS = \
   specclauses \
   special stack staticarray strings \
   stringliteral \
-  structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
+  structassign typequals typeof ud ulstypes union unioninit \
+  unnamedsu unreachable unsignedcompare \
   unused ullint utypes void widestrings
 
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
@@ -161,6 +137,15 @@ arraydims:
 	$(SPLINTR) arraydims.c -varuse -expect 2
 	$(SPLINTR) arraydims.c -initsize -varuse
 
+.PHONY: arrayinit
+arrayinit:
+	$(SPLINTR) arrayinit.c -expect 9
+
+.PHONY: arraylit
+arraylit:
+	$(SPLINTR) arraylit.c -expect 2
+	$(SPLINTR) arraylit.c +stringliteralsmaller -expect 4
+
 .PHONY: blocks
 blocks:
 	$(SPLINTR) blocks.c -expect 4
@@ -219,6 +204,14 @@ compdestroy:
 	$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
 	$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
 	$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+
+.PHONY: compoundliterals
+compoundliterals:
+	${SPLINTRN} compoundliterals.c 
+
+.PHONY: compoundstmt
+compoundstmt:
+	${SPLINTRN} compoundstmt.c -expect 3
 
 .PHONY: constannot
 constannot:
@@ -425,6 +418,10 @@ list:
 loopexec:
 	$(SPLINTR) loopexec.c -expect 1
 	$(SPLINTR) loopexec.c -obviousloopexec -expect 3
+
+.PHONY: looptesteffect
+looptesteffect:
+	$(SPLINTR) looptesteffect.c -expect 1
 
 .PHONY: macros
 macros:
@@ -674,6 +671,10 @@ stack:
 staticarray:
 	$(SPLINTR) staticarray.c -expect 3
 
+###
+### evans 2002-03-16: Default setting of stringliteralnoroomfinalnull changed
+### 
+
 .PHONY: stringliteral
 stringliteral:
 	$(SPLINTR) stringliteral.c -stringliteralnoroomfinalnull -expect 3
@@ -688,6 +689,10 @@ strings:
 .PHONY: structassign
 structassign:
 	$(SPLINTR) structassign.c -expect 4
+
+.PHONY: typeof
+typeof:
+	$(SPLINTR) typeof.c -expect 2
 
 .PHONY: typequals
 typequals:
@@ -719,6 +724,10 @@ union:
 .PHONY: unioninit
 unioninit:
 	$(SPLINTR) unioninit.c -expect 2
+
+.PHONY: unnamedsu
+unnamedsu:
+	$(SPLINTR) unnamedsu.c -expect 0
 
 .PHONY: unreachable
 unreachable:
@@ -754,8 +763,7 @@ ullint:
 
 .PHONY: utypes
 utypes:
-# herbert: TODO
-	-${SPLINTRN} utypes.c -expect 6
+	${SPLINTRN} utypes.c -expect 6
 
 ###
 
