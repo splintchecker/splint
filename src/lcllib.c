@@ -444,7 +444,10 @@ loadStateFile (FILE *f, cstring name)
 		  cstring vname;
 		  char *nl = strchr (buf, '\n');
 
-		  *nl = '\0';
+		  /*drl7x this is evans is code I think
+		    I'll need is find out if code is safe or if I
+		    broke it somehow... */
+		  /*@i223*/	  *nl = '\0';
 
 		  vname = cstring_fromChars (buf + 9);
 
