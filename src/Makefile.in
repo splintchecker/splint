@@ -142,9 +142,9 @@ GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
 
 GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 
-OVERFLOWCHSRC = constraintGeneration.c constraintTerm.c \
+OVERFLOWCHSRC = constraintList.c constraintResolve.c \
+                constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
-                constraintList.c constraintResolve.c \
                 constraintOutput.c loopHeuristics.c 
 
 
@@ -473,10 +473,10 @@ am__objects_16 = $(am__objects_8) $(am__objects_9) $(am__objects_10) \
 	$(am__objects_13) $(am__objects_14) $(am__objects_15)
 am__objects_17 = exprNode.$(OBJEXT) exprChecks.$(OBJEXT) \
 	llmain.$(OBJEXT) help.$(OBJEXT) rcfiles.$(OBJEXT)
-am__objects_18 = constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
+am__objects_18 = constraintList.$(OBJEXT) constraintResolve.$(OBJEXT) \
+	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
 	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
-	constraint.$(OBJEXT) constraintList.$(OBJEXT) \
-	constraintResolve.$(OBJEXT) constraintOutput.$(OBJEXT) \
+	constraint.$(OBJEXT) constraintOutput.$(OBJEXT) \
 	loopHeuristics.$(OBJEXT)
 am__objects_19 =
 am__objects_20 = $(am__objects_19)

@@ -50,9 +50,9 @@ GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
 
 GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 
-OVERFLOWCHSRC = constraintGeneration.c constraintTerm.c \
+OVERFLOWCHSRC = constraintList.c constraintResolve.c \
+                constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
-                constraintList.c constraintResolve.c \
                 constraintOutput.c loopHeuristics.c 
 
 GENERALSRC = exprData.c cstring.c fileloc.c message.c inputStream.c \

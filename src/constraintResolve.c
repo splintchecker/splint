@@ -41,13 +41,6 @@
 
 /*@access constraint, exprNode @*/ /*!!! NO! Don't do this so recklessly - design your code more carefully so you don't need to! */
 
-/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
-/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
-
-
-
 static constraint  inequalitySubstitute  (/*@returned@*/ constraint p_c, constraintList p_p);
 
 
@@ -65,10 +58,6 @@ static constraint constraint_addOr (/*@returned@*/ constraint p_orig, /*@observe
 static bool resolveOr (/*@temp@*/constraint p_c, /*@observer@*/ /*@temp@*/ constraintList p_list);
 
 static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constraintList p_pre2, constraintList p_post1);
-
-/*********************************************/
-
-
 
 
 /*@only@*/ constraintList constraintList_mergeEnsuresFreeFirst (constraintList list1, constraintList list2)
@@ -163,6 +152,14 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
   DPRINTF((message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
 
+  
+  if (exprNode_isUndefined(parent) )
+    {
+      llassert (exprNode_isDefined(parent) );
+      return;
+    }
+  
+  
   if (exprNode_isError (child1)  || exprNode_isError(child2) )
     {
       if (exprNode_isError (child1) && !exprNode_isError(child2) )
@@ -337,6 +334,9 @@ static /*@only@*/ constraintList reflectChangesNoOr (/*@observer@*/ /*@temp@*/ c
 static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@*/ constraint orConstr)
 {
   constraint c;
+
+  llassert(constraint_isDefined(orig) );
+  
   c = orig;
 
   DPRINTF((message("constraint_addor: oring %s onto %s", constraint_printOr(orConstr), constraint_printOr(orig) ) ));
@@ -361,7 +361,11 @@ static bool resolveOr ( /*@temp@*/ constraint c, /*@observer@*/ /*@temp@*/ const
   int numberOr;
 
   numberOr = 0;
+
+    llassert(constraint_isDefined(c) );
+
   DPRINTF(( message("resolveOr: constraint %s and list %s", constraint_printOr(c), constraintList_print(list) ) ));
+  
   temp = c;
 
   do
@@ -383,7 +387,7 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
 {
   constraint temp;
 
-  llassert(constraint_isUndefined (c->or ) );
+  llassert(constraint_isDefined (c ) );
 
   DPRINTF((message("doResolve:: call on constraint c = : %q and constraintList %q",
 		   constraint_printOr(c), constraintList_print(post1)
@@ -518,8 +522,11 @@ static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c
   
    /*drl bee: pbr*/ *resolved = FALSE;
 
+  llassert(constraint_isDefined(c) );
 
   ret = constraint_copy(c);
+
+  llassert(constraint_isDefined(ret) );
 
   if (constraintList_isEmpty(post1) )
     {
@@ -638,7 +645,10 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
 
 static bool constraint_conflict (constraint c1, constraint c2)
 {
-  
+
+  llassert(constraint_isDefined(c1) );
+  llassert(constraint_isDefined(c2) );
+
   if (constraintExpr_similar(c1->lexpr, c2->lexpr) )
     {
       if (c1->ar == EQ)
@@ -687,8 +697,11 @@ static bool constraint_conflict (constraint c1, constraint c2)
 
 static void constraint_fixConflict (/*@temp@*/ constraint good, /*@temp@*/ /*@observer@*/ constraint conflicting) /*@modifies good@*/
 {
+  llassert(constraint_isDefined(conflicting) );
+  
   if (conflicting->ar ==EQ )
     {
+      llassert(constraint_isDefined(good) );
       good->expr = constraintExpr_searchandreplace (good->expr, conflicting->lexpr, conflicting->expr);
       good = constraint_simplify (good);
     }
@@ -738,6 +751,9 @@ constraintList constraintList_fixConflicts (constraintList list1, constraintList
 /*returns true if constraint post satifies cosntriant pre */
 static bool satifies (constraint pre, constraint post)
 {
+  llassert(constraint_isDefined(pre) );
+  llassert(constraint_isDefined(post) );
+
   if (constraint_isAlwaysTrue (pre)  )
     return TRUE;
   
@@ -805,6 +821,9 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
   constraintTerm ct;
   exprNode e, t;
   sRef s1, s2;
+
+  llassert(constraintExpr_isDefined(buf1) && constraintExpr_isDefined(expr2) );
+
   /*@access constraintExpr@*/
   
   if ((expr2->kind != term) && (buf1->kind != term) )
@@ -818,6 +837,11 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
 
   e = constraintTerm_getExprNode(ct);
 
+  llassert(exprNode_isDefined(e) );
+
+  if (! (exprNode_isDefined(e) ) )
+    return FALSE;
+  
   if (e->kind != XPR_SIZEOF)
     return FALSE;
   
@@ -847,12 +871,17 @@ static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
 
   DPRINTF(( message("sizeOfMaxSet: checking %s ", constraint_print(c) )
 	    ));
-  
+
+  llassert (constraint_isDefined(c) );
+    
   l = c->lexpr;
   r = c->expr;
 
   if (!((c->ar == EQ) || (c->ar == GTE) || (c->ar == LTE) ) )
     return FALSE;
+
+  llassert (constraintExpr_isDefined(l)  );
+  llassert (constraintExpr_isDefined(r)  );
 
   /*check if the constraintExpr is MaxSet(buf) */
   if (l->kind == unaryExpr)
@@ -926,6 +955,9 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
   constraintExpr l, r;
   bool rHasConstant;
   int rConstant;
+
+  
+  llassert (constraint_isDefined(c) );  
   
   l = c->lexpr;
   r = c->expr;
@@ -1137,7 +1169,10 @@ static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arit
 
 static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr newExpr)
 {
+   llassert (constraint_isDefined(c)  );
+
   DPRINTF (("Doing replace for lexpr") );
+  
   c->lexpr = constraintExpr_searchandreplace (c->lexpr, old, newExpr);
   DPRINTF (("Doing replace for expr") );
   c->expr = constraintExpr_searchandreplace (c->expr, old, newExpr);
@@ -1148,7 +1183,9 @@ bool constraint_search (constraint c, constraintExpr old) /*@*/
 {
   bool ret;
   ret = FALSE;
-
+  
+  llassert (constraint_isDefined(c)  );
+  
   ret  = constraintExpr_search (c->lexpr, old);
   ret = ret || constraintExpr_search (c->expr, old);
   return ret;
@@ -1163,6 +1200,9 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
 		     constraint_print(old))
 		   ));
 
+  llassert(constraint_isDefined(substitute));
+  llassert(constraint_isDefined(old));
+	   
   loc1 = constraint_getFileloc (old);
   loc2 = constraintExpr_getFileloc (substitute->lexpr);
   loc3 = constraintExpr_getFileloc (substitute->expr);
@@ -1197,11 +1237,16 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
 
 constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p)
 {
+  llassert(constraint_isDefined(c) );
+
   if (c->ar != GTE)
     return c;
   
   constraintList_elements (p, el)
     {
+      
+      llassert(constraint_isDefined(el) );
+      
       if ((el->ar == LT )  )
 	/* if (!constraint_conflict (c, el) ) */ /*@i523 explain this! */
 	   {
@@ -1245,6 +1290,13 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
 {
   DPRINTF (( message ("inequalitySubstituteStrong examining substituting for %q", constraint_print(c) ) ));      
 
+  llassert(constraint_isDefined(c) );
+
+  if (! (constraint_isDefined(c) ) )
+  {
+    return c;
+  }
+  
   if (c->ar != GTE)
     return c;
   
@@ -1252,8 +1304,10 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
 		      constraint_print(c), constraintList_print(p) ) ));      
   constraintList_elements (p, el)
     {
+      
       DPRINTF (( message ("inequalitySubstituteStrong examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
 
+      llassert(constraint_isDefined(el) );
       if ((el->ar == LT ) ||  (el->ar == LTE )  )
 	/* if (!constraint_conflict (c, el) ) */ /*@i523@*/
 	   {
@@ -1299,13 +1353,18 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
 static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, constraintList p)
 {
   DPRINTF (( message ("Doing inequalitySubstituteUnsound " ) ));
+
+    llassert(constraint_isDefined(c) );
   
   if (c->ar != GTE)
     return c;
   
   constraintList_elements (p, el)
     {
-  DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
+
+      llassert(constraint_isDefined(el) );
+
+      DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
        if (( el->ar == LTE) || (el->ar == LT) )
 	 /* if (!constraint_conflict (c, el) ) */ /*@i532@*/
 	   {
@@ -1338,6 +1397,7 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
   ret = constraint_copy(c);
   constraintList_elements (p, el)
     {
+      llassert(constraint_isDefined(el) );
        if ( el->ar == EQ)
 	 if (!constraint_conflict (ret, el) )
 
@@ -1348,6 +1408,9 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
 	     
 	     temp = constraint_adjust(temp, ret);
 
+	     llassert(constraint_isDefined(temp) );
+
+	     
 	     DPRINTF((message ("constraint_substitute :: Substituting in %s using %s",
 			       constraint_print (ret), constraint_print (temp)
 			       ) ) );
@@ -1403,6 +1466,9 @@ return ret;
 
 static constraint constraint_solve (/*@returned@*/ constraint c)
 {
+
+  llassert(constraint_isDefined(c) );
+
   DPRINTF((message ("Solving %s\n", constraint_print(c) ) ) );
   c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);
   DPRINTF((message ("Solved and got %s\n", constraint_print(c) ) ) );
@@ -1433,6 +1499,9 @@ static arithType flipAr (arithType ar)
 static constraint  constraint_swapLeftRight (/*@returned@*/ constraint c)
 {
   constraintExpr temp;
+
+  llassert(constraint_isDefined(c) );
+
   c->ar = flipAr (c->ar);
   temp = c->lexpr;
   c->lexpr = c->expr;
@@ -1445,7 +1514,9 @@ static constraint  constraint_swapLeftRight (/*@returned@*/ constraint c)
 
 constraint constraint_simplify ( /*@returned@*/ constraint c)
 {
-
+  
+  llassert(constraint_isDefined(c) );
+	
   DPRINTF(( message("constraint_simplify on %q ", constraint_print(c) ) ));
 
   if (constraint_tooDeep(c))
