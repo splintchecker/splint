@@ -64,7 +64,6 @@ obviousloop.c: (in function f1b)
 obviousloop.c:59:3: Unreachable code: x = 12
 obviousloop.c: (in function f2)
 obviousloop.c:75:3: Unreachable code: x = 12
-constraintGeneration.c:470 [obviousloop.c:76:2]: >> strange for statement:for (<error>; <error>; <error>) { x++ }, ignoring it
 
 Finished LCLint checking --- 4 code errors found, as expected
 

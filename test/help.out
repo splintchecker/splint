@@ -114,6 +114,7 @@ Finished LCLint checking --- no code processed
    constmacros                 
    constprefix                 
    constprefixexclude          
+   constraintlocation          
    constuse                    
    continuecomment             
    controlnestdepth            
@@ -898,6 +899,7 @@ arrayread --- possible out of bounds read
 arraywrite --- possible buffer overflow from an out of bounds write
 fcnpost --- Function has the post condition
 fcnconstraint --- unresolved constraint
+constraintlocation --- display full c expression for every constraint generated
 nullterminated --- misuse of nullterminated allocation
 nullderef --- possible dereferencce of null pointer
 fcnderef --- dereferencce of a function type

@@ -1,6 +1,6 @@
 
 sizeof.c: (in function main)
-sizeof.c:9:2: Unresolved constraint:
+sizeof.c:6:2: Unresolved constraint:
     Lclint is unable to resolve Requires: :
     ( 2 )   >=  ( 3 )  needed to satisfy Requires: : MAXSET ((x @ sizeof.c:6:2
     ) )  >=  ( 3 ) 
