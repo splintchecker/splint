@@ -35,6 +35,10 @@ extern /*@only@*/ cstring globSet_unparse (globSet p_ll) /*@*/ ;
 extern /*@only@*/ cstring globSet_dump (globSet) /*@*/ ;
 extern /*@only@*/ globSet globSet_undump (char **p_s) /*@modifies *p_s@*/ ;
 
+extern /*@only@*/ globSet globSet_unionFree (/*@only@*/ /*@returned@*/ globSet p_g1, /*@only@*/ globSet p_g2) /*@modifies p_g1@*/ ;
+# define globSet_unionFree(g1,g2) sRefSet_unionFree(g1,g2)
+
+     
 extern void globSet_markImmutable (globSet p_g) /*@modifies p_g@*/ ;
 
 extern globSet 

@@ -1232,7 +1232,7 @@ typeSpecifier
  | CGFLOAT NotType
  | CDOUBLE NotType
  | CVOID NotType 
- | QANYTYPE NotType              { $$ = ctype_anytype; }
+ | QANYTYPE NotType              { $$ = ctype_anytype; DPRINTF (("anytype: %s", ctype_unparse ($$))); }
  | QINTEGRALTYPE NotType         { $$ = ctype_anyintegral; }
  | QUNSIGNEDINTEGRALTYPE NotType { $$ = ctype_unsignedintegral; }
  | QSIGNEDINTEGRALTYPE NotType   { $$ = ctype_signedintegral; }

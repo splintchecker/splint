@@ -1187,7 +1187,6 @@ int main (int argc, char *argv[])
 	}
     }
 
-  setCodePoint ();  
   showHerald (); 
   
   /*

@@ -141,10 +141,13 @@ extern /*@noreturn@*/ void llfatalerrorLoc (/*@only@*/ cstring p_s)
 
 extern /*@private@*/ void
    xllparseerror (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s)
+   /*@globals g_currentloc@*/
    /*@modifies g_warningstream@*/ ;
 
 extern void llparseerror (/*@only@*/ cstring p_s) 
-   /*@globals g_currentloc@*/ ;
+   /*@globals g_currentloc@*/
+   /*@modifies g_warningstream@*/ ;
+
 # define llparseerror(p_s) xllparseerror (__FILE__, __LINE__, p_s)
 # ifndef NOLCL
 extern /*@noreturn@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_warningstream@*/ ;

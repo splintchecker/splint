@@ -150,12 +150,14 @@ qtype qtype_mergeAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 
 qtype qtype_combine (/*@returned@*/ qtype q1, ctype ct)
 {
+  DPRINTF (("Combine: %s %s", qtype_unparse (q1), ctype_unparse (ct)));
   if (qtype_isDefined (q1))
     {
       /* ct is modifier (or q1->type is unknown) */
       q1->type = ctype_combine (q1->type, ct); 
     }
 
+  DPRINTF (("Combine: %s %s", qtype_unparse (q1), ctype_unparse (ct)));
   return q1;
 }
 
@@ -188,7 +190,9 @@ qtype qtype_newBase (/*@returned@*/ qtype q, ctype ct)
 {
   if (qtype_isDefined (q))
     {
+      DPRINTF (("new base: %s -> %s", qtype_unparse (q), ctype_unparse (ct)));
       q->type = ctype_newBase (ct, q->type);
+      DPRINTF (("new base: %s -> %s", qtype_unparse (q), ctype_unparse (ct)));
     }
 
   return q;
@@ -202,6 +206,7 @@ qtype qtype_newQbase (qtype q1, qtype q2)
       q1->quals = qualList_appendList (q1->quals, q2->quals);
     }
 
+  DPRINTF (("new base: %s -> %s", qtype_unparse (q1), qtype_unparse (q1)));
   return q1;
 }
 

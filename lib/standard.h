@@ -881,7 +881,9 @@ void /*@alt char * @*/
 
 void /*@alt char * @*/
   strncpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2, size_t n) 
-  /*@modifies *s1@*/      /*@requires maxSet(s1) >= ( n - 1 ); @*/ /*@ensures maxRead (s2) >= maxRead(s1) /\ maxRead (s1) <= n; @*/; 
+     /*@modifies *s1@*/ 
+     /*@requires maxSet(s1) >= ( n - 1 ); @*/
+     /*@ensures maxRead (s2) >= maxRead(s1) /\ maxRead (s1) <= n; @*/ ; 
 
 void /*@alt char * @*/
   strcat (/*@unique@*/ /*@returned@*/ char *s1, char *s2) 

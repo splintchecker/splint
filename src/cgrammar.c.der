@@ -4368,7 +4368,7 @@ case 367:
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 374:
-{ yyval.ctyp = ctype_anytype; ;
+{ yyval.ctyp = ctype_anytype; DPRINTF (("anytype: %s", ctype_unparse (yyval.ctyp))); ;
     break;}
 case 375:
 { yyval.ctyp = ctype_anyintegral; ;

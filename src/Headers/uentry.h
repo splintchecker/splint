@@ -570,7 +570,7 @@ extern alkind uentry_getAliasKind (uentry p_u) /*@*/ ;
 extern exkind uentry_getExpKind (uentry p_u) /*@*/ ;
 extern /*@observer@*/ multiVal uentry_getConstantValue (uentry p_e) /*@*/ ;
 extern void uentry_fixupSref (uentry p_ue) /*@modifies p_ue@*/ ;
-extern void uentry_setGlobals (uentry p_ue, /*@owned@*/ globSet p_globs) /*@modifies p_ue, p_globs@*/ ;
+extern void uentry_setGlobals (uentry p_ue, /*@only@*/ globSet p_globs) /*@modifies p_ue, p_globs@*/ ;
 extern bool uentry_isYield (uentry p_ue) /*@*/ ;
 extern /*@notnull@*/ uentry uentry_makeIdConstant (idDecl p_t) /*@*/ ;
 extern /*@observer@*/ cstring uentry_getRealName (uentry p_e) /*@*/ ;

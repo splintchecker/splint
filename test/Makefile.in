@@ -93,6 +93,8 @@ DIFFFLAGS =
 # -u show context
 SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
+### These are shell-specific
+
 ### This is horrible!  Can't we make top_builddir absolute?
 SPLINTNEST = ../$(top_builddir)/src/splint$(EXEEXT)
 
@@ -903,9 +905,6 @@ uninstall-am: uninstall-info-am
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-generic uninstall uninstall-am uninstall-info-am
 
-
-unexport LARCH_PATH
-unexport LCLIMPORTDIR
 
 .PHONY: all check
 all check: fulltest

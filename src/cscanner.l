@@ -199,7 +199,7 @@ static void setTokLengthT (size_t len)
 
 %%
 
-"/*"		{ llfatalbug (cstring_makeLiteral ("Comment in pre-processor output")); }
+"/*"		{ llfatalerror (cstring_makeLiteral ("Comment in pre-processor output")); }
 
 "#"{Letter}({Letter}|{Digit})*  { 
                  context_saveLocation (); 

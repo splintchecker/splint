@@ -744,9 +744,12 @@ void uentry_checkParams (uentry ue)
       if (uentry_isRealFunction (ue))
 	{
 	  uentryList params = uentry_getParams (ue);
+	  int paramno = 0;
 
 	  uentryList_elements (params, current)
 	    {
+	      paramno++;
+
 	      if (uentry_isValid (current))
 		{
 		  ctype ct = current->utype;		      
@@ -760,24 +763,48 @@ void uentry_checkParams (uentry ue)
 			}
 		      else
 			{
-			  voptgenerror 
-			    (FLG_FIXEDFORMALARRAY,
-			     message ("Function parameter %q declared as "
-				      "manifest array (size constant is meaningless)",
-				      uentry_getName (current)),
-			     uentry_whereDeclared (current));
+			  if (uentry_hasName (current))
+			    {
+			      voptgenerror 
+				(FLG_FIXEDFORMALARRAY,
+				 message ("Function parameter %q declared as "
+					  "manifest array (size constant is meaningless)",
+					  uentry_getName (current)),
+				 uentry_whereDeclared (current));
+			    }
+			  else
+			    {
+			      voptgenerror 
+				(FLG_FIXEDFORMALARRAY,
+				 message ("Unnamed function parameter %d declared as "
+					  "manifest array (size constant is meaningless)",
+					  paramno),
+				 uentry_whereDeclared (current));
+			    }
 			}
 		    }
 		  else 
 		    {
 		      if (ctype_isArray (ct))
 			{
-			  voptgenerror 
-			    (FLG_FORMALARRAY,
-			     message ("Function parameter %q declared as "
-				      "array (treated as pointer)", 
-				      uentry_getName (current)),
-			     uentry_whereDeclared (current));
+			  if (uentry_hasName (current))
+			    {
+			      voptgenerror 
+				(FLG_FORMALARRAY,
+				 message ("Function parameter %q declared as "
+					  "array (treated as pointer)", 
+					  uentry_getName (current)),
+				 uentry_whereDeclared (current));
+			    }
+			  else
+			    {
+			      voptgenerror 
+				(FLG_FORMALARRAY,
+				 message ("Unnamed function parameter %d declared as "
+					  "array (treated as pointer)", 
+					  paramno),
+				 uentry_whereDeclared (current));
+			    }
 			}
 		    }
 
@@ -3592,36 +3619,24 @@ void uentry_makeConstantFunction (uentry ue)
 }
 
 void
-uentry_setGlobals (uentry ue, /*@owned@*/ globSet globs)
+uentry_setGlobals (uentry ue, /*@only@*/ globSet globs)
 {
   llassert (uentry_isValid (ue));
 
+  globSet_markImmutable (globs);
+
   if (uentry_isIter (ue))
     {
-      llassert (globSet_isUndefined (ue->info->iter->globs));
-      ue->info->iter->globs = globs;
+      ue->info->iter->globs = globSet_unionFree (ue->info->iter->globs, globs);
     }
   else
     {
       uentry_convertVarFunction (ue);
-      
       llassert (uentry_isFunction (ue));
-      llassert (!ue->info->fcn->hasGlobs 
-		&& globSet_isUndefined (ue->info->fcn->globs));
-      
-      ue->info->fcn->hasGlobs = TRUE;
-      globSet_markImmutable (globs);
-      /*@-mustfree@*/ ue->info->fcn->globs = globs;
-      /*@=mustfree@*/
-    }
 
-  /*@i23*/
-  /* ???  - evans 2001-09-09 not sure what's going on here...?
-  if (globSet_hasStatic (globs))
-    {
-      context_recordFileGlobals (globs);
+      ue->info->fcn->hasGlobs = TRUE;
+      ue->info->fcn->globs = globSet_unionFree (ue->info->fcn->globs, globs);
     }
-  */
 
   if (context_getFlag (FLG_GLOBALSIMPMODIFIESNOTHING))
     {
@@ -9974,8 +9989,8 @@ uentry_mergeUses (uentry res, uentry other)
 */
 
 static void
-  branchStateError (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other, 
-		    bool flip, clause cl, fileloc loc)
+branchStateError (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other, 
+		  bool flip, clause cl, fileloc loc)
 {
   if (optgenerror 
       (FLG_BRANCHSTATE,
@@ -9988,10 +10003,12 @@ static void
       if (sRef_isDead (res->sref))
 	{
 	  sRef_showStateInfo (res->sref);
+	  sRef_showStateInfo (other->sref);
 	}
       else if (sRef_isKept (res->sref))
 	{
 	  sRef_showAliasInfo (res->sref);
+	  sRef_showAliasInfo (other->sref);
 	}
       else /* dependent */
 	{

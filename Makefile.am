@@ -24,6 +24,8 @@
 ## To report a bug: splint-bug@splint.org
 ## 
 
+.PHONY: test
+
 AUTOMAKE_OPTIONS = 1.5 foreign
 
 binaryfixscript = ./fixBinaryDist.sh

@@ -117,9 +117,14 @@ AC_SUBST(LCLOBJ)
 myprefix=$prefix
 test x$myprefix = xNONE && myprefix=$ac_default_prefix
 
+
+### Yuck!  This is really kludgey, but I don't understand autoconf well
+### enough to do something simple that always works.  Hopefully this does.
+
 # cpplib.h defines 2 include dirs; one is $includedir, the other is gcc's
 # include dir.  Not the most portable setup, but let's do our best.
-if test x$ac_cv_c_compiler_gnu = xyes; then
+
+if test x$GCC = xyes; then
   dnl Make sure to override NLS; this assumes gcc prints only
   dnl   Reading specs from blah
   dnl   gcc version blah
@@ -131,6 +136,8 @@ GCC_INCLUDE_DIR=/usr/include
 #  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -n -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/p'`
   AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "$GCC_INCLUDE_DIR",
                      [system include directory])
+else
+  AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "/usr/include", [system include directory])
 fi
 AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR2, "$myprefix/include",
                    [alternate include directory])

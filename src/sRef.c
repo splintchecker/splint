@@ -7940,7 +7940,7 @@ sRef_mergeNullState (sRef s, nstate n)
       
       if (n != old && n != NS_UNKNOWN)
 	{	  	  
-	    sRef_setNullState (s, n, g_currentloc);
+	  sRef_setNullState (s, n, g_currentloc);
 	}
     }
   else
@@ -7953,11 +7953,11 @@ bool
 sRef_possiblyNull (sRef s)
 {
   if (sRef_isReasonable (s))
-      {
-	if (sRef_getNullState (s) == NS_ABSNULL)
+    {
+      if (sRef_getNullState (s) == NS_ABSNULL)
 	{
 	  ctype rct = ctype_realType (s->type);
-
+	  
 	  if (ctype_isAbstract (rct))
 	    {
 	      return FALSE;
@@ -7982,7 +7982,7 @@ sRef_possiblyNull (sRef s)
 	  return nstate_possiblyNull (sRef_getNullState (s));
 	}
     }
-
+  
   return FALSE;
 }
 
@@ -10112,7 +10112,13 @@ size_t sRef_getArraySize (sRef p_s) /*@*/
 
 void sRef_setValue (sRef s, multiVal val)
 {
-  llassert (sRef_isReasonable (s));
+  if (!sRef_isReasonable (s))
+    {
+      llcontbuglit ("Unreasonable sRef");
+      llcontbug (message ("sRef: %s", sRef_unparse (s)));
+      return;
+    }
+
   multiVal_free (s->val);
   s->val = val;
 }

@@ -47,11 +47,6 @@ typedef /*@signedintegraltype@*/ suseconds_t;
 typedef /*@integraltype@*/ timer_t;
 typedef /*@unsignedintegraltype@*/ useconds_t;
 
-   /*-------------------------------------------------------------
-     -------------------------------------------------------------
-   */
-
-   
 /*
 ** Extra stuff in some unixen, not in posix.
 */
@@ -290,7 +285,6 @@ typedef u_long fixpt_t;
 typedef long segsz_t;
 typedef /*@abstract@*/ fd_set;
 
-int ttyname_r (int fg, /*@out@*/ char *buffer, int len) /*@modifies buffer@*/ ;
 int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg) 
    /*@modifies *arg, errno@*/ ;  /* depends on request! */
 
@@ -865,13 +859,6 @@ int initgroups (const char *name, int basegid)
 	extern int
 lchown (const char *path, uid_t owner, gid_t group)
 	/*@modifies errno, fileSystem@*/;
-
-	extern int
-readlink (const char *path, /*@out@*/ char *buf, int size)
-     /*@modifies *buf, errno@*/
-     /*drl 10/27/001*/
-     /*@requires maxSet(buf) >= (size - 1) @*/
-     /*@ensures result <= size @*/;
 
 	extern int
 select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, struct timeval *t)
@@ -1472,9 +1459,9 @@ int /*@alt lltX_bool@*/ S_TYPEISSHM  (/*@sef@*/ struct stat *buf) /*@*/ ;
 /* in POSIX: chmod, fstat, mkdir, mkfifo, stat, umask */
 
 int lstat(const char *, /*@out@*/ struct stat *)
-  /*:errorcode -1:*/
-  /*@modifies errno@*/ ;
-
+     /*:errorcode -1:*/
+     /*@modifies errno@*/ ;
+     
 int mknod (const char *, mode_t, dev_t)
   /*@warn portability "The only portable use of mknod is to create FIFO-special file. If mode is not S_IFIFO or dev is not 0, the behaviour of mknod() is unspecified."@*/
   /*:errorcode -1:*/
@@ -1487,6 +1474,39 @@ int chflags (const char *path, u_long flags)
 int fchflags (int fd, u_long flags)
   /*@warn unixstandard "Not in Single UNIX Specification Version 2"@*/
   /*@modifies fileSystem, errno@*/;
+
+/* evans 2002-03-17: this was missing, reported by Ralf Wildenhues */
+int fchmod(int fildes, mode_t mode) 
+   /*@modifies fileSystem, errno@*/ ; 
+  
+/*
+** sys/statvfs.h
+** from http://www.opengroup.org/onlinepubs/007908799/xsh/sysstatvfs.h.html
+*/
+
+struct statvfs {
+   unsigned long f_bsize;
+   unsigned long f_frsize;
+   fsblkcnt_t    f_blocks;
+   fsblkcnt_t    f_bfree;
+   fsblkcnt_t    f_bavail;
+   fsfilcnt_t    f_files;
+   fsfilcnt_t    f_ffree;
+   fsfilcnt_t    f_favail;                       
+   unsigned long f_fsid;
+   unsigned long f_flag;
+   unsigned long f_namemax; 
+} ;
+
+/*@constant unsigned long ST_RDONLY; @*/
+/*@constant unsigned long ST_NOSUID; @*/
+
+int fstatvfs (int fildes, /*@out@*/ struct statvfs *buf) 
+   /*@modifies buf@*/ ;
+
+int statvfs (const char *path, /*@out@*/ struct statvfs *buf)
+    /*@modifies buf@*/ ; 
+
 
 /*________________________________________________________________________
  * stropts.h
@@ -1689,16 +1709,448 @@ struct hostent {
 
 /*
 ** unistd.h
+** from http://www.opengroup.org/onlinepubs/007908799/xsh/unistd.h.html
 */
 
+/*@constant int _POSIX_VERSION@*/
+/*@constant int _POSIX2_VERSION@*/
+/*@constant int _POSIX2_C_VERSION@*/
+/*@constant int _XOPEN_VERSION@*/
+/*@constant int _XOPEN_XCU_VERSION@*/
+
+/* for access: */
+
+/*@constant int R_OK@*/
+/*@constant int W_OK@*/
+/*@constant int X_OK@*/
+/*@constant int F_OK@*/
+
+/* for confstr: */
+/*@constant int _CS_PATH@*/
+/*@constant int _CS_XBS5_ILP32_OFF32_CFLAGS@*/
+/*@constant int _CS_XBS5_ILP32_OFF32_LDFLAGS@*/
+/*@constant int _CS_XBS5_ILP32_OFF32_LIBS@*/
+/*@constant int _CS_XBS5_ILP32_OFF32_LINTFLAGS@*/
+/*@constant int _CS_XBS5_ILP32_OFFBIG_CFLAGS@*/
+/*@constant int _CS_XBS5_ILP32_OFFBIG_LDFLAGS@*/
+/*@constant int _CS_XBS5_ILP32_OFFBIG_LIBS@*/
+/*@constant int _CS_XBS5_ILP32_OFFBIG_LINTFLAGS@*/
+/*@constant int _CS_XBS5_LP64_OFF64_CFLAGS@*/
+/*@constant int _CS_XBS5_LP64_OFF64_LDFLAGS@*/
+/*@constant int _CS_XBS5_LP64_OFF64_LIBS@*/
+/*@constant int _CS_XBS5_LP64_OFF64_LINTFLAGS@*/
+/*@constant int _CS_XBS5_LPBIG_OFFBIG_CFLAGS@*/
+/*@constant int _CS_XBS5_LPBIG_OFFBIG_LDFLAGS@*/
+/*@constant int _CS_XBS5_LPBIG_OFFBIG_LIBS@*/
+/*@constant int _CS_XBS5_LPBIG_OFFBIG_LINTFLAGS@*/
+
+/* name parameters to sysconf: */
+
+/*@constant int _SC_2_C_BIND@*/
+/*@constant int _SC_2_C_DEV@*/
+/*@constant int _SC_2_C_VERSION@*/
+/*@constant int _SC_2_FORT_DEV@*/
+/*@constant int _SC_2_FORT_RUN@*/
+/*@constant int _SC_2_LOCALEDEF@*/
+/*@constant int _SC_2_SW_DEV@*/
+/*@constant int _SC_2_UPE@*/
+/*@constant int _SC_2_VERSION@*/
+/*@constant int _SC_ARG_MAX@*/
+/*@constant int _SC_AIO_LISTIO_MAX@*/
+/*@constant int _SC_AIO_MAX@*/
+/*@constant int _SC_AIO_PRIO_DELTA_MAX@*/
+/*@constant int _SC_ASYNCHRONOUS_IO@*/
+/*@constant int _SC_ATEXIT_MAX@*/
+/*@constant int _SC_BC_BASE_MAX@*/
+/*@constant int _SC_BC_DIM_MAX@*/
+/*@constant int _SC_BC_SCALE_MAX@*/
+/*@constant int _SC_BC_STRING_MAX@*/
+/*@constant int _SC_CHILD_MAX@*/
+/*@constant int _SC_CLK_TCK@*/
+/*@constant int _SC_COLL_WEIGHTS_MAX@*/
+/*@constant int _SC_DELAYTIMER_MAX@*/
+/*@constant int _SC_EXPR_NEST_MAX@*/
+/*@constant int _SC_FSYNC@*/
+/*@constant int _SC_GETGR_R_SIZE_MAX@*/
+/*@constant int _SC_GETPW_R_SIZE_MAX@*/
+/*@constant int _SC_IOV_MAX@*/
+/*@constant int _SC_JOB_CONTROL@*/
+/*@constant int _SC_LINE_MAX@*/
+/*@constant int _SC_LOGIN_NAME_MAX@*/
+/*@constant int _SC_MAPPED_FILES@*/
+/*@constant int _SC_MEMLOCK@*/
+/*@constant int _SC_MEMLOCK_RANGE@*/
+/*@constant int _SC_MEMORY_PROTECTION@*/
+/*@constant int _SC_MESSAGE_PASSING@*/
+/*@constant int _SC_MQ_OPEN_MAX@*/
+/*@constant int _SC_MQ_PRIO_MAX@*/
+/*@constant int _SC_NGROUPS_MAX@*/
+/*@constant int _SC_OPEN_MAX@*/
+/*@constant int _SC_PAGESIZE@*/
+/*@constant int _SC_PAGE_SIZE@*/
+/*@constant int _SC_PASS_MAX@*/
+/*@constant int _SC_PRIORITIZED_IO@*/
+/*@constant int _SC_PRIORITY_SCHEDULING@*/
+/*@constant int _SC_RE_DUP_MAX@*/
+/*@constant int _SC_REALTIME_SIGNALS@*/
+/*@constant int _SC_RTSIG_MAX@*/
+/*@constant int _SC_SAVED_IDS@*/
+/*@constant int _SC_SEMAPHORES@*/
+/*@constant int _SC_SEM_NSEMS_MAX@*/
+/*@constant int _SC_SEM_VALUE_MAX@*/
+/*@constant int _SC_SHARED_MEMORY_OBJECTS@*/
+/*@constant int _SC_SIGQUEUE_MAX@*/
+/*@constant int _SC_STREAM_MAX@*/
+/*@constant int _SC_SYNCHRONIZED_IO@*/
+/*@constant int _SC_THREADS@*/
+/*@constant int _SC_THREAD_ATTR_STACKADDR@*/
+/*@constant int _SC_THREAD_ATTR_STACKSIZE@*/
+/*@constant int _SC_THREAD_DESTRUCTOR_ITERATIONS@*/
+/*@constant int _SC_THREAD_KEYS_MAX@*/
+/*@constant int _SC_THREAD_PRIORITY_SCHEDULING@*/
+/*@constant int _SC_THREAD_PRIO_INHERIT@*/
+/*@constant int _SC_THREAD_PRIO_PROTECT@*/
+/*@constant int _SC_THREAD_PROCESS_SHARED@*/
+/*@constant int _SC_THREAD_SAFE_FUNCTIONS@*/
+/*@constant int _SC_THREAD_STACK_MIN@*/
+/*@constant int _SC_THREAD_THREADS_MAX@*/
+/*@constant int _SC_TIMERS@*/
+/*@constant int _SC_TIMER_MAX@*/
+/*@constant int _SC_TTY_NAME_MAX@*/
+/*@constant int _SC_TZNAME_MAX@*/
+/*@constant int _SC_VERSION@*/
+/*@constant int _SC_XOPEN_VERSION@*/
+/*@constant int _SC_XOPEN_CRYPT@*/
+/*@constant int _SC_XOPEN_ENH_I18N@*/
+/*@constant int _SC_XOPEN_SHM@*/
+/*@constant int _SC_XOPEN_UNIX@*/
+/*@constant int _SC_XOPEN_XCU_VERSION@*/
+/*@constant int _SC_XOPEN_LEGACY@*/
+/*@constant int _SC_XOPEN_REALTIME@*/
+/*@constant int _SC_XOPEN_REALTIME_THREADS@*/
+/*@constant int _SC_XBS5_ILP32_OFF32@*/
+/*@constant int _SC_XBS5_ILP32_OFFBIG@*/
+/*@constant int _SC_XBS5_LP64_OFF64@*/
+/*@constant int _SC_XBS5_LPBIG_OFFBIG@*/
+
+
+int access(const char *, int) /*@modifies errno@*/ /*:errorcode -1:*/ ;
+unsigned int alarm (unsigned int) /*@modifies internalState@*/ ;
+
+int brk(void *)
+     /*@modifies errno@*/
+     /*:errorcode -1:*/
+     /*@warn legacy "brk is obsolete"@*/ ;
+
+int chdir (const char *)
+     /*@modifies internalState, errno@*/
+     /*:errorcode -1:*/ ;
+
+int chown (const char *, uid_t, gid_t)
+     /*@modifies internalState, errno@*/
+     /*:errorcode -1:*/ ;
+
+int close (int)
+     /*@modifies internalState, errno@*/
+     /*:errorcode -1:*/ ;
+
+size_t confstr(int, /*@null@*/ char *, size_t)
+     /*@globals internalState@*/
+     /*@modifies errno@*/
+     /*:errorcode 0:*/ ;
+
+/*@dependent@*/ /*@null@*/ char *crypt(const char *, const char *)
+     /*@modifies errno, internalState@*/ ;
+
+/*@dependent@*/ /*@null@*/ char *ctermid(/*@returned@*/ /*@null@*/ /*@out@*/ char *s)
+     /*@modifies s@*/ ;
+
+/*@null@*/ /*@dependent@*/ char *cuserid (/*@null@*/ /*@returned@*/ char *s)
+     /*@warn legacy "cuserid is obsolete"@*/
+     /*@modifies s@*/ ;
+
+int dup(int)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int dup2(int, int)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+void encrypt(char p_block[], int)
+     /*@requires maxSet(p_block) == 63@*/
+     /*@modifies p_block, errno@*/ ;
+
+extern char **environ;
+
+int execl (const char *, const char *, ...)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int execle(const char *, const char *, ...)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int execlp(const char *, const char *, ...)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int execv(const char *, char *const [])
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int execve(const char *, char *const [], char *const [])
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int execvp(const char *, char *const [])
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+/*@exits@*/ void _exit (int);
+
+int fchown (int, uid_t, gid_t)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+int fchdir (int)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+int fdatasync (int)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+pid_t fork (void)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+long int fpathconf(int, int)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int fsync(int)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+int ftruncate(int, off_t)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+/*@null@*/ char *getcwd (/*@returned@*/ char *buf, size_t size)
+     /*@requires maxSet(buf) >= size;@*/
+     /*@modifies errno@*/ ;
+
+int getdtablesize (void)
+     /*@warn legacy "getdtablesize is obsolete"@*/ ;
+
+gid_t getegid (void) /*@globals internalState*/ ;
+uid_t geteuid (void) /*@globals internalState*/ ;
+gid_t getgid (void) /*@globals internalState*/ ;
+
+int getgroups (int gidsetsize, gid_t grouplist[])
+     /*@requires maxSet(grouplist) >= gidsetsize@*/
+     /*@modifies errno@*/
+     /*:errorcode -1:*/ ;
+
+long gethostid (void) /*@globals internalState@*/ ;
+
+/*@null@*/ /*@dependent@*/ char *getlogin (void)
+     /*@modifies errno@*/ ;
+
+int getlogin_r (char *name, size_t namesize)
+     /*@requires maxSet(name) >= namesize@*/
+     /*:errorcode !0:*/ ;
+
+extern char *optarg;
+extern int optind;
+extern int opterr;
+extern int optopt;
+
+int getopt(int, char * const [], const char *)
+     /*@modifies optind, opterr, optopt, errno@*/
+     /*:errorcode -1:*/ ;
+
+int getpagesize(void)
+     /*@warn legacy "getpagesize is obsolete"@*/ ;
+
+/*@dependent@*/ /*@null@*/ char *getpass(/*@nullterminated@*/ const char *)
+     /*@warn legacy "getpass is obsolete"@*/ ;
+
+pid_t getpgid(pid_t)
+     /*@modifies errno@*/
+     /*@globals internalState@*/
+     /*:errorcode (pid_t)-1:*/ ;
+
+pid_t getpgrp(void) /*@globals internalState*/ ;
+
+pid_t getpid(void) /*@globals internalState*/ ;
+pid_t getppid(void) /*@globals internalState*/ ;
+
+pid_t getsid(pid_t)
+     /*@modifies errno@*/
+     /*@globals internalState@*/
+     /*:errorcode (pid_t)-1:*/ ;
+
+uid_t getuid(void) /*@globals internalState@*/ ;
+
+/*@null@*/ char *getwd (/*@returned@*/ char *path_name)
+     /*@modifies path_name@*/ ;
+
+int isatty(int)
+     /*@globals internalState@*/
+     /*@modifies errno@*/
+     /*:errorcode 0:*/ ;
+
+int lchown(const char *, uid_t, gid_t)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+int link(const char *, const char *)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+int lockf(int, int, off_t)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+off_t lseek(int, off_t, int)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode (off_t)-1:*/ ;
+
+int nice(int)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+long int pathconf(const char *, int)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int pause(void)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int pipe(int p[])
+     /*@requires maxRead(p) == 1@*/
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+ssize_t pread(int, /*@out@*/ void *buf, size_t nbyte, off_t offset)
+     /*@modifies errno, fileSystem@*/
+     /*@requires maxSet(buf) >= (nbyte - 1) @*/
+     /*@ensures maxRead(buf) >= nbyte @*/ 
+     /*:errorcode -1:*/ ;
+     
+int pthread_atfork(void (*)(void), void (*)(void), void(*)(void))
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode !0:*/ ;
+
+ssize_t pwrite(int, const void *buf, size_t nbyte, off_t)
+     /*@requires maxRead(buf) >= nbyte@*/
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+/*     ssize_t      read(int, void *, size_t); in posix.h */
+
+int readlink(const char *, char *buf, size_t bufsize)
+     /*@requires maxSet(buf) >= (bufsize - 1)@*/
+     /*@modifies errno, fileSystem, *buf@*/
+     /*:errorcode -1:*/ ;
+
+/* int          rmdir(const char *); in posix.h */
+
+void *sbrk(intptr_t)
+     /*@modifies errno@*/
+     /*:errorcode (void *)-1:*/
+     /*@warn legacy "sbrk is obsolete"@*/ ;
+
+     /*     int          setgid(gid_t);
+	    int          setpgid(pid_t, pid_t);
+     */
+
+pid_t setpgrp(void) /*@modifies internalState@*/ ;
+
+int setregid(gid_t, gid_t)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+int setreuid(uid_t, uid_t)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+pid_t setsid(void)
+     /*@modifies errno, internalState@*/
+     /*:errorcode (pid_t) -1:*/ ;
+
+int setuid(uid_t)
+     /*@modifies errno, internalState@*/
+     /*:errorcode -1:*/ ;
+
+unsigned int sleep(unsigned int)
+     /*@modifies systemState@*/ ;
+
+void swab(/*@unique@*/ const void *src, /*@unique@*/ void *dest, ssize_t nbytes)
+     /*@requires maxSet(dest) >= (nbytes - 1)@*/ ;
+
+int symlink(const char *, const char *)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+void sync(void) /*@modifies systemState@*/ ;
+
+long int sysconf(int)
+     /*@modifies errno, systemState@*/
+     /*:errorcode -1:*/ ;
+
+pid_t tcgetpgrp(int)
+     /*@globals systemState@*/
+     /*@modifies errno@*/
+     /*:errorcode -1:*/ ;
+
+int tcsetpgrp(int, pid_t)
+     /*@modifies errno, systemState@*/
+     /*:errorcode -1:*/ ;
+
+int truncate(const char *, off_t)
+     /*@modifies errno, fileSystem@*/
+     /*:errorcode -1:*/ ;
+
+/*@dependent@*/ /*@null@*/ char *ttyname(int)
+     /*@globals systemState@*/
+     /*@modifies errno@*/
+     /*:errorcode -1:*/ ;
+
+int ttyname_r(int, char *name, size_t namesize)
+     /*@requires maxSet(name) >= (namesize - 1)@*/ ;
+     /*:errorcode !0:*/ ;
+
+useconds_t ualarm(useconds_t, useconds_t)
+     /*@modifies systemState@*/ ;
+
+int unlink(const char *)
+     /*@modifies fileSystem, errno@*/
+     /*:errorcode -1:*/ ;
+     
+int usleep(useconds_t)
+     /*@modifies fileSystem, errno@*/
+     /*:errorcode -1:*/ ;
+
+pid_t vfork(void)
+     /*@modifies fileSystem, errno@*/
+     /*:errorcode -1:*/ ;
+
+     /* in posix.h ssize_t write(int, const void *, size_t); */
+
+
 int chroot (/*@notnull@*/ /*@nullterminated@*/ const char *path)
-   /*:statusreturn@*/
-   /*@warn superuser "Only super-user processes may call chroot."@*/
-     /*: other wanings? */ ;
+     /*@modifies internalState, errno@*/
+     /*:errorcode -1:*/ 
+     /*@warn superuser "Only super-user processes may call chroot."@*/ ;
 
 int fchroot (int fildes)
    /*:statusreturn@*/
    /*@warn superuser "Only super-user processes may call fchroot."@*/ ;
+
 
 /*
 ** ctype.h 

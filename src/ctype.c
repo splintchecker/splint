@@ -232,22 +232,30 @@ ctype_realishType (ctype c)
   return c;
 }
 
+static bool 
+ctype_isSpecialType (ctype c)
+{
+  return (ctype_isUnknown (c) || ctype_isAnytype (c));
+}
+
 bool
 ctype_isUA (ctype c)
 {
-  return (!ctype_isUnknown (c) && ctbase_isUA (ctype_getCtbase (c)));
+  return (!ctype_isSpecialType (c) 
+	  && ctbase_isUA (ctype_getCtbase (c)));
 }
 
 bool
 ctype_isUser (ctype c)
 {
-  return (!ctype_isUnknown (c) && ctbase_isUser (ctype_getCtbase (c)));
+  return (!ctype_isSpecialType (c) 
+	  && ctbase_isUser (ctype_getCtbase (c)));
 }
 
 bool
 ctype_isAbstract (ctype c)
 {
-  return (!ctype_isUnknown (c) 
+  return (!ctype_isSpecialType (c) 
 	  && ((ctype_isPlain (c) && ctbase_isAbstract (ctype_getCtbaseSafe (c))) ||
 	      (ctype_isConj (c) &&
 	       (ctype_isAbstract (ctype_getConjA (c)) 
@@ -488,9 +496,9 @@ ctype_isWideString (ctype c)
 ctype
 ctype_getReturnType (ctype c)
 {
-  if (ctype_isUnknown (c))
+  if (ctype_isSpecialType (c))
     {
-      return ctype_unknown;
+      return c;
     }
 
   return (ctbase_baseFunction (ctype_getCtbaseSafe (c)));
@@ -503,7 +511,7 @@ ctype_getReturnType (ctype c)
 /*@observer@*/ uentryList
 ctype_argsFunction (ctype c)
 {
-  if (ctype_isUnknown (c))
+  if (ctype_isSpecialType (c))
     {
       return uentryList_undefined;
     }
@@ -589,9 +597,9 @@ ctype_compare (ctype c1, ctype c2)
   ctentry ce1;
   ctentry ce2;
 
-  if (ctype_isUnknown (c1))
+  if (ctype_isSpecialType (c1))
     {
-      if (ctype_isUnknown (c2))
+      if (ctype_isSpecialType (c2))
 	{
 	  return 0;
 	}
@@ -601,7 +609,7 @@ ctype_compare (ctype c1, ctype c2)
 	}
     }
   
-  if (ctype_isUnknown (c2))
+  if (ctype_isSpecialType (c2))
     {
       return -1;
     }
@@ -1113,6 +1121,8 @@ ctype_isForceRealBool (ctype * c)
 static ctype
 ctype_makeConjAux (ctype c1, ctype c2, bool isExplicit)
 {
+  DPRINTF (("Make conj: %s / %s", ctype_unparse (c1), ctype_unparse (c2)));
+
   if (ctype_isBogus (c1) || ctype_isUndefined (c1))
     {
       return c2;
@@ -1137,6 +1147,8 @@ ctype_makeConjAux (ctype c1, ctype c2, bool isExplicit)
 ctype
 ctype_makeExplicitConj (ctype c1, ctype c2)
 {
+  DPRINTF (("Make conj: %s / %s", ctype_unparse (c1), ctype_unparse (c2)));
+
   if (ctype_isFunction (c1) && !ctype_isFunction (c2))
     {
       ctype ret = ctype_makeExplicitConj (ctype_getReturnType (c1), c2);
@@ -1629,11 +1641,11 @@ ctype_matchDef (ctype c1, ctype c2)
     return TRUE;
 
   if (ctype_isElips (c1))
-    return (ctype_isElips (c2) || ctype_isUnknown (c2));
+    return (ctype_isElips (c2) || ctype_isSpecialType (c2));
 
   if (ctype_isElips (c2))
     {
-      return (ctype_isUnknown (c2));
+      return (ctype_isSpecialType (c2));
     }
   else
     {
@@ -1653,10 +1665,14 @@ bool ctype_match (ctype c1, ctype c2)
     return TRUE;
 
   if (ctype_isElips (c1))
-    return (ctype_isElips (c2) || ctype_isUnknown (c2));
-
+    {
+      return (ctype_isElips (c2) || ctype_isSpecialType (c2));
+    }
+  
   if (ctype_isElips (c2))
-    return (ctype_isUnknown (c2));
+    {
+      return (ctype_isSpecialType (c2));
+    }
  
   return (ctbase_match (ctype_getCtbase (c1), ctype_getCtbase (c2)));
 }
@@ -1788,7 +1804,7 @@ ctype_unparseDeclaration (ctype c, /*@only@*/ cstring name)
 {
   llassert (! (ctype_isElips (c) || ctype_isMissingParamsMarker (c)));
 
-  if (ctype_isUnknown (c))
+  if (ctype_isSpecialType (c))
     {
       return message ("? %q", name);
     }
@@ -2221,7 +2237,7 @@ bool ctype_isRefCounted (ctype t)
 
 bool ctype_isVisiblySharable (ctype t)
 {
-  if (ctype_isUnknown (t)) return TRUE;
+  if (ctype_isSpecialType (t)) return TRUE;
 
   if (ctype_isConj (t))
     {
@@ -2538,6 +2554,7 @@ ctype ctype_resolve (ctype c)
 {
   if (ctype_isUnknown (c)) 
     {
+      DPRINTF (("Resolving! %s", ctype_unparse (c)));
       return ctype_int;
     }
   else if (c == ctype_anytype)

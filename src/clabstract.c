@@ -773,10 +773,11 @@ void clabstract_declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
 	  
 	  resetGlobals ();
 	}
-      
+
       resetStorageClass ();
-      idDecl_free (tid);
     }
+
+  idDecl_free (tid);
 }
 
 void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/

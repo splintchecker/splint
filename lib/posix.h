@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.13 2002/01/07 03:37:25 drl7x Exp $
+ * $Id: posix.h,v 1.14 2002/03/18 01:54:51 evans1629 Exp $
  */
 
 /*
@@ -827,7 +827,8 @@ pipe (/*@out@*/ int fd[]) /* Out parameter noticed by Marc Espie. */
 	/*@modifies errno@*/;
 
 extern ssize_t read (int fd, /*@out@*/ void *buf, size_t nbyte)
-   /*@modifies errno, *buf@*/ /*@requires maxSet(buf) >= (nbyte - 1) @*/
+   /*@modifies errno, *buf@*/
+   /*@requires maxSet(buf) >= (nbyte - 1) @*/
    /*@ensures maxRead(buf) >= nbyte @*/ ;
 
 extern int rmdir (const char *path)
@@ -863,7 +864,8 @@ extern int unlink (const char *path)
    /*@modifies fileSystem, errno@*/;
 
 extern ssize_t write (int fd, const void *buf, size_t nbyte)
-   /*@modifies errno@*/;
+     /*@requires maxRead(buf) >= nbyte@*/
+     /*@modifies errno@*/;
 
 /*
 ** utime.h
