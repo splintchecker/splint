@@ -3343,7 +3343,7 @@ cat >>confdefs.h <<EOF
 EOF
 
 cat >>confdefs.h <<EOF
-#define DEFAULT_LCLIMPORTDIR "$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports"
+#define DEFAULT_LCLIMPORTDIR ".$PATH_SEPARATOR$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports"
 EOF
 
 # These used to be in herald.h

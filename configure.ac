@@ -117,7 +117,7 @@ AC_DEFINE_UNQUOTED(SYSTEM_LIBDIR, "$myprefix/include",
 AC_DEFINE_UNQUOTED(DEFAULT_LARCHPATH,
                    ".$PATH_SEPARATOR$myprefix/share/lclint/lib$PATH_SEPARATOR`pwd`/lib$PATH_SEPARATOR",
                    [The directory where LCLint's library files live])
-AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, "$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports",
+AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, ".$PATH_SEPARATOR$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports",
                    [LCLint's imports directory])
 
 # These used to be in herald.h
