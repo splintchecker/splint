@@ -78,6 +78,26 @@ void flagSpec_free (flagSpec f)
     }
 }
 
+flagSpec flagSpec_copy (flagSpec f)
+{
+  if (flagSpec_isDefined (f))
+    {
+      if (flagSpec_isDefined (f->trest))
+	{
+	  return flagSpec_createOr (cstring_copy (f->tspec->name), 
+				    flagSpec_copy (f->trest));
+	}
+      else
+	{
+	  return flagSpec_createPlain (cstring_copy (f->tspec->name));
+	}
+    }
+  else
+    {
+      return flagSpec_undefined;
+    }
+}
+
 cstring flagSpec_unparse (flagSpec f)
 {
   if (flagSpec_isDefined (f))

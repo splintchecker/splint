@@ -2762,8 +2762,8 @@ static flaglist flags =
   },
   {
     FK_NONE, FK_NONE, plainFlag,
-    "special",
-    FLG_SPECIAL,
+    "unclassified",
+    FLG_UNCLASSIFIED,
     NULL, NULL,
     0, 0
   },
