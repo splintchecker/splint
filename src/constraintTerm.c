@@ -37,14 +37,6 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@-czechfcns@*/
-/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
-/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
-
-/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
-
 bool constraintTerm_isDefined (constraintTerm t)
 {
   return t != NULL;
@@ -123,7 +115,7 @@ bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*
   return FALSE;
 }
 
-
+/*@access exprNode@*/
 int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
 {
 
@@ -150,7 +142,7 @@ int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm 
 
   return ret;  
 }
-
+/*@noaccess exprNode@*/
 
 
 bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/
@@ -633,7 +625,11 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
 	sRef s;
 	char * term;
 	term = reader_getWord(&str);
-	
+
+	if (term == NULL)
+	  {
+	    llfatalbug (message ("Library file appears to be corrupted.") );
+	  }
 	if (strcmp (term, "Result") == 0 )
 	  {
 	    s = sRef_makeResult (ctype_unknown);
@@ -649,6 +645,11 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
 	    str2  = reader_getWord(&str);
 	    param = reader_getInt(&str);
 
+	if (str2 == NULL)
+	  {
+	    llfatalbug (message ("Library file appears to be corrupted.") );
+	  }
+	    
 	    ostr2 = str2;
 	    t = ctype_undump(&str2) ;
 	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc, SA_CREATED));
@@ -680,6 +681,12 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
 	cstring termStr;
 		
 	term = reader_getWord(&str);
+
+	if (term == NULL)
+	  {
+	    llfatalbug (message ("Library file appears to be corrupted.") );
+	  }
+
 	/* This must be an identifier that we can search for in usymTab */
 	termStr = cstring_makeLiteralTemp(term);
 	
