@@ -41,6 +41,7 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-declundef@*/
 
 /* < end of bison.head > */
 
@@ -1558,3 +1559,4 @@ static void yyprint (FILE *file, int type, YYSTYPE value)
 /*@=systemunrecog@*/
 /*@=dependenttrans@*/
 /*@=unqualifiedtrans@*/
+/*@=declundef@*/

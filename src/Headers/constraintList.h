@@ -31,11 +31,11 @@ extern constraintList constraintList_preserveCallInfo (/*@returned@*/ constraint
 
 /*@iter constraintList_elements (sef constraintList x, yield exposed constraint el); @*/
 # define constraintList_elements(x, m_el) \
-   { int m_ind; constraint *m_elements = &((x)->elements[0]); \
+   { if (constraintList_isDefined (x)) { int m_ind; constraint *m_elements = &((x)->elements[0]); \
      for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
        { constraint m_el = *(m_elements++); 
 
-# define end_constraintList_elements }}
+# define end_constraintList_elements }}}
 
 extern /*@only@*/ constraintList constraintList_makeNew(void) /*@*/;
 extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) /*@modifies p_s@*/ ;

@@ -41,6 +41,7 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-declundef@*/
 
 /* < end of bison.head > */
 
@@ -157,3 +158,4 @@ typedef union {
 /*@=systemunrecog@*/
 /*@=dependenttrans@*/
 /*@=unqualifiedtrans@*/
+/*@=declundef@*/
