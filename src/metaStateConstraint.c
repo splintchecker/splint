@@ -45,6 +45,12 @@ cstring metaStateConstraint_unparse (metaStateConstraint m)
 		  metaStateExpression_unparse (m->rspec));
 }
 
+metaStateConstraint metaStateConstraint_copy (metaStateConstraint m)
+{
+  return metaStateConstraint_create (metaStateSpecifier_copy (m->lspec),
+				     metaStateExpression_copy (m->rspec));
+}
+
 void metaStateConstraint_free (/*@only@*/ metaStateConstraint m) 
 {
   metaStateSpecifier_free (m->lspec);

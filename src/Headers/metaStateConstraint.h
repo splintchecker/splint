@@ -18,6 +18,7 @@ extern metaStateConstraint
 metaStateConstraint_create (/*@only@*/ metaStateSpecifier, /*@only@*/ metaStateExpression) ;
 
 extern cstring metaStateConstraint_unparse (metaStateConstraint) /*@*/ ;
+extern /*@only@*/ metaStateConstraint metaStateConstraint_copy (metaStateConstraint) /*@*/ ;
 extern void metaStateConstraint_free (/*@only@*/ metaStateConstraint) ;
 
 # else

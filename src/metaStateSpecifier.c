@@ -38,6 +38,12 @@ metaStateSpecifier_create (/*@only@*/ sRef sr, /*@observer@*/ metaStateInfo msin
   return res;
 }
 
+metaStateSpecifier 
+metaStateSpecifier_copy (metaStateSpecifier m)
+{
+  return metaStateSpecifier_create (sRef_saveCopy (m->sr), m->msinfo);
+}
+
 cstring metaStateSpecifier_unparse (metaStateSpecifier m) 
 {
   return message ("%q:%s", 

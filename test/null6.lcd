@@ -1076,7 +1076,8 @@ e2
 -1
 ;; end precondition constraints
 calloc
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@4
@@ -1099,7 +1100,8 @@ e2
 -1
 ;; end precondition constraints
 malloc
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@4
@@ -1122,7 +1124,8 @@ e2
 -1
 ;; end precondition constraints
 realloc
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@3
@@ -1171,7 +1174,8 @@ r
 2
 Param 63 2
 ;; end precondition constraints
-post:EMPTY
+post:
+;; end precondition constraints
 memmove
 pre:
 C
@@ -1199,7 +1203,8 @@ r
 2
 Param 63 2
 ;; end precondition constraints
-post:EMPTY
+post:
+;; end precondition constraints
 strcpy
 pre:
 C
@@ -1410,7 +1415,8 @@ e2
 Param 5 2
 ;; end precondition constraints
 strchr
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@3
@@ -1466,7 +1472,8 @@ r
 0
 ;; end precondition constraints
 strrchr
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@3
@@ -1522,7 +1529,8 @@ r
 0
 ;; end precondition constraints
 strstr
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@3
@@ -1621,7 +1629,8 @@ e2
 -1
 ;; end precondition constraints
 strlen
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@4
@@ -1637,7 +1646,8 @@ r
 Param 23 0
 ;; end precondition constraints
 asctime
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@4
@@ -1665,7 +1675,8 @@ r
 25
 ;; end precondition constraints
 ctime
-pre:EMPTY
+pre:
+;; end precondition constraints
 post:
 C
 0@1@4

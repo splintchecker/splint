@@ -104,8 +104,8 @@ typedef struct
   bool hasGlobs BOOLBITS;
   bool hasMods  BOOLBITS;
 
-  constraintList preconditions;
-  constraintList postconditions;
+  functionConstraint preconditions;
+  functionConstraint postconditions;
   
 } *ufinfo ;
 
@@ -655,11 +655,10 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 /*drl7x*/
 extern constraintList uentry_getFcnPreconditions (uentry p_ue);
 extern constraintList uentry_getFcnPostconditions (uentry p_ue);
-extern void
-uentry_setPostconditions (uentry p_ue, /*@only@*/ constraintList p_postconditions);
 
-extern void
-uentry_setPreconditions (uentry p_ue, /*@only@*/ constraintList p_preconditions);
+extern void uentry_setPostconditions (uentry p_ue, /*@only@*/ functionConstraint p_postconditions);
+
+extern void uentry_setPreconditions (uentry p_ue, /*@only@*/ functionConstraint p_preconditions);
 
      /*end mods*/
 

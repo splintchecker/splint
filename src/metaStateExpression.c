@@ -64,6 +64,22 @@ cstring metaStateExpression_unparse (metaStateExpression m)
     }
 }
 
+metaStateExpression metaStateExpression_copy (metaStateExpression m) 
+{
+  if (m == NULL) return NULL;
+
+  if (m->rest != NULL)
+    {
+      return metaStateExpression_createMerge (metaStateSpecifier_copy (m->spec),
+					      metaStateExpression_copy (m->rest));
+      
+    }
+  else
+    {
+      return metaStateExpression_create (metaStateSpecifier_copy (m->spec));
+    }
+}
+
 void metaStateExpression_free (/*@only@*/ metaStateExpression m) 
 {
   llassert (m != NULL);

@@ -18,6 +18,7 @@ extern metaStateSpecifier
 metaStateSpecifier_create (/*@only@*/ sRef, /*@observer@*/ metaStateInfo) ;
 
 extern cstring metaStateSpecifier_unparse (metaStateSpecifier) /*@*/ ;
+extern metaStateSpecifier metaStateSpecifier_copy (metaStateSpecifier) /*@*/ ;
 extern void metaStateSpecifier_free (/*@only@*/ metaStateSpecifier) ;
 
 # else

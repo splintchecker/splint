@@ -26,7 +26,9 @@ extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p
 # define constraintList_isUndefined(e)  ((e) == constraintList_undefined)
 # define constraintList_isError(e)      ((e) == constraintList_undefined)
 
-extern  constraintList constraintList_addListFree (/*@returned@*/ constraintList, /*@only@*/ constraintList) ;
+extern constraintList constraintList_single (/*@only@*/ constraint) ;
+
+extern constraintList constraintList_addListFree (/*@returned@*/ constraintList, /*@only@*/ constraintList) ;
 extern constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList p_c, /*@observer@*/ /*@dependent@*/ exprNode p_fcn) ;
 
 /*@iter constraintList_elements (sef constraintList x, yield exposed constraint el); @*/

@@ -99,6 +99,7 @@
 # include "metaStateTable.h"
 # include "annotationInfo.h"
 # include "annotationTable.h"
+# include "functionConstraint.h"
 
 # include "context.h"
 # include "constants.h"

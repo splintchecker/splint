@@ -55,6 +55,10 @@ extern bool fileloc_closer (/*@observer@*/ fileloc  p_loc1, /*@observer@*/ filel
 extern /*@only@*/ cstring arithType_print (arithType p_ar) /*@*/;
 
 extern /*@only@*/ fileloc constraint_getFileloc (constraint p_c);
+
+extern /*@only@*/ cstring constraint_unparse (/*@temp@*/ /*@observer@*/ constraint p_c) /*@*/;
+# define constraint_unparse constraint_print
+
 extern /*@only@*/ cstring constraint_print (/*@temp@*/ /*@observer@*/ constraint p_c) /*@*/;
 
 extern /*@only@*/ constraint constraint_makeWriteSafeInt (/*@dependent@*/ /*@oberserver@*/ exprNode p_po, int p_ind);

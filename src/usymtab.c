@@ -1962,7 +1962,7 @@ void usymtab_load (FILE *f)
       
       if (cstring_compareLit (temp,"pre:") == 0 )
 	{
-	  preconditions = constraintList_undump(f);
+	  preconditions = constraintList_undump (f);
 	}
       else
 	{
@@ -1977,7 +1977,7 @@ void usymtab_load (FILE *f)
       temp = cstring_fromChars(reader_getWord(&s) );
       if (cstring_compareLit (temp,"post:") == 0 )
 	{
-	  postconditions = constraintList_undump(f);
+	  postconditions = constraintList_undump (f);
 	}
       else
 	{
@@ -1987,8 +1987,8 @@ void usymtab_load (FILE *f)
       
       cstring_free(temp);
 
-      uentry_setPreconditions (ue, preconditions);
-      uentry_setPostconditions (ue, postconditions);
+      uentry_setPreconditions (ue, functionConstraint_createBufferConstraint (preconditions));
+      uentry_setPostconditions (ue, functionConstraint_createBufferConstraint (postconditions));
       
       s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
     }

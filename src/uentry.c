@@ -558,45 +558,44 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 {
   if (uentry_isValid (ue))
     {
-	{
-	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	    {
-	      DPRINTF(( (message( "Function pointer %s not doing  uentry_getFcnPreconditions", uentry_unparse(ue) )) ));
-	      //  uentry_makeVarFunction (ue);
-	    }
-
-	  //llassert (uentry_isFunction (ue));
-	  //llassert ((ue->info->fcn->preconditions));
-  //llassert ((ue->info->fcn->preconditions));
-	  if (!uentry_isFunction (ue))
-	    {
-	      DPRINTF( (message ("called uentry_getFcnPreconditions on nonfunction %s",
-				  uentry_unparse (ue) ) ) );
-	      	  if (!uentry_isSpecified (ue) )
-		    {
-		      DPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
-					uentry_unparse (ue) ) ));
-		      return constraintList_undefined;
-		    }
-	  
-
-		  return constraintList_undefined;
-	    }
-
-	  if (constraintList_isDefined(ue->info->fcn->preconditions))
-	    {
-	   return constraintList_copy (ue->info->fcn->preconditions);
-	    }
-	  else
-	    {
-	      return NULL;
-	    }
-	}
+      {
+	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	  {
+	    DPRINTF(( (message( "Function pointer %s not doing  uentry_getFcnPreconditions", uentry_unparse(ue) )) ));
+	    //  uentry_makeVarFunction (ue);
+	  }
 	
+	//llassert (uentry_isFunction (ue));
+	//llassert ((ue->info->fcn->preconditions));
+	//llassert ((ue->info->fcn->preconditions));
+
+	if (!uentry_isFunction (ue))
+	  {
+	    DPRINTF( (message ("called uentry_getFcnPreconditions on nonfunction %s",
+			       uentry_unparse (ue) ) ) );
+	    if (!uentry_isSpecified (ue) )
+	      {
+		DPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
+				  uentry_unparse (ue) ) ));
+		return constraintList_undefined;
+	      }
+	    
+	    
+	    return constraintList_undefined;
+	  }
+	
+	if (functionConstraint_hasBufferConstraint (ue->info->fcn->preconditions))
+	  {
+	    return constraintList_copy (functionConstraint_getBufferConstraint (ue->info->fcn->preconditions));
+	  }
+	else
+	  {
+	    return NULL;
+	  }
+      }
     }
   
   return constraintList_undefined;
-  
 }
 
 
@@ -636,12 +635,14 @@ constraintList uentry_getFcnPostconditions (uentry ue)
 	        return constraintList_undefined;
 
 	    }
-	  if (constraintList_isDefined(ue->info->fcn->postconditions) )
+
+	  if (functionConstraint_hasBufferConstraint (ue->info->fcn->postconditions))
 	    {
 	      DPRINTF((message ("called uentry_getFcnPostconditions on %s and returned %q",
 				uentry_unparse (ue),
-				constraintList_print(ue->info->fcn->postconditions) ) ));
-	   return constraintList_copy (ue->info->fcn->postconditions);
+				constraintList_unparse (functionConstraint_getBufferConstraint (ue->info->fcn->postconditions)))));
+
+	      return constraintList_copy (functionConstraint_getBufferConstraint (ue->info->fcn->postconditions));
 	    }
 	  else
 	    {
@@ -1089,12 +1090,12 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 	}
       else if (functionClause_isEnsures (el))
 	{
-	  constraintList cl = functionClause_takeEnsures (el);
+	  functionConstraint cl = functionClause_takeEnsures (el);
 	  uentry_setPostconditions (ue, cl);
 	}
       else if (functionClause_isRequires (el))
 	{
-	  constraintList cl = functionClause_takeRequires (el);
+	  functionConstraint cl = functionClause_takeRequires (el);
 	  uentry_setPreconditions (ue, cl);
 	}
       else if (functionClause_isState (el))
@@ -1576,7 +1577,7 @@ void uentry_addWarning (uentry ue, /*@only@*/ warnClause warn)
 }
 
 void
-uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions)
+uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
 {
   if (sRef_modInFunction ())
     {
@@ -1590,24 +1591,26 @@ uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions)
 
   if (uentry_isValid (ue))
     {
-	{
-	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	    {
-	      uentry_makeVarFunction (ue);
-	    }
-	  
-	  llassertfatal (uentry_isFunction (ue));
-	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
+      {
+	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	  {
+	    uentry_makeVarFunction (ue);
+	  }
 	
-	  if (constraintList_isDefined(ue->info->fcn->preconditions) )
-	    {
-	      constraintList_free(ue->info->fcn->preconditions);
-	      ue->info->fcn->preconditions = preconditions;
-	    }
-	  else
-	      ue->info->fcn->preconditions = preconditions;
-	}
+	llassertfatal (uentry_isFunction (ue));
 	
+	if (functionConstraint_isDefined (ue->info->fcn->preconditions))
+	  {
+	    BADBRANCH; /* should conjoin constraints? */
+	    functionConstraint_free (ue->info->fcn->preconditions);
+	    ue->info->fcn->preconditions = preconditions;
+	  }
+	else
+	  {
+	    ue->info->fcn->preconditions = preconditions;
+	  }
+      }
+      
     }
   else
     {
@@ -1620,7 +1623,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions)
   added 12/28/2000
 */
 void
-uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions)
+uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postconditions)
 {
   if (sRef_modInFunction ())
     {
@@ -1628,31 +1631,31 @@ uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions)
 	(message ("Postcondition list not in function context.  "
 		  "A postcondition list can only appear following the parameter list "
 		  "in a function declaration or header."));
-
+      
       /*@-mustfree@*/ return; /*@=mustfree@*/ 
     }
 
   if (uentry_isValid (ue))
     {
-	{
-	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	    {
-	      uentry_makeVarFunction (ue);
-	    }
-	  
-	  llassertfatal (uentry_isFunction (ue));
-	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
-
-	  if (constraintList_isUndefined(ue->info->fcn->postconditions) )
-	    	  ue->info->fcn->postconditions = postconditions;
-	  else
-	    {
-	    constraintList_free(ue->info->fcn->postconditions);
-	    ue->info->fcn->postconditions = postconditions;
-	    }	    
-
-	}
+      {
+	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	  {
+	    uentry_makeVarFunction (ue);
+	  }
 	
+	llassertfatal (uentry_isFunction (ue));
+	
+	if (functionConstraint_isUndefined (ue->info->fcn->postconditions))
+	  {
+	    ue->info->fcn->postconditions = postconditions;
+	  }
+	else
+	  {
+	    BADBRANCH; /* should conjoin */
+	    functionConstraint_free (ue->info->fcn->postconditions);
+	    ue->info->fcn->postconditions = postconditions;
+	  }	    
+      }
     }
   else
     {
@@ -3369,11 +3372,11 @@ void uentry_makeVarFunction (uentry ue)
   ue->info->fcn->defparams = uentryList_undefined;
 
   /*drl*/
-  ue->info->fcn->preconditions = constraintList_undefined;
+  ue->info->fcn->preconditions = functionConstraint_undefined;
   /*end */
 
   /*drl 12/28/2000*/
-  ue->info->fcn->postconditions = constraintList_undefined;
+  ue->info->fcn->postconditions = functionConstraint_undefined;
   /*end */
 
   
@@ -6516,20 +6519,8 @@ ufinfo_copy (ufinfo u)
   ret->defparams = u->defparams;
   ret->specclauses = stateClauseList_copy (u->specclauses);
 
-  /*drl 11 30 2000 */
-  /* change 6/8/01 */
-
-  if (constraintList_isDefined(u->preconditions))
-    ret->preconditions = constraintList_copy(u->preconditions);
-  else
-    ret->preconditions = NULL;
-  /* end drl */
-
-    if (constraintList_isDefined(u->postconditions))
-    ret->postconditions = constraintList_copy(u->postconditions);
-  else
-    ret->postconditions = NULL;
-  /* end drl */
+  ret->preconditions = functionConstraint_copy (u->preconditions);
+  ret->postconditions = functionConstraint_copy (u->postconditions);
   
   return ret;
 }
