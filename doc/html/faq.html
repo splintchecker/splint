@@ -14,7 +14,7 @@
     <h3>Index</h3>
     	
     <ol>
-    <h4>General Questions About Splint</h4>
+    <a href="#genquest"><h4>General Questions About Splint</h4></a>
       <li>
         <a href="#quest1">
         What is the difference between Splint and LCLint?</a><br />
@@ -26,10 +26,12 @@
       <li><a href="#quest4">Can we use your software in our company? (We are not a GNU
       organization.)<br />
       </a></li>
+            <li><a href="#quest9">Which compilers does Splint support?<br />
+      </a></li>
       <li><a href="#quest5">Does Splint handle C++?<br />
       </a></li>
 
-      <h4> Installation</h4>
+      <a href="#install"><h4> Installation</h4></a>
       <li><a href="#quest6">I downloaded the Splint .tgz file but can't figure out how to
       extract it. There is no 'z' option on the tar on my system.<br />
       </a></li>
@@ -38,11 +40,35 @@
       <li><a href="#quest8">I have installed Splint for Windows 2000. Where should I put
       the ".splintrc" file?<br />
       </a></li>
-      <h4>Usage</h4>
-      <li><a href="#quest9">Which compilers does Splint support?<br />
+            <li><a href="#quest17">When I build Splint I get the following errors.... Should I be worried?<br />
+      </a></li>
+       <li><a href="#quest18">I just installed Splint on a new machine. I get a bunch of
+      errors during building when the test suite is run. When I look through the results,
+      it seems like Splint is not reporting any errors in the code it analyzes. What is
+      going on?<br />
+      </a></li>
+      <a href="#usage"><h4>Usage</h4></a>
+           <li><a href="#quest15">I heard that we will get lot of parse errors when we run
+      this tool first time. Hence we need to modify source code. Is it correct ?<br />
+      </a></li>
+      <li><a href="#quest16">I heard that Splint can generate some spurious errors ( not
+      genuine errors). Is it correct ?<br />
       </a></li>
       <li><a href="#quest10">How does Splint handle const?<br />
       </a></li>
+       <li><a href="#quest14">I develop code on an embedded system with a compiler that
+      uses nonstandard key words and data types. I would like to run Splint on my code
+      but these nonstandard keywords cause parse errors. What should I do?<br />
+      </a></li>
+      <li><a href="#quest14b">How can I get Splint to recognize directory trees and local
+      source include directories?<br />
+      </a></li>
+      
+      <li><a href="#quest20">I use realloc in my code. How can I get Splint in check this
+      code more effectively?<br />
+      </a></li>
+				   
+     <a href="#warnerror"><h4>Warnings and Errors</h4></a>
       <li><a href="#quest11">Why do I get a warning when multiplying different integer
       types? The C standard says this is ok. Why is this wrong?<br />
       </a></li>
@@ -52,46 +78,23 @@
       <li><a href="#quest13">Splint complains if I ignore the return value of scanf but
       not printf?<br />
       </a></li>
-      <li><a href="#quest14">I develop code on an embedded system with a compiler that
-      uses nonstandard key words and data types. I would like to run Splint on my code
-      but these nonstandard keywords cause parse errors. What should I do?<br />
-      </a></li>
-      <li><a href="#quest14b">How can I get Splint to recognize directory trees and local
-      source include directories?<br />
-      </a></li>
-      <li><a href="#quest15">I heard that we will get lot of parse errors when we run
-      this tool first time. Hence we need to modify source code. Is it correct ?<br />
-      </a></li>
-      <li><a href="#quest16">I heard that Splint can generate some spurious errors ( not
-      genuine errors). Is it correct ?<br />
-      </a></li>
-      <li><a href="#quest17">When I build Splint I get the following errors.... Should I
-      be worried?<br />
-      </a></li>
-      <li><a href="#quest18">I just installed Splint on a new machine. I get a bunch of
-      errors during building when the test suite is run. When I look through the results,
-      it seems like Splint is not reporting any errors in the code it analyzes. What is
-      going on?<br />
-      </a></li>
       <li><a href="#quest18b">I get parse errors when I try to run Splint on code like
       #define MACROdebug(...) blahblah . Can I use variadic macros in Splint?<br />
       </a></li>
-      <li><a href="#quest20">I use realloc in my code. How can I get Splint in check this
-      code more effectively?<br />
-      </a></li>
-      <h4>Bugs</h4>
+      <a href="#bugs"><h4>Bugs</h4></a>
       <li><a href="#quest21">I think I've found a bug in Splint. What should I do?<br />
       </a></li>
       <li><a href="#quest22">Splint tells me that there is a bug and I should report it.
       What information should I send?<br />
       </a></li>
+           <a href="#adinfo"> <h4>Additional Information</h4></a>
       <li><a href="#quest23">My question isn't answered here. How can I get more
       information about Splint?<br />
       </a></li>
     </ol>
     <h3>Questions and Answers</h3>
     <ol>
-        <h4>General Questions About Splint</h4>
+        <a id="genquest" name="genquest"><h4>General Questions About Splint</h4>
       <li>
         <p><a id="quest1" name="quest1">What is the difference between Splint and
         LCLint?</a></p>
@@ -159,6 +162,7 @@
           <br />
         </blockquote>
       </li>
+      <a id="install" name="install"><h4>Installation</h4>
       <li>
         <p><a id="quest6" name="quest6">I downloaded the Splint .tgz file but can't
         figure out how to extract it. There is no 'z' option on the tar on my
@@ -196,92 +200,7 @@
           <p>your home directory. See the Splint manual for more information.</p>
         </blockquote>
       </li>
-            <h4>Usage</h4>
-
-      <li>
-        <p><a id="quest10" name="quest10">How does Splint handle const?</a></p>
-        <blockquote>
-          Splint doesn't interpret const (at all). See the manual section on modifies
-          checking (<a
-          href="http://www.splint.org/manual/html/sec7.html">http://www.splint.org/manual/html/sec7.html</a>).<br />
-          <br />
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest11" name="quest11">Why do I get a Warning when multiplying
-        different integer types? The C standard says this is ok. Why is this
-        wrong?</a></p>
-        <blockquote>
-          There are lots of things that the C spec allows and defines clearly, that
-          Splint will provide warnings for. It's not a question of it being "wrong", it's
-          a matter of it being likely to reveal a programming mistake.<br />
-          <br />
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest12" name="quest12">The C standard says that what I'm doing is
-        okay. Why does Splint give me a warning?</a></p>
-        <blockquote>
-          See the previous question.<br />
-          <br />
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest13" name="quest13">Splint complains if I ignore the return value
-        of scanf but not printf?</a></p>
-        <blockquote>
-          This is just a strategic decision --- we view ignoring the result of a scanf to
-          be more likely to reveal a problem with the code than ignoring the result of a
-          printf, even though strict programmers will want to check printf also.<br />
-          <br />
-           
-          <blockquote>
-            If you want stricter checking, use the flags +ansistrictlib, +posixstrictlib,
-            +unixstrictlib to select the strict versions of these libraries.<br />
-            <br />
-          </blockquote>
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest14" name="quest14">I develop code on an embedded system with a
-        compiler that uses nonstandard key words and data types. I would like to run
-        Splint on my code but these nonstandard keywords cause parse errors. What should
-        I do?</a></p>
-        <blockquote>
-          <p>You can often use -D to solve this problem.</p>
-          <p>If you just want to ignore a keyword, you can add -Dnonstandardkeyword= to
-          make the preprocessor eliminate the keyword, where nonstandardkeyword is the
-          name of the keyword. Similarly, you can use -Dspecialtype=int to make a custom
-          type parse as an int.</p>
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest14b" name="quest14b">How can I get Splint to recognize directory
-        trees and local source include directories? I've tried putting them in my path
-        but it doesn't seem to look beyond the current directory.</a></p>
-        <blockquote>
-          You can use -I to set the include path like you would with a compiler.<br />
-          <br />
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest15" name="quest15">I heard that we will get lot of parse errors
-        when we run this tool first time. Hence we need to modify source code. Is it
-        correct ?</a></p>
-        <blockquote>
-          Usually not, but Splint doesn't support all C99 extensions.<br />
-          <br />
-        </blockquote>
-      </li>
-      <li>
-        <p><a id="quest16" name="quest16">I heard that Splint can generate some spurious
-        errors ( not genuine errors). Is it correct ?</a></p>
-        <blockquote>
-          Yes, please see <a href="http://www.splint.org/">www.splint.org</a> for
-          details.<br />
-          <br />
-        </blockquote>
-      </li>
+      
       <li>
         <p><a id="quest17" name="quest17">When I build Splint I get the following
         error:</a></p>
@@ -325,17 +244,57 @@
           <br />
         </blockquote>
       </li>
-      <li>
-        <p><a id="quest18b" name="quest18b">I get parse errors when I try to run Splint
-        on code like #define MACROdebug(...) blahblah . Can I use variadic macros in
-        Splint?</a></p>
+           <a id="usage" name="usage"><h4>Usage</h4>
+  <li>
+        <p><a id="quest15" name="quest15">I heard that we will get lot of parse errors
+        when we run this tool first time. Hence we need to modify source code. Is it
+        correct ?</a></p>
         <blockquote>
-          Sorry, Splint does not yet support variadic macros. We hope to fix this in a
-          future release.<br />
+          Usually not, but Splint doesn't support all C99 extensions.<br />
           <br />
         </blockquote>
       </li>
       <li>
+        <p><a id="quest16" name="quest16">I heard that Splint can generate some spurious
+        errors ( not genuine errors). Is it correct ?</a></p>
+        <blockquote>
+          Yes, please see <a href="http://www.splint.org/">www.splint.org</a> for
+          details.<br />
+          <br />
+        </blockquote>
+      </li>
+      <li>
+        <p><a id="quest10" name="quest10">How does Splint handle const?</a></p>
+        <blockquote>
+          Splint doesn't interpret const (at all). See the manual section on modifies
+          checking (<a
+          href="http://www.splint.org/manual/html/sec7.html">http://www.splint.org/manual/html/sec7.html</a>).<br />
+          <br />
+        </blockquote>
+      </li>
+          <li>
+        <p><a id="quest14" name="quest14">I develop code on an embedded system with a
+        compiler that uses nonstandard key words and data types. I would like to run
+        Splint on my code but these nonstandard keywords cause parse errors. What should
+        I do?</a></p>
+        <blockquote>
+          <p>You can often use -D to solve this problem.</p>
+          <p>If you just want to ignore a keyword, you can add -Dnonstandardkeyword= to
+          make the preprocessor eliminate the keyword, where nonstandardkeyword is the
+          name of the keyword. Similarly, you can use -Dspecialtype=int to make a custom
+          type parse as an int.</p>
+        </blockquote>
+      </li>
+      <li>
+        <p><a id="quest14b" name="quest14b">How can I get Splint to recognize directory
+        trees and local source include directories? I've tried putting them in my path
+        but it doesn't seem to look beyond the current directory.</a></p>
+        <blockquote>
+          You can use -I to set the include path like you would with a compiler.<br />
+          <br />
+        </blockquote>
+      </li>
+       <li>
         <p><a id="quest20" name="quest20">I use realloc in my code. How can I get Splint
         in check this code more effectively?</a></p>
         <blockquote>
@@ -350,6 +309,53 @@
           href="http://www.splint.org/documentation/realloc.htm">http://www.splint.org/documentation/realloc.htm</a></p>
         </blockquote>
       </li>
+         <a id="warnerror" name="warnerror"><h4>Warnings and Errors</h4>
+      <li>
+        <p><a id="quest11" name="quest11">Why do I get a Warning when multiplying
+        different integer types? The C standard says this is ok. Why is this
+        wrong?</a></p>
+        <blockquote>
+          There are lots of things that the C spec allows and defines clearly, that
+          Splint will provide warnings for. It's not a question of it being "wrong", it's
+          a matter of it being likely to reveal a programming mistake.<br />
+          <br />
+        </blockquote>
+      </li>
+      <li>
+        <p><a id="quest12" name="quest12">The C standard says that what I'm doing is
+        okay. Why does Splint give me a warning?</a></p>
+        <blockquote>
+          See the previous question.<br />
+          <br />
+        </blockquote>
+      </li>
+      <li>
+        <p><a id="quest13" name="quest13">Splint complains if I ignore the return value
+        of scanf but not printf?</a></p>
+        <blockquote>
+          This is just a strategic decision --- we view ignoring the result of a scanf to
+          be more likely to reveal a problem with the code than ignoring the result of a
+          printf, even though strict programmers will want to check printf also.<br />
+          <br />
+           
+          <blockquote>
+            If you want stricter checking, use the flags +ansistrictlib, +posixstrictlib,
+            +unixstrictlib to select the strict versions of these libraries.<br />
+            <br />
+          </blockquote>
+        </blockquote>
+      </li>
+    <li><p><a id="quest18b" name="quest18b">I get parse errors when I try to run Splint
+        on code like #define MACROdebug(...) blahblah . Can I use variadic macros in
+        Splint?</a></p>
+        <blockquote>
+          Sorry, Splint does not yet support variadic macros. We hope to fix this in a
+          future release.<br />
+          <br />
+        </blockquote>
+      </li>
+
+     <a id="bugs" name="bugs"><h4>Bugs</h4>
       <li>
         <p><a id="quest21" name="quest21">I think I've found a bug in Splint. What should
         I do?</a></p>
@@ -373,6 +379,7 @@
           may be able to at least to offer you advice on working around the problem.</p>
         </blockquote>
       </li>
+     <a id="adinfo" name="adinfo"><h4>Additional Information</h4>
       <li>
         <p><a id="quest23" name="quest23">My question isn't answered here. How can I get
         more information about Splint?</a></p>
