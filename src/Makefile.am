@@ -153,7 +153,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/exprNode.h               Headers/quantifierNode.h \
           Headers/exprNodeList.h           Headers/quantifierNodeList.h \
           Headers/exprNodeSList.h          Headers/randomNumbers.h \
-          Headers/fcnNode.h                Headers/rangeTable.h \
+          Headers/fcnNode.h                \
           Headers/fcnNodeList.h            Headers/reader.h \
           Headers/fileId.h                 Headers/refTable-branch.h \
           Headers/fileIdList.h             Headers/renamingNode.h \
@@ -174,8 +174,8 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/general.h                Headers/sortList.h \
           Headers/genericTable.h           Headers/sortSet.h \
           Headers/globalList.h             Headers/sortSetList.h \
-          Headers/globalsClause.h          Headers/source.h \
-          Headers/globals.h                Headers/specialClauses.h \
+          Headers/globalsClause.h          \
+          Headers/globals.h                \
           Headers/globSet.h                Headers/sRef.h \
           Headers/gram.h                   Headers/sRefList.h \
           Headers/guardSet.h               Headers/sRefSet.h \
@@ -230,10 +230,11 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
           Headers/ltoken.h   Headers/splintMacros.nf  
 
+
 IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 
 ## Non-built files we need to distribute
-EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
+EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             flags.def cscanner.l flex.head flex.reset $(IFILES) \
  Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
 

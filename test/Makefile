@@ -725,7 +725,6 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./tq.h \
               ./metastate/global.h \
               ./suppressfile/test.h \
-              ./tests2.2/Makefile.hide \
               ./tests2.2/mbool.h \
               ./tests2.4/forward.h \
               ./tests2.4/hash.h \
@@ -751,10 +750,8 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./strchr/Makefile \
               ./tainted/Makefile \
               ./temp/Makefile \
-              ./tests2.2/Makefile.hide \
               ./tests2.2/Makefile \
               ./tests2.2/Makefile-tests2.2.os2 \
-              ./tests2.2a/Makefile \
               ./tests2.4/Makefile \
               ./tests2.4/Makefile-tests2.4.os2 \
               ./tests2.5/Makefile \
@@ -763,9 +760,14 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./Makefile.in \
               ./moreBufferTests2/Makefile \
               ./fileio/eof.mts ./fileio/file.mts ./fileio/filerw.mts ./mergestate/tainted.mts ./mergestate/taintednm.mts ./metastate/file.mts ./metastate/nullterminated.mts ./metastate/sockets.mts ./tainted/tainted-bad.mts ./tainted/tainted.mts ./fileio/file.xh ./fileio/filerw.xh ./mergestate/tainted.xh ./mergestate/taintednm.xh ./metastate/file.xh ./tainted/tainted.xh \
-               alias   alttypes ansireserved   \
-               db2.old-expect  outglob outparam preds  union.pp warnuse.old-expect \
-               ./tests2.5/badcomment  ./tests2.5/boolbad  ./tests2.5/booltest   ./tests2.5/uconstants 
+                db2.old-expect   union.pp warnuse.old-expect \
+               ./tests2.5/badcomment  ./tests2.5/boolbad  ./tests2.5/booltest   ./tests2.5/uconstants  loopexec.expect mergenull.expect shifts.expect \
+                unioninit.expect  unioninit.c utypes.c \
+                utypes.expect widestrings.expect  widestrings.c  \
+                functionmacro.expect functionmacro.c  info.c info.expect \
+                loopexec.c mergenull.c shifts.c \
+                manual.expect ./manual/Makefile \
+                ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c
 
 subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -795,7 +797,7 @@ top_distdir = ..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/./conditions $(distdir)/./db1 $(distdir)/./db2 $(distdir)/./db3 $(distdir)/./fileio $(distdir)/./for $(distdir)/./globalbufferannotation $(distdir)/./maxset $(distdir)/./mergestate $(distdir)/./metastate $(distdir)/./moreBufferTests $(distdir)/./moreBufferTests2 $(distdir)/./nullterminatedtest $(distdir)/./simplebufferConstraintTests $(distdir)/./sizeoftest $(distdir)/./strchr $(distdir)/./suppressfile $(distdir)/./tainted $(distdir)/./tclauses $(distdir)/./temp $(distdir)/./tests2.2 $(distdir)/./tests2.2a $(distdir)/./tests2.4 $(distdir)/./tests2.4/subdir $(distdir)/./tests2.5 $(distdir)/./warnuse
+	$(mkinstalldirs) $(distdir)/./conditions $(distdir)/./db1 $(distdir)/./db2 $(distdir)/./db3 $(distdir)/./fileio $(distdir)/./for $(distdir)/./globalbufferannotation $(distdir)/./manual $(distdir)/./maxset $(distdir)/./mergestate $(distdir)/./metastate $(distdir)/./moreBufferTests $(distdir)/./moreBufferTests2 $(distdir)/./nullterminatedtest $(distdir)/./simplebufferConstraintTests $(distdir)/./sizeoftest $(distdir)/./strchr $(distdir)/./suppressfile $(distdir)/./tainted $(distdir)/./tclauses $(distdir)/./temp $(distdir)/./tests2.2 $(distdir)/./tests2.2a $(distdir)/./tests2.4 $(distdir)/./tests2.4/subdir $(distdir)/./tests2.5 $(distdir)/./warnuse
 	@for file in $(DISTFILES); do \
 	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
