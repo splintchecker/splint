@@ -47,6 +47,12 @@ static ynm
 static /*@exposed@*/ sRef dependentReference (sRef p_sr);
 static bool canLoseLocalReference (sRef p_sr, fileloc p_loc) ;
 
+/* added DRL 8/19/200- */
+static void
+checkTransferNullTerminatedAux (sRef p_fref, exprNode p_fexp,
+				/*@unused@*/ bool p_ffix,
+		      sRef p_tref, exprNode p_texp, /*@unused@*/ bool p_tfix,
+		      fileloc p_loc, transferKind p_transferType);
 /*
 ** returns the most specific alkind
 */
@@ -3765,7 +3771,7 @@ bool canLoseLocalReference (sRef sr, fileloc loc)
 
 /*this is modeled after checkTransferNullAux */
 
- static void
+static void
 checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
 				/*@unused@*/ bool ffix,
 		      sRef tref, exprNode texp, /*@unused@*/ bool tfix,
@@ -3819,7 +3825,7 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
               if (sRef_isPossiblyNullTerminated (fref)) {
 	        if (lloptgenerror
 		  (FLG_NULLTERMINATEDWARNING, 
-		  message ("%s %q initialized to %s value: %q",
+		  message ("%s %q initialized to %q value: %q",
 			    sRef_getScopeName (tref),
 			    sRef_unparse (tref),
 			    sRef_ntMessage (fref),
@@ -3835,7 +3841,7 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
 	      
 	        if (lloptgenerror
 		  (FLG_NULLTERMINATED, 
-		  message ("%s %q initialized to %s value: %q",
+		  message ("%s %q initialized to %q value: %q",
 			    sRef_getScopeName (tref),
 			    sRef_unparse (tref),
 			    sRef_ntMessage (fref),
@@ -3858,10 +3864,11 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
 
               if (sRef_isPossiblyNullTerminated (fref))
 	      {
+		
 	        if (lloptgenerror
 		  (FLG_NULLTERMINATEDWARNING, 
 		  message ("%q storage %q%s: %q",
-			   cstring_capitalize (sRef_ntMessage (fref)),
+			   /*@i777@*/cstring_capitalize (sRef_ntMessage (fref)),
 			   sRef_unparseOpt (fref),
 			   transferNTMessage (transferType), 
 			   generateText (fexp, texp, tref, transferType)),
@@ -3876,7 +3883,7 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
 	        if (lloptgenerror
 		  ((transferType == TT_FCNPASS) ? FLG_NULLTERMINATED: FLG_NULLTERMINATED,
 		  message ("%q storage %q%s: %q",
-			   cstring_capitalize (sRef_ntMessage (fref)),
+			   /*@i77@*/cstring_capitalize (sRef_ntMessage (fref)),
 			   sRef_unparseOpt (fref),
 			   transferNTMessage (transferType), 
 			   generateText (fexp, texp, tref, transferType)),

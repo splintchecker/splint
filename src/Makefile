@@ -44,7 +44,7 @@ include Makefile.sys
 ### (can't be 1 unless you have lclint already!)
 ###
 
-CHECK = 0
+CHECK = 0 ### set to 1
 
 ###
 ### source files
@@ -235,7 +235,7 @@ endif
 	@echo '//  Updating version information'
 	@$(MAKE) -e updateversion
 	@echo '//  Updating local constants'
-	@$(MAKE) -e localconstants
+###	@$(MAKE) -e localconstants
 	@echo '// '
 	@echo '//  Compiling:'
 	@echo '// '

@@ -46,6 +46,9 @@ endif
 
 DEBUGFLAGS = -DYYDEBUG=1 -DYYIMPURE=1 # don't change this
 
+BISON = /af10/evans/bison-1.28/bin/bison
+FLEX = /usr/bin/flex
+
 ### bison flags
 
 YFLAGS          = -v -t -d
