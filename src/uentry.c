@@ -11415,3 +11415,19 @@ metaStateConstraintList uentry_getMetaStateEnsures (uentry e)
   llassert (uentry_isValid (e) && uentry_isFunction (e));
   return functionConstraint_getMetaStateConstraints (e->info->fcn->postconditions);
 }
+
+# ifdef DEBUGSPLINT
+
+/*
+** For debugging only
+*/
+
+void uentry_checkValid (uentry ue)
+{
+  if (uentry_isValid (ue))
+    {
+      (void) sRef_isCompletelyReasonable (ue->sref);
+    }
+}
+
+# endif

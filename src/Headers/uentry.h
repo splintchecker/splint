@@ -671,6 +671,14 @@ extern void uentry_setPostconditions (uentry p_ue, /*@only@*/ functionConstraint
 extern void uentry_setPreconditions (uentry p_ue, /*@only@*/ functionConstraint p_preconditions);
 /*end mods*/
 
+/*
+** For debugging only
+*/
+
+# ifdef DEBUGSPLINT
+extern void uentry_checkValid (uentry p_ue) /*@modifies g_errorstream@*/ ; 
+# endif
+
 # else
 # error "Multiple include"
 # endif

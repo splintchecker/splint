@@ -408,6 +408,10 @@ extern /*@exposed@*/ sRef usymtab_lookupGlobalMarker (void) /*@globals internalS
 extern void usymtab_addReallyForceMustAlias (/*@exposed@*/ sRef p_s, /*@exposed@*/ sRef p_al) /*@modifies internalState@*/ ;
 extern int usymtab_getCurrentDepth (void) /*@globals internalState@*/ ;
 
+# ifdef DEBUGSPLINT
+extern void usymtab_checkAllValid (void) /*@modifies g_errorstream@*/ ; 
+# endif
+
 # else
 # error "Multiple include"
 # endif

@@ -89,6 +89,10 @@ sRefTable_add (sRefTable s, /*@owned@*/ sRef el)
 void
 sRefTable_clear (sRefTable s)
 {
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
+
   if (sRefTable_isDefined (s))
     {
       int i;
@@ -103,6 +107,10 @@ sRefTable_clear (sRefTable s)
       s->nspace += s->entries;
       s->entries = 0;
     }
+
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
 }
 
 static int sRefTable_size (sRefTable s)

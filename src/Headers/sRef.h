@@ -151,6 +151,7 @@ extern void sRef_setDefNull (sRef p_s, fileloc p_loc);
 
 extern /*@nullwhentrue@*/ bool sRef_isInvalid (sRef p_s) /*@*/ ;
 extern /*@falsewhennull@*/ bool sRef_isValid (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isReasonable (sRef p_s) /*@*/ ;
 
 /*@constant null sRef sRef_undefined; @*/
 # define sRef_undefined    ((sRef) NULL)
@@ -699,6 +700,10 @@ extern void
 sRef_aliasSetCompleteAlkParam (void (p_predf) (sRef, alkind, fileloc), sRef p_s, 
 			       alkind p_kind, fileloc p_loc)
      /*@modifies p_s@*/ ;
+
+# ifdef DEBUGSPLINT
+extern void sRef_checkCompletelyReasonable (sRef p_s) /*@*/ ;
+# endif
 
 # else
 # error "Multiple include"

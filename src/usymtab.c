@@ -1313,7 +1313,6 @@ void
   /*@modifies utab, globtab, e@*/
 {
   sRef old = uentry_getSref (e);
-
   
   if (sRef_isType (old))
     {
@@ -2327,6 +2326,8 @@ usymtab_enterFunctionScope (uentry fcn)
 {
   usymtab t = usymtab_create (US_NORMAL, utab, TRUE);
 
+  DPRINTF (("Enter function: %s", uentry_unparse (fcn)));
+
   if (utab->lexlevel != fileScope)
     {
       if (utab->lexlevel > fileScope)
@@ -2424,6 +2425,9 @@ usymtab_enterFunctionScope (uentry fcn)
     } end_globSet_allElements;
 
   DPRINTF (("Globs after: %s", globSet_unparse (uentry_getGlobs (fcn))));
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
 }
 
 static void
@@ -4338,6 +4342,10 @@ usymtab_quietExitScope (fileloc loc)
   usymtab_freeLevel (utab);
 
   utab = t;
+
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
 }
 
 /*
@@ -4384,32 +4392,34 @@ void usymtab_exitScope (exprNode expr)
     }
   
   if (utab->kind == US_TBRANCH || utab->kind == US_FBRANCH
-      || utab->kind == US_CBRANCH || utab->kind == US_SWITCH) {
-   
-    if (context_inMacro ()) {
-      /* evs 2000-07-25 */
-      /* Unparseable macro may end inside nested scope.  Deal with it. */
-      
-      llerror (FLG_SYNTAX, 
-	       message ("Problem parsing macro body of %s (unbalanced scopes). "
-			"Attempting to recover, recommend /*@notfunction@*/ before "
-			"macro definition.", 
-			context_inFunctionName ()));
-      
-      while (utab->kind == US_TBRANCH
-	     || utab->kind == US_FBRANCH
-	     || utab->kind == US_CBRANCH
-	     || utab->kind == US_SWITCH) 
+      || utab->kind == US_CBRANCH || utab->kind == US_SWITCH) 
+    {
+      if (context_inMacro ()) 
 	{
-	  utab = utab->env;
-	  llassert (utab != GLOBAL_ENV);
-	}
-    } else {
-      llcontbug (message ("exitScope: in branch: %q", usymtab_unparseStack ()));
-      /*@-branchstate@*/ 
-    } /*@=branchstate@*/
-  }
-
+	  /* evs 2000-07-25 */
+	  /* Unparseable macro may end inside nested scope.  Deal with it. */
+	  
+	  llerror (FLG_SYNTAX, 
+		   message ("Problem parsing macro body of %s (unbalanced scopes). "
+			    "Attempting to recover, recommend /*@notfunction@*/ before "
+			    "macro definition.", 
+			    context_inFunctionName ()));
+	  
+	  while (utab->kind == US_TBRANCH
+		 || utab->kind == US_FBRANCH
+		 || utab->kind == US_CBRANCH
+		 || utab->kind == US_SWITCH) 
+	    {
+	      utab = utab->env;
+	      llassert (utab != GLOBAL_ENV);
+	    }
+	} else 
+	  {
+	    llcontbug (message ("exitScope: in branch: %q", usymtab_unparseStack ()));
+	    /*@-branchstate@*/ 
+	  } /*@=branchstate@*/
+    }
+  
   /*
   ** check all variables in scope were used
   */
@@ -4435,7 +4445,7 @@ void usymtab_exitScope (exprNode expr)
   ** NOTE: note for exiting paramsScope, since checkReturn should be
   ** called first.
   */
-
+  
   if (!mustReturn && (usymtab_lexicalLevel () > functionScope))
     {
       /*
@@ -4454,7 +4464,6 @@ void usymtab_exitScope (exprNode expr)
       uentryList params = context_getParams ();
       globSet    globs = context_getUsedGlobs ();
 
-                  
       uentryList_elements (params, ue)
 	{
 	  uentry_fixupSref (ue);
@@ -4462,9 +4471,12 @@ void usymtab_exitScope (exprNode expr)
 
       clearFunctionTypes ();
 
-      
+      DPRINTF (("Fixing up globals: %s", globSet_unparse (globs)));
+
       globSet_allElements (globs, el)
 	{
+	  DPRINTF (("Fix: %s", sRef_unparseDebug (el)));
+
 	  if (sRef_isCvar (el))
 	    {
 	      uentry current;
@@ -4482,13 +4494,17 @@ void usymtab_exitScope (exprNode expr)
 	      
 	      if (uentry_isVariable (current))
 		{
+		  DPRINTF (("Fixup: %s", uentry_unparse (current)));
 		  uentry_fixupSref (current);
 		}
 	      else
 		{
+		  DPRINTF (("Clear: %s", uentry_getSref (current)));
 		  sRef_clearDerived (uentry_getSref (current));
 		}
 	    }
+
+	  sRef_clearDerived (el); /* evans 2002-03-14 - this is the likely source of many crashes! */
 	} end_globSet_allElements;
     }
   
@@ -4500,6 +4516,11 @@ void usymtab_exitScope (exprNode expr)
       /*@i@*/ utab = ctab;
     /*@-branchstate@*/ } /*@=branchstate@*/
   /*@-globstate@*/
+
+
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
 /*@i523@*/ }
 /*@=globstate@*/
 
@@ -5010,6 +5031,7 @@ uentry usymtab_lookupGlob (cstring k)
   if (uentry_isPriv (ce))
     llfatalbug (message ("usymtab_lookup: private: %s", k));
 
+  DPRINTF (("Lookup global: %s", uentry_unparseFull (ce)));
   return ce;
 }
 
@@ -5018,7 +5040,7 @@ uentry usymtab_lookupGlob (cstring k)
   /*@globals globtab@*/
 {
   uentry ce = usymtab_lookupAux (globtab, k);
-
+  DPRINTF (("Lookup global: %s", uentry_unparseFull (ce)));
   return ce;
 }
 
@@ -5030,6 +5052,7 @@ uentry usymtab_lookupEither (cstring k)
   if (uentry_isUndefined (ce))
     llfatalerror (message ("usymtab_lookup: not found: %s", k));
 
+  DPRINTF (("Lookup either: %s", uentry_unparseFull (ce)));
   return ce;
 }
 
@@ -6318,4 +6341,37 @@ void usymtab_checkDistinctName (uentry e, int scope)
 
   return uentry_getSref (ue);
 }
+
+
+# ifdef DEBUGSPLINT
+/*
+** For debugging only
+*/
+
+void
+usymtab_checkAllValid () /*@globals utab@*/ 
+{
+  usymtab tab = utab;
+
+  while (tab != GLOBAL_ENV)
+    {
+      int i;
+
+      for (i = 0; i < utab->nentries; i++)
+	{
+	  uentry e = utab->entries[i];
+	  
+	  uentry_checkValid (e);
+	}
+
+      aliasTable_checkValid (tab->aliases);
+      tab = tab->env;
+    }
+}
+# endif
+
+
+
+
+
 

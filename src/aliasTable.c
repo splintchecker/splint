@@ -824,5 +824,22 @@ aliasTable_checkGlobs (aliasTable t)
     } end_aliasTable_elements;
 }
 
+# ifdef DEBUGSPLINT
 
+/*
+** For debugging only
+*/
 
+void aliasTable_checkValid (aliasTable t)
+{
+  aliasTable_elements (t, key, value)
+    {
+      (void) sRef_isCompletelyReasonable (key);
+
+      sRefSet_elements (value, sr) 
+	{
+	  (void) sRef_isCompletelyReasonable (sr);
+	} end_sRefSet_elements ;
+    } end_aliasTable_elements ;
+}
+# endif

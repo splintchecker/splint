@@ -77,6 +77,14 @@ extern aliasTable aliasTable_levelUnionSeq (/*@returned@*/ aliasTable p_t1,
 /*@constant int aliasTableBASESIZE; @*/
 # define aliasTableBASESIZE MIDBASESIZE
 
+/*
+** For debugging only
+*/
+
+# ifdef DEBUGSPLINT
+extern void aliasTable_checkValid (aliasTable) /*@modifies g_errorstream@*/ ;
+# endif
+
 # else
 # error "Multiple include"
 # endif

@@ -23,6 +23,11 @@ extern int bool_compare (bool p_b1, bool p_b2) /*@*/ ;
 extern bool bool_fromInt (int p_i) /*@*/ ;
 extern int bool_toInt (bool p_b) /*@*/ ;
 
+extern bool bool_isReasonable (/*@sef@*/ bool p_b) /*@*/ ;
+/*@-boolcompare@*/
+# define bool_isReasonable(b) (((b) == TRUE) || ((b) == FALSE))
+/*@=boolcompare@*/
+
 # define bool_unparse(b)   (cstring_makeLiteralTemp ((b) ? "true" : "false" ))
 # define bool_dump(b)      (cstring_makeLiteralTemp ((b) ? "1" : "0" ))
 # define bool_not(b)       ((b) ? FALSE : TRUE)

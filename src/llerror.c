@@ -1404,10 +1404,16 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   llflush ();
   
+  /*
+  ** This is confusing, and hardly ever useful.
+
   if (errno != 0)
     {
       perror ("Possible system error diagnostic: ");
     }
+
+  **
+  */
 
   printBugReport ();
   llflush ();
@@ -1970,22 +1976,41 @@ void displayScanContinue (/*@temp@*/ cstring msg)
 {
   if (context_getFlag (FLG_SHOWSCAN))
     {
-      llassert (s_scanOpen);
-      fprintf (g_messagestream, "%s", cstring_toCharsSafe (msg));
-      (void) fflush (g_messagestream);
+      if (s_scanOpen) 
+	{
+	  fprintf (g_messagestream, "%s", cstring_toCharsSafe (msg));
+	  (void) fflush (g_messagestream);
+	}
+      else
+	{
+	  /*
+	  ** Don't call bug recursively
+	  */
+
+	  fprintf (stderr, "*** Bug: scan continue scan not open\n");
+	}
     }
 }
 
 void displayScanClose (void)
 {
-  llassert (s_scanOpen);
-
-  if (context_getFlag (FLG_SHOWSCAN))
+  if (s_scanOpen)
     {
-      fprintf (g_messagestream, " >\n");
-      (void) fflush (g_messagestream);
+      if (context_getFlag (FLG_SHOWSCAN))
+	{
+	  fprintf (g_messagestream, " >\n");
+	  (void) fflush (g_messagestream);
+	}
     }
-
+  else
+    {
+      /*
+      ** Don't call bug recursively
+      */
+      
+      fprintf (stderr, "*** Bug: scan close scan not open\n");
+    }
+  
   s_scanOpen = FALSE;
 }
 

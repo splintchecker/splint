@@ -3952,7 +3952,9 @@ exprNode_functionCall (/*@only@*/ exprNode f, /*@only@*/ exprNodeList args)
 {
   ctype t;
 
-  setCodePoint ();
+# ifdef DEBUGSPLINT
+  usymtab_checkAllValid ();
+# endif
 
   if (exprNode_isUndefined (f))
     {

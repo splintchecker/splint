@@ -35,6 +35,9 @@ typedef enum {
   SS_LAST
 } sstate;
 
+extern bool sstate_isValid (/*@sef@*/ sstate) /*@*/ ;
+# define sstate_isValid(s) ((s) >= SS_UNKNOWN && (s) <= SS_LAST)
+
 typedef enum { 
   SCNONE, 
   SCEXTERN, 
@@ -117,6 +120,9 @@ extern bool exkind_isUnknown (exkind p_e) /*@*/ ;
 
 extern bool exkind_isKnown (/*@sef@*/ exkind p_e) /*@*/ ;
 # define exkind_isKnown(e)      ((e) != XO_UNKNOWN && (e) != XO_NORMAL)
+
+extern bool exkind_isValid (/*@sef@*/ exkind p_e) /*@*/ ;
+# define exkind_isValid(e)      ((e) >= XO_UNKNOWN && (e) <= XO_OBSERVER)
 
 extern bool alkind_isValid (/*@sef@*/ alkind p_a) /*@*/ ;
 # define alkind_isValid(a) ((a) >= AK_UNKNOWN && (a) <= AK_LOCAL)

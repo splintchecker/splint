@@ -93,10 +93,78 @@ static void sRef_resetAliasKind (/*@notnull@*/ sRef s) /*@modifies s->aliaskind@
     }
 }
 
+# ifdef DEBUGSPLINT
+extern void sRef_checkCompletelyReasonable (sRef s) /*@*/ 
+{
+  DPRINTF (("Check sRef: [%p] %s / %s", s, sRef_unparse (s),
+	    sRefSet_unparse (sRef_derivedFields (s))));
+
+  if (sRef_isReasonable (s))
+    {
+      sRefSet_elements (s->deriv, el)
+	{
+	  llassert (el != s);
+	  sRef_checkCompletelyReasonable (el);
+	} end_sRefSet_elements ;
+    }
+}
+# endif
+
+/*@falsewhennull@*/ bool sRef_isReasonable (sRef s) /*@*/
+{
+  if (sRef_isValid (s))
+    {
+# ifdef DEBUGSPLINT
+      if (!bool_isReasonable (s->safe)
+	  || !bool_isReasonable (s->modified)
+	  || !bool_isReasonable (s->immut))
+	{
+	  llcontbug (message ("Unreasonable sRef [%p]", s));
+	  return FALSE;
+	}
+
+      if (!sstate_isValid (s->defstate))
+	{
+	  llcontbug (message ("Unreasonable sRef [%p]", s));
+	  return FALSE;
+	}
+
+      if (!nstate_isValid (s->nullstate))
+	{
+	  llcontbug (message ("Unreasonable sRef [%p]", s));
+	  return FALSE;
+	}
+
+      if (!alkind_isValid (s->aliaskind)
+	  || !alkind_isValid (s->oaliaskind))
+	{
+	  llcontbug (message ("Unreasonable sRef [%p]", s));
+	  return FALSE;
+	}
+
+      if (!exkind_isValid (s->expkind)
+	  || !exkind_isValid (s->oexpkind))
+	{
+	  llcontbug (message ("Unreasonable sRef [%p]", s));
+	  return FALSE;
+	}
+# endif
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static /*@nullwhentrue@*/ bool sRef_isUnreasonable (sRef s) /*@*/
+{
+  return (!sRef_isReasonable (s));
+}
+
 static void sRef_checkMutable (/*@unused@*/ sRef s)
 {
   /*@i235@*/
-  if (sRef_isValid (s) && s->immut)
+  if (sRef_isReasonable (s) && s->immut)
     {
       llcontbug (message ("Modification to sRef marked immutable: %q", 
 			  sRef_unparseFull (s)));
@@ -251,7 +319,7 @@ static void sRef_checkValidAux (sRef s, sRefSet checkedsofar)
 {
   llassert (FALSE);
 
-  if (!sRef_isValid (s)) return;
+  if (!sRef_isReasonable (s)) return;
 
   if (sRefSet_containsSameObject (checkedsofar, s))
     {
@@ -438,7 +506,7 @@ sRef_isRecursiveField (sRef s)
 	  fieldname = sRef_getField (s);
 	  base = sRef_getBase (s);
 	  
-	  while (sRef_isValid (base))
+	  while (sRef_isReasonable (base))
 	    {
 	      if (sRef_isField (base))
 		{
@@ -461,8 +529,8 @@ sRef_addDeriv (/*@notnull@*/ sRef s, /*@notnull@*/ /*@exposed@*/ sRef t)
 {
   if (!context_inProtectVars () 
       && !protectDerivs
-      && sRef_isValid (s)
-      && sRef_isValid (t)
+      && sRef_isReasonable (s)
+      && sRef_isReasonable (t)
       && !sRef_isConst (s))
     {
       int sd = sRef_depth (s);
@@ -507,6 +575,10 @@ sRef_addDeriv (/*@notnull@*/ sRef s, /*@notnull@*/ /*@exposed@*/ sRef t)
 		}
 	      else
 		{
+		  DPRINTF (("Add deriv: [%p] %s / [%p] %s",
+			    s, sRef_unparse (s),
+			    t, sRef_unparse (t)));
+		  
 		  s->deriv = sRefSet_insert (s->deriv, t);
 		}
 	    }
@@ -525,7 +597,7 @@ sRef_addDeriv (/*@notnull@*/ sRef s, /*@notnull@*/ /*@exposed@*/ sRef t)
 bool
 sRef_deepPred (bool (predf) (sRef), sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if ((*predf)(s)) return TRUE;
 
@@ -555,7 +627,7 @@ bool sRef_modInFunction (void)
 
 void sRef_setStateFromType (sRef s, ctype ct)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (ctype_isUser (ct))
 	{
@@ -578,7 +650,7 @@ void sRef_setStateFromType (sRef s, ctype ct)
 
 static void sRef_setTypeState (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setStateFromType (s, s->type);
     }
@@ -587,21 +659,21 @@ static void sRef_setTypeState (sRef s)
 static bool
   sRef_hasAliasInfoLoc (sRef s)
 {
-  return (sRef_isValid (s) && (s->aliasinfo != NULL)
+  return (sRef_isReasonable (s) && (s->aliasinfo != NULL)
 	  && (fileloc_isDefined (s->aliasinfo->loc)));
 }
 
 static /*@falsewhennull@*/ bool
 sRef_hasStateInfoLoc (sRef s)
 {
-  return (sRef_isValid (s) && (s->definfo != NULL) 
+  return (sRef_isReasonable (s) && (s->definfo != NULL) 
 	  && (fileloc_isDefined (s->definfo->loc)));
 }
 
 static /*@falsewhennull@*/ bool
 sRef_hasExpInfoLoc (sRef s)
 {
-  return (sRef_isValid (s) 
+  return (sRef_isReasonable (s) 
 	  && (s->expinfo != NULL) && (fileloc_isDefined (s->expinfo->loc)));
 }
 
@@ -610,7 +682,7 @@ static /*@observer@*/ /*@unused@*/ stateInfo sRef_getInfo (sRef s, cstring key)
 {
   stateValue sv;
   
-  if (!sRef_isValid (s)) {
+  if (!sRef_isReasonable (s)) {
     return stateInfo_undefined;
   }
   
@@ -628,21 +700,21 @@ static /*@observer@*/ /*@unused@*/ stateInfo sRef_getInfo (sRef s, cstring key)
 static bool
 sRef_hasNullInfoLoc (sRef s)
 {
-  return (sRef_isValid (s) && s->nullinfo != NULL
+  return (sRef_isReasonable (s) && s->nullinfo != NULL
 	  && (fileloc_isDefined (s->nullinfo->loc)));
 }
 
 bool
 sRef_hasAliasInfoRef (sRef s)
 {
-  return (sRef_isValid (s) && (s->aliasinfo != NULL) 
-	  && (sRef_isValid (s->aliasinfo->ref)));
+  return (sRef_isReasonable (s) && (s->aliasinfo != NULL) 
+	  && (sRef_isReasonable (s->aliasinfo->ref)));
 }
 
 static /*@observer@*/ fileloc
 sRef_getAliasInfoLoc (/*@exposed@*/ sRef s)
 {
-  llassert (sRef_isValid (s) && s->aliasinfo != NULL
+  llassert (sRef_isReasonable (s) && s->aliasinfo != NULL
 	    && (fileloc_isDefined (s->aliasinfo->loc)));
   return (s->aliasinfo->loc);
 }
@@ -650,7 +722,7 @@ sRef_getAliasInfoLoc (/*@exposed@*/ sRef s)
 static /*@observer@*/ fileloc
 sRef_getStateInfoLoc (/*@exposed@*/ sRef s)
 {
-  llassert (sRef_isValid (s) && s->definfo != NULL 
+  llassert (sRef_isReasonable (s) && s->definfo != NULL 
 	    && (fileloc_isDefined (s->definfo->loc)));
   return (s->definfo->loc);
 }
@@ -658,7 +730,7 @@ sRef_getStateInfoLoc (/*@exposed@*/ sRef s)
 static /*@observer@*/ fileloc
 sRef_getExpInfoLoc (/*@exposed@*/ sRef s)
 {
-  llassert (sRef_isValid (s) && s->expinfo != NULL 
+  llassert (sRef_isReasonable (s) && s->expinfo != NULL 
 	    && (fileloc_isDefined (s->expinfo->loc)));
   return (s->expinfo->loc);
 }
@@ -666,7 +738,7 @@ sRef_getExpInfoLoc (/*@exposed@*/ sRef s)
 static /*@observer@*/ fileloc
 sRef_getNullInfoLoc (/*@exposed@*/ sRef s)
 {
-  llassert (sRef_isValid (s) && s->nullinfo != NULL 
+  llassert (sRef_isReasonable (s) && s->nullinfo != NULL 
 	    && (fileloc_isDefined (s->nullinfo->loc)));
   return (s->nullinfo->loc);
 }
@@ -674,7 +746,7 @@ sRef_getNullInfoLoc (/*@exposed@*/ sRef s)
 /*@observer@*/ sRef
   sRef_getAliasInfoRef (/*@temp@*/ sRef s)
 {
-  llassert (sRef_isValid (s) && s->aliasinfo != NULL);
+  llassert (sRef_isReasonable (s) && s->aliasinfo != NULL);
   return (s->aliasinfo->ref);
 }
 
@@ -753,6 +825,7 @@ void sRef_exitFunctionScope ()
     {
       DPRINTF (("Exit function scope."));
       sRefTable_clear (allRefs);
+      DPRINTF (("Exit function scope done."));
       inFunction = FALSE;
     }
   else
@@ -780,7 +853,7 @@ sRef_fixConj (/*@notnull@*/ sRef s)
 	s = sRef_getConjA (s);
       } while (sRef_isConj (s));
       
-      llassert (sRef_isValid (s));
+      llassert (sRef_isReasonable (s));
       return s; /* don't need to ref */
     }
   else
@@ -795,7 +868,7 @@ sRef_isExternallyVisibleAux (sRef s)
   bool res = FALSE;
   sRef base = sRef_getRootBase (s);
 
-  if (sRef_isValid (base))
+  if (sRef_isReasonable (base))
     {
       res = sRef_isParam (base) || sRef_isFileOrGlobalScope (base) || sRef_isExternal (base);
     }
@@ -815,7 +888,7 @@ sRef_getBaseUentry (sRef s)
   sRef base = sRef_getRootBase (s);
   uentry res = uentry_undefined;
   
-  if (sRef_isValid (base))
+  if (sRef_isReasonable (base))
     {
       switch (base->kind)
 	{
@@ -848,7 +921,7 @@ sRef_updateSref (sRef s)
   sRef ret;
   sRef res;
 
-  if (!sRef_isValid (s)) return sRef_undefined;
+  if (!sRef_isReasonable (s)) return sRef_undefined;
   
   switch (s->kind)
     {
@@ -978,7 +1051,7 @@ sRef_updateSref (sRef s)
 uentry
 sRef_getUentry (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   switch (s->kind)
     {
@@ -1008,7 +1081,7 @@ sRef_getUentry (sRef s)
 int
 sRef_getParam (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   llassert (s->kind == SK_PARAM);
 
   return s->info->paramno;
@@ -1017,12 +1090,12 @@ sRef_getParam (sRef s)
 bool
 sRef_isModified (sRef s)
 {
-    return (!sRef_isValid (s) || s->modified);
+    return (!sRef_isReasonable (s) || s->modified);
 }
 
 void sRef_setModified (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->modified = TRUE;
 
@@ -1168,7 +1241,7 @@ bool sRef_checkModifyVal (sRef s, sRefSet sl)
 
 static bool sRef_checkModify (sRef s, sRefSet sl)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   switch (s->kind)
     {
@@ -1293,7 +1366,7 @@ cstring sRef_stateAltVerb (sRef s)
 static 
 bool sRef_doModifyVal (sRef s, sRefSet sl)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   
   switch (s->kind)
@@ -1382,7 +1455,7 @@ bool sRef_doModifyVal (sRef s, sRefSet sl)
 static 
 bool sRef_doModify (sRef s, sRefSet sl)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   
   switch (s->kind)
     {
@@ -1464,8 +1537,8 @@ static /*@exposed@*/ sRef
 {
   llassert (sRef_similar (s1, s2));
   
-  if (!sRef_isValid (s1)) return s1;
-  if (!sRef_isValid (s2)) return s1;
+  if (!sRef_isReasonable (s1)) return s1;
+  if (!sRef_isReasonable (s2)) return s1;
 
   sRef_combineDefState (s1, s2);
   sRef_combineNullState (s1, s2);
@@ -1960,8 +2033,13 @@ sRef_includedBy (sRef small, sRef big)
 bool
 sRef_realSame (sRef s1, sRef s2)
 {
-  if (s1 == s2) return TRUE;  
-  if (sRef_isInvalid (s1) || sRef_isInvalid (s2)) return FALSE;
+  if (s1 == s2) return TRUE;
+  
+  if (sRef_isUnreasonable (s1) 
+      || sRef_isUnreasonable (s2)) 
+    {
+      return FALSE;
+    }
 
   switch (s1->kind)
     {
@@ -3114,7 +3192,7 @@ cstring sRef_unconstrainedName (sRef s)
 
 bool sRef_isUnconstrained (sRef s) 
 {
-  return (sRef_isValid(s) && s->kind == SK_UNCONSTRAINED);
+  return (sRef_isReasonable(s) && s->kind == SK_UNCONSTRAINED);
 }
 
 static /*@dependent@*/ /*@notnull@*/ sRef 
@@ -3170,14 +3248,14 @@ static /*@dependent@*/ /*@notnull@*/ sRef
 
 int sRef_lexLevel (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef conj;
 
       conj = sRef_fixConj (s);
       s = sRef_getRootBase (conj);
       
-      if (sRef_isValid (s) && s->kind == SK_CVAR)
+      if (sRef_isReasonable (s) && s->kind == SK_CVAR)
 	{
 	  return (s->info->cvar->lexlevel);
 	}
@@ -3195,7 +3273,7 @@ sRef_makeGlobal (usymId l, ctype ct, /*@only@*/ stateInfo stinfo)
 void
 sRef_setParamNo (sRef s, int l)
 {
-  llassert (sRef_isValid (s) && s->kind == SK_PARAM);
+  llassert (sRef_isReasonable (s) && s->kind == SK_PARAM);
   s->info->paramno = l;
   llassert (l >= -1);
 }
@@ -3224,7 +3302,7 @@ sRef_isIndexKnown (sRef arr)
 {
   bool res;
 
-  llassert (sRef_isValid (arr));
+  llassert (sRef_isReasonable (arr));
   arr = sRef_fixConj (arr);
   
   llassert (arr->kind == SK_ARRAYFETCH);  
@@ -3237,7 +3315,7 @@ sRef_getIndex (sRef arr)
 {
   int result;
 
-  llassert (sRef_isValid (arr));
+  llassert (sRef_isReasonable (arr));
   arr = sRef_fixConj (arr);
 
   llassert (arr->kind == SK_ARRAYFETCH);  
@@ -3312,10 +3390,10 @@ cstring sRef_getField (sRef s)
 {
   cstring res;
 
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   s = sRef_fixConj (s);
 
-  llassertprint (sRef_isValid (s) && (s->kind == SK_FIELD),
+  llassertprint (sRef_isReasonable (s) && (s->kind == SK_FIELD),
 		 ("s = %s", sRef_unparseDebug (s)));
 
   res = s->info->field->field;
@@ -3488,7 +3566,7 @@ sRef sRef_makeExternal (sRef t)
 {
   sRef s = sRef_newRef ();
 
-  llassert (sRef_isValid (t));
+  llassert (sRef_isReasonable (t));
 
   s->kind = SK_EXTERNAL;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
@@ -3501,7 +3579,7 @@ sRef sRef_makeExternal (sRef t)
 
 /*@dependent@*/ sRef sRef_makeDerived (/*@exposed@*/ sRef t)
 {
-  if (sRef_isValid (t))
+  if (sRef_isReasonable (t))
     {
       sRef s = sRef_newRef ();
       
@@ -3529,8 +3607,8 @@ sRef sRef_makeExternal (sRef t)
 void
 sRef_mergeStateQuiet (sRef res, sRef other)
 {
-  llassert (sRef_isValid (res));
-  llassert (sRef_isValid (other));
+  llassert (sRef_isReasonable (res));
+  llassert (sRef_isReasonable (other));
 
   res->modified = res->modified || other->modified;
   res->safe = res->safe && other->safe;
@@ -3589,8 +3667,8 @@ sRef_mergeStateQuietReverse (/*@dependent@*/ sRef res, /*@dependent@*/ sRef othe
 {
   bool changed = FALSE;
 
-  llassert (sRef_isValid (res));
-  llassert (sRef_isValid (other));
+  llassert (sRef_isReasonable (res));
+  llassert (sRef_isReasonable (other));
   sRef_checkMutable (res);
 
   if (res->kind != other->kind)
@@ -3678,7 +3756,7 @@ sRef_mergeStateQuietReverse (/*@dependent@*/ sRef res, /*@dependent@*/ sRef othe
 void 
 sRef_mergeState (sRef res, sRef other, clause cl, fileloc loc)
 {
-  if (sRef_isValid (res) && sRef_isValid (other))
+  if (sRef_isReasonable (res) && sRef_isReasonable (other))
     {
       sRef_mergeStateAux (res, other, cl, FALSE, loc, TRUE);
     }
@@ -3700,7 +3778,7 @@ sRef_mergeState (sRef res, sRef other, clause cl, fileloc loc)
 void 
 sRef_mergeOptState (sRef res, sRef other, clause cl, fileloc loc)
 {
-  if (sRef_isValid (res) && sRef_isValid (other))
+  if (sRef_isReasonable (res) && sRef_isReasonable (other))
     {
       sRef_mergeStateAux (res, other, cl, TRUE, loc, TRUE);
     }
@@ -3725,8 +3803,8 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 		    bool doDerivs)
    /*@modifies res@*/ 
 {
-  llassertfatal (sRef_isValid (res));
-  llassertfatal (sRef_isValid (other));
+  llassertfatal (sRef_isReasonable (res));
+  llassertfatal (sRef_isReasonable (other));
   
   DPRINTF (("Merge aux: %s / %s",
 	    sRef_unparseFull (res),
@@ -3944,7 +4022,7 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 	{
 	  sRef nother = sRef_buildPointer (sRef_getBase (other));
 
-	  if (sRef_isValid (nother))
+	  if (sRef_isReasonable (nother))
 	    {
 	      sRef_copyState (nother, other);
 	      sRef_mergeStateAux (res, nother, cl, opt, loc, doDerivs);
@@ -4008,11 +4086,11 @@ sRef_mergeUnionDerivs (/*@only@*/ sRefSet res,
     {
       sRefSet_allElements (other, el)
 	{
-	  if (sRef_isValid (el))
+	  if (sRef_isReasonable (el))
 	    {
 	      sRef e2 = sRefSet_lookupMember (other, el);
 	      
-	      if (sRef_isValid (e2))
+	      if (sRef_isReasonable (e2))
 		{
 		  sRef_mergeStateAux (el, e2, cl, opt, loc, FALSE);
 		}
@@ -4035,11 +4113,11 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 
   sRefSet_allElements (res, el)
     {
-      if (sRef_isValid (el))
+      if (sRef_isReasonable (el))
 	{
 	  sRef e2 = sRefSet_lookupMember (other, el);
 
-	  if (sRef_isValid (e2))
+	  if (sRef_isReasonable (e2))
 	    {
 	      if (el->defstate == SS_ALLOCATED &&
 		  e2->defstate == SS_PDEFINED)
@@ -4113,7 +4191,7 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 		{
 		  sRef sr = sRef_leastCommon (el, e2);
 
-		  if (sRef_isValid (sr))
+		  if (sRef_isReasonable (sr))
 		    {
 		      ret = sRefSet_insert (ret, sr);
 		    }
@@ -4134,7 +4212,7 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 
   sRefSet_allElements (other, el)
     {
-      if (sRef_isValid (el))
+      if (sRef_isReasonable (el))
 	{
 	  (void) checkDeadState (el, FALSE, loc);
 	}
@@ -4219,7 +4297,7 @@ checkDerivDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
     {
       sRefSet_allElements (el->deriv, t)
 	{
-	  if (sRef_isValid (t))
+	  if (sRef_isReasonable (t))
 	    {
 	      	      checkDerivDeadState (t, tbranch, loc);
 	    }
@@ -4235,11 +4313,11 @@ static sRefSet
 
   sRefSet_allElements (res, el)
     {
-      if (sRef_isValid (el))
+      if (sRef_isReasonable (el))
 	{
 	  sRef e2 = sRefSet_lookupMember (other, el);
 	  
-	  if (sRef_isValid (e2))
+	  if (sRef_isReasonable (e2))
 	    {
 	      if (sRef_isAllocated (el) && !sRef_isAllocated (e2))
 		{
@@ -4274,7 +4352,7 @@ static sRefSet
   
   sRefSet_allElements (other, el)
     {
-      if (sRef_isValid (el))
+      if (sRef_isReasonable (el))
 	{
 	  if (!sRefSet_member (ret, el))
 	    {
@@ -4297,8 +4375,8 @@ static sRefSet
 
 sRef sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef a, /*@exposed@*/ sRef b)
 {
-  llassert (sRef_isValid (a));
-  llassert (sRef_isValid (b));
+  llassert (sRef_isReasonable (a));
+  llassert (sRef_isReasonable (b));
       
   if (!sRef_equivalent (a, b))
     {
@@ -4463,7 +4541,7 @@ sRef_isSpecState (sRef s)
 bool
 sRef_isResult (sRef s)
 {
-  return (sRef_isValid (s) && s->kind == SK_RESULT);
+  return (sRef_isReasonable (s) && s->kind == SK_RESULT);
 }
 
 bool
@@ -4481,7 +4559,7 @@ sRef_isGlobalMarker (sRef s)
 usymId
 sRef_getScopeIndex (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   llassert (sRef_isCvar (s));
 
   return (s->info->cvar->index);
@@ -4490,7 +4568,7 @@ sRef_getScopeIndex (sRef s)
 void
 sRef_makeSafe (sRef s)
 {
-  if (sRef_isValid (s)) 
+  if (sRef_isReasonable (s)) 
     {
       s->safe = TRUE;
     }
@@ -4499,7 +4577,7 @@ sRef_makeSafe (sRef s)
 void
 sRef_makeUnsafe (sRef s)
 {
-  if (sRef_isValid (s)) 
+  if (sRef_isReasonable (s)) 
     {
       s->safe = FALSE;
     }
@@ -4528,7 +4606,7 @@ sRef_makeUnsafe (sRef s)
 
   st = message ("%q:", sRef_unparseFull (s));
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRefSet_allElements (s->deriv, el)
 	{
@@ -4737,7 +4815,7 @@ static /*@exposed@*/ sRef whatUndefined (/*@exposed@*/ sRef fref, int depth)
 		    {
 		      sRef wdef = whatUndefined (fldref, depth + 1);
 
-		      if (sRef_isValid (wdef))
+		      if (sRef_isReasonable (wdef))
 			{
 			  return wdef;
 			}
@@ -4803,7 +4881,7 @@ static bool checkDefined (/*@temp@*/ sRef sr)
 
 bool sRef_isReallyDefined (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (sRef_isAnyDefined (s))
 	{
@@ -4829,7 +4907,7 @@ bool sRef_isReallyDefined (sRef s)
 
 void sRef_showNotReallyDefined (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (sRef_isAnyDefined (s))
 	{
@@ -4842,7 +4920,7 @@ void sRef_showNotReallyDefined (sRef s)
 	      /*@-temptrans@*/ /* the result of whatUndefined is lost */
 	      sRef ref = whatUndefined (s, 0);
 
-	      llassert (sRef_isValid (ref));
+	      llassert (sRef_isReasonable (ref));
 
 	      if (ref != s)
 		{
@@ -4898,7 +4976,7 @@ void sRef_setAliasKind (sRef s, alkind kind, fileloc loc)
 {
   sRef_checkMutable (s);  
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_clearDerived (s);
 
@@ -4916,7 +4994,7 @@ void sRef_setOrigAliasKind (sRef s, alkind kind)
 {
   sRef_checkMutable (s);  
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->oaliaskind = kind;
     }
@@ -4924,7 +5002,7 @@ void sRef_setOrigAliasKind (sRef s, alkind kind)
 
 exkind sRef_getExKind (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       return (s->expkind);
     }
@@ -4936,7 +5014,7 @@ exkind sRef_getExKind (sRef s)
 
 exkind sRef_getOrigExKind (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       return (s->oexpkind);
     }
@@ -4973,7 +5051,7 @@ void sRef_setExKind (sRef s, exkind exp, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (s->expkind != exp)
 	{
@@ -4993,7 +5071,7 @@ static void sRef_copyRealDerived (sRef s1, sRef s2)
   DPRINTF (("Copy real: %s / %s", sRef_unparse (s1), sRef_unparse (s2)));
   sRef_checkMutable (s1);
 
-  if (sRef_isValid (s1) && sRef_isValid (s2))
+  if (sRef_isReasonable (s1) && sRef_isReasonable (s2))
     {
       sRef sb = sRef_getRootBase (s1);
 
@@ -5001,7 +5079,7 @@ static void sRef_copyRealDerived (sRef s1, sRef s2)
 
       sRefSet_allElements (s2->deriv, el)
 	{
-	  if (sRef_isValid (el))
+	  if (sRef_isReasonable (el))
 	    {
 	      sRef rb = sRef_getRootBase (el);
 	      
@@ -5009,7 +5087,7 @@ static void sRef_copyRealDerived (sRef s1, sRef s2)
 		{
 		  sRef fb = sRef_fixDirectBase (el, s1);
 		  
-		  if (sRef_isValid (fb))
+		  if (sRef_isReasonable (fb))
 		    {
 		      sRef_copyRealDerived (fb, el);
 		      sRef_addDeriv (s1, fb);
@@ -5034,7 +5112,7 @@ void sRef_setUndefined (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->defstate = SS_UNDEFINED;
 
@@ -5082,7 +5160,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 
       arr = sRef_findDerivedArrayFetch (p, FALSE, 0, FALSE);
 
-      if (sRef_isValid (arr))
+      if (sRef_isReasonable (arr))
 	{
 	  sRef_setDefinedAux (arr, loc, clear);
 	}
@@ -5095,7 +5173,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 	  sRef p = s->info->arrayfetch->arr;
 	  sRef ptr = sRef_constructPointer (p);
 
-	  if (sRef_isValid (ptr))
+	  if (sRef_isReasonable (ptr))
 	    {
 	      if (ptr->defstate == SS_ALLOCATED 
 		  || ptr->defstate == SS_UNDEFINED
@@ -5123,7 +5201,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
     {
       sRef parent = s->info->field->rec;
       
-      if (sRef_isValid (parent))
+      if (sRef_isReasonable (parent))
 	{
 	  if (ctype_isUnion (ctype_realType (parent->type)))
 	    {
@@ -5154,7 +5232,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
       /* evans 2001-07-12: need to define the derived references */
       sRefSet_elements (s->deriv, el)
 	{
-	  llassert (sRef_isValid (el));
+	  llassert (sRef_isReasonable (el));
 	  el->defstate = SS_DEFINED;
 	} end_sRefSet_elements ;
     }
@@ -5194,7 +5272,7 @@ void sRef_setDefinedCompleteDirect (sRef s, fileloc loc)
 
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  sRef_setDefined (current, loc);
@@ -5234,7 +5312,7 @@ static bool sRef_isDeepUnionField (sRef s)
 
 bool sRef_isUnionField (sRef s)
 {
-  if (sRef_isValid (s) && s->kind == SK_FIELD)
+  if (sRef_isReasonable (s) && s->kind == SK_FIELD)
     {
       /*
        ** defining one field of a union defines the union
@@ -5242,7 +5320,7 @@ bool sRef_isUnionField (sRef s)
       
       sRef base = s->info->field->rec;
 
-      if (sRef_isValid (base))
+      if (sRef_isReasonable (base))
 	{
 	  return (ctype_isUnion (ctype_realType (base->type)));
 	}
@@ -5254,7 +5332,7 @@ bool sRef_isUnionField (sRef s)
 void sRef_setPdefined (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
-  if (sRef_isValid (s) && !sRef_isPartial (s))
+  if (sRef_isReasonable (s) && !sRef_isPartial (s))
     {
       sRef base = sRef_getBaseSafe (s);
 
@@ -5273,7 +5351,7 @@ void sRef_setPdefined (sRef s, fileloc loc)
       
       /* e.g., if x is allocated, *x = 3 defines x */
       
-      while (sRef_isValid (base) && sRef_isKnown (base))
+      while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED)
 	    { 
@@ -5296,7 +5374,7 @@ static void sRef_setStateAux (sRef s, sstate ss, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       /* if (s->defstate == SS_RELDEF) return; */
 
@@ -5312,7 +5390,7 @@ static void sRef_setStateAux (sRef s, sstate ss, fileloc loc)
 	{
 	  sRef base = sRef_getBaseSafe (s);
 	  
-	  while (sRef_isValid (base) && sRef_isKnown (base))
+	  while (sRef_isReasonable (base) && sRef_isKnown (base))
 	    {
 	      if (base->defstate == SS_DEFINED) 
 		{ 
@@ -5341,7 +5419,7 @@ static void sRef_setAllocatedShallow (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (s->defstate == SS_DEAD || s->defstate == SS_UNDEFINED)
 	{
@@ -5376,7 +5454,7 @@ void sRef_setShared (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (s->aliaskind != AK_SHARED && fileloc_isDefined (loc))
 	{
@@ -5392,7 +5470,7 @@ void sRef_setLastReference (sRef s, /*@exposed@*/ sRef ref, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->aliaskind = sRef_getAliasKind (ref);
       s->aliasinfo = stateInfo_updateRefLoc (s->aliasinfo, ref, loc);
@@ -5414,7 +5492,7 @@ void sRef_setNullStateAux (/*@notnull@*/ sRef s, nstate ns, fileloc loc)
 
 void sRef_setNotNull (sRef s, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, NS_NOTNULL, loc);
     }
@@ -5422,7 +5500,7 @@ void sRef_setNotNull (sRef s, fileloc loc)
 
 void sRef_setNullStateN (sRef s, nstate n)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_checkMutable (s);
       s->nullstate = n;
@@ -5432,7 +5510,7 @@ void sRef_setNullStateN (sRef s, nstate n)
 
 void sRef_setNullState (sRef s, nstate n, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, n, loc);
     }
@@ -5500,7 +5578,7 @@ void sRef_setNullStateInnerComplete (sRef s, nstate n, fileloc loc)
 
 void sRef_setPosNull (sRef s, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, NS_POSNULL, loc);
     }
@@ -5508,7 +5586,7 @@ void sRef_setPosNull (sRef s, fileloc loc)
   
 void sRef_setDefNull (sRef s, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, NS_DEFNULL, loc);
     }
@@ -5516,7 +5594,7 @@ void sRef_setDefNull (sRef s, fileloc loc)
 
 void sRef_setNullUnknown (sRef s, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, NS_UNKNOWN, loc);
     }
@@ -5524,7 +5602,7 @@ void sRef_setNullUnknown (sRef s, fileloc loc)
 
 void sRef_setNullError (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef_setNullStateAux (s, NS_UNKNOWN, fileloc_undefined);
     }
@@ -5539,7 +5617,7 @@ void sRef_setOnly (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s) && s->aliaskind != AK_ONLY)
+  if (sRef_isReasonable (s) && s->aliaskind != AK_ONLY)
     {
       s->aliaskind = AK_ONLY;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
@@ -5550,7 +5628,7 @@ void sRef_setDependent (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s) && !sRef_isConst (s) && (s->aliaskind != AK_DEPENDENT))
+  if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_DEPENDENT))
     {
       DPRINTF (("Setting dependent: %s", sRef_unparseFull (s)));
       s->aliaskind = AK_DEPENDENT;
@@ -5562,7 +5640,7 @@ void sRef_setOwned (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s) && !sRef_isConst (s) && (s->aliaskind != AK_OWNED))
+  if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_OWNED))
     {
       s->aliaskind = AK_OWNED;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
@@ -5573,11 +5651,11 @@ void sRef_setKept (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s) && !sRef_isConst (s) && (s->aliaskind != AK_KEPT))
+  if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_KEPT))
     {
       sRef base = sRef_getBaseSafe (s);  
       
-      while (sRef_isValid (base) && sRef_isKnown (base))
+      while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED) 
 	    {
@@ -5625,7 +5703,7 @@ void sRef_setFresh (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->aliaskind = AK_FRESH;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
@@ -5637,11 +5715,11 @@ void sRef_kill (sRef s, fileloc loc)
   DPRINTF (("Kill: %s", sRef_unparseFull (s)));
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s) && !sRef_isShared (s) && !sRef_isConst (s))
+  if (sRef_isReasonable (s) && !sRef_isShared (s) && !sRef_isConst (s))
     {
       sRef base = sRef_getBaseSafe (s);  
       
-      while (sRef_isValid (base) && sRef_isKnown (base))
+      while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED) 
 	    {
@@ -5666,12 +5744,12 @@ void sRef_maybeKill (sRef s, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef base = sRef_getBaseSafe (s);  
 
             
-      while (sRef_isValid (base) && sRef_isKnown (base))
+      while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED || base->defstate == SS_RELDEF)
 	    {
@@ -5699,7 +5777,7 @@ void sRef_maybeKill (sRef s, fileloc loc)
 
 static void sRef_killAux (sRef s, fileloc loc)
 {
-  if (sRef_isValid (s) && !sRef_isShared (s))
+  if (sRef_isReasonable (s) && !sRef_isShared (s))
     {
       if (sRef_isUnknownArrayFetch (s))
 	{
@@ -5735,7 +5813,7 @@ static bool sRef_equivalent (sRef s1, sRef s2)
 {
   sRef ret;
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       bool old = inFunction;
 
@@ -5769,7 +5847,7 @@ sRef sRef_copy (sRef s)
       /*@=retalias@*/
     }
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef t = sRef_alloc ();
 
@@ -5835,7 +5913,7 @@ bool sRef_isAddress (sRef s)
 
 bool sRef_isThroughArrayFetch (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef tref = s;
 
@@ -5850,7 +5928,7 @@ bool sRef_isThroughArrayFetch (sRef s)
 	  
 	  lt = sRef_getBase (tref);
 	  tref = lt;
-	} while (sRef_isValid (tref));
+	} while (sRef_isReasonable (tref));
     } 
 
   return FALSE;
@@ -6028,7 +6106,7 @@ void sRef_setType (sRef s, ctype t)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->type = t;
     }
@@ -6038,7 +6116,7 @@ void sRef_setTypeFull (sRef s, ctype t)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       s->type = t;
 
@@ -6058,16 +6136,23 @@ void sRef_setTypeFull (sRef s, ctype t)
 static /*@exposed@*/ sRef
 sRef_findDerivedField (/*@notnull@*/ sRef rec, cstring f)
 {
-  sRefSet_allElements (rec->deriv, sr)
+  sRefSet_allElements (sRef_derivedFields (rec), sr)
     {
-      if (sRef_isValid (sr))
+      if (sRef_isReasonable (sr))
 	{
-	  if (sr->info != NULL) 
+	  if (sRef_isReasonable (sr))
 	    {
-	      if (sr->kind == SK_FIELD && cstring_equal (sr->info->field->field, f))
+	      if (sr->info != NULL) 
 		{
-		  return sr;
+		  if (sr->kind == SK_FIELD && cstring_equal (sr->info->field->field, f))
+		    {
+		      return sr;
+		    }
 		}
+	    }
+	  else
+	    {
+	      llcontbug (message ("Invalid sRef as derived field of %s", sRef_unparse (rec)));
 	    }
 	}
     } end_sRefSet_allElements;
@@ -6077,7 +6162,7 @@ sRef_findDerivedField (/*@notnull@*/ sRef rec, cstring f)
 
 /*@dependent@*/ /*@observer@*/ sRefSet sRef_derivedFields (/*@temp@*/ sRef rec)
 {
-  if (sRef_isValid (rec))
+  if (sRef_isReasonable (rec))
     {
       sRefSet ret;
       ret = rec->deriv;
@@ -6092,11 +6177,11 @@ sRef_findDerivedField (/*@notnull@*/ sRef rec, cstring f)
 static /*@exposed@*/ sRef
   sRef_findDerivedPointer (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRefSet_realElements (s->deriv, sr)
 	{
-	  if (sRef_isValid (sr) && sr->kind == SK_PTR)
+	  if (sRef_isReasonable (sr) && sr->kind == SK_PTR)
 	    {
 	      return sr;
 	    }
@@ -6109,7 +6194,7 @@ static /*@exposed@*/ sRef
 bool
 sRef_isUnknownArrayFetch (sRef s)
 {
-  return (sRef_isValid (s) 
+  return (sRef_isReasonable (s) 
 	  && s->kind == SK_ARRAYFETCH
 	  && !s->info->arrayfetch->indknown);
 }
@@ -6122,7 +6207,7 @@ sRef_findDerivedArrayFetch (/*@notnull@*/ sRef s, bool isknown, int idx, bool de
     {
       sRefSet_realElements (s->deriv, sr)
 	{
-	  if (sRef_isValid (sr)
+	  if (sRef_isReasonable (sr)
 	      && sr->kind == SK_ARRAYFETCH
 	      && sr->info->arrayfetch->indknown
 	      && (sr->info->arrayfetch->ind == idx))
@@ -6135,7 +6220,7 @@ sRef_findDerivedArrayFetch (/*@notnull@*/ sRef s, bool isknown, int idx, bool de
     {
       sRefSet_realElements (s->deriv, sr)
 	{
-	  if (sRef_isValid (sr)
+	  if (sRef_isReasonable (sr)
 	      && sr->kind == SK_ARRAYFETCH
 	      && (!sr->info->arrayfetch->indknown
 		  || (sr->info->arrayfetch->indknown && 
@@ -6178,7 +6263,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
 
   s = sRef_findDerivedField (rec, f);
   
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       return s;
     }
@@ -6305,7 +6390,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
 bool
 sRef_isStackAllocated (sRef s)
 {
-  return (sRef_isValid(s) 
+  return (sRef_isReasonable(s) 
 	  && s->defstate == SS_ALLOCATED && ctype_isStackAllocated (s->type));
 }
 	  
@@ -6338,7 +6423,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
     {
       sRef sp = sRef_findDerivedPointer (arr);
       
-      if (sRef_isValid (sp))
+      if (sRef_isReasonable (sp))
 	{
 	  
 	  if (ctype_isMutable (s->type))
@@ -6441,32 +6526,38 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 		  
 		  sRefSet_allElements (arr->deriv, sr)
 		    {
-		      if (sRef_isValid (sr))
+		      if (sRef_isReasonable (sr))
 			{
-			  if (sr->defstate == SS_ALLOCATED)
+			  if (sRef_isReasonable (sr))
 			    {
-			      s->defstate = SS_ALLOCATED;
-			    }
-			  else 
-			    {
-			      if (sr->defstate == SS_DEFINED)
+			      if (sr->defstate == SS_ALLOCATED)
 				{
-				  if (context_getFlag (FLG_STRICTDESTROY))
-				    {
-				      s->defstate = SS_DEFINED;
-				    }
-				  else
-				    {
-				      s->defstate = SS_PARTIAL;
-				    }
-
-				  break;
+				  s->defstate = SS_ALLOCATED;
 				}
+			      else 
+				{
+				  if (sr->defstate == SS_DEFINED)
+				    {
+				      if (context_getFlag (FLG_STRICTDESTROY))
+					{
+					  s->defstate = SS_DEFINED;
+					}
+				      else
+					{
+					  s->defstate = SS_PARTIAL;
+					}
+				      
+				      break;
+				    }
+				}
+			    }
+			  else
+			    {
+			      llcontbug (message ("Invalid sRef as derived element of %s", sRef_unparse (arr)));
 			    }
 			}
 		    } end_sRefSet_allElements;
-		  
-		  		}
+		}
 	      else
 		{
 		  s->defstate = SS_UNDEFINED;
@@ -6508,7 +6599,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 {
   sRef s;
 
-  if (!sRef_isValid (arr)) {
+  if (!sRef_isReasonable (arr)) {
     /*@-nullret@*/ return arr /*@=nullret@*/;
   }
 
@@ -6519,7 +6610,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
   
   s = sRef_findDerivedArrayFetch (arr, FALSE, 0, FALSE);
   
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       /* evans 2001-07-12: this is bogus, clean-up hack */
       if (s->info->arrayfetch->arr != arr)
@@ -6570,7 +6661,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 {
   sRef s;
 
-  if (!sRef_isValid (arr)) {
+  if (!sRef_isReasonable (arr)) {
     /*@-nullret@*/ return arr /*@=nullret@*/;
   }
 
@@ -6581,7 +6672,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 
   s = sRef_findDerivedArrayFetch (arr, TRUE, i, FALSE);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       /* evans 2001-07-12: this is bogus, clean-up hack */
       if (s->info->arrayfetch->arr != arr)
@@ -6634,7 +6725,7 @@ sRef_setPartsFromUentry (sRef s, uentry ue)
 {    
   sRef uref = uentry_getSref (ue);
 
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   s->aliaskind = alkind_derive (s->aliaskind, uentry_getAliasKind (ue));
   s->oaliaskind = s->aliaskind;
@@ -6661,7 +6752,7 @@ sRef_setPartsFromUentry (sRef s, uentry ue)
       s->oaliaskind = s->aliaskind = AK_IMPDEPENDENT;
     } 
 
-  if (sRef_isValid (uref))
+  if (sRef_isReasonable (uref))
     {
       valueTable utable = uref->state;
       valueTable_free (s->state);
@@ -6672,7 +6763,7 @@ sRef_setPartsFromUentry (sRef s, uentry ue)
 static void
 sRef_setStateFromAbstractUentry (sRef s, uentry ue)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   sRef_checkMutable (s);
 
   sRef_setPartsFromUentry (s, ue);
@@ -6694,7 +6785,7 @@ sRef_setStateFromUentry (sRef s, uentry ue)
   sstate defstate;
 
   sRef_checkMutable (s);
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   
   sRef_setPartsFromUentry (s, ue);
 
@@ -6728,7 +6819,7 @@ sRef_setStateFromUentry (sRef s, uentry ue)
 
       DPRINTF (("find derived: %s", sRef_unparse (s)));
 
-      if (sRef_isValid (s))
+      if (sRef_isReasonable (s))
 	{
 	  
 	  sRef_setExKind (s, sRef_getExKind (t), g_currentloc);
@@ -6743,7 +6834,7 @@ sRef_setStateFromUentry (sRef s, uentry ue)
 	  
 	  DPRINTF (("construct: %s", sRef_unparse (s)));
 
-	  if (sRef_isValid (s))
+	  if (sRef_isReasonable (s))
 	    {
 	      sRef_addDeriv (t, s);
 
@@ -6765,7 +6856,7 @@ sRef_constructPointer (/*@exposed@*/ sRef t)
 
 static /*@exposed@*/ sRef sRef_constructDerefAux (sRef t, bool isdead)
 {
-  if (sRef_isValid (t))
+  if (sRef_isReasonable (t))
     {
       sRef s;
       
@@ -6775,7 +6866,7 @@ static /*@exposed@*/ sRef sRef_constructDerefAux (sRef t, bool isdead)
       
       s = sRef_findDerivedArrayFetch (t, FALSE, 0, isdead);
       
-      if (sRef_isValid (s))
+      if (sRef_isReasonable (s))
 	{
 	  DPRINTF (("Found array fetch: %s", sRef_unparseFull (s)));
 	  return s;
@@ -6863,14 +6954,15 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
 
 bool sRef_hasDerived (sRef s)
 {
-  return (sRef_isValid (s) && !sRefSet_isEmpty (s->deriv));
+  return (sRef_isReasonable (s) && !sRefSet_isEmpty (s->deriv));
 }
 
 void
 sRef_clearDerived (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
+      DPRINTF (("Clear derived: [%p] %s", s, sRef_unparseDebug (s)));
       sRefSet_clear (s->deriv); 
     }
 }
@@ -6878,17 +6970,18 @@ sRef_clearDerived (sRef s)
 void
 sRef_clearDerivedComplete (sRef s)
 {
-  
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sRef base = sRef_getBaseSafe (s);
-
-      while (sRef_isValid (base))
+      
+      while (sRef_isReasonable (base))
 	{
+	  DPRINTF (("Clear derived: [%p] %s", base, sRef_unparse (base)));
 	  sRefSet_clear (base->deriv); 
 	  base = sRef_getBaseSafe (base);
 	}
 
+      DPRINTF (("Clear derived: [%p] %s", s, sRef_unparse (s)));
       sRefSet_clear (s->deriv); 
     }
 }
@@ -7112,7 +7205,7 @@ sRef_unparseKindNamePlain (sRef s)
 void
 sRef_copyState (sRef s1, sRef s2)
 {
-  if (sRef_isValid (s1) && sRef_isValid (s2))
+  if (sRef_isReasonable (s1) && sRef_isReasonable (s2))
     {
       s1->defstate = s2->defstate;
       
@@ -7147,7 +7240,7 @@ sRef_makeNew (ctype ct, sRef t, cstring name)
   s->kind = SK_NEW;
   s->type = ct;
 
-  llassert (sRef_isValid (t));
+  llassert (sRef_isReasonable (t));
   s->defstate = t->defstate;
 
   s->aliaskind = t->aliaskind;
@@ -7730,7 +7823,7 @@ sRef_showMetaStateInfo (sRef s, cstring key)
   stateValue val;
   metaStateInfo minfo = context_lookupMetaStateInfo (key);
 
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   llassert (valueTable_isDefined (s->state));
   llassert (metaStateInfo_isDefined (minfo));
 
@@ -7843,7 +7936,7 @@ sRef_showAliasInfo (sRef s)
 void
 sRef_mergeNullState (sRef s, nstate n)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       nstate old;
       
@@ -7863,7 +7956,7 @@ sRef_mergeNullState (sRef s, nstate n)
 bool
 sRef_possiblyNull (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
       {
 	if (sRef_getNullState (s) == NS_ABSNULL)
 	{
@@ -7938,7 +8031,7 @@ sRef_unparseScope (sRef s)
 int
 sRef_getScope (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   if (sRef_isCvar (s))
     {
@@ -7957,13 +8050,13 @@ sRef_getScope (sRef s)
 bool
 sRef_isDead (sRef s)
 {
-  return (sRef_isValid (s) && (s)->defstate == SS_DEAD);
+  return (sRef_isReasonable (s) && (s)->defstate == SS_DEAD);
 }
 
 bool
 sRef_isDeadStorage (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (s->defstate == SS_DEAD
 	  || s->defstate == SS_UNUSEABLE
@@ -7986,12 +8079,12 @@ sRef_isDeadStorage (sRef s)
 bool
 sRef_isPossiblyDead (sRef s)
 {
-  return (sRef_isValid (s) && s->defstate == SS_HOFFA);
+  return (sRef_isReasonable (s) && s->defstate == SS_HOFFA);
 }
 
 bool sRef_isStateLive (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       sstate ds = s->defstate;
 
@@ -8009,7 +8102,7 @@ bool sRef_isStateLive (sRef s)
 
 bool sRef_isStateUndefined (sRef s)
 {
-  return ((sRef_isValid(s)) && ((s)->defstate == SS_UNDEFINED));
+  return ((sRef_isReasonable(s)) && ((s)->defstate == SS_UNDEFINED));
 }
 
 bool sRef_isJustAllocated (sRef s)
@@ -8033,7 +8126,7 @@ bool sRef_isJustAllocated (sRef s)
 static bool
 sRef_isAllocatedStorage (sRef s)
 {
-  if (sRef_isValid (s) && ynm_toBoolStrict (sRef_isValidLvalue (s)))
+  if (sRef_isReasonable (s) && ynm_toBoolStrict (sRef_isValidLvalue (s)))
     {
       return (ctype_isVisiblySharable (sRef_getType (s)));
     }
@@ -8052,7 +8145,7 @@ sRef_isUnuseable (sRef s)
 bool
 sRef_perhapsNull (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (sRef_getNullState (s) == NS_ABSNULL)
 	{
@@ -8093,7 +8186,7 @@ sRef_perhapsNull (sRef s)
 bool 
 sRef_definitelyNull (sRef s)
 {
-  return (sRef_isValid (s)
+  return (sRef_isReasonable (s)
 	  && (sRef_getNullState (s) == NS_DEFNULL || sRef_getNullState (s) == NS_CONSTNULL));
 }
 
@@ -8104,11 +8197,11 @@ sRef_definitelyNull (sRef s)
 void
 sRef_setDerivNullState (sRef set, sRef guide, nstate ns)
 {
-  if (sRef_isValid (set))
+  if (sRef_isReasonable (set))
     {
       sRef deriv = sRef_getDeriv (set, guide);
       
-      if (sRef_isValid (deriv))
+      if (sRef_isReasonable (deriv))
 	{
 	  sRef_setNullStateN (deriv, ns);
 	}
@@ -8118,20 +8211,18 @@ sRef_setDerivNullState (sRef set, sRef guide, nstate ns)
 static /*@exposed@*/ sRef
 sRef_getDeriv (/*@returned@*/ /*@notnull@*/ sRef set, sRef guide)
 {
-  llassert (sRef_isValid (set));
-  llassert (sRef_isValid (guide));
+  llassert (sRef_isReasonable (set));
+  llassert (sRef_isReasonable (guide));
 
   switch (guide->kind)
     {
     case SK_CVAR:
-      llassert (set->kind == SK_CVAR);
-      
+      llassert (set->kind == SK_CVAR);      
       return set;
 
     case SK_PARAM:
       llassert (set->kind == guide->kind);
       llassert (set->info->paramno == guide->info->paramno);
-
       return set;
 
     case SK_ARRAYFETCH:
@@ -8233,14 +8324,21 @@ sRef_aliasCheckPred (bool (predf) (sRef, exprNode, sRef, exprNode),
       
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
-	      if (!sRef_similar (current, s)
-		  || (error && sRef_sameName (current, s)))
+	      if (sRef_isReasonable (current))
 		{
-		  (void) (*predf)(current, e, s, err);
+		  if (!sRef_similar (current, s)
+		      || (error && sRef_sameName (current, s)))
+		    {
+		      (void) (*predf)(current, e, s, err);
+		    }
 		}
-	      }
+	      else
+		{
+		  llcontbug (message ("Invalid sRef as alias field of %s", sRef_unparse (s)));
+		}
+	    }
 	} end_sRefSet_realElements;
 
       sRefSet_free (aliases);
@@ -8267,7 +8365,7 @@ sRef_aliasCheckSimplePred (sRefTest predf, sRef s)
       
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      sRef cref = sRef_updateSref (current);
 	      
@@ -8305,7 +8403,7 @@ sRef_aliasCompleteSimplePred (bool (predf) (sRef), sRef s)
   
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  if ((*predf)(current)) result = TRUE;
@@ -8329,7 +8427,7 @@ sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  ((*predf)(current, loc));
@@ -8359,7 +8457,7 @@ sRef_aliasSetCompleteParam (void (predf) (sRef, int, fileloc), sRef s,
 
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  ((*predf)(current, kind, loc));
@@ -8392,7 +8490,7 @@ sRef_aliasSetCompleteAlkParam (void (predf) (sRef, alkind, fileloc), sRef s,
 
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  ((*predf)(current, kind, loc));
@@ -8409,7 +8507,7 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
   sRefSet aliases;
   ctype ct;
 
-  if (!sRef_isValid (s)) return;
+  if (!sRef_isReasonable (s)) return;
 
   /*
   ** Type equivalence checking is necessary --- there might be casting.
@@ -8430,7 +8528,7 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
       
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      
@@ -8453,7 +8551,7 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      DPRINTF (("Current: %s", sRef_unparseFull (current)));
@@ -8499,7 +8597,7 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
       
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      
@@ -8539,7 +8637,7 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
   sRefSet aliases;
   ctype ct;
 
-  if (!sRef_isValid (s)) return;
+  if (!sRef_isReasonable (s)) return;
 
   /*
   ** Type equivalence checking is necessary --- there might be casting.
@@ -8560,7 +8658,7 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
             
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      
@@ -8582,7 +8680,7 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
 
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      
@@ -8615,7 +8713,7 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
       
       sRefSet_realElements (aliases, current)
 	{
-	  if (sRef_isValid (current))
+	  if (sRef_isReasonable (current))
 	    {
 	      current = sRef_updateSref (current);
 	      
@@ -9484,7 +9582,7 @@ void sRef_combineNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other)
 
 cstring sRef_nullMessage (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   switch (sRef_getNullState (s))
     {
@@ -9499,7 +9597,7 @@ cstring sRef_nullMessage (sRef s)
 
 /*@observer@*/ cstring sRef_ntMessage (sRef s)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   switch (s->nullstate)
     {
@@ -9519,7 +9617,7 @@ sRef sRef_fixResultType (/*@returned@*/ sRef s, ctype typ, uentry ue)
   sRef tmp = sRef_undefined;
   sRef ret;
 
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
 
   switch (s->kind)
     {
@@ -9655,63 +9753,63 @@ bool sRef_isDependent (sRef s)
 
 bool sRef_isOwned (sRef s)
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_OWNED));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_OWNED));
 }
 
 bool sRef_isKeep (sRef s) 
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_KEEP));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_KEEP));
 }
 
 bool sRef_isTemp (sRef s)
 {
-  return (sRef_isValid (s) && alkind_isTemp (s->aliaskind));
+  return (sRef_isReasonable (s) && alkind_isTemp (s->aliaskind));
 }
 
 bool sRef_isLocalState (sRef s) 
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_LOCAL));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_LOCAL));
 }
 
 bool sRef_isUnique (sRef s)
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_UNIQUE));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_UNIQUE));
 }
 
 bool sRef_isShared (sRef s) 
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_SHARED));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_SHARED));
 }
 
 bool sRef_isExposed (sRef s) 
 {
-  return (sRef_isValid (s) && (s->expkind == XO_EXPOSED));
+  return (sRef_isReasonable (s) && (s->expkind == XO_EXPOSED));
 }
 
 bool sRef_isObserver (sRef s) 
 {
-  return (sRef_isValid (s) && (s->expkind == XO_OBSERVER));
+  return (sRef_isReasonable (s) && (s->expkind == XO_OBSERVER));
 }
 
 bool sRef_isFresh (sRef s) 
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_FRESH));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_FRESH));
 }
 
 bool sRef_isDefinitelyNull (sRef s) 
 {
-  return (sRef_isValid (s) && (sRef_getNullState (s) == NS_DEFNULL 
+  return (sRef_isReasonable (s) && (sRef_getNullState (s) == NS_DEFNULL 
 			       || sRef_getNullState (s) == NS_CONSTNULL));
 }
 
 bool sRef_isAllocated (sRef s)
 {
-  return (sRef_isValid (s) && (s->defstate == SS_ALLOCATED));
+  return (sRef_isReasonable (s) && (s->defstate == SS_ALLOCATED));
 }
 
 bool sRef_isStack (sRef s)
 {
-  return (sRef_isValid (s) && (s->aliaskind == AK_STACK));
+  return (sRef_isReasonable (s) && (s->aliaskind == AK_STACK));
 }
 
 bool sRef_isNotNull (sRef s)
@@ -9732,7 +9830,7 @@ alkind sRef_getAliasKind (sRef s)
 
 nstate sRef_getNullState (sRef s)
 {
-  if (sRef_isValid (s)) {
+  if (sRef_isReasonable (s)) {
     llassert (nstate_isValid (s->nullstate));
     return s->nullstate;
   }
@@ -9742,7 +9840,7 @@ nstate sRef_getNullState (sRef s)
 
 void sRef_reflectAnnotation (sRef s, annotationInfo a, fileloc loc)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (!valueTable_isDefined (s->state))
 	{
@@ -9773,7 +9871,7 @@ void sRef_setMetaStateValueComplete (sRef s, cstring key, int value, fileloc loc
 
   sRefSet_realElements (aliases, current)
     {
-      if (sRef_isValid (current))
+      if (sRef_isReasonable (current))
 	{
 	  current = sRef_updateSref (current);
 	  sRef_setMetaStateValue (current, key, value, loc);
@@ -9787,7 +9885,7 @@ void sRef_setMetaStateValue (sRef s, cstring key, int value, fileloc loc)
 {
   sRef_checkMutable (s);
 
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (!valueTable_isDefined (s->state))
 	{
@@ -9818,7 +9916,7 @@ void sRef_setMetaStateValue (sRef s, cstring key, int value, fileloc loc)
 
 bool sRef_checkMetaStateValue (sRef s, cstring key, int value)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (valueTable_isDefined (s->state))
 	{
@@ -9844,7 +9942,7 @@ bool sRef_checkMetaStateValue (sRef s, cstring key, int value)
 
 /*@observer@*/ stateValue sRef_getMetaStateValue (sRef s, cstring key)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       if (valueTable_isDefined (s->state))
 	{
@@ -9869,9 +9967,9 @@ bool sRef_checkMetaStateValue (sRef s, cstring key, int value)
 {
   DPRINTF (("Get value table: %s", sRef_unparse (s)));
 
-  if (sRef_isValid (s)) 
+  if (sRef_isReasonable (s)) 
     {
-      llassert (sRef_isValid (s));
+      llassert (sRef_isReasonable (s));
       DPRINTF (("Value table: %s", valueTable_unparse (s->state)));
       return s->state;
     }  
@@ -9888,7 +9986,7 @@ bool sRef_makeStateSpecial (sRef s)
   ** Default defined state can be made special.
   */
 
-  llassert (sRef_isValid (s)); /*@i523 why doesn't null-checking work!??? */
+  llassert (sRef_isReasonable (s)); /*@i523 why doesn't null-checking work!??? */
 
   if (s->defstate == SS_UNKNOWN || s->defstate == SS_DEFINED || s->defstate == SS_SPECIAL)
     {
@@ -9907,7 +10005,7 @@ bool sRef_makeStateSpecial (sRef s)
 
 void sRef_markImmutable (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       DPRINTF (("Mark immutable: %s", sRef_unparseFull (s)));
       s->immut = TRUE;
@@ -9940,7 +10038,7 @@ struct s_bbufinfo sRef_getNullTerminatedState (sRef p_s) {
 }
 
 void sRef_setNullTerminatedState(sRef p_s) {
-   if(sRef_isValid (p_s)) {
+   if(sRef_isReasonable (p_s)) {
       p_s->bufinfo.bufstate = BB_NULLTERMINATED;
    } else {
       llfatalbug( message("sRef_setNT passed a invalid sRef\n"));
@@ -9949,7 +10047,7 @@ void sRef_setNullTerminatedState(sRef p_s) {
 
 
 void sRef_setPossiblyNullTerminatedState(sRef p_s) {
-   if( sRef_isValid (p_s)) {
+   if( sRef_isReasonable (p_s)) {
       p_s->bufinfo.bufstate = BB_POSSIBLYNULLTERMINATED;
    } else {
       llfatalbug( message("sRef_setPossNT passed a invalid sRef\n"));
@@ -9957,7 +10055,7 @@ void sRef_setPossiblyNullTerminatedState(sRef p_s) {
 }
 
 void sRef_setNotNullTerminatedState(sRef p_s) {
-   if( sRef_isValid (p_s)) {
+   if( sRef_isReasonable (p_s)) {
       p_s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
    } else {
       llfatalbug( message("sRef_unsetNT passed a invalid sRef\n"));
@@ -9965,7 +10063,7 @@ void sRef_setNotNullTerminatedState(sRef p_s) {
 }
 
 void sRef_setLen(sRef p_s, int len) {
-   if( sRef_isValid (p_s) && sRef_isNullTerminated(p_s)) {
+   if( sRef_isReasonable (p_s) && sRef_isNullTerminated(p_s)) {
       p_s->bufinfo.len = len;
    } else {
       llfatalbug( message("sRef_setLen passed a invalid sRef\n"));
@@ -9982,7 +10080,7 @@ void sRef_setSize(sRef p_s, int size) {
 }
 
 void sRef_resetLen(sRef p_s) {
-	if (sRef_isValid (p_s)) {
+	if (sRef_isReasonable (p_s)) {
 		p_s->bufinfo.len = 0;
 	} else {
 		llfatalbug (message ("sRef_setLen passed an invalid sRef\n"));
@@ -10009,20 +10107,20 @@ long int sRef_getArraySize (sRef p_s) /*@*/ {
 
 void sRef_setValue (sRef s, multiVal val)
 {
-  llassert (sRef_isValid (s));
+  llassert (sRef_isReasonable (s));
   multiVal_free (s->val);
   s->val = val;
 }
 
 bool sRef_hasValue (sRef s)
 {
-  return (sRef_isValid (s)
+  return (sRef_isReasonable (s)
 	  && multiVal_isDefined (s->val));
 }
 
 multiVal sRef_getValue (sRef s)
 {
-  if (sRef_isValid (s))
+  if (sRef_isReasonable (s))
     {
       return s->val;
     }
