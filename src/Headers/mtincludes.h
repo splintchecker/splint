@@ -20,3 +20,6 @@
 # include "mtMergeItem.h"
 # include "mtMergeClause.h"
 # include "mtMergeClauseList.h"
+# include "metaStateConstraint.h"
+# include "metaStateSpecifier.h"
+# include "metaStateExpression.h"

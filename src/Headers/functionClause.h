@@ -17,6 +17,8 @@
   FCK_STATE,
   FCK_ENSURES,
   FCK_REQUIRES,
+  FCK_MTENSURES,
+  FCK_MTREQUIRES,
   FCK_DEAD
 } functionClauseKind;
 
@@ -29,6 +31,7 @@ struct s_functionClause {
     stateClause state;
     constraintList ensures;
     constraintList requires;
+    metaStateConstraint mtconstraint;
   } val;
 } ;
 
@@ -60,6 +63,12 @@ extern bool functionClause_isEnsures (functionClause) /*@*/ ;
 extern bool functionClause_isRequires (functionClause) /*@*/ ;
 # define functionClause_isRequires(p_h) (functionClause_matchKind(p_h, FCK_REQUIRES))
 
+extern bool functionClause_isMetaRequires (functionClause) /*@*/ ;
+# define functionClause_isMetaRequires(p_h) (functionClause_matchKind(p_h, FCK_MTREQUIRES))
+
+extern bool functionClause_isMetaEnsures (functionClause) /*@*/ ;
+# define functionClause_isMetaEnsures(p_h) (functionClause_matchKind(p_h, FCK_MTENSURES))
+
 extern /*@truenull@*/ bool functionClause_isUndefined(functionClause) /*@*/ ;
 # define functionClause_isUndefined(p_h) ((p_h) == functionClause_undefined)
 
@@ -69,6 +78,8 @@ extern functionClause functionClause_createWarn (/*@only@*/ warnClause) /*@*/ ;
 extern functionClause functionClause_createState (/*@only@*/ stateClause) /*@*/ ;
 extern functionClause functionClause_createEnsures (/*@only@*/ constraintList) /*@*/ ;
 extern functionClause functionClause_createRequires (/*@only@*/ constraintList) /*@*/ ;
+extern functionClause functionClause_createMetaEnsures (/*@only@*/ metaStateConstraint) /*@*/ ;
+extern functionClause functionClause_createMetaRequires (/*@only@*/ metaStateConstraint) /*@*/ ;
 
 extern /*@exposed@*/ globalsClause functionClause_getGlobals (functionClause) /*@*/ ;
 extern /*@exposed@*/ modifiesClause functionClause_getModifies (functionClause) /*@*/ ;
@@ -76,10 +87,12 @@ extern /*@exposed@*/ stateClause functionClause_getState (functionClause) /*@*/ 
 extern /*@exposed@*/ warnClause functionClause_getWarn (functionClause) /*@*/ ;
 extern /*@exposed@*/ constraintList functionClause_getEnsures (functionClause) /*@*/ ;
 extern /*@exposed@*/ constraintList functionClause_getRequires (functionClause) /*@*/ ;
+extern /*@exposed@*/ metaStateConstraint functionClause_getMetaConstraint (functionClause) /*@*/ ;
 
 extern /*@only@*/ stateClause functionClause_takeState (functionClause p_fc) /*@modifies p_fc@*/ ;
 extern /*@only@*/ constraintList functionClause_takeEnsures (functionClause p_fc) /*@modifies p_fc@*/ ;
 extern /*@only@*/ constraintList functionClause_takeRequires (functionClause p_fc) /*@modifies p_fc@*/ ;
+extern /*@only@*/ metaStateConstraint functionClause_takeMetaConstraint (functionClause p_fc) /*@modifies p_fc@*/ ;
 extern /*@only@*/ warnClause functionClause_takeWarn (functionClause p_fc) /*@modifies p_fc@*/ ;
 
 extern bool functionClause_matchKind (functionClause p_p, functionClauseKind p_kind) /*@*/ ;

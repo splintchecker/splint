@@ -27,6 +27,9 @@ abst_typedef /*@null@*/ genericTable valueTable;
 abst_typedef /*@null@*/ genericTable metaStateTable;
 abst_typedef /*@null@*/ genericTable annotationTable;
 abst_typedef /*@null@*/ struct s_metaStateInfo *metaStateInfo;
+abst_typedef struct s_metaStateConstraint *metaStateConstraint;
+abst_typedef struct s_metaStateSpecifier *metaStateSpecifier;
+abst_typedef /*@null@*/ struct s_metaStateExpression *metaStateExpression;
 
 abst_typedef /*@null@*/ struct s_functionClause *functionClause;
 abst_typedef /*@null@*/ struct s_functionClauseList *functionClauseList;
