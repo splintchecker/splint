@@ -435,6 +435,10 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    {
    case XPR_SIZEOF:
      t = exprData_getSingle (data);
+     while (exprNode_isInParens (t) )
+       {
+	 t = exprData_getUopNode (t->edata);
+       }
      s = exprNode_getSref (t);
      if (sRef_isFixedArray(s) )
       {
@@ -443,6 +447,15 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 	size = (int) sRef_getArraySize(s);
 	ret = constraintExpr_makeIntLiteral (size);
       }
+     else if ( exprNode_isStringLiteral (t) )
+      {
+	cstring str; 
+	int size;
+
+	str =  multiVal_forceString(exprNode_getValue(t) );
+	size = cstring_length (str) + 1;
+	ret = constraintExpr_makeIntLiteral (size);
+      } 
      else
        {
 	 DPRINTF ((message ("could not determine the size of %s", exprNode_unparse (e) ) ) );
