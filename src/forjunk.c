@@ -176,6 +176,8 @@ static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintLis
   ret = constraintList_makeNew();
   constraintList_elements (c, el)
     {
+      llassert (constraint_isDefined (el));
+
       if (incVar (el) )
 	{
 	  constraint temp;

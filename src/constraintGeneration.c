@@ -892,10 +892,10 @@ if (lltok_isLe_Op (tok) )
      tempList = constraintList_addList (tempList, t2->falseEnsuresConstraints);
      temp = tempList;
      tempList = constraintList_logicalOr (tempList, t1->falseEnsuresConstraints);
-     constraintList_free(temp);
-
-      e->falseEnsuresConstraints =constraintList_addList(e->falseEnsuresConstraints, tempList);
-      
+     constraintList_free (temp);
+     
+     /* evans - was constraintList_addList - memory leak detected by lclint */
+     e->falseEnsuresConstraints =constraintList_addListFree (e->falseEnsuresConstraints, tempList);
    }
  else if (lltok_isOr_Op (tok) )
   {
@@ -912,17 +912,13 @@ if (lltok_isLe_Op (tok) )
       tempList = constraintList_logicalOr (tempList, t1->trueEnsuresConstraints);
       constraintList_free(temp);
 
-
-      e->trueEnsuresConstraints =constraintList_addListFree(e->trueEnsuresConstraints, tempList);
+      e->trueEnsuresConstraints = constraintList_addListFree(e->trueEnsuresConstraints, tempList);
       tempList = constraintList_undefined;
-
-      
     }
  else
     {
       DPRINTF((message("%s is not a boolean operation", lltok_unparse(tok) ) ));
-    }
-  
+    } 
 }
 
 void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@observer@*/ /*@temp@*/ fileloc sequencePoint)

@@ -35,20 +35,20 @@
 
 /*@iter constraintList_elements_private_only (sef constraintList x, yield only constraint el); @*/
 # define constraintList_elements_private_only(x, m_el) \
-   { int m_ind; constraint *m_elements = &((x)->elements[0]); \
+   { if (constraintList_isDefined (x)) { int m_ind; constraint *m_elements = &((x)->elements[0]); \
      for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
        { constraint m_el = *(m_elements++); 
 
-# define end_constraintList_elements_private_only }}
+# define end_constraintList_elements_private_only }}}
 
 
-  /*@iter constraintList_elements_private (sef constraintList x, yield  constraint el); @*/
+/*@iter constraintList_elements_private (sef constraintList x, yield  constraint el); @*/
 # define constraintList_elements_private(x, m_el) \
-   { int m_ind; constraint *m_elements = &((x)->elements[0]); \
+   { if (constraintList_isDefined (x)) { int m_ind; constraint *m_elements = &((x)->elements[0]); \
      for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
        { constraint m_el = *(m_elements++); 
 
-# define end_constraintList_elements_private }}
+# define end_constraintList_elements_private }}}
 
 
 constraintList constraintList_makeNew ()
@@ -69,6 +69,8 @@ constraintList_grow (constraintList s)
   int i;
   constraint *newelements; 
 
+  llassert (constraintList_isDefined (s));
+
   s->nspace += constraintListBASESIZE;
   newelements = (constraint *) dmalloc (sizeof (*newelements)
 				     * (s->nelements + s->nspace));
@@ -86,6 +88,8 @@ constraintList_grow (constraintList s)
 constraintList 
 constraintList_add (/*@returned@*/ constraintList s, /*@only@*/ constraint el)
 {
+  llassert (constraintList_isDefined (s));
+
   /*drl7x */
   //   el = constraint_simplify (el);
   if (constraintList_resolve (el, s) )
@@ -170,6 +174,11 @@ constraintList_print (/*@temp@*/ constraintList s) /*@*/
   int i;
   cstring st = cstring_undefined;
   bool first = TRUE;
+  
+  if (!constraintList_isDefined (s))
+    {
+      return cstring_makeLiteral ("<undefined>");
+    }
 
   if (s->nelements == 0)
     {
@@ -241,6 +250,11 @@ constraintList_printDetailed (constraintList s)
   int i;
   cstring st = cstring_undefined;
   bool first = TRUE;
+
+  if (!constraintList_isDefined (s))
+    {
+      return cstring_makeLiteral ("<undefined>");
+    }
 
   if (s->nelements == 0)
     {

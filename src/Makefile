@@ -106,8 +106,6 @@ ifdef BISON
 	-@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
 	@$(CAT) bison.head cgrammar.tab.h bison.reset > Headers/cgrammar_tokens.h
 	@$(RM) cgrammar.tab.c cgrammar.tab.h
-	chmod 200 cgrammar.c 
-	chmod 200 Headers/cgrammar_tokens.h
 else
 	$(CP) cgrammar.c.der cgrammar.c
 endif
@@ -119,8 +117,6 @@ ifdef BISON
 #	@$(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak
 	@$(CAT) bison.head mtgrammar.tab.h bison.reset > Headers/mtgrammar_tokens.h
 	@$(RM) mtgrammar.tab.c mtgrammar.tab.h
-	chmod 200 mtgrammar.c 
-	chmod 200 Headers/mtgrammar_tokens.h
 else
 	$(CP) mtgrammar.c.der mtgrammar.c
 endif
@@ -144,9 +140,7 @@ endif
 cscanner.c : cscanner.c.der cscanner.l
 ifdef FLEX				
 	$(FLEX) $(LFLAGS) cscanner.l 
-	-chmod 600 cscanner.c
 	$(CAT) flex.head lex.yy.c flex.reset > cscanner.c
-	chmod 200 cscanner.c
 else
 	$(CP) cscanner.c.der cscanner.c
 endif
