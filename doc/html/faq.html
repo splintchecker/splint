@@ -27,13 +27,12 @@
       </a></li>
       <li><a href="#quest5">Does Splint handle C++?<br />
       </a></li>
-      <li style="list-style: none">
         <h4><a href="#install">Installation</a></h4>
       </li>
       <li><a href="#quest6">I downloaded the Splint .tgz file but can't figure out how to
       extract it. There is no 'z' option on the tar on my system.<br />
       </a></li>
-      <li><a href="#quest7">I want to use Splint in win2000. How do I do that?<br />
+      <li><a href="#quest7">I want to use Splint in Windows. How do I do that?<br />
       </a></li>
       <li><a href="#quest8">I have installed Splint for Windows 2000. Where should I put
       the ".splintrc" file?<br />
@@ -143,7 +142,7 @@
       <li>
         <p><a id="quest9" name="quest9">Which compilers does Splint support?</a></p>
         <blockquote>
-          It is independent from your compiler.<br />
+          Splint is independent from your compiler.  It should be able to handle code written for any compiler as long as the code is C99 compliant. <br />
           <br />
         </blockquote>
       </li>
@@ -172,27 +171,20 @@
         </blockquote>
       </li>
       <li>
-        <p><a id="quest7" name="quest7">I want to use Splint in win2000. How do I do
+        <p><a id="quest7" name="quest7">I want to use Splint in Windows. How do I do
         that?</a></p>
         <blockquote>
-          See <a href="http://www.splint.org/">www.splint.org</a> for information on
-          Splint.<br />
+          See <a href="http://splint.org/win32.html/">http://splint.org/win32.html</a> for instructions on obtaining and installing Splint on Windows.<br />
           <br />
-           
-          <p><a
-          href="http://www.splint.org/win32.html">http://www.splint.org/win32.html</a>
-          for Windows instructions.</p>
-        </blockquote>
+	</blockquote>
       </li>
       <li>
         <p><a id="quest8" name="quest8">I have installed Splint for Windows 2000. Where
         should I put the ".splintrc" file?</a></p>
         <blockquote>
           For Win32, Splint looks for splint.rc instead of .splintrc due to the DOS
-          filename problems. It will look first in the current directory, then in<br />
-          <br />
-           
-          <p>your home directory. See the Splint manual for more information.</p>
+          filename problems. It will look first in the current directory, then in           
+          your home directory. See the Splint manual for more information.<br / >
         </blockquote>
       </li>
       <li>
@@ -244,7 +236,12 @@
         when we run this tool first time. Hence we need to modify source code. Is it
         correct ?</a></p>
         <blockquote>
-          Usually not, but Splint doesn't support all C99 extensions.<br />
+        Usually not.<br />
+	Parse errors usually occur in code written for compilers that use nonstandard keywords. (See the <a href="#quest14">question</a> on using Splint for code development on embedded systems.)<br />
+
+	If you're getting parse errors make sure that the required libraries are included by using the +posixlib or +unixlib flags.  If you're using nonstandard gnu extensions the +gnuextensions flag make be helpful.<br />
+
+       However, Splint doesn't yet support all C99 extensions so there are some legitimate C programs that will need to be modified.<br />
           <br />
         </blockquote>
       </li>
@@ -252,9 +249,12 @@
         <p><a id="quest16" name="quest16">I heard that Splint can generate some spurious
         errors ( not genuine errors). Is it correct ?</a></p>
         <blockquote>
-          Yes, please see <a href="http://www.splint.org/">www.splint.org</a> for
-          details.<br />
-          <br />
+
+          Yes.  Many of the program properties that Splint checks are undecidable.  This means that any static analysis tool that can be run on real programs will either produce false positives or false negatives. Because
+of this and to improve efficiency, Splint makes some simplifying assumptions.  This means
+that Splint will occasionally produce spurious warnings or miss real errors.<br />
+
+However, often spurious errors can be fixed by adding additional annotations.<br />
         </blockquote>
       </li>
       <li>
