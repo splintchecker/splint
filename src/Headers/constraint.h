@@ -65,13 +65,13 @@ constraintExpr makePostOpInc (exprNode t1);
 
 
 bool fileloc_closer (fileloc  loc1, fileloc  loc2, fileloc  loc3);
-cstring constraintTerm_print (constraintTerm term);
+cstring constraintTerm_print (constraintTerm term) /*@*/;
 
-cstring arithType_print (arithType ar);
+cstring arithType_print (arithType ar) /*@*/;
 
-cstring constraintExpr_print (constraintExpr ex);
+cstring constraintExpr_print (constraintExpr ex) /*@*/;
 fileloc constraint_getFileloc (constraint c);
-cstring constraint_print (constraint c);
+cstring constraint_print (constraint c) /*@*/;
 constraint constraint_makeWriteSafeInt (exprNode po, int ind);
 
 exprNode exprNode_copyConstraints (exprNode dst, exprNode src);
