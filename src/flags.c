@@ -128,6 +128,11 @@ typedef enum {
   ARG_SPECIAL   /* ? */
 } argcode;
 
+# ifdef WIN32
+/* Make Microsoft VC++ happy */
+# pragma warning (disable:4715)
+# endif
+
 static /*@observer@*/ cstring argcode_unparse (argcode arg)
 {
   switch (arg) 
@@ -143,14 +148,10 @@ static /*@observer@*/ cstring argcode_unparse (argcode arg)
     case ARG_SPECIAL:
       BADBRANCH;
     }
-# ifdef WIN32
-/* Make Microsoft VC++ happy */
-# pragma warning (disable:4715)
-# endif
 }      
 
 # ifdef WIN32
-/* # pragma warning (enable:4715)  */
+# pragma warning (default : 4715)
 # endif
 
 typedef struct { 

@@ -51,8 +51,9 @@
 /*@notfunction@*/
 # define MOVECHAR()   do { *bufptr++ = c; c = *currentLine++; colNumber++; } while (FALSE) 
 
-/*@constant static int MAXCHAR;@*/
-# define MAXCHAR 512      
+/* evans 2003-04-21: changed name to avoid conflict with MS VC++ */
+/*@constant static int SCANMAXCHAR;@*/ 
+# define SCANMAXCHAR 512      
 
 /*@constant static int TABSIZE;@*/
 # define TABSIZE 8	
@@ -66,7 +67,7 @@ static int startCol;
 static bool reportEOL;		
 static bool reportComments;	
 
-static char tokenBuffer[MAXCHAR];
+static char tokenBuffer[SCANMAXCHAR];
 
 static const charClassData charClassDef[] =
 {

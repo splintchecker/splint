@@ -1076,13 +1076,13 @@ sRef_getUentry (sRef s)
     }
 }
 
-usymId
+int
 sRef_getParam (sRef s)
 {
   llassert (sRef_isReasonable (s));
   llassert (s->kind == SK_PARAM);
 
-  return usymId_fromInt (s->info->paramno);
+  return s->info->paramno;
 }
 
 bool

@@ -264,7 +264,7 @@ checkRefGlobParam (sRef base, /*@notnull@*/ exprNode e,
 	  else if (sRef_isAnyParam (base))
 	    {
 	      uentryList params = context_getParams ();
-	      int paramno = usymId_toInt (sRef_getParam (base));
+	      int paramno = sRef_getParam (base);
 
 	      if (paramno < uentryList_size (params))
 		{
@@ -319,7 +319,7 @@ checkRefGlobParam (sRef base, /*@notnull@*/ exprNode e,
 	  else if (sRef_isAnyParam (base) && !(sRef_isOnly (base)))
 	    {
 	      uentryList params = context_getParams ();
-	      int paramno = usymId_toInt (sRef_getParam (base));
+	      int paramno = sRef_getParam (base);
 	      
 	      if (paramno < uentryList_size (params))
 		{

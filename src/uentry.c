@@ -5772,6 +5772,11 @@ uentry_getGlobs (uentry l)
     }
 }
 
+# ifdef WIN32
+/* Make Microsoft VC++ happy */
+# pragma warning (disable : 4715) 
+# endif
+
 /*@observer@*/ sRefSet
 uentry_getMods (uentry l)
 {
@@ -5799,10 +5804,6 @@ uentry_getMods (uentry l)
     {
       BADBRANCH;
     }
-# ifdef WIN32
-/* Make Microsoft VC++ happy */
-# pragma warning (disable : 4715) 
-# endif
 }
 
 ekind

@@ -4,10 +4,10 @@
 /*@-constmacros@*/
 
 /* The directory where Splint's library files live */
-#define DEFAULT_LARCHPATH ".;C:/splint-3.0.1.6/lib"
+#define DEFAULT_LARCHPATH ".;C:/splint/lib"
 
 /* Splint's imports directory */
-#define DEFAULT_LCLIMPORTDIR ".;C:/splint-3.0.1.6/imports"
+#define DEFAULT_LCLIMPORTDIR ".;C:/splint/imports"
 
 /* system include directory */
 #define GCC_INCLUDE_DIR "C:/include"
@@ -19,16 +19,16 @@
 #define UNAME "WIN32"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using Microsoft Visual C++ 6.0"
+#define LCL_COMPILE "Compiled using Microsoft Visual C++ 7.0"
 
 /* Splint's version number */
-#define LCL_PARSE_VERSION "Splint 3.0.1.7"
+#define LCL_PARSE_VERSION "Splint 3.1.0"
 
 /* Define to disable support LCL files */
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.1.7 --- 11 Mar 2002"
+#define SPLINT_VERSION "Splint 3.1.0 --- 20 Apr 2003"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "C:/include"

@@ -3133,7 +3133,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 
 	      if (sRef_isObserver (b))
 		{
-		  exprNode e = exprNodeList_nth (args, usymId_toInt (sRef_getParam (rb)));
+		  exprNode e = exprNodeList_nth (args, sRef_getParam (rb));
 		  
 		  if (optgenerror 
 		      (FLG_MODOBSERVER,

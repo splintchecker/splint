@@ -140,19 +140,22 @@ static /*@null@*/ /*@exposed@*/ void *ghbucket_lookup (ghbucket p_h, cstring p_k
 static void
 ghbucket_add (/*@notnull@*/ ghbucket h, /*@only@*/ ghentry e)
 {
-    void *exloc = ghbucket_lookup (h, e->key);
-    
-    if (exloc != NULL) {
-      llassert (FALSE);
-    }
-
-    if (h->nspace == 0) {
-	ghbucket_grow (h);
-    }
-    
-    h->entries[h->size] = e;
-    h->size++;
-    h->nspace--;
+  void *exloc = ghbucket_lookup (h, e->key);
+  
+  if (exloc != NULL) {
+    llcontbug (message ("ghbucket_add: adding duplicate entry: %s",
+			e->key));
+    ghentry_free (e);
+    return;
+  }
+  
+  if (h->nspace == 0) {
+    ghbucket_grow (h);
+  }
+  
+  h->entries[h->size] = e;
+  h->size++;
+  h->nspace--;
 }
 
 static int

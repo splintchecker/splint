@@ -384,6 +384,10 @@ nocheck:
 test:
 	${MAKE} ; cd ../test; ${MAKE} --no-print-directory
 
+.PHONY: libs
+libs:
+	${MAKE} ; cd ../lib; ${MAKE} --no-print-directory
+
 ### Automake generates wrong tags
 .PHONY: etags
 etags:
