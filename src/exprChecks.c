@@ -894,9 +894,9 @@ void exprNode_checkFunctionBody (exprNode body)
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
   constraintList c, t;
-  /* drl added 8-8-2000 */
 
-  //return;
+
+  //  return;
   
   exprNode_generateConstraints (body);
   

@@ -570,11 +570,13 @@ constraintList uentry_getFcnPreconditions (uentry ue)
 	      uentry_makeVarFunction (ue);
 	    }
 
-	  llassert (uentry_isFunction (ue));
+	  //llassert (uentry_isFunction (ue));
 	  //llassert ((ue->info->fcn->preconditions));
 
 	  if (!uentry_isFunction (ue))
 	    {
+	      BPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
+				  uentry_unparse (ue) ) ) );
 	      return constraintList_undefined;
 	    }
 	  
