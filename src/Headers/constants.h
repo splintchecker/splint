@@ -210,7 +210,7 @@
 */
 
 /*@constant float SPLINT_LIBVERSION; @*/
-# define SPLINT_LIBVERSION 2.6
+# define SPLINT_LIBVERSION 2.7
 
 /*
 ** Flex doesn't pre-process input, so remember to copy these manually
