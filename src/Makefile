@@ -42,18 +42,18 @@ SYSTEM_LIBDIR   = "/usr/include"
 ### 
 
 ### directory for lclint libraries
-LIBDIR     = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/lib
+LIBDIR     = /a/apollo/af9/drl7x/re/LCLintDev/lib
 
 ### directory for lclint standard imports
-IMPORTSDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/imports
+IMPORTSDIR = /a/apollo/af9/drl7x/re/LCLintDev/imports
 
 ### directory for lclint binary
-INSTALLDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/bin
+INSTALLDIR = /a/apollo/af9/drl7x/re/LCLintDev/bin
 
 ### this should be the complete path for the directory where this
 ### Makefile is, with no trailing / or spaces.
 
-BASEDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev
+BASEDIR = /a/apollo/af9/drl7x/re/LCLintDev
 
 ###
 ### Then, run:
@@ -93,7 +93,7 @@ SHELL  = /bin/csh
 ###
 
 ### installation command
-INSTALL      = /usr/bin/install -c
+INSTALL      = cp
 INSTALLFLAGS =           
 
 ### this works with nfs, change to whatever is needed to make
@@ -110,13 +110,13 @@ MAKEEXE = chmod 755
 ###              without changes using cc on several platforms.
 ###
 
-CC = gcc  -DSTDC_HEADERS=1
+CC = /opt/GCC281/bin/gcc  -DSTDC_HEADERS=1 -g -Wall
 
 ###
 ### optimizing compiler --- add optimization flags here
 ### 
 
-CCOPT = $(CC) -O2
+CCOPT = $(CC)
 
 ###
 ### link flags --- this links the lex or flex library
@@ -129,8 +129,8 @@ LINKFLAGS = -ll
 ### (Note: yacc will probably not work; lex might work but is not recommended.)
 ###
 
-BISON     = /usr/bin/bison
-FLEX      = /usr/bin/flex
+BISON     = /gnu/bin//bison
+FLEX      = /gnu/bin//flex
 
 ###
 ### is the test suite available? (must be full path here)
