@@ -8,7 +8,9 @@
 # define BASIC_H
 
 # ifdef HAVE_CONFIG_H
-# include "config.h"
+# include "../../config.h"
+# else
+# error "No config.h file!"
 # endif
 
 # include <stdlib.h>

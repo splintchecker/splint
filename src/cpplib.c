@@ -3445,7 +3445,7 @@ special_symbol (hashNode hp, cppReader *pfile)
       break;
 
     case T_VERSION:
-      buf = message ("\"%s\"", cstring_makeLiteralTemp (CPP_VERSION));
+      buf = cstring_makeLiteral ("\"--- cpp version---\"");
       break;
 
 #ifndef NO_BUILTIN_SIZE_TYPE

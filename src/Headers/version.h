@@ -12,9 +12,6 @@
 /*@constant observer char *SPLINT_MAINTAINER; @*/
 # define SPLINT_MAINTAINER "splint-bug@cs.virginia.edu"
 
-/*@constant observer char *CPP_VERSION;@*/
-# define CPP_VERSION "cygnus-2.7.2-970404"
-
 # else
 # error "Multiple include"
 # endif
