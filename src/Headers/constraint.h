@@ -37,6 +37,7 @@ INTLITERAL
 
 
 struct _constraintTerm {
+  constraintType constrType;
   fileloc loc;
   constraintTermValue value;
   constraintTermType kind;
@@ -45,10 +46,10 @@ struct _constraintTerm {
 abst_typedef struct _constraintTerm * constraintTerm;
 
 struct constraintExpr_ {
-  constraintType c1;
-  constraintTerm t1;
+
+  constraintTerm term;
   constraintExprOp op;
-  struct constraintExpr_ * e1;
+  struct constraintExpr_ * expr;
 };
 # define constraintExpr_undefined ((constraintExpr)NULL)
 
@@ -57,10 +58,9 @@ abst_typedef struct constr_ * constr;
 
 
 struct _constraint {
-  constraintType c1;
-  constraintTerm t1;
+  constraintExpr lexpr;
   arithType       ar;
-  constraintExpr  e1;
+  constraintExpr  expr;
   bool post;
 } ;
 
@@ -82,9 +82,9 @@ constraintTerm exprNode_makeConstraintTerm (/*@only@*/ exprNode e);
 constraintTerm intLit_makeConstraintTerm (int p_i);
 
 /*@special@*/ constraintExpr makeConstraintExpr (/*@only@*/ /*@notnull@*/ constraintTerm term)
- /*@post:isnull result->e1@*/
+ /*@post:isnull result->expr@*/
      /*@post:notnull result->t1@*/
-     /*@defines result->e1, result->t1, result->c1@, result->op*/;
+     /*@defines result->expr, result->t1, result->c1@, result->op*/;
      
 constraintExpr makeConstraintExprIntlit (int p_i);
 
@@ -99,24 +99,26 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode p_t1, exprNode p_t2, fi
 constraint constraint_makeEnsureMinReadAtMost (exprNode po, exprNode ind, fileloc sequencePoint);
 
 constraint constraint_makeSideEffectPostIncrement (exprNode t1,  fileloc p_sequencePoint);
-void constraintType_print (constraintType c1);
+cstring constraintType_print (constraintType c1);
 
+constraint constraint_copy (constraint c);
 
 constraintExpr makePostOpInc (exprNode t1);
 
 
 
-void constraintTerm_print (constraintTerm term);
+cstring constraintTerm_print (constraintTerm term);
 
-void arithType_print (arithType ar);
+cstring arithType_print (arithType ar);
 
-void constraintExpr_print (constraintExpr ex);
+cstring constraintExpr_print (constraintExpr ex);
 
-void constraint_print (constraint c);
+cstring constraint_print (constraint c);
 /*@=czechfcns*/
-//#warning take this out
+#warning take this out
 #include "constraintList.h"
 
+#include "constraintTerm.h"
 
 
 

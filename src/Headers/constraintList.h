@@ -25,11 +25,18 @@ abst_typedef struct _constraintList
 extern /*@only@*/ constraintList constraintList_new(void);
 extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) ;
 
+extern constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@only@*/constraintList new);
+
+
 extern constraintList constraintList_copy (constraintList p_s);
 
 //extern /*@only@*/ cstring constraintList_unparse (constraintList p_s) ;
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
+
+extern constraintList constraintList_copy (constraintList s);
+
+extern cstring constraintList_print (constraintList s);
 /*@constant int constraintListBASESIZE;@*/
 # define constraintListBASESIZE SMALLBASESIZE
 

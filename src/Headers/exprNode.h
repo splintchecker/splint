@@ -160,7 +160,8 @@ struct _exprNode
   /*@relnull@*/ exprData edata;
   cstring etext;
   environmentTable environment;
-  constraintList constraints;
+  constraintList requiresConstraints;
+  constraintList ensuresConstraints;
 } ;
 
 /*@constant null exprNode exprNode_undefined; @*/
