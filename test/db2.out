@@ -1,4 +1,2 @@
-
-< reading spec employee.lcl >
-employee.lcl:2: Cannot find standard import file: stdio.lcs
+employee.lcl:2:1: Cannot find standard import file: stdio.lcs
 *** Cannot continue.
