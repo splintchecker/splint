@@ -198,3 +198,36 @@ Finished checking --- 1 code warning, as expected
 ignore.c:10: Return value (type bool) ignored: fb()
 
 Finished checking --- 1 code warning, as expected
+
+setChar.c:5: Possible out-of-bounds store:
+    buf[10]
+    Unable to resolve constraint:
+    requires 9 >= 10
+     needed to satisfy precondition:
+    requires maxSet(buf @ setChar.c:5) >= 10
+
+Finished checking --- 1 code warning, as expected
+
+multiError.c:4: Possible out-of-bounds store:
+    buf[2]
+    Unable to resolve constraint:
+    requires maxSet(buf @ multiError.c:4) >= 2
+     needed to satisfy precondition:
+    requires maxSet(buf @ multiError.c:4) >= 2
+
+Finished checking --- 1 code warning, as expected
+
+updateMyEnv.c:16: Possible out-of-bounds store:
+    strcpy(str, tmp)
+    Unable to resolve constraint:
+    requires maxSet(str @ updateMyEnv.c:16) >=
+    maxRead(getenv("MYENV") @ updateMyEnv.c:14)
+     needed to satisfy precondition:
+    requires maxSet(str @ updateMyEnv.c:16) >=
+    maxRead(tmp @ updateMyEnv.c:16)
+     derived from strcpy precondition: requires
+    maxSet(<parameter 1>) >= maxRead(<parameter 2>)
+
+Finished checking --- 1 code warning, as expected
+
+Finished checking --- no warnings

@@ -21,7 +21,7 @@ DIFF = diff
 
 all: sample null mstring usedef bool palindrome only stack rstring unique \
      exposure modify globals annotglobs clauses order loop switch noeffect \
-     ignore
+     ignore setChar multiError updateMyEnv updateMyEnvGood
 
 ### In line example
 .PHONY: sample
@@ -138,9 +138,30 @@ ignore: ignore.c
 	$(SPLINT) $(SPLINTFLAGS) bool.h ignore.c -retvalint -expect 1
 
 ### Figure 23:
-.PHONY: names
+.PHONY: Anames
 names: names.c
 	$(SPLINT) $(SPLINTFLAGS) names.c +distinctinternalnames +internalnamelookalike +isoreserved -expect 3
+
+### Figure ???:
+
+.PHONY: setChar
+setChar: setChar.c
+	$(SPLINT) $(SPLINTFLAGS) setChar.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+
+
+.PHONY: multiError
+multiError: multiError.c
+	$(SPLINT) $(SPLINTFLAGS) multiError.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+
+
+.PHONY: updateMyEnv
+updateMyEnv: updateMyEnv.c
+	$(SPLINT) $(SPLINTFLAGS) updateMyEnv.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+
+
+.PHONY: updateMyEnvGood
+updateMyEnvGood: updateMyEnvGood.c
+	$(SPLINT) $(SPLINTFLAGS) updateMyEnvGood.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 0
 
 clean: 
 	-rm -f core a.out *.*~
