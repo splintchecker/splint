@@ -1611,7 +1611,19 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
       
       if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	{
-	  BADBRANCH; /* should conjoin constraints? */
+	  /* drl 11-29-2001
+	     I changed this so it didn't appear as an LCLint bug
+	     among other things this gets triggered when there is
+	     a function with two requires clauses.  Now LCLint
+	     prints an error and tries to conjoin the lists.
+	  */
+      llparseerror
+	(message ("Duplicate precondition list"
+		  "Attemping the conjoin the requires clauses"
+		  ));
+
+
+	  /* should conjoin constraints? */
 	  /*@notreached@*/ 
 	  ue->info->fcn->preconditions = functionConstraint_conjoin (ue->info->fcn->preconditions, preconditions);
 	}
