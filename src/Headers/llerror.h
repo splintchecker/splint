@@ -142,6 +142,7 @@ extern void lclRedeclarationError (ltoken p_id);
 # endif
 
 extern void flagWarning (/*@observer@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern void llerror_flagWarning (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
 
 extern /*@exits@*/ void llbugaux (cstring p_file, int p_line, /*@only@*/ cstring p_s) 
    /*@globals g_msgstream, g_currentloc@*/

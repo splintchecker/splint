@@ -154,7 +154,7 @@ llmsgplain (/*@only@*/ cstring s)
   closeMessage ();
 }
 
-void flagWarning (cstring s)
+void llerror_flagWarning (cstring s)
 {
   if (context_getFlag (FLG_WARNFLAGS))
     {
@@ -162,12 +162,16 @@ void flagWarning (cstring s)
 
       if (fileloc_isBuiltin (g_currentloc))
 	{
-	  llmsg (message ("Warning: %s", s));
+	  llmsg (message ("Warning: %q", s));
 	}
       else
 	{
-	  llgenmsg (message ("Warning: %s", s), g_currentloc);
+	  llgenmsg (message ("Warning: %q", s), g_currentloc);
 	}
+    }
+  else
+    {
+      cstring_free (s);
     }
 }
 

@@ -3,19 +3,19 @@ Finished LCLint checking --- no code errors found
 
 czechnames.c:5:5: Variable michelob_light name violates Czech naming
     convention.  Czech prefix michelob is not the name of a type.
-  Variable name is not consistent with Czech naming convention. (-czechvars
-  will suppress message)
+  Variable name is not consistent with Czech naming convention. (Setting either
+  -czechvars or -namechecks will suppress message)
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
   Function or iterator name is not consistent with Czech naming convention.
-  (-czechfcns will suppress message)
+  (Setting either -czechfcns or -namechecks will suppress message)
 
 Finished LCLint checking --- 2 code errors found, as expected
 
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
   Function or iterator name is not consistent with Czech naming convention.
-  (-czechfcns will suppress message)
+  (Setting either -czechfcns or -namechecks will suppress message)
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -24,6 +24,8 @@ czechnames.c:4:5: Variable pivo_pyet name violates Czech naming convention.
   Use +accessczech to allow access to type <t> in functions named <t>_<name>.
 czechnames.c:5:5: Variable michelob_light name violates Czech naming
     convention.  Czech prefix michelob is not the name of a type.
+  Variable name is not consistent with Czech naming convention. (Setting either
+  -czechvars or -namechecks will suppress message)
 czechnames.c:8:17: Constant pivo_devenast name violates Czech naming
     convention. Czech prefix pivo names an abstract type that is not
     accessible.

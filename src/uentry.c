@@ -7701,22 +7701,25 @@ checkMetaState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 			}
 		      else
 			{
-			  if (mustConform 
-			      && optgenerror 
-			      (FLG_INCONDEFS,
-			       message ("%s %q inconsistently %rdeclared %s %s, %s as %s",
-					uentry_ekindName (unew),
-					uentry_getName (unew),
-					uentry_isDeclared (old),
-					fcnErrName (unew),
-					metaStateInfo_unparseValue (msinfo, 
-								    stateValue_getValue (newval)),
-					uentry_specOrDefName (old),
-					metaStateInfo_unparseValue (msinfo,
-								    stateValue_getValue (oldval))),
-			       uentry_whereDeclared (unew)))
+			  if (!stateValue_isError (newval))
 			    {
-			      uentry_showWhereSpecified (old);
+			      if (mustConform 
+				  && optgenerror 
+				  (FLG_INCONDEFS,
+				   message ("%s %q inconsistently %rdeclared %s %s, %s as %s",
+					    uentry_ekindName (unew),
+					    uentry_getName (unew),
+					    uentry_isDeclared (old),
+					    fcnErrName (unew),
+					    metaStateInfo_unparseValue (msinfo, 
+									stateValue_getValue (newval)),
+					    uentry_specOrDefName (old),
+					    metaStateInfo_unparseValue (msinfo,
+									stateValue_getValue (oldval))),
+				   uentry_whereDeclared (unew)))
+				{
+				  uentry_showWhereSpecified (old);
+				}
 			    }
 			}
 		      

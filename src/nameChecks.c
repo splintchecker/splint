@@ -340,8 +340,8 @@ checkPrefix (uentry ue)
       
       if (!matchPrefix (name, context_getString (flag)))
 	{
-	  if (optgenerror
-	      (flag,
+	  if (optgenerror2
+	      (flag, FLG_NAMECHECKS,
 	       message ("%s %s name is not consistent with %s "
 			"namespace prefix \"%s\"",
 			uentry_ekindName (ue),
@@ -418,8 +418,8 @@ checkPrefix (uentry ue)
 		  
 		  if (matchPrefix (name, context_getString (rcode)))
 		    {
-		      if (optgenerror
-			  (code,
+		      if (optgenerror2
+			  (code, FLG_NAMECHECKS,
 			   message
 			   ("%s %s name is not a %s (it is a %s), "
 			    "but matches the %s "
@@ -530,8 +530,8 @@ checkNationalName (uentry ue)
 	    {
 	      if (isupper ((unsigned char) c))
 		{
-		  if (optgenerror
-		      (FLG_CZECHOSLOVAKTYPES,
+		  if (optgenerror2
+		      (FLG_CZECHOSLOVAKTYPES, FLG_NAMECHECKS,
 		       message
 		       ("%s %q name violates Czechoslovak naming convention.  "
 			"Czechoslovak datatype names should not use uppercase "
@@ -547,8 +547,8 @@ checkNationalName (uentry ue)
 
 	      if (c == '_' && charno != 2 && charno != 3)
 		{
-		  if (optgenerror
-		      (FLG_CZECHOSLOVAKTYPES,
+		  if (optgenerror2
+		      (FLG_CZECHOSLOVAKTYPES, FLG_NAMECHECKS,
 		       message ("%s %q name violates Czechoslovak naming "
 				"convention.  Czechoslovak datatype names "
 				"should not use the _ charater.",
@@ -573,8 +573,8 @@ checkNationalName (uentry ue)
 	  
 	  if (!okay)
 	    {
-	      if (optgenerror
-		  (czechoslovakflag,
+	      if (optgenerror2
+		  (czechoslovakflag, FLG_NAMECHECKS,
 		   message ("%s %q name is not consistent with Czechoslovak "
 			    "naming convention.",
 			    uentry_ekindName (ue),
@@ -606,8 +606,8 @@ static bool checkCzechName (uentry ue, flagcode czechflag, bool report)
 	    {
 	      if (report)
 		{
-		  if (optgenerror
-		      (FLG_CZECHTYPES,
+		  if (optgenerror2
+		      (FLG_CZECHTYPES, FLG_NAMECHECKS,
 		       message 
 		       ("%s %q name violates Czech naming convention.  "
 			"Czech datatype names should not use the _ charater.",
@@ -641,8 +641,8 @@ static bool checkCzechName (uentry ue, flagcode czechflag, bool report)
 		{
 		  if (report)
 		    {
-		      if (optgenerror
-			  (czechflag,
+		      if (optgenerror2
+			  (czechflag, FLG_NAMECHECKS,
 			   message ("%s %q name is not consistent with Czech "
 				    "naming convention.  The name should "
 				    "begin with %s_",
@@ -669,8 +669,8 @@ static bool checkCzechName (uentry ue, flagcode czechflag, bool report)
 		{
 		  if (report)
 		    {
-		      if (optgenerror
-			  (czechflag,
+		      if (optgenerror2
+			  (czechflag, FLG_NAMECHECKS,
 			   message ("%s %q name is not consistent with Czech "
 				    "naming convention.  Accessible types: %q",
 				    uentry_ekindName (ue),
@@ -817,8 +817,8 @@ static bool checkCzechName (uentry ue, flagcode czechflag, bool report)
 		    {
 		      if (report)
 			{
-			  if (optgenerror
-			      (czechflag,
+			  if (optgenerror2
+			      (czechflag, FLG_NAMECHECKS,
 			       message 
 			       ("%s %q name violates Czech naming convention.  "
 				"Czech prefix %s is not the name of a type.",
@@ -861,8 +861,8 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 		{
 		  if (report)
 		    {
-		      if (optgenerror
-			  (FLG_SLOVAKTYPES,
+		      if (optgenerror2
+			  (FLG_SLOVAKTYPES, FLG_NAMECHECKS,
 			   message 
 			   ("%s %q name violates Slovak naming convention.  "
 			    "Slovak datatype names should not use uppercase "
@@ -896,8 +896,8 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 		{
 		  if (report)
 		    {
-		      if (optgenerror
-			  (slovakflag,
+		      if (optgenerror2
+			  (slovakflag, FLG_NAMECHECKS,
 			   message ("%s %q name is not consistent with Slovak "
 				    "naming convention.  Accessible types: %q",
 				    uentry_ekindName (ue),
@@ -920,8 +920,8 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 		    {
 		      if (report)
 			{
-			  if (optgenerror
-			      (slovakflag,
+			  if (optgenerror2
+			      (slovakflag, FLG_NAMECHECKS,
 			       message ("%s %q name is not consistent with "
 					"Slovak naming convention.  The "
 					"name should begin with %s followed "
@@ -1065,8 +1065,8 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 		    {
 		      if (report)
 			{
-			  if (optgenerror
-			      (slovakflag,
+			  if (optgenerror2
+			      (slovakflag, FLG_NAMECHECKS,
 			       message 
 			       ("%s %q name violates Slovak naming convention.  "
 				"Slovak prefix %s is not the name of a type.",
@@ -1163,8 +1163,8 @@ checkCppName (uentry ue)
   if (cstring_isDefined (cstring_bsearch (name, &cppNames[0],
 					  NCPPNAMES)))
     {
-      if (optgenerror
-	  (FLG_CPPNAMES,
+      if (optgenerror2
+	  (FLG_CPPNAMES, FLG_NAMECHECKS,
 	   message ("Name %s is a keyword or reserved word in C++",
 		    name),
 	   uentry_whereLast (ue)))
@@ -1228,8 +1228,8 @@ checkAnsiName (uentry ue)
   if (cstring_isDefined (cstring_bsearch (name, &reservedNames[0],
 					  NRESERVEDNAMES)))
     {
-      hasError |= optgenerror
-	(FLG_ANSIRESERVED,
+      hasError |= optgenerror2
+	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message ("Name %s is reserved for the standard library",
 		  name),
 	 uentry_whereLast (ue));
@@ -1240,8 +1240,8 @@ checkAnsiName (uentry ue)
     {
       if (fchar == '_')
 	{
-	  hasError |= optgenerror
-	    (FLG_ANSIRESERVED,
+	  hasError |= optgenerror2
+	    (FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	     message 
 	     ("Name %s is in the implementation name space (any identifier "
 	      "beginning with underscore)", 
@@ -1260,8 +1260,8 @@ checkAnsiName (uentry ue)
       if (fchar == '_' 
 	  && (schar == '_' || isupper ((int) schar)))
 	{
-	  hasError |= optgenerror
-	    (FLG_ANSIRESERVED,
+	  hasError |= optgenerror2
+	    (FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	     message 
 	     ("Name %s is in the implementation name space (any identifier "
 	      "beginning with underscore and either an uppercase letter or "
@@ -1280,8 +1280,8 @@ checkAnsiName (uentry ue)
   if (fchar == 'E' && (isdigit ((int) schar) 
 		       || isupper ((int) schar)))
     {
-      hasError |= optgenerror
-	(FLG_ANSIRESERVED,
+      hasError |= optgenerror2
+	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message 
 	 ("Name %s is reserved for future ANSI library extensions. "
 	  "Macros beginning with E and a digit or uppercase letter "
@@ -1302,8 +1302,8 @@ checkAnsiName (uentry ue)
 	  && (tchar == '_'))
       && (isupper ((int) rchar)))
     {
-      hasError |= optgenerror
-	(FLG_ANSIRESERVED,
+      hasError |= optgenerror2
+	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message
 	 ("Name %s is reserved for future ANSI library extensions.  "
 	  "Macros beginning with \"LC_\" and an uppercase letter may "
@@ -1323,8 +1323,8 @@ checkAnsiName (uentry ue)
 				  && isupper ((int) cstring_getChar (name, 5)))))
 	       || (isupper ((int) rchar))))
     {
-      hasError |= optgenerror
-	(FLG_ANSIRESERVED,
+      hasError |= optgenerror2
+	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message
 	 ("Name %s is reserved for future ANSI library extensions.  "
 	  "Macros that begin with SIG and an uppercase letter or SIG_ "
@@ -1366,8 +1366,8 @@ checkAnsiName (uentry ue)
 	   || (fchar == 't' && schar == 'o'))
 	  && (islower ((int) tchar)))
 	{
-	  hasError |= optgenerror
-	    (flg,
+	  hasError |= optgenerror2
+	    (flg, FLG_NAMECHECKS,
 	     message
 	     ("Name %s is reserved for future ANSI library extensions.  "
 	      "Functions beginning with \"is\" or \"to\" and a lowercase "
@@ -1418,8 +1418,8 @@ checkAnsiName (uentry ue)
 		    cstring_equalPrefix (name, "ldexp") ||
 		    cstring_equalPrefix (name, "log10"))))))
 	{
-	  hasError |= optgenerror
-	    (flg,
+	  hasError |= optgenerror2
+	    (flg, FLG_NAMECHECKS,
 	     message
 	     ("Name %s is reserved for future ANSI library extensions.  "
 	      "The names of all existing functions in <math.h> suffixed "
@@ -1443,8 +1443,8 @@ checkAnsiName (uentry ue)
       if (fchar == 's' && schar == 't' && tchar == 'r' 
 	  && (islower ((int) rchar)))
 	{
-	  hasError |= optgenerror
-	    (flg,
+	  hasError |= optgenerror2
+	    (flg, FLG_NAMECHECKS,
 	     message
 	     ("Name %s is reserved for future ANSI library extensions.  "
 	      "Functions that begin with \"str\" and a lowercase letter "
@@ -1465,8 +1465,8 @@ checkAnsiName (uentry ue)
 	   || (fchar == 'w' && schar == 'c' && tchar == 's'))
 	  && (islower ((int) rchar)))
 	{
-	  hasError |= optgenerror
-	    (flg,
+	  hasError |= optgenerror2
+	    (flg, FLG_NAMECHECKS,
 	     message
 	     ("Name %s is reserved for future ANSI library extensions.  "
 	      "Functions that begin with \"mem\" or \"wcs\" and a "
@@ -1504,8 +1504,8 @@ void checkParamNames (uentry ue)
 	    {
 	      if (noformal && !cstring_isDefined (fpfx))
 		{
-		  if (optgenerror
-		      (FLG_DECLPARAMNAME, 
+		  if (optgenerror2
+		      (FLG_DECLPARAMNAME, FLG_NAMECHECKS,
 		       message ("Declaration parameter has name: %q",
 				uentry_getName (p)),
 		       uentry_whereLast (p)))
@@ -1521,8 +1521,8 @@ void checkParamNames (uentry ue)
 		    {
 		      if (context_getFlag (FLG_NAMECHECKS))
 			{
-			  if (optgenerror
-			      (FLG_DECLPARAMPREFIX, 
+			  if (optgenerror2
+			      (FLG_DECLPARAMPREFIX, FLG_NAMECHECKS,
 			       message ("Declaration parameter name %s does not begin "
 					"with protoparamprefix (%s)",
 					pname, fpfx),
