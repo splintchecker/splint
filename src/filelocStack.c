@@ -59,9 +59,7 @@ filelocStack_grow (/*@notnull@*/ filelocStack s)
     
   for (i = 0; i < s->nelements; i++)
     {
-      /*drl bee: si*/
-      /*drl bee: si*/
-      s->elements[i] = oldelements[i];
+                  s->elements[i] = oldelements[i];
     }
   
   sfree (oldelements);
@@ -79,8 +77,7 @@ static void
     }
   
   s->free--;
-  /*drl bee: si*/
-  s->elements[s->nelements] = el;
+    s->elements[s->nelements] = el;
   s->nelements++;
 }
 
@@ -99,8 +96,7 @@ void filelocStack_clear (filelocStack s)
 
       for (i = 0; i < s->nelements; i++)
 	{
-	        /*drl bee: si*/
-	  fileloc_free (s->elements[i]);
+	        	  fileloc_free (s->elements[i]);
 	}
 
       s->free += s->nelements;
@@ -120,18 +116,15 @@ bool filelocStack_popPushFile (filelocStack s, fileloc el)
 
   for (i = s->nelements - 1; i >= 0; i--)
     {
-            /*drl bee: si*/
-      if (fileloc_sameBaseFile (s->elements[i], el))
+                  if (fileloc_sameBaseFile (s->elements[i], el))
 	{
 	  int j;
 	  
 	  for (j = i; j < s->nelements; j++)
 	    {
-	            /*drl bee: si*/
-	      fileloc_free (s->elements[j]);
+	            	      fileloc_free (s->elements[j]);
 	    }
-      /*drl bee: si*/
-	  s->elements[i] = el;
+      	  s->elements[i] = el;
 	  s->nelements = i + 1;
 	  return FALSE;
 	}
@@ -153,13 +146,11 @@ filelocStack_unparse (filelocStack s)
 	 {
 	   if (i == s->nelements - 1)
 	     {
-	             /*drl bee: si*/
-	       st = message ("%q %q", st, fileloc_unparse (s->elements[i]));
+	             	       st = message ("%q %q", st, fileloc_unparse (s->elements[i]));
 	     }
 	   else
 	     {
-	             /*drl bee: si*/
-	       st = message ("%q, %q", st, fileloc_unparse (s->elements[i]));
+	             	       st = message ("%q, %q", st, fileloc_unparse (s->elements[i]));
 	     }
 	 }
      }
@@ -178,8 +169,7 @@ int filelocStack_includeDepth (filelocStack s)
       /* the zeroth element doesn't count! */
       for (i = s->nelements - 1; i > 0; i--)
 	{
-	        /*drl bee: si*/
-	  if (!fileloc_isSpecialFile (s->elements[i]))
+	        	  if (!fileloc_isSpecialFile (s->elements[i]))
 	    {
 	      depth++;
 	    }
@@ -206,11 +196,9 @@ filelocStack_printIncludes (filelocStack s)
       /* don't show last two files pushed */
       for (i = s->nelements - 3; i >= 0; i--)
 	{
-	        /*drl bee: si*/
-	  if (i == 0 || !fileloc_isSpecialFile (s->elements[i]))
+	        	  if (i == 0 || !fileloc_isSpecialFile (s->elements[i]))
 	    {
-	            /*drl bee: si*/
-	      llgenindentmsg (cstring_makeLiteral ("Include site"),
+	            	      llgenindentmsg (cstring_makeLiteral ("Include site"),
 			      s->elements[i]);
 	    }
 	}
@@ -230,8 +218,7 @@ filelocStack_free (/*@only@*/ filelocStack s)
       int i;
       for (i = 0; i < s->nelements; i++)
 	{
-	        /*drl bee: si*/
-	  fileloc_free (s->elements[i]); 
+	        	  fileloc_free (s->elements[i]); 
 	}
       
       sfree (s->elements); 

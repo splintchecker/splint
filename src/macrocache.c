@@ -97,7 +97,7 @@ macrocache_free (macrocache s)
 
   for (i = 0; i < s->entries; i++)
     {
-     /*drl bee: si*/   mce_free (s->contents[i]);
+       mce_free (s->contents[i]);
     }
 
   sfree (s->contents);
@@ -115,7 +115,7 @@ macrocache_grow (macrocache s)
 
   for (i = 0; i < s->entries; i++)
     {
-      /*drl bee: dm*/    /*drl bee: si*/  s->contents[i] = oldcontents[i];
+       s->contents[i] = oldcontents[i];
     }
 
   sfree (oldcontents);
@@ -136,7 +136,7 @@ macrocache_addGenEntry (macrocache s, /*@only@*/ fileloc fl,
 
   if ((i = macrocache_exists (s, fl)) != DNE)
     {
-      /*drl bee: si*/   if (cstring_equal (def, s->contents[i]->def))
+        if (cstring_equal (def, s->contents[i]->def))
 	{
 	  fileloc_free (fl);
 	  cstring_free (def);
@@ -153,7 +153,7 @@ macrocache_addGenEntry (macrocache s, /*@only@*/ fileloc fl,
 	  */
 	  
 	  cstring_free (s->contents[i]->def);
-	  /*drl bee: si*/   s->contents[i]->def = def;
+	    s->contents[i]->def = def;
 
 	  fileloc_free (fl);
 	  return;
@@ -165,7 +165,7 @@ macrocache_addGenEntry (macrocache s, /*@only@*/ fileloc fl,
   }
 
   s->nspace--;
-  /*drl bee: si*/   s->contents[s->entries] = mce_create (fl, def, sup);
+    s->contents[s->entries] = mce_create (fl, def, sup);
   s->entries++;
 }
 
@@ -190,7 +190,7 @@ macrocache_exists (macrocache s, fileloc fl)
 
   for (i = 0; i < s->entries; i++)
     {
-  /*drl bee: si*/       if (fileloc_equal (s->contents[i]->fl, fl))
+        if (fileloc_equal (s->contents[i]->fl, fl))
 	return (i);
     }
 
@@ -205,7 +205,7 @@ macrocache_unparse (macrocache m)
 
   for (i = 0; i < m->entries; i++)
     {
-    /*drl bee: si*/     fileloc fl = m->contents[i]->fl;
+        fileloc fl = m->contents[i]->fl;
       cstring def = m->contents[i]->def;
       bool defined = m->contents[i]->defined;
       
@@ -277,9 +277,9 @@ static void pushString (/*@only@*/ cstring s)
 static void
 macrocache_processMacro (macrocache m, int i)
 {
-  /*drl bee: si*/   fileloc fl = m->contents[i]->fl;
+    fileloc fl = m->contents[i]->fl;
    
-   /*drl bee: si*/  m->contents[i]->defined = TRUE;
+    m->contents[i]->defined = TRUE;
 
   if (!fileId_equal (currentFile (), fileloc_fileId (fl)))
     {
@@ -339,7 +339,7 @@ extern void macrocache_processUndefinedElements (macrocache m)
     {
       for (i = 0; i < m->entries; i++) 
 	{
-	  /*drl bee: si*/   if (m->contents[i]->defined)
+	    if (m->contents[i]->defined)
 	    {
 	      ;
 	    }
@@ -380,7 +380,7 @@ extern /*@observer@*/ fileloc macrocache_processFileElements (macrocache m, cstr
 
   for (i = 0; i < m->entries; i++) 
     {
-   /*drl bee: si*/      if (m->contents[i]->defined)
+        if (m->contents[i]->defined)
 	{
 	  ;
 	}

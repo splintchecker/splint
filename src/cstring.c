@@ -265,7 +265,7 @@ void cstring_stripChars (cstring s, const char *clist)
 
       for (i = 0; i < size_toInt (size); i++)
 	{
-	  /*drl bee: is*/ 	
+	  	
 	  char c = s[i];
 	  
 	  if (strchr (clist, c) != NULL)
@@ -277,10 +277,10 @@ void cstring_stripChars (cstring s, const char *clist)
 	      
 	      for (j = i; j < size_toInt (size); j++)
 		{
-		  /*drl bee: is*/ /*drl bee: is*/ s[j] = s[j+1];
+		  s[j] = s[j+1];
 		}
 	      
-	      /*drl bee: is*/ s[size] = '\0'; 
+	      s[size] = '\0'; 
 	      i--;
 	    }
 	}
@@ -375,8 +375,7 @@ cmpcode cstring_genericEqual (cstring s, cstring t,
 	  t++;
 	}
 
-  /*drl bee: ib*/
-      /*drl bee: ib*/ 
+        
       if (*s == '\0' && *t != '\0')
 	{
 	  return CGE_DISTINCT;
@@ -592,7 +591,7 @@ cstring_clip (cstring s, size_t len)
   else
     {
       llassert (s != NULL);
-      /*drl bee: mrms*/ 
+      
       *(s + len) = '\0';
     }
   
@@ -611,7 +610,7 @@ cstring_elide (cstring s, size_t len)
       cstring sc = cstring_create (len);
       
       strncpy (sc, s, len);
-      /*drl bee: mrms*/ 
+      
       *(sc + len - 1) = '\0';
       *(sc + len - 2) = '.';      
       *(sc + len - 3) = '.';      
@@ -633,8 +632,7 @@ cstring_fill (cstring s, size_t n) /*@requires n >= 0 @*/
     {
       for (i = 0; i < n; i++)
 	{
-	/*drl bee: is*/
-	  /*drl bee: is*/ 
+		  
 	  *t++ = *s++;
 	}
       *t = '\0';
@@ -643,13 +641,12 @@ cstring_fill (cstring s, size_t n) /*@requires n >= 0 @*/
     {
       for (i = 0; i < len; i++)
 	{
-	/*drl bee: is*/
-/*drl bee: is*/ 
+	
 	  *t++ = *s++;
 	}
       for (i = 0; i < n - len; i++)
 	{
-/*drl bee: is*/ 
+
 	  *t++ = ' ';
 	}
       *t = '\0';
@@ -667,7 +664,7 @@ cstring_downcase (cstring s)
       cstring ot = t;
       char c;
       
- /*drl bee: lhnt*/      while ((c = *s) != '\0')
+      while ((c = *s) != '\0')
 	{
 	  if (c >= 'A' && c <= 'Z')
 	    {
@@ -676,7 +673,7 @@ cstring_downcase (cstring s)
 	  *t++ = c;
 	  s++;
 	}
-     /*drl bee: is*/  *t = '\0';
+      *t = '\0';
       
       return ot;
     }
@@ -698,13 +695,13 @@ cstring_appendChar (/*@only@*/ cstring s1, char c)
     {  
       strcpy (s, s1);
       *(s + l) = c;
-      /*drl bee: dm*/ *(s + l + 1) = '\0';
+      *(s + l + 1) = '\0';
       sfree (s1); 
     }
   else
     {
       *(s) = c;
-      /*drl bee: dm*/  *(s + 1) = '\0';
+       *(s + 1) = '\0';
     } 
 
   return s;
@@ -753,7 +750,7 @@ cstring_concat (cstring s, cstring t) /*@requires maxSet(s) >= 0 @*/
 
   if (cstring_isDefined (s))
     {
-    /*drl bee: sl*/   strcpy (ret, s);
+      strcpy (ret, s);
     }
   if (cstring_isDefined (t))
     {
@@ -778,7 +775,7 @@ cstring_prependChar (char c, /*@temp@*/ cstring s1)
   size_t l = cstring_length (s1);
   char *s = (char *) dmalloc (sizeof (*s) * (l + 2));
   
-/*drl bee: dm*/   *(s) = c;
+  *(s) = c;
 
   if (cstring_isDefined (s1)) 
     {
@@ -787,7 +784,7 @@ cstring_prependChar (char c, /*@temp@*/ cstring s1)
       /*@=mayaliasunique@*/ 
     }
 
- /*drl bee: dm*/ *(s + l + 1) = '\0';
+ *(s + l + 1) = '\0';
   return s;
 }
 
@@ -798,7 +795,7 @@ cstring_hasNonAlphaNumBar (cstring s)
 
   if (cstring_isUndefined (s)) return FALSE;
 
-/*drl bee: lhnt*/  while ((c = (int) *s) != (int) '\0')
+ while ((c = (int) *s) != (int) '\0')
     {
       if ((isalnum (c) == 0) && (c != (int) '_')
 	  && (c != (int) '.') && (c != (int) CONNECTCHAR))
@@ -816,7 +813,7 @@ cstring_create (size_t n)
 {
   char *s = dmalloc (sizeof (*s) * (n + 1));
   
-  /*drl bee: dm*/ *s = '\0';
+  *s = '\0';
   return s;
 }
 
@@ -880,7 +877,7 @@ cstring cstring_bsearch (cstring key, char **table, int nentries)
       if (mid != 0 && mid < nentries - 1)
 	{
 	  llassert (cstring_compare (key, table[mid - 1]) > 0);
-	/*drl bee: ndv*/  llassert (cstring_compare (key, table[mid + 1]) < 0);
+	 llassert (cstring_compare (key, table[mid + 1]) < 0);
 	}
 
       return res;
@@ -894,7 +891,7 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   if (cstring_isDefined (s)) {
     char *t = s;
 
- /*drl bee: lhnt*/   while (*t != '\0' && isspace ((int) *t)) {
+   while (*t != '\0' && isspace ((int) *t)) {
       t++;
     }
 

@@ -1092,7 +1092,7 @@ static bool
     {
       ctype cbr = ctype_getConjA (*c);
 
-     /*drl bee: si*/   if ((*pred) (cbr))
+       if ((*pred) (cbr))
 	{
 	  if ((*pred) (ctype_getConjB (*c)))
 	    {
