@@ -34,6 +34,8 @@
 # include "lclintMacros.nf"
 # include "basic.h"
 
+static int flagMarkerList_lastBeforeLoc (flagMarkerList p_s, fileloc p_loc) /*@*/ ;
+
 flagMarkerList
   flagMarkerList_new ()
 {
@@ -70,6 +72,9 @@ flagMarkerList_grow (flagMarkerList s)
 void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 {
   int i = s->nelements - 1;
+  int lastloc;
+
+  DPRINTF (("Flag marker: %s", flagMarker_unparse (fm)));
 
   if (i > 0)
     {
@@ -164,30 +169,12 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 	}
     }
 
-  
-  /*
-  ** all this code is necessary to check the invariant is preserved
-  */
-
-  while (i > 0
-	 && !flagMarker_sameFile (s->elements[i],
-				  flagMarker_getLoc (fm))) 
-    {
-      i--;
-    }
 
   /*
-  ** reprocessing header file, okay to be out of order
+  ** Need to insert this flag in the right place (after the last before loc flag)
   */
 
-  if (i >= 0 && !fileloc_isHeader (flagMarker_getLoc (fm)))
-    {
-                  
-      /*
-      llassert (!flagMarker_beforeMarker (s->elements[i], 
-					  flagMarker_getLoc (fm)));
-					  */
-    }
+  lastloc = flagMarkerList_lastBeforeLoc (s, flagMarker_getLoc (fm));
 
   if (s->nspace <= 0)
     {
@@ -195,9 +182,31 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
     }
   
   s->nspace--;
-  s->elements[s->nelements] = fm;
+
+  if (lastloc == -1)
+    {
+      /* Add it to the end of the list */
+      s->elements[s->nelements] = fm;
+    }
+  else
+    {
+      DPRINTF (("Inserting: %s in %s", 
+		flagMarker_unparse (fm),
+		flagMarkerList_unparse (s)));
+
+      /* Insert it at location lastloc + 1, push other flags down */
+      for (i = s->nelements; i > lastloc + 1; i--)
+	{
+	  s->elements [i] = s->elements [i - 1];
+	}
+
+      s->elements [lastloc + 1] = fm;
+
+    }
+
   s->nelements++;
-  }
+  DPRINTF (("Add flag ==> %s", flagMarkerList_unparse (s)));
+}
 
 void flagMarkerList_checkSuppressCounts (flagMarkerList s)
 {
@@ -348,13 +357,6 @@ flagMarkerList_lastBeforeLoc (flagMarkerList s, fileloc loc)
 	{
 	  return i;
 	}
-/*
-      if (flagMarker_sameFile (current, loc) 
-	  && (!flagMarker_beforeMarker (current, loc)))
-	{
-	  return i;
-	}
-*/
     }
 
   return -1;
@@ -380,10 +382,10 @@ flagMarkerList_suppressError (flagMarkerList s, flagcode code, fileloc loc)
     {
       i = flagMarkerList_lastBeforeLoc (s, loc);
     }
-
   
   if (i < 0)
     {
+      DPRINTF (("RETURNING!"));
       return MAYBE;
     }
   
@@ -394,10 +396,12 @@ flagMarkerList_suppressError (flagMarkerList s, flagcode code, fileloc loc)
   for (; i >= 0; i--) 
     {
       flagMarker current = s->elements[i];
-
       
+      DPRINTF (("Check current: %s", flagMarker_unparse (current)));
+
       if (!islib && !flagMarker_sameFile (current, loc))
 	{
+	  DPRINTF (("Not same file: %s", fileloc_unparse (loc)));
 	  break;
 	}
 
@@ -441,7 +445,7 @@ flagMarkerList_suppressError (flagMarkerList s, flagcode code, fileloc loc)
 		    }
 		  else
 		    {
-		      		      flagOff = TRUE;
+		      flagOff = TRUE;
 		      flagSet = MAYBE;
 		    }
 		  
@@ -477,7 +481,7 @@ flagMarkerList_suppressError (flagMarkerList s, flagcode code, fileloc loc)
 		    }
 		  else
 		    {
-		      		      nameChecksOff = TRUE;
+		      nameChecksOff = TRUE;
 		      flagSet = MAYBE;
 		    }
 		  

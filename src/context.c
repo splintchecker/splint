@@ -329,14 +329,18 @@ context_suppressFlagMsg (flagcode flag, fileloc fl)
       return TRUE;
     }
 
+  DPRINTF (("Checking suppress: %s / %s", fileloc_unparse (fl), fileloc_unparse (g_currentloc)));
+
   /* want same object compare here */
 
   if (fileloc_equal (fl, g_currentloc) || gc.inDerivedFile)
     {
+      DPRINTF (("In derived file: %s", bool_unparse (gc.inDerivedFile)));
+
       return (!context_getFlag (flag)
 	      || context_inSuppressRegion ()
 	      || context_inSuppressZone (fl)
-	      || (gc.inDerivedFile && context_inSuppressFlagZone (fl, flag)));
+	      || (/*@!@@#@ gc.inDerivedFile && */ context_inSuppressFlagZone (fl, flag)));
     }
   else
     {

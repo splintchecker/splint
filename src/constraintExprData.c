@@ -110,18 +110,16 @@ constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*/ cons
 
 constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ constraintExprData data)
 {
-  llassert (constraintExprData_isDefined(data));
+  llassert (constraintExprData_isDefined (data));
   /*@i232*/ return (data->unaryOp.expr);
 }
 
 
 
- constraintExprData constraintExprData_unaryExprSetOp ( /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op)
+constraintExprData constraintExprData_unaryExprSetOp ( /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op)
 {
-  /*@-uniondef@*/
-  llassert (constraintExprData_isDefined(data));
-  /*@=uniondef@*/
-
+  llassert (constraintExprData_isDefined (data));
+  
   data->unaryOp.unaryOp = op;
   return data;
 }

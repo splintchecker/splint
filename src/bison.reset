@@ -40,3 +40,4 @@
 /*@=systemunrecog@*/
 /*@=dependenttrans@*/
 /*@=unqualifiedtrans@*/
+/*@=declundef@*/

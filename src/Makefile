@@ -89,10 +89,10 @@ purify: ${OBJ}
 
 signature.c : signature.c.der signature.y
 ifdef BISON
-	@$(BISON) $(YFLAGS) -p lsl signature.y
-	@$(CAT) bison.head signature.tab.c bison.reset > signature.c
-	-@$(MV) Headers/signature_gen.h Headers/signature_gen.bak
-	@$(CAT) bison.head signature.tab.h bison.reset > Headers/signature_gen.h
+	$(BISON) $(YFLAGS) -p lsl signature.y
+	$(CAT) bison.head signature.tab.c bison.reset > signature.c
+	-$(MV) Headers/signature_gen.h Headers/signature_gen.bak
+	$(CAT) bison.head signature.tab.h bison.reset > Headers/signature_gen.h
 else
 	$(CP) signature.c.der signature.c
 endif
@@ -106,8 +106,8 @@ ifdef BISON
 	-@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
 	@$(CAT) bison.head cgrammar.tab.h bison.reset > Headers/cgrammar_tokens.h
 	@$(RM) cgrammar.tab.c cgrammar.tab.h
-	chmod 600 cgrammar.c 
-	chmod 600 Headers/cgrammar_tokens.h
+	chmod 200 cgrammar.c 
+	chmod 200 Headers/cgrammar_tokens.h
 else
 	$(CP) cgrammar.c.der cgrammar.c
 endif
@@ -119,8 +119,8 @@ ifdef BISON
 #	@$(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak
 	@$(CAT) bison.head mtgrammar.tab.h bison.reset > Headers/mtgrammar_tokens.h
 	@$(RM) mtgrammar.tab.c mtgrammar.tab.h
-	chmod 600 mtgrammar.c 
-	chmod 600 Headers/mtgrammar_tokens.h
+	chmod 200 mtgrammar.c 
+	chmod 200 Headers/mtgrammar_tokens.h
 else
 	$(CP) mtgrammar.c.der mtgrammar.c
 endif
@@ -137,9 +137,6 @@ ifdef BISON
 	-@$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak
 	@$(CAT) bison.head llgrammar.tab.h bison.reset > Headers/llgrammar_gen.h
 	@$(RM) llgrammar.tab.c llgrammar.tab.h
-	chmod 400 llgrammar.c 
-	chmod 400 Headers/llgrammar_gen.h
-	chmod 400 Headers/llgrammar_gen2.h
 else
 	$(CP) llgrammar.c.der llgrammar.c
 endif
@@ -149,7 +146,7 @@ ifdef FLEX
 	$(FLEX) $(LFLAGS) cscanner.l 
 	-chmod 600 cscanner.c
 	$(CAT) flex.head lex.yy.c flex.reset > cscanner.c
-	chmod 400 cscanner.c
+	chmod 200 cscanner.c
 else
 	$(CP) cscanner.c.der cscanner.c
 endif
@@ -386,6 +383,9 @@ lintweak:
 lintnew: 
 	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
+linttest: 
+	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude cgrammar.c -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +keep
+
 lint: 
 	../bin/lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse 
 
@@ -398,9 +398,6 @@ lintabstract:
 
 lintnodestroy: 
 	lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal -unrecogcomments -fcnuse -constuse -exportlocal -supcounts -compdestroy
-
-linttest: 
-	lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -constuse -exportlocal -supcounts test.c
 
 linttest1g: 
 	lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude test.c -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -constuse -exportlocal -supcounts +partial

@@ -508,7 +508,7 @@ BufConstraintTerm
 
 
 BufConstraintSrefExpr
-: id                               { $$ = checkbufferConstraintClausesId ($1);}
+: id                               { /*@-onlytrans@*/ $$ = checkbufferConstraintClausesId ($1); /*@=onlytrans@*/ /*@i523@*/ }
 | NEW_IDENTIFIER                   { $$ = fixStateClausesId ($1); }
 | BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
 |  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
@@ -1793,9 +1793,9 @@ typeName
 
 %%
 
-/*@-redecl@*/
+/*@-redecl@*/ /*@-namechecks@*/
 extern char *yytext;
-/*@=redecl@*/
+/*@=redecl@*/ /*@=namechecks@*/
 
 # include "bison.reset"
 

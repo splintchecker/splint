@@ -41,6 +41,7 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-declundef@*/
 
 /* < end of bison.head > */
 
