@@ -996,7 +996,6 @@ void fileTable_closeAll (fileTable ft)
       */
 
       (void) fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
-      lldiagmsg (message ("Unclosed file at exit: %s", cstring_toCharsSafe (ft->openelements[i]->fname)));
       ft->openelements[i]->f = NULL;
       foentry_free (ft->openelements[i]);
       ft->openelements[i] = NULL;
