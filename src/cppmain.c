@@ -80,7 +80,7 @@ void cppReader_initMod ()
 {
   struct cppOptions *opts = (struct cppOptions *) dmalloc (sizeof (*opts));
 
-  cppReader_init (&g_cppState);
+  cpplib_init (&g_cppState);
   llassert (g_cppState.opts == NULL);
   g_cppState.opts = opts;
 
@@ -90,7 +90,7 @@ void cppReader_initMod ()
 
 void cppReader_initialize ()
 {
-  cppReader_initializeReader (&g_cppState);
+  cpplib_initializeReader (&g_cppState);
 }
 
 int cppProcess (/*@dependent@*/ cstring infile, 
@@ -103,7 +103,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
   opts->in_fname = infile;
   opts->out_fname = outfile;
   
-  if (cppFatalErrors (&g_cppState))
+  if (cpplib_fatalErrors (&g_cppState))
     {
       llexit (LLFAILURE);
     }
@@ -136,11 +136,11 @@ int cppProcess (/*@dependent@*/ cstring infile,
       if (!opts->no_output)
 	{
 	  (void) fwrite (g_cppState.token_buffer, (size_t) 1,
-			 cppReader_getWritten (&g_cppState), ofile);
+			 cpplib_getWritten (&g_cppState), ofile);
 	}
       
       cppReader_setWritten (&g_cppState, 0);
-      kind = cppGetToken (&g_cppState);
+      kind = cpplib_getToken (&g_cppState);
       
       if (kind == CPP_EOF)
 	break;
@@ -216,7 +216,7 @@ void cppDoUndefine (cstring str)
   sym_length = cppReader_checkMacroName (&g_cppState, buf,
 				 cstring_makeLiteralTemp ("macro"));
   
-  while ((hp = cppReader_lookup (buf, sym_length, -1)) != NULL)
+  while ((hp = cpphash_lookup (buf, sym_length, -1)) != NULL)
     {
       /*@-exposetrans@*/ /*@-dependenttrans@*/
       cppReader_deleteMacro (hp);

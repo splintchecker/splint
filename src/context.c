@@ -820,6 +820,7 @@ context_resetAllFlags (void)
 
   /*@i34 move this into flags.def */
     
+  gc.flags[FLG_OBVIOUSLOOPEXEC] = TRUE;
   gc.flags[FLG_MODIFIES] = TRUE;
   gc.flags[FLG_NESTCOMMENT] = TRUE;
   gc.flags[FLG_GLOBALS] = TRUE;
@@ -2250,7 +2251,7 @@ void context_exitIterClause (exprNode body)
 
   context_setJustPopped ();
 
-  if (context_getFlag (FLG_LOOPEXEC))
+  if (context_getFlag (FLG_ITERLOOPEXEC))
     {
       usymtab_popTrueExecBranch (exprNode_undefined, body, ITERCLAUSE);
     }
@@ -2307,7 +2308,7 @@ void context_exitWhileClause (exprNode pred, exprNode body)
   ** predicate must be false after while loop (unless there are breaks)
   */
 
-  if (context_getFlag (FLG_LOOPEXEC))
+  if (context_getFlag (FLG_WHILELOOPEXEC))
     {
       usymtab_popTrueExecBranch (pred, body, WHILECLAUSE);
     }
@@ -2353,17 +2354,30 @@ void context_exitForClause (exprNode forPred, exprNode body)
   llassert (gc.inclause == FORCLAUSE);
   context_setJustPopped ();
 
+  DPRINTF (("Exit for: %s / %s", exprNode_unparse (forPred), exprNode_unparse (body)));
+
   /*
-  ** predicate must be false after while loop (unless there are breaks)
+  ** Predicate must be false after for loop (unless there are breaks)
   */
 
-  if (context_getFlag (FLG_LOOPEXEC))
+  if (context_getFlag (FLG_FORLOOPEXEC))
     {
+      DPRINTF (("Here: for loop exec"));
       usymtab_popTrueExecBranch (forPred, body, FORCLAUSE);
     }
   else
     {
-      usymtab_popTrueBranch (forPred, body, FORCLAUSE);
+      if (context_getFlag (FLG_OBVIOUSLOOPEXEC)
+	  && exprNode_loopMustExec (forPred))
+	{
+	  DPRINTF (("Here: loop must exec"));
+	  usymtab_popTrueExecBranch (forPred, body, FORCLAUSE);
+	}
+      else
+	{
+	  DPRINTF (("Pop true branch:"));
+	  usymtab_popTrueBranch (forPred, body, FORCLAUSE);
+	}
     }
 
   usymtab_addGuards (invGuards);
@@ -3699,10 +3713,10 @@ context_setFlagTemp (flagcode f, bool b)
         gc.flags[ff] = b; } while (FALSE)
 
 static void
-  context_setFlagAux (flagcode f, bool b, bool 
-		      inFile, /*@unused@*/ bool isRestore)
+context_setFlagAux (flagcode f, bool b, bool inFile, 
+		    /*@unused@*/ bool isRestore)
 {
-  DPRINTF (("set flag: %s / %s", flagcode_unparse (f), bool_unparse (b)));
+  DPRINTF (("Set flag: %s / %s", flagcode_unparse (f), bool_unparse (b)));
 
   if (f == FLG_USESTDERR) 
     {
@@ -3924,6 +3938,11 @@ static void
       DOSET (FLG_SWITCHSWITCHBREAK, b);
       DOSET (FLG_LOOPLOOPCONTINUE, b);
       DOSET (FLG_DEEPBREAK, b);
+      break;
+    case FLG_LOOPEXEC:
+      DOSET (FLG_FORLOOPEXEC, b);
+      DOSET (FLG_WHILELOOPEXEC, b);
+      DOSET (FLG_ITERLOOPEXEC, b);
       break;
     case FLG_ACCESSALL:
       DOSET (FLG_ACCESSMODULE, b);

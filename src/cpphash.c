@@ -244,7 +244,7 @@ static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node)
    computed a step at a time, elsewhere  */
 
 int
-hashf (const char *name, int len, int hashsize)
+cpphash_hashCode (const char *name, int len, int hashsize)
 {
   unsigned int r = 0;
 
@@ -258,7 +258,7 @@ hashf (const char *name, int len, int hashsize)
 
 /*
 ** Find the most recent hash node for name name (ending with first
-** non-identifier char) cppReader_installed by install
+** non-identifier char) cpphash_installed by install
 **
 ** If LEN is >= 0, it is the length of the name.
 ** Otherwise, compute the length by scanning the entire name.
@@ -267,7 +267,7 @@ hashf (const char *name, int len, int hashsize)
 ** Otherwise, compute the hash code.  
 */
 
-/*@null@*/ hashNode cppReader_lookup (char *name, int len, int hash)
+/*@null@*/ hashNode cpphash_lookup (char *name, int len, int hash)
 {
   const char *bp;
   hashNode bucket;
@@ -284,7 +284,7 @@ hashf (const char *name, int len, int hashsize)
 
   if (hash < 0)
     {
-      hash = hashf (name, len, CPP_HASHSIZE);
+      hash = cpphash_hashCode (name, len, CPP_HASHSIZE);
     }
 
   bucket = hashtab[hash];
@@ -303,9 +303,9 @@ hashf (const char *name, int len, int hashsize)
   return NULL;
 }
 
-/*@null@*/ hashNode cppReader_lookupExpand (char *name, int len, int hash)
+/*@null@*/ hashNode cpphash_lookupExpand (char *name, int len, int hash, bool forceExpand)
 {
-  hashNode node = cppReader_lookup (name, len, hash);
+  hashNode node = cpphash_lookup (name, len, hash);
 
   DPRINTF (("Lookup expand: %s", name));
 
@@ -317,7 +317,7 @@ hashf (const char *name, int len, int hashsize)
 	
 	  DPRINTF (("Check macro..."));
 
-	  if (defn->noExpand) {
+	  if (defn->noExpand && !forceExpand) {
 	    DPRINTF (("No expand!"));
 	    return NULL;
 	  }
@@ -398,14 +398,14 @@ cppReader_deleteMacro (hashNode hp)
    If HASH is >= 0, it is the precomputed hash code.
    Otherwise, compute the hash code.  */
 
-hashNode cppReader_install (char *name, int len, enum node_type type, 
+hashNode cpphash_install (char *name, int len, enum node_type type, 
 			     int ivalue, char *value, int hash)
 {
   hashNode hp;
   int i, bucket;
   char *p;
 
-  DPRINTF (("Install: %s", name));
+  DPRINTF (("Install: %s / %d", name, len));
 
   if (len < 0) {
     p = name;
@@ -420,7 +420,7 @@ hashNode cppReader_install (char *name, int len, enum node_type type,
 
   if (hash < 0) 
     {
-      hash = hashf (name, len, CPP_HASHSIZE);
+      hash = cpphash_hashCode (name, len, CPP_HASHSIZE);
     }
 
   i = sizeof (*hp) + len + 1;
@@ -436,7 +436,6 @@ hashNode cppReader_install (char *name, int len, enum node_type type,
     {
       hp->next->prev = hp;
     }
-
 
   hashtab[bucket] = hp;
 
@@ -461,10 +460,11 @@ hashNode cppReader_install (char *name, int len, enum node_type type,
   /*@=mustfree@*/ /*@=uniondef@*/ /*@=compdef@*/ /*@=compmempass@*/
 }
 
-hashNode cppReader_installMacro (char *name, int len, 
+hashNode cpphash_installMacro (char *name, int len, 
 				 struct definition *defn, int hash)
 {
-  return cppReader_install (name, len, T_MACRO, 0, (char  *) defn, hash);
+  DPRINTF (("install macro: %s", name));
+  return cpphash_install (name, len, T_MACRO, 0, (char  *) defn, hash);
 }
 
 void

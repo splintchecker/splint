@@ -244,7 +244,6 @@
 #define	TYPE_NAME	444
 #define	METASTATE_NAME	445
 
-#line 24 "cgrammar.y"
 
 /*
 **
@@ -300,7 +299,6 @@ extern void yyerror (char *);
 # endif
 
 
-#line 80 "cgrammar.y"
 typedef union
 {
   lltok tok;
@@ -2595,7 +2593,7 @@ static const short yycheck[] = {     0,
     -1,    -1,    -1,   185,   186,    -1,    -1,    -1,   190
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -2809,7 +2807,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/usr/lib/bison.simple"
+
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -3138,62 +3136,48 @@ yyreduce:
   switch (yyn) {
 
 case 3:
-#line 322 "cgrammar.y"
 { context_checkGlobalScope (); ;
     break;}
 case 4:
-#line 323 "cgrammar.y"
 { context_checkGlobalScope (); ;
     break;}
 case 5:
-#line 326 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 6:
-#line 327 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 7:
-#line 328 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 8:
-#line 329 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 9:
-#line 330 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 10:
-#line 331 "cgrammar.y"
 { uentry_checkDecl (); exprNode_free (yyvsp[0].expr); ;
     break;}
 case 11:
-#line 332 "cgrammar.y"
 { uentry_clearDecl (); ;
     break;}
 case 12:
-#line 336 "cgrammar.y"
 { checkConstant (yyvsp[-6].qtyp, yyvsp[-4].ntyp); ;
     break;}
 case 13:
-#line 338 "cgrammar.y"
 { checkValueConstant (yyvsp[-9].qtyp, yyvsp[-7].ntyp, yyvsp[-3].expr) ; ;
     break;}
 case 14:
-#line 341 "cgrammar.y"
 { context_enterFunctionHeader (); ;
     break;}
 case 15:
-#line 342 "cgrammar.y"
 { 
      declareStaticFunction (yyvsp[-2].ntyp); context_quietExitFunction (); 
      context_exitFunctionHeader (); 
    ;
     break;}
 case 16:
-#line 349 "cgrammar.y"
 { 
      qtype qint = qtype_create (ctype_int);
      yyval.ntyp = idDecl_fixBase (yyvsp[0].ntyp, qint);
@@ -3201,27 +3185,21 @@ case 16:
    ;
     break;}
 case 17:
-#line 355 "cgrammar.y"
 { yyval.ntyp = idDecl_fixBase (yyvsp[0].ntyp, yyvsp[-2].qtyp); ;
     break;}
 case 19:
-#line 360 "cgrammar.y"
 { yyval.ntyp = yyvsp[0].ntyp; qtype_adjustPointers (yyvsp[-1].count, idDecl_getTyp (yyval.ntyp)); ;
     break;}
 case 20:
-#line 363 "cgrammar.y"
 { yyval.ntyp = idDecl_create (yyvsp[0].cname, qtype_unknown ()); ;
     break;}
 case 21:
-#line 365 "cgrammar.y"
 { yyval.ntyp = idDecl_expectFunction (yyvsp[-2].ntyp); ;
     break;}
 case 22:
-#line 367 "cgrammar.y"
 { yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
     break;}
 case 23:
-#line 369 "cgrammar.y"
 {
      exprNode_findValue(yyvsp[-2].expr);
      if (exprNode_hasValue (yyvsp[-2].expr)) 
@@ -3235,11 +3213,9 @@ case 23:
    ;
     break;}
 case 24:
-#line 381 "cgrammar.y"
 { setCurrentParams (uentryList_missingParams); ;
     break;}
 case 25:
-#line 383 "cgrammar.y"
 { /* need to support globals and modifies here! */
      ctype ct = ctype_makeFunction (idDecl_getCtype (yyvsp[-5].ntyp), 
 				    uentryList_makeMissingParams ());
@@ -3252,11 +3228,9 @@ case 25:
    ;
     break;}
 case 26:
-#line 394 "cgrammar.y"
 { setCurrentParams (yyvsp[-1].entrylist); ;
     break;}
 case 27:
-#line 396 "cgrammar.y"
 { setImplictfcnConstraints ();
      clearCurrentParams ();
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-6].ntyp, ctype_makeFunction (idDecl_getCtype (yyvsp[-6].ntyp), yyvsp[-3].entrylist));
@@ -3265,19 +3239,15 @@ case 27:
    ;
     break;}
 case 28:
-#line 404 "cgrammar.y"
 { yyval.ntyp = idDecl_create (yyvsp[0].cname, qtype_unknown ()); ;
     break;}
 case 29:
-#line 406 "cgrammar.y"
 { yyval.ntyp = idDecl_expectFunction (yyvsp[-2].ntyp); ;
     break;}
 case 30:
-#line 408 "cgrammar.y"
 { yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
     break;}
 case 31:
-#line 410 "cgrammar.y"
 { 
      int value;
 
@@ -3295,11 +3265,9 @@ case 31:
    ;
     break;}
 case 32:
-#line 426 "cgrammar.y"
 { setCurrentParams (uentryList_missingParams); ;
     break;}
 case 33:
-#line 428 "cgrammar.y"
 {
      ctype ct = ctype_makeFunction (idDecl_getCtype (yyvsp[-5].ntyp), 
 				    uentryList_makeMissingParams ());
@@ -3310,11 +3278,9 @@ case 33:
    ;
     break;}
 case 34:
-#line 437 "cgrammar.y"
 { setCurrentParams (yyvsp[-1].entrylist); ;
     break;}
 case 35:
-#line 439 "cgrammar.y"
 { 
      clearCurrentParams ();
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-6].ntyp, ctype_makeFunction (idDecl_getCtype (yyvsp[-6].ntyp), yyvsp[-3].entrylist));
@@ -3323,113 +3289,87 @@ case 35:
    ;
     break;}
 case 36:
-#line 448 "cgrammar.y"
 { setCurrentParams (yyvsp[-1].entrylist); ;
     break;}
 case 37:
-#line 449 "cgrammar.y"
 { clearCurrentParams (); ;
     break;}
 case 38:
-#line 450 "cgrammar.y"
 { declareCIter (yyvsp[-8].cname, yyvsp[-6].entrylist); ;
     break;}
 case 39:
-#line 453 "cgrammar.y"
 { exprNode_checkMacroBody (yyvsp[-1].expr); ;
     break;}
 case 40:
-#line 454 "cgrammar.y"
 { exprNode_checkIterBody (yyvsp[-1].expr); ;
     break;}
 case 41:
-#line 455 "cgrammar.y"
 { exprNode_checkIterEnd (yyvsp[-1].expr); ;
     break;}
 case 42:
-#line 456 "cgrammar.y"
 { exprChecks_checkEmptyMacroBody (); ;
     break;}
 case 43:
-#line 459 "cgrammar.y"
 { clabstract_declareFunction (yyvsp[0].ntyp); ;
     break;}
 case 44:
-#line 463 "cgrammar.y"
 { yyval.msconstraint = metaStateConstraint_create (yyvsp[-2].msspec, yyvsp[0].msexpr); ;
     break;}
 case 45:
-#line 466 "cgrammar.y"
 { cscanner_expectingMetaStateName (); ;
     break;}
 case 46:
-#line 467 "cgrammar.y"
 { cscanner_clearExpectingMetaStateName ();
       yyval.msspec = metaStateSpecifier_create (yyvsp[-3].sr, yyvsp[0].msinfo); ;
     break;}
 case 47:
-#line 469 "cgrammar.y"
 { cscanner_expectingMetaStateName (); ;
     break;}
 case 48:
-#line 470 "cgrammar.y"
 { cscanner_clearExpectingMetaStateName ();
       yyval.msspec = metaStateSpecifier_createElipsis (yyvsp[0].msinfo); ;
     break;}
 case 49:
-#line 474 "cgrammar.y"
 { yyval.msexpr = metaStateExpression_create (yyvsp[0].msspec); ;
     break;}
 case 50:
-#line 475 "cgrammar.y"
 { yyval.msexpr = metaStateExpression_createMerge (yyvsp[-2].msspec, yyvsp[0].msexpr); ;
     break;}
 case 52:
-#line 483 "cgrammar.y"
 { yyval.conL = constraintList_add (yyvsp[0].conL, yyvsp[-2].con); ;
     break;}
 case 53:
-#line 484 "cgrammar.y"
 { yyval.conL = constraintList_single (yyvsp[0].con); ;
     break;}
 case 54:
-#line 487 "cgrammar.y"
 {
  yyval.con = makeConstraintParse3 (yyvsp[-2].conE, yyvsp[-1].tok, yyvsp[0].conE);
  DPRINTF(("Done BufConstraint1\n")); ;
     break;}
 case 61:
-#line 502 "cgrammar.y"
 {yyval.conE = constraintExpr_parseMakeUnaryOp (yyvsp[-3].tok, yyvsp[-1].conE);  DPRINTF( ("Got BufConstraintExpr UNary Op ") ); ;
     break;}
 case 62:
-#line 503 "cgrammar.y"
 {
    DPRINTF( ("Got BufConstraintExpr BINary Op ") );
    yyval.conE = constraintExpr_parseMakeBinaryOp (yyvsp[-3].conE, yyvsp[-2].tok, yyvsp[-1].conE); ;
     break;}
 case 63:
-#line 508 "cgrammar.y"
 { yyval.conE =  constraintExpr_makeTermsRef (yyvsp[0].sr);;
     break;}
 case 64:
-#line 509 "cgrammar.y"
 { yyval.conE = constraintExpr_makeIntLiteral (exprNode_getLongValue (yyvsp[0].expr)); ;
     break;}
 case 65:
-#line 513 "cgrammar.y"
 { /*@-onlytrans@*/ yyval.sr = checkbufferConstraintClausesId (yyvsp[0].entry); /*@=onlytrans@*/ /*@i523@*/ ;
     break;}
 case 66:
-#line 515 "cgrammar.y"
 { yyval.sr = fixStateClausesId (yyvsp[0].cname); ;
     break;}
 case 67:
-#line 517 "cgrammar.y"
 { yyval.sr = sRef_makeAnyArrayFetch (yyvsp[-2].sr); ;
     break;}
 case 68:
-#line 519 "cgrammar.y"
 {
     /*
     char *t; int c; 
@@ -3440,117 +3380,90 @@ case 68:
   ;
     break;}
 case 69:
-#line 528 "cgrammar.y"
 { yyval.sr = sRef_constructPointer (yyvsp[0].sr); ;
     break;}
 case 70:
-#line 530 "cgrammar.y"
 { yyval.sr = yyvsp[-1].sr; ;
     break;}
 case 71:
-#line 532 "cgrammar.y"
 { cstring_markOwned (yyvsp[0].cname); yyval.sr = sRef_buildField (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 72:
-#line 534 "cgrammar.y"
 { cstring_markOwned (yyvsp[0].cname); yyval.sr = sRef_makeArrow (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 76:
-#line 561 "cgrammar.y"
 { yyval.funcclauselist = functionClauseList_new (); ;
     break;}
 case 77:
-#line 563 "cgrammar.y"
 { yyval.funcclauselist = functionClauseList_prepend (yyvsp[0].funcclauselist, yyvsp[-1].funcclause); ;
     break;}
 case 78:
-#line 571 "cgrammar.y"
 { yyval.funcclauselist = functionClauseList_new (); ;
     break;}
 case 79:
-#line 573 "cgrammar.y"
 { yyval.funcclauselist = functionClauseList_prepend (yyvsp[0].funcclauselist, yyvsp[-1].funcclause); ;
     break;}
 case 80:
-#line 576 "cgrammar.y"
 { yyval.funcclause = functionClause_createGlobals (yyvsp[0].globsclause); ;
     break;}
 case 81:
-#line 577 "cgrammar.y"
 { yyval.funcclause = functionClause_createModifies (yyvsp[0].modsclause); ;
     break;}
 case 82:
-#line 578 "cgrammar.y"
 { yyval.funcclause = functionClause_createModifies (yyvsp[0].modsclause); ;
     break;}
 case 83:
-#line 579 "cgrammar.y"
 { yyval.funcclause = functionClause_createState (yyvsp[0].stateclause); ;
     break;}
 case 84:
-#line 580 "cgrammar.y"
 { yyval.funcclause = yyvsp[0].funcclause; ;
     break;}
 case 85:
-#line 581 "cgrammar.y"
 { yyval.funcclause = functionClause_createWarn (yyvsp[0].warnclause); ;
     break;}
 case 86:
-#line 584 "cgrammar.y"
 { yyval.funcclause = functionClause_createGlobals (yyvsp[0].globsclause); ;
     break;}
 case 87:
-#line 585 "cgrammar.y"
 { yyval.funcclause = functionClause_createModifies (yyvsp[0].modsclause); ;
     break;}
 case 88:
-#line 586 "cgrammar.y"
 { yyval.funcclause = functionClause_createModifies (yyvsp[0].modsclause); ;
     break;}
 case 89:
-#line 587 "cgrammar.y"
 { yyval.funcclause = functionClause_createState (yyvsp[0].stateclause); ;
     break;}
 case 90:
-#line 588 "cgrammar.y"
 { yyval.funcclause = yyvsp[0].funcclause; ;
     break;}
 case 91:
-#line 589 "cgrammar.y"
 { yyval.funcclause = functionClause_createWarn (yyvsp[0].warnclause); ;
     break;}
 case 92:
-#line 592 "cgrammar.y"
 { yyval.globsclause = yyvsp[-1].globsclause; ;
     break;}
 case 93:
-#line 595 "cgrammar.y"
 { setProcessingGlobalsList (); ;
     break;}
 case 94:
-#line 597 "cgrammar.y"
 { 
      unsetProcessingGlobals (); 
      yyval.globsclause = globalsClause_create (yyvsp[-3].tok, yyvsp[-1].globset); 
    ;
     break;}
 case 95:
-#line 603 "cgrammar.y"
 { yyval.modsclause = modifiesClause_createNoMods (yyvsp[0].tok); ;
     break;}
 case 96:
-#line 606 "cgrammar.y"
 { yyval.modsclause = yyvsp[-1].modsclause; ;
     break;}
 case 97:
-#line 610 "cgrammar.y"
 {
      context_setProtectVars (); enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
    ;
     break;}
 case 98:
-#line 615 "cgrammar.y"
 { 
      exitParamsTemp ();
      sRef_clearGlobalScopeSafe (); 
@@ -3559,23 +3472,18 @@ case 98:
    ;
     break;}
 case 99:
-#line 624 "cgrammar.y"
 { yyval.flagspec = flagSpec_createPlain (yyvsp[0].cname); ;
     break;}
 case 100:
-#line 626 "cgrammar.y"
 { yyval.flagspec = flagSpec_createOr (yyvsp[-2].cname, yyvsp[0].flagspec); ;
     break;}
 case 103:
-#line 633 "cgrammar.y"
 { yyval.warnclause = warnClause_undefined; ;
     break;}
 case 104:
-#line 636 "cgrammar.y"
 { yyval.warnclause = yyvsp[-1].warnclause; ;
     break;}
 case 105:
-#line 640 "cgrammar.y"
 {      
      llassert (exprNode_knownStringValue (yyvsp[0].expr));
      yyval.warnclause = warnClause_create (yyvsp[-2].tok, yyvsp[-1].flagspec, cstring_copy (multiVal_forceString (exprNode_getValue (yyvsp[0].expr)))); 
@@ -3583,63 +3491,48 @@ case 105:
    ;
     break;}
 case 106:
-#line 646 "cgrammar.y"
 { yyval.warnclause = warnClause_create (yyvsp[-1].tok, yyvsp[0].flagspec, cstring_undefined); ;
     break;}
 case 107:
-#line 649 "cgrammar.y"
 { yyval.globset = globSet_single (yyvsp[0].sr); ;
     break;}
 case 108:
-#line 650 "cgrammar.y"
 { yyval.globset = globSet_insert (yyvsp[-2].globset, yyvsp[0].sr); ;
     break;}
 case 109:
-#line 653 "cgrammar.y"
 { yyval.sr = clabstract_createGlobal (yyvsp[0].sr, yyvsp[-1].tquallist); ;
     break;}
 case 110:
-#line 656 "cgrammar.y"
 { yyval.tquallist = qualList_undefined; ;
     break;}
 case 111:
-#line 657 "cgrammar.y"
 { yyval.tquallist = qualList_add (yyvsp[0].tquallist, yyvsp[-1].typequal); ;
     break;}
 case 112:
-#line 660 "cgrammar.y"
 { yyval.sr = uentry_getSref (yyvsp[0].entry); ;
     break;}
 case 113:
-#line 661 "cgrammar.y"
 { yyval.sr = clabstract_unrecognizedGlobal (yyvsp[0].cname); ;
     break;}
 case 114:
-#line 662 "cgrammar.y"
 { yyval.sr = clabstract_checkGlobal (yyvsp[0].expr); ;
     break;}
 case 115:
-#line 665 "cgrammar.y"
 { yyval.typequal = qual_createUndef (); ;
     break;}
 case 116:
-#line 666 "cgrammar.y"
 { yyval.typequal = qual_createKilled (); ;
     break;}
 case 117:
-#line 667 "cgrammar.y"
 { yyval.typequal = qual_createOut (); ;
     break;}
 case 118:
-#line 668 "cgrammar.y"
 { yyval.typequal = qual_createIn (); ;
     break;}
 case 119:
-#line 669 "cgrammar.y"
 { yyval.typequal = qual_createPartial (); ;
     break;}
 case 127:
-#line 684 "cgrammar.y"
 { 
      qtype qint = qtype_create (ctype_int);
      yyval.ntyp = idDecl_fixBase (yyvsp[0].ntyp, qint);
@@ -3647,30 +3540,24 @@ case 127:
    ;
     break;}
 case 128:
-#line 690 "cgrammar.y"
 { yyval.ntyp = idDecl_fixBase (yyvsp[0].ntyp, yyvsp[-2].qtyp); ;
     break;}
 case 129:
-#line 693 "cgrammar.y"
 { checkDoneParams (); context_enterInnerContext (); ;
     break;}
 case 130:
-#line 695 "cgrammar.y"
 {  
      exprNode_checkFunctionBody (yyvsp[0].expr); yyval.expr = yyvsp[0].expr; 
      context_exitInner (yyvsp[0].expr); 
    ;
     break;}
 case 131:
-#line 699 "cgrammar.y"
 { context_enterOldStyleScope (); ;
     break;}
 case 132:
-#line 700 "cgrammar.y"
 { oldStyleDoneParams (); context_enterInnerContext (); ;
     break;}
 case 133:
-#line 702 "cgrammar.y"
 {
      exprNode_checkFunctionBody (yyvsp[0].expr); 
      yyval.expr = yyvsp[0].expr; /* oldstyle */ 
@@ -3678,7 +3565,6 @@ case 133:
    ;
     break;}
 case 134:
-#line 710 "cgrammar.y"
 { 
      context_setFunctionDefined (exprNode_loc (yyvsp[0].expr)); 
      exprNode_checkFunction (context_getHeader (),  yyvsp[0].expr); 
@@ -3688,107 +3574,82 @@ case 134:
    ;
     break;}
 case 135:
-#line 719 "cgrammar.y"
 { yyval.srset = yyvsp[-1].srset; ;
     break;}
 case 136:
-#line 720 "cgrammar.y"
 { yyval.srset = sRefSet_new (); ;
     break;}
 case 137:
-#line 723 "cgrammar.y"
 { yyval.sr = uentry_getSref (yyvsp[0].entry); checkModifiesId (yyvsp[0].entry); ;
     break;}
 case 138:
-#line 724 "cgrammar.y"
 { yyval.sr = fixModifiesId (yyvsp[0].cname); ;
     break;}
 case 139:
-#line 725 "cgrammar.y"
 { yyval.sr = modListArrayFetch (yyvsp[-2].sr, sRef_undefined); ;
     break;}
 case 140:
-#line 726 "cgrammar.y"
 { yyval.sr = modListArrayFetch (yyvsp[-3].sr, yyvsp[-1].sr); ;
     break;}
 case 141:
-#line 727 "cgrammar.y"
 { yyval.sr = modListPointer (yyvsp[0].sr); ;
     break;}
 case 142:
-#line 728 "cgrammar.y"
 { yyval.sr = yyvsp[-1].sr; ;
     break;}
 case 143:
-#line 729 "cgrammar.y"
 { yyval.sr = modListFieldAccess (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 144:
-#line 730 "cgrammar.y"
 { yyval.sr = modListArrowAccess (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 145:
-#line 734 "cgrammar.y"
 { yyval.sr = yyvsp[0].sr; ;
     break;}
 case 146:
-#line 735 "cgrammar.y"
 { yyval.sr = sRef_makeUnknown (); /* sRef_makeConstant ($1); ? */ ;
     break;}
 case 147:
-#line 739 "cgrammar.y"
 { yyval.srset = sRefSet_single (yyvsp[0].sr); ;
     break;}
 case 148:
-#line 740 "cgrammar.y"
 { yyval.srset = sRefSet_insert (yyvsp[-2].srset, yyvsp[0].sr); ;
     break;}
 case 149:
-#line 744 "cgrammar.y"
 { yyval.sr = checkStateClausesId (yyvsp[0].entry); ;
     break;}
 case 150:
-#line 746 "cgrammar.y"
 { yyval.sr = fixStateClausesId (yyvsp[0].cname); ;
     break;}
 case 151:
-#line 747 "cgrammar.y"
 { yyval.sr = sRef_makeAnyArrayFetch (yyvsp[-2].sr); ;
     break;}
 case 152:
-#line 748 "cgrammar.y"
 { yyval.sr = sRef_makeAnyArrayFetch (yyvsp[-3].sr); ;
     break;}
 case 153:
-#line 749 "cgrammar.y"
 { yyval.sr = sRef_constructPointer (yyvsp[0].sr); ;
     break;}
 case 154:
-#line 750 "cgrammar.y"
 { yyval.sr = yyvsp[-1].sr; ;
     break;}
 case 155:
-#line 751 "cgrammar.y"
 { cstring_markOwned (yyvsp[0].cname);
 					    yyval.sr = sRef_buildField (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 156:
-#line 753 "cgrammar.y"
 { cstring_markOwned (yyvsp[0].cname);
                                             yyval.sr = sRef_makeArrow (yyvsp[-2].sr, yyvsp[0].cname); ;
     break;}
 case 157:
-#line 757 "cgrammar.y"
 { yyval.srset = sRefSet_undefined ;
     break;}
 case 159:
-#line 762 "cgrammar.y"
 { if (sRef_isValid (yyvsp[0].sr)) { yyval.srset = sRefSet_single (yyvsp[0].sr); } 
       else { yyval.srset = sRefSet_undefined; } 
     ;
     break;}
 case 160:
-#line 766 "cgrammar.y"
 { if (sRef_isValid (yyvsp[0].sr))
 	{
 	  yyval.srset = sRefSet_insert (yyvsp[-2].srset, yyvsp[0].sr); 
@@ -3800,325 +3661,248 @@ case 160:
     ;
     break;}
 case 161:
-#line 777 "cgrammar.y"
 { yyval.expr = exprNode_fromIdentifier (yyvsp[0].entry); ;
     break;}
 case 162:
-#line 778 "cgrammar.y"
 { yyval.expr = exprNode_fromUIO (yyvsp[0].cname); ;
     break;}
 case 164:
-#line 780 "cgrammar.y"
 { yyval.expr = exprNode_addParens (yyvsp[-2].tok, yyvsp[-1].expr); ;
     break;}
 case 165:
-#line 781 "cgrammar.y"
 { yyval.expr = exprNode_fromIdentifier (coerceId (yyvsp[0].cname)); ;
     break;}
 case 166:
-#line 782 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 168:
-#line 786 "cgrammar.y"
 { yyval.expr = exprNode_arrayFetch (yyvsp[-3].expr, yyvsp[-1].expr); ;
     break;}
 case 169:
-#line 787 "cgrammar.y"
 { yyval.expr = exprNode_functionCall (yyvsp[-2].expr, exprNodeList_new ()); ;
     break;}
 case 170:
-#line 788 "cgrammar.y"
 { yyval.expr = exprNode_functionCall (yyvsp[-3].expr, yyvsp[-1].exprlist); ;
     break;}
 case 171:
-#line 789 "cgrammar.y"
 { yyval.expr = exprNode_vaArg (yyvsp[-5].tok, yyvsp[-3].expr, yyvsp[-1].qtyp); ;
     break;}
 case 172:
-#line 790 "cgrammar.y"
 { yyval.expr = exprNode_fieldAccess (yyvsp[-4].expr, yyvsp[-2].tok, yyvsp[-1].cname); ;
     break;}
 case 173:
-#line 791 "cgrammar.y"
 { yyval.expr = exprNode_arrowAccess (yyvsp[-4].expr, yyvsp[-2].tok, yyvsp[-1].cname); ;
     break;}
 case 174:
-#line 792 "cgrammar.y"
 { yyval.expr = exprNode_postOp (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 175:
-#line 793 "cgrammar.y"
 { yyval.expr = exprNode_postOp (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 176:
-#line 796 "cgrammar.y"
 { yyval.exprlist = exprNodeList_singleton (yyvsp[0].expr); ;
     break;}
 case 177:
-#line 797 "cgrammar.y"
 { yyval.exprlist = exprNodeList_push (yyvsp[-2].exprlist, yyvsp[0].expr); ;
     break;}
 case 179:
-#line 801 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 180:
-#line 802 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 181:
-#line 803 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 182:
-#line 804 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 183:
-#line 805 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 184:
-#line 806 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 185:
-#line 807 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 186:
-#line 808 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 187:
-#line 809 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 188:
-#line 810 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 189:
-#line 813 "cgrammar.y"
 { yyval.cstringlist = cstringList_add (yyvsp[-2].cstringlist, yyvsp[0].cname); ;
     break;}
 case 190:
-#line 814 "cgrammar.y"
 { yyval.cstringlist = cstringList_single (yyvsp[0].cname); ;
     break;}
 case 191:
-#line 818 "cgrammar.y"
 { yyval.expr = exprNode_offsetof (yyvsp[-5].qtyp, yyvsp[-2].cstringlist); ;
     break;}
 case 192:
-#line 821 "cgrammar.y"
 { context_setProtectVars (); ;
     break;}
 case 193:
-#line 822 "cgrammar.y"
 { context_sizeofReleaseVars (); yyval.expr = yyvsp[0].expr; ;
     break;}
 case 194:
-#line 825 "cgrammar.y"
 { yyval.expr = exprNode_sizeofType (yyvsp[-1].qtyp); ;
     break;}
 case 195:
-#line 826 "cgrammar.y"
 { yyval.expr = exprNode_sizeofExpr (yyvsp[0].expr); ;
     break;}
 case 196:
-#line 827 "cgrammar.y"
 { yyval.expr = exprNode_alignofType (yyvsp[-1].qtyp); ;
     break;}
 case 197:
-#line 828 "cgrammar.y"
 { yyval.expr = exprNode_alignofExpr (yyvsp[0].expr); ;
     break;}
 case 199:
-#line 833 "cgrammar.y"
 { yyval.expr = exprNode_cast (yyvsp[-3].tok, yyvsp[0].expr, yyvsp[-2].qtyp); ;
     break;}
 case 201:
-#line 837 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 202:
-#line 838 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 203:
-#line 839 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 205:
-#line 843 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 206:
-#line 844 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 208:
-#line 848 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 209:
-#line 849 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 211:
-#line 853 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 212:
-#line 854 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 213:
-#line 855 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 214:
-#line 856 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 216:
-#line 860 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 217:
-#line 861 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 219:
-#line 865 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 221:
-#line 869 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 223:
-#line 874 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 225:
-#line 879 "cgrammar.y"
 { exprNode_produceGuards (yyvsp[-1].expr); 
      context_enterAndClause (yyvsp[-1].expr); 
    ;
     break;}
 case 226:
-#line 883 "cgrammar.y"
 { 
      yyval.expr = exprNode_op (yyvsp[-3].expr, yyvsp[0].expr, yyvsp[-2].tok); 
      context_exitAndClause (yyval.expr, yyvsp[0].expr);
    ;
     break;}
 case 228:
-#line 891 "cgrammar.y"
 { 
      exprNode_produceGuards (yyvsp[-1].expr);
      context_enterOrClause (yyvsp[-1].expr); 
    ;
     break;}
 case 229:
-#line 896 "cgrammar.y"
 { 
      yyval.expr = exprNode_op (yyvsp[-3].expr, yyvsp[0].expr, yyvsp[-2].tok); 
      context_exitOrClause (yyval.expr, yyvsp[0].expr);
    ;
     break;}
 case 231:
-#line 903 "cgrammar.y"
 { exprNode_produceGuards (yyvsp[-1].expr); context_enterTrueClause (yyvsp[-1].expr); ;
     break;}
 case 232:
-#line 904 "cgrammar.y"
 { context_enterFalseClause (yyvsp[-4].expr); ;
     break;}
 case 233:
-#line 905 "cgrammar.y"
 { yyval.expr = exprNode_cond (yyvsp[-6].expr, yyvsp[-3].expr, yyvsp[0].expr); context_exitClause (yyvsp[-6].expr, yyvsp[-3].expr, yyvsp[0].expr); ;
     break;}
 case 235:
-#line 909 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 236:
-#line 910 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 237:
-#line 911 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 238:
-#line 912 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 239:
-#line 913 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 240:
-#line 914 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 241:
-#line 915 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 242:
-#line 916 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 243:
-#line 917 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 244:
-#line 918 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 245:
-#line 919 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 247:
-#line 923 "cgrammar.y"
 { yyval.expr = exprNode_comma (yyvsp[-2].expr, yyvsp[0].expr); ;
     break;}
 case 248:
-#line 926 "cgrammar.y"
 { yyval.expr = exprNode_undefined; ;
     break;}
 case 251:
-#line 935 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 252:
-#line 936 "cgrammar.y"
 { doVaDcl (); yyval.expr = exprNode_makeError (); ;
     break;}
 case 253:
-#line 937 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 254:
-#line 941 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 255:
-#line 955 "cgrammar.y"
 {
      setProcessingVars (yyvsp[-3].qtyp); 
      processNamedDecl (yyvsp[-1].ntyp); 
    ;
     break;}
 case 256:
-#line 960 "cgrammar.y"
 { 
      unsetProcessingVars (); 
      yyval.expr = exprNode_makeEmptyInitialization (yyvsp[-6].ntyp); 
@@ -4126,120 +3910,92 @@ case 256:
    ;
     break;}
 case 257:
-#line 966 "cgrammar.y"
 { setProcessingVars (yyvsp[-4].qtyp); processNamedDecl (yyvsp[-2].ntyp); ;
     break;}
 case 258:
-#line 968 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-2].expr, exprNode_makeInitialization (yyvsp[-8].ntyp, yyvsp[-3].expr)); 
      unsetProcessingVars ();
    ;
     break;}
 case 259:
-#line 974 "cgrammar.y"
 { 
      processNamedDecl (yyvsp[-1].ntyp); 
      yyval.expr = exprNode_makeEmptyInitialization (yyvsp[-1].ntyp);
    ;
     break;}
 case 260:
-#line 978 "cgrammar.y"
 { processNamedDecl (yyvsp[-2].ntyp); ;
     break;}
 case 261:
-#line 979 "cgrammar.y"
 { yyval.expr = exprNode_makeInitialization (yyvsp[-5].ntyp, yyvsp[0].expr); ;
     break;}
 case 262:
-#line 982 "cgrammar.y"
 { setProcessingTypedef (yyvsp[0].qtyp); ;
     break;}
 case 263:
-#line 984 "cgrammar.y"
 { clabstract_declareType (yyvsp[-3].exprlist, yyvsp[-1].warnclause); ;
     break;}
 case 264:
-#line 985 "cgrammar.y"
 { /* in the ANSI grammar, semantics unclear */ ;
     break;}
 case 265:
-#line 986 "cgrammar.y"
 { /* in the ANSI grammar, semantics unclear */ ;
     break;}
 case 266:
-#line 989 "cgrammar.y"
 { g_expectingTypeName = TRUE; ;
     break;}
 case 267:
-#line 992 "cgrammar.y"
 { g_expectingTypeName = TRUE; context_pushLoc (); ;
     break;}
 case 268:
-#line 995 "cgrammar.y"
 { yyval.exprlist = yyvsp[-1].exprlist; ;
     break;}
 case 269:
-#line 998 "cgrammar.y"
 { yyval.exprlist = exprNodeList_singleton (yyvsp[0].expr); ;
     break;}
 case 270:
-#line 999 "cgrammar.y"
 { yyval.exprlist = exprNodeList_push (yyvsp[-3].exprlist, yyvsp[0].expr); ;
     break;}
 case 271:
-#line 1002 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 272:
-#line 1003 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-3].expr, yyvsp[0].expr); ;
     break;}
 case 274:
-#line 1007 "cgrammar.y"
 { yyval.expr = exprNode_makeInitBlock (yyvsp[-2].tok, yyvsp[-1].exprlist); ;
     break;}
 case 275:
-#line 1008 "cgrammar.y"
 { yyval.expr = exprNode_makeInitBlock (yyvsp[-3].tok, yyvsp[-2].exprlist); ;
     break;}
 case 276:
-#line 1013 "cgrammar.y"
 { yyval.exprlist = exprNodeList_singleton (yyvsp[0].expr); ;
     break;}
 case 277:
-#line 1015 "cgrammar.y"
 { yyval.exprlist = exprNodeList_push (yyvsp[-2].exprlist, yyvsp[0].expr); ;
     break;}
 case 278:
-#line 1023 "cgrammar.y"
 { setStorageClass (SCEXTERN); yyval.typequal = qual_createExtern (); ;
     break;}
 case 279:
-#line 1024 "cgrammar.y"
 { yyval.typequal = qual_createInline (); ;
     break;}
 case 280:
-#line 1025 "cgrammar.y"
 { setStorageClass (SCSTATIC); yyval.typequal = qual_createStatic (); ;
     break;}
 case 281:
-#line 1026 "cgrammar.y"
 { yyval.typequal = qual_createAuto (); ;
     break;}
 case 282:
-#line 1027 "cgrammar.y"
 { yyval.typequal = qual_createRegister (); ;
     break;}
 case 283:
-#line 1030 "cgrammar.y"
 { yyval.typequal = qual_createNullTerminated (); ;
     break;}
 case 284:
-#line 1033 "cgrammar.y"
 { yyval.stateclause = yyvsp[-1].stateclause; ;
     break;}
 case 285:
-#line 1037 "cgrammar.y"
 {
      context_setProtectVars (); 
      enterParamsTemp (); 
@@ -4247,7 +4003,6 @@ case 285:
    ;
     break;}
 case 286:
-#line 1043 "cgrammar.y"
 { 
      exitParamsTemp ();
      sRef_clearGlobalScopeSafe (); 
@@ -4256,15 +4011,12 @@ case 286:
    ;
     break;}
 case 287:
-#line 1051 "cgrammar.y"
 { yyval.funcclause = yyvsp[-1].funcclause; ;
     break;}
 case 288:
-#line 1054 "cgrammar.y"
 { yyval.tok = yyvsp[-1].tok; context_enterFunctionHeader (); ;
     break;}
 case 289:
-#line 1058 "cgrammar.y"
 {
      context_exitFunctionHeader ();
      context_setProtectVars (); 
@@ -4273,7 +4025,6 @@ case 289:
    ;
     break;}
 case 290:
-#line 1065 "cgrammar.y"
 { 
      exitParamsTemp ();
      sRef_clearGlobalScopeSafe (); 
@@ -4282,7 +4033,6 @@ case 290:
    ;
     break;}
 case 291:
-#line 1072 "cgrammar.y"
 {
      context_setProtectVars (); 
      enterParamsTemp (); 
@@ -4290,7 +4040,6 @@ case 291:
    ;
     break;}
 case 292:
-#line 1078 "cgrammar.y"
 {
      context_exitFunctionHeader ();
      exitParamsTemp ();
@@ -4315,469 +4064,354 @@ case 292:
    ;
     break;}
 case 293:
-#line 1102 "cgrammar.y"
 { yyval.fcnconstraint = functionConstraint_createBufferConstraint (yyvsp[0].conL); ;
     break;}
 case 294:
-#line 1103 "cgrammar.y"
 { yyval.fcnconstraint = functionConstraint_createMetaStateConstraint (yyvsp[0].msconstraint); DPRINTF (("Made constraint: %s", functionConstraint_unparse (yyval.fcnconstraint))); ;
     break;}
 case 295:
-#line 1106 "cgrammar.y"
 { yyval.typequal = qual_createExits (); ;
     break;}
 case 296:
-#line 1107 "cgrammar.y"
 { yyval.typequal = qual_createMayExit (); ;
     break;}
 case 297:
-#line 1108 "cgrammar.y"
 { yyval.typequal = qual_createTrueExit (); ;
     break;}
 case 298:
-#line 1109 "cgrammar.y"
 { yyval.typequal = qual_createFalseExit (); ;
     break;}
 case 299:
-#line 1110 "cgrammar.y"
 { yyval.typequal = qual_createNeverExit (); ;
     break;}
 case 300:
-#line 1113 "cgrammar.y"
 { yyval.typequal = qual_createChecked (); ;
     break;}
 case 301:
-#line 1114 "cgrammar.y"
 { yyval.typequal = qual_createCheckMod (); ;
     break;}
 case 302:
-#line 1115 "cgrammar.y"
 { yyval.typequal = qual_createUnchecked (); ;
     break;}
 case 303:
-#line 1116 "cgrammar.y"
 { yyval.typequal = qual_createCheckedStrict (); ;
     break;}
 case 304:
-#line 1119 "cgrammar.y"
 { yyval.typequal = qual_createOwned (); ;
     break;}
 case 305:
-#line 1120 "cgrammar.y"
 { yyval.typequal = qual_createDependent (); ;
     break;}
 case 306:
-#line 1121 "cgrammar.y"
 { yyval.typequal = qual_createYield (); ;
     break;}
 case 307:
-#line 1122 "cgrammar.y"
 { yyval.typequal = qual_createTemp (); ;
     break;}
 case 308:
-#line 1123 "cgrammar.y"
 { yyval.typequal = qual_createOnly (); ;
     break;}
 case 309:
-#line 1124 "cgrammar.y"
 { yyval.typequal = qual_createKeep (); ;
     break;}
 case 310:
-#line 1125 "cgrammar.y"
 { yyval.typequal = qual_createKept (); ;
     break;}
 case 311:
-#line 1126 "cgrammar.y"
 { yyval.typequal = qual_createShared (); ;
     break;}
 case 312:
-#line 1127 "cgrammar.y"
 { yyval.typequal = qual_createUnique (); ;
     break;}
 case 313:
-#line 1128 "cgrammar.y"
 { yyval.typequal = qual_createNull (); ;
     break;}
 case 314:
-#line 1129 "cgrammar.y"
 { yyval.typequal = qual_createIsNull (); ;
     break;}
 case 315:
-#line 1130 "cgrammar.y"
 { yyval.typequal = qual_createRelNull (); ;
     break;}
 case 316:
-#line 1131 "cgrammar.y"
 { yyval.typequal = qual_createNotNull (); ;
     break;}
 case 317:
-#line 1132 "cgrammar.y"
 { yyval.typequal = qual_createExposed (); ;
     break;}
 case 318:
-#line 1133 "cgrammar.y"
 { yyval.typequal = qual_createObserver (); ;
     break;}
 case 319:
-#line 1134 "cgrammar.y"
 { yyval.typequal = qual_createNullTerminated (); ;
     break;}
 case 320:
-#line 1135 "cgrammar.y"
 { yyval.typequal = qual_createMetaState (yyvsp[0].annotation); ;
     break;}
 case 321:
-#line 1139 "cgrammar.y"
 { yyval.typequal = qual_createReturned (); ;
     break;}
 case 322:
-#line 1140 "cgrammar.y"
 { yyval.typequal = qual_createSef (); ;
     break;}
 case 323:
-#line 1143 "cgrammar.y"
 { yyval.typequal = qual_createUnused (); ;
     break;}
 case 324:
-#line 1144 "cgrammar.y"
 { yyval.typequal = qual_createExternal (); ;
     break;}
 case 325:
-#line 1147 "cgrammar.y"
 { yyval.typequal = qual_createTrueNull (); ;
     break;}
 case 326:
-#line 1148 "cgrammar.y"
 { yyval.typequal = qual_createFalseNull (); ;
     break;}
 case 327:
-#line 1151 "cgrammar.y"
 { yyval.typequal = qual_createAbstract (); ;
     break;}
 case 328:
-#line 1152 "cgrammar.y"
 { yyval.typequal = qual_createConcrete (); ;
     break;}
 case 329:
-#line 1153 "cgrammar.y"
 { yyval.typequal = qual_createMutable (); ;
     break;}
 case 330:
-#line 1154 "cgrammar.y"
 { yyval.typequal = qual_createImmutable (); ;
     break;}
 case 331:
-#line 1157 "cgrammar.y"
 { yyval.typequal = qual_createRefCounted (); ;
     break;}
 case 332:
-#line 1158 "cgrammar.y"
 { yyval.typequal = qual_createRefs (); ;
     break;}
 case 333:
-#line 1159 "cgrammar.y"
 { yyval.typequal = qual_createKillRef (); ;
     break;}
 case 334:
-#line 1160 "cgrammar.y"
 { yyval.typequal = qual_createRelDef (); ;
     break;}
 case 335:
-#line 1161 "cgrammar.y"
 { yyval.typequal = qual_createNewRef (); ;
     break;}
 case 336:
-#line 1162 "cgrammar.y"
 { yyval.typequal = qual_createTempRef (); ;
     break;}
 case 337:
-#line 1165 "cgrammar.y"
 { yyval.typequal = qual_createShort (); ;
     break;}
 case 338:
-#line 1166 "cgrammar.y"
 { yyval.typequal = qual_createLong (); ;
     break;}
 case 339:
-#line 1167 "cgrammar.y"
 { yyval.typequal = qual_createSigned (); ;
     break;}
 case 340:
-#line 1168 "cgrammar.y"
 { yyval.typequal = qual_createUnsigned (); ;
     break;}
 case 341:
-#line 1171 "cgrammar.y"
 { yyval.typequal = qual_createOut (); ;
     break;}
 case 342:
-#line 1172 "cgrammar.y"
 { yyval.typequal = qual_createIn (); ;
     break;}
 case 343:
-#line 1173 "cgrammar.y"
 { yyval.typequal = qual_createPartial (); ;
     break;}
 case 344:
-#line 1174 "cgrammar.y"
 { yyval.typequal = qual_createSpecial (); ;
     break;}
 case 345:
-#line 1177 "cgrammar.y"
 { yyval.typequal = qual_createConst (); ;
     break;}
 case 346:
-#line 1178 "cgrammar.y"
 { yyval.typequal = qual_createVolatile (); ;
     break;}
 case 347:
-#line 1179 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 348:
-#line 1180 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 349:
-#line 1181 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 350:
-#line 1182 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 351:
-#line 1183 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 352:
-#line 1184 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 353:
-#line 1185 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 354:
-#line 1186 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 355:
-#line 1187 "cgrammar.y"
 { yyval.typequal = yyvsp[-1].typequal; ;
     break;}
 case 362:
-#line 1200 "cgrammar.y"
 { yyval.ctyp = ctype_unknown; ;
     break;}
 case 363:
-#line 1201 "cgrammar.y"
 { yyval.ctyp = ctype_anyintegral; ;
     break;}
 case 364:
-#line 1202 "cgrammar.y"
 { yyval.ctyp = ctype_unsignedintegral; ;
     break;}
 case 365:
-#line 1203 "cgrammar.y"
 { yyval.ctyp = ctype_signedintegral; ;
     break;}
 case 369:
-#line 1207 "cgrammar.y"
 { yyval.ctyp = ctype_fromQual (yyvsp[-1].typequal); ;
     break;}
 case 370:
-#line 1211 "cgrammar.y"
 { yyval.qtyp = qtype_resolve (yyvsp[-1].qtyp); ;
     break;}
 case 371:
-#line 1214 "cgrammar.y"
 { yyval.qtyp = yyvsp[0].qtyp; ;
     break;}
 case 372:
-#line 1216 "cgrammar.y"
 { yyval.qtyp = qtype_mergeAlt (yyvsp[-3].qtyp, yyvsp[-1].qtyp); ;
     break;}
 case 374:
-#line 1221 "cgrammar.y"
 { yyval.qtyp = qtype_mergeAlt (yyvsp[-2].qtyp, yyvsp[0].qtyp); ;
     break;}
 case 375:
-#line 1224 "cgrammar.y"
 { yyval.qtyp = qtype_addQual (yyvsp[0].qtyp, yyvsp[-1].typequal); ;
     break;}
 case 376:
-#line 1225 "cgrammar.y"
 { yyval.qtyp = qtype_addQual (yyvsp[0].qtyp, yyvsp[-1].typequal); ;
     break;}
 case 377:
-#line 1226 "cgrammar.y"
 { yyval.qtyp = qtype_combine (yyvsp[0].qtyp, yyvsp[-1].ctyp); ;
     break;}
 case 378:
-#line 1229 "cgrammar.y"
 { yyval.qtyp = qtype_unknown (); ;
     break;}
 case 379:
-#line 1230 "cgrammar.y"
 { yyval.qtyp = yyvsp[0].qtyp; ;
     break;}
 case 380:
-#line 1233 "cgrammar.y"
 { sRef_setGlobalScopeSafe (); ;
     break;}
 case 381:
-#line 1235 "cgrammar.y"
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 382:
-#line 1237 "cgrammar.y"
 { yyval.ctyp = declareStruct (yyvsp[-8].cname, yyvsp[-3].flist); ;
     break;}
 case 383:
-#line 1238 "cgrammar.y"
 { sRef_setGlobalScopeSafe (); ;
     break;}
 case 384:
-#line 1240 "cgrammar.y"
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 385:
-#line 1242 "cgrammar.y"
 { yyval.ctyp = declareUnion (yyvsp[-8].cname, yyvsp[-3].flist); ;
     break;}
 case 386:
-#line 1244 "cgrammar.y"
 { yyval.ctyp = declareStruct (yyvsp[-3].cname, uentryList_new ()); ;
     break;}
 case 387:
-#line 1246 "cgrammar.y"
 { yyval.ctyp = declareUnion (yyvsp[-3].cname, uentryList_new ()); ;
     break;}
 case 388:
-#line 1247 "cgrammar.y"
 { sRef_setGlobalScopeSafe (); ;
     break;}
 case 389:
-#line 1249 "cgrammar.y"
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 390:
-#line 1251 "cgrammar.y"
 { yyval.ctyp = declareUnnamedStruct (yyvsp[-3].flist); ;
     break;}
 case 391:
-#line 1252 "cgrammar.y"
 { sRef_setGlobalScopeSafe (); ;
     break;}
 case 392:
-#line 1254 "cgrammar.y"
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 393:
-#line 1256 "cgrammar.y"
 { yyval.ctyp = declareUnnamedUnion (yyvsp[-3].flist); ;
     break;}
 case 394:
-#line 1258 "cgrammar.y"
 { yyval.ctyp = ctype_createUnnamedStruct (uentryList_new ()); ;
     break;}
 case 395:
-#line 1260 "cgrammar.y"
 { yyval.ctyp = ctype_createUnnamedUnion (uentryList_new ()); ;
     break;}
 case 396:
-#line 1261 "cgrammar.y"
 { yyval.ctyp = handleStruct (yyvsp[-1].cname); ;
     break;}
 case 397:
-#line 1262 "cgrammar.y"
 { yyval.ctyp = handleUnion (yyvsp[-1].cname); ;
     break;}
 case 398:
-#line 1265 "cgrammar.y"
 { g_expectingTypeName = FALSE; ;
     break;}
 case 400:
-#line 1269 "cgrammar.y"
 { yyval.flist = uentryList_undefined; /* bogus! */ ;
     break;}
 case 401:
-#line 1270 "cgrammar.y"
 { yyval.flist = uentryList_mergeFields (yyvsp[-1].flist, yyvsp[0].flist); ;
     break;}
 case 402:
-#line 1274 "cgrammar.y"
 { yyval.flist = fixUentryList (yyvsp[-2].ntyplist, yyvsp[-4].qtyp); ;
     break;}
 case 403:
-#line 1276 "cgrammar.y"
 { yyval.flist = fixUnnamedDecl (yyvsp[-2].qtyp); ;
     break;}
 case 404:
-#line 1280 "cgrammar.y"
 { yyval.ntyplist = idDeclList_singleton (yyvsp[-1].ntyp); ;
     break;}
 case 405:
-#line 1282 "cgrammar.y"
 { yyval.ntyplist = idDeclList_add (yyvsp[-3].ntyplist, yyvsp[-1].ntyp); ;
     break;}
 case 406:
-#line 1285 "cgrammar.y"
 { yyval.ntyp = yyvsp[0].ntyp; ;
     break;}
 case 407:
-#line 1286 "cgrammar.y"
 { yyval.ntyp = idDecl_undefined; ;
     break;}
 case 408:
-#line 1287 "cgrammar.y"
 { yyval.ntyp = yyvsp[-3].ntyp; ;
     break;}
 case 409:
-#line 1292 "cgrammar.y"
 { yyval.ctyp = declareUnnamedEnum (yyvsp[-2].enumnamelist); ;
     break;}
 case 410:
-#line 1293 "cgrammar.y"
 { context_pushLoc (); ;
     break;}
 case 411:
-#line 1294 "cgrammar.y"
 { context_popLoc (); yyval.ctyp = declareEnum (yyvsp[-5].cname, yyvsp[-2].enumnamelist); ;
     break;}
 case 412:
-#line 1295 "cgrammar.y"
 { yyval.ctyp = handleEnum (yyvsp[-1].cname); ;
     break;}
 case 413:
-#line 1299 "cgrammar.y"
 { yyval.enumnamelist = enumNameList_single (yyvsp[0].cname); ;
     break;}
 case 414:
-#line 1301 "cgrammar.y"
 { yyval.enumnamelist = enumNameList_push (yyvsp[-2].enumnamelist, yyvsp[0].cname); ;
     break;}
 case 416:
-#line 1306 "cgrammar.y"
 { uentry ue = uentry_makeEnumConstant (yyvsp[0].cname, ctype_unknown);
      usymtab_supGlobalEntry (ue);
      yyval.cname = yyvsp[0].cname;
    ;
     break;}
 case 417:
-#line 1311 "cgrammar.y"
 { uentry ue = uentry_makeEnumInitializedConstant (yyvsp[-3].cname, ctype_unknown, yyvsp[0].expr);
      usymtab_supGlobalEntry (ue);
      yyval.cname = yyvsp[-3].cname; 
    ;
     break;}
 case 419:
-#line 1318 "cgrammar.y"
 { yyval.ntyp = idDecl_create (cstring_undefined, qtype_create (yyvsp[0].ctyp)); ;
     break;}
 case 420:
-#line 1320 "cgrammar.y"
 { 
      qtype qt = qtype_unknown ();
 
@@ -4786,91 +4420,69 @@ case 420:
    ;
     break;}
 case 421:
-#line 1327 "cgrammar.y"
 { yyval.ntyp = yyvsp[0].ntyp; qtype_adjustPointers (yyvsp[-1].count, idDecl_getTyp (yyval.ntyp)); ;
     break;}
 case 423:
-#line 1332 "cgrammar.y"
 { yyval.ntyp = yyvsp[0].ntyp; qtype_adjustPointers (yyvsp[-1].count, idDecl_getTyp (yyval.ntyp)); ;
     break;}
 case 424:
-#line 1335 "cgrammar.y"
 { yyval.entrylist = handleParamTypeList (yyvsp[0].entrylist); ;
     break;}
 case 425:
-#line 1336 "cgrammar.y"
 { yyval.entrylist = handleParamIdList (yyvsp[0].entrylist); ;
     break;}
 case 426:
-#line 1339 "cgrammar.y"
 { /* ignored for now */; ;
     break;}
 case 427:
-#line 1340 "cgrammar.y"
 { ; ;
     break;}
 case 428:
-#line 1343 "cgrammar.y"
 { ; ;
     break;}
 case 429:
-#line 1344 "cgrammar.y"
 { ; ;
     break;}
 case 430:
-#line 1347 "cgrammar.y"
 { yyval.count = 1; ;
     break;}
 case 431:
-#line 1348 "cgrammar.y"
 { yyval.count = 1; ;
     break;}
 case 432:
-#line 1349 "cgrammar.y"
 { yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 433:
-#line 1350 "cgrammar.y"
 { yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 435:
-#line 1354 "cgrammar.y"
 { yyval.entrylist = uentryList_add (yyvsp[-2].entrylist, uentry_makeElipsisMarker ()); ;
     break;}
 case 436:
-#line 1357 "cgrammar.y"
 { yyval.entrylist = uentryList_single (uentry_makeVariableLoc (yyvsp[0].cname, ctype_int)); ;
     break;}
 case 437:
-#line 1358 "cgrammar.y"
 { yyval.entrylist = uentryList_add (yyvsp[-2].entrylist, uentry_makeVariableLoc (yyvsp[0].cname, ctype_int)); ;
     break;}
 case 438:
-#line 1361 "cgrammar.y"
 { yyval.entrylist = uentryList_single (uentry_makeElipsisMarker ()); ;
     break;}
 case 440:
-#line 1363 "cgrammar.y"
 { yyval.entrylist = uentryList_add (yyvsp[-2].entrylist, uentry_makeElipsisMarker ()); ;
     break;}
 case 441:
-#line 1366 "cgrammar.y"
 { storeLoc (); ;
     break;}
 case 442:
-#line 1366 "cgrammar.y"
 { yyval.entrylist = uentryList_single (yyvsp[0].oentry); ;
     break;}
 case 443:
-#line 1367 "cgrammar.y"
 { storeLoc (); ;
     break;}
 case 444:
-#line 1368 "cgrammar.y"
 { yyval.entrylist = uentryList_add (yyvsp[-3].entrylist, yyvsp[0].oentry); ;
     break;}
 case 445:
-#line 1372 "cgrammar.y"
 { 
      if (isFlipOldStyle ()) 
        { 
@@ -4884,7 +4496,6 @@ case 445:
    ;
     break;}
 case 446:
-#line 1384 "cgrammar.y"
 { 
      idDecl tparam = idDecl_create (yyvsp[0].cname, qtype_unknown ());
 
@@ -4900,389 +4511,296 @@ case 446:
    ;
     break;}
 case 448:
-#line 1400 "cgrammar.y"
 { yyval.qtyp = qtype_newBase (yyvsp[-1].qtyp, yyvsp[0].ctyp); ;
     break;}
 case 449:
-#line 1403 "cgrammar.y"
 { yyval.ctyp = ctype_adjustPointers (yyvsp[0].count, ctype_unknown); ;
     break;}
 case 451:
-#line 1405 "cgrammar.y"
 { yyval.ctyp = ctype_adjustPointers (yyvsp[-1].count, yyvsp[0].ctyp); ;
     break;}
 case 452:
-#line 1408 "cgrammar.y"
 { yyval.ctyp = ctype_unknown; ;
     break;}
 case 454:
-#line 1413 "cgrammar.y"
 { yyval.ctyp = ctype_expectFunction (yyvsp[-1].ctyp); ;
     break;}
 case 455:
-#line 1414 "cgrammar.y"
 { yyval.ctyp = ctype_makeArray (ctype_unknown); ;
     break;}
 case 456:
-#line 1416 "cgrammar.y"
 { yyval.ctyp = ctype_makeFixedArray (ctype_unknown, exprNode_getLongValue (yyvsp[-1].expr)); ;
     break;}
 case 457:
-#line 1417 "cgrammar.y"
 { yyval.ctyp = ctype_makeArray (yyvsp[-2].ctyp); ;
     break;}
 case 458:
-#line 1419 "cgrammar.y"
 { yyval.ctyp = ctype_makeFixedArray (yyvsp[-3].ctyp, exprNode_getLongValue (yyvsp[-1].expr)); ;
     break;}
 case 459:
-#line 1421 "cgrammar.y"
 { yyval.ctyp = ctype_makeFunction (ctype_unknown, uentryList_makeMissingParams ()); ;
     break;}
 case 460:
-#line 1423 "cgrammar.y"
 { yyval.ctyp = ctype_makeParamsFunction (ctype_unknown, yyvsp[-1].entrylist); ;
     break;}
 case 461:
-#line 1425 "cgrammar.y"
 { yyval.ctyp = ctype_makeFunction (yyvsp[-3].ctyp, uentryList_makeMissingParams ()); ;
     break;}
 case 462:
-#line 1427 "cgrammar.y"
 { yyval.ctyp = ctype_makeParamsFunction (yyvsp[-4].ctyp, yyvsp[-1].entrylist); ;
     break;}
 case 472:
-#line 1455 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 475:
-#line 1463 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 476:
-#line 1467 "cgrammar.y"
 { yyval.expr = exprNode_while (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 477:
-#line 1469 "cgrammar.y"
 { yyval.expr = exprNode_doWhile (yyvsp[-5].expr, yyvsp[-2].expr); ;
     break;}
 case 478:
-#line 1471 "cgrammar.y"
 { yyval.expr = exprNode_doWhile (yyvsp[-4].expr, yyvsp[-1].expr); ;
     break;}
 case 479:
-#line 1473 "cgrammar.y"
 { yyval.expr = exprNode_for (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 480:
-#line 1477 "cgrammar.y"
 { context_setProtectVars (); ;
     break;}
 case 481:
-#line 1477 "cgrammar.y"
 { context_sizeofReleaseVars (); ;
     break;}
 case 482:
-#line 1479 "cgrammar.y"
 { yyval.expr = exprNode_forPred (yyvsp[-7].expr, yyvsp[-5].expr, yyvsp[-2].expr); 
      context_enterForClause (yyvsp[-5].expr); ;
     break;}
 case 483:
-#line 1484 "cgrammar.y"
 { setProcessingIterVars (yyvsp[-2].entry); ;
     break;}
 case 484:
-#line 1486 "cgrammar.y"
 { yyval.expr = exprNode_iterStart (yyvsp[-5].entry, yyvsp[-1].exprlist); ;
     break;}
 case 485:
-#line 1487 "cgrammar.y"
 { yyval.expr = exprNode_createId (yyvsp[0].entry); ;
     break;}
 case 489:
-#line 1493 "cgrammar.y"
 { yyval.expr = yyvsp[-1].expr; DPRINTF (("def stmt: %s", exprNode_unparse (yyval.expr))); ;
     break;}
 case 497:
-#line 1501 "cgrammar.y"
 { yyval.expr = yyvsp[-1].expr; ;
     break;}
 case 498:
-#line 1502 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 499:
-#line 1506 "cgrammar.y"
 { /* don't: context_exitTrueClause ($1, $2); */
      yyval.expr = exprNode_if (yyvsp[-1].expr, yyvsp[0].expr); 
    ;
     break;}
 case 500:
-#line 1511 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 501:
-#line 1514 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 512:
-#line 1529 "cgrammar.y"
 { yyval.expr = exprNode_addParens (yyvsp[-2].tok, yyvsp[-1].expr); ;
     break;}
 case 514:
-#line 1531 "cgrammar.y"
 { yyval.expr = exprNode_makeError (); ;
     break;}
 case 515:
-#line 1534 "cgrammar.y"
 { yyval.expr = exprNode_labelMarker (yyvsp[-1].cname); ;
     break;}
 case 516:
-#line 1535 "cgrammar.y"
 { yyval.expr = exprNode_notReached (yyvsp[0].expr); ;
     break;}
 case 517:
-#line 1542 "cgrammar.y"
 { ; ;
     break;}
 case 518:
-#line 1543 "cgrammar.y"
 { ; ;
     break;}
 case 519:
-#line 1549 "cgrammar.y"
 { context_enterCaseClause (yyvsp[0].expr); ;
     break;}
 case 520:
-#line 1550 "cgrammar.y"
 { yyval.expr = exprNode_caseMarker (yyvsp[-2].expr, FALSE); ;
     break;}
 case 521:
-#line 1551 "cgrammar.y"
 { context_enterCaseClause (yyvsp[0].expr); ;
     break;}
 case 522:
-#line 1552 "cgrammar.y"
 { yyval.expr = exprNode_caseMarker (yyvsp[-2].expr, TRUE); ;
     break;}
 case 523:
-#line 1555 "cgrammar.y"
 { context_enterCaseClause (exprNode_undefined); ;
     break;}
 case 524:
-#line 1556 "cgrammar.y"
 { yyval.expr = exprNode_defaultMarker (yyvsp[-2].tok, FALSE); ;
     break;}
 case 525:
-#line 1557 "cgrammar.y"
 { context_enterCaseClause (exprNode_undefined); ;
     break;}
 case 526:
-#line 1558 "cgrammar.y"
 { yyval.expr = exprNode_defaultMarker (yyvsp[-2].tok, TRUE); ;
     break;}
 case 527:
-#line 1561 "cgrammar.y"
 { yyval.expr = yyvsp[-1].expr; ;
     break;}
 case 528:
-#line 1563 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; context_exitInner (yyvsp[0].expr); ;
     break;}
 case 529:
-#line 1566 "cgrammar.y"
 { yyval.expr = yyvsp[-1].expr; ;
     break;}
 case 530:
-#line 1569 "cgrammar.y"
 { context_enterInnerContext (); ;
     break;}
 case 531:
-#line 1572 "cgrammar.y"
 { context_exitInnerPlain (); ;
     break;}
 case 532:
-#line 1575 "cgrammar.y"
 { context_enterStructInnerContext (); ;
     break;}
 case 533:
-#line 1578 "cgrammar.y"
 { context_exitStructInnerContext (); ;
     break;}
 case 534:
-#line 1581 "cgrammar.y"
 { context_exitInnerSafe (); ;
     break;}
 case 535:
-#line 1584 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 536:
-#line 1585 "cgrammar.y"
 { yyval.expr = exprNode_notReached (exprNode_createTok (yyvsp[0].tok)); ;
     break;}
 case 537:
-#line 1586 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (yyvsp[-1].expr, lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 538:
-#line 1588 "cgrammar.y"
 { yyval.expr = exprNode_notReached (exprNode_updateLocation (yyvsp[-2].expr, lltok_getLoc (yyvsp[0].tok))); ;
     break;}
 case 539:
-#line 1589 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (yyvsp[-1].expr, lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 540:
-#line 1591 "cgrammar.y"
 { yyval.expr = exprNode_notReached (exprNode_updateLocation (yyvsp[-2].expr, lltok_getLoc (yyvsp[0].tok))); ;
     break;}
 case 541:
-#line 1593 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (exprNode_concat (yyvsp[-2].expr, yyvsp[-1].expr), lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 542:
-#line 1595 "cgrammar.y"
 { yyval.expr = exprNode_notReached (exprNode_updateLocation (exprNode_concat (yyvsp[-3].expr, yyvsp[-2].expr), 
 							lltok_getLoc (yyvsp[-1].tok))); 
    ;
     break;}
 case 543:
-#line 1601 "cgrammar.y"
 { yyval.expr = exprNode_makeBlock (yyvsp[0].expr); ;
     break;}
 case 544:
-#line 1605 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 545:
-#line 1607 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (yyvsp[-1].expr, lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 546:
-#line 1609 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (yyvsp[-1].expr, lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 547:
-#line 1611 "cgrammar.y"
 { yyval.expr = exprNode_updateLocation (exprNode_concat (yyvsp[-2].expr, yyvsp[-1].expr), lltok_getLoc (yyvsp[0].tok)); ;
     break;}
 case 549:
-#line 1615 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 550:
-#line 1618 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 551:
-#line 1619 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 552:
-#line 1622 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 553:
-#line 1623 "cgrammar.y"
 { yyval.expr = exprNode_concat (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 554:
-#line 1626 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 555:
-#line 1627 "cgrammar.y"
 { yyval.expr = exprNode_statement (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 556:
-#line 1630 "cgrammar.y"
 { yyval.expr = exprNode_createTok (yyvsp[0].tok); ;
     break;}
 case 557:
-#line 1631 "cgrammar.y"
 { yyval.expr = exprNode_statement (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 558:
-#line 1632 "cgrammar.y"
 { yyval.expr = exprNode_checkExpr (yyvsp[0].expr); ;
     break;}
 case 559:
-#line 1636 "cgrammar.y"
 { yyval.expr = yyvsp[-1].expr; exprNode_produceGuards (yyvsp[-1].expr); context_enterTrueClause (yyvsp[-1].expr); ;
     break;}
 case 560:
-#line 1644 "cgrammar.y"
 { 
      context_exitTrueClause (yyvsp[-1].expr, yyvsp[0].expr);
      yyval.expr = exprNode_if (yyvsp[-1].expr, yyvsp[0].expr); 
    ;
     break;}
 case 561:
-#line 1648 "cgrammar.y"
 { context_enterFalseClause (yyvsp[-2].expr); ;
     break;}
 case 562:
-#line 1649 "cgrammar.y"
 {
      context_exitClause (yyvsp[-4].expr, yyvsp[-3].expr, yyvsp[0].expr);
      yyval.expr = exprNode_ifelse (yyvsp[-4].expr, yyvsp[-3].expr, yyvsp[0].expr); 
    ;
     break;}
 case 563:
-#line 1653 "cgrammar.y"
 { context_enterSwitch (yyvsp[0].expr); ;
     break;}
 case 564:
-#line 1654 "cgrammar.y"
 { yyval.expr = exprNode_switch (yyvsp[-3].expr, yyvsp[0].expr); ;
     break;}
 case 565:
-#line 1658 "cgrammar.y"
 { yyval.expr = exprNode_whilePred (yyvsp[-1].expr); context_enterWhileClause (yyvsp[-1].expr); ;
     break;}
 case 566:
-#line 1662 "cgrammar.y"
 { yyval.expr = exprNode_whilePred(yyvsp[-1].expr); ;
     break;}
 case 567:
-#line 1665 "cgrammar.y"
 { context_enterIterClause (); ;
     break;}
 case 568:
-#line 1666 "cgrammar.y"
 { setProcessingIterVars (yyvsp[-3].entry); ;
     break;}
 case 569:
-#line 1669 "cgrammar.y"
 { 
      yyval.expr = exprNode_iter (yyvsp[-9].entry, yyvsp[-4].exprlist, yyvsp[-2].expr, yyvsp[-1].entry); 
 
    ;
     break;}
 case 570:
-#line 1675 "cgrammar.y"
 { yyval.exprlist = exprNodeList_singleton (yyvsp[0].expr); ;
     break;}
 case 571:
-#line 1676 "cgrammar.y"
 { nextIterParam (); ;
     break;}
 case 572:
-#line 1677 "cgrammar.y"
 { yyval.exprlist = exprNodeList_push (yyvsp[-3].exprlist, yyvsp[0].expr); ;
     break;}
 case 573:
-#line 1680 "cgrammar.y"
 { yyval.expr = exprNode_iterExpr (yyvsp[0].expr); ;
     break;}
 case 574:
-#line 1681 "cgrammar.y"
 { yyval.expr = exprNode_iterId (yyvsp[0].entry); ;
     break;}
 case 575:
-#line 1682 "cgrammar.y"
 { uentry ue = coerceIterId (yyvsp[0].cname);
 
 		      if (uentry_isValid (ue)) 
@@ -5296,324 +4814,245 @@ case 575:
 		    ;
     break;}
 case 576:
-#line 1693 "cgrammar.y"
 { yyval.expr = exprNode_iterNewId (yyvsp[0].cname); ;
     break;}
 case 578:
-#line 1701 "cgrammar.y"
 { yyval.expr = exprNode_combineLiterals (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 580:
-#line 1705 "cgrammar.y"
 { yyval.expr = exprNode_addParens (yyvsp[-2].tok, yyvsp[-1].expr); ;
     break;}
 case 582:
-#line 1709 "cgrammar.y"
 { yyval.expr = exprNode_arrayFetch (yyvsp[-3].expr, yyvsp[-1].expr); ;
     break;}
 case 583:
-#line 1710 "cgrammar.y"
 { yyval.expr = exprNode_functionCall (yyvsp[-2].expr, exprNodeList_new ()); ;
     break;}
 case 584:
-#line 1711 "cgrammar.y"
 { yyval.expr = exprNode_functionCall (yyvsp[-3].expr, yyvsp[-1].exprlist); ;
     break;}
 case 585:
-#line 1713 "cgrammar.y"
 { yyval.expr = exprNode_vaArg (yyvsp[-5].tok, yyvsp[-3].expr, yyvsp[-1].qtyp); ;
     break;}
 case 586:
-#line 1714 "cgrammar.y"
 { yyval.expr = exprNode_fieldAccess (yyvsp[-4].expr, yyvsp[-2].tok, yyvsp[-1].cname); ;
     break;}
 case 587:
-#line 1715 "cgrammar.y"
 { yyval.expr = exprNode_arrowAccess (yyvsp[-4].expr, yyvsp[-2].tok, yyvsp[-1].cname); ;
     break;}
 case 588:
-#line 1716 "cgrammar.y"
 { yyval.expr = exprNode_postOp (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 589:
-#line 1717 "cgrammar.y"
 { yyval.expr = exprNode_postOp (yyvsp[-1].expr, yyvsp[0].tok); ;
     break;}
 case 591:
-#line 1721 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 592:
-#line 1722 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 593:
-#line 1723 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 594:
-#line 1724 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 595:
-#line 1725 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 596:
-#line 1726 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 597:
-#line 1727 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 598:
-#line 1728 "cgrammar.y"
 { yyval.expr = exprNode_preOp (yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 599:
-#line 1729 "cgrammar.y"
 { yyval.expr = yyvsp[0].expr; ;
     break;}
 case 601:
-#line 1733 "cgrammar.y"
 { yyval.expr = exprNode_cast (yyvsp[-3].tok, yyvsp[0].expr, yyvsp[-2].qtyp); ;
     break;}
 case 603:
-#line 1737 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 604:
-#line 1738 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 605:
-#line 1739 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 607:
-#line 1743 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 608:
-#line 1744 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 610:
-#line 1748 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 611:
-#line 1749 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 613:
-#line 1753 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 614:
-#line 1754 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 615:
-#line 1755 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 616:
-#line 1756 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 618:
-#line 1760 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 619:
-#line 1761 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 621:
-#line 1765 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 623:
-#line 1769 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 625:
-#line 1774 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 627:
-#line 1778 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 629:
-#line 1782 "cgrammar.y"
 { yyval.expr = exprNode_op (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 631:
-#line 1786 "cgrammar.y"
 { context_enterTrueClause (yyvsp[-1].expr); ;
     break;}
 case 632:
-#line 1787 "cgrammar.y"
 { context_enterFalseClause (yyvsp[-4].expr); ;
     break;}
 case 633:
-#line 1788 "cgrammar.y"
 { yyval.expr = exprNode_cond (yyvsp[-6].expr, yyvsp[-3].expr, yyvsp[0].expr); ;
     break;}
 case 635:
-#line 1792 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 636:
-#line 1793 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 637:
-#line 1794 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 638:
-#line 1795 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 639:
-#line 1796 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 640:
-#line 1797 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 641:
-#line 1798 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 642:
-#line 1799 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 643:
-#line 1800 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 644:
-#line 1801 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 645:
-#line 1802 "cgrammar.y"
 { yyval.expr = exprNode_assign (yyvsp[-2].expr, yyvsp[0].expr, yyvsp[-1].tok); ;
     break;}
 case 646:
-#line 1805 "cgrammar.y"
 { yyval.entry = yyvsp[0].entry; ;
     break;}
 case 647:
-#line 1806 "cgrammar.y"
 { yyval.entry = uentry_undefined; ;
     break;}
 case 648:
-#line 1809 "cgrammar.y"
 { context_enterDoWhileClause (); yyval.tok = yyvsp[0].tok; ;
     break;}
 case 649:
-#line 1813 "cgrammar.y"
 { yyval.expr = exprNode_while (yyvsp[-1].expr, yyvsp[0].expr); context_exitWhileClause (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 650:
-#line 1815 "cgrammar.y"
 { yyval.expr = exprNode_statement (exprNode_doWhile (yyvsp[-5].expr, yyvsp[-2].expr), yyvsp[0].tok); ;
     break;}
 case 651:
-#line 1817 "cgrammar.y"
 { yyval.expr = exprNode_for (yyvsp[-1].expr, yyvsp[0].expr); context_exitForClause (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 652:
-#line 1820 "cgrammar.y"
 { yyval.expr = exprNode_while (yyvsp[-1].expr, yyvsp[0].expr); context_exitWhileClause (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 653:
-#line 1822 "cgrammar.y"
 { yyval.expr = exprNode_statement (exprNode_doWhile (yyvsp[-5].expr, yyvsp[-2].expr), yyvsp[0].tok); ;
     break;}
 case 654:
-#line 1824 "cgrammar.y"
 { yyval.expr = exprNode_doWhile (yyvsp[-4].expr, yyvsp[-1].expr); ;
     break;}
 case 655:
-#line 1825 "cgrammar.y"
 { yyval.expr = exprNode_for (yyvsp[-1].expr, yyvsp[0].expr); context_exitForClause (yyvsp[-1].expr, yyvsp[0].expr); ;
     break;}
 case 656:
-#line 1828 "cgrammar.y"
 { yyval.expr = exprNode_goto (yyvsp[-1].cname); ;
     break;}
 case 657:
-#line 1829 "cgrammar.y"
 { yyval.expr = exprNode_continue (yyvsp[-1].tok, BADTOK); ;
     break;}
 case 658:
-#line 1831 "cgrammar.y"
 { yyval.expr = exprNode_continue (yyvsp[-2].tok, QINNERCONTINUE); ;
     break;}
 case 659:
-#line 1832 "cgrammar.y"
 { yyval.expr = exprNode_break (yyvsp[-1].tok, BADTOK); ;
     break;}
 case 660:
-#line 1833 "cgrammar.y"
 { yyval.expr = exprNode_break (yyvsp[-1].tok, QSWITCHBREAK); ;
     break;}
 case 661:
-#line 1834 "cgrammar.y"
 { yyval.expr = exprNode_break (yyvsp[-1].tok, QLOOPBREAK); ;
     break;}
 case 662:
-#line 1835 "cgrammar.y"
 { yyval.expr = exprNode_break (yyvsp[-1].tok, QINNERBREAK); ;
     break;}
 case 663:
-#line 1836 "cgrammar.y"
 { yyval.expr = exprNode_break (yyvsp[-1].tok, QSAFEBREAK); ;
     break;}
 case 664:
-#line 1837 "cgrammar.y"
 { yyval.expr = exprNode_nullReturn (yyvsp[-1].tok); ;
     break;}
 case 665:
-#line 1838 "cgrammar.y"
 { yyval.expr = exprNode_return (yyvsp[-1].expr); ;
     break;}
 case 667:
-#line 1842 "cgrammar.y"
 { ; ;
     break;}
 case 670:
-#line 1849 "cgrammar.y"
 { yyval.cname = uentry_getName (yyvsp[0].entry); ;
     break;}
 case 671:
-#line 1850 "cgrammar.y"
 { yyval.cname = uentry_getName (yyvsp[0].entry); ;
     break;}
 case 672:
-#line 1851 "cgrammar.y"
 { yyval.cname = uentry_getName (yyvsp[0].entry); ;
     break;}
 case 673:
-#line 1852 "cgrammar.y"
 { yyval.cname = yyvsp[0].cname; ;
     break;}
 case 675:
-#line 1856 "cgrammar.y"
 { yyval.ctyp = ctype_unknown; ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/usr/lib/bison.simple"
+
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -5833,7 +5272,6 @@ yyerrhandle:
     }
   return 1;
 }
-#line 1858 "cgrammar.y"
 
 
 /*@-redecl@*/ /*@-namechecks@*/

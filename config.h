@@ -16,7 +16,7 @@
 #define GCC_INCLUDE_DIR2 "/usr/local/include"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux matthews.cs.Virginia.EDU 2.4.3-12 #1 Fri Jun 8 13:35:30 EDT 2001 i686 unknown by evans"
+#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux paisley 2.4.9-12 #1 Tue Oct 30 18:33:49 EST 2001 i686 unknown by evans"
 
 /* Splint's version number */
 #define LCL_PARSE_VERSION "Splint 3.0.0.20"
@@ -25,7 +25,7 @@
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.0.20 --- 31 Dec 2001"
+#define SPLINT_VERSION "Splint 3.0.0.20 --- 02 Jan 2002"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "/usr/local/include"

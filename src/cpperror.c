@@ -228,7 +228,7 @@ cppReader_message (cppReader *pfile, int is_error, /*@only@*/ cstring msg)
    such as inconsistent options.  I.e. there is little point in continuing.
    (We do not exit, to support use of cpplib as a library.
    Instead, it is the caller's responsibility to check
-   cppFatalErrors.  */
+   cpplib_fatalErrors.  */
 
 void
 cppReader_fatalError (cppReader *pfile, /*@only@*/ cstring str)

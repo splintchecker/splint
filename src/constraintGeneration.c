@@ -553,11 +553,16 @@ static /*@dependent@*/ exprNode exprNode_makeDependent(/*@returned@*/  exprNode 
   /*@=temptrans@*/  
 }
 
-static void exprNode_doGenerateConstraintSwitch (/*@dependent@*/ exprNode switchExpr,
-						  /*@dependent@*/ exprNode body, /*@special@*/ constraintList * currentRequires, /*@special@*/  constraintList *
-						  currentEnsures,  /*@special@*/  constraintList * savedRequires, /*@special@*/ constraintList *
-						  savedEnsures)
-     /*@post:only *currentRequires,  *currentEnsures,  *savedRequires, *savedEnsures @*/ /*@defines *currentRequires,  *currentEnsures,  *savedRequires, *savedEnsures @*/
+static void 
+exprNode_doGenerateConstraintSwitch 
+  (/*@dependent@*/ exprNode switchExpr,
+   /*@dependent@*/ exprNode body,
+   /*@special@*/ constraintList *currentRequires,
+   /*@special@*/ constraintList *currentEnsures,
+   /*@special@*/ constraintList *savedRequires,
+   /*@special@*/ constraintList *savedEnsures)
+  /*@post:only *currentRequires, *currentEnsures, *savedRequires, *savedEnsures @*/ 
+  /*@sets *currentRequires,  *currentEnsures,  *savedRequires, *savedEnsures @*/
 {
   exprNode stmt, stmtList;
 
@@ -567,11 +572,11 @@ static void exprNode_doGenerateConstraintSwitch (/*@dependent@*/ exprNode switch
 
   if (exprNode_isError(body) )
     {
-      *currentRequires = constraintList_makeNew();
-      *currentEnsures = constraintList_makeNew();
+      *currentRequires = constraintList_makeNew ();
+      *currentEnsures = constraintList_makeNew ();
 
-      *savedRequires = constraintList_makeNew();
-      *savedEnsures = constraintList_makeNew();
+      *savedRequires = constraintList_makeNew ();
+      *savedEnsures = constraintList_makeNew ();
       /*@-onlytrans@*/
       return;
       /*@=onlytrans@*/      
@@ -756,7 +761,7 @@ static void exprNode_doGenerateConstraintSwitch (/*@dependent@*/ exprNode switch
 }
 
 
-static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
+static void exprNode_generateConstraintSwitch (exprNode switchStmt)
 {
   constraintList constraintsRequires;
   constraintList constraintsEnsures;
@@ -783,7 +788,11 @@ static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
   lastEnsures = constraintList_makeNew();
   */
 
-  exprNode_doGenerateConstraintSwitch (switchExpr, body, &lastRequires, &lastEnsures, &constraintsRequires, &constraintsEnsures);
+  /*@-mustfree@*/ 
+  /*@i6534 - evans 2002-01-01: spurious warnings for these becuase of stack allocated storage */
+  exprNode_doGenerateConstraintSwitch (switchExpr, body, &lastRequires, 
+				       &lastEnsures, &constraintsRequires, &constraintsEnsures);
+  /*@=mustfree@*/
 
   /*
     merge current and saved constraint with Logical Or...

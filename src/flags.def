@@ -422,10 +422,38 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_CONTROL, FK_MEMORY, modeFlag,
+    FK_CONTROL, FK_MEMORY, specialFlag,
     "loopexec",
     FLG_LOOPEXEC,
-    "assume all loops execute at least once",
+    "assume all loops execute at least once (sets forloopexec, whileloopexec and iterloopexec)",
+    NULL, 0, 0
+  },
+  {
+    FK_CONTROL, FK_MEMORY, plainFlag,
+    "forloopexec",
+    FLG_FORLOOPEXEC,
+    "assume all for loops execute at least once",
+    NULL, 0, 0
+  },
+  {
+    FK_CONTROL, FK_MEMORY, plainFlag,
+    "whileloopexec",
+    FLG_WHILELOOPEXEC,
+    "assume all while loops execute at least once",
+    NULL, 0, 0
+  },
+  {
+    FK_CONTROL, FK_MEMORY, plainFlag,
+    "iterloopexec",
+    FLG_ITERLOOPEXEC,
+    "assume all iterator loops execute at least once",
+    NULL, 0, 0
+  },
+  {
+    FK_CONTROL, FK_MEMORY, plainFlag,
+    "obviousloopexec",
+    FLG_OBVIOUSLOOPEXEC,
+    "assume loop that can be determined to always execute always does",
     NULL, 0, 0
   },
   {

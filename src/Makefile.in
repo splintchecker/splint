@@ -89,7 +89,10 @@ SUFFIXES = .h .c .o .l .check
 CHECK = 1
 
 # Some preferences
-YFLAGS = -v -t -d --debug
+### We use the no-lines option to prevent confusion with splint flag settings.
+### Should fix splint to avoid this...
+YFLAGS = -v -t -d --debug --no-lines
+LFLAGS = -L
 
 BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
 
@@ -972,7 +975,7 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 	  $(BISON) $(YFLAGS) -p lsl signature.y; \
 	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
 	  $(CP) signature.c signature.c.der; \
-	  -$(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
+	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
 	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
 	  $(RM) signature.tab.c signature.tab.h; \
 	fi
@@ -986,7 +989,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
-	  -$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
+	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset >Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
 	fi
@@ -998,7 +1001,7 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
-	  -$(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
+	  $(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
 	  $(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h; \
 	  $(RM) mtgrammar.tab.c mtgrammar.tab.h; \
 	fi
@@ -1011,9 +1014,9 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
 	  $(CP) llgrammar.c llgrammar.c.der; \
-	  -$(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
+	  $(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
 	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h; \
-	  0$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
+	  $(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
 	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h; \
 	  $(RM) llgrammar.tab.c llgrammar.tab.h; \
 	fi
@@ -1038,7 +1041,9 @@ test:
 etags:
 	maketags
 
-lintnew: 
+lintnew: splintme
+
+splintme: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw

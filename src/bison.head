@@ -41,6 +41,9 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-nullpass@*/
+/*@-nullptrarith*/
+/*@-usereleased@*/
 /*@-declundef@*/
 
 /*drl added 11/27/2001*/

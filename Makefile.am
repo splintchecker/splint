@@ -1,8 +1,9 @@
 ## Process this file with automake to create Makefile.in. -*-Makefile-*-
-
-## Makefile for lclint 3.0
 ##
-## Copyright (C) 2001 University of Virginia,
+## Makefile for Splint 3.0
+## For more information: http://www.splint.org
+##
+## Copyright (C) 2001-2 University of Virginia,
 ##         Massachusetts Institute of Technology
 ##
 ## This program is free software; you can redistribute it and/or modify it
@@ -21,7 +22,7 @@
 ##
 ## For information on lclint: lclint-request@cs.virginia.edu
 ## To report a bug: lclint-bug@cs.virginia.edu
-## For more information: http://lclint.cs.virginia.edu
+## 
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 

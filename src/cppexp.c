@@ -152,7 +152,7 @@ Written by Per Bothner 1994.  */
 #define MAX_WCHAR_TYPE_SIZE WCHAR_TYPE_SIZE
 #endif
 
-static struct operation cppReader_lex (cppReader *);
+static struct operation cppexp_lex (cppReader *);
 static void integer_overflow (cppReader *);
 static long left_shift (cppReader *, long, bool p_unsignedp, size_t);
 static long right_shift (long, bool p_unsignedp, unsigned long);
@@ -388,6 +388,7 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen)
   
   op.value = n;
   op.op = CPPEXP_INT;
+  DPRINTF (("Parse number: %d", op.value));
   return op;
 }
 
@@ -412,7 +413,7 @@ static struct token tokentab2[] = {
 
 /* Read one token.  */
 
-struct operation cppReader_lex (cppReader *pfile)
+struct operation cppexp_lex (cppReader *pfile)
 {
   int ic;
   char c;
@@ -423,27 +424,32 @@ struct operation cppReader_lex (cppReader *pfile)
   int old_written;
 
  retry:
-
-  old_written = size_toInt (cppReader_getWritten (pfile));
+  
+  old_written = size_toInt (cpplib_getWritten (pfile));
   cppSkipHspace (pfile);
-  ic = cppBufPeek (cppReader_getBufferSafe (pfile));
+  ic = cpplib_bufPeek (cppReader_getBufferSafe (pfile));
 
   c = (char) ic;
   llassert (c != '#');
-  
+  DPRINTF (("Read: %c", c));
+
   if (c == '\n')
     {
       op.op = 0;
       return op;
     }
 
-  token = cppGetToken (pfile);
+  token = cpplib_getTokenForceExpand (pfile);
+
   tok_start = pfile->token_buffer + old_written;
-  tok_end = cppReader_getPWritten (pfile);
+  tok_end = cpplib_getPWritten (pfile);
+
+  DPRINTF (("Token: %s < %s", tok_start, tok_end));
+
   pfile->limit = tok_start;
 
   switch (token)
-  {
+    {
     case CPP_EOF: /* Should not happen ...  */
     case CPP_VSPACE:
       op.op = 0;
@@ -462,7 +468,7 @@ struct operation cppReader_lex (cppReader *pfile)
       return cppReader_parseNumber (pfile, tok_start, tok_end - tok_start);
     case CPP_STRING:
       cppReader_errorLit (pfile, 
-		    cstring_makeLiteralTemp ("string constants not allowed in #if expressions"));
+			  cstring_makeLiteralTemp ("string constants not allowed in #if expressions"));
       op.op = CPPREADER_ERRORTOK;
       return op;
     case CPP_CHAR:
@@ -481,7 +487,7 @@ struct operation cppReader_lex (cppReader *pfile)
 #else
 	char token_buffer[MAX_LONG_TYPE_SIZE/MAX_CHAR_TYPE_SIZE + 1];
 #endif
-
+	
 	if (*ptr == 'L')
 	  {
 	    ptr++;
@@ -497,7 +503,7 @@ struct operation cppReader_lex (cppReader *pfile)
 	  {
 	    max_chars = size_toInt (MAX_LONG_TYPE_SIZE / width);
 	  }
-
+	
 	++ptr;
 	while (ptr < tok_end && ((c = *ptr++) != '\''))
 	  {
@@ -559,7 +565,7 @@ struct operation cppReader_lex (cppReader *pfile)
 	  {
 	    int num_bits = num_chars * width;
 
-	    if ((cppReader_lookup ("__CHAR_UNSIGNED__",
+	    if ((cpphash_lookup ("__CHAR_UNSIGNED__",
 			     sizeof ("__CHAR_UNSIGNED__") - 1, -1) != NULL)
 		|| (((unsigned) result >> (num_bits - 1)) & 1) == 0)
 	      {
@@ -601,6 +607,7 @@ struct operation cppReader_lex (cppReader *pfile)
       return op;
 
     case CPP_NAME:
+      DPRINTF (("Name!"));
       return cppReader_parseNumber (pfile, "0", 0);
 
     case CPP_OTHER:
@@ -904,7 +911,7 @@ cppReader_parseExpression (cppReader *pfile)
       int flags = 0;
 
       /* Read a token */
-      op =  cppReader_lex (pfile);
+      op = cppexp_lex (pfile);
 
       /* See if the token is an operand, in which case go to set_value.
 	 If the token is an operator, figure out its left and right

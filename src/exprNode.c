@@ -35,6 +35,7 @@
 # include "transferChecks.h"
 # include "exprNodeSList.h"
 
+static bool exprNode_sameStorage (exprNode p_e1, exprNode p_e2) /*@*/ ;
 static bool exprNode_isEmptyStatement (exprNode p_e);
 static /*@exposed@*/ exprNode exprNode_firstStatement (/*@returned@*/ exprNode p_e);
 static bool exprNode_isFalseConstant (exprNode p_e) /*@*/ ;
@@ -3868,6 +3869,19 @@ uentry exprNode_getUentry (exprNode e)
     }
 }
 
+/*
+** Returns true iff e1 and e2 are both exactly the same storage
+** (conservative).
+*/
+
+static bool exprNode_sameStorage (exprNode e1, exprNode e2)
+{
+  sRef s1 = exprNode_getSref (e1);
+  sRef s2 = exprNode_getSref (e2);
+  
+  return (sRef_realSame (s1, s2));
+}
+
 exprNode 
 exprNode_makeInitBlock (lltok brace, /*@only@*/ exprNodeList inits)
 {
@@ -7029,6 +7043,7 @@ checkSwitchExpr (exprNode test, /*@dependent@*/ exprNode e, /*@out@*/ bool *allp
 			g_currentloc);
 
 	  enumNameSList_free (unused);
+	  *allpaths = FALSE; /* evans 2002-01-01 */
 	}
       else
 	{
@@ -7408,6 +7423,77 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
   return ret;
 }
 
+bool exprNode_loopMustExec (exprNode forPred)
+{
+  /*
+  ** Returns true if it is obvious that the loop always executes at least once
+  **
+  ** For now, we only identify the most obvious cases.  Should be true anytime
+  ** we can prove init => !test.
+  */
+
+  if (exprNode_isDefined (forPred))
+    {
+      exprNode init, test, inc;
+      exprData edata;
+
+      llassert (forPred->kind == XPR_FORPRED);
+      
+      edata = forPred->edata;
+      init = exprData_getTripleInit (edata);
+      test = exprData_getTripleTest (edata);
+      inc = exprData_getTripleInc (edata);
+      
+      if (exprNode_isAssign (init))
+	{
+	  exprNode loopVar = exprData_getOpA (init->edata);
+	  exprNode loopInit = exprData_getOpB (init->edata);
+
+	  if (exprNode_isDefined (test) && test->kind == XPR_OP)
+	    {
+	      exprNode testVar = exprData_getOpA (test->edata);
+	      exprNode testVal = exprData_getOpB (test->edata);
+	      lltok comp = exprData_getOpTok (test->edata);
+	      int opid = lltok_getTok (comp);
+
+	      DPRINTF (("Same storage: %s / %s", exprNode_unparse (loopVar),
+			exprNode_unparse (testVar)));
+	      
+	      if (exprNode_sameStorage (loopVar, testVar))
+		{
+		  multiVal valinit = exprNode_getValue (loopInit);
+		  multiVal valtest = exprNode_getValue (testVal);
+
+		  DPRINTF (("Values: %s / %s", multiVal_unparse (valinit), 
+			    multiVal_unparse (valtest)));
+
+		  if (multiVal_isInt (valinit) && multiVal_isInt (valtest))
+		    {
+		      long v1 = multiVal_forceInt (valinit);
+		      long v2 = multiVal_forceInt (valtest);
+
+		      DPRINTF (("Here: %ld %ld", v1, v2));
+		      
+		      if ((opid == EQ_OP && v1 < v2)
+			  || (opid == NE_OP && v1 != v2)
+			  || (opid == TLT && v1 <= v2)
+			  || (opid == TGT && v1 >= v2)
+			  || (opid == LE_OP && v1 < v2)
+			  || (opid == GE_OP && v1 > v2))
+			{
+			  DPRINTF (("mustexec if inc"));
+			  return TRUE;
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  DPRINTF (("loop must exec: FALSE"));
+  return FALSE;
+}
+
 exprNode exprNode_for (/*@keep@*/ exprNode inc, /*@keep@*/ exprNode body)
 {
   exprNode ret;
@@ -7461,14 +7547,13 @@ exprNode exprNode_for (/*@keep@*/ exprNode inc, /*@keep@*/ exprNode body)
       
       ret->exitCode = exitkind_makeConditional (body->exitCode);
 
-            exprNode_mergeUSs (inc, body);
+      exprNode_mergeUSs (inc, body);
       
       if (exprNode_isDefined (inc))
 	{
 	  exprNode tmp;
 
 	  context_setMessageAnnote (cstring_makeLiteral ("in post loop increment"));
-     
 	  
 	  tmp = exprNode_effect (exprData_getTripleInc (inc->edata));
 	  exprNode_freeShallow (tmp); 
@@ -9748,7 +9833,7 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 	  
 	  while (sRef_isValid (s) && sRef_isKnown (s))
 	    {
-	      ynm readable = sRef_isReadable (s);
+	      ynm readable = sRef_isValidLvalue (s);
 
 	      DPRINTF (("Readable: %s / %s",
 			sRef_unparseFull (s), ynm_unparse (readable)));
