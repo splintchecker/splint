@@ -1252,3 +1252,17 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
 
 /*@constant size_t INTPTR_MIN@*/
 /*@constant size_t INTPTR_MAX@*/
+
+/*drl added  the __func__ identifier from C99
+  This won't follow the same semantics as
+  __func__ in C99
+
+  FWIW C99 says that __func__ should have the value of the
+  lexically enclosing function 
+  e.g. in the function foo __func__ == "foo"
+  in bar __func__ == "bar"
+
+  We're just having the value be constant here and picking
+  an arbitary value.
+*/
+static const char _ _func_ _[] = "function-name";
