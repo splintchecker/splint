@@ -539,9 +539,9 @@ extern void srand (unsigned int seed) /*@modifies internalState@*/ ;
 */
 
 extern /*@null@*/ /*@only@*/ void *calloc (size_t nobj, size_t size) /*@*/
-     /*@ensures MaxSet(result) == nobj; @*/ ;
+     /*@ensures MaxSet(result) == (nobj - 1); @*/ ;
 extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@*/
-     /*@ensures MaxSet(result) == size; @*/ ;
+     /*@ensures MaxSet(result) == (size - 1); @*/ ;
 
 /*end drl changed */
      
@@ -550,7 +550,8 @@ extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@*/
 # if 0
 extern /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@special@*/ void *p, 
-	    size_t size) /*@releases p@*/ /*@modifies *p@*/ ;
+	    size_t size) /*@releases p@*/ /*@modifies *p@*/
+     /*@ensures MaxSet(result) >= (size - 1) @*/;
 # endif
 
 /*
@@ -564,7 +565,7 @@ extern /*@null@*/ /*@only@*/ void *
 
 extern /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@out@*/ /*@returned@*/ void *p, size_t size) 
-   /*@modifies *p @*/;
+     /*@modifies *p @*/ /*@ensures MaxSet(result) >= (size - 1) @*/;
 
 extern void free (/*@null@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ ;
 
@@ -882,10 +883,10 @@ extern /*@null@*/ void *memchr (void *s, int c, size_t n) /*@*/ ;
 
 # ifdef STRICT
 extern /*@exposed@*/ /*@null@*/ char *
-strchr (char *s, char c) /*@*//*@ensures MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/ ;
+strchr (char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
 # else
 extern /*@exposed@*/ /*@null@*/ char *
-  strchr ( char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxRead(s) /\  MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/ ;
+  strchr ( char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/ ;
 # endif
 
 extern size_t strcspn (char *s1, char *s2) /*@*/ ;
@@ -894,17 +895,17 @@ extern /*@null@*/ /*@exposed@*/ char *
 
 # ifdef STRICT
 extern /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxRead(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/;
+  strrchr (/*@returned@*/ char *s, char c) /*@*/  /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
 # else
 extern /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0/\ MaxSet(result) <= MaxRead(s)/\ MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/;
+  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/  /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
 # endif
 
 extern size_t strspn (char *s, char *t) /*@*/ ;
 
 extern /*@null@*/ /*@exposed@*/  char *
   strstr (/*@returned@*/ /*@unique@*/ char *s, char *t) /*@*/
-/*@ensures MaxSet(result) >= 0 /\  MaxSet(result) <= MaxRead(s) /\  MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/;
+       /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
 
 extern /*@null@*/ /*@exposed@*/ char *
   strtok (/*@returned@*/ /*@null@*/ char *s, char *t)
@@ -912,7 +913,7 @@ extern /*@null@*/ /*@exposed@*/ char *
 
 extern void /*@alt void *@*/ memset (/*@out@*/ /*@returned@*/ void *s, 
 				     int c, size_t n)
-   /*@modifies *s@*/ ;
+     /*@modifies *s@*/ /*@requires MaxSet(s) >= (n - 1) @*/ /*@ensures MaxRead(s) >= (n - 1) @*/ ;
 
 extern /*@observer@*/ char *strerror (int errnum) /*@*/ ;
 
