@@ -143,11 +143,11 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
   if (op == BINARYOP_PLUS)
     op = tempOp;
-  else if (op == MINUS)
+  else if (op == BINARYOP_MINUS)
     {
       if (tempOp == BINARYOP_PLUS)
-	op = MINUS;
-      else if (tempOp == MINUS)
+	op = BINARYOP_MINUS;
+      else if (tempOp == BINARYOP_MINUS)
 	op = BINARYOP_PLUS;
       else
 	BADEXIT;
@@ -211,7 +211,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
   if (op == BINARYOP_PLUS)
     *literal    = literal1 +  literal2;
-  else   if (op == MINUS)
+  else   if (op == BINARYOP_MINUS)
     *literal    = literal1 -  literal2;
   else
     BADEXIT;
@@ -230,7 +230,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
       if (op == BINARYOP_PLUS )
 	return (constraintExpr_makeIntLiteral ( (t1+t2) ));
-      else if (op ==  MINUS)
+      else if (op ==  BINARYOP_MINUS)
 	return (constraintExpr_makeIntLiteral ( (t1-t2) ));
       else
 	BADEXIT;
@@ -249,7 +249,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 	  constraintExpr_free(expr);
 	  return expr2;
 	}
-      else if (op == MINUS)
+      else if (op == BINARYOP_MINUS)
 	{
 	  
 	  constraintExpr temp;
@@ -277,7 +277,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
           
       if ( op == BINARYOP_PLUS )
 	*literal += constraintExpr_getValue (expr2);
-      else if (op ==  MINUS)
+      else if (op ==  BINARYOP_MINUS)
 	*literal -= constraintExpr_getValue (expr2);
       else
 	BADEXIT;
@@ -730,7 +730,7 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   if (op.tok == TPLUS)
     ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
   else if (op.tok == TMINUS)
-    ret->data = constraintExprData_binaryExprSetOp(ret->data, MINUS);
+    ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_MINUS);
     else
       {
 	llassert(FALSE);
@@ -771,7 +771,7 @@ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr ex
 
   inc = constraintExpr_makeIntLiteral (1);
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, inc);
-  ret->data = constraintExprData_binaryExprSetOp(ret->data, MINUS);
+  ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_MINUS);
   return ret;
 }
 
@@ -783,7 +783,7 @@ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr ex
   DPRINTF ( (message ("Making  subtract expression") ) );
 
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
-  ret->data = constraintExprData_binaryExprSetOp (ret->data, MINUS);
+  ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_MINUS);
   return ret;
 }
 
@@ -842,7 +842,7 @@ static cstring constraintExprBinaryOpKind_print (constraintExprBinaryOpKind op)
     {
     case BINARYOP_PLUS:
       return message("+");
-    case MINUS:
+    case BINARYOP_MINUS:
       return message("-");
 
     default:
@@ -1135,7 +1135,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
   else
     {
       op = constraintExprData_binaryExprGetOp (c->data);      
-      if (op == MINUS)
+      if (op == BINARYOP_MINUS)
 	if (constraintExpr_similar(e1, e2) )
 	  {
 	    constraintExpr_free(c);
@@ -1181,7 +1181,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
   
   if (op == BINARYOP_PLUS)
     expr = constraintExpr_makeSubtractExpr (expr, expr2);
-  else if (op == MINUS)
+  else if (op == BINARYOP_MINUS)
     expr = constraintExpr_makeAddExpr (expr, expr2);
   else
     BADEXIT;
