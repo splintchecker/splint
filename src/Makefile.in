@@ -123,9 +123,9 @@ CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
 SPLINTSRC = exprNode.c exprChecks.c llmain.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
-GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c
+GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c mtreader.c
 
-GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtreader.c mtgrammar.c
+GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 
 OVERFLOWCHSRC = constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
@@ -159,8 +159,6 @@ LCLONLYSRC = usymtab_interface.c abstract.c ltoken.c lclscanline.c \
 LSLSRC = tokentable.c scan.c scanline.c lslparse.c \
          lh.c checking.c lclctypes.c imports.c lslinit.c syntable.c 
 
-
-LCLGRAMSRC = llgrammar.c signature.c
 
 LCLSETSRC = lsymbolSet.c sigNodeSet.c lslOpSet.c sortSet.c
 
@@ -334,14 +332,11 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
 #files to run Splint on
-LINTSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) 
+LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
 
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
-LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) \
-         $(LCLGRAMSRC)
-
-
+LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
 lcl_SOURCES = $(LCLSRC)
 
 splint_SOURCES = $(ALLSRC)
@@ -388,34 +383,33 @@ am_lcl_OBJECTS = lsymbolSet.$(OBJEXT) sigNodeSet.$(OBJEXT) \
 	lclscanline.$(OBJEXT) lclsyntable.$(OBJEXT) \
 	lcltokentable.$(OBJEXT) sort.$(OBJEXT) symtable.$(OBJEXT) \
 	lclinit.$(OBJEXT) shift.$(OBJEXT) lclscan.$(OBJEXT) \
-	lsymbol.$(OBJEXT) mapping.$(OBJEXT) llgrammar.$(OBJEXT) \
-	signature.$(OBJEXT)
+	lsymbol.$(OBJEXT) mapping.$(OBJEXT)
 lcl_OBJECTS = $(am_lcl_OBJECTS)
 lcl_LDADD = $(LDADD)
 lcl_DEPENDENCIES =
 lcl_LDFLAGS =
 am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
-	mtscanner.$(OBJEXT) mtreader.$(OBJEXT) mtgrammar.$(OBJEXT) \
-	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
-	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
-	constraint.$(OBJEXT) constraintList.$(OBJEXT) \
-	constraintResolve.$(OBJEXT) constraintOutput.$(OBJEXT) \
-	loopHeuristics.$(OBJEXT) cppmain.$(OBJEXT) cpplib.$(OBJEXT) \
-	cppexp.$(OBJEXT) cpphash.$(OBJEXT) cpperror.$(OBJEXT) \
-	uentry.$(OBJEXT) cprim.$(OBJEXT) macrocache.$(OBJEXT) \
-	qual.$(OBJEXT) qtype.$(OBJEXT) stateClause.$(OBJEXT) \
-	stateClauseList.$(OBJEXT) ctype.$(OBJEXT) cvar.$(OBJEXT) \
-	clabstract.$(OBJEXT) idDecl.$(OBJEXT) clause.$(OBJEXT) \
-	globalsClause.$(OBJEXT) modifiesClause.$(OBJEXT) \
-	warnClause.$(OBJEXT) functionClause.$(OBJEXT) \
-	functionClauseList.$(OBJEXT) metaStateConstraint.$(OBJEXT) \
-	metaStateConstraintList.$(OBJEXT) metaStateExpression.$(OBJEXT) \
-	metaStateSpecifier.$(OBJEXT) functionConstraint.$(OBJEXT) \
-	structNames.$(OBJEXT) transferChecks.$(OBJEXT) \
-	varKinds.$(OBJEXT) nameChecks.$(OBJEXT) exprData.$(OBJEXT) \
-	cstring.$(OBJEXT) fileloc.$(OBJEXT) message.$(OBJEXT) \
-	inputStream.$(OBJEXT) fileTable.$(OBJEXT) \
-	cstringTable.$(OBJEXT) valueTable.$(OBJEXT) \
+	mtscanner.$(OBJEXT) mtgrammar.$(OBJEXT) llgrammar.$(OBJEXT) \
+	signature.$(OBJEXT) constraintGeneration.$(OBJEXT) \
+	constraintTerm.$(OBJEXT) constraintExprData.$(OBJEXT) \
+	constraintExpr.$(OBJEXT) constraint.$(OBJEXT) \
+	constraintList.$(OBJEXT) constraintResolve.$(OBJEXT) \
+	constraintOutput.$(OBJEXT) loopHeuristics.$(OBJEXT) \
+	cppmain.$(OBJEXT) cpplib.$(OBJEXT) cppexp.$(OBJEXT) \
+	cpphash.$(OBJEXT) cpperror.$(OBJEXT) uentry.$(OBJEXT) \
+	cprim.$(OBJEXT) macrocache.$(OBJEXT) qual.$(OBJEXT) \
+	qtype.$(OBJEXT) stateClause.$(OBJEXT) stateClauseList.$(OBJEXT) \
+	ctype.$(OBJEXT) cvar.$(OBJEXT) clabstract.$(OBJEXT) \
+	idDecl.$(OBJEXT) clause.$(OBJEXT) globalsClause.$(OBJEXT) \
+	modifiesClause.$(OBJEXT) warnClause.$(OBJEXT) \
+	functionClause.$(OBJEXT) functionClauseList.$(OBJEXT) \
+	metaStateConstraint.$(OBJEXT) metaStateConstraintList.$(OBJEXT) \
+	metaStateExpression.$(OBJEXT) metaStateSpecifier.$(OBJEXT) \
+	functionConstraint.$(OBJEXT) structNames.$(OBJEXT) \
+	transferChecks.$(OBJEXT) varKinds.$(OBJEXT) \
+	nameChecks.$(OBJEXT) exprData.$(OBJEXT) cstring.$(OBJEXT) \
+	fileloc.$(OBJEXT) message.$(OBJEXT) inputStream.$(OBJEXT) \
+	fileTable.$(OBJEXT) cstringTable.$(OBJEXT) valueTable.$(OBJEXT) \
 	stateValue.$(OBJEXT) llerror.$(OBJEXT) messageLog.$(OBJEXT) \
 	flagMarker.$(OBJEXT) aliasTable.$(OBJEXT) ynm.$(OBJEXT) \
 	sRefTable.$(OBJEXT) genericTable.$(OBJEXT) ekind.$(OBJEXT) \
@@ -423,13 +417,14 @@ am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	sRef.$(OBJEXT) lcllib.$(OBJEXT) randomNumbers.$(OBJEXT) \
 	fileLib.$(OBJEXT) context.$(OBJEXT) globals.$(OBJEXT) \
 	flags.$(OBJEXT) general.$(OBJEXT) osd.$(OBJEXT) \
-	reader.$(OBJEXT) clauseStack.$(OBJEXT) filelocStack.$(OBJEXT) \
-	cstringList.$(OBJEXT) cstringSList.$(OBJEXT) \
-	sRefSetList.$(OBJEXT) ctypeList.$(OBJEXT) \
-	enumNameList.$(OBJEXT) enumNameSList.$(OBJEXT) \
-	exprNodeList.$(OBJEXT) exprNodeSList.$(OBJEXT) \
-	uentryList.$(OBJEXT) fileIdList.$(OBJEXT) filelocList.$(OBJEXT) \
-	qualList.$(OBJEXT) sRefList.$(OBJEXT) flagMarkerList.$(OBJEXT) \
+	reader.$(OBJEXT) mtreader.$(OBJEXT) clauseStack.$(OBJEXT) \
+	filelocStack.$(OBJEXT) cstringList.$(OBJEXT) \
+	cstringSList.$(OBJEXT) sRefSetList.$(OBJEXT) \
+	ctypeList.$(OBJEXT) enumNameList.$(OBJEXT) \
+	enumNameSList.$(OBJEXT) exprNodeList.$(OBJEXT) \
+	exprNodeSList.$(OBJEXT) uentryList.$(OBJEXT) \
+	fileIdList.$(OBJEXT) filelocList.$(OBJEXT) qualList.$(OBJEXT) \
+	sRefList.$(OBJEXT) flagMarkerList.$(OBJEXT) \
 	idDeclList.$(OBJEXT) flagSpec.$(OBJEXT) globSet.$(OBJEXT) \
 	intSet.$(OBJEXT) typeIdSet.$(OBJEXT) guardSet.$(OBJEXT) \
 	usymIdSet.$(OBJEXT) sRefSet.$(OBJEXT) stateInfo.$(OBJEXT) \

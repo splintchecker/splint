@@ -158,6 +158,8 @@ static cstring describeFlagCode (flagcode p_flag) /*@*/ ;
 static cstringSList sortedFlags (void) /*@*/ ;
 static /*@observer@*/ cstring categoryName (flagkind p_kind) /*@*/ ;
 
+static flagcode flags_identifyFlagAux (cstring p_s, bool p_quiet) /*@modifies g_msgstream@*/ ;
+
 # if 0
 static /*@unused@*/ cstring listModes (void) /*@*/ ;
 # endif
@@ -574,7 +576,7 @@ cstring
 describeFlag (cstring flagname)
 {
   cstring oflagname = cstring_copy (flagname);
-  flagcode f = identifyFlag (flagname);
+  flagcode f = flags_identifyFlag (flagname);
 
   if (flagcode_isSkip (f))
     {
@@ -720,7 +722,19 @@ canonicalizeFlag (cstring s)
 }
 
 flagcode
-identifyFlag (cstring s)
+flags_identifyFlag (cstring s)
+{
+  return flags_identifyFlagAux (s, FALSE);
+}
+
+flagcode
+flags_identifyFlagQuiet (cstring s)
+{
+  return flags_identifyFlagAux (s, TRUE);
+}
+
+static flagcode
+flags_identifyFlagAux (cstring s, bool quiet)
 {
   if (cstring_length (s) == 0) {
     /* evs 2000-06-25: A malformed flag. */
@@ -894,58 +908,82 @@ identifyFlag (cstring s)
   
   if (cstring_equalLit (s, "accessunspec"))
     {
-      llerror_flagWarning 
-	(cstring_makeLiteral
-	 ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
-	  "accessfunction to provide more precise control of accessibility "
-	  "of representations.  For more information, "
-	  "see lclint -help accessmodule"));
+      if (!quiet) 
+	{
+	  llerror_flagWarning 
+	    (cstring_makeLiteral
+	     ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
+	      "accessfunction to provide more precise control of accessibility "
+	      "of representations.  For more information, "
+	      "see lclint -help accessmodule"));
+	}
       
       return SKIP_FLAG;
     }
+  else if (cstring_equalLit (s, "staticmods"))
+    {
+      if (!quiet) 
+	{
+	  llerror_flagWarning 
+	    (cstring_makeLiteral
+	     ("staticmods flag is obsolete.  You probably "
+	      "want impcheckmodstatics.  For more information, "
+	      "see lclint -help impcheckmodstatics"));
+	}
 
-  if (cstring_equalLit (s, "staticmods"))
+      return SKIP_FLAG;
+    }
+  else if (cstring_equalLit (s, "bool"))
     {
-      llerror_flagWarning 
-	(cstring_makeLiteral
-	 ("staticmods flag is obsolete.  You probably "
-	  "want impcheckmodstatics.  For more information, "
-	  "see lclint -help impcheckmodstatics"));
+      if (!quiet) 
+	{
+	  llerror_flagWarning
+	    (cstring_makeLiteral ("bool flag is obsolete.  It never really "
+				  "made sense in the first place."));
+	}
       
       return SKIP_FLAG;
     }
-
-  if (cstring_equalLit (s, "bool"))
+  else if (cstring_equalLit (s, "shiftsigned"))
     {
-      llerror_flagWarning
-	(cstring_makeLiteral ("bool flag is obsolete.  It never really "
-			      "made sense in the first place."));
+      if (!quiet) 
+	{
+	  llerror_flagWarning
+	    (cstring_makeLiteral ("shiftsigned flag is obsolete.  You probably "
+				  "want bitwisesigned, shiftnegative or shiftsize."));
+	}
       
       return SKIP_FLAG;
     }
-  
-  if (cstring_equalLit (s, "ansi"))
+  else if (cstring_equalLit (s, "ansi"))
     {
-      llerror_flagWarning
-	(cstring_makeLiteral ("ansi flag is obsolete.  You probably "
-			      "want noparams and/or oldstyle."));
+      if (!quiet) 
+	{
+	  llerror_flagWarning
+	    (cstring_makeLiteral ("ansi flag is obsolete.  You probably "
+				  "want noparams and/or oldstyle."));
+	}
       
       return SKIP_FLAG;
     }
-    
-  if (cstring_equalLit (s, "stdio"))
+  else if (cstring_equalLit (s, "stdio"))
     {
-      llerror_flagWarning 
-	(cstring_makeLiteral
-	 ("stdio flag is obsolete.  You may "
-	  "want strictlib or one of the gloabls "
-	  "checking flags.  For more information, "
-	  "see lclint -help strictlib or lclint -help flags globals"));
+      if (!quiet) 
+	{
+	  llerror_flagWarning 
+	    (cstring_makeLiteral
+	     ("stdio flag is obsolete.  You may "
+	      "want strictlib or one of the gloabls "
+	      "checking flags.  For more information, "
+	      "see lclint -help strictlib or lclint -help flags globals"));
+	}
       
       return SKIP_FLAG;
     }
-
-  return INVALID_FLAG;
+  else
+    {
+      return INVALID_FLAG;
+    }
 }
 
 void setValueFlag (flagcode opt, cstring arg)
@@ -1041,7 +1079,7 @@ describeModes ()
 
   cstringSList_elements (sflags, flagname)
     {
-      flagcode code = identifyFlag (flagname);
+      flagcode code = flags_identifyFlag (flagname);
       fflag currentflag = flags[code];
       
       if (mstring_isDefined (currentflag.desc) && flagcode_isModeFlag (code))

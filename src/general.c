@@ -354,6 +354,12 @@ fputline (FILE *out, char *s)
   check (fputc ('\n', out) == (int) '\n');
 }
 
+unsigned int int_toNonNegative (int x)
+{
+  llassert (x >= 0);
+  return (unsigned) x;
+}
+
 int int_log (int x)
 {
   int ret = 1;

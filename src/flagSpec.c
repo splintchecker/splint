@@ -32,7 +32,7 @@ static /*@only@*/ flagSpecItem flagSpecItem_create (/*@only@*/ cstring fname)
 {
   flagSpecItem res = (flagSpecItem) dmalloc (sizeof (*res));
   res->name = fname;
-  res->code = identifyFlag (fname);
+  res->code = flags_identifyFlag (fname);
   /* Invalid flag okay for now... */
   return res;
 }

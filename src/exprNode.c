@@ -944,7 +944,7 @@ exprNode exprNode_makeConstantString (cstring c, /*@only@*/ fileloc loc)
   e->sref = sRef_makeConst (ctype_string);
   e->edata = exprData_makeId (uentry_makeUnrecognized (c, fileloc_copy (loc)));
   e->typ = ctype_string;
-
+  
   /* No alias errors for unrecognized identifiers */
   sRef_setAliasKind (e->sref, AK_STATIC, loc); 
   sRef_setExKind (e->sref, XO_OBSERVER, loc);
@@ -957,7 +957,9 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
   if (uentry_isValid (c))
     {
       exprNode e = exprNode_new ();
-      
+
+      DPRINTF (("create id: %s", uentry_unparse (c)));
+
       e->typ = uentry_getType (c);
 
       if (uentry_isFunction (c)
@@ -1142,6 +1144,16 @@ exprNode_isNonNegative (exprNode e)
       if (multiVal_isInt (m))
 	{
 	  return (multiVal_forceInt (m) >= 0);
+	}
+
+      /*
+      ** This is not always true if programmer defines enum
+      ** values, but then the constant should be known.
+      */
+
+      if (ctype_isEnum (ctype_realType (e->typ)))
+	{
+	  return TRUE;
 	}
     }
 
@@ -5233,6 +5245,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
     }
 
   ret->val = multiVal_undefined;
+
   ret->kind = XPR_OP;
   ret->edata = exprData_makeOp (e1, e2, op);
 
@@ -5326,7 +5339,18 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	case TDIV:		/*                                        */
 	case MUL_ASSIGN:	/*    numeric, numeric -> numeric         */
 	case DIV_ASSIGN:	/*                                        */
-	  
+
+	  if (opid == TMULT || opid == MUL_ASSIGN)
+	    {
+	      ret->val = multiVal_multiply (exprNode_getValue (e1),
+					    exprNode_getValue (e2));
+	    }
+	  else
+	    {
+	      ret->val = multiVal_divide (exprNode_getValue (e1),
+					  exprNode_getValue (e2));
+	    }
+	  	  
 	  tret = checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
 	  break;
 	  
@@ -5334,7 +5358,18 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	case TMINUS:		/*    pointer, int     -> pointer          */
 	case SUB_ASSIGN:	/*    int, pointer     -> pointer          */
 	case ADD_ASSIGN:	/*    numeric, numeric -> numeric          */
-	  
+
+	  if (opid == TPLUS || opid == ADD_ASSIGN)
+	    {
+	      ret->val = multiVal_add (exprNode_getValue (e1),
+				       exprNode_getValue (e2));
+	    }
+	  else
+	    {
+	      ret->val = multiVal_subtract (exprNode_getValue (e1),
+					    exprNode_getValue (e2));
+	    }
+
 	  tr1 = ctype_fixArrayPtr (tr1);
 
 	  if ((ctype_isRealPointer (tr1) && !exprNode_isNullValue (e1))
@@ -5528,7 +5563,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	  
 	  break;
 
-	case LEFT_ASSIGN:   /* Shifts: should be unsigned values */
+	case LEFT_ASSIGN:   
 	case RIGHT_ASSIGN:
 	case LEFT_OP:
 	case RIGHT_OP:
@@ -5540,47 +5575,80 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	case OR_ASSIGN:
 	  {
 	    bool reported = FALSE;
-	    flagcode code = FLG_BITWISEOPS;
 	    
-	    if (opid == LEFT_OP || opid == LEFT_ASSIGN
-		|| opid == RIGHT_OP || opid == RIGHT_ASSIGN) {
-	      code = FLG_SHIFTSIGNED;
-	    }
+	    /*
+	    ** Shift Operator 
+	    */
 
-	    if (!ctype_isUnsigned (tr1)) 
+	    if (opid == LEFT_OP || opid == LEFT_ASSIGN
+		|| opid == RIGHT_OP || opid == RIGHT_ASSIGN) 
 	      {
-		if (exprNode_isNonNegative (e1)) {
-		  ;
-		} else {
-		  reported = optgenerror 
-		    (code,
-		     message ("Left operand of %s is not unsigned value (%t): %s",
-			      lltok_unparse (op), te1,
-			      exprNode_unparse (ret)),
-		     e1->loc);
-		  
-		  if (reported) {
-		    te1 = ctype_uint;
-		  }
-		}
-	      }
-	    else 
-	      {
-		/* right need not be signed for shifts */
-		if (code != FLG_SHIFTSIGNED 
-		    && !ctype_isUnsigned (tr2)) 
+		/*
+		** evans 2002-01-01: fixed this to follow ISO 6.5.7.
+		*/
+		
+		if (!ctype_isUnsigned (tr2)
+		    && !exprNode_isNonNegative (e2))
 		  {
-		    if (!exprNode_isNonNegative (e2)) {
+		    reported = optgenerror 
+		      (FLG_SHIFTNEGATIVE,
+		       message ("Right operand of %s may be negative (%t): %s",
+				lltok_unparse (op), te2,
+				exprNode_unparse (ret)),
+		       e2->loc);
+		  }
+		
+		if (!ctype_isUnsigned (tr1)
+		    && !exprNode_isNonNegative (e1))
+		  {
+		    reported = optgenerror 
+		      (FLG_SHIFTIMPLEMENTATION,
+		       message ("Left operand of %s may be negative (%t): %s",
+				lltok_unparse (op), te1,
+				exprNode_unparse (ret)),
+		       e1->loc);
+		  }
+		
+		/*
+		** Should check size of right operand also...
+		*/
+		
+	      }
+	    else
+	      {
+		if (!ctype_isUnsigned (tr1)) 
+		  {
+		    if (exprNode_isNonNegative (e1)) {
+		      ;
+		    } else {
 		      reported = optgenerror 
-			(code,
-			 message ("Right operand of %s is not unsigned value (%t): %s",
-				  lltok_unparse (op), te2,
+			(FLG_BITWISEOPS,
+			 message ("Left operand of %s is not unsigned value (%t): %s",
+				  lltok_unparse (op), te1,
 				  exprNode_unparse (ret)),
-			 e2->loc);
+			 e1->loc);
+		      
+		      if (reported) {
+			te1 = ctype_uint;
+		      }
 		    }
 		  }
+		else 
+		  {
+		    if (!ctype_isUnsigned (tr2)) 
+		      {
+			if (!exprNode_isNonNegative (e2)) {
+			  reported = optgenerror 
+			    (FLG_BITWISEOPS,
+			     message ("Right operand of %s is not unsigned value (%t): %s",
+				      lltok_unparse (op), te2,
+				      exprNode_unparse (ret)),
+			     e2->loc);
+			}
+		      }
+		  }
 	      }
-	    
+
 	    if (!reported) 
 	      {
 		if (!checkIntegral (e1, e2, ret, op)) {

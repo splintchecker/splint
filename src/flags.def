@@ -3083,12 +3083,19 @@ static flaglist flags =
   },
   {
     FK_OPS, FK_TYPE, modeFlag,
-    "shiftsigned",
-    FLG_SHIFTSIGNED,
-    "a shift operator does not have unsigned operands",
-    "An operand to a shift operator is not unsigned values.  This "
-    "may have unexpected results depending on the signed "
-    "representations.", 0, 0
+    "shiftnegative",
+    FLG_SHIFTNEGATIVE,
+    "a shift right operand may be negative",
+    "The right operand to a shift operator may be negative (behavior undefined).",
+    0, 0
+  },
+  {
+    FK_OPS, FK_TYPE, modeFlag,
+    "shiftimplementation",
+    FLG_SHIFTIMPLEMENTATION,
+    "a shift left operand may be negative",
+    "The left operand to a shift operator may be negative (behavior is implementation-defined).",
+    0, 0
   },
   {
     FK_OPS, FK_BOOL, modeFlag,

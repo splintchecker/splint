@@ -45,9 +45,9 @@ CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
 SPLINTSRC = exprNode.c exprChecks.c llmain.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
-GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c
+GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c mtreader.c
 
-GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtreader.c mtgrammar.c
+GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 
 OVERFLOWCHSRC = constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
@@ -78,8 +78,6 @@ LCLONLYSRC = usymtab_interface.c abstract.c ltoken.c lclscanline.c \
 
 LSLSRC = tokentable.c scan.c scanline.c lslparse.c \
          lh.c checking.c lclctypes.c imports.c lslinit.c syntable.c 
-
-LCLGRAMSRC = llgrammar.c signature.c
 
 LCLSETSRC  = lsymbolSet.c sigNodeSet.c lslOpSet.c sortSet.c
 
@@ -252,13 +250,11 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
 #files to run Splint on
-LINTSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) 
+LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
-LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) \
-         $(LCLGRAMSRC)
-
+LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
 lcl_SOURCES = $(LCLSRC)
 
 splint_SOURCES = $(ALLSRC)

@@ -54,7 +54,6 @@ Written by Per Bothner 1994.  */
 /*@+ignorequals@*/
 /*@+ignoresigns@*/
 /*@+matchanyintegral@*/
-/*@-shiftsigned@*/
 
 # include <string.h> 
 # include "lclintMacros.nf"
@@ -74,7 +73,7 @@ Written by Per Bothner 1994.  */
 
 /* these are guesses! */ 
 
-/*@constant int BITS_PER_UNIT@*/
+/*@constant int BITS_PER_UNIT = 8@*/
 # define BITS_PER_UNIT 8
 
 /*@constant size_t BITS_PER_CHAR@*/
@@ -86,7 +85,7 @@ Written by Per Bothner 1994.  */
 /*@constant size_t HOST_BITS_PER_INT@*/
 # define HOST_BITS_PER_INT 32
 
-/*@constant size_t HOST_BITS_PER_LONG@*/
+/*@constant size_t HOST_BITS_PER_LONG = 32@*/
 # define HOST_BITS_PER_LONG 32
 
 /*@constant char TARGET_BELL@*/
@@ -567,15 +566,17 @@ struct operation cppexp_lex (cppReader *pfile)
 
 	    if ((cpphash_lookup ("__CHAR_UNSIGNED__",
 			     sizeof ("__CHAR_UNSIGNED__") - 1, -1) != NULL)
-		|| (((unsigned) result >> (num_bits - 1)) & 1) == 0)
+		|| (((unsigned) result >> (int_toNonNegative (num_bits - 1))) & 1) == 0)
 	      {
 		op.value
-		  = result & ((unsigned long) ~0 >> (HOST_BITS_PER_LONG - num_bits));
+		  = result & ((unsigned long) ~0 
+			      >> int_toNonNegative ((HOST_BITS_PER_LONG - num_bits)));
 	      }
 	    else
 	      {
 		op.value
-		  = result | ~((unsigned long) ~0 >> (HOST_BITS_PER_LONG - num_bits));
+		  = result | ~((unsigned long) ~0 
+			       >> int_toNonNegative ((HOST_BITS_PER_LONG - num_bits)));
 	      }
 	  }
 	else
@@ -760,7 +761,7 @@ cppReader_parseEscape (cppReader *pfile, char **string_ptr)
 				cstring_makeLiteralTemp ("\\x used with no following hex digits"));
 	  }
 
-	if ((overflow | (i & ~((1 << BITS_PER_UNIT) - 1))) != 0)
+	if ((overflow | (i & ~((1 << int_toNonNegative (BITS_PER_UNIT)) - 1))) != 0)
 	  {
 	    i &= (1 << BITS_PER_UNIT) - 1;
 	    cppReader_pedwarnLit (pfile,
@@ -800,9 +801,9 @@ left_shift (cppReader *pfile, long a, bool unsignedp, size_t b)
     }
   else
     {
-      long l = a << b;
+      long l = int_toNonNegative (a) << b;
       
-      if (l >> b != a)
+      if (int_toNonNegative (l) >> b != a)
 	{
 	  integer_overflow (pfile);
 	}
@@ -815,11 +816,11 @@ static long
 right_shift (long a, bool unsignedp, unsigned long b)
 {
   if (b >= HOST_BITS_PER_LONG)
-    return (unsignedp ? 0 : a >> (HOST_BITS_PER_LONG - 1));
+    return (unsignedp ? 0 : int_toNonNegative (a) >> (HOST_BITS_PER_LONG - 1));
   else if (unsignedp)
     return (unsigned long) a >> b;
   else
-    return a >> b;
+    return int_toNonNegative (a) >> b;
 }
 
 /* These priorities are all even, so we can handle associatively.  */

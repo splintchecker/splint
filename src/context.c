@@ -1046,7 +1046,8 @@ context_setMode (cstring s)
 	  FLG_MODGLOBS, FLG_WARNLINTCOMMENTS,
 	  FLG_IFEMPTY, FLG_REALCOMPARE,
 	  FLG_BOOLOPS, FLG_PTRNEGATE,
-	  FLG_SHIFTSIGNED,
+	  FLG_SHIFTNEGATIVE, 	  
+	  FLG_SHIFTIMPLEMENTATION,
 	  FLG_BUFFEROVERFLOWHIGH,
 	  FLG_BUFFEROVERFLOW,
 	  INVALID_FLAG 
@@ -1123,7 +1124,6 @@ context_setMode (cstring s)
 	  FLG_UNREACHABLE, 
 	  FLG_NORETURN, FLG_CASEBREAK, FLG_MISSCASE,
 	  FLG_EVALORDER, FLG_USEDEF, 
-
 	  FLG_NESTEDEXTERN, 
 
 	  /* warn use flags */
@@ -1169,7 +1169,8 @@ context_setMode (cstring s)
           FLG_MACROMATCHNAME, FLG_WARNLINTCOMMENTS,
 	  FLG_INCLUDENEST, FLG_ANSIRESERVED, FLG_CPPNAMES, 
 	  FLG_NOPARAMS, FLG_IFEMPTY, FLG_WHILEEMPTY, FLG_REALCOMPARE,
-	  FLG_BOOLOPS, FLG_SHIFTSIGNED,
+	  FLG_BOOLOPS, FLG_SHIFTNEGATIVE,
+	  FLG_SHIFTIMPLEMENTATION,
 	  FLG_BUFFEROVERFLOWHIGH, FLG_BUFFEROVERFLOW,
 	  INVALID_FLAG } ;
 
@@ -1295,7 +1296,9 @@ context_setMode (cstring s)
 	  FLG_REALCOMPARE, FLG_BOOLOPS,
 	  FLG_SYSTEMDIRERRORS, FLG_UNUSEDSPECIAL,
 
-	  FLG_SHIFTSIGNED, FLG_BITWISEOPS,
+	  FLG_SHIFTNEGATIVE,
+	  FLG_SHIFTIMPLEMENTATION,
+	  FLG_BITWISEOPS,
 	  FLG_BUFFEROVERFLOWHIGH, FLG_BUFFEROVERFLOW,
 	  INVALID_FLAG
 	} ;
@@ -2745,10 +2748,9 @@ context_setValue (flagcode flag, int val)
     case FLG_INDENTSPACES:
       if (val < 0)
 	{
-	  
 	  llerror_flagWarning (message ("Value for %s must be a non-negative "
-				    "number (given %d)",
-				    flagcode_unparse (flag), val));
+					"number (given %d)",
+					flagcode_unparse (flag), val));
 	  return;
 	}
 
