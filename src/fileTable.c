@@ -809,7 +809,7 @@ fileTable_cleanup (fileTable ft)
   if (msg)
     {
       (void) fflush (g_warningstream);
-      displayScanOpen (cstring_makeLiteral ("< cleaning"));
+      displayScanOpen (cstring_makeLiteral ("cleaning"));
     }
 
   for (i = 0; i < ft->nentries; i++)
@@ -851,7 +851,7 @@ fileTable_cleanup (fileTable ft)
 
       if (msg && ((i % skip) == 0))
 	{
-	  displayScan (cstring_makeLiteral (i == 0 ? " " : "."));
+	  displayScanContinue (cstring_makeLiteral (i == 0 ? " " : "."));
 	}
     }
 

@@ -3,15 +3,7 @@ utypes.c:16: Include file <sys/types.h> matches the name of a POSIX library,
     but the POSIX library is not being used.  Consider using +posixlib or
     +posixstrictlib to select the POSIX library, or -warnposix to suppress this
     message.
-utypes.c:3:23: Variable uchar inconsistently redeclared as datatype
-   utypes.c:13: Previous definition of uchar as variable: <any>
-utypes.c:4:24: Variable ushort inconsistently redeclared as datatype
-   utypes.c:15: Previous definition of ushort as variable: <any>
-utypes.c:5:22: Variable uint inconsistently redeclared as datatype
-   utypes.c:14: Previous definition of uint as variable: <any>
-utypes.c:6:23: Variable ulong inconsistently redeclared as datatype
-   utypes.c:16: Previous definition of ulong as variable: <any>
 utypes.c: (in function f)
 utypes.c:26:8: Variable src_bytes declared but not used
 
-Finished checking --- 6 code warnings, as expected
+Finished checking --- 2 code warnings, as expected

@@ -196,41 +196,167 @@ struct lconv *localeconv (void) /*@*/ ;
 
 /*
 ** math.h
+**
+** evans 2002-07-03: updated from ISO C99 (http://www.vmunix.com/~gabor/c/draft.html)
 */
+
+typedef float float_t;
+typedef double double_t;
 
 /*@constant double HUGE_VAL; @*/
+/*@constant float HUGE_VALF; @*/
+/*@constant long double HUGE_VALL; @*/
+
+/*@constant float INFINITY; @*/
+
+/*@constant float NAN; @*/
+  /*:warn implementationoptional "NAN is defined if and only if the implementation supports quiet float type NaNs.":*/ ;
+
+/*@constant int FP_INFINITE;@*/
+/*@constant int FP_NAN;@*/
+/*@constant int FP_NORMAL;@*/
+/*@constant int FP_SUBNORMAL;@*/
+/*@constant int FP_ZERO;@*/
+
+/*@constant int FP_ILOGB0;@*/
+/*@constant int FP_ILOGBNAN;@*/
+
+/*@constant int DECIMAL_DIG;@*/
+
+/* Defined for specs only - this type is any real type */
+typedef float /*@alt double, long double@*/ s_real_t;
+
+int fpclassify (/*@sef@*/ s_real_t) /*@*/ ;
+int signbit (/*@sef@*/ s_real_t) /*@*/ ;
+int isfinite (/*@sef@*/ s_real_t) /*@*/ ;
+int isnormal (/*@sef@*/ s_real_t) /*@*/ ;
+int isnan (/*@sef@*/ s_real_t) /*@*/ ;
+int isinf (/*@sef@*/ s_real_t) /*@*/ ;
 
 /*
-** math functions that may have a range error modify errno 
+** math functions that may have a range error modify errno (implementation defined).
 */
 
-double sin (double x) /*@*/ ;
-double cos (double x) /*@*/ ;
-double tan (double x) /*@*/ ;
-double asin (double x) /*@modifies errno@*/ ;
 double acos (double x) /*@modifies errno@*/ ;
+double asin (double x) /*@modifies errno@*/ ;
 double atan (double x) /*@*/ ;
 double atan2 (double y, double x) /*@*/ ;
-double sinh (double x) /*@*/ ;
+
+double cos (double x) /*@*/ ;
+double sin (double x) /*@*/ ;
+double tan (double x) /*@*/ ;
+
 double cosh (double x) /*@modifies errno@*/ ;
+double sinh (double x) /*@modifies errno@*/ ;
 double tanh (double x) /*@*/ ;
 
+double acosh (double x) /*@modifies errno@*/ ;
+double asinh (double x) /*@modifies errno@*/ ;
+double atanh (double x) /*@modifies errno@*/ ;
+
 double exp (double x) /*@modifies errno@*/ ;
-double ldexp (double x, int n) /*@modifies errno@*/ ;
 double frexp (double x, /*@out@*/ int *xp) /*@modifies *xp;@*/ ;
+double ldexp (double x, int n) /*@modifies errno@*/ ;
 
 double log (double x) /*@modifies errno@*/ ;
 double log10 (double x) /*@modifies errno@*/ ;
 
+double modf (double x, /*@out@*/ double *ip) /*@modifies *ip;@*/ ;
+
+double exp2 (double x) /*@modifies errno@*/ ;
+double expm1 (double x) /*@modifies errno@*/ ;
+double log1p (double x) /*@modifies errno@*/ ;
+double log2 (double x) /*@modifies errno@*/ ;
+double logb (double x) /*@modifies errno@*/ ;
+
+double scalbn (double x, int n) /*@modifies errno@*/ ;
+double scalbln (double x, long int n) /*@modifies errno@*/ ;
+long double scalblnl(long double x, long int n) /*@modifies errno@*/ ;
+
+int ilogb (double x) /*@modifies errno@*/ ;
+int ilogbf (float x) /*@modifies errno@*/ ;
+int ilogbl (long double x) /*@modifies errno@*/ ;
+
+double fabs (double x) /*@*/ ;
+float fabsf (float x) /*@*/ ;
+long double fabsl (long double x) /*@*/ ;
+
 double pow (double x, double y) /*@modifies errno@*/ ;
+float powf(float x, float y) /*@modifies errno@*/ ;
+long double powl(long double x, long double y) /*@modifies errno@*/ ;
+
 double sqrt (double x) /*@modifies errno@*/ ;
+float sqrtf(float x) /*@modifies errno@*/ ;
+long double sqrtl (long double x) /*@modifies errno@*/ ;
+
+double cbrt (double x) /*@*/ ;
+float cbrtf (float x) /*@*/ ;
+long double cbrtl (long double x) /*@*/ ;
+
+double hypot (double x, double y) /*@modifies errno@*/ ;
+float hypotf (float x, float y) /*@modifies errno@*/ ;
+long double hypotl (long double x, long double y) /*@modifies errno@*/ ;
+
+double erf (double x) /*@*/ ;
+double erfc (double x) /*@*/ ;
+float erff (float x) /*@*/ ;
+long double erfl (long double x) /*@*/ ;
+float erfcf (float x) /*@*/ ;
+long double erfcl (long double x) /*@*/ ;
+
+double gamma (double x) /*@modifies errno@*/ ;
+float gammaf(float x) /*@modifies errno@*/ ;
+long double gammal (long double x) /*@modifies errno@*/ ;
+double lgamma (double x) /*@modifies errno@*/ ;
+float lgammaf (float x)  /*@modifies errno@*/ ;
+long double lgammal (long double x)  /*@modifies errno@*/ ;
 
 double ceil (double x) /*@*/ ;
-double floor (double x) /*@*/ ;
-double fabs (double x) /*@*/ ;
+float ceilf(float x) /*@*/ ;
+long double ceill(long double x) /*@*/ ;
 
-double modf (double x, /*@out@*/ double *ip) /*@modifies *ip;@*/ ;
+double floor (double x) /*@*/ ;
+float floorf (float x) /*@*/ ;
+long double floorl (long double x) /*@*/ ;
+
+double nearbyint (double x) /*@*/ ;
+float nearbyintf (float x) /*@*/ ; 
+long double nearbyintl (long double x) /*@*/ ;
+
+double rint (double x) /*@*/;
+float rintf (float x) /*@*/ ;
+long double rintl (long double x) /*@*/ ;
+long int lrint (double x) /*@modifies errno@*/ ;
+long int lrintf (float x) /*@modifies errno@*/ ;
+long int lrintl (long double x) /*@modifies errno@*/ ;
+long long llrint (double x) /*@modifies errno@*/ ;
+long long llrintf(float x)  /*@modifies errno@*/ ;
+long long llrintl(long double x) /*@modifies errno@*/ ;
+
+double round (double x) /*@*/ ;
+long int lround (double x) /*@modifies errno@*/ ;
+long long llround (double x) /*@modifies errno@*/ ;
+
+double trunc (double x) /*@*/ ; 
 double fmod (double x, double y) /*@*/ ;
+double remainder (double x, double y) /*@*/ ;
+double remquo (double x, double y, /*@out@*/ int *quo) /*@modifies *quo@*/ ;
+double copysign (double x, double y) /*@*/ ;
+double nan (/*@nullterminated@*/ const char *tagp) /*@*/ ;
+double nextafter (double x, double y) /*@*/ ;
+double nextafterx (double x, long double y) /*@*/ ;
+
+double fdim (double x, double y) /*@modifies errno@*/ ;
+double fmax (double x, double y) /*@*/ ;
+double fmin (double x, double y) /*@*/ ;
+double fma (double x, double y, double z) /*@*/ ;
+
+int isgreater (s_real_t x, s_real_t y) /*@*/ ;
+int isgreaterequal (s_real_t x, s_real_t y) /*@*/ ;
+int isless (s_real_t x, s_real_t y) /*@*/ ;
+int islessequal (s_real_t x, s_real_t y) /*@*/ ;
+int islessgreater (s_real_t x, s_real_t y) /*@*/ ;
+int isunordered (s_real_t x, s_real_t y) /*@*/ ;
 
 /*
 ** These functions are optional in iso C.  An implementation does not

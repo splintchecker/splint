@@ -1654,8 +1654,8 @@ flags_processFlags (bool inCommandLine,
 
       llassert (argv != NULL);
       thisarg = argv[i];
-
-      DPRINTF (("thisarg: %s", thisarg));
+      
+      DPRINTF (("process thisarg [%d]: %s", i, thisarg));
 
       if (*thisarg == '-' || *thisarg == '+')
 	{
@@ -1726,7 +1726,7 @@ flags_processFlags (bool inCommandLine,
 	    {
 	      context_setMode (flagname);
 	    }
-	  else if (flagcode_isMessageControlFlag (opt))
+	  else if (inCommandLine && flagcode_isMessageControlFlag (opt))
 	    {
 	      /*
 	      ** Processed on first pass

@@ -79,7 +79,12 @@
 
 extern /*@external@*/ int yydebug;
 static void cleanupFiles (void);
-static void interrupt (int p_i);
+/*
+** evans 2002-07-03: renamed from interrupt to avoid conflict with WATCOM compiler keyword
+**    (Suggested by Adam Clarke)
+*/
+
+static void llinterrupt (int p_i);
 
 static void describeVars (void);
 static bool specialFlagsHelp (char *p_next);
@@ -406,8 +411,8 @@ int main (int argc, char *argv[])
   g_messagestream = stderr;
   g_errorstream = stderr;
 
-  (void) signal (SIGINT, interrupt);
-  (void) signal (SIGSEGV, interrupt); 
+  (void) signal (SIGINT, llinterrupt);
+  (void) signal (SIGSEGV, llinterrupt); 
 
   flags_initMod ();
   clabstract_initMod ();
@@ -1155,7 +1160,7 @@ int main (int argc, char *argv[])
 # endif 
 
 void
-interrupt (int i)
+llinterrupt (int i)
 {
   switch (i)
     {
@@ -1306,10 +1311,10 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 	      if ((filesprocessed % skip) == 0) 
 		{
 		  if (filesprocessed == 0) {
-		    displayScan (cstring_makeLiteral (" "));
+		    displayScanContinue (cstring_makeLiteral (" "));
 		  }
 		  else {
-		    displayScan (cstring_makeLiteral ("."));
+		    displayScanContinue (cstring_makeLiteral ("."));
 		  }
 		}
 	      filesprocessed++;

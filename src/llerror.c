@@ -1945,10 +1945,16 @@ static bool s_scanOpen = FALSE;
 
 void displayScan (cstring msg)
 {
+  if (s_scanOpen)
+    {
+      displayScanClose ();
+    }
+
   llassert (!s_scanOpen);
 
   if (context_getFlag (FLG_SHOWSCAN))
     {
+      showHerald ();
       fprintf (g_messagestream, "< %s >\n", cstring_toCharsSafe (msg));
       (void) fflush (g_messagestream);
     }
@@ -1958,6 +1964,11 @@ void displayScan (cstring msg)
 
 void displayScanOpen (cstring msg)
 {
+  if (s_scanOpen)
+    {
+      displayScanClose ();
+    }
+
   llassert (!s_scanOpen);
   s_scanOpen = TRUE;
 

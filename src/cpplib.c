@@ -74,7 +74,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <time.h>
 # else
 # ifndef VMS
-# ifndef USG
+/*
+** evans 2002-07-03: exception for WATCOM 10.6 compiler suggest by Adam Clarke 
+*/
+# if !defined (USG) && !defined (__WATCOMC__)
 # include <time.h> /* Reported by Paul Smith */
 # include <sys/time.h>
 # include <sys/resource.h>
@@ -243,7 +246,13 @@ static int cpp_peekN (cppReader *p_pfile, int p_n) /*@*/ ;
 /*@function static void cppReader_putCharQ (cppReader *p_file, char p_ch)
                     modifies *p_file; @*/
 # define cppReader_putCharQ(PFILE, CH) (*(PFILE)->limit++ = (CH))
-
+/*
+static void cppReader_putCharQ (cppReader *p_file, char p_ch)
+{
+  fprintf (stderr, "put char: %c\n", p_ch);
+  (*(p_file)->limit++ = (p_ch));
+}
+*/
 /* Append character CH to PFILE's output buffer.  Make space if need be. */
 
 /*@function static void cppReader_putChar (sef cppReader *p_file, char p_ch)
@@ -2943,6 +2952,7 @@ cppReader_pushBuffer (cppReader *pfile, char *buffer, size_t length)
 
   buf--;
   memset ((char *) buf, 0, sizeof (*buf));
+  DPRINTF (("Pushing buffer: %s", cstring_copyLength (buffer, length)));
   CPPBUFFER (pfile) = buf;
 
   buf->if_stack = pfile->if_stack;
@@ -3016,6 +3026,8 @@ cpp_expand_to_buffer (cppReader *pfile, char *buf, size_t length)
   register cppBuffer *ip;
   char *limit = buf + length;
   char *buf1, *p1, *p2;
+
+  DPRINTF (("Expand to buffer: %s", cstring_copyLength (buf, length)));
 
   /* evans - 2001-08-26
   ** length is unsigned - this doesn't make sense
@@ -4051,7 +4063,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 
   cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile), &end_line, &end_column);
   DPRINTF (("Expand macro: %d:%d", end_line, end_column));
-
+  
   /* If macro wants zero args, we parsed the arglist for checking only.
      Read directly from the macro definition.  */
 
@@ -4398,7 +4410,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   /* Now put the expansion on the input stack
      so our caller will commence reading from it.  */
   DPRINTF (("Pushing expansion: %s", cstring_copyLength (xbuf, xbuf_len)));
-
+  
   if (end_line != start_line)
     {
       /* xbuf must have enough newlines */
@@ -4437,11 +4449,13 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   DPRINTF (("Pushing expansion: %s", cstring_copyLength (xbuf, xbuf_len)));
 
   push_macro_expansion (pfile, xbuf, xbuf_len, hp);
+  DPRINTF (("After pushing expansion: %s", cstring_copyLength (xbuf, xbuf_len)));
   cppReader_getBufferSafe (pfile)->has_escapes = 1;
 
   /* Pop the space we've used in the token_buffer for argument expansion.  */
   cppReader_setWritten (pfile, old_written);
-
+  DPRINTF (("Done set written"));
+  
   /* Recursive macro use sometimes works traditionally.
      #define foo(x,y) bar (x (y,0), y)
      foo (foo, baz)  */
@@ -4491,8 +4505,10 @@ push_macro_expansion (cppReader *pfile, char *xbuf, size_t xbuf_len,
 	  || xbuf[2] == '\"'))
   {
     llassert (mbuf->cur != NULL);
+    DPRINTF (("Eating: %c", xbuf[2]));
     mbuf->cur += 2;
   }
+  
 }
 
 
@@ -6007,7 +6023,7 @@ get_next:
 	  cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile),
 				   &start_line, &start_column);
 	  c = skip_comment (pfile, &newlines);
-
+	  DPRINTF (("c = %c", c));
 	  if (opts->put_out_comments && (c == '/' || c == EOF))
 	    {
 	      assertSet (&start_mark);
@@ -6069,10 +6085,12 @@ get_next:
 				      &start_line, &start_column);
 	  old_written = cpplib_getWritten (pfile);
 	string:
+	  DPRINTF (("Put char: %c", c));
 	  cppReader_putChar (pfile, c);
 	  while (TRUE)
 	    {
 	      int cc = cppReader_getC (pfile);
+	      DPRINTF (("cc: %c", c));
 	      if (cc == EOF)
 		{
 		  if (cppBuffer_isMacro (CPPBUFFER (pfile)))
@@ -6116,6 +6134,7 @@ get_next:
 		    }
 		  /*@loopbreak@*/ break;
 		}
+	      DPRINTF (("putting char: %c", cc));
 	      cppReader_putChar (pfile, cc);
 	      switch (cc)
 		{
@@ -6275,9 +6294,11 @@ get_next:
 	  return CPP_OTHER;
 
 	case '@':
+	  DPRINTF (("Macro @!"));
 	  if (cppReader_getBufferSafe (pfile)->has_escapes)
 	    {
 	      c = cppReader_getC (pfile);
+	      DPRINTF (("got c: %c", c));
 	      if (c == '-')
 		{
 		  if (pfile->output_escapes)
@@ -6487,12 +6508,17 @@ get_next:
 		struct parse_marker macro_mark;
 		int is_macro_call;
 
+		DPRINTF (("Arglist macro!"));
+
+		parseSetMark (&macro_mark, pfile); 
+
 		while (cppBuffer_isMacro (CPPBUFFER (pfile)))
 		  {
 		    cppBuffer *next_buf;
 		    cppSkipHspace (pfile);
 		    if (cppReader_peekC (pfile) != EOF)
 		      {
+			DPRINTF (("Peeking!"));
 			/*@loopbreak@*/ break;
 		      }
 
@@ -6501,12 +6527,13 @@ get_next:
 		  CPPBUFFER (pfile) = next_buf;
 		  }
 
-		parseSetMark (&macro_mark, pfile);
+		/* parseSetMark (&macro_mark, pfile); */
 
 		for (;;)
 		  {
 		    cppSkipHspace (pfile);
 		    c = cppReader_peekC (pfile);
+		    DPRINTF (("c: %c", c));
 		    is_macro_call = c == '(';
 		    if (c != '\n')
 		      /*@loopbreak@*/ break;
@@ -6522,9 +6549,11 @@ get_next:
 
 		if (!is_macro_call)
 		  {
+		    DPRINTF (("not macro call!"));
 		    return CPP_NAME;
 		  }
 	      }
+
 	    /* This is now known to be a macro call.  */
 
 	    /* it might not actually be a macro.  */
@@ -7234,6 +7263,7 @@ parseSetMark (struct parse_marker *pmark, cppReader *pfile)
 
   pmark->buf = pbuf;
   pmark->position = pbuf->cur - pbuf->buf;
+  DPRINTF (("set mark: %d / %s", pmark->position, pbuf->cur));
 }
 
 /* Cleanup PMARK - we no longer need it.  */
@@ -7266,6 +7296,7 @@ parseGotoMark (struct parse_marker *pmark, cppReader *pfile)
 
   llassert (pbuf->buf != NULL);
   pbuf->cur = pbuf->buf + pmark->position;
+  DPRINTF (("goto mark: %d / %s", pmark->position, pbuf->cur));
 }
 
 /* Reset PMARK to point to the current position of PFILE.  (Same
@@ -7283,6 +7314,7 @@ parseMoveMark (struct parse_marker *pmark, cppReader *pfile)
     }
 
   pmark->position = pbuf->cur - pbuf->buf;
+  DPRINTF (("move mark: %s", pmark->position));
 }
 
 void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is loaded. */

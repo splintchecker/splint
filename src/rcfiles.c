@@ -57,7 +57,7 @@ bool rcfiles_read (cstring fname, cstringSList *passThroughArgs, bool report)
 	  fileloc fc = g_currentloc;
 	  g_currentloc = fileloc_createRc (fname);
 
-	  displayScan (message ("< reading options from %q >", 
+	  displayScan (message ("reading options from %q", 
 				fileloc_outputFilename (g_currentloc)));
 	  
 	  rcfiles_loadFile (innerf, passThroughArgs);
@@ -89,7 +89,7 @@ static void rcfiles_loadFile (/*:open:*/ FILE *rcfile, cstringSList *passThrough
   cstringList args = cstringList_new ();
 
   DPRINTF (("Loading rc file..."));
-
+  
   s = os;
 
   while (reader_readLine (rcfile, s, MAX_LINE_LENGTH) != NULL)

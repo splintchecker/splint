@@ -236,7 +236,7 @@ message (/*@temp@*/ char *fmt, ...)
 	      ret = mstring_concatFree (ret, GETPRINTF ("%d", lastint));
 	      break;
 	    case XFLOAT:
-	      ret = mstring_concatFree (ret, GETPRINTF ("%e", va_arg (pvar, double)));
+	      ret = mstring_concatFree (ret, GETPRINTF ("%.2lf", va_arg (pvar, double)));
 	      break;
 	    case XBOOL:
 	      ret = mstring_concatFree1 (ret, cstring_toCharsSafe 

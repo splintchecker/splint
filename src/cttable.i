@@ -320,7 +320,7 @@ cttable_dump (FILE *fout)
   if (context_getFlag (FLG_SHOWSCAN) && cttab.size > 5000)
     {
       displayScanClose ();
-      displayScanOpen (message ("< Dumping type table (%d types) ", cttab.size));
+      displayScanOpen (message ("Dumping type table (%d types)", cttab.size));
       showdotstride = cttab.size / 5;
       showdots = TRUE;
     }
@@ -338,14 +338,15 @@ cttable_dump (FILE *fout)
       if (showdots && (i != 0 && ((i - 1) % showdotstride == 0)))
 	{
 	  (void) fflush (g_warningstream);
-	  fprintf (stderr, ".");
+	  displayScanContinue (cstring_makeLiteralTemp ("."));
 	  (void) fflush (stderr);
 	}
     }
 
   if (showdots)
     {
-      fprintf (stderr, " >\n< Continuing dump ");
+      displayScanClose ();
+      displayScanOpen (cstring_makeLiteral ("Continuing dump "));
     }
   
 }

@@ -6839,7 +6839,7 @@ KindConformanceError (/*@unique@*/ uentry old, uentry unew, bool mustConform)
   llassert (uentry_isValid (old));
   llassert (uentry_isValid (unew));
 
-  if (uentry_isEitherConstant (unew)
+  if ((uentry_isEitherConstant (unew) || uentry_isDatatype (unew))
       && (fileloc_isPreproc (uentry_whereDeclared (old))
 	  || ctype_isUnknown (old->utype))
       && !uentry_isSpecified (old))

@@ -858,10 +858,12 @@ ullint:
 ###
 ### 2001-12-30: Poor warnings reported by Peter Deutsch
 ###
+### 2002-07-03: removed warnings for datatype/macro definitions
+###
 
 .PHONY: utypes
 utypes:
-	${SPLINTRN} utypes.c -expect 6
+	${SPLINTRN} utypes.c -expect 2
 
 ###
 

@@ -831,8 +831,10 @@ unaryExpr
  | offsetofExpr    { $$ = $1; }
 
 fieldDesignator
- : fieldDesignator TDOT newId { $$ = cstringList_add ($1, $3); }
- | newId                      { $$ = cstringList_single ($1); }
+ : fieldDesignator TDOT newId         { $$ = cstringList_add ($1, $3); }
+ | fieldDesignator TLSQBR expr TRSQBR { $$ = $1; }
+   /* evans 2002-07-02: offsetof designators can use array indexes */
+ | newId                              { $$ = cstringList_single ($1); }
 
 offsetofExpr
  : COFFSETOF IsType TLPAREN typeExpression NotType TCOMMA fieldDesignator TRPAREN IsType

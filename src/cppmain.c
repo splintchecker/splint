@@ -137,6 +137,8 @@ int cppProcess (/*@dependent@*/ cstring infile,
 
       if (!opts->no_output)
 	{
+	  DPRINTF (("Writing: %s", cstring_copyLength (g_cppState.token_buffer, cpplib_getWritten (&g_cppState))));
+
 	  (void) fwrite (g_cppState.token_buffer, (size_t) 1,
 			 cpplib_getWritten (&g_cppState), ofile);
 	}

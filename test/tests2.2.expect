@@ -27,9 +27,9 @@ Finished checking --- 2 code warnings, as expected
 
 decl.c:3:21: Structure struct tm declared with fields { int x; }, specified
                 with fields { int tm_sec; int tm_min; int tm_hour;, ... }
-   load file standard.lcd:963:1: Specification of struct tm
+   load file standard.lcd:1218:1: Specification of struct tm
    decl.c:3:17: Field tm_sec in specified corresponds to x in declaration
-   load file standard.lcd:638:1: Specification of tm_sec
+   load file standard.lcd:803:1: Specification of tm_sec
 
 Finished checking --- 1 code warning, as expected
 

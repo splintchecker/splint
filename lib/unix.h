@@ -105,10 +105,13 @@ extern /*@null@*/ /*@dependent@*/ char *
 extern /*@null@*/ /*@dependent@*/ char *
   rindex (/*@returned@*/ char *s, char c) /*@*/ ;
 
+# if 0
+These are in ISO C99.  Moved to standard.h:
+   extern double cbrt (double x) /*@modifies errno@*/ ;
+   extern double rint (double x) /*@*/ ;
+   extern double trunc (double x) /*@*/ ; 
+# endif
 
-extern double cbrt (double x) /*@modifies errno@*/ ;
-extern double rint (double x) /*@*/ ;
-extern double trunc (double x) /*@*/ ; 
 
 /*@constant int ENOTBLK@*/
 /*@constant int ETXTBSY@*/
