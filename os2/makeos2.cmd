@@ -35,6 +35,8 @@ sh -c "export TODAY=`date.exe`; export LCL_DATE=`date.exe | cut -d ' ' -f 2,3,6`
 goto end
 
 :oldconf
+if not exist %base%\src\Headers\local_constants.h copy local_constants.h %base%\src\Headers\local_constants.h
+if not exist %base%\src\Headers\heral.h copy local_constants.h %base%\src\Headers\herald.h
 make -f Makefile.os2 --directory=../src --warn-undefined-variables %2 %3 %4 %5 %6 %7 %8 %9 
 if errorlevel 0 mv ..\src\lclint.exe ..\bin
 goto end

@@ -33,6 +33,13 @@ Each of the above options will create a new configuration. To continue
 a build with an existing configuration use "o". Finally "t" runs the
 "quicktest" part of the test suite (other tests are not yet supported).
 
+If you experience problems with the automatic configuration file creation
+from within Makefile.os2 you may alternatively call makeos2.cmd with the
+`-o' option and use the existing config.inc file (assuming that you use
+IBMC, else edit it by hand). In that case you may also want to edit the
+local_constants.h and herald.h files from this directory to have it match 
+your setup.
+
 Please, be aware that you need the flex library in order to build lclint.
 As far as I remember the OS/2 version of flex comes with this library for
 the emx/gcc compiler. If not, you will easily be able to compile it 
