@@ -6510,6 +6510,12 @@ get_next:
 
 		DPRINTF (("Arglist macro!"));
 
+		/*
+		** evans 2002-07-03: Moved this here (from below).
+		**   This bug caused necessary whitespace to be lost
+		**   when parsing parameterized macros without parameters.
+		*/
+
 		parseSetMark (&macro_mark, pfile); 
 
 		while (cppBuffer_isMacro (CPPBUFFER (pfile)))
