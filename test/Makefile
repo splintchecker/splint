@@ -774,7 +774,8 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
-                  moreBufferTests2/fixedArrayType.c oldstyle2.c
+                  moreBufferTests2/fixedArrayType.c oldstyle2.c \
+                  stringliteral.expect  stringliteral.c
 
 subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -1661,7 +1662,6 @@ buffertest:
 .PHONY: $(SUBDIRTESTS)
 $(SUBDIRTESTS):
 	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)"
-
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
