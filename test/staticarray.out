@@ -1,8 +1,5 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 staticarray.c: (in function foo1)
-staticarray.c:8:3: Unrecognized identifier: strcpy
 staticarray.c:9:10: Unqualified static storage buf returned as implicitly only:
                        buf
 staticarray.c: (in function f)
@@ -12,4 +9,4 @@ staticarray.c: (in function g)
 staticarray.c:27:10: Implicitly temp storage outstr returned as implicitly
                         only: outstr
 
-Finished LCLint checking --- 4 code errors found, expected 3
+Finished LCLint checking --- 3 code errors found, as expected

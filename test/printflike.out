@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 printflike.c:2:5: Function mprint is marked printflike, but has no elipsis
                      parameter
 printflike.c:5:5: Function kprint is marked printflike, but has no elipsis
@@ -18,8 +16,6 @@ printflike.c:17:5: Function qxprint is marked messagelike, but the argument
 
 Finished LCLint checking --- 6 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 printflike.c:2:5: Function mprint is marked printflike, but has no elipsis
                      parameter
 printflike.c:5:5: Function kprint is marked printflike, but has no elipsis

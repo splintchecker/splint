@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 inparam.c: (in function f)
 inparam.c:8:16: Passed storage x not completely defined (*x is undefined):
                    unknown (x)
@@ -9,8 +7,6 @@ inparam.c:12:16: Passed storage x not completely defined (*x is undefined):
 
 Finished LCLint checking --- 2 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 inparam.c: (in function f)
 inparam.c:12:16: Passed storage x not completely defined (*x is undefined):
                     inparam (x)

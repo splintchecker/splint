@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 moduncon.c: (in function g)
 moduncon.c:12:10: Undetected modification possible from call to unconstrained
                      function umod: umod
@@ -13,8 +11,6 @@ moduncon.c:13:10: Undetected modification possible from call to unconstrained
 
 Finished LCLint checking --- 4 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 moduncon.c: (in function f)
 moduncon.c:6:22: Undetected modification possible from call to unconstrained
                     function umod: umod

@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 unused.c:13:6: Name _inner is in the implementation name space (any identifier
                   beginning with underscore)
 unused.c:14:2: Name _st is in the implementation name space (any identifier
@@ -12,8 +10,6 @@ unused.c:16:12: Function undef exported but not declared in header file
 
 Finished LCLint checking --- 5 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 unused.c:13:6: Name _inner is in the implementation name space (any identifier
                   beginning with underscore)
 unused.c:14:2: Name _st is in the implementation name space (any identifier

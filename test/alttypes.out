@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 alttypes.c:19:20: Function f2 inconsistently redeclared to return alternate
     types int | bool (types match, but alternates are not identical, so
     checking may not be correct)

@@ -1,13 +1,9 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 mystrncat.c: (in function func)
-mystrncat.c:10:7: Unrecognized identifier: malloc
-mystrncat.c:11:3: Unrecognized identifier: assert
-mystrncat.c:11:15: Unrecognized identifier: NULL
 mystrncat.c:12:13: Passed storage buffer not completely defined (*buffer is
                       undefined): mystrncat (buffer, ...)
-mystrncat.c:15:3: Unrecognized identifier: free
+mystrncat.c:13:13: Passed storage b not completely defined (*b is undefined):
+                      mystrncat (b, ...)
 mystrncat.c:12:3: Possible out-of-bounds store:
     Unable to resolve constraint:
     requires maxRead(buffer @ mystrncat.c:12:13) <= 0
@@ -18,12 +14,11 @@ mystrncat.c:12:3: Possible out-of-bounds store:
     requires maxSet(<parameter 1>) >= maxRead(<parameter 1>) + <parameter 3>
 mystrncat.c:13:3: Possible out-of-bounds store:
     Unable to resolve constraint:
-    requires maxSet(malloc(256) @ mystrncat.c:10:7) >= maxRead(malloc(256) @
-    mystrncat.c:10:7) + 255
+    requires maxRead(malloc(256) @ mystrncat.c:10:7) <= 0
      needed to satisfy precondition:
     requires maxSet(b @ mystrncat.c:13:13) >= maxRead(b @ mystrncat.c:13:13) +
     255
      derived from mystrncat precondition:
     requires maxSet(<parameter 1>) >= maxRead(<parameter 1>) + <parameter 3>
 
-Finished LCLint checking --- 7 code errors found, expected 4
+Finished LCLint checking --- 4 code errors found, as expected

@@ -1,14 +1,23 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-strings.c: (in function f3)
-strings.c:18:3: Unrecognized identifier: free
-strings.c:19:2: Only storage x not released before return
-   strings.c:16:27: Storage x becomes only
 strings.c:21:6: Function main declared to return void, should return int
 strings.c: (in function main)
 strings.c:24:14: Function call may modify observer: "hullo"
 strings.c:25:7: Observer storage passed as only param: f3 ("hullo")
    strings.c:25:7: Storage becomes observer
 
-Finished LCLint checking --- 5 code errors found, expected 3
+Finished LCLint checking --- 3 code errors found, as expected
+
+strings.c:21:6: Function main declared to return void, should return int
+
+Finished LCLint checking --- 1 code error found, as expected
+
+strings.c: (in function main)
+strings.c:23:14: Call to unconstrained function f1 may modify observer: "hullo"
+   strings.c:23:14: Storage becomes observer
+strings.c:24:14: Function call may modify observer: "hullo"
+strings.c:25:7: Call to unconstrained function f3 may modify observer: "hullo"
+   strings.c:25:7: Storage becomes observer
+strings.c:25:7: Observer storage passed as only param: f3 ("hullo")
+   strings.c:25:7: Storage becomes observer
+
+Finished LCLint checking --- 4 code errors found, as expected

@@ -1,8 +1,6 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 release.c: (in function f)
-release.c:3:12: Unrecognized identifier: NULL
-release.c:8:17: Unrecognized identifier: malloc
+release.c:25:12: Owned storage z not released before return
+   release.c:22:7: Storage z becomes owned
 
-Finished LCLint checking --- 2 code errors found, expected 1
+Finished LCLint checking --- 1 code error found, as expected

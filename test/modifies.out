@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 modifies.c:7:29: Modifies list uses internalState which is a variable and has
     special meaning in a modifies list.  (Special meaning assumed.)
    modifies.c:4:25: Declaration of internalState

@@ -1,68 +1,24 @@
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 csyntax.c:20:5: Function main declared with 1 arg, should have 2 (int argc,
                    char *argv[])
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 csyntax2.c: (in function mapping_create)
-csyntax2.c:13:3: Assignment of unsigned long int to int: x = sizeof((t))
-csyntax2.c:14:3: Assignment of unsigned long int to int: x = sizeof(*t)
+csyntax2.c:13:3: Assignment of size_t to int: x = sizeof((t))
+csyntax2.c:14:3: Assignment of size_t to int: x = sizeof(*t)
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 csyntax3.c:3:4: Function main declared to return a1, should return int
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 csyntax13.c: (in function f)
 csyntax13.c:9:11: Variable isrs shadows outer declaration
    csyntax13.c:7:9: Previous definition of isrs: isr_t
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 csyntax16.c: (in function main)
-csyntax16.c:16:23: Unrecognized identifier: atoi
 csyntax16.c:18:11: Variable getbuiltout used before definition
-csyntax16.c:20:16: Unrecognized identifier: NULL
-csyntax16.c:22:7: Unrecognized identifier: printf
-csyntax16.c:23:7: Unrecognized identifier: exit
-csyntax16.c:23:12: Unrecognized identifier: EXIT_SUCCESS
-csyntax16.c:24:16: Unrecognized identifier: EXIT_FAILURE
-csyntax16.c:25:2: Path with no return in function declared to return int
 csyntax16.c: (in function getbuiltout)
 csyntax16.c:43:14: Variable qpolygon used before definition
+
+csyntax17.c: (in function f)
+csyntax17.c:11:11: Variable x initialized to type EID_UNIT_NUM, expects int:
+                      (EID_UNIT_NUM)3
+csyntax17.c:12:2: Path with no return in function declared to return int
+csyntax17.c:11:7: Variable x declared but not used
 

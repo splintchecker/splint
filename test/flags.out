@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 flags.c:1:9: Variable x initialized to type char, expects int: 'c'
 flags.c:5:9: Variable y
     initialized to type
@@ -38,8 +36,6 @@ flags.c:18:20: Flag linelen must be followed by a positive number
 
 Finished LCLint checking --- 8 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 flags.c:1:9: Variable x initialized to type char, expects int: 'c'
 flags.c:5:9: Variable y initialized to type char, expects int: 'c'
 

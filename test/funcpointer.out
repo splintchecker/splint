@@ -1,8 +1,9 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 funcpointer.c: (in function func2)
-funcpointer.c:13:34: Unrecognized identifier: malloc
+funcpointer.c:13:27: Possibly null storage returned as non-null:
+                        (int *)malloc(sizeof(int))
+funcpointer.c:13:27: Returned storage not completely defined (storage pointed
+    to by [result of malloc] is undefined): (int *)malloc(sizeof(int))
 funcpointer.c: (in function func5)
 funcpointer.c:19:28: Immediate address &i returned as implicitly only: &i
 funcpointer.c: (in function main)
@@ -28,4 +29,4 @@ funcpointer.c:49:10: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:11: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:10: Function ((t6)(3)) called with 0 args, expects 1
 
-Finished LCLint checking --- 17 code errors found, expected 18
+Finished LCLint checking --- 18 code errors found, as expected

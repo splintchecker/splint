@@ -1,18 +1,7 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 strchr.c: (in function func)
-strchr.c:5:7: Unrecognized identifier: strchr
-strchr.c:6:3: Possible out-of-bounds store:
-    Unable to resolve constraint:
-    requires maxSet(strchr("dfdfedfd", 'e') @ strchr.c:5:7) >= 0
-     needed to satisfy precondition:
-    requires maxSet(c @ strchr.c:6:4) >= 0
-strchr.c: (in function fixline)
-strchr.c:15:5: Possible out-of-bounds store:
-    Unable to resolve constraint:
-    requires maxSet(strchr(line, '\n') @ strchr.c:13:13) >= 0
-     needed to satisfy precondition:
-    requires maxSet(p @ strchr.c:15:6) >= 0
+strchr.c:6:4: Dereference of possibly null pointer c: *c
+   strchr.c:5:7: Storage c may become null
+strchr.c:6:3: Suspect modification of observer c: *c = 'd'
 
-Finished LCLint checking --- 3 code errors found, expected 2
+Finished LCLint checking --- 2 code errors found, as expected

@@ -1,6 +1,4 @@
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 preds.c: (in function f)
 preds.c:10:7: Test expression for if not bool, type int: *p
   Test expression type is not boolean or int. (-predboolint will suppress
@@ -26,8 +24,6 @@ preds.c:35:7: Test expression for if not bool, type char: c
 
 Finished LCLint checking --- 6 code errors found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
 preds.c: (in function f)
 preds.c:20:7: Test expression for if is assignment expression: b1 = b2
   The condition test is an assignment expression. Probably, you mean to use ==
@@ -37,12 +33,6 @@ preds.c:20:7: Test expression for if is assignment expression: b1 = b2
 
 Finished LCLint checking --- 1 code error found, as expected
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-bool.h:11:25: Constant exported, but not specified: FALSE
-  A constant is exported, but not specified. (-exportconst will suppress
-  message)
-bool.h:16:25: Constant exported, but not specified: TRUE
 preds.c: (in function f)
 preds.c:5:8: Operand of ! is non-boolean (int *): !p
   The operand of ! operator is a pointer. (+ptrnegate will suppress message)
@@ -76,4 +66,4 @@ bool.h:30:13: Function bool_equal declared but not used
 preds.c:3:5: Function f declared but not used
    preds.c:41:1: Definition of f
 
-Finished LCLint checking --- 14 code errors found, expected 12
+Finished LCLint checking --- 12 code errors found, as expected
