@@ -234,7 +234,10 @@ void constraintList_printError (constraintList s, fileloc loc)
     {
       if (constraint_isDefined(elem) )
 	{
-	  constraint_printError (elem, loc);
+	  if (constraint_isPost(elem) )
+	    constraint_printErrorPostCondition (elem, loc);
+	  else
+	    constraint_printError (elem, loc);
 	}
     }
   end_constraintList_elements;

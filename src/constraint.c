@@ -728,40 +728,34 @@ void constraint_printError (constraint c, fileloc loc)
 
   errorLoc = loc;
 
-  loc = NULL;
-
   temp = constraint_getFileloc(c);
 
   if (fileloc_isDefined(temp) )
     {
       errorLoc = temp;
-      
-      if (c->post)
-	{
-	  voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
-	}
-      else
-	{
-	  if (constraint_hasMaxSet (c) )
-	    voptgenerror (FLG_ARRAYBOUNDS, string, errorLoc);
-	  else
-	    voptgenerror (FLG_ARRAYBOUNDSREAD, string, errorLoc);
-	}
-      fileloc_free(temp);
-      errorLoc = NULL;
     }
   else
     {
-      if (c->post)
-	{
-	  voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
-	}
-      else
-	{
-	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
-	}
-      errorLoc = NULL;
+      llassert(FALSE);
+      DPRINTF(( message("constraint %s had undefined fileloc %s", constraint_print(c), fileloc_unparse(temp) ) ));
+      fileloc_free(temp);
+      errorLoc = fileloc_copy(errorLoc);
     }
+      
+  if (c->post)
+    {
+      voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
+    }
+  else
+    {
+      if (constraint_hasMaxSet (c) )
+	voptgenerror (FLG_ARRAYBOUNDS, string, errorLoc);
+      else
+	voptgenerror (FLG_ARRAYBOUNDSREAD, string, errorLoc);
+    }
+
+  fileloc_free(errorLoc);
+
 }
 
 
@@ -1136,3 +1130,12 @@ int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * c1, /*@observer@*
 }
 
 
+bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint c)
+{
+  llassert(constraint_isDefined(c) );
+
+  if (constraint_isUndefined(c) )
+    return FALSE;
+  
+  return (c->post);
+}
