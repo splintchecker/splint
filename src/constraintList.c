@@ -125,7 +125,7 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
   c = NULL;
 }
 
-/*@only@*/ constraintList constraintList_addList (/*@only@*/ /*@returned@*/ constraintList s, /*@observer@*/ constraintList newList)
+/*@only@*/ constraintList constraintList_addList (/*@only@*/ /*@returned@*/ constraintList s, /*@observer@*/ /*@temp@*/ constraintList newList)
 {
   llassert(constraintList_isDefined(s) );
   llassert(constraintList_isDefined(newList) );

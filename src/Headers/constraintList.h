@@ -46,7 +46,7 @@ extern constraintList constraintList_preserveCallInfo (/*@returned@*/ constraint
 extern /*@only@*/ constraintList constraintList_makeNew(void) /*@*/;
 extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) /*@modifies p_s@*/ ;
 
-extern /*@only@*/ constraintList constraintList_addList (/*@only@*/ /*@returned@*/ constraintList p_s, /*@observer@*/ constraintList p_newList) /*@modifies p_s@*/  ;
+     extern /*@only@*/ constraintList constraintList_addList (/*@only@*/ /*@returned@*/ constraintList p_s, /*@observer@*/ /*@temp@*/ constraintList p_newList) /*@modifies p_s@*/  ;
 
 
 extern constraintList constraintList_copy ( /*@observer@*/ /*@temp@*/ constraintList p_s) /*@*/ ;

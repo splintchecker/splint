@@ -128,7 +128,7 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
   if (context_getFlag (FLG_REDUNDANTCONSTRAINTS) )
     {
       ret = constraintList_copy(list1);
-      /*@i5232@*/ ret = constraintList_addList(ret, list2); /* fix this? */
+      ret = constraintList_addList(ret, list2); 
       return ret;
     }
     
