@@ -11,7 +11,7 @@
 .PHONY: argorder args blocks break cases cast charlit 
 .PHONY: clauses commentchar 
 .PHONY: compdestroy controldepth csyntax czechnames czechoslovaknames 
-.PHONY: deadparam decl enum exports external fields flags forbody format funcpointer glob globals 
+.PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
 .PHONY: list macros macrosef merge modifies modtest moduncon mongoincludes 
 .PHONY: null observer oldstyle outglob outparam preds prefixes printflike rc 
@@ -47,7 +47,7 @@ LCLINTR = $(LCLINTRN) -exportlocal
 
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
    charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
-   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
+   decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
    init inparam internal iter keep libs linked lintcomments list macros macrosef merge metastate modifies \
    modtest moduncon mongoincludes null nullret nullassign observer oldstyle outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
@@ -674,6 +674,9 @@ metastate:
 
 tainted:
 	setenv LCLINT '$(LCLINTRN)'; cd tainted ; $(MAKE) -e
+
+fileio:
+	setenv LCLINT '$(LCLINTRN)'; cd fileio ; $(MAKE) -e
 
 warnuse:
 	setenv LCLINT '$(LCLINTRN)'; cd warnuse ; $(MAKE) -e
