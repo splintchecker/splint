@@ -13,7 +13,7 @@
 .PHONY: compdestroy controldepth csyntax czechnames czechoslovaknames 
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
-.PHONY: list macros macrosef merge modifies modtest moduncon mongoincludes 
+.PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
 .PHONY: null observer oldstyle outglob outparam preds prefixes printflike rc 
 .PHONY: refcounts release repexpose returned sharing slovaknames special
 .PHONY: specclauses stack staticarray 
@@ -48,7 +48,7 @@ LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
    charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
    decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
-   init inparam internal iter keep libs linked lintcomments list macros macrosef merge metastate modifies \
+   init inparam internal iter keep libs linked lintcomments list macros macrosef merge mergestate metastate modifies \
    modtest moduncon mongoincludes mystrncat null nullret nullassign observer oldstyle \
    outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
@@ -682,6 +682,9 @@ tests2.5:
 
 metastate:
 	setenv LCLINT '$(LCLINTRN)'; cd metastate ; $(MAKE) -e
+
+mergestate:
+	setenv LCLINT '$(LCLINTRN)'; cd mergestate ; $(MAKE) -e
 
 tainted:
 	setenv LCLINT '$(LCLINTRN)'; cd tainted ; $(MAKE) -e

@@ -24,8 +24,8 @@ tainted-bad.mts:11:7: Annotation declaration uses unrecognized value name blue:
                          maybetainted reference ==> blue
 tainted-bad.mts:5:21: Defaults declaration uses unrecognized value name
                          stainted: stainted reference
-tainted-bad.mts:7:21: Duplicate defaults declaration for context param:
-                         untainted param
+tainted-bad.mts:7:21: Duplicate defaults declaration for context parameter:
+                         untainted parameter
 tainted.c: (in function f)
 tainted.c:5:20: Invalid transfer from tainted s to untainted (Possibly tainted
                    storage used as untainted.): s
