@@ -280,16 +280,16 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 ## Grammars
 
 Headers/signature_gen.h signature.c: signature.c.der signature.y
-	@if test x$(BISON) = xno; then \
-	  $(CP) signature.c.der signature.c; \
-	else \
-	  echo '* Making signature.c'; \
-	  $(BISON) $(YFLAGS) -p lsl signature.y; \
-	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
-	  $(CP) signature.c signature.c.der; \
-	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
-	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
-	  $(RM) signature.tab.c signature.tab.h; \
+	@if test x$(BISON) = xno; then 
+	  $(CP) signature.c.der signature.c; 
+	else 
+	  echo '* Making signature.c'; 
+	  $(BISON) $(YFLAGS) -p lsl signature.y; 
+	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; 
+	  $(CP) signature.c signature.c.der; 
+	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; 
+	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; 
+	  $(RM) signature.tab.c signature.tab.h; 
 	fi
 
 ## 11/29/001 drl added copy so that the file cgrammar.c.der is created
@@ -304,7 +304,6 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
-	  touch cgrammar.c; \
 	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
