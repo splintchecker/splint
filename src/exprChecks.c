@@ -938,6 +938,8 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
     // check if errors will printed
     if (! (context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
 	   context_getFlag(FLG_FUNCTIONCONSTRAINT) ||
+	   context_getFlag(FLG_ARRAYBOUNDS) ||
+	   context_getFlag(FLG_ARRAYBOUNDSREAD) ||
 	   context_getFlag(FLG_CHECKPOST) 
 	   )
 	)

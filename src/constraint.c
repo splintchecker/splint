@@ -309,13 +309,16 @@ static bool checkForMaxSet (constraint c)
 
 bool constraint_hasMaxSet(constraint c)
 {
+  if (checkForMaxSet(c) )
+    return TRUE;
+  
   if (c->orig != NULL)
     {
       if (checkForMaxSet(c->orig) )
 	return TRUE;
     }
 
-  return (checkForMaxSet(c) );
+  return FALSE;
 }
 
 constraint constraint_makeReadSafeExprNode (  exprNode po, exprNode ind)
@@ -739,7 +742,10 @@ void constraint_printError (constraint c, fileloc loc)
 	}
       else
 	{
-	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
+	  if (constraint_hasMaxSet (c) )
+	    voptgenerror (FLG_ARRAYBOUNDS, string, errorLoc);
+	  else
+	    voptgenerror (FLG_ARRAYBOUNDSREAD, string, errorLoc);
 	}
       fileloc_free(temp);
       errorLoc = NULL;
@@ -769,6 +775,7 @@ static cstring constraint_printDeep (constraint c)
   
   if (c->orig != constraint_undefined)
     {
+      st = cstring_appendChar(st, '\n');
       genExpr =  exprNode_unparse(c->orig->generatingExpr);
       if (!c->post)
 	{
@@ -776,7 +783,7 @@ static cstring constraint_printDeep (constraint c)
 	    st = cstring_concatFree(st, (message(" derived from %s precondition: %q", genExpr, constraint_printDeep(c->orig) )
 					 ) );
 	  else
-	    st = cstring_concatFree(st,(message(" needed to satisfy %q",
+	    st = cstring_concatFree(st,(message(" needed to satisfy precondition:\n%q",
 						constraint_printDeep(c->orig) )
 					) );
 	  
@@ -823,32 +830,38 @@ static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/
 cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
-  cstring genExpr;
+  cstring temp = cstring_undefined;
+    cstring genExpr;
   
   if (!c->post)
     {
-      st = message ("Unresolved constraint:\nLclint is unable to resolve %q", constraint_printDeep (c) );
+      st = message ("Unable to resolve constraint:\n%q", constraint_printDeep (c) );
     }
   else
     {
       st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_printDeep (c) );
     }
 
+  if (constraint_hasMaxSet(c) )
+    {
+      temp = cstring_makeLiteral("Possible out-of-bounds store.  ");
+    }
+  else
+    {
+      temp = cstring_makeLiteral("Possible out-of-bounds read.  ");
+    }
+
+  st  = cstring_concatFree(temp,st);
+  
   genExpr = exprNode_unparse (c->generatingExpr);
 
   if (context_getFlag (FLG_CONSTRAINTLOCATION) )
     {
-      cstring temp;
-      // llassert (c->generatingExpr);
-      temp = message ("\nOriginal Generating expression %q: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
-		      genExpr );
+      temp = message ("\nConstraint generated from expression: %s at %q\n",
+		      genExpr,
+		      fileloc_unparse( exprNode_getfileloc (c->generatingExpr) )
+		      );
       st = cstring_concatFree (st, temp);
-
-      if (constraint_hasMaxSet(c) )
-	{
-	  temp = message ("Has MaxSet\n");
-	  st = cstring_concatFree (st, temp);
-	}
     }
   return st;
 }
@@ -860,11 +873,11 @@ cstring  constraint_printDetailed (constraint c)
   llassert (c !=NULL);
   if (c->post)
     {
-      type = cstring_makeLiteral ("Ensures: ");
+      type = cstring_makeLiteral ("ensures: ");
     }
   else
     {
-      type = cstring_makeLiteral ("Requires: ");
+      type = cstring_makeLiteral ("requires: ");
     }
   st = message ("%q: %q %q %q",
 		type,

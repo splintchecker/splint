@@ -789,13 +789,13 @@ static cstring constraintExprUnaryOpKind_print (constraintExprUnaryOpKind op)
   switch (op)
     {
     case MAXSET:
-      return message("MAXSET");
+      return message("maxSet");
     case MINSET:
-      return message("MINSET");
+      return message("minSet");
     case MAXREAD:
-      return message("MAXREAD");
+      return message("maxRead");
     case MINREAD:
-      return message("MINREAD");
+      return message("minRead");
     default:
       llassert(FALSE);
       return message ("<(Unary OP OTHER>");
@@ -1484,7 +1484,7 @@ bool constraintExpr_hasMaxSet (constraintExpr expr) /*@*/
 
   t = constraintExpr_unparse(expr);
 
-  if (cstring_containsLit(t, "MAXSET") != NULL )
+  if (cstring_containsLit(t, "maxSet") != NULL )
     {
       cstring_free(t);
       return (TRUE);

@@ -27,13 +27,13 @@ GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y mtgrammar.y
 GRAMSRC    = cgrammar.c cscanner.c mtscanner.c mtreader.c mtgrammar.c
 
 OVERFLOWCHSRC = \
+    constraintGeneration.c \
     constraintTerm.c \
     constraintExprData.c \
     constraintExpr.c \
     constraint.c \
     constraintList.c \
     constraintResolve.c \
-    constraintGeneration.c \
     constraintOutput.c \
     forjunk.c 
     

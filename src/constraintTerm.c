@@ -132,7 +132,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return (t->value.sref);
 }
 
-/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@depenedent@*/  exprNode e)
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/  exprNode e)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_copy(exprNode_getfileloc(e));

@@ -51,7 +51,7 @@
 # define end_constraintList_elements_private }}}
 
 
-constraintList constraintList_makeNew ()
+/*@only@*/ constraintList constraintList_makeNew ()
 {
   constraintList s = (constraintList) dmalloc (sizeof (*s));
 
@@ -360,7 +360,7 @@ constraintList_free (/*@only@*/ constraintList s)
 }
 
 constraintList
-constraintList_copy (/*@oberserver@*/ /*@temp@*/ constraintList s)
+constraintList_copy (/*@observer@*/ /*@temp@*/ constraintList s)
 {
   constraintList ret = constraintList_makeNew ();
 
@@ -384,7 +384,7 @@ constraintList constraintList_preserveOrig (constraintList c)
   return c;
 }
 
-constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,/*@observer@*/ /*@depenent@*/ /*@observer@*/  exprNode fcn)
+constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,/*@observer@*/ /*@dependent@*/ /*@observer@*/  exprNode fcn)
 {
   DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_print (c) ) ));
 

@@ -49,7 +49,7 @@ static  constraintList checkCall (/*@dependent@*/ exprNode p_fcn, exprNodeList p
   */
 //}
 
-static bool exprNode_isUnhandled (/*@dependent@*/ /*@obsever@*/ exprNode e)
+static bool exprNode_isUnhandled (/*@dependent@*/ /*@observer@*/ exprNode e)
 {
   llassert( exprNode_isDefined(e) );
   switch (e->kind)
@@ -182,7 +182,7 @@ if (exprNode_handleError (e) != NULL)
 
 }
 
-static void exprNode_stmt ( /*@dependent@*/ exprNode e)
+static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
 {
   exprNode snode;
   fileloc loc;
@@ -560,10 +560,18 @@ static void doFor (/*@dependent@*/ exprNode e, /*@dependent@*/ exprNode forPred,
       
 }
 
-static void exprNode_doGenerateConstraintSwitch ( exprNode switchExpr,
-						  exprNode body, constraintList * currentRequires, constraintList *
-						  currentEnsures,  constraintList * savedRequires, constraintList *
+static /*@dependent@*/ exprNode exprNode_makeDependent(/*@returned@*/  exprNode e)
+{
+  /*@-temptrans@*/
+  return e;
+  /*@=temptrans@*/  
+}
+
+static void exprNode_doGenerateConstraintSwitch (/*@dependent@*/ exprNode switchExpr,
+						  /*@dependent@*/ exprNode body, /*@special@*/ constraintList * currentRequires, /*@special@*/  constraintList *
+						  currentEnsures,  /*@special@*/  constraintList * savedRequires, /*@special@*/ constraintList *
 						  savedEnsures)
+     /*@post:only *currentRequires,  *currentEnsures,  *savedRequires, *savedEnsures @*/ /*@defines *currentRequires,  *currentEnsures,  *savedRequires, *savedEnsures @*/
 {
   exprNode stmt, stmtList;
 
@@ -573,7 +581,14 @@ static void exprNode_doGenerateConstraintSwitch ( exprNode switchExpr,
 
   if (exprNode_isError(body) )
     {
+      *currentRequires = constraintList_makeNew();
+      *currentEnsures = constraintList_makeNew();
+
+      *savedRequires = constraintList_makeNew();
+      *savedEnsures = constraintList_makeNew();
+      /*@-onlytrans@*/
       return;
+      /*@=onlytrans@*/      
     }
 
   if (body->kind != XPR_STMTLIST )
@@ -585,12 +600,16 @@ stmtlist: %s",
       //      llassert(body->kind == XPR_STMT );
       stmt = body;
       stmtList = exprNode_undefined;
+      stmt = exprNode_makeDependent(stmt);
+      stmtList = exprNode_makeDependent(stmtList);
     }
-    else
-      {
-	stmt     = exprData_getPairB(body->edata);
-	stmtList = exprData_getPairA(body->edata);
-      }
+  else
+    {
+      stmt     = exprData_getPairB(body->edata);
+      stmtList = exprData_getPairA(body->edata);
+      stmt = exprNode_makeDependent(stmt);
+      stmtList = exprNode_makeDependent(stmtList);
+    }
 
   DPRINTF((message("exprNode_doGenerateConstraintSwitch: stmtlist: %s
 stmt: %s",
@@ -602,9 +621,14 @@ stmt: %s",
 				       savedRequires, savedEnsures );
 
   if (exprNode_isError(stmt) )
+    /*@-onlytrans@*/
     return;
+    /*@=onlytrans@*/
 
   exprNode_stmt(stmt);
+
+  switchExpr = exprNode_makeDependent (switchExpr);
+    
   //, FALSE, FALSE, exprNode_getfileloc(stmt) );
 
   if (! exprNode_isCaseMarker(stmt) )
@@ -618,9 +642,9 @@ stmt: %s",
       temp = constraintList_reflectChanges (stmt->requiresConstraints,
 					    *currentEnsures);
 
-            *currentRequires = constraintList_mergeRequiresFreeFirst
-	      (*currentRequires,
-	       temp);
+            *currentRequires = constraintList_mergeRequiresFreeFirst(
+								     *currentRequires,
+								     temp);
 
 	    constraintList_free(temp);
 
@@ -632,7 +656,10 @@ stmt: %s",
 				    exprNode_unparse(switchExpr), exprNode_unparse(body),
 				    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
 				    ) ));
+		  /*@-onlytrans@*/
 		  return;
+		  /*@=onlytrans@*/
+
     }
 
   if (exprNode_isCaseMarker(stmt) && exprNode_mustEscape(stmtList) )
@@ -648,19 +675,21 @@ stmt: %s",
       if (constraintList_isUndefined(*savedEnsures) &&
 	  constraintList_isUndefined(*savedRequires) )
 	{
+	  llassert(constraintList_isUndefined(*savedEnsures) );
+	  llassert(constraintList_isUndefined(*savedRequires) );
 	  *savedEnsures  = constraintList_copy(*currentEnsures);
 	  *savedRequires = constraintList_copy(*currentRequires);
 	}
-             else
-	       {
-		 DPRINTF (( message("Doing logical or") ));
-		 temp = constraintList_logicalOr (*savedEnsures, *currentEnsures);
-		 constraintList_free (*savedEnsures);
-		 *savedEnsures = temp;
-
-		 *savedRequires = constraintList_mergeRequiresFreeFirst (*savedRequires, *currentRequires);
-	       }
-
+      else
+	{
+	  DPRINTF (( message("Doing logical or") ));
+	  temp = constraintList_logicalOr (*savedEnsures, *currentEnsures);
+	  constraintList_free (*savedEnsures);
+	  *savedEnsures = temp;
+	  
+	  *savedRequires = constraintList_mergeRequiresFreeFirst (*savedRequires, *currentRequires);
+	}
+      
       con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle
 					(stmt->edata), exprNode_getfileloc(stmt) );
 
@@ -703,21 +732,30 @@ stmt: %s",
       if (exprNode_isError(stmtList) )
 	{
 	  constraintList_free(*currentEnsures);
+
 	  *currentEnsures = constraintList_copy(ensuresTemp);
+	  constraintList_free(ensuresTemp);
+
 	}
-            else
-	      {
+      else
+	{
+	  
+	  temp = constraintList_logicalOr (*currentEnsures, ensuresTemp);
+	  
+	  constraintList_free(*currentEnsures);
+	  constraintList_free(ensuresTemp);
 
-		temp = constraintList_logicalOr (*currentEnsures, ensuresTemp);
-
-		constraintList_free(*currentEnsures);
-		constraintList_free(ensuresTemp);
-
-		*currentEnsures = temp;
-	      }
+	  *currentEnsures = temp;
+	}
       constraintList_free(*currentRequires);
-
+      
       *currentRequires = constraintList_makeNew();
+    }
+  else
+    {
+      // we handle the case of ! exprNode_isCaseMarker above
+      // the else if clause should always be true.
+      BADEXIT;
     }
 
   DPRINTF(( message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
@@ -725,7 +763,9 @@ stmt: %s",
 		    exprNode_unparse(switchExpr), exprNode_unparse(body),
 		    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
 		    ) ));
+  /*@-onlytrans@*/ 
   return;
+  /*@=onlytrans@*/ 
 
 }
 
@@ -747,12 +787,13 @@ static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
   if ( body->kind == XPR_BLOCK)
     body = exprData_getSingle(body->edata);
 
+  /*
   constraintsRequires = constraintList_undefined;
   constraintsEnsures = constraintList_undefined;
 
   lastRequires = constraintList_makeNew();
   lastEnsures = constraintList_makeNew();
-
+  */
 
   exprNode_doGenerateConstraintSwitch (switchExpr, body, &lastRequires, &lastEnsures, &constraintsRequires, &constraintsEnsures);
 
@@ -769,11 +810,11 @@ static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
       constraintList_free (constraintsRequires);
       constraintList_free (constraintsEnsures);
     }
-    else
-      {
-	switchStmt->ensuresConstraints =    constraintList_copy(lastEnsures);
-	switchStmt->requiresConstraints =   constraintList_copy(lastRequires);
-      }
+  else
+    {
+      switchStmt->ensuresConstraints =    constraintList_copy(lastEnsures);
+      switchStmt->requiresConstraints =   constraintList_copy(lastRequires);
+    }
 
   constraintList_free (lastRequires);
   constraintList_free (lastEnsures);
