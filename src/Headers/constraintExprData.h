@@ -1,7 +1,5 @@
 #ifndef __constraintExprData_h__
-
 #define __constraintExprData_h__
-
 
 typedef enum
 {
@@ -18,7 +16,6 @@ typedef enum
  }
 constraintExprUnaryOpKind;
 
-
 typedef struct constraintExprBinaryOp_
 {
   constraintExpr expr1;
@@ -26,13 +23,11 @@ typedef struct constraintExprBinaryOp_
   constraintExpr expr2;
 } constraintExprBinaryOp;
 
-
 typedef struct constraintExprUnaryOp_
 {
   constraintExpr expr;
   constraintExprUnaryOpKind unaryOp;
 } constraintExprUnaryOp;
-
 
 typedef union constraintExprData
 {
@@ -50,13 +45,17 @@ extern void constraintExprData_freeTerm (/*@only@*/ constraintExprData) ;
 
 extern constraintExprData constraintExprData_termSetTerm ( /*@returned@*/ /*@partial@*/ constraintExprData p_data, /*@only@*/ constraintTerm p_term);
 
-extern /*@observer@*/ constraintTerm constraintExprData_termGetTerm (/*@observer@*/ constraintExprData p_data) /*@*/;
+extern /*@exposed@*/ constraintTerm 
+constraintExprData_termGetTerm (/*@observer@*/ constraintExprData p_data) /*@*/;
 
-extern constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*/ /*@reldef@*/ constraintExprData p_data) /*@*/;
+extern constraintExprUnaryOpKind 
+constraintExprData_unaryExprGetOp (/*@observer@*/ /*@reldef@*/ constraintExprData p_data) /*@*/;
 
-extern /*@observer@*/ constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ /*@reldef@*/constraintExprData p_data) /*@*/;
+extern /*@observer@*/ constraintExpr 
+constraintExprData_unaryExprGetExpr (/*@observer@*/ /*@reldef@*/constraintExprData p_data) /*@*/;
 
-extern constraintExprData  constraintExprData_unaryExprSetOp (/*@partial@*/ /*@returned@*/ constraintExprData p_data, constraintExprUnaryOpKind p_op);
+extern constraintExprData  
+constraintExprData_unaryExprSetOp (/*@partial@*/ /*@returned@*/ constraintExprData p_data, constraintExprUnaryOpKind p_op);
 
 extern constraintExprData  constraintExprData_unaryExprSetExpr (/*@partial@*/ /*@returned@*/ constraintExprData p_data,  /*@only@*/ constraintExpr p_expr);
 

@@ -460,7 +460,8 @@ ctype_baseArrayPtr (ctype c)
 
       if (ctype_isBroken (clp))
 	{
-	  llbuglit ("ctype_baseArrayPtr: bogus ctype");
+	  llcontbug (message ("ctype_baseArrayPtr: bogus ctype getting base of: %s", ctype_unparse (c)));
+	  return ctype_unknown;
 	}
 
       return clp;

@@ -149,9 +149,7 @@ constraintExprData_termSetTerm (/*@returned@*/ constraintExprData data,
   return data;
 }
 
-
-
-/*@observer@*/ constraintTerm 
+/*@exposed@*/ constraintTerm 
 constraintExprData_termGetTerm (/*@observer@*/ constraintExprData data)
 {
   llassert (constraintExprData_isDefined (data));

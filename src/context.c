@@ -4913,111 +4913,46 @@ valueTable context_createGlobalMarkerValueTable (stateInfo info)
     }
 }
 
-
-/*drl 12/30/01 these are some ugly functions that were added to facilitate struct annotations */
-
-
-/*drl added */
-static ctype lastStruct;
-
-ctype context_setLastStruct (/*@returned@*/ ctype s) /*@globals lastStruct@*/
+constraintList context_getImplicitFcnConstraints (uentry ue)
 {
-  lastStruct = s;
-  return s;
-}
+  constraintList ret = constraintList_makeNew ();
+  uentryList params = uentry_getParams (ue);
 
-ctype context_getLastStruct (/*@returned@*/ /*ctype s*/) /*@globals lastStruct@*/
-{
-  return lastStruct;
-}
-
-/*
-** Why is this stuff in context.c?
-*/
-
-/*@unused@*/ static int sInfoNum = 0;
-
-
-struct getUe {
-  /*@unused@*/  uentry ue;
-  /*@unused@*/ sRef s;
-};
-
-struct sInfo {
-  /*@unused@*/ ctype ct;
-  /*@unused@*/ constraintList inv;
- /*@unused@*/ int ngetUe;
- /*@unused@*/ struct getUe * t ;
-};
-
-/* unused: static struct sInfo globalStructInfo; */
-
-/*drl 1/6/2001: I didn't think these functions were solid enough to include in the
-  stable  release of splint.  I coomented them out so that they won't break anything
-  but didn't delete them because they will be fixed and included later
-
-
-*/
-
-/*@-paramuse@*/
-
-void context_setGlobalStructInfo (ctype ct, constraintList list)
-{
-# if 0
-  /* int i;
-  uentryList f;
-
-  f =  ctype_getFields (ct);
-  
-  if (constraintList_isDefined(list) )
+  uentryList_elements (params, el)
     {
-      globalStructInfo.ct = ct;
-      globalStructInfo.inv = list;
-
-      globalStructInfo.ngetUe = 0;
+      DPRINTF (("setImplicitfcnConstraints doing: %s", uentry_unparse(el)));
       
-      /* abstraction violation fix it * /
-      globalStructInfo.t   = dmalloc(f->nelements * sizeof(struct getUe) );
-
-      globalStructInfo.ngetUe = f->nelements;
-
-      i = 0;
-      
-      uentryList_elements(f, ue)
+      if (uentry_isElipsisMarker (el))
 	{
-	  globalStructInfo.t[i].ue = ue;
-	  globalStructInfo.t[i].s = uentry_getSref(ue);
-	  TPRINTF(( message(" setGlobalStructInfo:: adding ue=%s and sRef=%s",
-			    uentry_unparse(ue), sRef_unparse( uentry_getSref(ue) )
-			    )
-		    ));
-	  i++;
+	  ;
 	}
-      end_uentryList_elements;
-    }
-  */
-# endif
+      else
+	{
+	  sRef s = uentry_getSref (el);
+	  
+	  DPRINTF (("Trying: %s", sRef_unparse (s)));
+
+	  if (ctype_isPointer (sRef_getType (s)))
+	    {
+	      constraint c = constraint_makeSRefWriteSafeInt (s, 0);
+	      ret = constraintList_add (ret, c);
+	      
+	      /*drl 10/23/2002 added support for out*/
+	      
+	      if (!uentry_isOut(el))
+		{
+		  c = constraint_makeSRefReadSafeInt (s, 0);
+		  ret = constraintList_add (ret , c);
+		}
+	    }
+	  else
+	    {
+	      DPRINTF (("%s is NOT a pointer", sRef_unparseFull (s)));
+	    }
+	}
+    } end_uentryList_elements;
+
+  DPRINTF (("Returns ==> %s", constraintList_unparse (ret)));
+  return ret;
 }
-
-# if 0
-/*
-
-bool hasInvariants (ctype ct) /*@* /
-{
-  if ( ctype_sameName(globalStructInfo.ct, ct) )
-
-    return TRUE;
-
-  else
-    
-    return FALSE;
-  
-}
-*/
-# endif
-
-/*@=paramuse@*/
-
-
-
 

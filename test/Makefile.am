@@ -46,7 +46,7 @@ UNITTESTS = \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
-  macros macrosef merge mergenull modifies modtest moduncon \
+  macros macrosef malloc merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned russian sharing shifts sizesigns slovaknames \
@@ -300,12 +300,16 @@ controldepth:
 	-$(SPLINTR) +hints -controlnestdepth 2 controldepth.c -expect 2
 	-$(SPLINTR) +hints -controlnestdepth 1 controldepth.c -expect 2
 
+###
+### 1 extra warning reported for +strict now because of out-of-bounds read
+###
+
 .PHONY: compdestroy
 compdestroy:
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader -expect 1
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
-	-$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+	-$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 4
 
 .PHONY: compoundliterals
 compoundliterals:
@@ -368,7 +372,7 @@ deadparam:
 .PHONY: decl
 decl:
 	-$(SPLINTR) decl.c -expect 2
-	-$(SPLINTRN) decl.c +strict -exportlocal -expect 5
+	-$(SPLINTRN) decl.c +strict -exportlocal -expect 6
 	-$(SPLINTR) decl2 -expect 4
 
 .PHONY: divzero
@@ -555,6 +559,10 @@ macrosef:
 	-$(SPLINTR) macrosef.c +allmacros -expect 3
 	-$(SPLINTR) macrosef.c +allmacros +sefuncon -expect 4
 
+.PHONY: malloc
+malloc:
+	-$(SPLINTRN) malloc.c +bounds -exportlocal -expect 7
+
 .PHONY: merge
 merge:
 	-$(SPLINTRN) merge.c +checks -exportlocal -exportheadervar -exportheader -expect 3
@@ -576,7 +584,7 @@ modtest:
 .PHONY: moduncon
 moduncon:
 	-$(SPLINTR) moduncon.c +moduncon -memchecks -expect 4
-	-$(SPLINTRN) moduncon.c +strict -exportlocal -expect 22
+	-$(SPLINTRN) moduncon.c +strict +impboundsconstraints -exportlocal -expect 22 
 
 .PHONY: mongoincludes
 mongoincludes:
@@ -675,7 +683,7 @@ parentype:
 preds:
 	-$(SPLINTR) +hints preds.c -expect 6
 	-$(SPLINTRN) +hints preds.c -weak -expect 1
-	-$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 10
+	-$(SPLINTRN) +hints preds.c -strict +impboundsconstraints -exportlocal -exportheader -expect 10
 
 .PHONY: prefixes
 prefixes:
@@ -1136,6 +1144,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./longconstants.c \
               ./macros.c \
               ./macrosef.c \
+	      ./malloc.c \
               ./merge.c \
               ./modclient.c \
               ./modifies.c \

@@ -110,32 +110,35 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
 
 constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
 {
-  constraint ret;
-
-  llassert (constraint_isDefined (c));
-
-  ret = constraint_makeNew ();
-  ret->lexpr = constraintExpr_copy (c->lexpr);
-  ret->ar = c->ar;
-  ret->expr =  constraintExpr_copy (c->expr);
-  ret->post = c->post;
-  /*@-assignexpose@*/
-  ret->generatingExpr = c->generatingExpr;
-  /*@=assignexpose@*/
-  
-  if (c->orig != NULL)
-    ret->orig = constraint_copy (c->orig);
+  if (!constraint_isDefined (c))
+    {
+      return constraint_undefined;
+    }
   else
-    ret->orig = NULL;
-
-  if (c->or != NULL)
-    ret->or = constraint_copy (c->or);
-  else
-    ret->or = NULL;
-
-  ret->fcnPre = c->fcnPre;
-  
-  return ret;
+    {
+      constraint ret = constraint_makeNew ();
+      ret->lexpr = constraintExpr_copy (c->lexpr);
+      ret->ar = c->ar;
+      ret->expr =  constraintExpr_copy (c->expr);
+      ret->post = c->post;
+      /*@-assignexpose@*/
+      ret->generatingExpr = c->generatingExpr;
+      /*@=assignexpose@*/
+      
+      if (c->orig != NULL)
+	ret->orig = constraint_copy (c->orig);
+      else
+	ret->orig = NULL;
+      
+      if (c->or != NULL)
+	ret->or = constraint_copy (c->or);
+      else
+	ret->or = NULL;
+      
+      ret->fcnPre = c->fcnPre;
+      
+      return ret;
+    }
 }
 
 /*like copy except it doesn't allocate memory for the constraint*/
@@ -203,8 +206,10 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
 
 constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, /*@exposed@*/ exprNode e)
 {
-  
-  llassert (constraint_isDefined (c) );
+  if (!constraint_isDefined (c)) 
+    {
+      return c;
+    }
   
   if (c->generatingExpr == NULL)
     {
@@ -391,14 +396,20 @@ static constraint
 constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintExpr c1, /*@only@*/ constraintExpr c2, 
 					fileloc sequencePoint, arithType ar)
 {
-  constraint ret = constraint_makeNew ();
-  llassert (constraintExpr_isDefined (c1) && constraintExpr_isDefined (c2));
-  ret->lexpr = c1;
-  ret->ar = ar;
-  ret->post = TRUE;
-  ret->expr = c2;
-  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
-  return ret;
+  if (constraintExpr_isDefined (c1) && constraintExpr_isDefined (c2))
+    {
+      constraint ret = constraint_makeNew ();
+      ret->lexpr = c1;
+      ret->ar = ar;
+      ret->post = TRUE;
+      ret->expr = c2;
+      ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
+      return ret;
+    } 
+  else
+    {
+      return constraint_undefined;
+    }
 }
 
 static constraint 
@@ -423,16 +434,7 @@ constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@dependent@*/ exprNode 
 
 constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
-  if (FALSE) /* (!ctype_almostEqual (exprNode_getType (e1), exprNode_getType (e2))) */
-    {
-      /* If the types are not identical, need to be careful the element sizes may be different. */
-      //! return (constraint_makeEnsuresOp (e1, e2, sequencePoint, CASTEQ));
-      BADBRANCH;
-    }
-  else
-    {
-      return (constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
-    }
+  return (constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
 }
 
 /* make constraint ensures e1 < e2 */
@@ -555,25 +557,22 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
 
 void constraint_free (/*@only@*/ constraint c)
 {
-  llassert (constraint_isDefined (c));
+  if (constraint_isDefined (c))
+    {
+      constraint_free (c->orig);
+      c->orig = NULL;
 
+      constraint_free (c->or);
+      c->or = NULL;
 
-  if (constraint_isDefined (c->orig))
-    constraint_free (c->orig);
-  if ( constraint_isDefined (c->or))
-    constraint_free (c->or);
+      constraintExpr_free (c->lexpr);
+      c->lexpr = NULL;
 
-  
-  constraintExpr_free (c->lexpr);
-  constraintExpr_free (c->expr);
-
-  c->orig = NULL;
-  c->or = NULL;
-  c->lexpr = NULL;
-  c->expr  = NULL;
-
-  free (c);
-  
+      constraintExpr_free (c->expr);
+      c->expr  = NULL;
+      
+      free (c);
+    }
 }
 
 cstring arithType_print (arithType ar) /*@*/
@@ -595,9 +594,6 @@ cstring arithType_print (arithType ar) /*@*/
       break;
     case EQ:
       st = cstring_makeLiteral ("==");
-      break;
-    case CASTEQ:
-      st = cstring_makeLiteral ("(!)==");
       break;
     case NONNEGATIVE:
       st = cstring_makeLiteral ("NONNEGATIVE");
@@ -815,7 +811,7 @@ cstring  constraint_unparseDetailed (constraint c)
   cstring genExpr;
   bool isLikely;
    
-  llassert (constraint_isDefined (c) );
+  llassert (constraint_isDefined (c));
    
   if (!c->post)
     {
@@ -826,17 +822,17 @@ cstring  constraint_unparseDetailed (constraint c)
       st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_unparseDeep (c));
     }
 
-  isLikely = constraint_isConstantOnly(c);
+  isLikely = constraint_isConstantOnly (c);
 
   if (isLikely)
     {
       if (constraint_hasMaxSet (c))
 	{
-	  temp = cstring_makeLiteral ("Likely out-of-bounds store:\n");
+	  temp = cstring_makeLiteral ("Likely out-of-bounds store: ");
 	}
       else
 	{
-	  temp = cstring_makeLiteral ("Likely out-of-bounds read:\n");
+	  temp = cstring_makeLiteral ("Likely out-of-bounds read: ");
 	}
     }
   else
@@ -844,11 +840,11 @@ cstring  constraint_unparseDetailed (constraint c)
       
       if (constraint_hasMaxSet (c))
 	{
-	  temp = cstring_makeLiteral ("Possible out-of-bounds store:\n");
+	  temp = cstring_makeLiteral ("Possible out-of-bounds store: ");
 	}
       else
 	{
-	  temp = cstring_makeLiteral ("Possible out-of-bounds read:\n");
+	  temp = cstring_makeLiteral ("Possible out-of-bounds read: ");
 	}
     }
   
@@ -996,41 +992,43 @@ constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exp
 
 constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/
 {
-  DPRINTF (("Doing constraint_preserverOrig for %q", constraint_printDetailed (c)));
-  llassert (constraint_isDefined (c));
-
-  if (c->orig == constraint_undefined)
+  if (constraint_isDefined (c))
     {
-      c->orig = constraint_copy (c);
-    }
-  else if (c->orig->fcnPre)
-    {
-      constraint temp = c->orig;
+      DPRINTF (("Doing constraint_preserverOrig for %q", constraint_printDetailed (c)));
       
-      /* avoid infinite loop */
-      c->orig = NULL;
-      c->orig = constraint_copy (c);
-      /*drl 03/2/2003 if c != NULL then the copy of c will != null*/
-      llassert (constraint_isDefined (c->orig) );
-
-      if (c->orig->orig == NULL)
+      if (c->orig == constraint_undefined)
 	{
-	  c->orig->orig = temp;
-	  temp = NULL;
+	  c->orig = constraint_copy (c);
+	}
+      else if (c->orig->fcnPre)
+	{
+	  constraint temp = c->orig;
+	  
+	  /* avoid infinite loop */
+	  c->orig = NULL;
+	  c->orig = constraint_copy (c);
+	  /*drl 03/2/2003 if c != NULL then the copy of c will != null*/
+	  llassert (constraint_isDefined (c->orig) );
+	  
+	  if (c->orig->orig == NULL)
+	    {
+	      c->orig->orig = temp;
+	      temp = NULL;
+	    }
+	  else
+	    {
+	      llcontbug ((message ("Expected c->orig->orig to be null")));
+	      constraint_free (c->orig->orig);
+	      c->orig->orig = temp;
+	      temp = NULL;
+	    }
 	}
       else
 	{
-	  llcontbug ((message ("Expected c->orig->orig to be null")));
-	  constraint_free (c->orig->orig);
-	  c->orig->orig = temp;
-	  temp = NULL;
+	  DPRINTF (("Not changing constraint"));
 	}
     }
-  else
-    {
-      DPRINTF (("Not changing constraint"));
-    }
-  
+
   DPRINTF ((message ("After Doing constraint_preserverOrig for %q ", constraint_unparseDetailed (c))));
   return c;
 }

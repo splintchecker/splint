@@ -942,10 +942,11 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
   constraintList c, t, post;
   constraintList c2, fix;
-  constraintList implicitFcnConstraints;
   context_enterInnerContext ();
 
   llassert (exprNode_isDefined (body));
+
+  DPRINTF (("Checking body: %s", exprNode_unparse (body)));
 
   /*
     if we're not going to be printing any errors for buffer overflows
@@ -955,21 +956,18 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
     in order to find potential problems like assert failures and seg faults...
   */
 
-  if (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT))
-    {
-      /* check if errors will printed */
-      if (!(context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
-	    context_getFlag(FLG_BOUNDSWRITE) ||
-	    context_getFlag(FLG_BOUNDSREAD)  ||
-	    context_getFlag(FLG_LIKELYBOUNDSWRITE) ||
-	    context_getFlag(FLG_LIKELYBOUNDSREAD)  ||
-	    context_getFlag(FLG_CHECKPOST) ))
-	{
-	  exprNode_free (body);
-	  context_exitInnerPlain();	  
-	  return;
-	}
-    }
+  if (!(context_getFlag (FLG_DEBUGFUNCTIONCONSTRAINT) 
+	|| context_getFlag (FLG_BOUNDSWRITE) 
+	|| context_getFlag (FLG_BOUNDSREAD)  
+	|| context_getFlag (FLG_LIKELYBOUNDSWRITE) 
+	|| context_getFlag (FLG_LIKELYBOUNDSREAD)  
+	|| context_getFlag (FLG_CHECKPOST)
+	|| context_getFlag (FLG_ALLOCMISMATCH)))
+  {
+    exprNode_free (body);
+    context_exitInnerPlain();	  
+    return;
+  }
   
   exprNode_generateConstraints (body); /* evans 2002-03-02: this should not be declared to take a
 					  dependent... fix it! */
@@ -978,8 +976,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
   
   if (constraintList_isDefined (c))
     {
-      DPRINTF ((message ("Function preconditions are %s \n\n\n\n\n", 
-			 constraintList_unparseDetailed (c) ) ) );
+      DPRINTF (("Function preconditions are %s", constraintList_unparseDetailed (c)));
       
       body->requiresConstraints = 
 	constraintList_reflectChangesFreePre (body->requiresConstraints, c);
@@ -1023,14 +1020,21 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
       DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue))));
     }
   
-  implicitFcnConstraints = getImplicitFcnConstraints();
-  
-  if (constraintList_isDefined(implicitFcnConstraints) )
+  if (context_getFlag (FLG_IMPBOUNDSCONSTRAINTS))
     {
-      if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
+      constraintList implicitFcnConstraints = context_getImplicitFcnConstraints (ue);
+      
+      if (constraintList_isDefined (implicitFcnConstraints))
 	{
+	  DPRINTF (("Implicit constraints: %s", constraintList_unparse (implicitFcnConstraints)));
+	  
 	  body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, 
-									    implicitFcnConstraints );
+									    implicitFcnConstraints);
+	  constraintList_free (implicitFcnConstraints);
+	}
+      else
+	{
+	  DPRINTF (("No implicit constraints"));
 	}
     }
   
@@ -1093,7 +1097,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 	printf ("The ensures constraints are:\n%s", constraintList_unparseDetailed(body->ensuresConstraints) );
    */
    
-   if (constraintList_isDefined(c) )
+   if (constraintList_isDefined (c))
      constraintList_free(c);
 
    context_exitInnerPlain();

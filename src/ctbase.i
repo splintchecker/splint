@@ -2664,7 +2664,7 @@ int ctbase_getSize (ctbase ct)
 	    return ctype_getSize (ct->contents.base);
 	  }
       }
-    case CT_FIXEDARRAY: //!
+    case CT_FIXEDARRAY: 
     case CT_ARRAY:
     case CT_FCN:
     case CT_STRUCT:

@@ -635,39 +635,6 @@ void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
   end_constraintList_elements; ;
 }
 
-//! don't use this!
-void constraintList_castConstraints (constraintList c, ctype tfrom, ctype tto)
-{
-  if (TRUE) /* flag to allow casting */ 
-    {
-      int fsize = ctype_getSize (tfrom);
-      int tsize = ctype_getSize (tto);
-
-      DPRINTF (("Sizes: [%s] [%s] %d / %d", ctype_unparse (tfrom),
-		ctype_unparse (tto), fsize, tsize));
-
-      if (fsize == tsize) 
-	{
-	  return; /* Sizes match, no change to constraints */
-	}
-      else 
-	{
-	  float scale = fsize / tsize;
-	  
-	  DPRINTF (("Scaling constraints by: %f", scale));
-
-	  constraintList_elements (c, el)
-	    {
-	      DPRINTF (("Scale: %s", constraint_unparse (el)));
-	      // constraint_scaleSize (el, scale);
-	      DPRINTF (("   ==> %s", constraint_unparse (el)));
-	    }
-	  end_constraintList_elements; 
-	}
-    }
-}
-
-
 constraintList constraintList_sort (/*@returned@*/ constraintList ret)
 {
   if (constraintList_isUndefined(ret) )

@@ -202,8 +202,7 @@ ignore.c:10: Return value (type bool) ignored: fb()
 
 Finished checking --- 1 code warning, as expected
 
-setChar.c:5: Likely out-of-bounds store:
-    buf[10]
+setChar.c:5: Likely out-of-bounds store: buf[10]
     Unable to resolve constraint:
     requires 9 >= 10
      needed to satisfy precondition:
@@ -211,8 +210,7 @@ setChar.c:5: Likely out-of-bounds store:
 
 Finished checking --- 1 code warning, as expected
 
-multiError.c:4: Possible out-of-bounds store:
-    buf[2]
+multiError.c:4: Possible out-of-bounds store: buf[2]
     Unable to resolve constraint:
     requires maxSet(buf @ multiError.c:4) >= 2
      needed to satisfy precondition:

@@ -53,7 +53,7 @@ static constraintList exprNode_traverseFalseEnsuresConstraints (/*@temp@*/ exprN
 
 static void checkArgumentList (/*@out@*/ exprNode p_temp, exprNodeList p_arglist, fileloc p_sequencePoint) /*@modifies p_temp @*/;
 
-static  constraintList checkCall (/*@temp@*/ exprNode p_fcn, exprNodeList p_arglist);
+static constraintList checkCall (/*@temp@*/ exprNode p_fcn, exprNodeList p_arglist);
 
 static bool exprNode_isUnhandled (/*@temp@*/ /*@observer@*/ exprNode e)
 {
@@ -155,7 +155,6 @@ static void exprNode_stmt (/*@temp@*/ exprNode e)
 {
   exprNode snode;
   fileloc loc;
-  //! cstring s;
   
   DPRINTF (("Generating constraint for: %s", exprNode_unparse (e)));
 
@@ -1337,7 +1336,7 @@ void exprNode_exprTraverse (/*@dependent@*/ exprNode e,
       
       fcn->requiresConstraints = 
 	constraintList_addListFree (fcn->requiresConstraints,
-				    checkCall (fcn, exprData_getArgs (data) ));      
+				    checkCall (fcn, exprData_getArgs (data)));      
       
       fcn->ensuresConstraints = 
 	constraintList_addListFree (fcn->ensuresConstraints,
@@ -2260,14 +2259,14 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
 	preconditions = constraintList_makeNew();
     }
   
-  if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
+  if (context_getFlag (FLG_IMPBOUNDSCONSTRAINTS))
     {
 
       /*
       uentryList_elements (arglist, el)
 	{
 	  sRef s;
-	  TPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
+	  TPRINTF((message("setImplicitfcnConstraints doing: %s", uentry_unparse(el) ) ));
 	  
 	  s = uentry_getSref(el);
 	  if (sRef_isReference (s) )

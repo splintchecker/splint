@@ -3582,14 +3582,14 @@ case 26:
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-5].ntyp, ct);
 
      /*drl 7/25/01 added*/
-     setImplictfcnConstraints();
+     setImplicitfcnConstraints();
 
      DPRINTF((message("namedDeclBase PushType TLPAREN TRPAREN...:\n adding implict constraints to functionClause List: %s",
 		      functionClauseList_unparse(yyvsp[0].funcclauselist)
 		      )
 	      ));
      
-     fcl = functionClauseList_setImplictConstraints(yyvsp[0].funcclauselist);
+     fcl = functionClauseList_setImplicitConstraints(yyvsp[0].funcclauselist);
 
      idDecl_addClauses (yyval.ntyp, fcl);
 
@@ -3609,7 +3609,7 @@ case 27:
 case 28:
 {
      functionClauseList fcl;
-     setImplictfcnConstraints ();
+     setImplicitfcnConstraints ();
      clearCurrentParams ();
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-6].ntyp, ctype_makeFunction (idDecl_getCtype (yyvsp[-6].ntyp), yyvsp[-3].entrylist));
 
@@ -3618,7 +3618,7 @@ case 28:
 		      )
 	      )) ;
      
-     fcl = functionClauseList_setImplictConstraints(yyvsp[0].funcclauselist);
+     fcl = functionClauseList_setImplicitConstraints(yyvsp[0].funcclauselist);
 
      idDecl_addClauses (yyval.ntyp, fcl);
 
@@ -4775,7 +4775,7 @@ case 405:
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 406:
-{ ctype ct; ct = declareStruct (yyvsp[-9].cname, yyvsp[-4].flist); context_setGlobalStructInfo(ct, yyvsp[0].conL); yyval.ctyp = ct; ;
+{ ctype ct; ct = declareStruct (yyvsp[-9].cname, yyvsp[-4].flist); /* context_setGlobalStructInfo(ct, $12); */ yyval.ctyp = ct; ;
     break;}
 case 407:
 { sRef_setGlobalScopeSafe (); ;

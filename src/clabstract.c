@@ -505,7 +505,7 @@ The current semantics are generated constraints of the form MaxSet(p) >= 0 and M
 unless the @out@ annotation has been applied to a parameter, then we only want to generate maxSet(p) > = 0
 */
 
-void setImplictfcnConstraints (void)
+void setImplicitfcnConstraints (void)
 {
   uentryList params;
   sRef s;
@@ -521,7 +521,7 @@ void setImplictfcnConstraints (void)
   
   uentryList_elements (params, el)
     {
-      DPRINTF (("setImplictfcnConstraints doing: %s", uentry_unparse(el)));
+      DPRINTF (("setImplicitfcnConstraints doing: %s", uentry_unparse(el)));
       
       if (uentry_isVariable (el))
 	{

@@ -49,7 +49,7 @@ extern /*@unused@*/ /*@only@*/ cstring functionClauseList_unparse (functionClaus
 extern void functionClauseList_free (/*@only@*/ functionClauseList p_s) ;
 
 functionClauseList 
-functionClauseList_setImplictConstraints (/*@returned@*/ functionClauseList p_s);
+functionClauseList_setImplicitConstraints (/*@returned@*/ functionClauseList p_s);
      
 /*@constant int functionClauseListBASESIZE;@*/
 # define functionClauseListBASESIZE MIDBASESIZE

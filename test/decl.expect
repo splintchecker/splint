@@ -9,10 +9,16 @@ decl.c:3:5: Function main declared without parameter list
 decl.c: (in function main)
 decl.c:7:3: Call to non-function (type [function (int) returns int] **): x
 decl.c:8:2: Path with no return in function declared to return int
+decl.c: (in function foo1)
+decl.c:13:3: Likely out-of-bounds store: buf[10]
+    Unable to resolve constraint:
+    requires 9 >= 10
+     needed to satisfy precondition:
+    requires maxSet(buf @ decl.c:13:3) >= 10
 decl.c:1:5: Function test declared but not defined
 decl.c:1:5: Function test exported but not declared in header file
 
-Finished checking --- 5 code warnings, as expected
+Finished checking --- 6 code warnings, as expected
 
 decl2.c:3:6: Variable glob2 defined with inconsistent type (arrays and pointers
                 are not identical in variable declarations): int *

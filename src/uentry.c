@@ -9489,8 +9489,7 @@ uentry_mergeEntries (uentry spec, /*@only@*/ uentry def)
       llassert (uentry_isFunction (spec));
     }
   
-  DPRINTF (("Merge entries: %s / %s",
-	    uentry_unparseFull (spec),
+  DPRINTF (("Merge entries: %s / %s", uentry_unparseFull (spec),
 	    uentry_unparseFull (def)));
 
   uentry_mergeConstraints (spec, def);

@@ -1981,7 +1981,7 @@ static flaglist flags =
   {
     FK_BOUNDS, FK_MEMORY, plainFlag,
     "impboundsconstraints",
-    FLG_IMPLICTCONSTRAINT,
+    FLG_IMPBOUNDSCONSTRAINTS,
     "generate implicit constraints for functions",
     NULL,
     0, 0

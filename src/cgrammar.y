@@ -409,14 +409,14 @@ namedDeclBase
      $$ = idDecl_replaceCtype ($1, ct);
 
      /*drl 7/25/01 added*/
-     setImplictfcnConstraints();
+     setImplicitfcnConstraints();
 
      DPRINTF((message("namedDeclBase PushType TLPAREN TRPAREN...:\n adding implict constraints to functionClause List: %s",
 		      functionClauseList_unparse($6)
 		      )
 	      ));
      
-     fcl = functionClauseList_setImplictConstraints($6);
+     fcl = functionClauseList_setImplicitConstraints($6);
 
      idDecl_addClauses ($$, fcl);
 
@@ -434,7 +434,7 @@ namedDeclBase
    functionClauses
    {
      functionClauseList fcl;
-     setImplictfcnConstraints ();
+     setImplicitfcnConstraints ();
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
 
@@ -443,7 +443,7 @@ namedDeclBase
 		      )
 	      )) ;
      
-     fcl = functionClauseList_setImplictConstraints($7);
+     fcl = functionClauseList_setImplicitConstraints($7);
 
      idDecl_addClauses ($$, fcl);
 
@@ -1472,7 +1472,7 @@ suSpc
    structDeclList  DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    optStructInvariant 
-   { ctype ct; ct = declareStruct ($3, $8); context_setGlobalStructInfo(ct, $12); $$ = ct; } 
+   { ctype ct; ct = declareStruct ($3, $8); /* context_setGlobalStructInfo(ct, $12); */ $$ = ct; } 
  | NotType CUNION  newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); } 

@@ -101,9 +101,9 @@ extern void declareStaticFunction (/*@only@*/ idDecl p_tid)
    */
    
 extern sRef checkbufferConstraintClausesId (uentry p_ue);
-extern void setImplictfcnConstraints (void);
+extern void setImplicitfcnConstraints (void);
 
-/*@observer@*/ constraintList  getImplicitFcnConstraints (void);
+/*@observer@*/ constraintList getImplicitFcnConstraints (void);
 
 /* end drl*/
 

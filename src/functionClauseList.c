@@ -173,16 +173,15 @@ functionClauseList_free (functionClauseList s)
 }
 
 functionClauseList 
-functionClauseList_setImplictConstraints (/*@returned@*/ functionClauseList s)
+functionClauseList_setImplicitConstraints (/*@returned@*/ functionClauseList s)
 {
   bool addedConstraints;
 
   constraintList c;
   
-  DPRINTF ((message ("functionClauseList_setImplictConstraints called ") ));
+  DPRINTF ((message ("functionClauseList_setImplicitConstraints called ") ));
   
   addedConstraints = FALSE;
-
 
   c = getImplicitFcnConstraints ();
   
@@ -203,14 +202,14 @@ functionClauseList_setImplictConstraints (/*@returned@*/ functionClauseList s)
 		{
 		  constraintList implCons = getImplicitFcnConstraints ();
 		  
-		  DPRINTF ((message ("functionClauseList_ImplictConstraints adding the implict constraints: %s to %s",
+		  DPRINTF ((message ("functionClauseList_ImplicitConstraints adding the implict constraints: %s to %s",
 		  		     constraintList_print(implCons), constraintList_print (con->constraint.buffer))));
 		  
 		  functionConstraint_addBufferConstraints (con, constraintList_copy (implCons) );
 
 		  addedConstraints = TRUE;
 		  
-		  DPRINTF ((message ("functionClauseList_ImplictConstraints the new constraint is %s",
+		  DPRINTF ((message ("functionClauseList_ImplicitConstraints the new constraint is %s",
 				     functionConstraint_unparse (con))));
 
 		}

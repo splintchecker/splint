@@ -60,7 +60,7 @@ static ctype constraintExpr_getCType (constraintExpr p_e);
 
 static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast (/*@only@*/ constraintExpr p_e,
 								     ctype p_tfrom, ctype p_tto,
-								     fileloc loc);
+								     fileloc p_loc);
 
 /*@special@*/ /*@notnull@*/ static constraintExpr constraintExpr_makeBinaryOp (void) 
      /* @allocates result->data @ @sets result->kind @ */ ;
@@ -438,7 +438,10 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
  exprNode t, t1, t2;
  lltok tok;
  
- llassert (e != NULL);
+ if (exprNode_isUndefined (e)) 
+   {
+     return constraintExpr_undefined;
+   }
  
  data = e->edata;
 
@@ -555,7 +558,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
      ret = constraintExpr_makeExprNode (t);
      break;
    case XPR_COMMA:
-     t = exprData_getPairA(data);
+     t = exprData_getPairA (data);
      ret = constraintExpr_makeExprNode(t);
      break;
    default:
@@ -2484,6 +2487,7 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
       float fnewval;
       long newval;
 
+      llassert (e != NULL);
       llassert (e->kind == term);
       ct = constraintExprData_termGetTerm (e->data);
       llassert (constraintTerm_canGetValue (ct));
@@ -2491,18 +2495,19 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
 
       DPRINTF (("Scaling constraints by: %ld * %f", val, scale));
 
-      // If scale * val is not an integer, give a warning
-      fnewval = val * scale;
+      fnewval = ((float) val) * scale;
       newval = (long) fnewval;
 
       DPRINTF (("Values: %f / %ld", fnewval, newval));
+
       if ((fnewval - (float) newval) > FLT_EPSILON) 
 	{
 	  voptgenerror (FLG_ALLOCMISMATCH,
 			message ("Allocated memory is converted to type %s of (size %d), "
-				 "which is not divisible into original allocation of space for %d elements of type %s (size %d)",
+				 "which is not divisible into original allocation of space "
+				 "for %d elements of type %s (size %d)",
 				 ctype_unparse (tto), sizeto,
-				 val, ctype_unparse (tfrom), sizefrom),
+				 long_toInt (val), ctype_unparse (tfrom), sizefrom),
 			loc);
 	}  
 
@@ -2544,71 +2549,80 @@ static /*@only@*/ constraintExpr constraintTerm_simpleDivTypeExprNode (/*@only@*
 
       if (lltok_isMult (tok))
 	{
-	  llassert (exprNode_isDefined(t1) && exprNode_isDefined(t2) );
+	  /*
+	  ** If the sizeof is first, flip them.
+	  */
+
+	  llassert (exprNode_isDefined(t1) && exprNode_isDefined(t2));
+
+	  if (t2->kind == XPR_SIZEOF || t2->kind == XPR_SIZEOFT) 
+	    {
+	      exprNode tmp = t1;
+	      t1 = t2;
+	      t2 = tmp;
+	    }
+	  
 	  /*drl 3/2/2003 we know this from the fact that it's a
 	    multiplication operation...*/
 	  
-	  if  ((t1->kind == XPR_SIZEOF) || (t1->kind == XPR_SIZEOFT))
+	  if (t1->kind == XPR_SIZEOF || t1->kind == XPR_SIZEOFT)
 	    {
-	      ctype ct2;
+	      ctype multype;
 	      
 	      if (t1->kind == XPR_SIZEOFT)
 		{
-		  ct2 = qtype_getType (exprData_getType (t1->edata));
+		  multype = qtype_getType (exprData_getType (t1->edata));
 		}
 	      else
 		{
 		  exprNode tempE = exprData_getSingle (t1->edata);
-		  ct2 = exprNode_getType (tempE); 
+		  multype = exprNode_getType (tempE); 
 		}
 
-	      if (ctype_match (ctype_makePointer(ct2), tfrom)) //!
+	      DPRINTF (("Here we go sizeof: %s / %s / %s",
+			ctype_unparse (multype), ctype_unparse (tfrom), ctype_unparse (tto)));
+	      llassert (ctype_isPointer (tfrom));
+
+	      if (ctype_almostEqual (ctype_makePointer (multype), tto))
 		{
 		  /* this is a bit sloopy but ... */
-		  constraintExpr_free(e);
+		  constraintExpr_free (e);
+		  DPRINTF (("Sizeof types match okay!"));
 		  return constraintExpr_makeExprNode (t2);
 		}
 	      else
 		{
-		  /* nothing was here */
-		  DPRINTF (("MISMATCHING TYPES!"));
-		}
-	    }
-	  else if ((t2->kind == XPR_SIZEOF) || (t2->kind == XPR_SIZEOFT))
-	    {
-	      ctype ct2;
-	      
-	      if (t2->kind == XPR_SIZEOFT)
-		{
-		  ct2 = qtype_getType (exprData_getType (t2->edata));
-		}
-	      else
-		{
-		  exprNode exprTemp;
-		  exprData eDTemp;
-		  
-		  exprTemp = exprData_getSingle (t2->edata);
+		  int sizemul = ctype_getSize (multype);
+		  ctype tobase = ctype_baseArrayPtr (tto);
+		  int sizeto = ctype_getSize (tobase);
 
-		  llassert (exprNode_isDefined (exprTemp));
-		  eDTemp = exprTemp->edata;
-		  
-		  ct2 = qtype_getType (exprData_getType(eDTemp ));
-		  
-		}
+		  DPRINTF (("Types: %s / %s / %s",
+			    ctype_unparse (tfrom), ctype_unparse (tto), ctype_unparse (multype)));
 
-	      if (ctype_match (ctype_makePointer (ct2), tfrom))
-		{
-		  /*a bit of a sloopy way to do this but... */
-		  constraintExpr_free(e);
-		  return constraintExpr_makeExprNode (t1);
+		  voptgenerror (FLG_ALLOCMISMATCH,
+				message ("Allocated memory is used as a different type (%s) from the sizeof type (%s)",
+					 ctype_unparse (tobase), ctype_unparse (multype)),
+				loc);
+		  
+		  if (sizemul == sizeto) 
+		    {
+		      constraintExpr_free (e);
+		      DPRINTF (("Sizeof types match okay!"));
+		      return constraintExpr_makeExprNode (t2);
+		    }
+		  else
+		    {
+		      /* nothing was here */
+		      DPRINTF (("MISMATCHING TYPES!"));
+		      return (constraintExpr_div (constraintExpr_makeExprNode (t2), multype, tto, loc));
+		    }
 		}
 	    }
 	  else
 	    {
 	      DPRINTF (("NOT A SIZEOF!"));
-	      /*empty*/
+	      /* empty */
 	    }
-	  
 	}
     }
 

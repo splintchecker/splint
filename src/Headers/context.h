@@ -58,6 +58,8 @@ extern /*@observer@*/ cstring context_getTrueName (void) /*@*/ ;
 extern /*@observer@*/ cstring context_getLarchPath (void) /*@*/ ;
 extern /*@observer@*/ cstring context_getLCLImportDir (void) /*@*/ ;
 
+extern constraintList context_getImplicitFcnConstraints (uentry p_ue) /*@*/ ;
+
 extern bool context_checkExport (uentry p_e) /*@*/ ;
 extern bool context_checkGlobMod (sRef p_el) /*@*/ ;
 extern bool context_checkGlobUse (uentry p_glob);
@@ -340,13 +342,9 @@ extern valueTable context_createGlobalMarkerValueTable (/*@only@*/ stateInfo p_i
 extern int context_getBugsLimit (void) /*@*/ ;
 # define context_getBugsLimit()  ((int)context_getValue(FLG_BUGSLIMIT))
 
-extern ctype context_setLastStruct (/*@returned@*/ ctype p_s) /*@modifies internalState@*/;
-extern ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies internalState@*/;
-
 /*drl added 2/4/2002*/
 
 extern bool context_inOldStyleScope (void) /*@*/ ;
-extern void context_setGlobalStructInfo (ctype p_ct, constraintList p_list) /*@modifies internalState@*/ ;
 
 /*drl added 3/5/2003*/
 

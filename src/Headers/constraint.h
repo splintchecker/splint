@@ -4,7 +4,7 @@
 
 typedef enum
 {
-  LT, LTE, GT, GTE, EQ, NONNEGATIVE, POSITIVE, CASTEQ
+  LT, LTE, GT, GTE, EQ, NONNEGATIVE, POSITIVE,
 }
 arithType;
 

@@ -86,9 +86,6 @@ extern void constraintList_printError (constraintList p_s, /*@observer@*/ filelo
 extern constraintList constraintList_sort (/*@returned@*/ constraintList p_ret)
    /*@modifies p_ret@*/ ;
 
-extern void constraintList_castConstraints (constraintList p_c, ctype p_tfrom, ctype p_tto) 
-   /*@modifies p_c@*/ ;
-
 extern void constraintList_dump (/*@observer@*/ constraintList p_c,  FILE * p_f);
 
 /*@only@*/ constraintList constraintList_undump (FILE * p_f);

@@ -632,9 +632,10 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
 
 static bool constraint_conflict (constraint c1, constraint c2)
 {
-
-  llassert(constraint_isDefined(c1) );
-  llassert(constraint_isDefined(c2) );
+  if (!constraint_isDefined(c1) || !constraint_isDefined(c2))
+    {
+      return FALSE;
+    }
 
   if (constraintExpr_similar (c1->lexpr, c2->lexpr))
     {
@@ -740,8 +741,15 @@ constraintList constraintList_fixConflicts (constraintList list1, constraintList
 
 static bool constraintResolve_satisfies (constraint pre, constraint post)
 {
-  llassert (constraint_isDefined(pre));
-  llassert (constraint_isDefined(post));
+  if (!constraint_isDefined (pre))
+    {
+      return TRUE;
+    }
+
+  if (!constraint_isDefined(post)) 
+    {
+      return FALSE;
+    }
 
   if (constraint_isAlwaysTrue (pre))
     return TRUE;
@@ -995,7 +1003,6 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
     {
       switch (c->ar)
 	{
-	case CASTEQ:
 	case EQ:
 	case GTE:
 	case LTE:
@@ -1388,41 +1395,34 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
 
 /*@only@*/ constraint constraint_substitute (/*@observer@*/ /*@temp@*/ constraint c, constraintList p)
 {
-  constraint ret;
+  constraint ret = constraint_copy (c);
 
-  ret = constraint_copy(c);
   constraintList_elements (p, el)
     {
-      llassert(constraint_isDefined(el) );
-       if ( el->ar == EQ)
-	 if (!constraint_conflict (ret, el) )
-
-	   {
-	     constraint temp;
-	     
-	     temp = constraint_copy(el);
-	     
-	     temp = constraint_adjust(temp, ret);
-
-	     llassert(constraint_isDefined(temp) );
-
-	     
-	     DPRINTF((message ("constraint_substitute :: Substituting in %s using %s",
-			       constraint_print (ret), constraint_print (temp)
-			       ) ) );
-			       
+      if (constraint_isDefined (el))
+	{
+	  if ( el->ar == EQ)
+	    if (!constraint_conflict (ret, el))
+	      {
+		constraint temp = constraint_copy(el);
+		temp = constraint_adjust(temp, ret);
+		
+		llassert(constraint_isDefined(temp) );
+		
+		
+		DPRINTF (("constraint_substitute :: Substituting in %s using %s",
+			  constraint_print (ret), constraint_print (temp)));
 	  
-	     ret = constraint_searchandreplace (ret, temp->lexpr, temp->expr);
-	     DPRINTF(( message (" constraint_substitute :: The new constraint is %s", constraint_print (ret) ) ));
-	     constraint_free(temp);
-	   }
+		ret = constraint_searchandreplace (ret, temp->lexpr, temp->expr);
+		DPRINTF (("constraint_substitute :: The new constraint is %s", constraint_print (ret)));;
+		constraint_free(temp);
+	      }
+	}
     }
   end_constraintList_elements;
 
-  ret = constraint_simplify(ret);
-
+  ret = constraint_simplify (ret);
   DPRINTF(( message (" constraint_substitute :: The final new constraint is %s", constraint_print (ret) ) ));
-
   return ret;
 }
 
