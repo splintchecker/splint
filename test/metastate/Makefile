@@ -2,15 +2,7 @@
 
 LCLINT = lclint
 
-all: file sockets struct nullbranch tainted osd
-
-tainted:
-	${LCLINT} tainted.mts tainted.xh tainted.c -mustfree -exportlocal -expect 2
-	${LCLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 7
-	${LCLINT} tainted.mts tainted.xh tainted2.c -mustfree -exportlocal -expect 1
-	${LCLINT} tainted.mts tainted.xh tainted3.c -mustfree -exportlocal -expect 1
-	${LCLINT} tainted.mts tainted.xh tainted4.c -mustfree -exportlocal -expect 1
-	${LCLINT} tainted.mts tainted.xh tainted5.c -mustfree -exportlocal -expect 2
+all: file sockets struct nullbranch osd
 
 file:
 	${LCLINT} -mts file file1.c -expect 4

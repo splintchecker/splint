@@ -17,7 +17,7 @@ state file
       open ==> error "open file not closed"
 
    defaults 
-      reference ==> unopen
+      reference ==> unopen 
       parameter ==> open
 end
 

@@ -1,5 +1,5 @@
 
-< loading standard library /afs/cert.org/usr/dlaroche/LCLintDev/lib/ansi.lcd .... >
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
@@ -57,7 +57,7 @@ drive.c:123: Return value (type db_status) ignored: hire(e)
 
 Finished LCLint checking --- 16 code errors found, as expected
 
-< loading standard library /afs/cert.org/usr/dlaroche/LCLintDev/lib/ansi.lcd .... >
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
@@ -677,7 +677,7 @@ sizeoftype                   7           0
 formalarray                  0          17
 type                         1           0
 enumindex                   24           0
-relaxtypes                  15           0
+enumint                     15           0
 matchanyintegral             2           0
 exportlocal                 15           0
 exportheader                 4           0

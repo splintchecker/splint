@@ -459,6 +459,7 @@ Finished LCLint checking --- no code processed
    unreachable                 
    unrecog                     
    unrecogcomments             
+   unrecogflagcomments         
    unusedspecial               
    usedef                      
    usereleased                 
@@ -524,6 +525,7 @@ booltrue --- set name of boolean true (default TRUE)
 noaccess --- ignore access comments
 nocomments --- ignore all stylized comments
 unrecogcomments --- stylized comment is unrecognized
+unrecogflagcomments --- stylized flag comment uses an unrecognized flag
 continuecomment --- line continuation marker (\) in comment before */ on same
 line
 nestcomment --- comment begins inside comment

@@ -27,7 +27,7 @@ file3.c:10:22: Possibly null storage fle1 passed as non-null param:
                   fclose (fle1)
    file3.c:6:16: Storage fle1 may become null
 file3.c:11:5: Control branches merge with incompatible states for fle1 (unopen
-                 and implicitly open): files merge in inconsistent state
+                 and open): files merge in inconsistent state
    file3.c:6:37: Meta state fle1 becomes implicitly open
    file3.c:10:14: Meta state fle1 becomes unopen
 
@@ -120,61 +120,6 @@ nullbranch.c:32:2: Return loses reference f in invalid state open (open file
    nullbranch.c:31:5: State becomes open
 
 Finished LCLint checking --- 2 code errors found, as expected
-
-tainted.c: (in function f)
-tainted.c:3:20: Invalid transfer from tainted s to untainted (Possibly tainted
-                   storage used as untainted.): s
-   tainted.c:1:48: Meta state s becomes tainted
-tainted.c: (in function test)
-tainted.c:9:18: Invalid transfer from tainted s to untainted (Possibly tainted
-                   storage used as untainted.): s
-   tainted.c:7:34: Meta state s becomes tainted
-
-Finished LCLint checking --- 2 code errors found, as expected
-
-tainted-bad.mts:18:7: Transfer clause uses unrecognized result state peach:
-                         untainted as tainted ==> peach
-tainted-bad.mts:14:17: Merge clause uses unrecognized second value junky:
-                          tainted X junky ==> error "Splat!"
-tainted-bad.mts:11:7: Annotation declaration uses unrecognized value name blue:
-                         maybetainted reference ==> blue
-tainted-bad.mts:5:21: Defaults declaration uses unrecognized value name
-                         stainted: stainted reference
-tainted-bad.mts:7:21: Duplicate defaults declaration for context param:
-                         untainted param
-tainted.c: (in function f)
-tainted.c:3:20: Invalid transfer from tainted s to untainted (Possibly tainted
-                   storage used as untainted.): s
-   tainted.c:1:48: Meta state s becomes tainted
-tainted.c: (in function test)
-tainted.c:9:18: Invalid transfer from tainted s to untainted (Possibly tainted
-                   storage used as untainted.): s
-   tainted.c:7:34: Meta state s becomes tainted
-
-Finished LCLint checking --- 7 code errors found, as expected
-
-tainted2.c: (in function test)
-tainted2.c:20:10: Invalid transfer from tainted stk to implicitly untainted
-                     (Possibly tainted storage used as untainted.): return stk
-   tainted2.c:17:14: Meta state stk becomes tainted
-
-Finished LCLint checking --- 1 code error found, as expected
-
-tainted3.c: (in function test)
-tainted3.c:7:3: Requires clause of called function checkUntainted not satisfied
-                   by def (state is tainted): requires untainted def
-
-Finished LCLint checking --- 1 code error found, as expected
-
-tainted4.c: (in function test)
-tainted4.c:6:17: Invalid transfer from tainted def to implicitly untainted
-   tainted4.c:4:36: Meta state def becomes tainted
-tainted4.c:7:19: Invalid transfer from tainted def to implicitly untainted
-   tainted4.c:4:36: Meta state def becomes tainted
-tainted4.c:7:3: Requires clause of called function checkUntainted not satisfied
-                   by def (state is tainted): requires untainted *def
-
-Finished LCLint checking --- 3 code errors found, expected 1
 
 osd.c: (in function osd_fileIsReadable)
 osd.c:9:7: Return value (type int) ignored: fclose(fl)

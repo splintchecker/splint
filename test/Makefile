@@ -18,7 +18,7 @@
 .PHONY: refcounts release repexpose returned sharing slovaknames special
 .PHONY: specclauses stack staticarray 
 .PHONY: strings structassign nullret
-.PHONY: typequals ud ulstypes union unreachable unused ullint void
+.PHONY: tainted typequals ud ulstypes union unreachable unused ullint void
 .PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
 .PHONY: metastate warnuse
@@ -37,7 +37,7 @@
 SHELL = /bin/csh -f
 
 # Command to run lclint
-LCLINT  = ${HOME}/lclint-dev/src/lclint
+LCLINT  = ${HOME}/LCLintDev/bin/lclint
 LCLINTP = $(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
@@ -51,7 +51,7 @@ UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTe
    init inparam internal iter keep libs linked lintcomments list macros macrosef merge metastate modifies \
    modtest moduncon mongoincludes null nullret nullassign observer oldstyle outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
-   staticarray strings structassign typequals ud ulstypes union unreachable unused ullint void warnuse \
+   staticarray strings structassign tainted typequals ud ulstypes union unreachable unused ullint void warnuse \
    tests2.2 tests2.2a tests2.4 tests2.5 
 
 UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
@@ -672,6 +672,9 @@ tests2.5:
 
 metastate:
 	setenv LCLINT '$(LCLINTRN)'; cd metastate ; $(MAKE) -e
+
+tainted:
+	setenv LCLINT '$(LCLINTRN)'; cd tainted ; $(MAKE) -e
 
 warnuse:
 	setenv LCLINT '$(LCLINTRN)'; cd warnuse ; $(MAKE) -e
