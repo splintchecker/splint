@@ -1201,11 +1201,11 @@ Splint Manual</span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
 'font-size: 18.0pt;font-family:"Book Antiqua"'>Version
-3.0.1.7</span></span></p>
+3.1.0</span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
-'font-size: 18.0pt;font-family:"Book Antiqua"'>17 March
-2003</span></span></p>
+'font-size: 18.0pt;font-family:"Book Antiqua"'>12 April 2003
+</span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
 'font-size: 15.5pt'>&nbsp;</span></span></p>
@@ -1317,13 +1317,9 @@ and <span class="Keyword"><span style=
 'font-size:10.0pt;font-family:Arial; color:windowtext'>autoconf</span></span>
 distribution.&nbsp;</p>
 <p class="TextFontCX">&nbsp;</p>
-<p class="TextFontCX">Splint research at the University of Virginia
-is currently funded in part by a grant from the NASA Langley
-Research Center, an NSF CAREER Award for swarm programming, and an
-NSF CCLI Award for using analysis to teach software
-engineering.&nbsp; David Larochelle is funded by a USENIX student
-research grant.&nbsp;&nbsp; <span style=
-'font-size:20.0pt'>&nbsp;</span></p></div>
+<p class="TextFontCX">
+Splint research at the University of Virginia is currently funded in part by an NSF CAREER Award and an NSF CCLI Award for using analysis to teach software engineering.&nbsp;  Splint has been previously supported by a grant from NASA and David Larochelle was funded by a USENIX student research grant.
+<span style='font-size:20.0pt'>&nbsp;</span></p></div>
 <span class="MsoCommentReference"><span style=
 'font-size:15.5pt;font-family:"Times New Roman"'><br clear="all"
 style='page-break-before:right'></span></span> 
@@ -1958,9 +1954,9 @@ Manual</span></b></p>
 <p class="MsoNormal" align="center" style='text-align:center'>
 &nbsp;</p>
 <p class="MsoNormal" align="center" style='text-align:center'>
-Version 3.0.1</p>
+Version 3.1.0</p>
 <p class="MsoNormal" align="center" style='text-align:center'>7
-January 2002</p>
+12 April 2003</p>
 <p class="TextFontCX">&nbsp;</p>
 <p class="TextFontCX">Splint<a href="#_ftn1" name="_ftnref1"
    title=""><span class="MsoFootnoteReference"><span class=
@@ -3755,6 +3751,16 @@ declare <span class="CodeText"><span style=
 operations are provided that modify the value of an
       <span class="CodeText"><span style=
       'font-size:10.0pt'>mstring</span></span>.</p>
+
+      
+<h2 style='margin-left:0in;text-indent:0in'><a name=
+"_Toc534974956"></a><a name="_Toc344355422"></a><a name=
+"_Ref343109614">4.3.3<span style=
+'font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+Semi-Abstract Types</a></h2>
+
+Sometimes it is useful to have a type that is abstract in some ways, but can be used with the standard numerical operators.  Splint supports numabstract types for this purpose.  The /*@numabstract@*/ annotation denotes a numabstract type.  Splint will report warnings when numabstract types are used inconsistently, but allow binary numeric operators to operate on two values of the same numabstract type.
+
 <h2 style='margin-left:0in;text-indent:0in'><a name=
 "_Toc534974956"></a><a name="_Toc344355422"></a><a name=
 "_Ref343109614">4.4<span style=
@@ -6370,12 +6376,13 @@ indicate that the <span class="CodeText"><span style=
 'font-size:10.0pt'>/*@innerbreak@*/</span></span>.</p>
 <p class="afterlist">Since <span class=
       "CodeText"><span style='font-size:10.0pt'>continue</span></span>
-      only makes sense within loops, warnings are only reported for
+      only makes sense within loops, a warning (Controlled by <span class=
+      "Flag"><span style=
+      'font-size: 10.0pt'>looploopcontinue</span></span>.)
+      is reported only for 
       <span class="CodeText"><span style=
       'font-size:10.0pt'>continue</span></span> statements within
-      nested loops.&nbsp; (Controlled by <span class=
-      "Flag"><span style=
-      'font-size: 10.0pt'>looploopcontinue</span></span>.)&nbsp; A
+      nested loops.&nbsp; A
       safe inner <span class="CodeText"><span style=
       'font-size:10.0pt'>continue</span></span> may be preceded by
       <span class="Annot"><span style=
