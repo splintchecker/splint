@@ -712,11 +712,12 @@ bool uentry_isUnnamedVariable (uentry ue)
 {
   ctype ct = idDecl_getCtype (id);
   uentry ue = uentry_makeDatatype (idDecl_observeId (id), ct, 
-				   MAYBE, MAYBE, setLocation ());
+				   MAYBE, qual_createUnknown (),
+				   setLocation ());
 
   uentry_reflectQualifiers (ue, idDecl_getQuals (id));
   
-  if (!ynm_isOn (ue->info->datatype->abs))
+  if (!qual_isEitherAbstract (ue->info->datatype->abs))
     {
       if (ctype_isUnknown (ct))
 	{
@@ -2346,6 +2347,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
       uentry_setNullState (ue, NS_MNOTNULL);
     }
   else if (qual_isAbstract (qel)
+	   || qual_isNumAbstract (qel)
 	   || qual_isConcrete (qel))
     {
       if (!uentry_isDatatype (ue))
@@ -2358,7 +2360,9 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	}
       else
 	{
-	  ue->info->datatype->abs = ynm_fromBool (qual_isAbstract (qel));
+	  ue->info->datatype->abs = qel;
+	  DPRINTF (("Setting abstract %s: %s",
+		    uentry_unparse (ue), qual_unparse (qel)));
 	}
     }
   else if (qual_isMutable (qel))
@@ -3775,7 +3779,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 /* is exported for use by usymtab_interface */
 
 /*@notnull@*/ uentry 
-  uentry_makeDatatypeAux (cstring n, ctype t, ynm mut, ynm abstract, 
+  uentry_makeDatatypeAux (cstring n, ctype t, ynm mut, qual abstract, 
 			  fileloc f, bool priv)
 {
   uentry e = uentry_alloc ();
@@ -3816,7 +3820,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
       uentry_setDefined (e, f);
     }
 
-  if (ynm_isOn (abstract) && !(uentry_isCodeDefined (e)))
+  if (qual_isAbstract (abstract) && !(uentry_isCodeDefined (e)))
     {
       sRef_setNullState (e->sref, NS_ABSNULL, uentry_whereDeclared (e));
     }
@@ -3825,12 +3829,12 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 }
 
 /*@notnull@*/ uentry
-  uentry_makeDatatype (cstring n, ctype t, ynm mut, ynm abstract, fileloc f)
+  uentry_makeDatatype (cstring n, ctype t, ynm mut, qual abstract, fileloc f)
 {
   return (uentry_makeDatatypeAux (n, t, mut, abstract, f, FALSE));
 }
 
-/*@notnull@*/ uentry uentry_makeBoolDatatype (ynm abstract)
+/*@notnull@*/ uentry uentry_makeBoolDatatype (qual abstract)
 {
   uentry ret = uentry_makeDatatypeAux (context_getBoolName (),
 				       ctype_bool, NO, abstract, 
@@ -3951,7 +3955,7 @@ static /*@only@*/ /*@notnull@*/ uentry
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
-  e->info->datatype->abs = NO;
+  e->info->datatype->abs = qual_createUnknown ();
   e->info->datatype->mut = (kind == KENUMTAG) ? NO : MAYBE;
   e->info->datatype->type = t;
   e->warn = warnClause_undefined; /*@i452@*/
@@ -4237,7 +4241,7 @@ uentry_compare (uentry u1, uentry u2)
 				    u2->info->datatype->type));
       COMPARERETURN (ynm_compare (u1->info->datatype->mut,
 				  u2->info->datatype->mut));
-      return (ynm_compare (u1->info->datatype->abs, u2->info->datatype->abs));
+      return (generic_compare (u1->info->datatype->abs, u2->info->datatype->abs));
     }
   
   BADEXIT;
@@ -4380,7 +4384,7 @@ static /*@only@*/ uentry
 }
 
 static /*@only@*/ uentry  
-uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abstract, 
+uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, qual abstract, 
 			 ynm mut, ctype rtype, alkind ak, exkind exp, 
 			 sstate defstate, nstate isnull,
 			 /*@only@*/ fileloc loc)
@@ -4418,7 +4422,7 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abstract,
 
   sRef_setDefState (e->sref, defstate, loc);
 
-  if (ynm_isOn (abstract) && ctype_isUnknown (ct) && isnull == NS_UNKNOWN)
+  if (qual_isEitherAbstract (abstract) && ctype_isUnknown (ct) && isnull == NS_UNKNOWN)
     {
       isnull = NS_ABSNULL;
     }
@@ -4653,7 +4657,7 @@ static /*@only@*/ uentry
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
-  e->info->datatype->abs  = NO;
+  e->info->datatype->abs  = qual_createUnknown ();
   e->info->datatype->mut  = MAYBE;
   e->info->datatype->type = rtype;
 
@@ -4850,7 +4854,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	  break;
 	case KDATATYPE: 
 	  {
-	    ynm abstract;
+	    qual abstract;
 	    ynm mut;
 	    ctype rtype;
 	    sstate defstate;
@@ -4858,7 +4862,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    alkind aliased;
 	    exkind exp;
 
-	    advanceField (s); abstract = ynm_fromCodeChar (reader_loadChar (s));
+	    advanceField (s); abstract = qual_abstractFromCodeChar (reader_loadChar (s));
 	    advanceField (s); mut = ynm_fromCodeChar (reader_loadChar (s));
 	    advanceField (s); defstate = sstate_fromInt (reader_getInt (s));      
 	    advanceField (s); isnull = nstate_fromInt (reader_getInt (s));      
@@ -5127,7 +5131,7 @@ uentry_dumpAux (uentry v, bool isParam)
 	else
 	  {
 	    sdump = message ("%d@%d@%d@%d@%d",	
-		     (int) dss,
+			     (int) dss,
 			     (int) nst,
 			     (int) alk,
 			     (int) exk,
@@ -5160,9 +5164,9 @@ uentry_dumpAux (uentry v, bool isParam)
 		ctype_unparse (v->utype), (int) v->utype));
       */
 
-      return (message ("%q@%s@%s@%d@%d@%d@%d@%q#%s", 
+      return (message ("%q@%c@%s@%d@%d@%d@%d@%q#%s", 
 		       ctype_dump (v->utype),
-		       ynm_unparseCode (v->info->datatype->abs),
+		       qual_abstractCode (v->info->datatype->abs),
 		       ynm_unparseCode (v->info->datatype->mut),
 		       (int) sRef_getDefState (v->sref),
 		       (int) sRef_getNullState (v->sref),
@@ -5331,8 +5335,8 @@ uentry_unparseFull (uentry v)
     {
       cstring res;
 
-      res = message ("[%w] %s %s: %s [spec: %q; decl: %q; def: %q]",
-		     (unsigned long) v, ekind_unparse (v->ukind), v->uname,
+      res = message ("[%p] %s %s: %s [spec: %q; decl: %q; def: %q]",
+		     v, ekind_unparse (v->ukind), v->uname,
 		     ctype_unparse (v->utype),
 		     fileloc_unparse (uentry_whereSpecified (v)),
 		     fileloc_unparse (uentry_whereDeclared (v)),
@@ -5348,7 +5352,7 @@ uentry_unparseFull (uentry v)
 			 (ctype_isDefined (v->info->datatype->type) 
 			  ? v->info->datatype->type : ctype_unknown),
 			 ynm_unparse (v->info->datatype->mut),
-			 ynm_unparse (v->info->datatype->abs),
+			 qual_unparse (v->info->datatype->abs),
 			 sRef_unparseState (v->sref));
 	}
       else if (uentry_isFunction (v))
@@ -5488,10 +5492,10 @@ uentry_setAbstract (uentry e)
   typeId oldid;
 
   llassert (uentry_isDatatype (e) 
-	    && (ynm_isMaybe (e->info->datatype->abs)));
+	    && (qual_isUnknown (e->info->datatype->abs)));
 
   oldid = ctype_typeId (e->info->datatype->type);
-  e->info->datatype->abs = YES;
+  e->info->datatype->abs = qual_createAbstract ();
   e->info->datatype->type = ctype_createAbstract (oldid);
 }
 
@@ -5499,23 +5503,24 @@ void
 uentry_setConcrete (uentry e)
 {
   llassert (uentry_isDatatype (e) 
-	    && (ynm_isMaybe (e->info->datatype->abs)));
+	    && (qual_isUnknown (e->info->datatype->abs)
+		|| qual_isConcrete (e->info->datatype->abs)));
 
-  e->info->datatype->abs = NO;
+  e->info->datatype->abs = qual_createConcrete ();
 }
 
 bool
 uentry_isAbstractDatatype (uentry e)
 {
   return (uentry_isDatatype (e) 
-	  && (ynm_isOn (e->info->datatype->abs)));
+	  && (qual_isEitherAbstract (e->info->datatype->abs)));
 }
 
 bool
 uentry_isMaybeAbstract (uentry e)
 {
   return (uentry_isDatatype (e) 
-	  && (ynm_isMaybe (e->info->datatype->abs)));
+	  && (!qual_isConcrete (e->info->datatype->abs)));
 }
 
 bool
@@ -5789,7 +5794,15 @@ uentry_getMods (uentry l)
     {
       BADBRANCH;
     }
+# ifdef WIN32
+/* Make Microsoft VC++ happy */
+# pragma warning (disable:4715) 
+# endif
 }
+
+# ifdef WIN32
+# pragma warning (enable:4715) 
+# endif
 
 ekind
 uentry_getKind (uentry e)
@@ -6581,7 +6594,15 @@ uentry_setDatatype (uentry e, usymId uid)
 
   if (uentry_isAbstractType (e))
     {
-      e->info->datatype->type = ctype_createAbstract (uid);
+      if (qual_isNumAbstract (e->info->datatype->abs)) 
+	{
+	  e->info->datatype->type = ctype_createNumAbstract (uid);
+	}
+      else
+	{
+	  llassert (qual_isAbstract (e->info->datatype->abs));
+	  e->info->datatype->type = ctype_createAbstract (uid);
+	}
     }
   else
     {
@@ -8868,10 +8889,10 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
 	}
     }
   
-  if (unew->info->datatype->abs != MAYBE)
+  if (!qual_isUnknown (unew->info->datatype->abs))
     {
-      if (ynm_isOff (old->info->datatype->abs)
-	  && ynm_isOn (unew->info->datatype->abs))
+      if (qual_isConcrete (old->info->datatype->abs)
+	  && qual_isEitherAbstract (unew->info->datatype->abs))
 	{
 	  if (!ctype_isDirectBool (old->utype))
 	    {
@@ -8887,8 +8908,8 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
 		}
 	    }
 	}
-      else if (ynm_isOn (old->info->datatype->abs)
-	       && ynm_isOff (unew->info->datatype->abs))
+      else if (qual_isEitherAbstract (old->info->datatype->abs)
+	       && qual_isConcrete (unew->info->datatype->abs))
 	{
 	  if (!ctype_isDirectBool (old->utype))
 	    {
@@ -8911,7 +8932,7 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
     }
   else 
     {
-      if (ynm_isOn (old->info->datatype->abs))
+      if (qual_isEitherAbstract (old->info->datatype->abs))
 	{
 	  old->sref = unew->sref;
 	  unew->info->datatype->mut = old->info->datatype->mut;
@@ -8960,7 +8981,7 @@ uentry_checkDatatypeConformance (/*@notnull@*/ uentry old,
     }
   else
     {
-      if (ynm_isOn (old->info->datatype->abs))
+      if (qual_isEitherAbstract (old->info->datatype->abs))
 	{
 	  if (ynm_isOn (old->info->datatype->mut) && ynm_isOff (unew->info->datatype->mut))
 	    {

@@ -461,7 +461,7 @@ static exprNode doWhile (/*@returned@*/ exprNode e, /*@dependent@*/ exprNode tes
 	  size = sRef_getArraySize(el);
 	  DPRINTF((message("%s is a fixed array with size %d",
 			    sRef_unparse(el), (int)size)));
-	  con = constraint_makeSRefSetBufferSize (el, (size - 1));
+	  con = constraint_makeSRefSetBufferSize (el, size_toLong (size - 1));
 	  ret = constraintList_add(ret, con);
 	}
       else

@@ -406,7 +406,7 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
 			     int ivalue, char *value, int hash)
 {
   hashNode hp;
-  int i, bucket;
+  int bucket;
   char *p;
 
   DPRINTF (("Install: %s / %d", name, len));
@@ -426,8 +426,6 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
     {
       hash = cpphash_hashCode (name, size_fromInt (len), CPP_HASHSIZE);
     }
-
-  i = sizeof (*hp) + len + 1;
 
   hp = (hashNode) dmalloc (sizeof (*hp));
   bucket = hash;

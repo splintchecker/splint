@@ -203,7 +203,7 @@ extern /*@dependent@*/ /*@null@*/
 char *inputStream_nextLine (inputStream s)
 {
   char *currentLine;
-  int len;
+  size_t len;
 
   llassert (inputStream_isDefined (s));
   llassert (s->curLine == NULL);
@@ -226,15 +226,15 @@ char *inputStream_nextLine (inputStream s)
 	      c = strchr (s->stringSourceTail, '\0');
 	    }
 
-	  len = c - s->stringSourceTail + 1;
+	  len = size_fromInt (c - s->stringSourceTail + 1);
 
-	  if (len > STUBMAXRECORDSIZE - 2)
+	  if (len > size_fromInt (STUBMAXRECORDSIZE - 2))
 	    {
-	      len = (STUBMAXRECORDSIZE - 2);
+	      len = size_fromInt (STUBMAXRECORDSIZE - 2);
 	    }
 
 	  currentLine = &(s->buffer)[0];
-	  strncpy (currentLine, s->stringSourceTail, size_fromInt (len));
+	  strncpy (currentLine, s->stringSourceTail, len);
 	  currentLine[len] = '\0';
 	  s->stringSourceTail += len;
 	  /*@noaccess cstring@*/
@@ -260,7 +260,7 @@ char *inputStream_nextLine (inputStream s)
 	}
       else 
 	{
-	  if (len >= STUBMAXRECORDSIZE - 2)
+	  if (len >= size_fromInt (STUBMAXRECORDSIZE - 2))
 	    {
 	      lldiagmsg (message ("Input line too long: %s",
 				  cstring_fromChars (currentLine)));

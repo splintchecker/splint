@@ -828,7 +828,7 @@ cstring_copySegment (cstring s, size_t findex, size_t tindex)
   llassert (cstring_isDefined (s));
   llassert (cstring_length (s) > tindex);
 
-  strncpy (res, (s + findex), size_fromInt ((tindex - findex + 1)));
+  strncpy (res, (s + findex), size_fromInt (size_toInt (tindex - findex) + 1));
   return res;
 }
 

@@ -928,7 +928,7 @@ static /*@only@*/ cstring makeTempName (cstring dir, cstring pre, cstring suf)
   static int pid = 0; 
   static /*@owned@*/ char *msg = NULL; 
   static /*@only@*/ cstring pidname = NULL;
-  int maxlen;
+  size_t maxlen;
   cstring smsg;
 
   llassert (cstring_length (pre) <= 3);

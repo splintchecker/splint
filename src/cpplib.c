@@ -762,11 +762,17 @@ cppReader_appendIncludeChain (cppReader *pfile,
       opts->first_bracket_include = first;
 
       for (dir = first; ; dir = dir->next) {
-	int len = cstring_length (dir->fname) + INCLUDE_LEN_FUDGE;
+	size_t len = cstring_length (dir->fname) + INCLUDE_LEN_FUDGE;
+
 	if (len > pfile->max_include_len)
-	  pfile->max_include_len = len;
+	  {
+	    pfile->max_include_len = len;
+	  }
+
 	if (dir == last)
-	  break;
+	  {
+	    break;
+	  }
       }
     }
 
@@ -843,8 +849,9 @@ cppReader_addIncludeChain (cppReader *pfile, /*@only@*/ struct file_name_list *d
 
   if (opts->first_bracket_include == 0)
     {
-      int len = cstring_length (dir->fname) + INCLUDE_LEN_FUDGE;
+      size_t len = cstring_length (dir->fname) + INCLUDE_LEN_FUDGE;
       opts->first_bracket_include = dir;
+      
       if (len > pfile->max_include_len)
 	{
 	  pfile->max_include_len = len;
@@ -2741,8 +2748,8 @@ compare_defs (DEFINITION *d1, DEFINITION *d2)
   if (a1 != a2)
     return TRUE;
 
-  if (comp_def_part (first, p1, d1->length - (p1 - d1->expansion),
-		     p2, d2->length - (p2 - d2->expansion), 1))
+  if (comp_def_part (first, p1, size_toInt (d1->length - (p1 - d1->expansion)),
+		     p2, size_toInt (d2->length - (p2 - d2->expansion)), 1))
     return TRUE;
 
   return FALSE;
@@ -3234,8 +3241,7 @@ output_line_command (cppReader *pfile, bool conditional,
       }
   }
 
-  cpplib_reserve (pfile,
-		     size_fromInt (4 * cstring_length (ip->nominal_fname) + 50));
+  cpplib_reserve (pfile, 4 * cstring_length (ip->nominal_fname) + 50);
 
   {
 #ifdef OUTPUT_LINE_COMMANDS
@@ -3674,7 +3680,7 @@ cpplib_installBuiltinType (/*@observer@*/ char *name, ctype ctyp,
   if (!usymtab_existsTypeEither (sname))
     {
       uentry ue = uentry_makeDatatype (sname, ctyp,
-				       NO, NO,
+				       NO, qual_createConcrete (),
 				       fileloc_createBuiltin ());
       llassert (!usymtab_existsEither (sname));
       usymtab_addGlobalEntry (ue);
@@ -3979,7 +3985,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 
 	      args[i].raw = size_toLong (cpplib_getWritten (pfile));
 	      token = macarg (pfile, rest_args);
-	      args[i].raw_length = cpplib_getWritten (pfile) - args[i].raw;
+	      args[i].raw_length = size_toInt (cpplib_getWritten (pfile) - args[i].raw);
 	      args[i].newlines = FALSE; /* FIXME */
 	    }
 	  else
@@ -4647,8 +4653,8 @@ do_include (cppReader *pfile, struct directive *keyword,
 		      /*@=onlytrans@*/
 		      nam[n] = save;
 
-		      if (n + INCLUDE_LEN_FUDGE > pfile->max_include_len)
-			pfile->max_include_len = n + INCLUDE_LEN_FUDGE;
+		      if (n + INCLUDE_LEN_FUDGE > size_toInt (pfile->max_include_len))
+			pfile->max_include_len = size_fromInt (n + INCLUDE_LEN_FUDGE);
 		    }
 		  else
 		    {
@@ -5541,8 +5547,8 @@ do_xifdef (cppReader *pfile, struct directive *keyword,
       if (start_of_file && !skip)
 	{
 	  DPRINTF (("Not skipping!"));
-	  control_macro = (char *) dmalloc (size_fromInt (ident_length + 1));
-	  memcpy (control_macro, ident, size_fromInt (ident_length + 1));
+	  control_macro = (char *) dmalloc (ident_length + 1);
+	  memcpy (control_macro, ident, ident_length + 1);
 	}
     }
   else
@@ -7546,7 +7552,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
     struct default_include *p = include_defaults;
     char *specd_prefix = opts->include_prefix;
     char *default_prefix = mstring_copy (GCC_INCLUDE_DIR);
-    int default_len = 0;
+    size_t default_len = 0;
     
     /* Remove the `include' from /usr/local/lib/gcc.../include.  */
     if (default_prefix != NULL) {
@@ -7566,8 +7572,7 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	  /* Does this dir start with the prefix?  */
 	  llassert (default_prefix != NULL);
 
-	  if (!strncmp (cstring_toCharsSafe (p->fname), default_prefix,
-			size_fromInt (default_len)))
+	  if (!strncmp (cstring_toCharsSafe (p->fname), default_prefix, default_len))
 	    {
 	      /* Yes; change prefix and add to search list.  */
 	      struct file_name_list *nlist

@@ -149,6 +149,10 @@ static /*@observer@*/ cstring argcode_unparse (argcode arg)
 # endif
 }      
 
+# ifdef WIN32
+# pragma warning (enable:4715) 
+# endif
+
 typedef struct { 
   flagkind main;
   flagkind sub;

@@ -51,9 +51,10 @@ static void checkUniqueParams (exprNode p_fcn,
 			       /*@notnull@*/ exprNode p_current, exprNodeList p_args, 
 			       int p_paramno, uentry p_ucurrent);
 static void updateAliases (/*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2);
-static void abstractOpError (ctype p_tr1, ctype p_tr2, lltok p_op, 
+static bool abstractOpError (ctype p_tr1, ctype p_tr2, lltok p_op, 
 			     /*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2, 
-			     fileloc p_loc1, fileloc p_loc2);
+			     fileloc p_loc1, fileloc p_loc2) 
+   /*@modifies g_warningstream@*/ ;
 static ctype checkNumerics (ctype p_tr1, ctype p_tr2, ctype p_te1, ctype p_te2,
 			    /*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2, lltok p_op);
 static void doAssign (/*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2, bool p_isInit);
@@ -860,7 +861,7 @@ exprNode_wideStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 /*@only@*/ exprNode
 exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
-  size_t len = size_fromInt (cstring_length (t) - 2);
+  size_t len = size_fromInt (size_toInt (cstring_length (t)) - 2);
   char *ts = cstring_toCharsSafe (t);
   char *s = cstring_toCharsSafe (cstring_create (len + 1));
 
@@ -1080,7 +1081,7 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 		(FLG_STRINGLITNOROOMFINALNULL,
 		 message ("String literal with %d character%& "
 			  "is assigned to %s (no room for final null terminator): %s",
-			  len + 1,
+			  size_toInt (len + 1),
 			  ctype_unparse (t1),
 			  exprNode_unparse (e2)),
 		 e2->loc);
@@ -1091,7 +1092,7 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 		(FLG_STRINGLITNOROOM,
 		 message ("String literal with %d character%& "
 			  "is assigned to %s (no room for null terminator): %s",
-			  len + 1,
+			  size_toInt (len + 1),
 			  ctype_unparse (t1),
 			  exprNode_unparse (e2)),
 		 e2->loc);
@@ -1103,7 +1104,7 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 	    (FLG_STRINGLITTOOLONG,
 	     message ("String literal with %d character%& (counting null terminator) "
 		      "is assigned to %s (insufficient storage available): %s",
-		      len + 1,
+		      size_toInt (len + 1),
 		      ctype_unparse (t1),
 		      exprNode_unparse (e2)),
 	     e2->loc);	  		      
@@ -1113,7 +1114,7 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 	  voptgenerror 
 	    (FLG_STRINGLITSMALLER,
 	     message ("String literal with %d character%& is assigned to %s (possible waste of storage): %s",
-		      len + 1,
+		      size_toInt (len + 1),
 		      ctype_unparse (t1),
 		      exprNode_unparse (e2)),
 	     e2->loc);	  
@@ -4385,11 +4386,15 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
     {
       if (ctype_isRealAbstract (t))
         {
-          voptgenerror 
-	    (FLG_ABSTRACT,
-	     message ("Operand of %s is abstract type (%t): %s",
-		      lltok_unparse (op), t, exprNode_unparse (e)),
-	     e->loc);
+	  if (ctype_isRealNumAbstract (t)) {
+	    ; /* Allow operations on numabstract types */
+	  } else {
+	    voptgenerror 
+	      (FLG_ABSTRACT,
+	       message ("Operand of %s is abstract type (%t): %s",
+			lltok_unparse (op), t, exprNode_unparse (e)),
+	       e->loc);
+	  }
         }
       else
         {
@@ -4496,15 +4501,22 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
       if (ctype_isRealAbstract (tr)
 	  && (!(ctype_isRealBool (te) && (opid == TEXCL))))
 	{
-	  if (optgenerror (FLG_ABSTRACT,
-			   message ("Operand of %s is abstract type (%t): %s",
-				    lltok_unparse (op), tr,
-				    exprNode_unparse (ret)),
-			   e->loc))
+	  if (ctype_isRealNumAbstract (tr))
 	    {
-	      tr = te = ctype_unknown;
-	      ret->typ = ctype_unknown;
-	      sRef_setNullError (e->sref);
+	      ; /* no warning for numabstract types */
+	    }
+	  else
+	    {
+	      if (optgenerror (FLG_ABSTRACT,
+			       message ("Operand of %s is abstract type (%t): %s",
+					lltok_unparse (op), tr,
+					exprNode_unparse (ret)),
+			       e->loc))
+		{
+		  tr = te = ctype_unknown;
+		  ret->typ = ctype_unknown;
+		  sRef_setNullError (e->sref);
+		}
 	    }
 	}
     }
@@ -4547,8 +4559,8 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 
 	/* Arithmetic operations on pointers wil modify the size/len/null terminated 
 		 status */
-	if ((sRef_isPossiblyNullTerminated (e->sref)) || (sRef_isNullTerminated(e->sref))) {
-
+	if ((sRef_isPossiblyNullTerminated (e->sref)) 
+	    || (sRef_isNullTerminated(e->sref))) {
 		ret->sref = sRef_copy (e->sref);
 
 		/* Operator : ++ */
@@ -5144,16 +5156,38 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
 	    }
 	  else
 	    {
-	      DPRINTF (("No access to: %s / %d",
-			ctype_unparse (bc), ctype_typeId (bc)));
-	      DPRINTF (("Context %s %s",
-			bool_unparse (context_inFunctionLike ()),
-			context_unparse ()));
-	      voptgenerror 
-		(FLG_ABSTRACT,
-		 message ("Cast to abstract type %t: %s", bc, 
-			  exprNode_unparse (ret)),
-		 e->loc);
+	      if (ctype_isNumAbstract (bc)) 
+		{
+		  if (exprNode_isNumLiteral (e))
+		    {
+		      voptgenerror 
+			(FLG_NUMABSTRACTCAST,
+			 message ("Cast from literal to numabstract type %t: %s", bc, 
+				  exprNode_unparse (ret)),
+			 e->loc);
+		    }
+		  else
+		    {
+		      voptgenerror 
+			(FLG_NUMABSTRACT,
+			 message ("Cast to numabstract type %t: %s", bc, 
+				  exprNode_unparse (ret)),
+			 e->loc);
+		    }
+		}
+	      else
+		{
+		  DPRINTF (("No access to: %s / %d",
+			    ctype_unparse (bc), ctype_typeId (bc)));
+		  DPRINTF (("Context %s %s",
+			    bool_unparse (context_inFunctionLike ()),
+			    context_unparse ()));
+		  voptgenerror 
+		    (FLG_ABSTRACT,
+		     message ("Cast to abstract type %t: %s", bc, 
+			      exprNode_unparse (ret)),
+		     e->loc);
+		}
 	    }
 	}
     }
@@ -5367,588 +5401,588 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	 (opid == AND_OP || opid == OR_OP 
 	  || opid == EQ_OP || opid == NE_OP))))
     {
-      abstractOpError (tr1, tr2, op, e1, e2, e1->loc, e2->loc);
+      if (abstractOpError (tr1, tr2, op, e1, e2, e1->loc, e2->loc)) 
+	{
+	  tret = ctype_unknown;
+	  goto skiprest;
+	}
     }
-  else if (ctype_isUnknown (te1) || ctype_isUnknown (te2))
+  
+  if (ctype_isUnknown (te1) || ctype_isUnknown (te2))
     {
       /* unknown types, no comparisons possible */
+      goto skiprest;
     }
-  else
+  
+  switch (opid)
     {
-      switch (opid)
+    case TMULT:		/* multiplication and division:           */
+    case TDIV:		/*                                        */
+    case MUL_ASSIGN:	/*    numeric, numeric -> numeric         */
+    case DIV_ASSIGN:	/*                                        */
+      if (opid == TMULT || opid == MUL_ASSIGN)
 	{
-	case TMULT:		/* multiplication and division:           */
-	case TDIV:		/*                                        */
-	case MUL_ASSIGN:	/*    numeric, numeric -> numeric         */
-	case DIV_ASSIGN:	/*                                        */
-
-	  if (opid == TMULT || opid == MUL_ASSIGN)
-	    {
-	      ret->val = multiVal_multiply (exprNode_getValue (e1),
-					    exprNode_getValue (e2));
-	    }
-	  else
-	    {
-	      ret->val = multiVal_divide (exprNode_getValue (e1),
-					  exprNode_getValue (e2));
-	    }
-	  	  
-	  tret = checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
-	  break;
+	  ret->val = multiVal_multiply (exprNode_getValue (e1),
+					exprNode_getValue (e2));
+	}
+      else
+	{
+	  ret->val = multiVal_divide (exprNode_getValue (e1),
+				      exprNode_getValue (e2));
+	}
+      
+      tret = checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
+      break;
+      
+    case TPLUS:		/* addition and subtraction:               */
+    case TMINUS:	/*    pointer, int     -> pointer          */
+    case SUB_ASSIGN:	/*    int, pointer     -> pointer          */
+    case ADD_ASSIGN:	/*    numeric, numeric -> numeric          */
+      if (opid == TPLUS || opid == ADD_ASSIGN)
+	{
+	  ret->val = multiVal_add (exprNode_getValue (e1),
+				   exprNode_getValue (e2));
+	}
+      else
+	{
+	  ret->val = multiVal_subtract (exprNode_getValue (e1),
+					exprNode_getValue (e2));
+	}
+      
+      tr1 = ctype_fixArrayPtr (tr1);
+      
+      if ((ctype_isRealPointer (tr1) && !exprNode_isNullValue (e1))
+	  && (!ctype_isRealPointer (tr2) && ctype_isRealInt (tr2)))
+	{
+	  /* pointer + int */
 	  
-	case TPLUS:		/* addition and subtraction:               */
-	case TMINUS:		/*    pointer, int     -> pointer          */
-	case SUB_ASSIGN:	/*    int, pointer     -> pointer          */
-	case ADD_ASSIGN:	/*    numeric, numeric -> numeric          */
-
-	  if (opid == TPLUS || opid == ADD_ASSIGN)
+	  if (context_msgPointerArith ())
 	    {
-	      ret->val = multiVal_add (exprNode_getValue (e1),
-				       exprNode_getValue (e2));
+	      voptgenerror
+		(FLG_POINTERARITH,
+		 message ("Pointer arithmetic (%t, %t): %s", 
+			  te1, te2, exprNode_unparse (ret)),
+		 e1->loc);
+	    }
+	  
+	  /*
+	  ** Swap terms so e1 is always the pointer
+	  */
+	  
+	  if (ctype_isRealPointer (tr1))
+	    {
+	      ;
 	    }
 	  else
 	    {
-	      ret->val = multiVal_subtract (exprNode_getValue (e1),
-					    exprNode_getValue (e2));
+	      exprNode_swap (e1, e2);
 	    }
-
-	  tr1 = ctype_fixArrayPtr (tr1);
-
-	  if ((ctype_isRealPointer (tr1) && !exprNode_isNullValue (e1))
-	      && (!ctype_isRealPointer (tr2) && ctype_isRealInt (tr2)))
+	  
+	  if (sRef_possiblyNull (e1->sref)
+	      && !usymtab_isGuarded (e1->sref))
 	    {
-	      /* pointer + int */
-
-	      if (context_msgPointerArith ())
-		{
-		  voptgenerror
-		    (FLG_POINTERARITH,
-		     message ("Pointer arithmetic (%t, %t): %s", 
-			      te1, te2, exprNode_unparse (ret)),
-		     e1->loc);
+	      voptgenerror
+		(FLG_NULLPOINTERARITH,
+		 message ("Pointer arithmetic involving possibly "
+			  "null pointer %s: %s", 
+			  exprNode_unparse (e1), 
+			  exprNode_unparse (ret)),
+		 e1->loc);
+	    }
+	  
+	  ret->sref = sRef_copy (e1->sref);
+	  
+	  /* start modifications */
+	  /* added by Seejo on 4/16/2000 */
+	  
+	  /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+	     status */
+	  if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
+	    int val;
+	    /*drl 1-4-2002
+	      added ugly fixed to stop
+	      program from crashing on point + int +int
+	      one day I'll fix this or ask Seejo wtf the codes supposed to do. */
+	    
+	    if (!multiVal_isInt (e2->val) )
+	      break;
+	    /*end drl*/
+	    
+	    val = (int) multiVal_forceInt (e2->val);
+	    
+	    /* Operator : + or += */
+	    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+	      if (sRef_getSize(e1->sref) >= val) {/* Incrementing the pointer by 
+						     val should not result in a 
+						     size < 0 (size = 0 is ok !) */
+		
+		sRef_setSize (ret->sref, sRef_getSize(e1->sref) - val);
+		
+		if (sRef_getLen(e1->sref) == val) { /* i.e. the character at posn val is \0 */
+		  sRef_setNotNullTerminatedState(ret->sref);
+		  sRef_resetLen (ret->sref);
+		} else {
+		  sRef_setNullTerminatedState(ret->sref);
+		  sRef_setLen (ret->sref, sRef_getLen(e1->sref) - val);
 		}
-
+	      }
+	    }
+	    
+	    /* Operator : - or -= */
+	    if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+	      if (sRef_getSize(e1->sref) >= 0) {
+		sRef_setSize (ret->sref, sRef_getSize(e1->sref) + val);
+		sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
+	      }
+	    }
+	  }
+	  
+	  /* end modifications */  
+	  
+	  sRef_setNullError (ret->sref);
+	  
+	  /*
+	  ** Fixed for 2.2c: the alias state of ptr + int is dependent,
+	  ** since is points to storage that should not be deallocated
+	  ** through this pointer.
+	  */
+	  
+	  if (sRef_isOnly (ret->sref) 
+	      || sRef_isFresh (ret->sref)) 
+	    {
+	      sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
+	    }
+	  
+	  tret = e1->typ;
+	}
+      else if ((!ctype_isRealPointer(tr1) && ctype_isRealInt (tr1)) 
+	       && (ctype_isRealPointer (tr2) && !exprNode_isNullValue (e2)))
+	{
+	  if (context_msgPointerArith ())
+	    {
+	      voptgenerror 
+		(FLG_POINTERARITH,
+		 message ("Pointer arithmetic (%t, %t): %s", 
+			  te1, te2, exprNode_unparse (ret)),
+		 e1->loc);
+	    }
+	  
+	  if (sRef_possiblyNull (e1->sref)
+	      && !usymtab_isGuarded (e1->sref))
+	    {
+	      voptgenerror
+		(FLG_NULLPOINTERARITH,
+		 message ("Pointer arithmetic involving possibly "
+			  "null pointer %s: %s", 
+			  exprNode_unparse (e2), 
+			  exprNode_unparse (ret)),
+		 e2->loc);
+	    }
+	  
+	  ret->sref = sRef_copy (e2->sref);
+	  
+	  /* start modifications */
+	  /* added by Seejo on 4/16/2000 */
+	  
+	  /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+	     status */
+	  
+	  if ((sRef_isPossiblyNullTerminated (e2->sref)) || (sRef_isNullTerminated(e2->sref))) {
+	    int val = (int) multiVal_forceInt (e1->val);
+	    
+	    /* Operator : + or += */
+	    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+	      if (sRef_getSize(e2->sref) >= val) {/* Incrementing the pointer by 
+						     val should not result in a 
+						     size < 0 (size = 0 is ok !) */
+		
+		sRef_setSize (ret->sref, sRef_getSize(e2->sref) - val);
+		
+		if (sRef_getLen(e2->sref) == val) { /* i.e. the character at posn val is \0 */
+		  sRef_setNotNullTerminatedState(ret->sref);
+		  sRef_resetLen (ret->sref);
+		} else {
+		  sRef_setNullTerminatedState(ret->sref);
+		  sRef_setLen (ret->sref, sRef_getLen(e2->sref) - val);
+		}
+	      }
+	    }
+	    
+	    /* Operator : - or -= */
+	    if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+	      if (sRef_getSize(e2->sref) >= 0) {
+		sRef_setSize (ret->sref, sRef_getSize(e2->sref) + val);
+		sRef_setLen (ret->sref, sRef_getLen(e2->sref) + val);
+	      }
+	    }
+	  }
+	  /* end modifications */
+	  
+	  sRef_setNullError (ret->sref);
+	  
+	  /*
+	  ** Fixed for 2.2c: the alias state of ptr + int is dependent,
+	  ** since is points to storage that should not be deallocated
+	  ** through this pointer.
+	  */
+	  
+	  if (sRef_isOnly (ret->sref) 
+	      || sRef_isFresh (ret->sref)) {
+	    sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
+	  }
+	  
+	  tret = e2->typ;
+	  ret->sref = e2->sref;
+	}
+      else
+	{
+	  tret = checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
+	}
+      
+      break;
+      
+    case LEFT_ASSIGN:   
+    case RIGHT_ASSIGN:
+    case LEFT_OP:
+    case RIGHT_OP:
+    case TAMPERSAND:    /* bitwise & */
+    case AND_ASSIGN:       
+    case TCIRC:         /* ^ (XOR) */
+    case TBAR:
+    case XOR_ASSIGN:
+    case OR_ASSIGN:
+      {
+	bool reported = FALSE;
+	
+	/*
+	** Shift Operator 
+	*/
+	
+	if (opid == LEFT_OP || opid == LEFT_ASSIGN
+	    || opid == RIGHT_OP || opid == RIGHT_ASSIGN) 
+	  {
+	    /*
+	    ** evans 2002-01-01: fixed this to follow ISO 6.5.7.
+	    */
+	    
+	    if (!ctype_isUnsigned (tr2)
+		&& !exprNode_isNonNegative (e2))
+	      {
+		reported = optgenerror 
+		  (FLG_SHIFTNEGATIVE,
+		   message ("Right operand of %s may be negative (%t): %s",
+			    lltok_unparse (op), te2,
+			    exprNode_unparse (ret)),
+		   e2->loc);
+	      }
+	    
+	    if (!ctype_isUnsigned (tr1)
+		&& !exprNode_isNonNegative (e1))
+	      {
+		reported = optgenerror 
+		  (FLG_SHIFTIMPLEMENTATION,
+		   message ("Left operand of %s may be negative (%t): %s",
+			    lltok_unparse (op), te1,
+			    exprNode_unparse (ret)),
+		   e1->loc);
+	      }
+	    
+	    /*
+	    ** Should check size of right operand also...
+	    */
+	    
+	  }
+	else
+	  {
+	    if (!ctype_isUnsigned (tr1)) 
+	      {
+		if (exprNode_isNonNegative (e1)) {
+		  ;
+		} else {
+		  reported = optgenerror 
+		    (FLG_BITWISEOPS,
+		     message ("Left operand of %s is not unsigned value (%t): %s",
+			      lltok_unparse (op), te1,
+			      exprNode_unparse (ret)),
+		     e1->loc);
+		  
+		  if (reported) {
+		    te1 = ctype_uint;
+		  }
+		}
+	      }
+	    else 
+	      {
+		if (!ctype_isUnsigned (tr2)) 
+		  {
+		    if (!exprNode_isNonNegative (e2)) {
+		      reported = optgenerror 
+			(FLG_BITWISEOPS,
+			 message ("Right operand of %s is not unsigned value (%t): %s",
+				  lltok_unparse (op), te2,
+				  exprNode_unparse (ret)),
+			 e2->loc);
+		    }
+		  }
+	      }
+	  }
+	
+	if (!reported) 
+	  {
+	    if (!checkIntegral (e1, e2, ret, op)) {
+	      te1 = ctype_unknown;
+	    }
+	  }
+	
+	DPRINTF (("Set: %s", ctype_unparse (te1)));	    
+	
+	/*
+	** tret is the widest type of te1 and te2 
+	*/
+	
+	tret = ctype_widest (te1, te2);
+	break;
+      }
+    case MOD_ASSIGN:
+    case TPERCENT:		
+      if (checkIntegral (e1, e2, ret, op)) {
+	tret = te1;
+      } else {
+	tret = ctype_unknown;
+      }
+      break;
+    case EQ_OP: 
+    case NE_OP:
+    case TLT:		/* comparisons                           */
+    case TGT:		/*    numeric, numeric -> bool           */
+      
+      DPRINTF (("Here we go: %s / %s",
+		ctype_unparse (tr1), ctype_unparse (tr2)));
+      
+      if ((ctype_isReal (tr1) && !ctype_isInt (tr1))
+	  || (ctype_isReal (tr2) && !ctype_isInt (tr2)))
+	{
+	  ctype rtype = tr1;
+	  bool fepsilon = FALSE;
+	  
+	  if (!ctype_isReal (rtype) || ctype_isInt (rtype))
+	    {
+	      rtype = tr2;
+	    }
+	  
+	  if (opid == TLT || opid == TGT)
+	    {
+	      uentry ue1 = exprNode_getUentry (e1);
+	      uentry ue2 = exprNode_getUentry (e2);
+	      
 	      /*
-	      ** Swap terms so e1 is always the pointer
+	      ** FLT_EPSILON, etc. really is a variable, not
+	      ** a constant.
 	      */
-
-	      if (ctype_isRealPointer (tr1))
+	      
+	      if (uentry_isVariable (ue1))
+		{
+		  cstring uname = uentry_rawName (ue1);
+		  
+		  if (cstring_equalLit (uname, "FLT_EPSILON")
+		      || cstring_equalLit (uname, "DBL_EPSILON")
+		      || cstring_equalLit (uname, "LDBL_EPSILON"))
+		    {
+		      fepsilon = TRUE;
+		    }
+		}
+	      
+	      if (uentry_isVariable (ue2))
+		{
+		  cstring uname = uentry_rawName (ue2);
+		  
+		  if (cstring_equalLit (uname, "FLT_EPSILON")
+		      || cstring_equalLit (uname, "DBL_EPSILON")
+		      || cstring_equalLit (uname, "LDBL_EPSILON"))
+		    {
+		      fepsilon = TRUE;
+		    }
+		}
+	    }
+	  
+	  if (fepsilon)
+	    {
+	      ; /* Don't complain. */
+	    }
+	  else
+	    {
+	      voptgenerror
+		(FLG_REALCOMPARE,
+		 message ("Dangerous comparison involving %s types: %s",
+			  ctype_unparse (rtype),
+			  exprNode_unparse (ret)),
+		 ret->loc);
+	    }
+	}
+      /*@fallthrough@*/
+    case LE_OP:
+    case GE_OP:
+      
+      /*
+      ** Types should match.
+      */
+      
+      DPRINTF (("Match types: %s / %s", exprNode_unparse (e1),
+		exprNode_unparse (e2)));
+      
+      if (!exprNode_matchTypes (e1, e2))
+	{
+	  hasError = gentypeerror 
+	    (te1, e1, te2, e2,
+	     message ("Operands of %s have incompatible types (%t, %t): %s",
+		      lltok_unparse (op), te1, te2, exprNode_unparse (ret)),
+	     e1->loc);
+	  
+	}
+      
+      if (hasError 
+	  || (ctype_isForceRealNumeric (&tr1)
+	      && ctype_isForceRealNumeric (&tr2)) ||
+	  (ctype_isRealPointer (tr1) && ctype_isRealPointer (tr2)))
+	{
+	  ; /* okay */
+	}
+      else
+	{
+	  if ((ctype_isRealNumeric (tr1) && ctype_isRealPointer (tr2)) ||
+	      (ctype_isRealPointer (tr1) && ctype_isRealNumeric (tr2)))
+	    {
+	      voptgenerror 
+		(FLG_PTRNUMCOMPARE,
+		 message ("Comparison of pointer and numeric (%t, %t): %s",
+			  te1, te2, exprNode_unparse (ret)),
+		 e1->loc);
+	    }
+	  else
+	    {
+	      (void) checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
+	    }
+	  tret = ctype_bool;
+	}
+      
+      /* certain comparisons on unsigned's and zero look suspicious */
+      
+      if (opid == TLT || opid == LE_OP || opid == GE_OP)
+	{
+	  if ((ctype_isUnsigned (tr1) && exprNode_isZero (e2))
+	      || (ctype_isUnsigned (tr2) && exprNode_isZero (e1)))
+	    {
+	      voptgenerror 
+		(FLG_UNSIGNEDCOMPARE,
+		 message ("Comparison of unsigned value involving zero: %s",
+			  exprNode_unparse (ret)),
+		 e1->loc);
+	    }
+	}
+      
+      /* EQ_OP should NOT be used with booleans (unless one is FALSE) */
+      
+      if ((opid == EQ_OP || opid == NE_OP) && 
+	  ctype_isDirectBool (tr1) && ctype_isDirectBool (tr2))
+	{
+	  /*
+	  ** is one a variable?
+	  */
+	  
+	  if (uentry_isVariable (exprNode_getUentry (e1))
+	      || uentry_isVariable (exprNode_getUentry (e2)))
+	    {
+	      /*
+	      ** comparisons with FALSE are okay
+	      */
+	      
+	      if (exprNode_isFalseConstant (e1)
+		  || exprNode_isFalseConstant (e2))
 		{
 		  ;
 		}
 	      else
 		{
-		  exprNode_swap (e1, e2);
-		}
-
-
-	      if (sRef_possiblyNull (e1->sref)
-		  && !usymtab_isGuarded (e1->sref))
-		{
 		  voptgenerror
-		    (FLG_NULLPOINTERARITH,
-		     message ("Pointer arithmetic involving possibly "
-			      "null pointer %s: %s", 
-			      exprNode_unparse (e1), 
-			      exprNode_unparse (ret)),
-		     e1->loc);
-		}
-
-	      ret->sref = sRef_copy (e1->sref);
-
-	      /* start modifications */
-	      /* added by Seejo on 4/16/2000 */
-
-	      /* Arithmetic operations on pointers wil modify the size/len/null terminated 
-		 status */
-	      if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
-		int val;
-		/*drl 1-4-2002
-		  added ugly fixed to stop
-		  program from crashing on point + int +int
-		  one day I'll fix this or ask Seejo wtf the codes supposed to do. */
-		
-		if (!multiVal_isInt (e2->val) )
-		  break;
-		/*end drl*/
-		
-		val = (int) multiVal_forceInt (e2->val);
-		
-		/* Operator : + or += */
-		if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
-		  if (sRef_getSize(e1->sref) >= val) {/* Incrementing the pointer by 
-							 val should not result in a 
-							 size < 0 (size = 0 is ok !) */
-		    
-		    sRef_setSize (ret->sref, sRef_getSize(e1->sref) - val);
-		    
-		    if (sRef_getLen(e1->sref) == val) { /* i.e. the character at posn val is \0 */
-		      sRef_setNotNullTerminatedState(ret->sref);
-		      sRef_resetLen (ret->sref);
-		    } else {
-		      sRef_setNullTerminatedState(ret->sref);
-		      sRef_setLen (ret->sref, sRef_getLen(e1->sref) - val);
-		    }
-		  }
-		}
-		
-		/* Operator : - or -= */
-		if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
-		  if (sRef_getSize(e1->sref) >= 0) {
-		    sRef_setSize (ret->sref, sRef_getSize(e1->sref) + val);
-		    sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
-		  }
-		}
-	      }
-	      
-	      /* end modifications */  
-
-	      sRef_setNullError (ret->sref);
-
-	      /*
-	      ** Fixed for 2.2c: the alias state of ptr + int is dependent,
-	      ** since is points to storage that should not be deallocated
-	      ** through this pointer.
-	      */
-
-	      if (sRef_isOnly (ret->sref) 
-		  || sRef_isFresh (ret->sref)) 
-		{
-		  sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
-		}
-	      
-	      tret = e1->typ;
-	    }
-	  else if ((!ctype_isRealPointer(tr1) && ctype_isRealInt (tr1)) 
-		   && (ctype_isRealPointer (tr2) && !exprNode_isNullValue (e2)))
-	    {
-	      if (context_msgPointerArith ())
-		{
-		  voptgenerror 
-		    (FLG_POINTERARITH,
-		     message ("Pointer arithmetic (%t, %t): %s", 
-			      te1, te2, exprNode_unparse (ret)),
-		     e1->loc);
-		}
-
-	      if (sRef_possiblyNull (e1->sref)
-		  && !usymtab_isGuarded (e1->sref))
-		{
-		  voptgenerror
-		    (FLG_NULLPOINTERARITH,
-		     message ("Pointer arithmetic involving possibly "
-			      "null pointer %s: %s", 
-			      exprNode_unparse (e2), 
-			      exprNode_unparse (ret)),
-		     e2->loc);
-		}
-
-	      ret->sref = sRef_copy (e2->sref);
-
-	      /* start modifications */
-	      /* added by Seejo on 4/16/2000 */
-	      
-	      /* Arithmetic operations on pointers wil modify the size/len/null terminated 
-		 status */
-	      
-	      if ((sRef_isPossiblyNullTerminated (e2->sref)) || (sRef_isNullTerminated(e2->sref))) {
-		int val = (int) multiVal_forceInt (e1->val);
-		
-		/* Operator : + or += */
-		if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
-		  if (sRef_getSize(e2->sref) >= val) {/* Incrementing the pointer by 
-							 val should not result in a 
-							 size < 0 (size = 0 is ok !) */
-		    
-		    sRef_setSize (ret->sref, sRef_getSize(e2->sref) - val);
-		    
-		    if (sRef_getLen(e2->sref) == val) { /* i.e. the character at posn val is \0 */
-		      sRef_setNotNullTerminatedState(ret->sref);
-		      sRef_resetLen (ret->sref);
-		    } else {
-		      sRef_setNullTerminatedState(ret->sref);
-		      sRef_setLen (ret->sref, sRef_getLen(e2->sref) - val);
-		    }
-		  }
-		}
-		
-		/* Operator : - or -= */
-		if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
-		  if (sRef_getSize(e2->sref) >= 0) {
-		    sRef_setSize (ret->sref, sRef_getSize(e2->sref) + val);
-		    sRef_setLen (ret->sref, sRef_getLen(e2->sref) + val);
-		  }
-		}
-	      }
-	      /* end modifications */
-	      
-	      sRef_setNullError (ret->sref);
-	      
-	      /*
-	      ** Fixed for 2.2c: the alias state of ptr + int is dependent,
-	      ** since is points to storage that should not be deallocated
-	      ** through this pointer.
-	      */
-	      
-	      if (sRef_isOnly (ret->sref) 
-		  || sRef_isFresh (ret->sref)) {
-		sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
-	      }
-	      
-	      tret = e2->typ;
-	      ret->sref = e2->sref;
-	    }
-	  else
-	    {
-	      tret = checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
-	    }
-	  
-	  break;
-
-	case LEFT_ASSIGN:   
-	case RIGHT_ASSIGN:
-	case LEFT_OP:
-	case RIGHT_OP:
-	case TAMPERSAND:    /* bitwise & */
-	case AND_ASSIGN:       
-	case TCIRC:         /* ^ (XOR) */
-	case TBAR:
-	case XOR_ASSIGN:
-	case OR_ASSIGN:
-	  {
-	    bool reported = FALSE;
-	    
-	    /*
-	    ** Shift Operator 
-	    */
-
-	    if (opid == LEFT_OP || opid == LEFT_ASSIGN
-		|| opid == RIGHT_OP || opid == RIGHT_ASSIGN) 
-	      {
-		/*
-		** evans 2002-01-01: fixed this to follow ISO 6.5.7.
-		*/
-		
-		if (!ctype_isUnsigned (tr2)
-		    && !exprNode_isNonNegative (e2))
-		  {
-		    reported = optgenerror 
-		      (FLG_SHIFTNEGATIVE,
-		       message ("Right operand of %s may be negative (%t): %s",
-				lltok_unparse (op), te2,
-				exprNode_unparse (ret)),
-		       e2->loc);
-		  }
-		
-		if (!ctype_isUnsigned (tr1)
-		    && !exprNode_isNonNegative (e1))
-		  {
-		    reported = optgenerror 
-		      (FLG_SHIFTIMPLEMENTATION,
-		       message ("Left operand of %s may be negative (%t): %s",
-				lltok_unparse (op), te1,
-				exprNode_unparse (ret)),
-		       e1->loc);
-		  }
-		
-		/*
-		** Should check size of right operand also...
-		*/
-		
-	      }
-	    else
-	      {
-		if (!ctype_isUnsigned (tr1)) 
-		  {
-		    if (exprNode_isNonNegative (e1)) {
-		      ;
-		    } else {
-		      reported = optgenerror 
-			(FLG_BITWISEOPS,
-			 message ("Left operand of %s is not unsigned value (%t): %s",
-				  lltok_unparse (op), te1,
-				  exprNode_unparse (ret)),
-			 e1->loc);
-		      
-		      if (reported) {
-			te1 = ctype_uint;
-		      }
-		    }
-		  }
-		else 
-		  {
-		    if (!ctype_isUnsigned (tr2)) 
-		      {
-			if (!exprNode_isNonNegative (e2)) {
-			  reported = optgenerror 
-			    (FLG_BITWISEOPS,
-			     message ("Right operand of %s is not unsigned value (%t): %s",
-				      lltok_unparse (op), te2,
-				      exprNode_unparse (ret)),
-			     e2->loc);
-			}
-		      }
-		  }
-	      }
-
-	    if (!reported) 
-	      {
-		if (!checkIntegral (e1, e2, ret, op)) {
-		  te1 = ctype_unknown;
-		}
-	      }
-	    
-	    DPRINTF (("Set: %s", ctype_unparse (te1)));	    
-
-	    /*
-	    ** tret is the widest type of te1 and te2 
-	    */
-
-	    tret = ctype_widest (te1, te2);
-	    break;
-	  }
-	case MOD_ASSIGN:
-	case TPERCENT:		
-	  if (checkIntegral (e1, e2, ret, op)) {
-	    tret = te1;
-	  } else {
-	    tret = ctype_unknown;
-	  }
-	  break;
-	case EQ_OP: 
-	case NE_OP:
-	case TLT:		/* comparisons                           */
-	case TGT:		/*    numeric, numeric -> bool           */
-
-	  DPRINTF (("Here we go: %s / %s",
-		    ctype_unparse (tr1), ctype_unparse (tr2)));
-
-	  if ((ctype_isReal (tr1) && !ctype_isInt (tr1))
-	      || (ctype_isReal (tr2) && !ctype_isInt (tr2)))
-	    {
-	      ctype rtype = tr1;
-	      bool fepsilon = FALSE;
-
-	      if (!ctype_isReal (rtype) || ctype_isInt (rtype))
-		{
-		  rtype = tr2;
-		}
-	      
-	      if (opid == TLT || opid == TGT)
-		{
-		  uentry ue1 = exprNode_getUentry (e1);
-		  uentry ue2 = exprNode_getUentry (e2);
-
-		  /*
-		  ** FLT_EPSILON, etc. really is a variable, not
-		  ** a constant.
-		  */
-
-		  if (uentry_isVariable (ue1))
-		    {
-		      cstring uname = uentry_rawName (ue1);
-
-		      if (cstring_equalLit (uname, "FLT_EPSILON")
-			  || cstring_equalLit (uname, "DBL_EPSILON")
-			  || cstring_equalLit (uname, "LDBL_EPSILON"))
-			{
-			  fepsilon = TRUE;
-			}
-		    }
-
-		  if (uentry_isVariable (ue2))
-		    {
-		      cstring uname = uentry_rawName (ue2);
-
-		      if (cstring_equalLit (uname, "FLT_EPSILON")
-			  || cstring_equalLit (uname, "DBL_EPSILON")
-			  || cstring_equalLit (uname, "LDBL_EPSILON"))
-			{
-			  fepsilon = TRUE;
-			}
-		    }
-		}
-
-	      if (fepsilon)
-		{
-		  ; /* Don't complain. */
-		}
-	      else
-		{
-		  voptgenerror
-		    (FLG_REALCOMPARE,
-		     message ("Dangerous comparison involving %s types: %s",
-			      ctype_unparse (rtype),
-			      exprNode_unparse (ret)),
-		     ret->loc);
-		}
-	    }
-	  /*@fallthrough@*/
-	case LE_OP:
-	case GE_OP:
-
-	  /*
-	  ** Types should match.
-	  */
-
-	  DPRINTF (("Match types: %s / %s", exprNode_unparse (e1),
-		    exprNode_unparse (e2)));
-
-	  if (!exprNode_matchTypes (e1, e2))
-	    {
-	      hasError = gentypeerror 
-		(te1, e1, te2, e2,
-		 message ("Operands of %s have incompatible types (%t, %t): %s",
-			  lltok_unparse (op), te1, te2, exprNode_unparse (ret)),
-		 e1->loc);
-	      
-	    }
-
-	  if (hasError 
-	      || (ctype_isForceRealNumeric (&tr1)
-		  && ctype_isForceRealNumeric (&tr2)) ||
-	      (ctype_isRealPointer (tr1) && ctype_isRealPointer (tr2)))
-	    {
-	      ; /* okay */
-	    }
-	  else
-	    {
-	      if ((ctype_isRealNumeric (tr1) && ctype_isRealPointer (tr2)) ||
-		  (ctype_isRealPointer (tr1) && ctype_isRealNumeric (tr2)))
-		{
-		  voptgenerror 
-		    (FLG_PTRNUMCOMPARE,
-		     message ("Comparison of pointer and numeric (%t, %t): %s",
-			      te1, te2, exprNode_unparse (ret)),
-		     e1->loc);
-		}
-	      else
-		{
-		  (void) checkNumerics (tr1, tr2, te1, te2, e1, e2, op);
-		}
-	      tret = ctype_bool;
-	    }
-
-	  /* certain comparisons on unsigned's and zero look suspicious */
-
-	  if (opid == TLT || opid == LE_OP || opid == GE_OP)
-	    {
-	      if ((ctype_isUnsigned (tr1) && exprNode_isZero (e2))
-		  || (ctype_isUnsigned (tr2) && exprNode_isZero (e1)))
-		{
-		  voptgenerror 
-		    (FLG_UNSIGNEDCOMPARE,
-		     message ("Comparison of unsigned value involving zero: %s",
-			      exprNode_unparse (ret)),
+		    (FLG_BOOLCOMPARE,
+		     message 
+		     ("Use of %q with %s variables (risks inconsistency because "
+		      "of multiple true values): %s",
+		      cstring_makeLiteral ((opid == EQ_OP) ? "==" : "!="),
+		      context_printBoolName (), exprNode_unparse (ret)),
 		     e1->loc);
 		}
 	    }
-
-	  /* EQ_OP should NOT be used with booleans (unless one is FALSE) */
-	  
-	  if ((opid == EQ_OP || opid == NE_OP) && 
-	      ctype_isDirectBool (tr1) && ctype_isDirectBool (tr2))
+	}
+      break;
+      
+    case AND_OP:		/* bool, bool -> bool */
+    case OR_OP:
+      if (ctype_isForceRealBool (&tr1) && ctype_isForceRealBool (&tr2))
+	{
+	  ; 
+	}
+      else
+	{
+	  if (context_maybeSet (FLG_BOOLOPS))
 	    {
-	      /*
-	      ** is one a variable?
-	      */
-
-	      if (uentry_isVariable (exprNode_getUentry (e1))
-		  || uentry_isVariable (exprNode_getUentry (e2)))
+	      if (!ctype_isRealBool (te1) && !ctype_isRealBool (te2))
 		{
-		  /*
-		  ** comparisons with FALSE are okay
-		  */
-
-		  if (exprNode_isFalseConstant (e1)
-		      || exprNode_isFalseConstant (e2))
-		    {
-		      ;
-		    }
-		  else
-		    {
-		      voptgenerror
-			(FLG_BOOLCOMPARE,
-			 message 
-			 ("Use of %q with %s variables (risks inconsistency because "
-			  "of multiple true values): %s",
-			  cstring_makeLiteral ((opid == EQ_OP) ? "==" : "!="),
-			  context_printBoolName (), exprNode_unparse (ret)),
-			 e1->loc);
-		    }
-		}
-	    }
-	  break;
-	  
-	case AND_OP:		/* bool, bool -> bool */
-	case OR_OP:
-
-	  if (ctype_isForceRealBool (&tr1) && ctype_isForceRealBool (&tr2))
-	    {
-	      ; 
-	    }
-	  else
-	    {
-	      if (context_maybeSet (FLG_BOOLOPS))
-		{
-		  if (!ctype_isRealBool (te1) && !ctype_isRealBool (te2))
-		    {
-		      if (ctype_sameName (te1, te2))
-			{
-			  voptgenerror 
-			    (FLG_BOOLOPS,
-			     message ("Operands of %s are non-boolean (%t): %s",
-				      lltok_unparse (op), te1,
-				      exprNode_unparse (ret)),
-			     e1->loc);
-			}
-		      else
-			{
-			  voptgenerror 
-			    (FLG_BOOLOPS,
-			     message
-			     ("Operands of %s are non-booleans (%t, %t): %s",
-			      lltok_unparse (op), te1, te2, exprNode_unparse (ret)),
-			     e1->loc);
-			}
-		    }
-		  else if (!ctype_isRealBool (te1))
+		  if (ctype_sameName (te1, te2))
 		    {
 		      voptgenerror 
 			(FLG_BOOLOPS,
-			 message ("Left operand of %s is non-boolean (%t): %s",
-				  lltok_unparse (op), te1, exprNode_unparse (ret)),
+			 message ("Operands of %s are non-boolean (%t): %s",
+				  lltok_unparse (op), te1,
+				  exprNode_unparse (ret)),
 			 e1->loc);
-		    }
-		  else if (!ctype_isRealBool (te2))
-		    {
-		      voptgenerror
-			(FLG_BOOLOPS,
-			 message ("Right operand of %s is non-boolean (%t): %s",
-				  lltok_unparse (op), te2, exprNode_unparse (ret)),
-			 e2->loc);
 		    }
 		  else
 		    {
-		      ;
+		      voptgenerror 
+			(FLG_BOOLOPS,
+			 message
+			 ("Operands of %s are non-booleans (%t, %t): %s",
+			  lltok_unparse (op), te1, te2, exprNode_unparse (ret)),
+			 e1->loc);
 		    }
 		}
-	      tret = ctype_bool;
+	      else if (!ctype_isRealBool (te1))
+		{
+		  voptgenerror 
+		    (FLG_BOOLOPS,
+		     message ("Left operand of %s is non-boolean (%t): %s",
+			      lltok_unparse (op), te1, exprNode_unparse (ret)),
+		     e1->loc);
+		}
+	      else if (!ctype_isRealBool (te2))
+		{
+		  voptgenerror
+		    (FLG_BOOLOPS,
+		     message ("Right operand of %s is non-boolean (%t): %s",
+			      lltok_unparse (op), te2, exprNode_unparse (ret)),
+		     e2->loc);
+		}
+	      else
+		{
+		  ;
+		}
 	    }
-	  break;
-	default: {
-	    llfatalbug 
-	      (cstring_makeLiteral 
-	       ("There has been a problem in the parser. This is believed to result "
-		"from a problem with bison v. 1.25.  Please try rebuidling Splint "
-		"using the pre-compiled grammar files by commenting out the "
-		"BISON= line in the top-level Makefile."));
-	  }
+	  tret = ctype_bool;
 	}
+      break;
+    default: 
+      llfatalbug 
+	(cstring_makeLiteral 
+	 ("There has been a problem in the parser. This is believed to result "
+	  "from a problem with bison v. 1.25.  Please try rebuidling Splint "
+	  "using the pre-compiled grammar files by commenting out the "
+	  "BISON= line in the top-level Makefile."));
     }
 
-  DPRINTF (("Return type: %s", ctype_unparse (tret)));
+skiprest:
   ret->typ = tret;
+  DPRINTF (("Return type %s: %s", exprNode_unparse (ret), ctype_unparse (tret)));
 
   exprNode_checkUse (ret, e1->sref, e1->loc);  
   exprNode_mergeUSs (ret, e2);
@@ -6157,7 +6191,23 @@ exprNode_assign (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2, /*@only@*/ llto
 		{
 		  if (exprNode_matchLiteral (te1, e2))
 		    {
-		      ;
+		      DPRINTF (("Literals match: %s / %s", 
+				ctype_unparse (te1), exprNode_unparse (e2)));
+		      if (ctype_isNumAbstract (te1)) {
+			if (!context_flagOn (FLG_NUMABSTRACTLIT, e1->loc)) {
+			  (void) llgenhinterror
+			    (FLG_NUMABSTRACT,
+			     message 
+			     ("Assignment of %t literal to numabstract type %t: %s %s %s",
+			      te2, te1,
+			      exprNode_unparse (e1),
+			      lltok_unparse (op), 
+			      exprNode_unparse (e2)),
+			     cstring_makeLiteral 
+			     ("Use +numabstractlit to allow numeric literals to be used as numabstract values"),
+			     e1->loc);
+			}
+		      }
 		    }
 		  else
 		    {
@@ -8619,7 +8669,7 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 	  if (multiVal_isDefined (e->val))
 	    {
 	      cstring slit = multiVal_forceString (e->val);
-	      sRef_setLen (ret->sref, cstring_length (slit) + 1);
+	      sRef_setLen (ret->sref, size_toInt (cstring_length (slit) + 1));
 	    }
 
 	  if (ctype_isFixedArray (ct))
@@ -9723,7 +9773,7 @@ exprNode_isInitializer (exprNode e)
 }
 
 bool 
-exprNode_isCharLit (exprNode e)
+exprNode_isCharLiteral (exprNode e)
 {
   if (exprNode_isDefined (e))
     {
@@ -9736,7 +9786,7 @@ exprNode_isCharLit (exprNode e)
 }
 
 bool
-exprNode_isNumLit (exprNode e)
+exprNode_isNumLiteral (exprNode e)
 {
   if (exprNode_isDefined (e))
     {
@@ -9777,6 +9827,12 @@ exprNode_matchLiteral (ctype expected, exprNode e)
 	    {
 	      long int val = multiVal_forceInt (m);
 	      
+	      if (ctype_isNumAbstract (expected)  
+		  && context_flagOn (FLG_NUMABSTRACTLIT, exprNode_loc (e))) 
+		{
+		  return TRUE;
+		}
+
 	      if (ctype_isDirectBool (ctype_realishType (expected)))
 		{
 		  if (val == 0) 
@@ -10647,30 +10703,58 @@ static ctype
 	  DPRINTF (("No error: [%s] %s / [%s]  %s",
 		    exprNode_unparse (e1), ctype_unparse (tr1),
 		    exprNode_unparse (e2), ctype_unparse (tr2)));
+
+	  ret = ctype_biggerType (tr1, tr2);
 	}
       else
 	{
-	  (void) gentypeerror 
-	    (tr1, e1, tr2, e2,
-	     message ("Incompatible types for %s (%s, %s): %s %s %s",
-		      lltok_unparse (op),
-		      ctype_unparse (te1),
-		      ctype_unparse (te2),
-		      exprNode_unparse (e1), lltok_unparse (op), 
-		      exprNode_unparse (e2)),
-	     e1->loc);
+	  if (ctype_isNumAbstract (tr1) 
+	      && exprNode_isNumLiteral (e2)
+	      && context_flagOn (FLG_NUMABSTRACTLIT, e1->loc))
+	    {
+	      ret = tr1; /* No error */
+	    }
+	  else if (ctype_isNumAbstract (tr2)
+		   && exprNode_isNumLiteral (e1)
+		   && context_flagOn (FLG_NUMABSTRACTLIT, e1->loc))
+	    {
+	      ret = tr2;
+	    }
+	  else 
+	    {
+	      if (gentypeerror 
+		  (tr1, e1, tr2, e2,
+		   message ("Incompatible types for %s (%s, %s): %s %s %s",
+			    lltok_unparse (op),
+			    ctype_unparse (te1),
+			    ctype_unparse (te2),
+			    exprNode_unparse (e1), lltok_unparse (op), 
+			    exprNode_unparse (e2)),
+		   e1->loc))
+		{
+		  ret = ctype_unknown;
+		}
+	      else 
+		{
+		  ret = ctype_biggerType (tr1, tr2);
+		}
+	    }
 	}
-      ret = ctype_unknown;
     }
   else
     {
-      if (ctype_isForceRealNumeric (&tr1) && ctype_isForceRealNumeric (&tr2))
+      if (ctype_isNumAbstract (tr1))
+	{
+	  ret = tr1;
+	}
+      else if (ctype_isForceRealNumeric (&tr1)
+	       && ctype_isForceRealNumeric (&tr2))
 	{
 	  ret = ctype_resolveNumerics (tr1, tr2);
 	}
       else if (!context_msgStrictOps ()) 
 	{
-	  	  if (ctype_isPointer (tr1))
+	  if (ctype_isPointer (tr1))
 	    {
 	      if (ctype_isPointer (tr2) && !exprNode_isNullValue (e2))
 		{
@@ -10776,7 +10860,7 @@ static ctype
   return ret;
 }
 
-static void
+static bool
 abstractOpError (ctype tr1, ctype tr2, lltok op, 
 		 /*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, 
 		 fileloc loc1, fileloc loc2)
@@ -10785,26 +10869,48 @@ abstractOpError (ctype tr1, ctype tr2, lltok op,
     {
       if (ctype_match (tr1, tr2))
 	{
-	  voptgenerror
-	    (FLG_ABSTRACT,
-	     message ("Operands of %s are abstract type (%t): %s %s %s",
-		      lltok_unparse (op), tr1, 
-		      exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
-	     loc1);
+	  if (ctype_isRealNumAbstract (tr1)) 
+	    {
+	      ; /* No warning for numabstract types */
+	    } 
+	  else 
+	    {
+	      return optgenerror
+		(FLG_ABSTRACT,
+		 message ("Operands of %s are abstract type (%t): %s %s %s",
+			  lltok_unparse (op), tr1, 
+			  exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
+		 loc1);
+	    }
 	}
       else
 	{
-	  voptgenerror 
-	    (FLG_ABSTRACT,
-	     message ("Operands of %s are abstract types (%t, %t): %s %s %s",
-		      lltok_unparse (op), tr1, tr2, 
-		      exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
-	     loc1);
+	  if (ctype_isRealNumAbstract (tr1) && ctype_isRealNumAbstract (tr2))  
+	    {
+	      return optgenerror 
+		(FLG_NUMABSTRACT,
+		 message
+		 ("Operands of %s are different numabstract types (%t, %t): %s %s %s",
+		  lltok_unparse (op), tr1, tr2, 
+		  exprNode_unparse (e1), 
+		  lltok_unparse (op), exprNode_unparse (e2)),
+		 loc1);
+	    }
+	  else
+	    {
+	      return optgenerror 
+		(FLG_ABSTRACT,
+		 message ("Operands of %s are abstract types (%t, %t): %s %s %s",
+			  lltok_unparse (op), tr1, tr2, 
+			  exprNode_unparse (e1), lltok_unparse (op), 
+			  exprNode_unparse (e2)),
+		 loc1);
+	    }
 	}
     }
-  else if (ctype_isRealAbstract (tr1))
+  else if (ctype_isRealAbstract (tr1) && !ctype_isRealNumAbstract (tr1))
     {
-      voptgenerror
+      return optgenerror
 	(FLG_ABSTRACT,
 	 message ("Left operand of %s is abstract type (%t): %s %s %s",
 		  lltok_unparse (op), tr1, 
@@ -10813,9 +10919,9 @@ abstractOpError (ctype tr1, ctype tr2, lltok op,
     }
   else 
     {
-      if (ctype_isRealAbstract (tr2))
+      if (ctype_isRealAbstract (tr2) && !ctype_isRealNumAbstract (tr2))
 	{
-	  voptgenerror
+	  return optgenerror
 	    (FLG_ABSTRACT,
 	     message ("Right operand of %s is abstract type (%t): %s %s %s",
 		      lltok_unparse (op), tr2, 
@@ -10823,6 +10929,8 @@ abstractOpError (ctype tr1, ctype tr2, lltok op,
 	     loc2);
 	}
     }
+
+  return FALSE;
 }
 
 /*

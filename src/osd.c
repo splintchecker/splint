@@ -868,6 +868,7 @@ static void osd_setWorkingDirectory (void)
     {
       lldiagmsg (message ("Cannot get working directory: %s\n",
 			  lldecodeerror (errno)));
+      osd_cwd = cstring_makeLiteral ("<missing directory>");
     }
   else
     {
@@ -903,7 +904,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
   llassert (cstring_isDefined (cwd2));
   llassert (cstring_isDefined (filename));
 
-  abs_buffer = (char *) dmalloc (size_fromInt (cstring_length (cwd2) + cstring_length (filename) + 2));
+  abs_buffer = (char *) dmalloc (cstring_length (cwd2) + cstring_length (filename) + 2);
   endp = abs_buffer;
   
   /*
@@ -1052,6 +1053,12 @@ cstring osd_outputPath (cstring filename)
   rel_buffer = (char *) dmalloc (filename_len);
   rel_buf_p = rel_buffer;
   *rel_buf_p = '\0';
+
+  if (cwd_p == NULL) 
+    {
+      /* Need to prevent recursive assertion failures */
+      return cstring_copy (filename);
+    }
 
   llassert (cwd_p != NULL);
   llassert (path_p != NULL);

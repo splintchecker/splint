@@ -157,7 +157,18 @@ ctype_createAbstract (typeId u)
   /* requires: ctype_createAbstract (u) is never called more than once for any u. */
   /*           [ tested by cttable_addFullSafe, not really required ]            */
 
-  return (cttable_addFullSafe (ctentry_makeNew (CTK_PLAIN, ctbase_createAbstract (u))));
+  return (cttable_addFullSafe
+	  (ctentry_makeNew (CTK_PLAIN, ctbase_createAbstract (u))));
+}
+
+ctype
+ctype_createNumAbstract (typeId u)
+{
+  /* requires: ctype_createAbstract (u) is never called more than once for any u. */
+  /*           [ tested by cttable_addFullSafe, not really required ]            */
+
+  return (cttable_addFullSafe 
+	  (ctentry_makeNew (CTK_PLAIN, ctbase_createNumAbstract (u))));
 }
 
 int
@@ -257,6 +268,16 @@ ctype_isAbstract (ctype c)
 }
 
 bool
+ctype_isNumAbstract (ctype c)
+{
+  return (!ctype_isUnknown (c) 
+	  && ((ctype_isPlain (c) && ctbase_isNumAbstract (ctype_getCtbaseSafe (c))) ||
+	      (ctype_isConj (c) &&
+	       (ctype_isNumAbstract (ctype_getConjA (c)) 
+		|| ctype_isNumAbstract (ctype_getConjB (c))))));
+}
+
+bool
 ctype_isImmutableAbstract (ctype t)
 {
   return (ctype_isAbstract (t) && !ctype_isMutable (t));
@@ -269,6 +290,15 @@ ctype_isRealAbstract (ctype c)
 	  (ctype_isConj (c) && 
 	   (ctype_isRealAbstract (ctype_getConjA (c)) || 
 	    ctype_isRealAbstract (ctype_getConjB (c)))));
+}
+
+bool
+ctype_isRealNumAbstract (ctype c)
+{
+  return (ctype_isNumAbstract (ctype_realType (c)) ||
+	  (ctype_isConj (c) && 
+	   (ctype_isRealNumAbstract (ctype_getConjA (c)) || 
+	    ctype_isRealNumAbstract (ctype_getConjB (c)))));
 }
 
 /*
@@ -1970,6 +2000,7 @@ ctype_getBaseType (ctype c)
 	      case CT_ENUMLIST:
 	      case CT_BOOL:
 	      case CT_ABST:
+	      case CT_NUMABST:
 	      case CT_FCN:
 	      case CT_STRUCT:
 	      case CT_UNION:
@@ -2796,3 +2827,14 @@ size_t ctype_getArraySize (ctype c)
   return size;
 }
 
+ctype ctype_biggerType (ctype c1, ctype c2)
+{
+  if (ctbase_isBigger (ctype_getCtbaseSafe (c2), ctype_getCtbaseSafe (c1)) )
+    {
+      return c2;
+    }
+  else
+    {
+      return c1;
+    }
+}

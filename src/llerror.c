@@ -638,18 +638,22 @@ llgentypeerroraux (char *srcFile, int srcLine,
     ut2 = ctype_baseArrayPtr (ut2);
   }
 
-  if ((ctype_isFloat (ut1) && ctype_isDouble (ut2))
-      || (ctype_isFloat (ut1) && ctype_isDouble (ut2)))
+  if (ctype_isRealNumAbstract (ut1) && exprNode_isNumLiteral (e2)) 
+    {
+      hcode = FLG_NUMABSTRACTLIT;
+    }
+  else if ((ctype_isFloat (ut1) && ctype_isDouble (ut2))
+	   || (ctype_isFloat (ut1) && ctype_isDouble (ut2)))
     {
       hcode = FLG_FLOATDOUBLE;
     }
-  else if ((exprNode_isCharLit (e1) && ctype_isInt (ut2))
-	   || (exprNode_isCharLit (e2) && ctype_isInt (ut1)))
+  else if ((exprNode_isCharLiteral (e1) && ctype_isInt (ut2))
+	   || (exprNode_isCharLiteral (e2) && ctype_isInt (ut1)))
     {
       hcode = FLG_CHARINTLITERAL;
     }
-  else if ((exprNode_isNumLit (e1) && ctype_isReal (ut2))
-	   || (exprNode_isNumLit (e2) && ctype_isReal (ut1)))
+  else if ((exprNode_isNumLiteral (e1) && ctype_isReal (ut2))
+	   || (exprNode_isNumLiteral (e2) && ctype_isReal (ut1)))
     {
       hcode = FLG_NUMLITERAL;
     }
@@ -793,10 +797,32 @@ llgentypeerroraux (char *srcFile, int srcLine,
 	  
 	  if (ctype_match (ct, ut1))
 	    {
-	      code = FLG_ABSTRACT;
-	      hint = message ("Underlying types match, but %s is an "
-			      "abstract type that is not accessible here.",
-			      ctype_unparse (t2));
+	      if (ctype_isNumAbstract (ut2)) 
+		{
+		  if (exprNode_isNumLiteral (e1))
+		    {
+		      code = FLG_NUMABSTRACTLIT;
+		      hint = message ("Underlying types match, but %s is a "
+				      "numabstract type that is not accessible here. "
+				      "(Use +numabstractlit to allow numeric literals "
+				      "to be used as numabstract type values.)",
+				      ctype_unparse (t2));
+		    }
+		  else
+		    {
+		      code = FLG_NUMABSTRACT;
+		      hint = message ("Underlying types match, but %s is a "
+				      "numabstract type that is not accessible here.",
+				      ctype_unparse (t2));
+		    }
+		}
+	      else
+		{
+		  code = FLG_ABSTRACT;
+		  hint = message ("Underlying types match, but %s is an "
+				  "abstract type that is not accessible here.",
+				  ctype_unparse (t2));
+		}
 	    }
 	}
       else
@@ -839,7 +865,7 @@ llgentypeerroraux (char *srcFile, int srcLine,
     {
       if (!context_suppressFlagMsg (ocode, fl))
 	{
-	  return llgenhinterror (code, s, hint, fl);
+	  return xllgenhinterror (srcFile, srcLine, code, s, hint, fl);
 	}
       else
 	{
@@ -855,7 +881,8 @@ llgentypeerroraux (char *srcFile, int srcLine,
 	  code = hcode;
 	}
       
-      if (llgenerroraux (ocode, srcFile, srcLine, s, flagcodeHint (code), fl, TRUE, FALSE))
+      if (llgenerroraux (ocode, srcFile, srcLine, s,
+			 flagcodeHint (code), fl, TRUE, FALSE))
 	{
 	  if (code != ocode) 
 	    {
@@ -1252,7 +1279,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 {
   int maxlen = context_getLineLen ();
   size_t nspaces = lastfileloclen + 5;
-  int nextlen = maxlen - nspaces;
+  int nextlen = maxlen - size_toInt (nspaces);
   size_t len = cstring_length (sc);
   int indent = 0;
   char *s = cstring_toCharsSafe (sc);
@@ -1309,7 +1336,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 
 	  if (nspaces < 1) nspaces = 1;
 
-	  nextlen = maxlen - nspaces;
+	  nextlen = size_toInt (maxlen - nspaces);
 
 	  mstring_split (&s, &t, maxlen, &indent);
 
@@ -1341,7 +1368,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
       else
 	{
 	  nspaces = 4;
-	  nextlen = maxlen - nspaces;
+	  nextlen = size_toInt (maxlen - nspaces);
 
 	  DPRINTF (("Here 2: [%s]", s));
 	  mstring_split (&s, &t, maxlen, &indent);

@@ -47,7 +47,7 @@ UNITTESTS = \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
-  mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
+  mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts sizesigns slovaknames \
   specclauses \
@@ -278,11 +278,12 @@ chararraylit:
 
 ### Two addition errors detected with 2.5 with -numliteral.
 
+### evans 2002-12-15: finds one more but in charlit
 .PHONY: charlit
 charlit:
 	-$(SPLINTR) +hints charlit.c -expect 4
 	-$(SPLINTR) +hints -numliteral charlit.c -expect 6
-	-$(SPLINTR) +hints charlit.c +charintliteral +ignoresigns
+	-$(SPLINTR) +hints charlit.c +charintliteral +ignoresigns -expect 1
 
 .PHONY: clauses
 clauses: 
@@ -618,13 +619,21 @@ null:
 .PHONY: nullret
 nullret:
 	-$(SPLINTR) nullret.c -expect 2
-	-$(SPLINTR) -nullret nullret.c -expect 1
+	-$(SPLINTR) -nullret nullret.c -expect 0
 
 .PHONY: nullassign
 nullassign:
 	-$(SPLINTR) nullassign.c -expect 2
 	-$(SPLINTR) -nullassign nullassign.c -expect 1
 
+
+### Added for 3.1 - evans 2002-12-14
+
+.PHONY: numabstract
+numabstract:
+	-$(SPLINTR) numabstract.c -expect 8
+	-$(SPLINTR) numabstract.c +numabstractlit -expect 7
+	-$(SPLINTR) numabstract.c -numabstractcast -expect 7
 
 #
 # Before 2.4, expected one more because error was reported both as 
@@ -745,10 +754,8 @@ shifts:
 
 ### evans - added 2002-08-17: check warnings with arbitrary integral types
 sizesigns:
-	-$(SPLINTR) +strict sizesigns.c
-	-$(SPLINTR) +strict +ignoresigns sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresigns sizesigns.c
+	-$(SPLINTR) +strict sizesigns.c -expect 5
+	-$(SPLINTR) +strict +matchanyintegral sizesigns.c -expect 4
 
 .PHONY: slovaknames
 slovaknames:

@@ -215,7 +215,7 @@ int filelocList_realSize (filelocList s)
 cstring filelocList_unparseUses (filelocList s)
 {
   int i;
-  int linelen = 0;
+  size_t linelen = 0;
   int maxlen = context_getLineLen () - 3;
   cstring st = cstring_undefined;
   fileId lastFile = fileId_invalid;
@@ -240,7 +240,7 @@ cstring filelocList_unparseUses (filelocList s)
 		{
 		  if (fileId_equal (fileloc_fileId (s->elements[i]), lastFile))
 		    {
-		      if (linelen + 7 > maxlen)
+		      if (linelen + 7 > size_fromInt (maxlen))
 			{
 			  st = message ("%q\n      ", st);
 			  linelen = 6;

@@ -165,7 +165,7 @@ cstringSList_printSpaced (cstringSList s, size_t indent, size_t gap, int linelen
 	    }
 	}
 
-      numcol = (linelen - indent) / (longest + gap);
+      numcol = size_toInt ((linelen - indent) / (longest + gap));
       
       if (numcol <= 1) 
 	{

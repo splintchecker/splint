@@ -155,7 +155,7 @@ struct cppReader {
 
   /* Current maximum length of directory names in the search path
      for include files.  (Altered as we get more of them.)  */
-  int max_include_len;
+  size_t max_include_len;
 
   /*@null@*/ struct if_stack *if_stack;
 

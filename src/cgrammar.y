@@ -189,7 +189,7 @@ extern void yyerror (char *);
 %token <tok> QRETURNED QEXPOSED QNULL QOBSERVER QISNULL 
 %token <tok> QEXITS QMAYEXIT QNEVEREXIT QTRUEEXIT QFALSEEXIT
 %token <tok> QLONG QSIGNED QUNSIGNED QSHORT QUNUSED QSEF QNOTNULL QRELNULL
-%token <tok> QABSTRACT QCONCRETE QMUTABLE QIMMUTABLE
+%token <tok> QABSTRACT QNUMABSTRACT QCONCRETE QMUTABLE QIMMUTABLE
 %token <tok> QTRUENULL QFALSENULL QEXTERNAL
 %token <tok> QREFCOUNTED QREFS QNEWREF QTEMPREF QKILLREF QRELDEF
 %token <ctyp> CGCHAR CBOOL CINT CGFLOAT CDOUBLE CVOID 
@@ -1327,6 +1327,7 @@ returnQualifier
 
 typedefQualifier
  : QABSTRACT     { $$ = qual_createAbstract (); }
+ | QNUMABSTRACT  { $$ = qual_createNumAbstract (); }
  | QCONCRETE     { $$ = qual_createConcrete (); }
  | QMUTABLE      { $$ = qual_createMutable (); }
  | QIMMUTABLE    { $$ = qual_createImmutable (); }

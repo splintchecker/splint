@@ -383,7 +383,7 @@ usymtab_initBool ()
       ctype boolt = ctype_bool;
       /* evs 2000-07-24: bool is now treated as abstract (always) */
 
-      uentry boolentry = uentry_makeBoolDatatype (YES);
+      uentry boolentry = uentry_makeBoolDatatype (qual_createAbstract ());
       usymtab_supGlobalEntry (boolentry);
       context_addBoolAccess ();
 
@@ -1234,10 +1234,12 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
       uid = usymtab_supEntryAux (globtab, e, FALSE);
       e = usymtab_getTypeEntry (uid);
 
+      /*? evans 2002-12-16 removed this? it doesn't make sense
       if (uentry_isMaybeAbstract (e))
 	{
 	  uentry_setConcrete (e);
 	}
+      */
     }
   
   if (sRef_modInFunction ())

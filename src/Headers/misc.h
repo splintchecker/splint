@@ -23,12 +23,14 @@ extern void assertDefined (/*@sef@*/ /*@unused@*/ void *p_x) ;
 
 
 /*@-czechfcns@*/
-extern int size_toInt (size_t p_x) /*@*/ /*@ensures result==p_x@*/;
-extern long size_toLong (size_t p_x) /*@*/ /*@ensures result==p_x@*/ ;
-extern size_t size_fromInt (int p_x) /*@*/ /*@ensures result==p_x@*/ ;
-extern int longUnsigned_toInt (long unsigned int p_x) /*@*/ /*@ensures result==p_x@*/ ;
-extern int long_toInt (long p_x) /*@*/ /*@ensures result==p_x@*/;
-extern long unsigned longUnsigned_fromInt (int p_x) /*@*/  /*@ensures result==p_x@*/ ;
+extern int size_toInt (size_t p_x) /*@*/ /*@ensures result == p_x@*/;
+extern long size_toLong (size_t p_x) /*@*/ /*@ensures result == p_x@*/ ;
+extern size_t size_fromInt (int p_x) /*@*/ /*@ensures result == p_x@*/ ;
+extern size_t size_fromLong (long p_x) /*@*/ /*@ensures result == p_x@*/ ;
+extern size_t size_fromLongUnsigned (long unsigned p_x) /*@*/ /*@ensures result == p_x@*/ ;
+extern int longUnsigned_toInt (long unsigned int p_x) /*@*/ /*@ensures result == p_x@*/ ;
+extern int long_toInt (long p_x) /*@*/ /*@ensures result == p_x@*/;
+extern long unsigned longUnsigned_fromInt (int p_x) /*@*/  /*@ensures result == p_x@*/ ;
 /*@=czechfcns@*/
 
 # include "mstring.h"

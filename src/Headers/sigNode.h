@@ -8,7 +8,7 @@ typedef struct {
   ltoken tok;
   ltokenList domain; 
   ltoken range;
-  unsigned int key;
+  unsigned long int key;
 } *sigNode;
 
 extern /*@only@*/ cstring sigNode_unparse (/*@null@*/ sigNode p_n) /*@*/ ;

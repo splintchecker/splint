@@ -702,6 +702,7 @@ static struct skeyword s_keytable[] = {
   { "kept", QKEPT } ,
   { "notnull", QNOTNULL } ,
   { "abstract", QABSTRACT } ,
+  { "numabstract", QNUMABSTRACT } ,
   { "concrete", QCONCRETE } ,
   { "mutable", QMUTABLE } ,
   { "immutable", QIMMUTABLE } ,

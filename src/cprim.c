@@ -469,6 +469,48 @@ bool cprim_isInt (cprim c)
 	  || (cprim_isAnyChar (c) && context_msgCharInt ()));
 }
     
-
-
-
+int cprim_getExpectedBits (cprim c)
+{
+  /* Any basis to these numbers?  Just guesses for now..., check ISO spec */
+  switch (c)
+    {
+    case CTX_UNKNOWN:
+      return 0;
+    case CTX_VOID:
+      return 0;
+    case CTX_CHAR:
+      return 8;
+    case CTX_UCHAR:
+      return 8;
+   case CTX_DOUBLE:
+      return 64;
+    case CTX_LDOUBLE:
+      return 128;
+    case CTX_FLOAT:
+      return 32;
+    case CTX_INT:
+      return 32;
+    case CTX_LINT:
+      return 64;
+    case CTX_LLINT:
+      return 128;
+    case CTX_ULLINT:
+      return 128;
+    case CTX_SINT:
+      return 8;
+    case CTX_UINT:
+      return 32;
+    case CTX_ULINT:
+      return 64;
+    case CTX_USINT:
+      return 8;
+    case CTX_UNSIGNEDINTEGRAL:
+      return 64;
+    case CTX_SIGNEDINTEGRAL:
+      return 64;
+    case CTX_ANYINTEGRAL:
+      return 64;
+    default:
+      return 0;
+    }
+}

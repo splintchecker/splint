@@ -394,6 +394,22 @@ size_t size_fromInt (int x) /*@ensures result==x@*/
   return res;
 }
 
+size_t size_fromLong (long x) /*@ensures result==x@*/
+{
+  size_t res = (size_t) x;
+
+  llassert ((long) res == x);
+  return res;
+}
+
+size_t size_fromLongUnsigned (unsigned long x) /*@ensures result==x@*/
+{
+  size_t res = (size_t) x;
+
+  llassert ((unsigned long) res == x);
+  return res;
+}
+
 int size_toInt (size_t x)
 {
   int res = (int) x;

@@ -121,6 +121,7 @@ cstring qual_unparse (qual q)
 	{
 	case QU_UNKNOWN:    return cstring_makeLiteralTemp ("unknown");
 	case QU_ABSTRACT:   return cstring_makeLiteralTemp ("abstract");
+	case QU_NUMABSTRACT:return cstring_makeLiteralTemp ("numabstract");
 	case QU_CONCRETE:   return cstring_makeLiteralTemp ("concrete");
 	case QU_MUTABLE:    return cstring_makeLiteralTemp ("mutable");
 	case QU_IMMUTABLE:  return cstring_makeLiteralTemp ("immutable");
@@ -190,6 +191,28 @@ cstring qual_unparse (qual q)
     }
   
   BADEXIT;
+}
+
+qual qual_abstractFromCodeChar (char c)
+{
+  switch (c) {
+  case '-': return qual_createUnknown ();
+  case 'a': return qual_createAbstract ();
+  case 'n': return qual_createNumAbstract ();
+  case 'c': return qual_createConcrete ();
+  BADDEFAULT;
+  }
+}
+
+char qual_abstractCode (qual q)
+{
+  switch (q->kind) {
+  case QU_UNKNOWN: return '-';
+  case QU_ABSTRACT: return 'a';
+  case QU_NUMABSTRACT: return 'n';
+  case QU_CONCRETE: return 'c';
+  BADDEFAULT;
+  }
 }
 
 extern bool qual_match (qual q1, qual q2)

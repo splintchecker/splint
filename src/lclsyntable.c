@@ -121,7 +121,8 @@ AllocSynTable (void) /*@globals SynTable; @*/
     {
       /* First time SynTable allocated.  Set initial size. */
       newSize = INITSYNTABLE;
-      SynTable = (lsymbol *) dmalloc (newSize * sizeof (*SynTable));
+      SynTable = (lsymbol *) dmalloc 
+	(size_fromLongUnsigned (newSize * sizeof (*SynTable)));
     }
   else
     {
@@ -131,7 +132,8 @@ AllocSynTable (void) /*@globals SynTable; @*/
 
       /* Synonym table already allocated.  Calulate extension size. */
       newSize = (unsigned long) (DELTASYNTABLE * oldSize);
-      SynTable = (lsymbol *) dmalloc (newSize * sizeof (*SynTable));
+      SynTable = (lsymbol *) dmalloc 
+	(size_fromLongUnsigned (newSize * sizeof (*SynTable)));
 
       for (i = 0; i < oldSize; i++)
 	{

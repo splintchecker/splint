@@ -126,14 +126,16 @@ AllocTokenTable (void)
     {
       newSize = INITTOKENTABLE;
       llassert (TokenTable == NULL);
-      TokenTable = (ltoken *) dmalloc (newSize * sizeof (*TokenTable)); 
+      TokenTable = (ltoken *) 
+	dmalloc (size_fromLongUnsigned (newSize * sizeof (*TokenTable))); 
     }
   else
     {
       o_ltoken *oldTokenTable = TokenTable;
 
       newSize = (long unsigned) (DELTATOKENTABLE * oldSize);
-      TokenTable = (ltoken *) dmalloc (newSize * sizeof (*TokenTable));
+      TokenTable = (ltoken *) 
+	dmalloc (size_fromLongUnsigned (newSize * sizeof (*TokenTable)));
 
       llassert (oldSize > 0);
       llassert (oldTokenTable != NULL);

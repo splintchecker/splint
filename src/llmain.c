@@ -1143,7 +1143,12 @@ int main (int argc, char *argv[])
 	  
 	  if (anylcl)
 	    {
+	      /* Gack: really should figure out how to make configure find snprintf... */
+# ifdef WIN32
+	      (void) _snprintf (msg, 256,
+# else
 	      (void) snprintf (msg, 256,
+# endif
 			"Time distribution (percent): initialize %.2f / lcl %.2f / "
 			"pre-process %.2f / c check %.2f / finalize %.2f \n", 
 			(100.0 * (double) (libtime - before) / ttime),
@@ -1154,7 +1159,11 @@ int main (int argc, char *argv[])
 	    }
 	  else
 	    {
+# ifdef WIN32
+	      (void) _snprintf (msg, 256,
+# else
 	      (void) snprintf (msg, 256,
+# endif
 			"Time distribution (percent): initialize %.2f / "
 			"pre-process %.2f / c check %.2f / finalize %.2f \n", 
 			(100.0 * (double) (libtime - before) / ttime),

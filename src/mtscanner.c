@@ -307,7 +307,8 @@ ctype mtscanner_lookupType (mttok tok)
   else
     {
       ctype ct;
-      ue = uentry_makeDatatype (tname, ctype_unknown, MAYBE, MAYBE, mttok_stealLoc (tok));
+      ue = uentry_makeDatatype (tname, ctype_unknown, MAYBE, QU_UNKNOWN,
+				mttok_stealLoc (tok));
       DPRINTF (("Making mts entry: %s", uentry_unparse (ue)));
       ct = usymtab_supForwardTypeEntry (ue);
       DPRINTF (("Type: %s", ctype_unparse (ct)));

@@ -473,6 +473,30 @@ static flaglist flags =
     0, 0
   },
   {
+    FK_ABSTRACT, FK_NONE, plainFlag,
+    "numabstract",
+    FLG_NUMABSTRACT,
+    "data abstraction barriers",
+    "An abstraction barrier involving a numabstract type is broken. If necessary, use /*@access <type>@*/ to allow access to a numabstract type.",
+    0, 0
+  },
+  {
+    FK_ABSTRACT, FK_NONE, modeFlag,
+    "numabstractcast",
+    FLG_NUMABSTRACTCAST,
+    "numeric literal cast to numabstract type",
+    "A numeric literal is cast to a numabstract type.",
+    0, 0
+  },
+  {
+    FK_ABSTRACT, FK_NONE, modeFlag,
+    "numabstractlit",
+    FLG_NUMABSTRACTLIT,
+    "numeric literal can used as numabstract type",
+    "A numeric literal can be used as a numabstract type.",
+    0, 0
+  },
+  {
     FK_ABSTRACT, FK_IMPLICIT, plainFlag,
     "impabstract",
     FLG_IMPABSTRACT,

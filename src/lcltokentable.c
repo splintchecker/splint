@@ -161,7 +161,8 @@ static void
     {
       newSize = INITTOKENTABLE;
       llassert (LCLTokenTable == NULL);
-      LCLTokenTable = (ltoken *) dmalloc (newSize * sizeof (*LCLTokenTable));
+      LCLTokenTable = (ltoken *) dmalloc 
+	(size_fromLongUnsigned (newSize * sizeof (*LCLTokenTable)));
     }
   else
     {
@@ -170,7 +171,8 @@ static void
       llassert (oldLCLTokenTable != NULL);
 
       newSize = (long unsigned) (DELTATOKENTABLE * oldSize);
-      LCLTokenTable = (ltoken *) dmalloc (newSize * sizeof (*LCLTokenTable));
+      LCLTokenTable = (ltoken *) dmalloc 
+	(size_fromLongUnsigned (newSize * sizeof (*LCLTokenTable)));
 
       for (i = 0; i < oldSize; i++)
 	{

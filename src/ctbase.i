@@ -33,6 +33,10 @@
 
 abst_typedef /*@null@*/ struct s_ctbase *ctbase;
 
+/*@function static bool ctuid_isAnyUserType (sef ctuid p_cid) @*/
+# define ctuid_isAnyUserType(cid) \
+   ((cid) == CT_ABST || (cid) == CT_USER || (cid) == CT_NUMABST)
+
 /*@private@*/ typedef struct {
   ctkind kind;
   ctbase ctbase; 
@@ -58,6 +62,7 @@ extern bool ctentry_isBogus (/*@sef@*/ ctentry p_c) /*@*/;
 static cttable cttab = { 0, 0, NULL };
 
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_createAbstract (typeId p_u);
+static /*@notnull@*/ /*@only@*/ ctbase ctbase_createNumAbstract (typeId p_u);
 static /*@observer@*/ cstring ctentry_doUnparse (ctentry p_c) /*@modifies p_c@*/;
 static /*@only@*/ ctentry
   ctentry_make (ctkind p_ctk, /*@keep@*/ ctbase p_c, ctype p_base, 
@@ -399,7 +404,7 @@ ctbase_typeBaseUid (ctbase c)
 	{
 	  return ctbase_typeBaseUid (ctype_getCtbase (c->contents.base));
 	}
-      else if (ct == CT_USER || ct == CT_ABST)
+      else if (ct == CT_USER || ct == CT_ABST || ct == CT_NUMABST)
 	{
 	  return c->contents.tid;
 	}
@@ -434,7 +439,7 @@ ctbase_isBaseUA (ctbase c)
 	  return ctbase_isBaseUA (ctype_getCtbase (c->contents.farray->base));
 	}
       else
-	return (ct == CT_USER || ct == CT_ABST);
+	return (ct == CT_USER || ct == CT_ABST || ct == CT_NUMABST);
     }
   return FALSE;
 }
@@ -476,8 +481,8 @@ ctbase_unparse (ctbase c)
     case CT_PRIM:
       return (cprim_unparse (c->contents.prim));
     case CT_USER:
-      return (usymtab_getTypeEntryName (c->contents.tid));
     case CT_ABST:
+    case CT_NUMABST:
       return (usymtab_getTypeEntryName (c->contents.tid));
     case CT_EXPFCN:
       return (message ("<expf: %t>", c->contents.base));
@@ -593,8 +598,8 @@ static /*@only@*/ cstring
 			   enumNameList_unparse (c->contents.cenum->members)));
 	}
     case CT_USER:
-      return (usymtab_getTypeEntryName (c->contents.tid));
     case CT_ABST:
+    case CT_NUMABST:
       return (usymtab_getTypeEntryName (c->contents.tid));
     case CT_EXPFCN:
       return (message ("<expf: %t>", c->contents.base));
@@ -653,6 +658,8 @@ ctbase_unparseNotypes (ctbase c)
       return (message ("uT#%d", c->contents.tid));
     case CT_ABST:
       return (message ("aT#%d", c->contents.tid));
+    case CT_NUMABST:
+      return (message ("nT#%d", c->contents.tid));
     case CT_EXPFCN:
       return (message ("<expf: %q >", ctbase_unparseNotypes (ctype_getCtbase (c->contents.base))));
     case CT_PTR:
@@ -702,6 +709,7 @@ ctbase_unparseDeclaration (ctbase c, /*@only@*/ cstring name) /*@*/
       return (message ("%q %q", cprim_unparse (c->contents.prim), name));
     case CT_USER:
     case CT_ABST:
+    case CT_NUMABST:
       return (message ("%q %q", usymtab_getTypeEntryName (c->contents.tid), name));
     case CT_EXPFCN:
       llcontbuglit ("ctbase_unparseDeclaration: expfcn");
@@ -838,6 +846,10 @@ static ctbase ctbase_undump (d_char *c) /*@requires maxRead(*c) >= 2 @*/
       return res;
     case 'a':
       res = ctbase_createAbstract (typeId_fromInt (reader_getInt (c)));
+      reader_checkChar (c, '|');
+      return res;
+    case 'n':
+      res = ctbase_createNumAbstract (typeId_fromInt (reader_getInt (c)));
       reader_checkChar (c, '|');
       return res;
     case 't':
@@ -1013,6 +1025,8 @@ ctbase_dump (ctbase c)
 		       usymtab_convertId (c->contents.tid)));
     case CT_ABST:
       return (message ("a%d|", usymtab_convertId (c->contents.tid)));
+    case CT_NUMABST:
+      return (message ("n%d|", usymtab_convertId (c->contents.tid)));
     case CT_PTR:
       return (message ("t%q|", ctype_dump (c->contents.base)));
     case CT_ARRAY:
@@ -1083,6 +1097,8 @@ ctbase_copy (/*@notnull@*/ ctbase c)
       return (ctbase_createUser (c->contents.tid));
     case CT_ABST:
       return (ctbase_createAbstract (c->contents.tid));
+    case CT_NUMABST:
+      return (ctbase_createNumAbstract (c->contents.tid));
     case CT_EXPFCN:
       return (ctbase_expectFunction (c->contents.base));
     case CT_PTR:
@@ -1145,9 +1161,8 @@ ctbase_free (/*@only@*/ ctbase c)
 	  sfree (c);
 	  break;
 	case CT_USER:
-	  sfree (c);
-	  break;
 	case CT_ABST:
+	case CT_NUMABST:
 	  sfree (c);
 	  break;
 	case CT_PTR:
@@ -1293,13 +1308,12 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep
 	  return (context_msgBoolInt ());
 	}
 
-      if ((c1tid == CT_BOOL && (c2tid == CT_ABST || c2tid == CT_USER))) {
+      if ((c1tid == CT_BOOL && (ctuid_isAnyUserType (c2tid)))) {
 	ctype t2c = c2->contents.base;
-
 	return (ctype_isBool (t2c));
       }
 
-      if ((c2tid == CT_BOOL && (c1tid == CT_ABST || c1tid == CT_USER))) {
+      if ((c2tid == CT_BOOL && (ctuid_isAnyUserType (c1tid)))) {
 	ctype t1c = c1->contents.base;
 
 	return (ctype_isBool (t1c));
@@ -1364,7 +1378,7 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep
   
       if (context_getFlag (FLG_FORWARDDECL))
 	{
-	  if (c1tid == CT_ABST || c1tid == CT_USER)
+	  if (ctuid_isAnyUserType (c1tid))
 	    {
 	      if (ctuid_isAP (c2tid))
 		{
@@ -1383,7 +1397,7 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep
 		}
 	    }
 	  
-	  if (c2tid == CT_ABST || c2tid == CT_USER)
+	  if (ctuid_isAnyUserType (c2tid))
 	    {
 	      if (ctuid_isAP (c1tid))
 		{
@@ -1420,7 +1434,7 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep
     case CT_BOOL:
       return (TRUE);
     case CT_ABST:
-      return (typeId_equal (c1->contents.tid, c2->contents.tid));
+    case CT_NUMABST:
     case CT_USER:
       return (typeId_equal (c1->contents.tid, c2->contents.tid));
     case CT_ENUM:	
@@ -1645,6 +1659,20 @@ ctbase_createAbstract (typeId u)
 
   llassert (typeId_isValid (c->contents.tid));
 
+  return (c);
+}
+
+static /*@only@*/ ctbase
+ctbase_createNumAbstract (typeId u)
+{
+  ctbase c = ctbase_new ();
+
+  c->type = CT_NUMABST;
+  c->contents.tid = u;
+  
+  /* also check its abstract? */
+  
+  llassert (typeId_isValid (c->contents.tid));
   return (c);
 }
 
@@ -2061,6 +2089,7 @@ ctbase_newBase (ctype c, ctype p)
     case CT_USER:
     case CT_ENUM:
     case CT_ABST:
+    case CT_NUMABST:
     case CT_STRUCT:
     case CT_UNION:
     case CT_EXPFCN:
@@ -2298,6 +2327,7 @@ ctbase_getBaseType (/*@notnull@*/ ctbase c)
     case CT_ENUMLIST:
     case CT_BOOL:
     case CT_ABST:
+    case CT_NUMABST:
     case CT_FCN:
     case CT_STRUCT:
     case CT_UNION:
@@ -2354,6 +2384,7 @@ ctbase_compare (ctbase c1, ctbase c2, bool strict)
       return 1;
     case CT_ENUM:		/* for now, keep like abstract */
     case CT_ABST:
+    case CT_NUMABST:
       return (int_compare (c1->contents.tid, c2->contents.tid));
     case CT_PTR:
       return (ctype_compare (c1->contents.base, c2->contents.base));
@@ -2466,12 +2497,18 @@ ctbase_isKind2 (/*@notnull@*/ ctbase c, ctuid kind1, ctuid kind2)
 static bool
 ctbase_isAbstract (/*@notnull@*/ ctbase c)
 {
-  return (c->type == CT_ABST);
+  return (c->type == CT_ABST || c->type == CT_NUMABST);
+}
+
+static bool
+ctbase_isNumAbstract (/*@notnull@*/ ctbase c)
+{
+  return (c->type == CT_NUMABST);
 }
 
 static bool ctbase_isUA (ctbase c) 
 {
-  return (ctbase_isDefined (c) && ((c)->type == CT_USER || (c)->type == CT_ABST));
+  return (ctbase_isDefined (c) && (ctuid_isAnyUserType (c->type)));
 }
 
 static bool
@@ -2511,7 +2548,7 @@ ctbase_almostEqual (ctbase c1, ctbase c2)
     case CT_BOOL:
       return TRUE;
     case CT_ABST:
-      return (typeId_equal (c1->contents.tid, c2->contents.tid));
+    case CT_NUMABST:
     case CT_USER:
       return (typeId_equal (c1->contents.tid, c2->contents.tid));
     case CT_ENUM:	
@@ -2563,4 +2600,27 @@ size_t ctbase_getArraySize (ctbase ctb)
   llassert (ctbase_isFixedArray(r) );
 
   return (r->contents.farray->size);
+}
+
+bool ctbase_isBigger (ctbase ct1, ctbase ct2)
+{
+  if (ct1 != NULL && ct2 != NULL
+      && (ct1->type == CT_PRIM && ct2->type == CT_PRIM))
+    {
+      /* Only compare sizes for primitives */
+      cprim cp1 = ct1->contents.prim;
+      cprim cp2 = ct2->contents.prim;
+      int nbits1 = cprim_getExpectedBits (cp1);
+      int nbits2 = cprim_getExpectedBits (cp2);
+
+      if (nbits1 > nbits2) {
+	return TRUE;
+      } else {
+	return FALSE;
+      }
+    }
+  else
+    {
+      return FALSE;
+    }
 }

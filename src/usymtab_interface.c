@@ -271,7 +271,8 @@ static ctype
 		
 		usymtab_supEntry 
 		  (uentry_makeDatatype 
-		   (tn, ctype_unknown, MAYBE, NO, fileloc_getBuiltin ()));
+		   (tn, ctype_unknown, MAYBE, qual_createConcrete (), 
+		    fileloc_getBuiltin ()));
 		
 	      }
 	    /*@switchbreak@*/ break;
@@ -876,7 +877,9 @@ declareAbstractType (abstractNode n, bool priv)
   loc = fileloc_fromTok (n->tok);
   
   ue = uentry_makeDatatypeAux (tn, ctype_unknown, 
-			       ynm_fromBool (n->isMutable), YES, loc, priv);
+			       ynm_fromBool (n->isMutable), 
+			       qual_createAbstract (), 
+			       loc, priv);
 
   if (n->isRefCounted)
     {
@@ -969,7 +972,8 @@ static void
 
     s = getVarName (i->declarator->type);
 
-    ue = uentry_makeDatatypeAux (s, realType, MAYBE, NO, loc, priv);
+    ue = uentry_makeDatatypeAux (s, realType, MAYBE, qual_createConcrete (), 
+				 loc, priv);
 
     uentry_reflectQualifiers (ue, qtype_getQuals (c));
     

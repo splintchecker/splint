@@ -4,13 +4,20 @@
 **
 */
 /*
-** syntable.h
+** lclsyntable.h
 */
 
-extern void	    LCLAddSyn(lsymbol, lsymbol);
-extern /*@exposed@*/ ltoken LCLGetTokenForSyn(lsymbol);
-extern bool	    LCLIsSyn(lsymbol);
+# ifndef LCLSYNTABLE_H
+# define LCLSYNTABLE_H
 
-extern void	    LCLSynTableInit(void);
-extern void	    LCLSynTableReset(void);
-extern void	    LCLSynTableCleanup(void);
+extern void LCLAddSyn(lsymbol, lsymbol);
+extern /*@exposed@*/ ltoken LCLGetTokenForSyn(lsymbol);
+extern bool LCLIsSyn(lsymbol);
+
+extern void LCLSynTableInit(void);
+extern void LCLSynTableReset(void);
+extern void LCLSynTableCleanup(void);
+
+# else
+# error "Multiple include"
+# endif

@@ -114,8 +114,8 @@ extern bool cprim_closeEnough (cprim, cprim) /*@*/ ;
 extern bool cprim_closeEnoughDeep (cprim, cprim) /*@*/ ;
 extern /*@only@*/ cstring cprim_unparse (cprim) /*@*/ ;
 extern cprim cprim_fromInt (int p_i);
-
 extern bool cprim_isInt(cprim p_c);
+extern int cprim_getExpectedBits (cprim p_c) /*@*/ ;
 
 # else
 # error "Multiple include"

@@ -1078,10 +1078,11 @@ parseLine (char *line, inputStream srce, mapping map)
 	  if (!usymtab_existsGlobEither (cnamestr))
 	    {
 	      (void) usymtab_addEntry 
-		(uentry_makeDatatype (cnamestr, ctype_unknown,
-				      ti->abstract ? ynm_fromBool (ti->modifiable) : MAYBE,
-				      ti->abstract ? YES : NO,
-				      fileloc_copy (imploc)));
+		(uentry_makeDatatype
+		 (cnamestr, ctype_unknown,
+		  ti->abstract ? ynm_fromBool (ti->modifiable) : MAYBE,
+		  ti->abstract ? qual_createAbstract () : qual_createConcrete (),
+		  fileloc_copy (imploc)));
 	    }
 	}
 

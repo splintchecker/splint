@@ -4,8 +4,11 @@
 **
 */
 /*
-** tokentable.h
+** lcltokentable.h
 */
+
+# ifndef LCLTOKENTABLE_H
+# define LCLTOKENTABLE_H
 
 extern /*@exposed@*/ ltoken 
   LCLInsertToken (ltokenCode, lsymbol, lsymbol, bool)
@@ -18,3 +21,7 @@ extern /*@exposed@*/ ltoken LCLReserveToken (ltokenCode, char *)
 
 extern void LCLTokenTableInit(void);
 extern void LCLTokenTableCleanup(void);
+
+# else
+# error "Multiple include"
+# endif

@@ -447,14 +447,10 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 	size = (int) sRef_getArraySize(s);
 	ret = constraintExpr_makeIntLiteral (size);
       }
-     else if ( exprNode_isStringLiteral (t) )
+     else if (exprNode_isStringLiteral (t))
       {
-	cstring str; 
-	int size;
-
-	str =  multiVal_forceString(exprNode_getValue(t) );
-	size = cstring_length (str) + 1;
-	ret = constraintExpr_makeIntLiteral (size);
+	cstring str = multiVal_forceString (exprNode_getValue(t));
+	ret = constraintExpr_makeIntLiteral (size_toLong (cstring_length (str) + 1));
       } 
      else
        {

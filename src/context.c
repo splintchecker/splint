@@ -892,6 +892,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_TYPE] = TRUE;
   gc.flags[FLG_INCOMPLETETYPE] = TRUE;
   gc.flags[FLG_ABSTRACT] = TRUE;
+  gc.flags[FLG_NUMABSTRACT] = TRUE;
   gc.flags[FLG_ITERBALANCE] = TRUE;
   gc.flags[FLG_ITERYIELD] = TRUE;
   gc.flags[FLG_DUPLICATECASES] = TRUE;
@@ -1027,7 +1028,7 @@ context_setModeAux (cstring s, bool warn)
       flagcode modeflags[] = 
 	{
 	  FLG_ENUMINT, FLG_MACROMATCHNAME,
-	  FLG_STRINGLITNOROOM,
+	  FLG_STRINGLITNOROOM, 
 	  FLG_STRINGLITNOROOMFINALNULL,
 	  FLG_MACROUNDEF, FLG_RELAXQUALS, 
 	  FLG_USEALLGLOBS, FLG_CHECKSTRICTGLOBALS,
@@ -1079,7 +1080,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_UNKNOWNTRANS,
 	  FLG_KEEPTRANS,
 	  FLG_IMMEDIATETRANS,
-
+	  FLG_NUMABSTRACTCAST,
 	  FLG_EXPORTLOCAL,
 
 	  FLG_USERELEASED, FLG_ALIASUNIQUE, FLG_MAYALIASUNIQUE,
@@ -1114,6 +1115,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_CHARINDEX, FLG_ABSTVOIDP, FLG_USEALLGLOBS, 
 	  FLG_CHARUNSIGNEDCHAR,
 	  FLG_PREDBOOLOTHERS, 
+	  FLG_NUMABSTRACTLIT,
           FLG_VARUNUSED, FLG_FUNCUNUSED, 
 	  FLG_TYPEUNUSED,
           FLG_CHECKSTRICTGLOBALS, FLG_MACROMATCHNAME,
@@ -1139,7 +1141,8 @@ context_setModeAux (cstring s, bool warn)
     {
       flagcode modeflags[] = 
 	{ 
-	  FLG_EXPORTLOCAL, FLG_IMPTYPE,
+	  FLG_EXPORTLOCAL, FLG_IMPTYPE, 
+	  FLG_NUMABSTRACTCAST,
 	  FLG_STATETRANSFER, FLG_STATEMERGE,
 	  FLG_CHECKSTRICTGLOBALIAS,
 	  FLG_CHECKEDGLOBALIAS,
@@ -1235,7 +1238,8 @@ context_setModeAux (cstring s, bool warn)
     {
       flagcode modeflags[] = 
 	{ 
-	  FLG_CHECKSTRICTGLOBALIAS,
+	  FLG_CHECKSTRICTGLOBALIAS, 
+	  FLG_NUMABSTRACTCAST,
 	  FLG_CHECKEDGLOBALIAS,
 	  FLG_CHECKMODGLOBALIAS,
 	  FLG_UNCHECKEDGLOBALIAS,
@@ -2962,7 +2966,7 @@ context_setString (flagcode flag, cstring val)
 	    
 	    if (cstring_lastChar (tval) != '\"')
 	      {
-		int n = cstring_length (tval) - 1;
+		int n = size_toInt (cstring_length (tval) - 1);
 		
 		while (isspace ((int) cstring_getChar (tval, size_fromInt (n))))
 		  {

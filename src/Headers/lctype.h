@@ -25,7 +25,8 @@ typedef enum
   CT_UNKNOWN, 
   CT_PRIM, 
   CT_USER, 
-  CT_ABST, 
+  CT_ABST,
+  CT_NUMABST, 
   CT_ENUM, 
   CT_PTR, 
   CT_ARRAY, 
@@ -166,6 +167,7 @@ extern bool ctype_genMatch (ctype p_c1, ctype p_c2, bool p_force, bool p_arg, bo
 
 extern bool ctype_isSimple (ctype p_c) /*@*/ ;
 extern bool ctype_isAbstract (ctype p_c) /*@*/ ;
+extern bool ctype_isNumAbstract (ctype p_c) /*@*/ ;
 extern bool ctype_isArray (ctype p_c) /*@*/ ;
 extern bool ctype_isFixedArray (ctype p_c) /*@*/ ;
 extern bool ctype_isIncompleteArray (ctype p_c) /*@*/ ;
@@ -201,7 +203,8 @@ extern bool ctype_isDouble (ctype p_c) /*@*/ ;
 extern bool ctype_isSigned (ctype p_c) /*@*/ ;
 extern bool ctype_isUnsigned (ctype p_c) /*@*/ ;
 extern bool ctype_isRealAP (ctype p_c) /*@*/ ;
-extern bool ctype_isRealAbstract(ctype p_c)  /*@*/ ;
+extern bool ctype_isRealAbstract(ctype p_c) /*@*/ ;
+extern bool ctype_isRealNumAbstract(ctype p_c) /*@*/ ;
 extern bool ctype_isRealArray (ctype p_c) /*@*/ ;
 extern bool ctype_isRealBool (ctype p_c) /*@*/ ;
 extern bool ctype_isRealFunction (ctype p_c) /*@*/ ;
@@ -211,7 +214,7 @@ extern bool ctype_isRealPointer (ctype p_c) /*@*/ ;
 extern bool ctype_isRealSU (ctype p_c) /*@*/ ;
 extern bool ctype_isRealVoid (ctype p_c) /*@*/ ;
 extern bool ctype_isStruct (ctype p_c) /*@*/ ;
-extern bool ctype_isStructorUnion(ctype p_c)  /*@*/ ;
+extern bool ctype_isStructorUnion(ctype p_c) /*@*/ ;
 extern bool ctype_isUA (ctype p_c) /*@*/ ;
 extern bool ctype_isUnion (ctype p_c) /*@*/ ;
 extern bool ctype_isVoid (ctype p_c) /*@*/ ;
@@ -237,6 +240,7 @@ extern ctype ctype_baseArrayPtr (ctype p_c) /*@*/ ;
 extern ctype ctype_combine (ctype p_dominant, ctype p_modifier) ;
 
 extern ctype ctype_createAbstract (typeId p_u)  /*@*/ ;
+extern ctype ctype_createNumAbstract (typeId p_u)  /*@*/ ;
 
 extern ctype ctype_createForwardStruct (/*@only@*/ cstring p_n)  /*@*/ ;
 extern ctype ctype_createForwardUnion (/*@only@*/ cstring p_n)  /*@*/ ;
@@ -252,6 +256,11 @@ extern ctype ctype_createUser (typeId p_u) ;
 
 extern bool ctype_isUnnamedSU (ctype p_c) /*@*/ ;
 extern bool ctype_isUser (ctype p_c) /*@*/ ;
+
+extern ctype ctype_biggerType (ctype p_c1, ctype p_c2) 
+  /* EFFECTS: returns whichever of c1 or c2 is bigger (storage requirements).
+        If they are equal, returns c1. */
+  /*@*/ ;
 
 extern ctype ctype_expectFunction(ctype p_c) ;
 extern ctype ctype_dontExpectFunction (ctype p_c) ;

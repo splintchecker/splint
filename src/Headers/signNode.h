@@ -7,7 +7,7 @@ typedef struct {
   ltoken tok;
   sortList domain; 
   sort range;
-  unsigned int key;
+  unsigned long int key;
 } *signNode;
 
 extern /*@only@*/ cstring signNode_unparse (signNode p_sn) /*@*/ ;

@@ -1,4 +1,4 @@
-void  mystrncat (/*@unique@*/ /*@returned@*/ char *s1, char *s2, int n)
+void  mystrncat (/*@unique@*/ /*@returned@*/ char *s1, char *s2, size_t n)
      /*@modifies *s1@*/ /*@requires MaxSet(s1) >= ( MaxRead(s1) + n); @*/
      /*@ensures MaxRead(result) >= (MaxRead(s1) + n); @*/;
 

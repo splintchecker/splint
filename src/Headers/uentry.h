@@ -72,7 +72,7 @@ typedef struct
 
 typedef struct 
 {
-  ynm   abs;
+  qual abs; /* oneof QU_UNKNOWN, QU_ABSTRACT, QU_NUMABSTRACT, QU_CONCRETE */
   ynm   mut;
   ctype type;
 } *udinfo ;
@@ -415,11 +415,11 @@ extern /*@notnull@*/ /*@only@*/ uentry
   /*@*/ ;
 
 extern /*@notnull@*/ /*@only@*/ uentry 
-  uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, ynm p_abstract, 
+  uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, qual p_abstract, 
 		       /*@only@*/ fileloc p_f) /*@*/ ;
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeDatatypeAux (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, 
-			  ynm p_abstract, /*@keep@*/ fileloc p_f, bool p_priv) /*@*/ ;
+			  qual p_abstract, /*@keep@*/ fileloc p_f, bool p_priv) /*@*/ ;
 extern /*@notnull@*/ uentry uentry_makeElipsisMarker (void) /*@*/ ;
 
 extern void uentry_makeVarFunction (/*@temp@*/ uentry p_ue) /*@modifies p_ue@*/ ;
@@ -472,7 +472,7 @@ extern /*@notnull@*/ /*@only@*/
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeIdDatatype (idDecl p_id);
 extern /*@notnull@*/ /*@only@*/ 
-  uentry uentry_makeBoolDatatype (ynm p_abstract);
+  uentry uentry_makeBoolDatatype (qual p_abstract);
 extern void uentry_mergeDefinition (uentry p_old, /*@only@*/ uentry p_unew);
 extern void uentry_mergeEntries (uentry p_spec, /*@only@*/ uentry p_def);
 extern uentry uentry_nameCopy (/*@only@*/ cstring p_name, uentry p_e);

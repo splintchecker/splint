@@ -23,7 +23,7 @@ struct s_opFormNode {
   ltoken tok;        /* keeps the openSym token */
   opFormKind kind;
   opFormUnion content;
-  unsigned int key;
+  unsigned long int key;
   ltoken close;      /* keeps the closeSym token */
 } ;
 

@@ -302,7 +302,7 @@ dumpState (cstring cfname)
       */
 
       fprintf (f, "%s %s\n", LIBRARY_MARKER, cstring_toCharsSafe (fname));
-      fprintf (f, ";;%s\n", SPLINT_VERSION);
+      fprintf (f, ";;Splint %f\n", SPLINT_LIBVERSION);
       fprintf (f, ";;lib:%d\n", (int) context_getLibrary ());
       fprintf (f, ";;ctTable\n");
       
@@ -484,10 +484,13 @@ loadLCDFile (FILE *f, cstring name)
 		  vname = cstring_fromChars (buf + 9);
 
 		  loadllmsg (message ("Load library %s is in obsolete Splint library "
-				      "format (version %s).  Attempting "
+				      "format (version %f (%s), expecting version %f).  Attempting "
 				      "to continue anyway, but results may be incorrect.  Rebuild "
 				      "the library with this version of splint.", 
-				      name, vname));
+				      name, 
+				      version,
+				      vname, 
+				      SPLINT_LIBVERSION));
 		}
 	      else
 		{

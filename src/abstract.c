@@ -1365,7 +1365,7 @@ nameNode_unparse (/*@null@*/ nameNode n)
 makesigNode (ltoken t, /*@only@*/ ltokenList domain, ltoken range)
 {
   sigNode s = (sigNode) dmalloc (sizeof (*s));
-  unsigned int key;
+  unsigned long int key;
 
   /*
   ** Assign a hash key here to speed up lookup of operators.
@@ -1383,7 +1383,7 @@ makesigNode (ltoken t, /*@only@*/ ltokenList domain, ltoken range)
     } end_ltokenList_elements;
   
   s->key = key;
-    return (s);
+  return (s);
 }
 
 cstring sigNode_unparse (/*@null@*/ sigNode n)
@@ -1413,10 +1413,9 @@ sigNode_unparseText (/*@null@*/ sigNode n)
   return cstring_undefined;
 }
 
-static unsigned int
-  opFormNode2key (opFormNode op, opFormKind k)
+static unsigned long opFormNode2key (opFormNode op, opFormKind k)
 {
-  unsigned int key;
+  unsigned long int key;
 
   switch (k)
     {
@@ -1474,7 +1473,7 @@ makeOpFormNode (ltoken t, opFormKind k, opFormUnion u,
 		ltoken close)
 {
   opFormNode n = (opFormNode) dmalloc (sizeof (*n));
-  unsigned int key = 0;
+  unsigned long int key = 0;
 
   /*
   ** Assign a hash key here to speed up lookup of operators.
@@ -1483,7 +1482,6 @@ makeOpFormNode (ltoken t, opFormKind k, opFormUnion u,
   n->tok = t;
   n->close = close;
   n->kind = k;
-
   
   switch (k)
     {
@@ -1536,7 +1534,7 @@ makeOpFormNode (ltoken t, opFormKind k, opFormUnion u,
       }
     }
   n->key = key;
-    return (n);
+  return (n);
 }
 
 static cstring printMiddle (int j)
@@ -5357,7 +5355,7 @@ enteringFcnScope (lclTypeSpecNode t, declaratorNode d, globalList g)
   fctInfo fi    = (fctInfo) dmalloc (sizeof (*fi));
   signNode sign = (signNode) dmalloc (sizeof (*sign));
   sortList domain = sortList_new ();
-  unsigned int key;
+  unsigned long int key;
 
   paramPairs = extractParams (d->type);
   returnSort = extractReturnSort (t, d);

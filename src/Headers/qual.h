@@ -35,7 +35,7 @@ typedef enum {
   QU_NEVEREXIT, QU_EXITS, QU_MAYEXIT, QU_TRUEEXIT, QU_FALSEEXIT,
   QU_UNUSED, QU_EXTERNAL, QU_SEF,
   QU_NOTNULL,
-  QU_ABSTRACT, QU_CONCRETE, 
+  QU_ABSTRACT, QU_NUMABSTRACT, QU_CONCRETE, 
   QU_MUTABLE, QU_IMMUTABLE,
   QU_REFCOUNTED, QU_REFS, QU_NEWREF, QU_KILLREF, QU_TEMPREF,
   QU_TRUENULL, QU_FALSENULL, 
@@ -126,6 +126,8 @@ extern bool qual_isUnused (qual) /*@*/ ;
 extern bool qual_isExternal (qual) /*@*/ ;
 extern bool qual_isSef (qual) /*@*/ ;
 extern bool qual_isAbstract (qual) /*@*/ ;
+extern bool qual_isNumAbstract (qual) /*@*/ ;
+extern bool qual_isEitherAbstract (/*@sef@*/ qual) /*@*/ ;
 extern bool qual_isConcrete (qual) /*@*/ ;
 extern bool qual_isMutable (qual) /*@*/ ;
 extern bool qual_isImmutable (qual) /*@*/ ;
@@ -162,71 +164,71 @@ extern /*@observer@*/ annotationInfo qual_getAnnotationInfo (qual) /*@*/ ;
 extern void qual_initMod (void) /*@modifies internalState@*/ ;
 extern void qual_destroyMod (void) /*@modifies internalState@*/ ;
 
-# define qual_isUnknown(q)    ((q)->kind == QU_UNKNOWN)
-# define qual_isTrueNull(q)   ((q)->kind == QU_TRUENULL)
-# define qual_isFalseNull(q)  ((q)->kind == QU_FALSENULL)
-# define qual_isOwned(q)      ((q)->kind == QU_OWNED)
-# define qual_isDependent(q)  ((q)->kind == QU_DEPENDENT)
-# define qual_isRefCounted(q) ((q)->kind == QU_REFCOUNTED)
-# define qual_isRefs(q)       ((q)->kind == QU_REFS)
-# define qual_isNewRef(q)     ((q)->kind == QU_NEWREF)
-# define qual_isKillRef(q)    ((q)->kind == QU_KILLREF)
-# define qual_isTempRef(q)    ((q)->kind == QU_TEMPREF)
-# define qual_isLong(q)       ((q)->kind == QU_LONG)
-# define qual_isShort(q)      ((q)->kind == QU_SHORT)
-# define qual_isSigned(q)     ((q)->kind == QU_SIGNED)
-# define qual_isUnsigned(q)   ((q)->kind == QU_UNSIGNED)
-# define qual_isUnique(q)     ((q)->kind == QU_UNIQUE)
-# define qual_isExits(q)      ((q)->kind == QU_EXITS)
-# define qual_isMayExit(q)    ((q)->kind == QU_MAYEXIT)
-# define qual_isNeverExit(q)  ((q)->kind == QU_NEVEREXIT)
-# define qual_isTrueExit(q)   ((q)->kind == QU_TRUEEXIT)
-# define qual_isFalseExit(q)  ((q)->kind == QU_FALSEEXIT)
-# define qual_isConst(q)      ((q)->kind == QU_CONST)
-# define qual_isRestrict(q)   ((q)->kind == QU_RESTRICT)
-# define qual_isVolatile(q)   ((q)->kind == QU_VOLATILE)
-# define qual_isInline(q)     ((q)->kind == QU_INLINE)
-# define qual_isExtern(q)     ((q)->kind == QU_EXTERN)
-# define qual_isStatic(q)     ((q)->kind == QU_STATIC)
-# define qual_isAuto(q)       ((q)->kind == QU_AUTO)
-# define qual_isRegister(q)   ((q)->kind == QU_REGISTER)
-# define qual_isOut(q)        ((q)->kind == QU_OUT)
-# define qual_isIn(q)         ((q)->kind == QU_IN)
-# define qual_isYield(q)      ((q)->kind == QU_YIELD)
-# define qual_isOnly(q)       ((q)->kind == QU_ONLY)
-# define qual_isImpOnly(q)    ((q)->kind == QU_IMPONLY)
-# define qual_isPartial(q)    ((q)->kind == QU_PARTIAL)
-# define qual_isSpecial(q)    ((q)->kind == QU_SPECIAL)
-# define qual_isKeep(q)       ((q)->kind == QU_KEEP)
-# define qual_isKept(q)       ((q)->kind == QU_KEPT)
-# define qual_isTemp(q)       ((q)->kind == QU_TEMP)
-# define qual_isShared(q)     ((q)->kind == QU_SHARED)
-# define qual_isRelDef(q)     ((q)->kind == QU_RELDEF)
-# define qual_isNull(q)       ((q)->kind == QU_NULL)
-# define qual_isIsNull(q)     ((q)->kind == QU_ISNULL)
-# define qual_isRelNull(q)    ((q)->kind == QU_RELNULL)
-# define qual_isNotNull(q)    ((q)->kind == QU_NOTNULL)
-# define qual_isReturned(q)   ((q)->kind == QU_RETURNED)
-# define qual_isExposed(q)    ((q)->kind == QU_EXPOSED)
-# define qual_isObserver(q)   ((q)->kind == QU_OBSERVER)
-# define qual_isUnused(q)     ((q)->kind == QU_UNUSED)
-# define qual_isExternal(q)   ((q)->kind == QU_EXTERNAL)
-# define qual_isSef(q)        ((q)->kind == QU_SEF)
-# define qual_isAbstract(q)   ((q)->kind == QU_ABSTRACT)
-# define qual_isConcrete(q)   ((q)->kind == QU_CONCRETE)
-# define qual_isMutable(q)    ((q)->kind == QU_MUTABLE)
-# define qual_isImmutable(q)  ((q)->kind == QU_IMMUTABLE)
-# define qual_isChecked(q)    ((q)->kind == QU_CHECKED)
-# define qual_isCheckMod(q)   ((q)->kind == QU_CHECKMOD)
-# define qual_isCheckedStrict(q) ((q)->kind == QU_CHECKEDSTRICT)
-# define qual_isUnchecked(q)     ((q)->kind == QU_UNCHECKED)
-# define qual_isUndef(q)      ((q)->kind == QU_UNDEF)
-# define qual_isKilled(q)     ((q)->kind == QU_KILLED)
-# define qual_isPrintfLike(q) ((q)->kind == QU_PRINTFLIKE)
-# define qual_isScanfLike(q) ((q)->kind == QU_SCANFLIKE)
-# define qual_isMessageLike(q) ((q)->kind == QU_MESSAGELIKE)
-# define qual_isMetaState(q) ((q)->kind == QU_USERANNOT)
-
+# define qual_isUnknown(q)        ((q)->kind == QU_UNKNOWN)
+# define qual_isTrueNull(q)       ((q)->kind == QU_TRUENULL)
+# define qual_isFalseNull(q)      ((q)->kind == QU_FALSENULL)
+# define qual_isOwned(q)          ((q)->kind == QU_OWNED)
+# define qual_isDependent(q)      ((q)->kind == QU_DEPENDENT)
+# define qual_isRefCounted(q)     ((q)->kind == QU_REFCOUNTED)
+# define qual_isRefs(q)           ((q)->kind == QU_REFS)
+# define qual_isNewRef(q)         ((q)->kind == QU_NEWREF)
+# define qual_isKillRef(q)        ((q)->kind == QU_KILLREF)
+# define qual_isTempRef(q)        ((q)->kind == QU_TEMPREF)
+# define qual_isLong(q)           ((q)->kind == QU_LONG)
+# define qual_isShort(q)          ((q)->kind == QU_SHORT)
+# define qual_isSigned(q)         ((q)->kind == QU_SIGNED)
+# define qual_isUnsigned(q)       ((q)->kind == QU_UNSIGNED)
+# define qual_isUnique(q)         ((q)->kind == QU_UNIQUE)
+# define qual_isExits(q)          ((q)->kind == QU_EXITS)
+# define qual_isMayExit(q)        ((q)->kind == QU_MAYEXIT)
+# define qual_isNeverExit(q)      ((q)->kind == QU_NEVEREXIT)
+# define qual_isTrueExit(q)       ((q)->kind == QU_TRUEEXIT)
+# define qual_isFalseExit(q)      ((q)->kind == QU_FALSEEXIT)
+# define qual_isConst(q)          ((q)->kind == QU_CONST)
+# define qual_isRestrict(q)       ((q)->kind == QU_RESTRICT)
+# define qual_isVolatile(q)       ((q)->kind == QU_VOLATILE)
+# define qual_isInline(q)         ((q)->kind == QU_INLINE)
+# define qual_isExtern(q)         ((q)->kind == QU_EXTERN)
+# define qual_isStatic(q)         ((q)->kind == QU_STATIC)
+# define qual_isAuto(q)           ((q)->kind == QU_AUTO)
+# define qual_isRegister(q)       ((q)->kind == QU_REGISTER)
+# define qual_isOut(q)            ((q)->kind == QU_OUT)
+# define qual_isIn(q)             ((q)->kind == QU_IN)
+# define qual_isYield(q)          ((q)->kind == QU_YIELD)
+# define qual_isOnly(q)           ((q)->kind == QU_ONLY)
+# define qual_isImpOnly(q)        ((q)->kind == QU_IMPONLY)
+# define qual_isPartial(q)        ((q)->kind == QU_PARTIAL)
+# define qual_isSpecial(q)        ((q)->kind == QU_SPECIAL)
+# define qual_isKeep(q)           ((q)->kind == QU_KEEP)
+# define qual_isKept(q)           ((q)->kind == QU_KEPT)
+# define qual_isTemp(q)           ((q)->kind == QU_TEMP)
+# define qual_isShared(q)         ((q)->kind == QU_SHARED)
+# define qual_isRelDef(q)         ((q)->kind == QU_RELDEF)
+# define qual_isNull(q)           ((q)->kind == QU_NULL)
+# define qual_isIsNull(q)         ((q)->kind == QU_ISNULL)
+# define qual_isRelNull(q)        ((q)->kind == QU_RELNULL)
+# define qual_isNotNull(q)        ((q)->kind == QU_NOTNULL)
+# define qual_isReturned(q)       ((q)->kind == QU_RETURNED)
+# define qual_isExposed(q)        ((q)->kind == QU_EXPOSED)
+# define qual_isObserver(q)       ((q)->kind == QU_OBSERVER)
+# define qual_isUnused(q)         ((q)->kind == QU_UNUSED)
+# define qual_isExternal(q)       ((q)->kind == QU_EXTERNAL)
+# define qual_isSef(q)            ((q)->kind == QU_SEF)
+# define qual_isAbstract(q)       ((q)->kind == QU_ABSTRACT)
+# define qual_isNumAbstract(q)    ((q)->kind == QU_NUMABSTRACT)
+# define qual_isConcrete(q)       ((q)->kind == QU_CONCRETE)
+# define qual_isMutable(q)        ((q)->kind == QU_MUTABLE)
+# define qual_isImmutable(q)      ((q)->kind == QU_IMMUTABLE)
+# define qual_isChecked(q)        ((q)->kind == QU_CHECKED)
+# define qual_isCheckMod(q)       ((q)->kind == QU_CHECKMOD)
+# define qual_isCheckedStrict(q)  ((q)->kind == QU_CHECKEDSTRICT)
+# define qual_isUnchecked(q)      ((q)->kind == QU_UNCHECKED)
+# define qual_isUndef(q)          ((q)->kind == QU_UNDEF)
+# define qual_isKilled(q)         ((q)->kind == QU_KILLED)
+# define qual_isPrintfLike(q)     ((q)->kind == QU_PRINTFLIKE)
+# define qual_isScanfLike(q)      ((q)->kind == QU_SCANFLIKE)
+# define qual_isMessageLike(q)    ((q)->kind == QU_MESSAGELIKE)
+# define qual_isMetaState(q)      ((q)->kind == QU_USERANNOT)
 # define qual_isNullTerminated(q) ((q)->kind == QU_NULLTERMINATED)
 
 extern qual qual_createPlain (quenum) /*@*/ ;
@@ -239,7 +241,8 @@ extern qual qual_createNewRef (void) /*@*/ ;
 extern qual qual_createKillRef (void) /*@*/ ;    
 extern qual qual_createTempRef (void) /*@*/ ;    
 extern qual qual_createNotNull (void) /*@*/ ;    
-extern qual qual_createAbstract (void) /*@*/ ;   
+extern qual qual_createAbstract (void) /*@*/ ;  
+extern qual qual_createNumAbstract (void) /*@*/ ;    
 extern qual qual_createConcrete (void) /*@*/ ;   
 extern qual qual_createMutable (void) /*@*/ ;    
 extern qual qual_createImmutable (void) /*@*/ ;  
@@ -312,6 +315,7 @@ extern qual qual_createMessageLike (void) /*@*/ ;
 # define qual_createTempRef()    qual_createPlain (QU_TEMPREF)
 # define qual_createNotNull()    qual_createPlain (QU_NOTNULL)
 # define qual_createAbstract()   qual_createPlain (QU_ABSTRACT)
+# define qual_createNumAbstract()   qual_createPlain (QU_NUMABSTRACT)
 # define qual_createConcrete()   qual_createPlain (QU_CONCRETE)
 # define qual_createMutable()    qual_createPlain (QU_MUTABLE)
 # define qual_createImmutable()  qual_createPlain (QU_IMMUTABLE)
@@ -395,7 +399,11 @@ extern bool qual_isNullStateQual (/*@sef@*/ qual) /*@*/ ;
    || qual_isNotNull (q))
 
 # define qual_isTypeQual(q) \
-  (qual_isAbstract(q) || qual_isMutable(q) || qual_isImmutable(q))
+  (qual_isAbstract(q) || qual_isNumAbstract(q) || qual_isConcrete(q) \
+   || qual_isMutable(q) || qual_isImmutable(q))
+
+# define qual_isEitherAbstract(q) \
+  (qual_isAbstract(q) || qual_isNumAbstract(q))
 
 # define qual_isControlQual(q)  (qual_isExits(q) || qual_isMayExit (q))
 # define qual_isStorageClass(q) (qual_isExtern(q) || qual_isStatic(q))
@@ -423,6 +431,9 @@ extern bool qual_isExitQual (/*@sef@*/ qual p_q) /*@*/ ;
 # define qual_isExitQual(q) \
   (qual_isExits (q) || qual_isNeverExit (q) || qual_isMayExit (q) \
    || qual_isTrueExit (q) || qual_isFalseExit (q))
+
+extern char qual_abstractCode (qual) /*@*/ ;
+extern qual qual_abstractFromCodeChar (char) /*@*/ ;
 
 # else
 # error "Multiple include"

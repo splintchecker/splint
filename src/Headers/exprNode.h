@@ -325,8 +325,8 @@ extern /*@dependent@*/ /*@observer@*/ cstring
 exprNode_unparse (/*@temp@*/ exprNode p_e) /*@*/ ; 
 
 extern /*@falsewhennull@*/ bool exprNode_isBlock (exprNode p_e) /*@*/ ;
-extern /*@falsewhennull@*/ bool exprNode_isCharLit (exprNode p_e) /*@*/ ;
-extern /*@falsewhennull@*/ bool exprNode_isNumLit (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isCharLiteral (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isNumLiteral (exprNode p_e) /*@*/ ;
 
 extern exprNode 
   exprNode_makeInitialization (/*@only@*/ idDecl p_t, /*@only@*/ exprNode p_e);
