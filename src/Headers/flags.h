@@ -34,7 +34,10 @@ extern int flagcode_numReported (flagcode p_f);
 extern bool flagcode_isNamePrefixFlag (flagcode p_f);
 
 extern /*@only@*/ cstring  describeFlag (cstring p_flagname);
-extern flagcode identifyFlag (cstring p_s);
+
+extern flagcode flags_identifyFlag (cstring p_s) /*@modifies g_msgstream@*/ ;
+extern flagcode flags_identifyFlagQuiet (cstring p_s) /*@modifies nothing@*/ ;
+
 extern void setValueFlag (flagcode p_opt, cstring p_arg);
 extern void setStringFlag (flagcode p_opt, /*@only@*/ cstring p_arg);
 

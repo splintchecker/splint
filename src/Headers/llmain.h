@@ -34,6 +34,7 @@ extern /*@exits@*/ void llexit (int p_status);
 extern void showHerald (void);
 
 /*@-redecl@*/ /*@-incondefs@*/
+/*@-declundef@*/
 extern int yyparse (void);
 extern void yyrestart (/*@dependent@*/ FILE *);
 
@@ -44,7 +45,7 @@ extern int lslparse (void);
 
 extern /*:open:*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
-
+/*@=declundef@*/
 
 # endif
 

@@ -288,6 +288,78 @@ int multiVal_compare (multiVal m1, multiVal m2)
   BADEXIT;
 }
 
+multiVal multiVal_add (multiVal m1, multiVal m2)
+{
+  if (multiVal_isUndefined (m1) || multiVal_isUndefined (m2) || m1->kind != m2->kind)
+    {
+      return multiVal_undefined;
+    }
+
+  switch (m1->kind)
+    {
+    case MVLONG:   return (multiVal_makeInt (m1->value.ival + m2->value.ival));
+    case MVCHAR:   return (multiVal_makeChar (m1->value.cval + m2->value.cval));
+    case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval + m2->value.fval));
+    case MVSTRING: return multiVal_undefined;
+    }
+
+  BADEXIT;
+}
+
+multiVal multiVal_subtract (multiVal m1, multiVal m2)
+{
+  if (multiVal_isUndefined (m1) || multiVal_isUndefined (m2) || m1->kind != m2->kind)
+    {
+      return multiVal_undefined;
+    }
+
+  switch (m1->kind)
+    {
+    case MVLONG:   return (multiVal_makeInt (m1->value.ival - m2->value.ival));
+    case MVCHAR:   return (multiVal_makeChar (m1->value.cval - m2->value.cval));
+    case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval - m2->value.fval));
+    case MVSTRING: return multiVal_undefined;
+    }
+
+  BADEXIT;
+}
+
+multiVal multiVal_multiply (multiVal m1, multiVal m2)
+{
+  if (multiVal_isUndefined (m1) || multiVal_isUndefined (m2) || m1->kind != m2->kind)
+    {
+      return multiVal_undefined;
+    }
+
+  switch (m1->kind)
+    {
+    case MVLONG:   return (multiVal_makeInt (m1->value.ival * m2->value.ival));
+    case MVCHAR:   return (multiVal_makeChar (m1->value.cval * m2->value.cval));
+    case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval * m2->value.fval));
+    case MVSTRING: return multiVal_undefined;
+    }
+
+  BADEXIT;
+}
+
+multiVal multiVal_divide (multiVal m1, multiVal m2)
+{
+  if (multiVal_isUndefined (m1) || multiVal_isUndefined (m2) || m1->kind != m2->kind)
+    {
+      return multiVal_undefined;
+    }
+
+  switch (m1->kind)
+    {
+    case MVLONG:   return (multiVal_makeInt (m1->value.ival / m2->value.ival));
+    case MVCHAR:   return (multiVal_makeChar (m1->value.cval / m2->value.cval));
+    case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval / m2->value.fval));
+    case MVSTRING: return multiVal_undefined;
+    }
+
+  BADEXIT;
+}
+
 void multiVal_free (/*@only@*/ multiVal m)
 {
   if (multiVal_isDefined (m))

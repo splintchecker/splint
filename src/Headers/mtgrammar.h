@@ -12,7 +12,9 @@
 
 # include "mtgrammar_tokens.h"
 
+/*@-declundef@*/
 extern int mtparse (void);
+/*@=declundef@*/
 
 # else
 # error "Multiple include"

@@ -6,7 +6,7 @@ void uknSize1()
   char b[bSIZE];
   char c[bSIZE];
 
-  c[9] = 'l';
+  c[9] = 'l'; /* error */
   b[sizeof b - 1] = 'd';
 
 }

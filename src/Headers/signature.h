@@ -16,7 +16,9 @@
 # include "osd.h"
 # endif
 
+/*@-declundef@*/
 extern void PrintToken(ltoken p_tok);
+/*@=declundef@*/
 
 # else
 # error "Multiple include"

@@ -787,7 +787,12 @@ int main (int argc, char *argv[])
 	    flagcode opt;
 
 	    thisarg++;
-	    opt = identifyFlag (cstring_fromChars (thisarg));
+
+	    /*
+	    ** Don't report warnings this time
+	    */
+
+	    opt = flags_identifyFlagQuiet (cstring_fromChars (thisarg));
 
 	    if (opt == FLG_NOF)
 	      {
@@ -1000,7 +1005,7 @@ int main (int argc, char *argv[])
 	      flagname = cstring_fromChars (thisarg);
 
 	      DPRINTF (("Flag: %s", flagname));
-	      opt = identifyFlag (flagname);
+	      opt = flags_identifyFlag (flagname);
 	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
 
 	      if (flagcode_isSkip (opt) || opt == FLG_SHOWSCAN || opt == FLG_WARNRC)
@@ -2414,7 +2419,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 
 	  DPRINTF (("Flag: %s", thisflag));
 
-	  opt = identifyFlag (cstring_fromChars (thisflag));
+	  opt = flags_identifyFlag (cstring_fromChars (thisflag));
 	  
 	  if (flagcode_isSkip (opt))
 	    {

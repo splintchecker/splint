@@ -16,7 +16,7 @@ typedef enum
   TS_SIGNED, TS_UNSIGNED, TS_SHORT, TS_LONG,
   TS_FLOAT,  TS_DOUBLE, TS_ENUM, TS_STRUCT, 
   TS_UNION, TS_TYPEDEF
-  } TypeSpecification;
+} TypeSpecification;
 
 /*
 ** TypeSpec is an enum for each of the valid combinations of type specifiers.
@@ -37,7 +37,7 @@ typedef enum {
 typedef bits lclctype;
 
 extern lclctype fixBits(TypeSpecification p_attr, lclctype p_spec);
-# define    fixBits(attr, spec)   ((unsigned)(1<<(attr) | (spec)))
+# define fixBits(attr, spec)   ((unsigned)(1<<(attr) | (spec)))
 
 extern lsymbol lclctype_toSort(lclctype p_t);
 extern lsymbol lclctype_toSortDebug(lclctype p_t);

@@ -19,13 +19,15 @@ extern /*:open:*/ FILE *g_msgstream;
 /*@-redecl@*/
 /*@-incondefs@*/ 
 /*@-namechecks@*/
-extern /*@dependent@*/ /*:open:*/ FILE *yyin;
-extern /*@dependent@*/ /*:open:*/ FILE *yyout;
-extern int yyleng;
+/*@-declundef@*/ /* Might not process grammar files */
+extern /*@dependent@*/ /*@open@*/ FILE *yyin;
+extern /*@dependent@*/ /*@open@*/ /*@unused@*/ FILE *yyout;
+extern /*@unused@*/ int yyleng;
 /*@=incondefs@*/ 
 
 extern int yydebug;
 /*@=redecl@*/
+/*@=declundef@*/
 /*@=namechecks@*/
 
 extern /*@observer@*/ cstring g_codeFile;

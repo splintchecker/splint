@@ -12,7 +12,9 @@
 
 extern ltokenCode yllex (void) /*@modifies internalState@*/ ;
 
+/*@-declundef@*/
 extern bool g_inTypeDef;
+/*@=declundef@*/
 
 extern /*@dependent@*/ /*@exposed@*/ ltoken LCLScanNextToken(void) 
    /*@modifies internalState@*/ ;

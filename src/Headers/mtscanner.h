@@ -10,6 +10,7 @@
 # ifndef MTSCANNER_H
 # define MTSCANNER_H
 
+/*@-declundef@*/
 extern void mtscanner_reset (inputStream p_sourceFile) 
      /*@modifies internalState@*/ ;
 
@@ -20,6 +21,7 @@ extern int mtlex (YYSTYPE *p_mtlval)
 
 extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
    /* Can steal p_tok's location. */
+/*@=declundef@*/
 
 # else
 # error "Multiple include"

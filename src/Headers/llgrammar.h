@@ -3,9 +3,9 @@
 
 # include "llgrammar_gen.h"
 
-/*@-redecl@*/
+/*@-redecl@*/ /*@-declundef@*/
 extern void ylerror (char *p_s) /*@modifies *g_msgstream@*/ ;
-/*@=redecl@*/
+/*@=redecl@*/ /*@=declundef@*/
 
 # else
 # error "Multiple includes"

@@ -31,6 +31,7 @@ extern size_t size_fromInt (int p_x) /*@*/ ;
 extern int longUnsigned_toInt (long unsigned int p_x) /*@*/ ;
 extern int long_toInt (long p_x) /*@*/ ;
 extern long unsigned longUnsigned_fromInt (int p_x) /*@*/ ;
+extern unsigned int int_toNonNegative (int p_x) /*@*/ ;
 /*@=czechfcns@*/
 
 /* string functions */

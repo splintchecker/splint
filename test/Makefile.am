@@ -43,7 +43,7 @@ UNITTESTS = \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
-  returned sharing slovaknames \
+  returned sharing shifts slovaknames \
   specclauses \
   special stack staticarray strings \
   structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
@@ -649,6 +649,12 @@ sharing:
 	-$(SPLINTR) sharing4.c -expect 13
 	-$(SPLINTR) sharing4.c -paramimptemp -expect 12
 	-$(SPLINTR) sharing5.c -expect 6
+
+.PHONY: shifts
+shifts:
+	-$(SPLINTR) shifts.c -expect 4
+	-$(SPLINTR) shifts.c -shiftimplementation -expect 3
+	-$(SPLINTR) shifts.c -shiftnegative -expect 1
 
 .PHONY: slovaknames
 slovaknames:

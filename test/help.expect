@@ -398,7 +398,8 @@ Finished checking --- no code processed
    sefuncon                    
    shadow                      
    sharedtrans                 
-   shiftsigned                 
+   shiftimplementation         
+   shiftnegative               
    showallconjs                
    showalluses                 
    showcolumn                  
@@ -978,7 +979,8 @@ nullptrarith --- arithmetic involving possibly null pointer and integer
 ptrcompare --- comparison between pointer and number
 strictops --- primitive operation does not type check strictly
 bitwisesigned --- a bitwise logical operator does not have unsigned operands
-shiftsigned --- a shift operator does not have unsigned operands
+shiftnegative --- a shift right operand may be negative
+shiftimplementation --- a shift left operand may be negative
 boolops --- primitive operation (!, && or ||) does not has a boolean argument
 ptrnegate --- allow ! to be used on pointer operand
 sizeoftype --- sizeof operator has a type argument

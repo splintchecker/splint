@@ -4036,12 +4036,10 @@ void usymtab_checkFinalScope (bool isReturn)
 		}
 	    }
 
-	  DPRINTF (("entry: %s", uentry_unparseFull (ce)));
-
-	  if (mustDefine && uentry_isOut (ce)
-	      && !uentry_isOnly (ce))
+	  if (mustDefine && uentry_isOut (ce))
 	    {
-	      if (!sRef_isReallyDefined (sr))
+	      /* No error if its dead (either only or error already reported */
+	      if (!sRef_isReallyDefined (sr) && !sRef_isDead (sr))
 		{
 		  voptgenerror 
 		    (FLG_MUSTDEFINE,

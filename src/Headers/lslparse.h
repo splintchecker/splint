@@ -10,9 +10,9 @@
 extern /*@dependent@*/ /*@null@*/ lslOp g_importedlslOp;
 extern bool g_lslParsingTraits;
 
-/*@-namechecks@*/
+/*@-namechecks@*/ /*@-declundef@*/
 extern int lsldebug; /* defined by bison (not a bool) */
-/*@=namechecks@*/
+/*@=namechecks@*/ /*@=declundef@*/
 
 extern lsymbol processTraitSortId (lsymbol p_sortid); 
 extern int parseSignatures (/*@only@*/ cstring p_infile);

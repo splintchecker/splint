@@ -23,6 +23,11 @@ extern /*@falsenull@*/ bool multiVal_isDefined (multiVal p_m) /*@*/ ;
 extern /*@truenull@*/ bool multiVal_isUndefined (multiVal p_m) /*@*/ ;
 extern /*@truenull@*/ bool multiVal_isUnknown (multiVal p_m) /*@*/ ;
 
+extern multiVal multiVal_add (multiVal p_m1, multiVal p_m2) /*@*/ ;
+extern multiVal multiVal_subtract (multiVal p_m1, multiVal p_m2) /*@*/ ;
+extern multiVal multiVal_multiply (multiVal p_m1, multiVal p_m2) /*@*/ ;
+extern multiVal multiVal_divide (multiVal p_m1, multiVal p_m2) /*@*/ ;
+
 /*@constant null multiVal multiVal_undefined; @*/
 # define multiVal_undefined      (multiVal)NULL
 # define multiVal_isDefined(m)   ((m) != multiVal_undefined)
