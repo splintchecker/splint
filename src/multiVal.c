@@ -351,9 +351,33 @@ multiVal multiVal_divide (multiVal m1, multiVal m2)
 
   switch (m1->kind)
     {
-    case MVLONG:   return (multiVal_makeInt (m1->value.ival / m2->value.ival));
-    case MVCHAR:   return (multiVal_makeChar ((char) (m1->value.cval / m2->value.cval)));
-    case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval / m2->value.fval));
+    case MVLONG: 
+      if (m2->value.ival != 0)
+	{
+	  return (multiVal_makeInt (m1->value.ival / m2->value.ival));
+	}
+      else
+	{
+	  return multiVal_undefined;
+	}
+    case MVCHAR:   
+      if (m2->value.cval != 0)
+	{
+	  return (multiVal_makeChar ((char) (m1->value.cval / m2->value.cval)));
+	}
+      else
+	{
+	  return multiVal_undefined;
+	}
+    case MVDOUBLE:
+      if (m2->value.fval != 0.0)
+	{
+	  return (multiVal_makeDouble (m1->value.fval / m2->value.fval));
+	}
+      else
+	{
+	  return multiVal_undefined;
+	}
     case MVSTRING: return multiVal_undefined;
     }
 
