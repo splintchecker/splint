@@ -106,7 +106,7 @@ static ctype ctypeType;
 static ctype filelocType; 
 static bool initMod = FALSE;
 
-# define exprNode_defineConstraints(e)  { (e)->environment=NULL; \
+# define exprNode_defineConstraints(e)  {  \
 					  (e)->requiresConstraints = constraintList_makeNew(); \
 					  (e)->ensuresConstraints = constraintList_makeNew(); \
 					  (e)->trueEnsuresConstraints = constraintList_makeNew(); \
@@ -406,10 +406,9 @@ static /*@notnull@*/ /*@special@*/ exprNode
   e->canBreak = FALSE;
   e->mustBreak = FALSE;
   e->isJumpPoint = FALSE;
-  e->environment =  environmentTable_undefined;
-  e->requiresConstraints = constraintList_makeNew();
-  e->ensuresConstraints  = constraintList_makeNew();
-  
+
+  exprNode_defineConstraints(e);
+
   return (e);
 }
 
