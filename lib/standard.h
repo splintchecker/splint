@@ -1,5 +1,5 @@
 /*
-** satndard.h --- ISO C99 Standard Library for Splint.
+** standard.h --- ISO C99 Standard Library for Splint.
 **
 ** Process with -DSTRICT to get strict library.
 */
@@ -935,7 +935,7 @@ size_t strcspn (char *s1, char *s2) /*@*/ ;
 size_t strspn (char *s, char *t) /*@*/ ;
 
 /*@null@*/ /*@exposed@*/  char *
-  strstr (/*@returned@*/ /*@unique@*/ char *s, char *t) /*@*/
+  strstr (/*@returned@*/ const char *s, const char *t) /*@*/
        /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 /\ maxRead(result) >= maxRead(t) /\ maxSet(result) >= maxRead(t)@*/ ;
 
 /*@null@*/ /*@exposed@*/ char *

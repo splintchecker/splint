@@ -295,7 +295,7 @@ pid_t vfork (void) /*@modifies fileSystem@*/ ;
 */
 
 struct iovec {
-  void *iov_base;
+  /*@dependent@*/ void *iov_base;
   size_t iov_len; /*: maxSet(iov_base) = iov_len */
 };
 
@@ -445,10 +445,8 @@ extern void free (/*@notnull@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ 
 /*@constant int NET_RT_IFLIST@*/
 /*@constant int NET_RT_MAXID@*/
 
-
 /*moved this to before socket.h to get splint to parse the header*/
 typedef /*@unsignedintegraltype@*/ sa_family_t;
-
 
 /*
 ** sys/socket.h
@@ -467,11 +465,11 @@ struct sockaddr_storage {
 } ;
 
 struct msghdr {
-  void *msg_name;		
+  /*@dependent@*/ void *msg_name;		
   socklen_t msg_namelen;	/*: maxSet (msg_name) >= msg_namelen */
-  struct iovec *msg_iov;	/* scatter/gather array */
+  /*@dependent@*/ struct iovec *msg_iov;	/* scatter/gather array */
   int msg_iovlen;		/* # elements in msg_iov */ /*: maxSet (msg_iov) >= msg_iovlen */
-  void *msg_control;		/* ancillary data, see below */
+  /*@dependent@*/ void *msg_control;		/* ancillary data, see below */
   socklen_t msg_controllen;     /*: maxSet (msg_control) >= msg_controllen */
   int msg_flags;		/* flags on received message */
 } ;
@@ -557,16 +555,8 @@ int bind (int s, const struct sockaddr *name, int namelen)
 int connect (int s, const struct sockaddr *name, int namelen)
   /*@modifies errno, internalState@*/;
 
+int getpeername (int s, /*@out@*/ struct sockaddr */*restrict*/ name, socklen_t */*restrict*/ namelen)
   /*drl splint doesn't handle restrict yet*/
-int getpeername (int s, /*@out@*/ struct sockaddr *
-#if 0
-		 restrict
-#endif
-		 name, socklen_t *
-#if 0		 
-		 restrict
-#endif
-		 namelen)
    /*@modifies *name, *namelen, errno@*/;
 	
 #ifdef STRICT
@@ -2250,7 +2240,7 @@ void srand48 (long int seedval) /*@modifies internalState@*/ ;
 typedef /*@unsignedintegraltype@*/ in_port_t; /* An unsigned integral type of exactly 16 bits. */
 typedef /*@unsignedintegraltype@*/ in_addr_t; /* An unsigned integral type of exactly 32 bits. */
 
-typedef /*@unsignedintegraltype@*/ sa_family_t;
+/* sa_family_t moved earlier */
 
 struct in_addr {
   in_addr_t      s_addr;
