@@ -11,6 +11,9 @@ extern /*@observer@*/ char *tmpnam (/*@untainted@*/ char *s) ;
 
 extern FILE *fopen (/*@untainted@*/ char *filename, char *mode) ;
 
+extern int sprintf (/*@out@*/ char *s, /*@untainted@*/ char *format, ...) 
+   /*@ensures s:taintedness = ...:taintedness@*/ ;
+
 extern int printf (/*@untainted@*/ char *format, ...) ;
 
 extern /*@null@*/ FILE *freopen (/*@untainted@*/ char *filename, char *mode, FILE *stream) ;

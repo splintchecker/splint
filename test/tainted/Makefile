@@ -13,3 +13,4 @@ tainted:
 	${LCLINT} -mts tainted tainted5.c -mustfree -exportlocal
 	${LCLINT} -mts tainted taintedmerge.c -mustfree -exportlocal -expect 3
 	${LCLINT} -mts tainted taintedimplicit.c -mustfree -exportlocal -expect 1
+	${LCLINT} -mts tainted sprintf.c -expect 2
