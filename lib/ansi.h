@@ -60,33 +60,33 @@ extern /*@falseexit@*/ void assert (/*@sef@*/ lltX_bool /*@alt int@*/ e)
 */
 
 # ifdef STRICT
-extern lltX_bool isalnum (unsigned char c) /*@*/ ;
-extern lltX_bool isalpha (unsigned char c) /*@*/ ;
-extern lltX_bool iscntrl (unsigned char c) /*@*/ ;
-extern lltX_bool isdigit (unsigned char c) /*@*/ ;
-extern lltX_bool isgraph (unsigned char c) /*@*/ ;
-extern lltX_bool islower (unsigned char c) /*@*/ ;
-extern lltX_bool isprint (unsigned char c) /*@*/ ;
-extern lltX_bool ispunct (unsigned char c) /*@*/ ;
-extern lltX_bool isspace (unsigned char c) /*@*/ ;
-extern lltX_bool isupper (unsigned char c) /*@*/ ;
-extern lltX_bool isxdigit (unsigned char c) /*@*/ ;
-extern char tolower (unsigned char c) /*@*/ ;
-extern char toupper (unsigned char c) /*@*/ ;
+extern lltX_bool isalnum (int c) /*@*/ ;
+extern lltX_bool isalpha (int c) /*@*/ ;
+extern lltX_bool iscntrl (int c) /*@*/ ;
+extern lltX_bool isdigit (int c) /*@*/ ;
+extern lltX_bool isgraph (int c) /*@*/ ;
+extern lltX_bool islower (int c) /*@*/ ;
+extern lltX_bool isprint (int c) /*@*/ ;
+extern lltX_bool ispunct (int c) /*@*/ ;
+extern lltX_bool isspace (int c) /*@*/ ;
+extern lltX_bool isupper (int c) /*@*/ ;
+extern lltX_bool isxdigit (int c) /*@*/ ;
+extern char tolower (int c) /*@*/ ;
+extern char toupper (int c) /*@*/ ;
 # else
-extern lltX_bool /*@alt int@*/ isalnum (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isalpha (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ iscntrl (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isdigit (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isgraph (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ islower (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isprint (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ ispunct (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isspace (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isupper (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern lltX_bool /*@alt int@*/ isxdigit (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern char /*@alt int@*/ tolower (unsigned char /*@alt int@*/ c) /*@*/ ;
-extern char /*@alt int@*/ toupper (unsigned char /*@alt int@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isalnum (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isalpha (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ iscntrl (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isdigit (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isgraph (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ islower (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isprint (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ ispunct (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isspace (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isupper (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern lltX_bool /*@alt int@*/ isxdigit (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern char /*@alt int@*/ tolower (int /*@alt unsigned char@*/ c) /*@*/ ;
+extern char /*@alt int@*/ toupper (int /*@alt unsigned char@*/ c) /*@*/ ;
 # endif
 
 /*
