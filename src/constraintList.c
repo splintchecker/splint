@@ -21,6 +21,7 @@
 ** To report a bug: lclint-bug@cs.virginia.edu
 ** For more information: http://lclint.cs.virginia.edu
 */
+
 /*
 ** constraintList.c
 **
