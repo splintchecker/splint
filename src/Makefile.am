@@ -251,7 +251,7 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
 #files to run Splint on
-LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
+LINTSRC = $(COMMONSRC) $(SPLINTSRC)
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
@@ -382,16 +382,21 @@ splintme:
 lintbuffercheck: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint -dLINTBUFFERCHECK
+                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +bounds +boundsread +implictconstraint -dLINTBUFFERCHECK
 
+binDir = bin
 
-all: splint$(EXEEXT)
+all: splint$(EXEEXT) ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
+
+../$(top_builddir)/$(binDir)/splint$(EXEEXT):  splint$(EXEEXT)
+	-$(RM) -f $(top_builddir)/$(binDir)/splint$(EXEEXT)
+	ln -s $(top_builddir)/src/splint$(EXEEXT)  $(top_builddir)/$(binDir)/splint$(EXEEXT)
 
 up: 
 	-rm cgrammar.c llgrammar.c mtgrammar.c signature.c cscanner.c
 	$(MAKE) clean
 
-CLEANFILES = splint$(EXEEXT)
+CLEANFILES = splint$(EXEEXT)  ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
 
 .c.o:
 	@echo "Compiling "$<"..."; \

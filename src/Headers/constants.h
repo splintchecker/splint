@@ -70,7 +70,7 @@
 # define LIBRARY_MARKER ";;; Splint Library "
 
 /*@constant int MAX_NAME_LENGTH=256; @*/
-# define MAX_NAME_LENGTH 256
+# define MAX_NAME_LENGTH 1024
 
 /*@constant int MAX_LINE_LENGTH=1024; @*/
 # define MAX_LINE_LENGTH 1024

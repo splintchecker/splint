@@ -26,4 +26,11 @@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-SUBDIRS =  preBuilt lib imports  doc
+binaryDir = bin
+
+SUBDIRS =  $(binaryDir) lib imports  doc
+
+all: config.h src/splint
+
+src/splint: $(binaryDir)/splint
+	ln -s ../$(binaryDir)/splint src/splint

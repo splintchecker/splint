@@ -29,17 +29,35 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 binaryfixscript = ./fixBinaryDist.sh
 SUBDIRS =   lib imports test doc src
 
+binaryDir = bin
+binaryDirFiles =  $(binaryDir)/Makefile.am $(binaryDir)/Makefile.in
+
 binaryBuiltFiles = Makefile.binary.am configure.binary.ac
+
 #include these in case we're trying to build on a systems
 #without the bleeding edge versions of automake and autoconf
 binaryDerivedFiles = Makefile.binary.in configure.binary
 
-EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) preBuilt/Makefile.am preBuilt/Makefile.in
+#try to remake these but don't stop if it fails.
+configure.binary:configure.binary.ac
+	-autoconf -oconfigure.binary configure.binary.ac
 
-bindist:
+Makefile.binary.in:Makefile.binary.am
+	-automake Makefile.binary
+
+$(binaryDir)/Makefile.in: $(binaryDir)/Makefile.am
+	-automake $(binaryDir)/Makefile
+
+EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) $(binaryDirFiles)
+
+preDist:  $(binaryDir)/Makefile.in  $(binaryDerivedFiles) 
+
+bindist: $(binaryDerivedFiles) 
 	$(MAKE)
-	$(CP) src/splint preBuilt/splint
-	$(MAKE) -e dist dh_script=$(binaryfixscript) SUBDIRS="preBuilt lib imports  doc"
+	$(RM) -f $(binaryDir)/splint
+	$(CP) src/splint $(binaryDir)/splint
+	$(MAKE) -e dist dh_script=$(binaryfixscript) SUBDIRS="$(binaryDir) lib imports  doc"
+	$(MV) $(distdir).tar.gz $(distdir).`uname`.tgz 
 
 dist-hook:
 	cd $(distdir); 	pwd; $(dh_script)

@@ -80,7 +80,7 @@ MV = mv
 OBJEXT = o
 PACKAGE = splint
 RM = rm
-VERSION = 3.0.1.2
+VERSION = 3.0.1.4
 am__include = include
 am__quote = 
 install_sh = /net/af9/drl7x/reTmp/LCLintDev/config/install-sh
@@ -114,7 +114,7 @@ SPLINTRNEST = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args blocks break cases cast charlit clauses commentchar compdestroy \
+  args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
@@ -1027,6 +1027,11 @@ argorder:
 .PHONY: args
 args:
 	-$(SPLINTR) args -noeffect -expect 12
+
+.PHONY: arraydims
+arraydims:
+	-$(SPLINTR) arraydims.c -varuse -expect 2
+	-$(SPLINTR) arraydims.c -initsize -varuse
 
 .PHONY: blocks
 blocks:

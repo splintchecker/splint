@@ -3173,7 +3173,7 @@ cat >>confdefs.h <<EOF
 #define TARGET_OS "${target_os}"
 EOF
 
-ac_config_files="$ac_config_files Makefile imports/Makefile lib/Makefile src/Makefile test/Makefile doc/Makefile preBuilt/Makefile"
+ac_config_files="$ac_config_files Makefile imports/Makefile lib/Makefile src/Makefile test/Makefile doc/Makefile bin/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3500,7 +3500,7 @@ do
   "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-  "preBuilt/Makefile" ) CONFIG_FILES="$CONFIG_FILES preBuilt/Makefile" ;;
+  "bin/Makefile" ) CONFIG_FILES="$CONFIG_FILES bin/Makefile" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h:config.hin" ;;
   *) { { echo "$as_me:3506: error: invalid argument: $ac_config_target" >&5

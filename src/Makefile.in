@@ -336,7 +336,7 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
 #files to run Splint on
-LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
+LINTSRC = $(COMMONSRC) $(SPLINTSRC)
 
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
@@ -358,7 +358,9 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 
 CHECKS = $(subst .c,.check,$(splint_SOURCES))
 
-CLEANFILES = splint$(EXEEXT)
+binDir = bin
+
+CLEANFILES = splint$(EXEEXT)  ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -579,7 +581,7 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
-DIST_COMMON = ChangeLog Makefile.am Makefile.in
+DIST_COMMON = Makefile.am Makefile.in
 SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 
 all: $(BUILT_SOURCES)
@@ -1056,9 +1058,13 @@ splintme:
 lintbuffercheck: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint -dLINTBUFFERCHECK
+                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +bounds +boundsread +implictconstraint -dLINTBUFFERCHECK
 
-all: splint$(EXEEXT)
+all: splint$(EXEEXT) ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
+
+../$(top_builddir)/$(binDir)/splint$(EXEEXT):  splint$(EXEEXT)
+	-$(RM) -f $(top_builddir)/$(binDir)/splint$(EXEEXT)
+	ln -s $(top_builddir)/src/splint$(EXEEXT)  $(top_builddir)/$(binDir)/splint$(EXEEXT)
 
 up: 
 	-rm cgrammar.c llgrammar.c mtgrammar.c signature.c cscanner.c

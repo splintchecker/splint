@@ -19,5 +19,8 @@ cp Makefile.binary.in Makefile.in
 #run these if possible...
 autoconf
 automake
-mkdir src
-ln -s ../preBuilt/splint src/splint
+mkdir src || echo "COULD NOT MAKE src tar ball may be incorrect"
+echo "Created this file because some versions of tar are too simple include this directory without it"  > src/dummy
+
+# Need to do this in the makefile because the tar command in make dist wants to derefence symlinks
+#ln -s ../bin/splint src/splint

@@ -54,8 +54,6 @@
 /*@-retvalother@*/
 
 /*drl added 11/27/2001*/
-/*@-arraybounds@*/
-/*@-arrayboundsread@*/
 
 
 # ifdef __LCLINT__

@@ -50,11 +50,6 @@
 /*@=redecl@*/
 /*@=retvalother@*/
 
-
-/*drl added 11/27/2001*/
-/*@=arraybounds@*/
-/*@=arrayboundsread@*/
-
 # ifdef OSF
 # define __GNUC__
 # endif

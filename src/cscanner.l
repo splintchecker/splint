@@ -1713,20 +1713,23 @@ static bool handleSpecial (char *yyt)
   char c;
   char *ol;
   cstring olc;
-  
-  strcpy (l, yyt + 1);
 
-  /* Need to safe original l for deallocating. */
-  ol = l;
+  int len_yyt;
 
-  l += strlen (yyt) - 1;
+  len_yyt = strlen (yyt +1) ;
+
+  l = mstring_copy (yyt + 1);
   
   while ((c = char_fromInt (lminput ())) != '\n' && c != '\0')
     {
-      *l++ = c;
+      l = mstring_append(l, c);
     }
 
-  *l = '\0';
+    /* Need to safe original l for deallocating. */
+  ol = l;
+
+  l += strlen (l);
+
   olc = cstring_fromChars (ol);
   
   if (cstring_equalPrefixLit (olc, "pragma"))
