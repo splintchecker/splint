@@ -260,7 +260,6 @@ PACKAGE_VERSION='3.1.1'
 PACKAGE_STRING='Splint 3.1.1'
 PACKAGE_BUGREPORT='splint-bug@splint.org'
 
-ac_unique_file="src/lclinit.c"
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1202,7 +1201,8 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"
 ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
 
-
+#NO source directory in the binary release so this must be commented out
+#AC_CONFIG_SRCDIR([src/lclinit.c])
 
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||

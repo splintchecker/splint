@@ -7,7 +7,8 @@ dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])
 
 dnl Set up the source directory
-AC_CONFIG_SRCDIR([src/lclinit.c])
+#NO source directory in the binary release so this must be commented out
+#AC_CONFIG_SRCDIR([src/lclinit.c])
 
 dnl Deduce host
 AC_CANONICAL_SYSTEM
