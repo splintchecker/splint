@@ -26,11 +26,14 @@ int (*compar)(const void *, const void *)) /*@*/
      extern /*@null@*/ /*@only@*/ void *calloc (size_t nobj, size_t size) /*@*/
   /*@ensures MaxSet(result) == (nobj - 1); @*/ ;
 
+  /*@-redef@*/
 typedef /*@concrete@*/ struct 
 {
   int quot;
   int rem;
 } div_t ;
+/*@=redef@*/
+
 
 extern div_t div (int num, int denom) /*@*/ ;
 
@@ -57,18 +60,28 @@ char *ecvt(double value, int ndigit, /*@out@*/ int *decpt, /*@out@*/ int *sign)
      char *initstate(unsigned int seed, char *state, size_t size)
      /*@modifies interalState, state @*/ /*@requires maxSet(state) >= (size - 1) @*/ /*drl added 09-20-001*/
      ;
+     
+     /*@-fixedformalarray@*/
      long int jrand48 (unsigned short int xsubi[3]) /*@modifies internalState@*/ /*@requires maxSet(xsubi) >= 2 @*/ ; 
-
+     /*@=fixedformalarray@*/
+     
      char *l64a(long value) /*@ensures maxRead(result) <= 5 /\ maxSet(result) <= 5 @*/ ;
      extern long int labs (long int n) /*@*/ ; 
 
+          /*@-fixedformalarray@*/
 extern     void lcong48 (unsigned short int param[7]) /*@modifies internalState@*/ /*@requires maxRead(param) >= 6 @*/ ; 
 
+     /*@=fixedformalarray@*/
+
+/*also in ansi.h */
+
+/*@-redef@*/
 typedef /*@concrete@*/ struct 
 {
   long int quot;
   long int rem;
 } ldiv_t ;
+/*@=redef@*/
 
 extern ldiv_t ldiv (long num, long denom) /*@*/ ;
 
@@ -104,12 +117,15 @@ extern int mbtowc (/*@null@*/ /*@out@*/ wchar_t *pwc, /*@null@*/ char *s, size_t
 
      long int mrand48 (void) /*@modifies internalState@*/ ;
 
+     /*@-fixedformalarray@*/
  long int nrand48 (unsigned short int xsubi[3]) /*@modifies internalState, xsubi @*/
 
      /*@requires maxSet(xsubi) >= 2 /\ maxRead(xsubi) >= 2 @*/
      ;
+
+      /*@=fixedformalarray@*/
      
-     extern /*@dependent@*/ /*check dependent */ char *ptsname(int fildes) /*@drl added 09-20-01@*/ ;
+     extern /*@dependent@*/ /*check dependent */ char *ptsname(int fildes) /*drl added 09-20-01*/ ;
      
 
 	extern int
@@ -139,14 +155,15 @@ extern int rand_r(unsigned int *seed) /*@modifies seed@*/   /*drl 09-20-01 added
    realloc (/*@null@*/ /*@only@*/ /*@out@*/ /*@returned@*/ void *p, size_t size)      /*@modifies *p, errno @*/ /*@ensures MaxSet(result) == (size - 1) @*/;
 
 extern char *realpath(const char *file_name, /*@out@*/ char *resolved_name)
-     //     /*@requires maxSet(resolved_name) >=  (PATH_MAX - 1) @*/
+     //     *@requires maxSet(resolved_name) >=  (PATH_MAX - 1) @*/
      ;
 
+     /*@-fixedformalarray@*/ 
 unsigned short int *seed48 (unsigned short int seed16v[3]) /*@modifies internalState@*/
      /*@requires maxRead(seed16v) >= 2 @*/
      ; 
 
-
+ /*@=fixedformalarray@*/
      void setkey(const char *key) /*@requires maxRead(key) >= 63 @*/
      /*@modifies internalState, errno@*/ 
      ;

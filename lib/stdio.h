@@ -6,7 +6,7 @@ extern void clearerr (FILE *stream) /*@modifies *stream@*/ ;
 
 extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
      /*@modifies *s @*/ 
-     //     /*@requires maxSet(s) >= ( L_ctermid - 1) @*/ /*ensures maxRead(s) <= ( L_ctermid - 1) /\ maxRead(s) >= 0 */
+     //     *@requires maxSet(s) >= ( L_ctermid - 1) @*/ *ensures maxRead(s) <= ( L_ctermid - 1) /\ maxRead(s) >= 0 */
 
        /*DRL 9-11-001 I've modified the definition in ansi.h to remove modifies SystemState and I've added a requires and ensures*/ ;
 
@@ -16,7 +16,7 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
          extern char *
  cuserid (/*@null@*/ /*@out@*/ char *s)
          /*@modifies *s@*/
-     // /*@requires maxSet(s) >= ( L_ctermid - 1) @*/ /*@ensures maxRead(s) <= ( L_ctermid - 1) /\ maxRead(s) >= 0  /\ maxRead(result) <= ( L_ctermid - 1) /\ maxRead(result) >= 0 @*/
+     // *@requires maxSet(s) >= ( L_ctermid - 1) @*/ *@ensures maxRead(s) <= ( L_ctermid - 1) /\ maxRead(s) >= 0  /\ maxRead(result) <= ( L_ctermid - 1) /\ maxRead(result) >= 0 @*/
       ;
 
       extern int fclose (FILE *stream) /*@modifies *stream, errno, fileSystem;@*/ ;
@@ -187,7 +187,7 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
 
   extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf) 
     /*@modifies fileSystem, *stream, *buf@*/ 
-     // /*@requires maxSet(buf) >= (BUFSIZ - 1) @*/
+     // *@requires maxSet(buf) >= (BUFSIZ - 1) @*/
      ;
 
     extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf, 
@@ -249,7 +249,7 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
  extern /*@observer@*/ char *
  tmpnam (/*@out@*/ /*@null@*/ /*@returned@*/ char *s) 
    /*@modifies *s, internalState @*/
-     //      /*@requires maxSet(s) >= (L_tmpnam - 1) @*/
+     //      *@requires maxSet(s) >= (L_tmpnam - 1) @*
       /*warn Between the time a pathname is created and the file is opened, it is possible for some other
         process to create a file with the same name. Applications may find tmpfile() more useful. */
       ;

@@ -180,17 +180,17 @@ extern double trunc (double x) /*@*/ ;
 /*@constant int USI_MAX@*/
 /*@constant int WORD_BIT@*/
 /*@constant int LONG_BIT@*/
-/*@constant long NAME_MAX@*/
+
 /*@constant long NGROUPS_MAX@*/
-/*@constant long MAX_INPUT@*/
+
 /*@constant long MAX_CANON@*/
 /*@constant int MAX_CHAR@*/
 /*@constant long OPEN_MAX@*/
 /*@constant int PASS_MAX@*/
-/*@constant int PATH_MAX@*/
+
 /*@constant int PID_MAX@*/
 /*@constant int SYSPID_MAX@*/
-/*@constant long PIPE_BUF@*/
+
 /*@constant int PIPE_MAX@*/
 /*@constant int PROC_MAX@*/
 /*@constant int STD_BLK@*/
