@@ -33,6 +33,10 @@ preds.c:20:7: Test expression for if is assignment expression: b1 = b2
 
 Finished checking --- 1 code warning, as expected
 
+bool.h:11:25: Constant exported, but not specified: FALSE
+  A constant is exported, but not specified. (Use -exportconst to inhibit
+  warning)
+bool.h:16:25: Constant exported, but not specified: TRUE
 preds.c: (in function f)
 preds.c:5:8: Operand of ! is non-boolean (int *): !p
   The operand of ! operator is a pointer. (Use +ptrnegate to inhibit warning)
@@ -57,13 +61,9 @@ preds.c:30:7: Use of == with bool variables (risks inconsistency because of
   splint/lib) provides bool_equal for safe bool comparisons. (Use -boolcompare
   to inhibit warning)
 preds.c:35:7: Test expression for if not bool, type char: c
-bool.h:21:13: Function bool_initMod declared but not used
+preds.c:3:5: Function f declared but not used
   A function is declared but not used. Use /*@unused@*/ in front of function
   header to suppress message. (Use -fcnuse to inhibit warning)
-bool.h:24:29: Function bool_unparse declared but not used
-bool.h:27:13: Function bool_not declared but not used
-bool.h:30:13: Function bool_equal declared but not used
-preds.c:3:5: Function f declared but not used
    preds.c:41:1: Definition of f
 
-Finished checking --- 12 code warnings, as expected
+Finished checking --- 10 code warnings, as expected

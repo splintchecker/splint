@@ -198,11 +198,11 @@
 # define PFX_ANYLETTERDIGIT '/'
          
 /*
-** Note: this name is wired into ansi.h!
+** _Bool is defined by ISO C99 (replaced old lltx_Bool)
 */
 
 /*@constant observer char *DEFAULT_BOOLTYPE;@*/
-# define DEFAULT_BOOLTYPE "lltX_bool"
+# define DEFAULT_BOOLTYPE "_Bool"
 
 /*@constant observer char *PRAGMA_EXPAND; @*/
 # define PRAGMA_EXPAND "expand"

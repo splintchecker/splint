@@ -77,10 +77,6 @@ abst_typedef /*@null@*/ ctypeList fileIdList;
 
 abst_typedef /*@null@*/ struct s_constraintExpr *constraintExpr;
 
-/*@-cppnames@*/
-typedef int bool;
-/*@=cppnames@*/
-
 abst_typedef /*@untainted@*/ /*@null@*/ char *cstring;
 typedef /*@only@*/ cstring o_cstring;
 

@@ -60,7 +60,7 @@ typedef /*@integraltype@*/ clockid_t;
 extern void bcopy (char *b1, /*@out@*/ char *b2, int length) 
    /*@modifies *b2@*/ ;  /* Yes, the second parameter is the out param! */
 
-extern int /*@alt lltX_bool@*/ bcmp (char *b1, char *b2, int length) /*@*/ ;
+extern int /*@alt _Bool@*/ bcmp (char *b1, char *b2, int length) /*@*/ ;
    /* Return value is NOT like strcmp! */
 
 extern void bzero (/*@out@*/ char *b1, int length) /*@modifies *b1@*/ ;
@@ -880,41 +880,17 @@ munlock (caddr_t addr, size_t len)
 
 /*@constant int MAXHOSTNAMELEN@*/
 
-	extern void
-FD_CLR (int n, fd_set *p)
-	/*@modifies *p@*/;
+extern void FD_CLR (/*@sef@*/ int n, /*@sef@*/ fd_set *p) /*@modifies *p@*/ ;
+extern void FD_COPY (/*@sef@*/ fd_set *f, /*@out@*/ fd_set *t) /*@modifies *t@*/ ;
+extern int /*@alt _Bool@*/ FD_ISSET (/*@sef@*/ int n, /*@sef@*/ fd_set *p) /*@*/ ;
+extern void FD_SET (/*@sef@*/ int n, /*@sef@*/ fd_set *p) /*@modifies *p@*/ ;
+extern void FD_ZERO (/*@sef@*/ fd_set /*@out@*/ *p) /*@modifies *p@*/;
 
-	extern void
-FD_COPY (fd_set *f, /*@out@*/ fd_set *t)
-	/*@modifies *t@*/;
+extern int fchdir (int fd) /*@modifies internalState, errno@*/;
+extern int fchown (int fd, uid_t owner, gid_t group) /*@modifies errno, fileSystem@*/;
+extern int fsync (int fd) /*@modifies errno, fileSystem@*/;
 
-	extern int /*@alt lltX_bool@*/
-FD_ISSET (int n, fd_set *p)
-	/*@*/;
-
-	extern void
-FD_SET (int n, fd_set *p)
-	/*@modifies *p@*/;
-
-	extern void
-FD_ZERO (fd_set /*@out@*/ *p)
-	/*@modifies *p@*/;
-
-	extern int
-fchdir (int fd)
-	/*@modifies internalState, errno@*/;
-
-	extern int
-fchown (int fd, uid_t owner, gid_t group)
-	/*@modifies errno, fileSystem@*/;
-
-	extern int
-fsync (int fd)
-	/*@modifies errno, fileSystem@*/;
-
-	extern int
-ftruncate (int fd, off_t length)
-	/*@modifies errno, fileSystem@*/;
+extern int ftruncate (int fd, off_t length) /*@modifies errno, fileSystem@*/;
 
 int gethostname (/*@out@*/ char *address, size_t address_len) 
    /*:errorstatus@*/
@@ -926,33 +902,34 @@ int initgroups (const char *name, int basegid)
 int lchown (const char *path, uid_t owner, gid_t group)
      /*@modifies errno, fileSystem@*/;
      
-int select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, /*@null@*/ struct timeval *t)
-     /*@modifies *r, *w, *e, *t, errno@*/;
-     /* evans - 2002-05-26: added null for t, bug reported by Enrico Scholz */
+int select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, 
+	    fd_set /*@null@*/ *e, /*@null@*/ struct timeval *t)
+  /*@modifies *r, *w, *e, *t, errno@*/;
+  /* evans - 2002-05-26: added null for t, bug reported by Enrico Scholz */
 
 int setegid (gid_t egid)
-     /*@modifies errno, internalState@*/;
+  /*@modifies errno, internalState@*/;
 
 int seteuid (uid_t euid)
-     /*@modifies errno, internalState@*/;
+   /*@modifies errno, internalState@*/;
      
 int setgroups (int ngroups, const gid_t *gidset)
-     /*@modifies errno, internalState@*/;
+   /*@modifies errno, internalState@*/;
      
 int setregid (gid_t rgid, gid_t egid)
-     /*@modifies errno, internalState@*/;
+   /*@modifies errno, internalState@*/;
      
 int setreuid (gid_t ruid, gid_t euid)
-     /*@modifies errno, internalState@*/;
+   /*@modifies errno, internalState@*/;
      
 void sync (void)
-     /*@modifies fileSystem@*/;
+   /*@modifies fileSystem@*/;
      
 int symlink (const char *path, const char *path2)
-     /*@modifies fileSystem@*/;
+   /*@modifies fileSystem@*/;
      
 int truncate (const char *name, off_t length)
-     /*@modifies errno, fileSystem@*/;
+   /*@modifies errno, fileSystem@*/;
      
 /*@constant int EBADRPC@*/
 /*@constant int ERPCMISMATCH@*/
@@ -1344,16 +1321,16 @@ struct stat {
 /*@constant int UF_APPEND@*/
 # endif
 
-int /*@alt lltX_bool@*/ S_ISBLK (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt lltX_bool@*/ S_ISCHR (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt lltX_bool@*/ S_ISDIR (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt lltX_bool@*/ S_ISFIFO (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt lltX_bool@*/ S_ISREG (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt lltX_bool@*/ S_ISLNK (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISBLK (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISCHR (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISDIR (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISFIFO (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISREG (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISLNK (/*@sef@*/ mode_t m) /*@*/;
 
-int /*@alt lltX_bool@*/ S_TYPEISMQ (/*@sef@*/ struct stat *buf) /*@*/ ;
-int /*@alt lltX_bool@*/ S_TYPEISSEM (/*@sef@*/ struct stat *buf) /*@*/ ;
-int /*@alt lltX_bool@*/ S_TYPEISSHM  (/*@sef@*/ struct stat *buf) /*@*/ ;
+int /*@alt _Bool@*/ S_TYPEISMQ (/*@sef@*/ struct stat *buf) /*@*/ ;
+int /*@alt _Bool@*/ S_TYPEISSEM (/*@sef@*/ struct stat *buf) /*@*/ ;
+int /*@alt _Bool@*/ S_TYPEISSHM  (/*@sef@*/ struct stat *buf) /*@*/ ;
 
 /* in POSIX: chmod, fstat, mkdir, mkfifo, stat, umask */
 
@@ -2039,13 +2016,13 @@ int fchroot (int fildes)
 */
 
 # ifdef STRICT
-lltX_bool isascii(int) /*@*/ ;
-lltX_bool toascii(int) /*@*/ ;
+_Bool isascii(int) /*@*/ ;
+_Bool toascii(int) /*@*/ ;
 char _toupper(/*@sef@*/ int) /*@*/ ;
 char  _tolower(/*@sef@*/ int) /*@*/ ;
 # else
-lltX_bool /*@alt int@*/ isascii(int /*@alt unsigned char@*/) /*@*/ ;
-lltX_bool /*@alt int@*/ toascii(int /*@alt unsigned char@*/);
+_Bool /*@alt int@*/ isascii(int /*@alt unsigned char@*/) /*@*/ ;
+_Bool /*@alt int@*/ toascii(int /*@alt unsigned char@*/);
 char  /*@alt int@*/ _toupper(/*@sef@*/ int /*@alt unsigned char@*/);
 char /*@alt int@*/ _tolower(/*@sef@*/ int /*@alt unsigned char@*/);
 # endif

@@ -169,7 +169,6 @@ lcllib_isSkipHeader (cstring sname)
   if (context_getFlag (FLG_SKIPISOHEADERS)
       && context_usingAnsiLibrary ())
     {
-      
       for (i = 0; i < NUMLIBS; i++)
 	{
 	  if (mstring_equal (libname, stdlibs[i]))

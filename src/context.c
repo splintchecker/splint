@@ -808,9 +808,9 @@ context_resetAllFlags (void)
 	    case FLG_BOOLTYPE:
 	      val = cstring_makeLiteral (DEFAULT_BOOLTYPE); break;
 	    case FLG_BOOLFALSE:
-	      val = cstring_makeLiteral ("FALSE"); break;
+	      val = cstring_makeLiteral ("false"); break;
 	    case FLG_BOOLTRUE:
-	      val = cstring_makeLiteral ("TRUE"); break;
+	      val = cstring_makeLiteral ("true"); break;
 	    case FLG_MACROVARPREFIX: 
 	      val = cstring_makeLiteral ("m_"); break;
 	    case FLG_SYSTEMDIRS:
@@ -2898,20 +2898,6 @@ context_setString (flagcode flag, cstring val)
 
   switch (flag)
     {
-      /*
-    case FLG_BOOLTRUE:
-      usymtab_supGlobalEntry 
-	(uentry_makeConstantValue (val, ctype_bool, 
-				   fileloc_getBuiltin (), TRUE, 
-				   multiVal_makeInt (1)));
-      break;
-    case FLG_BOOLFALSE:
-      usymtab_supGlobalEntry 
-	(uentry_makeConstantValue (val, ctype_bool, 
-				   fileloc_getBuiltin (), FALSE, 
-				   multiVal_makeInt (0)));
-      break;
-      */
     case FLG_MESSAGESTREAM:
     case FLG_WARNINGSTREAM:
     case FLG_ERRORSTREAM:
@@ -4974,7 +4960,7 @@ struct sInfo {
 
 /*@-paramuse@*/
 
-void context_setGlobalStructInfo(ctype ct, constraintList list)
+void context_setGlobalStructInfo (ctype ct, constraintList list)
 {
 # if 0
   /* int i;

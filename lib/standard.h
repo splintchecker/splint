@@ -23,6 +23,17 @@
 # endif
 
 /*
+** stdbool.h
+*/
+
+/*@-likelybool@*/
+typedef _Bool bool;
+/*@=likelybool@*/
+/*@constant bool true@*/
+/*@constant bool false@*/
+/*@constant int __bool_true_false_are_defined = 1@*/
+
+/*
 ** types 
 */
 
@@ -44,13 +55,13 @@ typedef /*@abstract@*/ mbstate_t;
 ** assert.h
 */
 
-/*@constant lltX_bool NDEBUG;@*/
+/*@constant _Bool NDEBUG;@*/
 
 # ifdef STRICT
-/*@falseexit@*/ void assert (/*@sef@*/ lltX_bool e) 
+/*@falseexit@*/ void assert (/*@sef@*/ _Bool e) 
   /*@*/ ;
 # else
-/*@falseexit@*/ void assert (/*@sef@*/ lltX_bool /*@alt int@*/ e) 
+/*@falseexit@*/ void assert (/*@sef@*/ _Bool /*@alt int@*/ e) 
   /*@*/ ;
 # endif
 
@@ -60,17 +71,17 @@ typedef /*@abstract@*/ mbstate_t;
 */
 
 # ifdef STRICT
-lltX_bool isalnum (int c) /*@*/ ;
-lltX_bool isalpha (int c) /*@*/ ;
-lltX_bool iscntrl (int c) /*@*/ ;
-lltX_bool isdigit (int c) /*@*/ ;
-lltX_bool isgraph (int c) /*@*/ ;
-lltX_bool islower (int c) /*@*/ ;
-lltX_bool isprint (int c) /*@*/ ;
-lltX_bool ispunct (int c) /*@*/ ;
-lltX_bool isspace (int c) /*@*/ ;
-lltX_bool isupper (int c) /*@*/ ;
-lltX_bool isxdigit (int c) /*@*/ ;
+_Bool isalnum (int c) /*@*/ ;
+_Bool isalpha (int c) /*@*/ ;
+_Bool iscntrl (int c) /*@*/ ;
+_Bool isdigit (int c) /*@*/ ;
+_Bool isgraph (int c) /*@*/ ;
+_Bool islower (int c) /*@*/ ;
+_Bool isprint (int c) /*@*/ ;
+_Bool ispunct (int c) /*@*/ ;
+_Bool isspace (int c) /*@*/ ;
+_Bool isupper (int c) /*@*/ ;
+_Bool isxdigit (int c) /*@*/ ;
 char tolower (int c) /*@*/ ;
 char toupper (int c) /*@*/ ;
 # else
@@ -78,17 +89,17 @@ char toupper (int c) /*@*/ ;
 ** evans 2002-01-03: added alt char (was alt unsigned char)
 */
 
-lltX_bool /*@alt int@*/ isalnum (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isalpha (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ iscntrl (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isgraph (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ islower (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isprint (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ ispunct (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isspace (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isupper (int /*@alt char, unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isxdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isalnum (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isalpha (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ iscntrl (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isgraph (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ islower (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isprint (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ ispunct (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isspace (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isupper (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+_Bool /*@alt int@*/ isxdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
 char /*@alt int@*/ tolower (int /*@alt char, unsigned char@*/ c) /*@*/ ;
 char /*@alt int@*/ toupper (int /*@alt char, unsigned char@*/ c) /*@*/ ;
 # endif
@@ -954,35 +965,35 @@ typedef /*@integraltype@*/ wctype_t;
 typedef /*@integraltype@*/ wctrans_t;
 
 # ifdef STRICT
-lltX_bool iswalnum (wint_t c) /*@*/ ;
-lltX_bool iswalpha (wint_t c) /*@*/ ;
-lltX_bool iswcntrl (wint_t c) /*@*/ ;
-lltX_bool iswctype (wint_t c, wctype_t ctg) /*@*/ ;
-lltX_bool iswdigit (wint_t c) /*@*/ ;
-lltX_bool iswgraph (wint_t c) /*@*/ ;
-lltX_bool iswlower (wint_t c) /*@*/ ;
-lltX_bool iswprint (wint_t c) /*@*/ ;
-lltX_bool iswpunct (wint_t c) /*@*/ ;
-lltX_bool iswspace (wint_t c) /*@*/ ;
-lltX_bool iswupper (wint_t c) /*@*/ ;
-lltX_bool iswxdigit (wint_t c) /*@*/ ;
+_Bool iswalnum (wint_t c) /*@*/ ;
+_Bool iswalpha (wint_t c) /*@*/ ;
+_Bool iswcntrl (wint_t c) /*@*/ ;
+_Bool iswctype (wint_t c, wctype_t ctg) /*@*/ ;
+_Bool iswdigit (wint_t c) /*@*/ ;
+_Bool iswgraph (wint_t c) /*@*/ ;
+_Bool iswlower (wint_t c) /*@*/ ;
+_Bool iswprint (wint_t c) /*@*/ ;
+_Bool iswpunct (wint_t c) /*@*/ ;
+_Bool iswspace (wint_t c) /*@*/ ;
+_Bool iswupper (wint_t c) /*@*/ ;
+_Bool iswxdigit (wint_t c) /*@*/ ;
 
 wint_t towctrans (wint_t c, wctrans_t ctg) /*@*/ ;
 wint_t towlower (wint_t c) /*@*/ ;
 wint_t towupper (wint_t c) /*@*/ ;
 # else
-lltX_bool /*@alt int@*/ iswalnum (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswalpha (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswcntrl (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswctype (wint_t c, wctype_t ctg) /*@*/ ;
-lltX_bool /*@alt int@*/ iswdigit (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswgraph (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswlower (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswprint (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswpunct (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswspace (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswupper (wint_t c) /*@*/ ;
-lltX_bool /*@alt int@*/ iswxdigit (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswalnum (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswalpha (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswcntrl (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswctype (wint_t c, wctype_t ctg) /*@*/ ;
+_Bool /*@alt int@*/ iswdigit (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswgraph (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswlower (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswprint (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswpunct (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswspace (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswupper (wint_t c) /*@*/ ;
+_Bool /*@alt int@*/ iswxdigit (wint_t c) /*@*/ ;
 
 wint_t /*@alt int@*/ towctrans (wint_t c, wctrans_t ctg)	/*@*/ ;
 wint_t /*@alt int@*/ towlower (wint_t c)	/*@*/ ;
@@ -1267,27 +1278,3 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
   an arbitary value.
 */
 const char __func__[] = "function-name";
-
-
-/* drl 3/5/2003
-   added limited supported for _Bool */
-
-/*__Bool shouled really be a basic type but edited the grammar and ripping
-  apart the rest of Splint would probably break too much stuff...
-*/
-
-typedef /*@unsignedintegraltype@*/  _Bool;
-
-/*support stdbool.h */
-
-typedef _Bool bool;
-
-//#define bool _Bool
-
-/*@constant _Bool true=1@*/
-#define true 1
-
-/*@constant _Bool false=0@*/
-#define false 0
-
-#define __bool_true_false_are_defined 1

@@ -30,7 +30,7 @@ booltest:
 	${SPLINT} booltest.c -booltype bool -predboolint -expect 1
 
 boolbad:
-	${SPLINT} -weak -booltype BOOLEAN boolbad.c
+	${SPLINT} -weak -booltype BOOLEAN  -booltrue TRUE -boolfalse FALSE boolbad.c
 
 
 ull:

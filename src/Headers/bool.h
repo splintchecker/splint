@@ -8,11 +8,13 @@
 # define BOOL_H
 
 # ifndef FALSE
-# define FALSE 0
+/*@constant bool FALSE=false@*/
+# define FALSE false
 # endif
 
 # ifndef TRUE
-# define TRUE (! FALSE)
+/*@constant bool TRUE=true@*/
+# define TRUE true
 # endif
 
 extern /*@observer@*/ cstring bool_unparse (bool p_b) /*@*/ ;

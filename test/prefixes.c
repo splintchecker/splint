@@ -18,7 +18,7 @@ extern int aGb_Xint;
 extern int g (void);
 
 # define mf() \
-  do { int m_x; { int y; }} while (FALSE)
+  do { int m_x; { int y; }} while (false)
 
 
 

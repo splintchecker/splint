@@ -671,7 +671,7 @@ fileloc_column (fileloc f)
 /*@only@*/ cstring
 fileloc_unparse (fileloc f)
 {
-  static in_funparse = FALSE;
+  static bool in_funparse = FALSE;
   bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
   bool htmlFormat = context_getFlag (FLG_HTMLFILEFORMAT);
   cstring res = cstring_undefined;

@@ -947,8 +947,8 @@ checkTypeDecl (uentry e, ctype rep)
 		  vgenhinterror 
 		    (FLG_SYNTAX,
 		     message ("Member of boolean enumerated type definition "
-			      "does not match name set to represent TRUE "
-			      "or FALSE: %s",
+			      "does not match name set to represent true "
+			      "or false: %s",
 			      ye),
 		     message ("Use -boolfalse and -booltrue to set the "
 			      "name of false and true boolean values."),

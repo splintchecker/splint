@@ -1,21 +1,21 @@
 /*@-booltype Kzam@*/
 typedef int Kzam;
 
-enum { TRUE, FALSE } ;
+enum { true, false } ; /* changed to be consistent with ISO true/false */
 
 int main() {
-  Kzam b = TRUE;
+  Kzam b = true;
   Kzam b1 = b;
 
-  b = TRUE;
+  b = true;
   b = b1;
   b = 12; /* Assignment of int to Kzam: b = 12 */
 
-  b = TRUE && FALSE;
-  b = b && FALSE;
-  b = FALSE && b;
+  b = true && false;
+  b = b && false;
+  b = false && b;
 
-  if ((b && FALSE) == 0)
+  if ((b && false) == 0)
     return(0);
   return(0);
 }

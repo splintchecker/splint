@@ -50,7 +50,7 @@ void eref_initMod (void)
   int i;
   const int size = 16;
   
-  if (needsInit == FALSE) 
+  if (needsInit == false) /* will produce a warning if FALSE is used instead */
     {
       return;
     }

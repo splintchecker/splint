@@ -1476,7 +1476,7 @@ parentype:
 preds:
 	-$(SPLINTR) +hints preds.c -expect 6
 	-$(SPLINTRN) +hints preds.c -weak -expect 1
-	-$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 12
+	-$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 10
 
 .PHONY: prefixes
 prefixes:

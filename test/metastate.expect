@@ -132,6 +132,6 @@ Finished checking --- 2 code warnings, as expected
 
 osd.c: (in function osd_fileIsReadable)
 osd.c:9:7: Return value (type int) ignored: fclose(fl)
-osd.c:10:14: Return value type bool does not match declared type int: (TRUE)
+osd.c:10:14: Return value type bool does not match declared type int: true
 
 Finished checking --- 2 code warnings, as expected

@@ -2,11 +2,11 @@
 #define BOOL_H
 
 #ifndef FALSE
-#define FALSE 0
+#define FALSE false
 #endif
 
 #ifndef TRUE
-#define TRUE (!FALSE)
+#define TRUE true
 #endif
 /*@-cppnames@*/
 typedef int bool;

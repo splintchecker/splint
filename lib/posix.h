@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.16 2002/07/08 18:10:24 evans1629 Exp $
+ * $Id: posix.h,v 1.17 2003/04/20 20:07:53 evans1629 Exp $
  */
 
 /*
@@ -424,10 +424,10 @@ struct stat {
 
 # ifdef STRICT
 /*@notfunction@*/
-# define SBOOLINT lltX_bool /*@alt int@*/
+# define SBOOLINT _Bool /*@alt int@*/
 # else
 /*@notfunction@*/
-# define SBOOLINT lltX_bool           
+# define SBOOLINT _Bool           
 # endif
 
 extern SBOOLINT S_ISBLK (/*@sef@*/ mode_t m) /*@*/ ;

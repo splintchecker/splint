@@ -33,14 +33,20 @@ decl.c:3:21: Structure struct tm declared with fields { int x; }, specified
 
 Finished checking --- 1 code warning, as expected
 
-enumbool.c:1:34: Member of boolean enumerated type definition does not match
-                    name set to represent TRUE or FALSE: false
-enumbool.c:1:34: Member of boolean enumerated type definition does not match
-                    name set to represent TRUE or FALSE: true
-
-Finished checking --- 2 code warnings, as expected
-
 Finished checking --- no warnings
+
+enumbool.c:1:16: Enumerator member false declared with inconsistent type:
+                    enum { false, true }
+   load file standard.lcd: Specification of false: bool
+enumbool.c:1:27: Enumerator member true declared with inconsistent type:
+                    enum { false, true }
+   load file standard.lcd: Specification of true: bool
+enumbool.c:1:34: Member of boolean enumerated type definition does not match
+                    name set to represent true or false: false
+enumbool.c:1:34: Member of boolean enumerated type definition does not match
+                    name set to represent true or false: true
+
+Finished checking --- 4 code warnings, expected 2
 
 Finished checking --- no warnings
 

@@ -5,46 +5,46 @@ SPLINT = splint
 all: boolops bool boolenum break bstring decl enumbool extension modarray nestext offestof sizeofarray rex struct
 
 boolops:
-	$(SPLINT) boolops.c -expect 1
+	-$(SPLINT) boolops.c -expect 1
 
 bool:
-	$(SPLINT) bool.lcl booldef.c -expect 1
+	-$(SPLINT) bool.lcl booldef.c -expect 1
 
 boolenum:
-	$(SPLINT) boolenum.c -booltype BOOLEAN -expect 1 
+	-$(SPLINT) boolenum.c -booltype BOOLEAN -booltrue TRUE -boolfalse FALSE -expect 1 
 
 break:
-	$(SPLINT) break.c -expect 1
+	-$(SPLINT) break.c -expect 1
 
 bstring:
-	$(SPLINT) bstring.c -expect 2 
+	-$(SPLINT) bstring.c -expect 2 
 
 decl:
-	$(SPLINT) decl.c -expect 1 
+	-$(SPLINT) decl.c -expect 1 
 
 enumbool:
-	$(SPLINT) enumbool.c -expect 2 
-	$(SPLINT) enumbool.c -booltrue "true" -boolfalse "false" 
+	-$(SPLINT) enumbool.c -booltrue true -boolfalse false 
+	-$(SPLINT) enumbool.c -booltrue TRUE -boolfalse FALSE -expect 2 
 
 extension:
 	-$(SPLINT) extension.c
 	-$(SPLINT) -gnuextensions extension.c 
 
 modarray:
-	$(SPLINT) modarray.c
+	-$(SPLINT) modarray.c
 
 nestext:
-	$(SPLINT) nestext.c -expect 1
+	-$(SPLINT) nestext.c -expect 1
 
 offsetof:
-	$(SPLINT) offsetof.c
+	-$(SPLINT) offsetof.c
 
 sizeofarray:
-	$(SPLINT) sizeofarray.c -expect 3 
+	-$(SPLINT) sizeofarray.c -expect 3 
 
 rex:
-	$(SPLINT) rex.c -expect 4
+	-$(SPLINT) rex.c -expect 4
 ### 3 new errors reported
 
 struct:
-	$(SPLINT) struct.c -expect 1
+	-$(SPLINT) struct.c -expect 1

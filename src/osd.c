@@ -479,7 +479,7 @@ extern /*@external@*/ int unlink (const char *) /*@modifies fileSystem@*/ ;
 /*@=redecl@*/
 # endif
 
-static s_tempError = FALSE;
+static bool s_tempError = FALSE;
 
 void osd_setTempError (void)
 {

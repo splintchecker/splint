@@ -9,7 +9,7 @@
 
 ### SHELL = /bin/csh -f
 
-SPLINT = splint -booltype "bool"
+SPLINT = splint -booltype "bool"  -booltrue TRUE -boolfalse FALSE
 LCL = $(SPLINT) -specundef +lh +quiet -nof
 SPLINTLH = $(SPLINT) +lh
 LCSFILES = dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs 

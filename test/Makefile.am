@@ -89,7 +89,6 @@ help:
 	-@$(SPLINTP) +boolint +boolint 
 	-@$(SPLINT) -help flags alpha
 
-
 #commenting these out for the release because they will almost always fail
 #since the default will only fit one system
 #Don't want to panic the user... 
@@ -677,7 +676,7 @@ parentype:
 preds:
 	-$(SPLINTR) +hints preds.c -expect 6
 	-$(SPLINTRN) +hints preds.c -weak -expect 1
-	-$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 12
+	-$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 10
 
 .PHONY: prefixes
 prefixes:

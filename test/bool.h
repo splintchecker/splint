@@ -9,25 +9,25 @@ typedef /*@abstract@*/ int bool;
 
 #ifndef FALSE
 /*@constant unused bool FALSE@*/
-#define FALSE 0
+#define FALSE false
 #endif
 
 #ifndef TRUE
 /*@constant unused bool TRUE@*/
-#define TRUE (! FALSE)
+#define TRUE true
 #endif
 
 /*@-slovakfcns@*/
-extern void bool_initMod (void);
+extern /*@unused@*/ void bool_initMod (void);
 # define bool_initMod()
 
-extern /*@observer@*/ char *bool_unparse (bool);
+extern /*@unused@*/ /*@observer@*/ char *bool_unparse (bool);
 # define bool_unparse(b) ((b) ? "true" : "false" )
 
-extern bool bool_not (bool);
+extern /*@unused@*/ bool bool_not (bool);
 # define bool_not(b) ((b) ? FALSE : TRUE)
 
-extern bool bool_equal (bool, bool);
+extern /*@unused@*/ bool bool_equal (bool, bool);
 # define bool_equal(a,b) ((a) ? (b) : !(b))
 /*@=slovakfcns@*/
 

@@ -7,10 +7,10 @@ int osd_fileIsReadable (char *f)
   if (fl != NULL)
     {
       fclose (fl);
-      return (TRUE);
+      return true;
     }
   else
     {
-      return (FALSE);
+      return false;
     }
 }

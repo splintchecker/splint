@@ -9,9 +9,9 @@
 /*@constant unsignedintegraltype BUFSIZ@*/ 
 /*@constant unsignedintegraltype FILENAME_MAX@*/
 /*@constant unsignedintegraltype FOPEN_MAX@*/
-/*@constant lltX_bool _IOFBF@*/
-/*@constant lltX_bool _IOLBF@*/
-/*@constant lltX_bool _IONBF@*/
+/*@constant _Bool _IOFBF@*/
+/*@constant _Bool _IOLBF@*/
+/*@constant _Bool _IONBF@*/
 /*@constant unsignedintegraltype L_ctermid@*/
 /*@constant unsignedintegraltype L_cuserid@*/
 /*@constant unsignedintegraltype L_tmpnam@*/
