@@ -1167,6 +1167,19 @@ ctbase_expectFunction (ctype c)
 }
 
 static bool
+ctbase_isExpectFunction (ctbase ct)
+{
+  return (ct->type == CT_EXPFCN);
+}
+
+static ctype
+ctbase_getExpectFunction (ctbase ct)
+{
+  llassert (ctbase_isExpectFunction (ct));
+  return ct->contents.base;
+}
+
+static bool
 ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep)
 {
   ctuid c1tid, c2tid;

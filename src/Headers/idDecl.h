@@ -36,6 +36,7 @@ extern /*@only@*/ cstring idDecl_unparseC (idDecl p_d);
 extern /*@exposed@*/ qtype idDecl_getTyp (idDecl p_d);
 extern void idDecl_setTyp (idDecl p_d, /*@only@*/ qtype p_c);
 extern idDecl idDecl_expectFunction (/*@returned@*/ idDecl p_d);
+extern void idDecl_notExpectingFunction (idDecl p_d) /*@modifies p_d@*/ ;
 extern idDecl idDecl_replaceCtype (/*@returned@*/ idDecl p_d, ctype p_c);
 extern idDecl idDecl_fixBase (/*@returned@*/ idDecl p_t, qtype p_b);
 extern idDecl idDecl_fixParamBase (/*@returned@*/ idDecl p_t, qtype p_b);

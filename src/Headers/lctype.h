@@ -250,7 +250,9 @@ extern ctype ctype_createUser (typeId p_u) ;
 
 extern bool ctype_isUnnamedSU (ctype p_c) /*@*/ ;
 extern bool ctype_isUser (ctype p_c) /*@*/ ;
+
 extern ctype ctype_expectFunction(ctype p_c) ;
+extern ctype ctype_dontExpectFunction (ctype p_c) ;
 
 extern ctype ctype_fixArrayPtr (ctype p_c);
 

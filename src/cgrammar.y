@@ -372,7 +372,9 @@ namedDeclBase
    { $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); }
  | namedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    {
-     exprNode_findValue($4);
+     exprNode_findValue ($4);
+     idDecl_notExpectingFunction ($1);
+
      if (exprNode_hasValue ($4)) 
        {
 	 $$ = idDecl_replaceCtype ($1, ctype_makeInnerFixedArray (idDecl_getCtype ($1), 

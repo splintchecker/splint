@@ -224,6 +224,25 @@ idDecl_expectFunction (/*@returned@*/ idDecl d)
   return d;
 }
 
+/*
+** evans 2002-02-09: This is a bit of a kludge, but we 
+** need it to fix declarations like int (*p)[];
+*/
+
+void
+idDecl_notExpectingFunction (/*@returned@*/ idDecl d)
+{
+  if (idDecl_isDefined (d)) 
+    {
+      ctype ct = qtype_getType (d->typ);
+
+      if (ctype_isExpFcn (ct))
+	{
+	  qtype_setType (d->typ, ctype_dontExpectFunction (ct));
+	}
+    }
+}
+
 void
 idDecl_addClauses (idDecl d, functionClauseList clauses)
 {

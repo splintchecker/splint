@@ -648,6 +648,20 @@ ctype ctype_expectFunction (ctype c)
   return (cttable_addComplex (ctbase_expectFunction (c)));
 }
 
+ctype ctype_dontExpectFunction (ctype c)
+{
+  ctbase ctb = ctype_getCtbase (c);
+
+  /* what about this?
+  if (!ctype_isAP (c))
+    {
+      c = ctype_makePointer (c);
+    }
+  */
+
+  return (ctbase_getExpectFunction (ctb));
+}
+
 /*
 ** makeRealFunction: function returning base
 */

@@ -44,7 +44,7 @@ UNITTESTS = \
   linked lintcomments list loopexec \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
-  postnotnull preds prefixes printflike rc refcounts release repexpose \
+  parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts slovaknames \
   specclauses \
   special stack staticarray strings \
@@ -600,6 +600,12 @@ outparam:
 .PHONY: postnotnull
 postnotnull:
 	${SPLINTR} postnotnull.c -expect 1
+
+### evans 2002-02-09: added parentype.c
+.PHONY: parentype
+parentype:
+	${SPLINTR} parentype.c 
+
 #
 # Four new +fcnuse errors for -strict (evans 2001-07-22)
 # 
