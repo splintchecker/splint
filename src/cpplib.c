@@ -1635,7 +1635,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
 	  exp_p--;
 	  SKIP_WHITE_SPACE (p);
 	  if (p == limit || ! is_idstart[(int) *p]
-	      || (*p == 'L' && p + 1 < limit && (p[1] == '\'' || p[1] == '"')))
+	      || (*p == 'L' && p + 1 < limit && (p[1] == '\'' || p[1] == '\"')))
 	    cppReader_errorLit (pfile,
 			  cstring_makeLiteralTemp ("`#' operator is not followed by a macro argument name"));
 	  else
@@ -1702,7 +1702,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
       id_len = p - id_beg;
 
       if (is_idstart[(int) c]
-	  && ! (id_len == 1 && c == 'L' && (*p == '\'' || *p == '"'))) {
+	  && ! (id_len == 1 && c == 'L' && (*p == '\'' || *p == '\"'))) {
 	register struct arglist *arg;
 
 	for (arg = arglist; arg != NULL; arg = arg->next) {
@@ -1992,7 +1992,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	  SKIP_WHITE_SPACE (bp);
 	} else {
 	  switch (*bp) {
-	  case '!':  case '"':  case '#':  case '%':  case '&':  case '\'':
+	  case '!':  case '\"':  case '#':  case '%':  case '&':  case '\'':
 	  case ')':  case '*':  case '+':  case ',':  case '-':  case '.':
 	  case '/':  case ':':  case ';':  case '<':  case '=':  case '>':
 	  case '?':  case '[':  case '\\': case ']':  case '^':  case '{':
@@ -2057,7 +2057,7 @@ int cppReader_checkMacroName (cppReader *pfile,
   sym_length = size_fromInt (p - symname);
 
   if (sym_length == 0
-      || (sym_length == 1 && *symname == 'L' && (*p == '\'' || *p == '"')))
+      || (sym_length == 1 && *symname == 'L' && (*p == '\'' || *p == '\"')))
     cppReader_error (pfile, message ("invalid %s name", usage));
   else if (!is_idstart[(int) *symname])
     {
@@ -2933,7 +2933,7 @@ special_symbol (hashNode hp, cppReader *pfile)
 
       if (!is_idstart[(int) *ip->cur])
 	goto oops;
-      if (ip->cur[0] == 'L' && (ip->cur[1] == '\'' || ip->cur[1] == '"'))
+      if (ip->cur[0] == 'L' && (ip->cur[1] == '\'' || ip->cur[1] == '\"'))
 	goto oops;
 
       if ((hp = cppReader_lookup (ip->cur, -1, -1)) != 0)

@@ -2177,6 +2177,10 @@ llexit (int status)
   exit ((status == LLSUCCESS) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+/*
+** This shouldn't be necessary, but Apple Darwin can't handle '"''s.
+*/
+
 void
 loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
    /*@ensures closed rcfile@*/
@@ -2444,16 +2448,16 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			    }
 			  else if (flagcode_hasString (opt))
 			    {
-			      if (cstring_firstChar (extra) == '"')
+			      if (cstring_firstChar (extra) == '\"')
 				{
-				  if (cstring_lastChar (extra) == '"')
+				  if (cstring_lastChar (extra) == '\"')
 				    {
 				      char *extras = cstring_toCharsSafe (extra);
 				      
-				      llassert (extras[strlen(extras) - 1] == '"');
+				      llassert (extras[strlen(extras) - 1] == '\"');
 				      extras[strlen(extras) - 1] = '\0';
 				      extra = cstring_fromChars (extras + 1); 
-				      DPRINTF (("Remove quites: %s", extra));
+				      DPRINTF (("Remove quotes: %s", extra));
 				    }
 				  else
 				    {

@@ -2983,6 +2983,22 @@ long processOctal ()
     
     if (c >= '0' && c <= '7') {
       tval = (int) c - (int) '0';
+    } else if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
+      index++;
+      while (yytext[index] != '\0') {
+	if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
+	  ;
+	} else {
+	  voptgenerror
+	    (FLG_SYNTAX, 
+	     message ("Invalid character (%c) following specifier in octal constant: %s",
+		      c, cstring_fromChars (yytext)),
+	     g_currentloc);
+	}
+	index++;
+      }
+
+      break;
     } else {
       voptgenerror
 	(FLG_SYNTAX, 

@@ -1072,7 +1072,7 @@ describeModes ()
   return (s);
 }
 
-static cstring
+static /*@unused@*/ cstring
 listModes (void)
 {
   cstring s = cstring_makeLiteral ("\t");

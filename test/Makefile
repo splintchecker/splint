@@ -13,7 +13,7 @@
 .PHONY: compdestroy constannot controldepth csyntax czechnames czechoslovaknames 
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
-.PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
+.PHONY: list longconstants macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
 .PHONY: noeffect null observer oldstyle outglob outparam postnotnull preds prefixes printflike rc 
 .PHONY: refcounts release repexpose returned sharing slovaknames special
 .PHONY: specclauses stack staticarray 
@@ -57,7 +57,7 @@ UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder args blocks branchstate break cases cast \
   charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
-  init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
+  init inparam internal iter keep libs linked lintcomments list longconstants macros macrosef merge modifies \
   modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
   outglob outparam postnotnull preds prefixes \
   printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
@@ -414,6 +414,9 @@ lintcomments:
 
 list:
 	$(LCLINTR) list.c -expect 3
+
+longconstants:
+	$(LCLINTR) longconstants.c -expect 1
 
 macros:
 	$(LCLINTR) macros -expect 17 

@@ -203,8 +203,11 @@ stateClause.c: Headers/cgrammar_tokens.h
 ifeq ($(CHECK), 1)
 	${MAKE} $*.check
 endif
-	@echo '//  Compiling '$*.c' / compiled: '`$(OFILES)`'  (of 181 files)'
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c
+
+### removed this: / compiled: '`$(OFILES)`'  (of 181 files)'
+### Apparently it is slow on some platforms...
+
 
 ###
 ### alternatives (tests, releases, backups, etc.)
@@ -245,9 +248,9 @@ betarelease:
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -r test/temp
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -f *~ */*~ */*/*~ #* */#* */*/#* .#* */.#* */*/.#* */*.core
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
-	cd ~/temp/; tar czvf ~/public_html/lclint/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`
-	chmod 644 ~/public_html/lclint/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz
-	ls -l ~/public_html/lclint/lclint-*.tgz
+	cd ~/temp/; tar czvf ~/public_html/lclint/downloads/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`
+	chmod 644 ~/public_html/lclint/downloads/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz
+	ls -l ~/public_html/lclint/downloads/lclint-*.tgz
 	@echo "Made release lclint-`cat ${VERSION_NUMBER}`"
 
 opt :

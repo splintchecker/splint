@@ -2847,7 +2847,7 @@ context_setString (flagcode flag, cstring val)
     }
 
   if (cstring_length (val) >= 1
-      && cstring_firstChar (val) == '"')
+      && cstring_firstChar (val) == '\"')
     {
       llerror_flagWarning (message
 		       ("setting %s to string beginning with \".  You probably "
