@@ -1091,6 +1091,8 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
       else if (functionClause_isEnsures (el))
 	{
 	  functionConstraint cl = functionClause_takeEnsures (el);
+	  DPRINTF (("Setting post: %s / %s",
+		    uentry_unparse (ue), functionConstraint_unparse (cl)));
 	  uentry_setPostconditions (ue, cl);
 	}
       else if (functionClause_isRequires (el))
@@ -1602,8 +1604,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
 	if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	  {
 	    BADBRANCH; /* should conjoin constraints? */
-	    functionConstraint_free (ue->info->fcn->preconditions);
-	    ue->info->fcn->preconditions = preconditions;
+	    ue->info->fcn->preconditions = functionConstraint_conjoin (ue->info->fcn->preconditions, preconditions);
 	  }
 	else
 	  {
@@ -1652,8 +1653,7 @@ uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postcondition
 	else
 	  {
 	    BADBRANCH; /* should conjoin */
-	    functionConstraint_free (ue->info->fcn->postconditions);
-	    ue->info->fcn->postconditions = postconditions;
+	    ue->info->fcn->postconditions = functionConstraint_conjoin (ue->info->fcn->postconditions, postconditions);
 	  }	    
       }
     }
@@ -5206,12 +5206,14 @@ uentry_unparseFull (uentry v)
       else if (uentry_isFunction (v))
 	{
 	  res = message ("%q / sref: %q / mods: %q / "
-			 "globs: %q / clauses: %q",
+			 "globs: %q / clauses: %q / pre: %q / post: %q",
 			 res,
 			 sRef_unparseFull (v->sref),
 			 sRefSet_unparse (v->info->fcn->mods),
 			 globSet_unparse  (v->info->fcn->globs),
-			 stateClauseList_unparse (v->info->fcn->specclauses));
+			 stateClauseList_unparse (v->info->fcn->specclauses),
+			 functionConstraint_unparse (v->info->fcn->preconditions),
+			 functionConstraint_unparse (v->info->fcn->postconditions));
 	}
       else if (uentry_isIter (v))
 	{
@@ -9038,6 +9040,51 @@ uentry_checkConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   sRef_storeState (unew->sref);
 }
 
+static void uentry_mergeConstraints (uentry spec, uentry def)
+{
+  if (uentry_isFunction (def))
+    {
+      DPRINTF (("Here: %s / %s",
+		uentry_unparseFull (spec),
+		uentry_unparseFull (def)));
+
+      if (functionConstraint_isDefined (def->info->fcn->preconditions))
+	{
+	  if (fileloc_isXHFile (uentry_whereLast (def)))
+	    {
+	      llassert (uentry_isFunction (spec));
+	      spec->info->fcn->preconditions = functionConstraint_conjoin (spec->info->fcn->preconditions,
+									   def->info->fcn->preconditions);
+	      def->info->fcn->preconditions = functionConstraint_undefined;
+	    }
+	  else
+	    {
+	      BADBRANCH;
+	    }
+	}
+
+
+      if (functionConstraint_isDefined (def->info->fcn->postconditions))
+	{
+	  if (fileloc_isXHFile (uentry_whereLast (def)))
+	    {
+	      llassert (uentry_isFunction (spec));
+	      DPRINTF (("Post: %s /++/ %s",
+			functionConstraint_unparse (spec->info->fcn->postconditions),
+			functionConstraint_unparse (def->info->fcn->postconditions)));
+	      spec->info->fcn->postconditions = functionConstraint_conjoin (spec->info->fcn->postconditions,
+									    def->info->fcn->postconditions);
+	      def->info->fcn->postconditions = functionConstraint_undefined;
+	      DPRINTF (("Conjoined post: %s", functionConstraint_unparse (spec->info->fcn->postconditions)));
+	    }
+	  else
+	    {
+	      BADBRANCH;
+	    }
+	}
+    }
+}
+
 /*
 ** modifies spec to reflect def, reports any inconsistencies
 */
@@ -9052,6 +9099,8 @@ uentry_mergeEntries (uentry spec, /*@only@*/ uentry def)
   DPRINTF (("Merge entries: %s / %s",
 	    uentry_unparseFull (spec),
 	    uentry_unparseFull (def)));
+
+  uentry_mergeConstraints (spec, def);
 
   uentry_checkConformance (spec, def, TRUE, 
 			   context_getFlag (FLG_NEEDSPEC));
@@ -9306,6 +9355,8 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 	    }
 	}
     }
+
+  uentry_mergeConstraints (old, unew);
 
   uentry_checkConformance (old, unew, mustConform, FALSE);
 
@@ -10674,14 +10725,16 @@ bool uentry_isGlobalMarker (uentry ue)
 /*@ignore@*/
 
 
-
+# if 0
   
 static  void uentry_testInRange (uentry p_e, uentry cconstant)  {
-  if( uentry_isValid(p_e) ) {
-    if( sRef_isValid (p_e->sref) ) {
-      char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
+  if (uentry_isValid(p_e)) {
+    if (sRef_isValid (p_e->sref)) {
+      /* char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
       int index = atoi( t );
       free (t);
+      */
+      long index = multiVal_forceInt (uentry_getConstantValue (cconstant));
       //      usymtab_testInRange (p_e->sref, index);
     }//end if
   }//endif
@@ -10719,6 +10772,8 @@ if( uentry_isValid(p_e) ) {
   }//endif
 }//end if
 }
+
+# endif
 
   
 /* start modifications */
@@ -10827,3 +10882,21 @@ effects: sets the length of the buffer
 }
 /*@end@*/
 /*@=type*/
+
+bool uentry_hasMetaStateEnsures (uentry e)
+{
+  if (uentry_isValid (e) && uentry_isFunction (e))
+    {
+      return functionConstraint_hasMetaStateConstraint (e->info->fcn->postconditions);
+    }
+  else
+    {
+      return FALSE;
+    }
+}
+
+metaStateConstraint uentry_getMetaStateEnsures (uentry e)
+{
+  llassert (uentry_hasMetaStateEnsures (e));
+  return functionConstraint_getMetaStateConstraint (e->info->fcn->postconditions);
+}

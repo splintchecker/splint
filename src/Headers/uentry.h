@@ -650,6 +650,9 @@ extern void printAnnots (void);
 extern void uentry_tallyAnnots (uentry u, ancontext kind);
 # endif /* DOANNOTS */
 
+extern bool uentry_hasMetaStateEnsures (uentry p_e) /*@*/ ;
+extern /*@observer@*/ metaStateConstraint uentry_getMetaStateEnsures (uentry p_e);
+
 /* start modifications */
 //extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
 /*drl7x*/

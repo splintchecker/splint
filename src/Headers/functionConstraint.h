@@ -11,7 +11,7 @@
 
 typedef enum
 {
-  FCT_BUFFER, FCT_METASTATE
+  FCT_BUFFER, FCT_METASTATE, FCT_CONJUNCT
 } functionConstraintKind ;
 
 struct s_functionConstraint {
@@ -19,6 +19,7 @@ struct s_functionConstraint {
   union {
     /*@only@*/ constraintList buffer;
     /*@only@*/ metaStateConstraint metastate;
+    struct { functionConstraint op1; functionConstraint op2; } conjunct;
   } constraint;
 } ;
 
@@ -40,6 +41,10 @@ extern functionConstraint
 functionConstraint_createMetaStateConstraint (/*@only@*/ metaStateConstraint) ;
 
 extern bool functionConstraint_hasBufferConstraint (functionConstraint) /*@*/ ;
+extern bool functionConstraint_hasMetaStateConstraint (functionConstraint) /*@*/ ;
+
+extern functionConstraint
+functionConstraint_conjoin (/*@only@*/ functionConstraint, /*@only@*/ functionConstraint) ;
 
 extern /*@observer@*/ constraintList functionConstraint_getBufferConstraint (functionConstraint) /*@*/ ;
 extern /*@observer@*/ metaStateConstraint functionConstraint_getMetaStateConstraint (functionConstraint) /*@*/ ;
