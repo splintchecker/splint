@@ -104,6 +104,7 @@ Finished LCLint checking --- no code processed
    charunsignedchar            
    checkedglobalias            
    checkmodglobalias           
+   checkpost                   
    checkstrictglobalias        
    checkstrictglobs            
    codeimponly                 
@@ -901,6 +902,7 @@ arrayread --- possible out of bounds read
 arraywrite --- possible buffer overflow from an out of bounds write
 fcnpost --- Function has the post condition
 fcnconstraint --- unresolved constraint
+checkpost --- unable to verify ensures annotation
 constraintlocation --- display full c expression for every constraint generated
 implictconstraint --- Try to generate implicit constraints for functions
 orconstraint --- Use limited OR expressions to resolve constraints

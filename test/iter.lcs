@@ -1,4 +1,4 @@
-%FAILED Output from LCLint 2.5q
+%FAILED Output from LCLint 3.0b-alpha
 %LCLimports 
 %LCLSortTable
 %LCLsort bool immutable nil nil

@@ -668,7 +668,7 @@ moduncon                    20           0
 modunconnomods               1           0
 ansireserved                 9           0
 fcnpost                      0          67
-fcnconstraint                0          14
+fcnconstraint                0          15
 nullret                      1           0
 nullstate                    1           0
 sizeoftype                   7           0
@@ -684,6 +684,6 @@ paramuse                     1           0
 typeuse                      1           0
 varuse                       4           0
                           ========  =========
-Total                      331         134
+Total                      331         135
 
 Finished LCLint checking --- 331 code errors found, as expected
