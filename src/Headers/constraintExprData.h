@@ -42,7 +42,7 @@ typedef union constraintExprData
 }  * constraintExprData;
 
 /*@constant null constraintExprData constraintExprData_undefined; @*/
-# define constraintExprData_undefined ((constraintExprData)NULL)
+# define constraintExprData_undefined ((constraintExprData) NULL)
 
 extern /*@falsenull@*/ bool constraintExprData_isDefined ( /*@temp@*/ /*@observer@*/ /*@reldef@*/constraintExprData p_e) /*@*/ ;
 extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (/*2oberserver@*/ constraintExprData p_e) /*@*/ ;

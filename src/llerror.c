@@ -246,19 +246,36 @@ llsuppresshint2 (char c, flagcode f1, flagcode f2)
 	      f2 = FLG_NAMECHECKS;
 	    }
 
-	  if (cstring_isDefined (desc))
+	  if (f1 == f2)
 	    {
-	      llgenhint (message ("%s (Setting either %h%s or %h%s will suppress message)", desc, 
-				  c,
-				  flagcode_unparse (f1),
-				  c,
-				  flagcode_unparse (f2)));
+	      if (cstring_isDefined (desc))
+		{
+		  llgenhint (message ("%s (Setting %h%s will suppress message)", desc,
+				      c,
+				      flagcode_unparse (f1)));
+		}
+	      else
+		{
+		  llgenhint (message ("(Setting %h%s will suppress message)", 
+				      c, flagcode_unparse (f1)));
+		}
 	    }
 	  else
 	    {
-	      llgenhint (message ("(Setting either %h%s or %h%s will suppress message)", c,
-				  flagcode_unparse (f1),
-				  c, flagcode_unparse (f2)));
+	      if (cstring_isDefined (desc))
+		{
+		  llgenhint (message ("%s (Setting either %h%s or %h%s will suppress message)", desc, 
+				      c,
+				      flagcode_unparse (f1),
+				      c,
+				      flagcode_unparse (f2)));
+		}
+	      else
+		{
+		  llgenhint (message ("(Setting either %h%s or %h%s will suppress message)", c,
+				      flagcode_unparse (f1),
+				      c, flagcode_unparse (f2)));
+		}
 	    }
 	}
     }

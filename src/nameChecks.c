@@ -340,6 +340,8 @@ checkPrefix (uentry ue)
       
       if (!matchPrefix (name, context_getString (flag)))
 	{
+	  llassert (flag != FLG_NAMECHECKS);
+
 	  if (optgenerror2
 	      (flag, FLG_NAMECHECKS,
 	       message ("%s %s name is not consistent with %s "

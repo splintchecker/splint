@@ -33,18 +33,15 @@ extern int main (int p_argc, char *p_argv[])
 extern /*@exits@*/ void llexit (int p_status);      
 extern void showHerald (void);
 
-/*@-redecl@*/
+/*@-redecl@*/ /*@-incondefs@*/
 extern int yyparse (void);
-extern void yyrestart (FILE *);
+extern void yyrestart (/*@dependent@*/ FILE *);
 
 # ifndef NOLCL
 extern int ylparse (void);
 extern int lslparse (void);
 # endif
 
-/*@=redecl@*/
-
-/*@-incondefs@*/ /*@-redecl@*/
 extern /*@open@*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
