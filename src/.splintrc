@@ -76,6 +76,9 @@
 -boolfalse FALSE
 
 +numliteral
++numabstractindex
++numabstractlit
+-numabstractprint
 
 -indentspaces 3
 

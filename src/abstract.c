@@ -35,7 +35,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "lslparse.h"
 # include "llgrammar.h"	/* need simpleOp, MULOP and logicalOp in makeInfixTermNode */
 # include "lclscan.h"
@@ -2523,8 +2523,12 @@ typeExpr makeArrayNode (/*@returned@*/ typeExpr x,
       ** in makeArrayNode.
       */
 
-      /*@i3@*/ x->content.function.returntype = makeArrayNode (x, a);
-      /*@i1@*/ return x;
+      /*@-usereleased@*/
+      x->content.function.returntype = makeArrayNode (x, a);
+      /*@=usereleased@*/ 
+      /*@-kepttrans@*/
+      return x;
+      /*@=kepttrans@*/ 
     }
   else
     {

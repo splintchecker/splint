@@ -11,8 +11,6 @@
 # ifndef USYMIDSET_H
 # define USYMIDSET_H
 
-# include "usymId.h"
-
 abst_typedef /*@null@*/ struct
 {
   int entries;

@@ -53,6 +53,15 @@ ghentry_create (/*@keep@*/ cstring key, /*@keep@*/ void *val)
   return (h);
 }
 
+static void
+ghentry_free (/*@only@*/ ghentry ghe)
+{
+  cstring_free (ghe->key);
+  /* can't free val contents */
+  sfree (ghe->val);
+  sfree (ghe);
+}
+
 static bool
 ghbucket_isEmpty (ghbucket h)
 {
@@ -95,7 +104,7 @@ static ghbucket ghbucket_single (/*@keep@*/ ghentry e)
   h->size = 1;
   h->nspace = GHBUCKET_BASESIZE - 1;
   h->entries = (ghentry *) dmalloc (GHBUCKET_BASESIZE * sizeof (*h->entries));
-  /*@i23@*/ h->entries[0] = e;
+  h->entries[0] = e;
   
   return (h);
 }
@@ -116,9 +125,10 @@ ghbucket_grow (/*@notnull@*/ ghbucket h)
       newentries[i] = h->entries[i]; 
     }
   
-  /*@i32@*/ sfree (h->entries);
+  sfree (h->entries);
   h->entries = newentries; 
-/*@i32@*/ }
+  /*@-compmempass@*/
+} /*@=compmempass*/ /* Spurious warnings reported for h->entries */ 
 
 static /*@null@*/ /*@exposed@*/ void *ghbucket_lookup (ghbucket p_h, cstring p_key);
 
@@ -143,7 +153,7 @@ ghbucket_add (/*@notnull@*/ ghbucket h, /*@only@*/ ghentry e)
     h->entries[h->size] = e;
     h->size++;
     h->nspace--;
-/*@i23@*/ }
+}
 
 static int
 ghbucket_ncollisions (ghbucket h)
@@ -178,7 +188,14 @@ void ghbucket_free (/*@only@*/ ghbucket h)
 {
   if (!ghbucket_isNull (h))
     {
-      /*@i32@*/ sfree (h->entries);
+      int i;
+
+      for (i = 0; i < h->size; i++)  
+	{
+	  ghentry_free (h->entries[i]);
+	}
+
+      sfree (h->entries);
       sfree (h);
     }
 }
@@ -323,7 +340,7 @@ genericTable_stats (genericTable h)
 }
 
 static void
-genericTable_addEntry (/*@notnull@*/ genericTable h, /*@keep@*/ ghentry e)
+genericTable_addEntry (/*@notnull@*/ genericTable h, /*@only@*/ ghentry e)
 {
   unsigned int hindex = genericTable_hashValue (h, e->key);
   /*
@@ -340,8 +357,8 @@ genericTable_addEntry (/*@notnull@*/ genericTable h, /*@keep@*/ ghentry e)
     }
   else
     {
-      /*@i23@*/ ghbucket_add (h->buckets[hindex], e);
-      /*@i23@*/ }
+      ghbucket_add (h->buckets[hindex], e);
+    }
 }
 
 void
@@ -407,13 +424,13 @@ genericTable_insert (genericTable h, cstring key, void *value)
   
   if (ghbucket_isNull (hb))
       {
-	  /*@i23@*/ h->buckets[hindex] = ghbucket_single (e);
+	h->buckets[hindex] = ghbucket_single (e);
       }
   else
       {
-	  ghbucket_add (hb, e);
-	  /*@i23@*/ }
-/*@i23@*/ }
+	ghbucket_add (hb, e);
+      }
+}
 
 /*@null@*/ /*@exposed@*/ void *
 genericTable_lookup (genericTable h, cstring key)

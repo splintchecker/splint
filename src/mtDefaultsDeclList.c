@@ -94,10 +94,10 @@ mtDefaultsDeclList mtDefaultsDeclList_add (mtDefaultsDeclList s, /*@keep@*/ mtDe
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 mtDefaultsDeclList mtDefaultsDeclList_prepend (mtDefaultsDeclList s, /*@keep@*/ mtDefaultsDecl el)
@@ -106,7 +106,7 @@ mtDefaultsDeclList mtDefaultsDeclList_prepend (mtDefaultsDeclList s, /*@keep@*/ 
 
   if (!mtDefaultsDeclList_isDefined (s))
     {
-      /*@i32@*/ return mtDefaultsDeclList_single (el);
+      return mtDefaultsDeclList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ mtDefaultsDeclList mtDefaultsDeclList_prepend (mtDefaultsDeclList s, /*@keep@*/ 
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 cstring

@@ -50,7 +50,7 @@
 
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "gram.h"
 # include "lclscan.h"
 # include "scanline.h"

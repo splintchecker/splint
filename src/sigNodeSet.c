@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "intSet.h"
 
 static bool sigNodeSet_member (sigNodeSet p_s, sigNode p_el);

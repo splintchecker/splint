@@ -119,8 +119,6 @@ void typeIdSet_loadTable (FILE *fin)
       tistable_addDirectEntry (u);
       s = reader_readLine (fin, os, MAX_DUMP_LINE_LENGTH);
     }
-
-  /*@i32 free os? @*/
 }
   
 static void tistable_grow (void)
@@ -201,8 +199,7 @@ typeIdSet typeIdSet_emptySet (void)
 bool typeIdSet_member (typeIdSet t, typeId el)
 {
   usymIdSet u = tistable_fetch (t);
-
-  return usymIdSet_member (u, el);
+  return usymIdSet_member (u, typeId_toUsymId (el));
 }
 
 bool typeIdSet_isEmpty (typeIdSet t)
@@ -212,14 +209,14 @@ bool typeIdSet_isEmpty (typeIdSet t)
 
 typeIdSet typeIdSet_single (typeId t)
 {
-  return (tistable_addEntry (usymIdSet_single (t)));
+  return (tistable_addEntry (usymIdSet_single (typeId_toUsymId (t))));
 }
 
 typeIdSet typeIdSet_singleOpt (typeId t)
 {
   if (typeId_isValid (t))
     {
-      return (tistable_addEntry (usymIdSet_single (t)));
+      return (tistable_addEntry (usymIdSet_single (typeId_toUsymId (t))));
     }
   else
     {
@@ -231,19 +228,19 @@ typeIdSet typeIdSet_insert (typeIdSet t, typeId el)
 {
   usymIdSet u = tistable_fetch (t);
 
-  if (usymIdSet_member (u, el))
+  if (usymIdSet_member (u, typeId_toUsymId (el)))
     {
       return t;
     }
   else
     {
-      return (tistable_addEntry (usymIdSet_add (u, el)));
+      return (tistable_addEntry (usymIdSet_add (u, typeId_toUsymId (el))));
     }
 }
 
 typeIdSet typeIdSet_removeFresh (typeIdSet t, typeId el)
 {
-  return (tistable_addEntry (usymIdSet_removeFresh (tistable_fetch (t), el)));
+  return (tistable_addEntry (usymIdSet_removeFresh (tistable_fetch (t), typeId_toUsymId (el))));
 }
 
 cstring typeIdSet_unparse (typeIdSet t)

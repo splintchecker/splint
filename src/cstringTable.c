@@ -55,8 +55,7 @@ static hentry hentry_create (/*@only@*/ cstring key, int val)
 
   h->key = key;
   h->val = val;
-  llassert (val != HBUCKET_DNE); /*@i523 way bogus! */
-
+  llassert (val != HBUCKET_DNE); 
   return (h);
 }
 
@@ -116,12 +115,13 @@ hbucket_grow (/*@notnull@*/ hbucket h)
   
   for (i = 0; i < h->size; i++) 
     {
-          newentries[i] = h->entries[i]; 
+      newentries[i] = h->entries[i]; 
     }
  
-  /*@i32@*/ sfree (h->entries);
+  sfree (h->entries);
   h->entries = newentries; 
-/*@i23@*/ }
+  /*@-compmempass@*/
+} /*@=compmempass@*/ /* Spurious warnings reported - shouldn't need this */
 
 static int hbucket_lookup (hbucket p_h, cstring p_key);
 

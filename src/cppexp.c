@@ -57,7 +57,7 @@ Written by Per Bothner 1994.  */
 
 # include <string.h> 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "cpplib.h"
 # include "cpphash.h"
 # include "cppexp.h"
@@ -366,7 +366,6 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen) /*@requires maxR
   
   if (overflow)
     {
-      /*@i23 add flags for all these...*/
       cppReader_pedwarnLit
 	(pfile, 
 	 cstring_makeLiteralTemp ("Integer constant out of range"));

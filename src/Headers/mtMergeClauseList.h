@@ -39,7 +39,7 @@ extern /*@unused@*/ mtMergeClauseList
   /*@modifies p_s@*/ ;
 
 extern mtMergeClauseList 
-  mtMergeClauseList_prepend (/*@returned@*/ mtMergeClauseList p_s, /*@keep@*/ mtMergeClause p_el) 
+  mtMergeClauseList_prepend (/*@only@*/ mtMergeClauseList p_s, /*@only@*/ mtMergeClause p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring mtMergeClauseList_unparse (mtMergeClauseList p_s) ;

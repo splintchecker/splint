@@ -34,7 +34,7 @@
 abst_typedef /*@null@*/ struct s_ctbase *ctbase;
 
 /*@function static bool ctuid_isAnyUserType (sef ctuid p_cid) @*/
-/*@i888@*/
+
 /*@-macrofcndecl@*/ /*@-macroparams@*/
 # define ctuid_isAnyUserType(cid) \
    ((cid) == CT_ABST || (cid) == CT_USER || (cid) == CT_NUMABST)
@@ -1024,12 +1024,11 @@ ctbase_dump (ctbase c)
     case CT_PRIM:
       return (message ("p%d|", c->contents.prim));
     case CT_USER:
-      return (message ("s%d|", 
-		       usymtab_convertId (c->contents.tid)));
+      return (message ("s%d|", usymtab_convertTypeId (c->contents.tid)));
     case CT_ABST:
-      return (message ("a%d|", usymtab_convertId (c->contents.tid)));
+      return (message ("a%d|", usymtab_convertTypeId (c->contents.tid)));
     case CT_NUMABST:
-      return (message ("n%d|", usymtab_convertId (c->contents.tid)));
+      return (message ("n%d|", usymtab_convertTypeId (c->contents.tid)));
     case CT_PTR:
       return (message ("t%q|", ctype_dump (c->contents.base)));
     case CT_ARRAY:
@@ -1173,7 +1172,8 @@ ctbase_free (/*@only@*/ ctbase c)
 	  sfree (c);
 	  break;
 	case CT_FCN:
-	  /*@i32@*/ /* uentryList_free (c->contents.fcn->params); */
+	  /* Cannot free params: uentryList_free (c->contents.fcn->params);  */ 
+	  uentryList_freeShallow (c->contents.fcn->params);
 	  sfree (c);
 	  break;
 	case CT_STRUCT:
@@ -2382,13 +2382,13 @@ ctbase_compare (ctbase c1, ctbase c2, bool strict)
     case CT_BOOL:
       return 0;
     case CT_USER:
-      return (int_compare (c1->contents.tid, c2->contents.tid));
+      return (typeId_compare (c1->contents.tid, c2->contents.tid));
     case CT_ENUMLIST:	     
       return 1;
     case CT_ENUM:		/* for now, keep like abstract */
     case CT_ABST:
     case CT_NUMABST:
-      return (int_compare (c1->contents.tid, c2->contents.tid));
+      return (typeId_compare (c1->contents.tid, c2->contents.tid));
     case CT_PTR:
       return (ctype_compare (c1->contents.base, c2->contents.base));
     case CT_FIXEDARRAY:

@@ -94,10 +94,10 @@ functionClauseList functionClauseList_add (functionClauseList s, /*@keep@*/ func
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 functionClauseList functionClauseList_prepend (functionClauseList s, /*@keep@*/ functionClause el)
@@ -106,7 +106,7 @@ functionClauseList functionClauseList_prepend (functionClauseList s, /*@keep@*/ 
 
   if (!functionClauseList_isDefined (s))
     {
-      /*@i32@*/ return functionClauseList_single (el);
+      return functionClauseList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ functionClauseList functionClauseList_prepend (functionClauseList s, /*@keep@*/ 
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
-
-  /*@i32@*/ return s;
+  
+  return s;
 }
 
 cstring
@@ -217,7 +217,6 @@ functionClauseList_setImplictConstraints (/*@returned@*/ functionClauseList s)
 	      else
 		{
 		  llassert (FALSE);
-		  /*@i2523 fix this */
 		}
 	    }
 	}

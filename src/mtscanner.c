@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "mtgrammar.h"
 # include "mtscanner.h"
 

@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "llmain.h"
 
 /*@constant int MCEBASESIZE;@*/

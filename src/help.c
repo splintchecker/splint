@@ -78,7 +78,7 @@ describeVars (void)
   llmsglit ("   --- path used to find #include'd files");
 
   llmsg (message 
-	 ("systemdirs = %s (set by -systemdirs or environment variable %s)", /*@i413223@*/
+	 ("systemdirs = %s (set by -systemdirs or environment variable %s)", 
 	  context_getString (FLG_SYSTEMDIRS),
 	  INCLUDEPATH_VAR));
 

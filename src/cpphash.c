@@ -52,7 +52,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  what you give them.   Help stamp out software-hoarding!  */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include <string.h>
 # include "cpplib.h"
 # include "cpphash.h"

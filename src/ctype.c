@@ -1954,8 +1954,7 @@ ctype_dump (ctype c)
   
   if (ctype_isUA (c))
     {
-      cstring tname = usymtab_getTypeEntryName 
-	 (usymtab_convertId (ctype_typeId (c)));
+      cstring tname = usymtab_getTypeEntryName (usymtab_convertTypeId (ctype_typeId (c)));
       
       if (cstring_equal (tname, context_getBoolName ()))
 	{
@@ -2296,7 +2295,10 @@ bool ctype_isRefCounted (ctype t)
 
 bool ctype_isVisiblySharable (ctype t)
 {
-  if (ctype_isUnknown (t)) return TRUE;
+  if (ctype_isUnknown (t))
+    {
+      return TRUE;
+    }
 
   if (ctype_isConj (t))
     {
@@ -2312,7 +2314,14 @@ bool ctype_isVisiblySharable (ctype t)
 
 	  if (rt == t)
 	    {
-	      return TRUE;
+	      if (ctype_isNumAbstract (t))
+		{
+		  return FALSE;
+		}
+	      else
+		{
+		  return TRUE;
+		}
 	    }
 	  else
 	    {

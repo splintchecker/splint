@@ -32,14 +32,14 @@ extern cstring mtLoseReferenceList_unparseSep (mtLoseReferenceList p_s, cstring 
 
 extern /*@unused@*/ /*@only@*/ mtLoseReferenceList mtLoseReferenceList_new (void) /*@*/ ;
 
-extern /*@only@*/ mtLoseReferenceList mtLoseReferenceList_single (/*@keep@*/ mtLoseReference p_el) /*@*/ ;
+extern /*@only@*/ mtLoseReferenceList mtLoseReferenceList_single (/*@only@*/ mtLoseReference p_el) /*@*/ ;
 
 extern mtLoseReferenceList 
-  mtLoseReferenceList_add (/*@returned@*/ mtLoseReferenceList p_s, /*@keep@*/ mtLoseReference p_el) 
+  mtLoseReferenceList_add (/*@only@*/ mtLoseReferenceList p_s, /*@only@*/ mtLoseReference p_el) 
   /*@modifies p_s@*/ ;
 
 extern mtLoseReferenceList 
-  mtLoseReferenceList_prepend (/*@returned@*/ mtLoseReferenceList p_s, /*@keep@*/ mtLoseReference p_el) 
+  mtLoseReferenceList_prepend (/*@only@*/ mtLoseReferenceList p_s, /*@only@*/ mtLoseReference p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring mtLoseReferenceList_unparse (mtLoseReferenceList p_s) ;

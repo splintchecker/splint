@@ -794,7 +794,7 @@ static void exprNode_generateConstraintSwitch (/*@notnull@*/ exprNode switchStmt
   
 
   /*@-mustfree@*/ 
-  /*@i6534 - evans 2002-01-01: spurious warnings for these becuase of stack allocated storage */
+  /* evans 2002-01-01: spurious warnings for these becuase of stack allocated storage */
   exprNode_doGenerateConstraintSwitch (switchExpr, body, &lastRequires, 
 				       &lastEnsures, &constraintsRequires, &constraintsEnsures);
   /*@=mustfree@*/

@@ -32,7 +32,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "gram.h"
 # include "lclscan.h"
 # include "lclsyntable.h"
@@ -863,7 +863,7 @@ declareAbstractType (abstractNode n, bool priv)
   cstring tn;
   fileloc loc;
   uentry ue;
-  usymId uid;
+  typeId uid;
   abstBodyNode ab;
 
   if (n == (abstractNode) 0)
@@ -949,10 +949,8 @@ declareAbstractType (abstractNode n, bool priv)
     }
 }
 
-static void
-  declareExposedType (exposedNode n, bool priv)
+static void declareExposedType (exposedNode n, bool priv)
 {
-  usymId uid;
   qtype c;
   cstring s;
 
@@ -982,7 +980,7 @@ static void
 	uentry_setDefined (ue, loc);
       }
 
-    uid = usymtab_supExposedTypeEntry (ue, context_inLCLLib () && !priv);
+    (void) usymtab_supExposedTypeEntry (ue, context_inLCLLib () && !priv);
   } end_declaratorInvNodeList_elements;
 
   qtype_free (c);
@@ -1120,7 +1118,7 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
 	}
     }
 
-  if (usymId_isInvalid (tn))
+  if (typeId_isInvalid (tn))
     {
       acct = context_fileAccessTypes ();
     }

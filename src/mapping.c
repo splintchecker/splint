@@ -32,7 +32,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 /*@constant int MAPPING_SIZE; @*/
 # define MAPPING_SIZE 127

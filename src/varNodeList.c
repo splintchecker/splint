@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 varNodeList varNodeList_new ()
 {

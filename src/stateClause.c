@@ -759,7 +759,7 @@ static sRefModVal stateClause_getStateFunction (stateClause cl)
     }
   else if (qual_isAliasQual (sq))
     {
-      return (sRefModVal) sRef_setAliasKind; /*@i23 complete? @*/
+      return (sRefModVal) sRef_setAliasKind; 
     }
   else
     {
@@ -777,9 +777,12 @@ int stateClause_getStateParameter (stateClause cl)
   llassert (cl->kind == SP_QUAL || cl->kind == SP_GLOBAL);
 
   sq = cl->squal;
-
-  /*@+relaxtypes@*/ /*@i523 this is wrong, remove the enumint@*/
-  /*@+enumint@*/
+  
+  /*@+enumint@*/ 
+  /*
+  ** Since this can be many different types of state kinds, we need to allow all
+  ** enum's to be returned as int.
+  */
 
   if (qual_isNotNull (sq))
     {

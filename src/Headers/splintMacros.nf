@@ -111,7 +111,6 @@
 /*@notfunction@*/
 # define NOALIAS(s,t) (/*@ignore@*/ (s == NULL) || (s != t) /*@end@*/)
 
-/*@i34@*/ /*fix this before release version*/
 /* evans 2002-02-24: got rid of -formatconst */
 
 /*@notfunction@*/

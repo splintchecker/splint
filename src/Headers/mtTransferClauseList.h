@@ -32,14 +32,14 @@ extern cstring mtTransferClauseList_unparseSep (mtTransferClauseList p_s, cstrin
 
 extern /*@unused@*/ /*@only@*/ mtTransferClauseList mtTransferClauseList_new (void) /*@*/ ;
 
-extern /*@only@*/ mtTransferClauseList mtTransferClauseList_single (/*@keep@*/ mtTransferClause p_el) /*@*/ ;
+extern /*@only@*/ mtTransferClauseList mtTransferClauseList_single (/*@only@*/ mtTransferClause p_el) /*@*/ ;
 
 extern mtTransferClauseList 
-  mtTransferClauseList_add (/*@returned@*/ mtTransferClauseList p_s, /*@keep@*/ mtTransferClause p_el) 
+  mtTransferClauseList_add (/*@only@*/ mtTransferClauseList p_s, /*@only@*/ mtTransferClause p_el) 
   /*@modifies p_s@*/ ;
 
-extern mtTransferClauseList 
-  mtTransferClauseList_prepend (/*@returned@*/ mtTransferClauseList p_s, /*@keep@*/ mtTransferClause p_el) 
+extern /*@only@*/ mtTransferClauseList 
+  mtTransferClauseList_prepend (/*@only@*/ mtTransferClauseList p_s, /*@only@*/ mtTransferClause p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring mtTransferClauseList_unparse (mtTransferClauseList p_s) ;

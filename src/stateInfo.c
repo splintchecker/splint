@@ -97,9 +97,9 @@ static /*@observer@*/ stateInfo stateInfo_sort (/*@temp@*/ stateInfo sinfo)
 
       if (!fileloc_lessthan (sinfo->loc, snext->loc))
 	{
-	  /*@i888@*/ sinfo->previous = sfirst;
+	  /*@i2@*/ sinfo->previous = sfirst; /* spurious? */
 	  DPRINTF (("Sorted ==> %s", stateInfo_unparse (sinfo)));
-	  /*@i888@*/ return sinfo;
+	  /*@i2@*/ return sinfo; /* spurious? */
 	}
       else
 	{
@@ -116,18 +116,24 @@ static /*@observer@*/ stateInfo stateInfo_sort (/*@temp@*/ stateInfo sinfo)
       
 	      snext->loc = sinfo->loc;
 	      snext->action = sinfo->action;
-	      /*@i888@*/ snext->ref = sinfo->ref;
+	      /*@-modobserver@*/
+	      snext->ref = sinfo->ref; /* Doesn't actually modifie sfirst */ 
+	      /*@=modobserver@*/
 	      
 	      sinfo->loc = tloc;
 	      sinfo->action = taction;
 	      sinfo->ref = tref;
-	      /*@i888@*/ sinfo->previous = snext->previous;
+	      /*@-mustfreeonly@*/
+	      sinfo->previous = snext->previous;
+	      /*@=mustfreeonly@*/
 	      snext = snext->previous;
 	      DPRINTF (("in while: sinfo/sext: %s // %s", stateInfo_unparse (sinfo), stateInfo_unparse (snext)));
 	    }
 	  
 	  DPRINTF (("Sorted ==> %s", stateInfo_unparse (sfirst)));
-	  /*@i888@*/ return sfirst;
+	  /*@-compmempass@*/
+	  return sfirst;
+	  /*@=compmempass@*/
 	}
     }
 }

@@ -118,7 +118,7 @@
 
 # include "bison.reset"
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 # ifndef S_SPLINT_S
 extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;

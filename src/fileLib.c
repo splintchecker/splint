@@ -220,8 +220,10 @@ cstring fileLib_cleanName (cstring s)
 {
   if (cstring_equalPrefixLit (s, "./")) 
     {
-      return cstring_copySegment (s, 2, cstring_length (s) - 1);
+      cstring res = cstring_copySegment (s, 2, cstring_length (s) - 1);
+      cstring_free (s);
+      return res;
     }
 
-  return cstring_copy (s);
+  return s;
 }

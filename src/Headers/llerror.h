@@ -422,7 +422,6 @@ extern void llgenindentmsgnoloc (/*@only@*/ cstring p_s);
 
 extern /*@observer@*/ cstring lldecodeerror (int) /*@*/ ;
 
-/*@i523@*/
 /*
 ** should be static, but used in cpperror (which shouldn't exist)
 */

@@ -1037,7 +1037,6 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 
 cstring osd_outputPath (cstring filename)
 {
-  /*@i2534 fix this junky code once and for all! */
 # if defined (UNIX) || defined (OS2)
   char *rel_buffer;
   char *rel_buf_p;
@@ -1078,7 +1077,6 @@ cstring osd_outputPath (cstring filename)
 	}
       else
 	{
-	  /*@i324 ! splint didn't report an errors for: return ++path_p; */
 	  cstring_free (rel_buffer);
 	  return cstring_fromCharsNew (path_p + 1);
 	}
@@ -1166,7 +1164,7 @@ cstring osd_outputPath (cstring filename)
       while ((*rel_buf_p++ = *path_p++) != '\0') ;
 
       
-      /*@=usereleased@*/ /*@i523! shouldn't need these */
+      /*@=usereleased@*/ /* Splint limitation: shouldn't need these */
       --rel_buf_p;
 
       if (osd_isConnectChar (*(rel_buf_p-1)))

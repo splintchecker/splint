@@ -19,7 +19,6 @@ extern void mtValuesNode_free (/*@only@*/ mtValuesNode) ;
 
 extern cstring mtValuesNode_unparse (mtValuesNode p_node) /*@*/ ;
 
-/*@i32 why no warning without observer!??*/
 extern /*@observer@*/ cstringList mtValuesNode_getValues (mtValuesNode p_node) /*@*/ ;
 # define mtValuesNode_getValues(node) ((node)->values)
 

@@ -74,14 +74,14 @@ mtAnnotationList_grow (/*@notnull@*/ mtAnnotationList s)
   s->elements = newelements;
 }
 
-mtAnnotationList mtAnnotationList_single (/*@keep@*/ mtAnnotationDecl el) 
+mtAnnotationList mtAnnotationList_single (/*@only@*/ mtAnnotationDecl el) 
 {
   mtAnnotationList s = mtAnnotationList_new ();
   s = mtAnnotationList_add (s, el);
   return s;
 }
 
-mtAnnotationList mtAnnotationList_add (mtAnnotationList s, /*@keep@*/ mtAnnotationDecl el)
+mtAnnotationList mtAnnotationList_add (mtAnnotationList s, mtAnnotationDecl el)
 {
   if (!mtAnnotationList_isDefined (s))
     {
@@ -94,19 +94,19 @@ mtAnnotationList mtAnnotationList_add (mtAnnotationList s, /*@keep@*/ mtAnnotati
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
-mtAnnotationList mtAnnotationList_prepend (mtAnnotationList s, /*@keep@*/ mtAnnotationDecl el)
+mtAnnotationList mtAnnotationList_prepend (mtAnnotationList s, mtAnnotationDecl el)
 {
   int i;
 
   if (!mtAnnotationList_isDefined (s))
     {
-      /*@i32@*/ return mtAnnotationList_single (el);
+      return mtAnnotationList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ mtAnnotationList mtAnnotationList_prepend (mtAnnotationList s, /*@keep@*/ mtAnno
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 cstring

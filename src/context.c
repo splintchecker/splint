@@ -34,7 +34,7 @@
  */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 # include "usymtab_interface.h"
 # include "exprChecks.h"
@@ -143,7 +143,7 @@ static struct
   int counters[NUMVALUEFLAGS];
 
   o_cstring strings[NUMSTRINGFLAGS];
-  sRefSetList modrecs; /*@i32 ???? what is this for? */
+  sRefSetList modrecs; /* Keep track of file static symbols modified. */
 
   metaStateTable stateTable; /* User-defined state information. */
   annotationTable annotTable; /* User-defined annotations table. */
@@ -831,10 +831,9 @@ context_resetAllFlags (void)
   ** These flags are true by default.
   */
 
-  /*@i34 move this into flags.def */
+  /* eventually, move this into flags.def */
     
   gc.flags[FLG_STREAMOVERWRITE] = TRUE;
-
   gc.flags[FLG_OBVIOUSLOOPEXEC] = TRUE;
   gc.flags[FLG_MODIFIES] = TRUE;
   gc.flags[FLG_NESTCOMMENT] = TRUE;
@@ -842,6 +841,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_FULLINITBLOCK] = TRUE;
   gc.flags[FLG_INITSIZE] = TRUE;
   gc.flags[FLG_INITALLELEMENTS] = TRUE;
+  gc.flags[FLG_NULLINIT] = TRUE;
 
   gc.flags[FLG_STRINGLITTOOLONG] = TRUE;
 
@@ -1116,7 +1116,7 @@ context_setModeAux (cstring s, bool warn)
 	{ 
 	  FLG_BOOLINT, FLG_CHARINT, FLG_FLOATDOUBLE, FLG_LONGINT, FLG_SHORTINT,
 	  FLG_ENUMINT, FLG_RELAXQUALS, FLG_FORWARDDECL, 
-	  FLG_CHARINDEX, FLG_ABSTVOIDP, FLG_USEALLGLOBS, 
+	  FLG_CHARINDEX, FLG_NUMABSTRACTINDEX, FLG_ABSTVOIDP, FLG_USEALLGLOBS, 
 	  FLG_CHARUNSIGNEDCHAR,
 	  FLG_PREDBOOLOTHERS, 
 	  FLG_NUMABSTRACTLIT,
@@ -1171,6 +1171,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_SPECUNDEF, FLG_IMPCHECKMODINTERNALS,
 	  FLG_DECLUNDEF, FLG_INCONDEFS, FLG_INCONDEFSLIB, 
 	  FLG_MISPLACEDSHAREQUAL, FLG_REDUNDANTSHAREQUAL,
+	  FLG_NUMABSTRACTPRINT,
 	  FLG_MATCHFIELDS, 
 	  FLG_MACROPARAMS,
 	  FLG_MACROASSIGN,
@@ -1252,6 +1253,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_MODFILESYSTEM,
 	  FLG_MACROMATCHNAME,
 	  FLG_FORMATCONST,
+	  FLG_NUMABSTRACTPRINT,
 	  FLG_STRINGLITNOROOM,
 	  FLG_STRINGLITNOROOMFINALNULL,
 	  FLG_STRINGLITSMALLER,
@@ -2298,8 +2300,7 @@ static
 void context_exitClauseAux (exprNode pred, exprNode tbranch)
 {
   context_setJustPopped ();
-  /*@i32 was makeAlt */
-  usymtab_popTrueBranch (pred, tbranch, gc.inclause);
+  usymtab_popTrueBranch (pred, tbranch, gc.inclause); /* evans 2003-02-02?: was makeAlt */
   clauseStack_pop (gc.clauses);
   gc.inclause = topClause (gc.clauses);
 }
@@ -3023,8 +3024,10 @@ context_setString (flagcode flag, cstring val)
       {
 	; /* Okay not handle everything in this switch */
       }
-  /*@i523@*/ } /* evans 2002-03-24: splintme reports a spurious (I think) warning here...need to look into it */
-  
+      /*@-branchstate@*/
+    } /* evans 2002-03-24: splintme reports a spurious (I think) warning here...need to look into it */
+  /*@=branchstate@*/ 
+
   if (cstring_length (val) >= 1
       && cstring_firstChar (val) == '\"')
     {
@@ -4856,7 +4859,7 @@ valueTable context_createValueTable (sRef s, stateInfo sinfo)
   if (metaStateTable_size (gc.stateTable) > 0)
     {
       valueTable res = valueTable_create (metaStateTable_size (gc.stateTable));
-      /*@i32 should use smaller value... */
+      /* should use smaller value... */
       DPRINTF (("Value table for: %s", sRef_unparse (s)));
       
       metaStateTable_elements (gc.stateTable, msname, msi)
@@ -4897,11 +4900,11 @@ valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
   if (metaStateTable_size (gc.stateTable) > 0)
     {
       valueTable res = valueTable_create (metaStateTable_size (gc.stateTable));
-      /*@i32 should use smaller value... */
+      /* should use smaller value... */
       
       metaStateTable_elements (gc.stateTable, msname, msi)
 	{
-	  /*@i23 only add global...*/
+	  /* only add global...*/
 	  DPRINTF (("Create: %s", metaStateInfo_unparse (msi)));
 	  llassert (cstring_equal (msname, metaStateInfo_getName (msi)));
 	  

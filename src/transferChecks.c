@@ -1657,7 +1657,7 @@ transferChecks_return (exprNode fexp, uentry rval)
     {
       if (stateClause_isGlobal (cl))
 	{
-	  ; /*@i32@*/
+	  ; 
 	}
       else if (stateClause_setsMetaState (cl))
 	{
@@ -1695,7 +1695,6 @@ transferChecks_return (exprNode fexp, uentry rval)
 			   exprNode_loc (fexp)))
 			{
 			  sRef_showAliasInfo (sr); 
-			  /*@i32@*/
 			}
 		    }
 		}
@@ -2535,7 +2534,7 @@ checkTransferNullAux (sRef fref, exprNode fexp, /*@unused@*/ bool ffix,
 	      if (sRef_isNotNull (tref))
 		{
 		  if (optgenerror
-		      (FLG_SYNTAX, /*@i432 kuldge flag... */
+		      (FLG_NULLINIT, /* kuldge flag... */
 		       message ("%s %q initialized to %s value: %q",
 				sRef_getScopeName (tref),
 				sRef_unparse (tref),
@@ -4139,7 +4138,7 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 static void
 checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref, 
 			exprNode fcn,
-			fileloc loc, transferKind /*@i32@*/ transferType)
+			fileloc loc, transferKind transferType)
 {
   valueTable fvalues = sRef_getValueTable (fref);
   valueTable tvalues = sRef_getValueTable (tref);
@@ -4237,8 +4236,6 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	      {
 		if (nval == stateValue_error)
 		  {
-		    /*@i32 print extra info for assignments@*/
-		    
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message

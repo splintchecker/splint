@@ -45,7 +45,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "osd.h"
 # include "portab.h"
 
@@ -80,14 +80,12 @@ inputStream_create (cstring name, cstring suffix, bool echo)
 {
   char *ps;
   inputStream s = (inputStream) dmalloc (sizeof (*s));
-  cstring oname;
 
   s->name = name;
   s->file = NULL;
 
   /*@access cstring@*/
   llassert (cstring_isDefined (s->name));
-  /*@i534 clean this up...*/
   ps = strrchr (s->name, CONNECTCHAR);
 
   if (ps == NULL)
@@ -101,9 +99,7 @@ inputStream_create (cstring name, cstring suffix, bool echo)
       s->name = cstring_concatFree1 (s->name, suffix);
     }
 
-  oname = s->name;
   s->name = fileLib_cleanName (s->name);
-  /*@i523@*/ cstring_free (oname); /* evans 2002-07-12: why no error without this?! */
 
   s->lineNo = 0;
   s->charNo = 0;
@@ -114,7 +110,7 @@ inputStream_create (cstring name, cstring suffix, bool echo)
   s->stringSourceTail = NULL;
   s->buffer[0] = '\0';
 
-  /*@i523@*/ return s;
+  return s;
 }
 
 extern /*@only@*/ inputStream 

@@ -29,7 +29,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "cgrammar.h"
 # include "usymtab_interface.h"
 
@@ -961,7 +961,7 @@ checkTypeDecl (uentry e, ctype rep)
   if (usymtab_exists (n))
     {
       usymId llm = usymtab_getId (n);
-      uentry le  = usymtab_getTypeEntry (llm);
+      uentry le  = usymtab_getTypeEntry (typeId_fromUsymId (llm));
 
       uentry_setDeclared (e, g_currentloc); 
       uentry_setSref (e, sRef_makeGlobal (llm, uentry_getType (le), stateInfo_currentLoc ()));

@@ -36,7 +36,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "llgrammar.h"
 # include "lclscan.h"
 

@@ -541,7 +541,7 @@ cttable_addComplex (/*@only@*/ ctbase cnew)
 	  
 	  ctb = ctype_getCtbase (i);
 	  
-	  /*@i32 is this optimization really worthwhile??? */
+	  /* is this optimization really worthwhile? */
 
 	  if (ctbase_isDefined (ctb) && ctbase_equivStrict (cnew, ctb))
 	    {

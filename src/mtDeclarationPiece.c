@@ -36,7 +36,7 @@ mtDeclarationPiece_create (mtPieceKind kind, /*@null@*/ /*@only@*/ void *node)
   res->kind = kind;
   res->node = node;
 
-  /*@i32@*/ return res;
+  return res;
 }
 
 extern mtDeclarationPiece mtDeclarationPiece_createContext (mtContextNode node) /*@*/ 

@@ -252,7 +252,7 @@ void stateClauseList_checkAll (uentry ue)
 
       if (stateClause_isGlobal (cl))
 	{
-	  /*@i232@*/
+	  ; 
 	}
       else
 	{
@@ -396,7 +396,7 @@ void stateClauseList_checkAll (uentry ue)
 		    {
 		      voptgenerror
 			(FLG_ANNOTATIONERROR,
-			 /*@-sefparams@*/ /* This is okay because its fresh storage. */ /*@i32@*/
+			 /*@-sefparams@*/ /* This is okay because its fresh storage. */
 			 message 
 			 ("%q clauses includes %q of "
 			  "non-dynamically allocated type %s",
@@ -451,7 +451,7 @@ void stateClauseList_checkEqual (uentry old, uentry unew)
 	{
 	  if (stateClause_isGlobal (cl))
 	    {
-	      ; /*@i32@*/ 
+	      ; /* Don't handle globals for now */
 	    }
 	  else
 	    {

@@ -1330,6 +1330,15 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 			      exprNode_unparse (e1), exprNode_unparse (e2)),
 		     arr->loc);
 		}
+              else if (ctype_isNumAbstract (rt))
+		{
+		  vnoptgenerror 
+		    (FLG_NUMABSTRACTINDEX,
+		     message ("Array fetch using numabstract type, %t: %s[%s]",
+			      ind->typ, 
+			      exprNode_unparse (e1), exprNode_unparse (e2)),
+		     arr->loc);
+		}
               else
 		{
 		  voptgenerror 
@@ -1623,11 +1632,9 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  expecttype = ctype_makeConj (ctype_int, 
 						       ctype_makeConj (ctype_char,
 								       ctype_uchar));
-			  /*@i231@*/
 			  /* evans 2001-10-05 - changed to reflect correct ISO spec:
 			     int converted to char */
 			  
-			  /* expecttype = ctype_makeConj (ctype_char, ctype_uchar); */
 			  /*@switchbreak@*/ break;
 			      
 			case 's': /* string */
@@ -2236,7 +2243,7 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 					    codetext, expecttype,
 					    a->typ, exprNode_unparse (a)),
 				   a->loc))
-				  {
+				{
 				  if (fileloc_isDefined (formatloc)
 				      && context_getFlag (FLG_SHOWCOL))
 				    {
@@ -3126,7 +3133,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 
 	      if (sRef_isObserver (b))
 		{
-		  exprNode e = exprNodeList_nth (args, sRef_getParam (rb));
+		  exprNode e = exprNodeList_nth (args, usymId_toInt (sRef_getParam (rb)));
 		  
 		  if (optgenerror 
 		      (FLG_MODOBSERVER,
@@ -3701,7 +3708,7 @@ checkRequiresClause (uentry le, exprNode f, exprNodeList args)
 			  
 			  if (sRef_isResult (sRef_getRootBase (sel)))
 			    {
-			      ; /*@i423 what do we do about results */
+			      ; /* what do we do about results? */
 			    }
 			  else
 			    {
@@ -6465,8 +6472,8 @@ exprNode_vaArg (/*@only@*/ lltok tok, /*@only@*/ exprNode arg, /*@only@*/ qtype 
       */
 
       if (!ctype_isUA (targ) ||
-	  (!usymId_equal (ctype_typeId (targ), 
-			 usymtab_getTypeId (cstring_makeLiteralTemp ("va_list")))))
+	  (!typeId_equal (ctype_typeId (targ), 
+			  usymtab_getTypeId (cstring_makeLiteralTemp ("va_list")))))
 	{
 	  voptgenerror
 	    (FLG_TYPE,
@@ -6777,8 +6784,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 
 exprNode exprNode_createTok (/*@only@*/ lltok t)
 {
-  exprNode ret; /*@i23 if on same line, bad things happen...!@*/
-  ret = exprNode_create (ctype_unknown);
+  exprNode ret = exprNode_create (ctype_unknown);
   ret->kind = XPR_TOK;
   ret->edata = exprData_makeTok (t);
   return ret;
@@ -6991,7 +6997,6 @@ exprNode exprNode_if (/*@only@*/ exprNode pred, /*@only@*/ exprNode tclause)
 	     exprNode_loc (pred));
 	}
       
-      /*! exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred); */ /*@i523@*/
       exprNode_checkUse (pred, pred->sref, pred->loc);
       
       if (!exprNode_isError (tclause))
@@ -7120,9 +7125,7 @@ exprNode exprNode_ifelse (/*@only@*/ exprNode pred,
 	     exprNode_loc (pred));
 	}
       
-      /*@i3423 exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred);*/
       exprNode_checkUse (ret, pred->sref, pred->loc);
-      
       exprNode_mergeCondUSs (ret, tclause, eclause);
     }
 
@@ -8496,37 +8499,6 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
     {
       uentry ue = usymtab_lookup (idDecl_observeId (t));
       ret = exprNode_createId (ue);
-
-      /*@i723 don't do this...but why? */
-# if 0
-      ct = ctype_realishType (ret->typ);
-
-      DPRINTF (("Type: %s", ctype_unparse (ret->typ)));
-
-      if (ctype_isUnknown (ct)) 
-	{
-	  if (uentry_isAnyTag (ue))
-	    {
-	      voptgenerror
-		(FLG_IMPTYPE,
-		 message ("%s used but not previously declared: %s",
-			  uentry_ekindName (ue),
-			  idDecl_getName (t)),
-		 g_currentloc);
-	      
-	    }
-	  else
-	    {
-	      voptgenerror
-		(FLG_IMPTYPE,
-		 message ("Variable has unknown (implicitly int) type: %s",
-			  idDecl_getName (t)),
-		 g_currentloc);
-	    }
-
-	  ct = ctype_int;
-	}
-# endif
     }
   else
     {
@@ -8535,9 +8507,6 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
       DPRINTF (("Unrecognized: %s", idDecl_unparse (t)));
 
       ue = uentry_makeUnrecognized (idDecl_observeId (t), fileloc_copy (g_currentloc));
-      /*!! fileloc_copy (g_currentloc)); */
-      /*@i32!!! should get error without this */
-
       ret = exprNode_fromIdentifierAux (ue);
 
       /*
@@ -11107,6 +11076,7 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
       ctype ct = sRef_getType (sr);
 
       if (ctype_isAbstract (t2) 
+	  && !ctype_isNumAbstract (t2)
 	  && !(uentry_isMutableDatatype (usymtab_getTypeEntry (ctype_typeId (t2)))))
 	{
 	  /* it is immutable, okay to reference */

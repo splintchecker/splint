@@ -74,7 +74,7 @@ mtLoseReferenceList_grow (/*@notnull@*/ mtLoseReferenceList s)
   s->elements = newelements;
 }
 
-mtLoseReferenceList mtLoseReferenceList_single (/*@keep@*/ mtLoseReference el) 
+mtLoseReferenceList mtLoseReferenceList_single (mtLoseReference el) 
 {
   mtLoseReferenceList s = mtLoseReferenceList_new ();
   s = mtLoseReferenceList_add (s, el);
@@ -94,19 +94,19 @@ mtLoseReferenceList mtLoseReferenceList_add (mtLoseReferenceList s, /*@keep@*/ m
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
-mtLoseReferenceList mtLoseReferenceList_prepend (mtLoseReferenceList s, /*@keep@*/ mtLoseReference el)
+mtLoseReferenceList mtLoseReferenceList_prepend (mtLoseReferenceList s, mtLoseReference el)
 {
   int i;
 
   if (!mtLoseReferenceList_isDefined (s))
     {
-      /*@i32@*/ return mtLoseReferenceList_single (el);
+      return mtLoseReferenceList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ mtLoseReferenceList mtLoseReferenceList_prepend (mtLoseReferenceList s, /*@keep@
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 cstring

@@ -153,13 +153,18 @@ static /*@exposed@*/ /*@dependent@*/ uentry
   usymtab_lookupQuietNoAlt (usymtab p_s, cstring p_k);
 
 static void usymtab_printAllAux (usymtab p_s) /*@modifies g_warningstream@*/ ;
-static int usymtab_getIndex (/*@notnull@*/ usymtab p_s, cstring p_k);
-static /*@exposed@*/ uentry usymtab_fetchIndex (/*@notnull@*/ usymtab p_s, int p_i);
-static /*@exposed@*/ uentry 
-  usymtab_lookupAux (usymtab p_s, cstring p_k);
-static /*@exposed@*/ /*@dependent@*/ /*@notnull@*/ usymtab 
-  usymtab_getFileTab (void) /*@globals filetab@*/ ;
-static int refTable_lookup (/*@notnull@*/ usymtab p_ut, int p_level, int p_index);
+
+/*@function bool usymtab_indexFound (usymId) @*/
+# define usymtab_indexFound(u) ((u) != usymId_notfound)
+
+static usymId usymtab_getIndex (/*@notnull@*/ usymtab p_s, cstring p_k);
+static /*@exposed@*/ uentry usymtab_fetchIndex (/*@notnull@*/ usymtab p_s, usymId p_ui);
+static /*@exposed@*/ uentry usymtab_lookupAux (usymtab p_s, cstring p_k);
+
+static /*@exposed@*/ /*@dependent@*/ /*@notnull@*/ 
+   usymtab usymtab_getFileTab (void) /*@globals filetab@*/ ;
+
+static int refTable_lookup (/*@notnull@*/ usymtab p_ut, int p_level, usymId p_index);
 static bool usymtab_mustBreak (usymtab p_s);
 static bool usymtab_mustEscape (usymtab p_s);
 
@@ -525,7 +530,7 @@ usymtab_addEntryBase (/*@notnull@*/ usymtab s, /*@only@*/ uentry e)
     }
   else
     {
-      int thisentry = s->nentries;  
+      usymId thisentry = usymId_fromInt (s->nentries); 
       
       if (uentry_isVar (e))
 	{
@@ -552,7 +557,7 @@ usymtab_addEntryAlways (/*@notnull@*/ usymtab s, /*@only@*/ uentry e)
   */
 
   uentry old;
-  int thisentry = s->nentries;  
+  usymId thisentry = usymId_fromInt (s->nentries);
 
   if (uentry_isValid (old = usymtab_lookupQuiet (s, uentry_rawName (e))))
     {
@@ -585,7 +590,7 @@ usymtab_addEntryAux (/*@notnull@*/ usymtab st, /*@keep@*/ uentry e, bool isSref)
      /*@globals globtab@*/
      /*@modifies st, e@*/
 {
-  usymId thisentry = st->nentries;
+  usymId thisentry = usymId_fromInt (st->nentries);
 
   llassert (!uentry_isElipsisMarker (e));
 
@@ -635,8 +640,7 @@ usymtab_addEntryAux (/*@notnull@*/ usymtab st, /*@keep@*/ uentry e, bool isSref)
 
   if (uentry_isDatatype (e))
     {
-      
-      uentry_setDatatype (e, thisentry);
+      uentry_setDatatype (e, typeId_fromUsymId (thisentry));
     }
 
   if (uentry_isFunction (e))
@@ -713,7 +717,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 {
   cstring ename = uentry_rawName (e);
   bool staticEntry = FALSE;
-  int eindex;
+  usymId eindex;
 
   DPRINTF (("Sup entry aux: %s", uentry_unparseFull (e)));
   
@@ -723,7 +727,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
     {
       eindex = usymtab_getIndex (st, ename);
 
-      if (eindex != NOT_FOUND)
+      if (usymtab_indexFound (eindex))
 	{
 	  uentry ce = st->entries[eindex];      
 	  
@@ -737,7 +741,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 	      uentry_showWhereLast (ce);
 	    }
 
-	  if (eindex == st->nentries - 1)
+	  if (eindex == usymId_fromInt (st->nentries - 1))
 	    {
 	     ;
 	    }
@@ -780,7 +784,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 
   eindex = usymtab_getIndex (st, ename);
       
-  if (eindex != NOT_FOUND)
+  if (usymtab_indexFound (eindex))
     {
       uentry ce = st->entries[eindex];
       
@@ -807,7 +811,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 
 	  if (uentry_isDatatype (e))
 	    {
-	      uentry_setDatatype (e, eindex);
+	      uentry_setDatatype (e, typeId_fromUsymId (eindex));
 	    }
 	  
 	  if (st == globtab && !uentry_isSpecified (e))
@@ -843,7 +847,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 		  st->entries[eindex] = e;
 		  ce = e;
 
-		  if (uentry_isDatatype (e)) uentry_setDatatype (e, eindex);
+		  if (uentry_isDatatype (e)) uentry_setDatatype (e, typeId_fromUsymId (eindex));
 		}
 	      else 
 		{
@@ -860,7 +864,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 
 		      if (uentry_isDatatype (e)) 
 			{
-			  uentry_setDatatype (e, eindex);
+			  uentry_setDatatype (e, typeId_fromUsymId (eindex));
 			}
 		      
 		      if (cstringTable_isDefined (st->htable))
@@ -970,7 +974,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 	  
 	  eindex = usymtab_getIndex (filetab, ename);
 	  
-	  if (eindex != NOT_FOUND)
+	  if (usymtab_indexFound (eindex))
 	    {
 	      uentry ce = filetab->entries[eindex];
 
@@ -1036,7 +1040,7 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
     }
 
  exitPoint:
-    return (staticEntry ? USYMIDINVALID : eindex);
+    return (staticEntry ? usymId_invalid : eindex);
 }
 
 static void
@@ -1044,12 +1048,12 @@ usymtab_replaceEntryAux (/*@notnull@*/ usymtab st, /*@only@*/ uentry e)
    /*@globals globtab@*/ /*@modifies st, e@*/
 {
   cstring ename = uentry_rawName (e);
-  int eindex;
+  usymId eindex;
 
   /* static tags in global scope */
   eindex = usymtab_getIndex (st, ename);
   
-  if (eindex != NOT_FOUND)
+  if (usymtab_indexFound (eindex))
     {
       uentry ce = st->entries[eindex];      
       
@@ -1160,13 +1164,14 @@ usymtab_supTypeEntry (/*@only@*/ uentry e)
 
   if (uentry_isAbstractDatatype (e))
     {
-      uid = usymtab_supAbstractTypeEntry (e, FALSE);
-      ret = ctype_createAbstract (uid);
+      typeId tid = usymtab_supAbstractTypeEntry (e, FALSE);
+      ret = ctype_createAbstract (tid);
+      uid = typeId_toUsymId (tid);
     }
   else
     {
       uid = usymtab_supEntryAux (globtab, e, FALSE);
-      ret = ctype_createUser (uid);
+      ret = ctype_createUser (typeId_fromUsymId (uid));
     }
 
   if (sRef_modInFunction ())
@@ -1188,7 +1193,7 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
 
   if (uentry_isAbstractDatatype (e))
     {
-      uid = usymtab_supAbstractTypeEntry (e, FALSE);
+      uid = typeId_toUsymId (usymtab_supAbstractTypeEntry (e, FALSE));
     }
   else if (uentry_isMaybeAbstract (e) && context_getFlag (FLG_IMPABSTRACT))
     {
@@ -1221,14 +1226,15 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
       if (maybeabs)
 	{
 	  uentry ux;
-	  uid = usymtab_supAbstractTypeEntry (e, FALSE);
-	  ux = usymtab_getTypeEntry (uid);
+	  typeId tid = usymtab_supAbstractTypeEntry (e, FALSE);
+	  ux = usymtab_getTypeEntry (tid);
 	  uentry_setAbstract (ux);
+	  uid = typeId_toUsymId (tid);
 	}
       else
 	{
 	  uid = usymtab_supEntryAux (globtab, e, FALSE);
-	  e = usymtab_getTypeEntry (uid);
+	  e = usymtab_getTypeEntry (typeId_fromUsymId (uid));
 	  
 	  if (uentry_isMaybeAbstract (e))
 	    {
@@ -1239,7 +1245,7 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
   else
     {
       uid = usymtab_supEntryAux (globtab, e, FALSE);
-      e = usymtab_getTypeEntry (uid);
+      e = usymtab_getTypeEntry (typeId_fromUsymId (uid));
 
       /*? evans 2002-12-16 removed this? it doesn't make sense
       if (uentry_isMaybeAbstract (e))
@@ -1257,15 +1263,15 @@ usymtab_supReturnTypeEntry (/*@only@*/ uentry e)
     return (globtab->entries[uid]);
 }
 
-usymId
+typeId
 usymtab_supAbstractTypeEntry (/*@only@*/ uentry e, bool dodef)
   /*@globals globtab, filetab@*/
   /*@modifies globtab, e@*/
 {
-  usymId uid;
+  typeId uid;
   uentry ue;
 
-  uid = usymtab_supEntryAux (globtab, e, FALSE);
+  uid = typeId_fromUsymId (usymtab_supEntryAux (globtab, e, FALSE));
   ue = usymtab_getTypeEntry (uid);
 
   if (dodef)
@@ -1286,14 +1292,14 @@ usymtab_supAbstractTypeEntry (/*@only@*/ uentry e, bool dodef)
   return (uid);
 }
 
-usymId
+typeId
 usymtab_supExposedTypeEntry (/*@only@*/ uentry e, bool dodef)
   /*@globals globtab, filetab@*/
   /*@modifies globtab, e@*/
 {
-  usymId uid;
+  typeId uid;
 
-  uid = usymtab_supEntryAux (globtab, e, FALSE);
+  uid = typeId_fromUsymId (usymtab_supEntryAux (globtab, e, FALSE));
 
   if (dodef)
     {
@@ -1307,7 +1313,7 @@ usymtab_supExposedTypeEntry (/*@only@*/ uentry e, bool dodef)
       recordFunctionType (globtab->entries[uid]);
     }
 
-  return (uid);
+  return uid;
 }
 
 ctype
@@ -1315,7 +1321,7 @@ usymtab_supForwardTypeEntry (/*@only@*/ uentry e)
   /*@globals globtab, filetab@*/
   /*@modifies globtab, e@*/
 {
-  usymId uid = usymtab_supEntryAux (globtab, e, FALSE);
+  typeId uid = typeId_fromUsymId (usymtab_supEntryAux (globtab, e, FALSE));
   uentry ue = usymtab_getTypeEntry (uid);
 
     uentry_setDatatype (ue, uid);
@@ -1395,7 +1401,7 @@ usymtab_inDeepScope () /*@globals utab@*/
   return (utab->lexlevel > paramsScope);
 }
 
-static int
+static usymId
 usymtab_getIndex (/*@notnull@*/ usymtab s, cstring k)
 {
   int i;
@@ -1405,7 +1411,7 @@ usymtab_getIndex (/*@notnull@*/ usymtab s, cstring k)
   if (cstringTable_isDefined (s->htable))
     {
       i = cstringTable_lookup (s->htable, k);
-      return i;
+      return usymId_fromInt (i);
     }
   else
     {
@@ -1418,33 +1424,37 @@ usymtab_getIndex (/*@notnull@*/ usymtab s, cstring k)
 	  if (!uentry_isUndefined (current) 
 	      && cstring_equal (uentry_rawName (current), k))
 	    {
-	      return i;
+	      return usymId_fromInt (i);
 	    }
 	}
 
-      return NOT_FOUND;
+      return usymId_notfound;
     }
 }
 
 static uentry
-usymtab_fetchIndex (/*@notnull@*/ usymtab s, int i)
+usymtab_fetchIndex (/*@notnull@*/ usymtab s, usymId ui)
 {
+  int i = usymId_toInt (ui);
   llassert (i >= 0 && i < s->nentries);
   return (s->entries[i]);
 }
 
-usymId
+typeId
 usymtab_getTypeId (cstring k) /*@globals globtab@*/
 {
   usymId uid = usymtab_getIndex (globtab, k);
 
-  if (uid == NOT_FOUND) return USYMIDINVALID;
-
-  if (!(uentry_isDatatype (usymtab_getTypeEntry (uid)))) {
-    return USYMIDINVALID;
-  }
-
-  return uid;
+  if (!usymtab_indexFound (uid)
+      || !(uentry_isDatatype (usymtab_getTypeEntry (typeId_fromUsymId (uid)))))
+    
+    {
+      return typeId_invalid;
+    }
+  else
+    {
+      return typeId_fromUsymId (uid);
+    }
 }
 
 /*@dependent@*/ uentry
@@ -1483,16 +1493,16 @@ usymtab_getId (cstring k) /*@globals globtab@*/
   usymId uid = usymtab_getIndex (globtab, k);
   uentry ue;
 
-  if (uid == NOT_FOUND)
+  if (!usymtab_indexFound (uid))
     {
-      return USYMIDINVALID;
+      return usymId_invalid;
     }
 
   ue = usymtab_getGlobalEntry (uid);
 
   if (uentry_isPriv (ue))
     {
-      return USYMIDINVALID;
+      return usymId_invalid;
     }
 
   return uid;
@@ -1501,9 +1511,9 @@ usymtab_getId (cstring k) /*@globals globtab@*/
 static /*@exposed@*/ uentry 
 usymtab_getEntryAux (/*@notnull@*/ usymtab s, usymId uid)
 {
-  llassert (uid != USYMIDINVALID);
+  llassert (uid != usymId_invalid);
  
-  if (uid < 0 || uid >= s->nentries)
+  if (uid < 0 || uid >= usymId_fromInt (s->nentries))
     {
       llcontbug (message ("usymtab_getEntry: out of range: level = %d [%d]",
 			  s->lexlevel, uid));
@@ -1533,13 +1543,12 @@ usymtab_getEntryAux (/*@notnull@*/ usymtab s, usymId uid)
     }
 }
 
-/*@dependent@*/ /*@exposed@*/ uentry 
-  usymtab_getTypeEntry (usymId uid)
+/*@dependent@*/ /*@exposed@*/ uentry usymtab_getTypeEntry (typeId uid)
   /*@globals globtab@*/
 {
   if (dbgload)
     {
-      if (uid >= 0 && uid < globtab->nentries)
+      if (uid >= 0 && uid < typeId_fromInt (globtab->nentries))
 	{
 	  return (globtab->entries[uid]);
 	}
@@ -1550,7 +1559,7 @@ usymtab_getEntryAux (/*@notnull@*/ usymtab s, usymId uid)
     }
   else
     {
-      llassert (uid >= 0 && uid < globtab->nentries);      
+      llassert (uid >= 0 && uid < typeId_fromInt (globtab->nentries));
       return (globtab->entries[uid]);
     }
 }
@@ -1559,30 +1568,27 @@ usymtab_getEntryAux (/*@notnull@*/ usymtab s, usymId uid)
 ** in load files
 */
 
-/*@dependent@*/ /*@exposed@*/ uentry 
-  usymtab_getTypeEntrySafe (usymId uid)
+/*@dependent@*/ /*@exposed@*/ uentry usymtab_getTypeEntrySafe (typeId uid)
   /*@globals globtab@*/
 {
-  if (uid < 0 || uid >= globtab->nentries)
+  if (uid < 0 || uid >= typeId_fromInt (globtab->nentries))
     {
       return uentry_undefined;
     }
-
-      return (globtab->entries[uid]);
+  
+  return (globtab->entries[uid]);
 }
 
-bool
-  usymtab_isBoolType (usymId uid)
+bool usymtab_isBoolType (typeId uid)
   /*@globals globtab@*/
 {
-  llassert (uid >= 0 && uid < globtab->nentries);
+  llassert (uid >= 0 && uid < typeId_fromInt (globtab->nentries));
 
   return (cstring_equal (uentry_rawName (globtab->entries[uid]),
 			 context_getBoolName ()));
 }
  
-cstring
-usymtab_getTypeEntryName (usymId uid)
+cstring usymtab_getTypeEntryName (typeId uid)
    /*@globals globtab@*/
 {
   uentry ue;
@@ -1653,12 +1659,16 @@ usymtab_shallowFree (/*@only@*/ /*@notnull@*/ usymtab s)
   /*@-compdestroy@*/ sfree (s); /*@=compdestroy@*/
 }
 
+usymId usymtab_convertTypeId (typeId uid)
+{
+  return usymtab_convertId (typeId_toUsymId (uid));
+}
+
 /*
-** converts usymId from old table to sorted one
+** usymtab_convertId: converts usymId from old table to sorted one
 */
 
-usymId 
-  usymtab_convertId (usymId uid)
+usymId usymtab_convertId (usymId uid)
   /*@globals oldtab, utab@*/
 {
   uentry ue;
@@ -1679,7 +1689,7 @@ usymId
 	    uentry_unparse (ue), uid,
 	    uentry_unparse (utab->entries[ret]), ret));
 
-  llassertprint (ret != USYMIDINVALID, ("convertId: return is invalid"));
+  llassertprint (ret != usymId_invalid, ("convertId: return is invalid"));
 
   return (ret);
 }
@@ -2400,7 +2410,7 @@ usymtab_enterFunctionScope (uentry fcn)
       
       if (sRef_isUndefGlob (el))
 	{
-	  int index = sRef_getScopeIndex (el);
+	  usymId index = sRef_getScopeIndex (el);
 	  sRef sr = sRef_updateSref (el);
 	  fileloc loc = uentry_whereEarliest (fcn);
 	
@@ -2845,7 +2855,7 @@ usymtab_exitSwitch (/*@unused@*/ exprNode sw, bool allpaths)
 	    {
 	      usymtab_entries (stab, current)
 		{
-		  if (usymtab_getIndex (ttab, uentry_rawName (current)) == NOT_FOUND)
+		  if (!usymtab_indexFound (usymtab_getIndex (ttab, uentry_rawName (current))))
 		    {
 		      uentry old = /*@-compmempass@*/
 			usymtab_lookupAux (ltab, uentry_rawName (current));
@@ -3065,7 +3075,7 @@ usymtab_popBranches (exprNode pred, exprNode tbranch, exprNode fbranch,
     {
       uentry fthis = ftab->entries[i];
       uentry old = usymtab_lookupAux (env, uentry_rawName (fthis));
-      int    tindex = usymtab_getIndex (ttab, uentry_rawName (fthis));
+      usymId tindex = usymtab_getIndex (ttab, uentry_rawName (fthis));
       
       DPRINTF (("Entry: %s / %s", uentry_unparseFull (fthis), uentry_unparseFull (old)));
 	  
@@ -3076,7 +3086,7 @@ usymtab_popBranches (exprNode pred, exprNode tbranch, exprNode fbranch,
 	  continue;
 	}
       
-      if (tindex != NOT_FOUND)
+      if (usymtab_indexFound (tindex))
 	{
 	  uentry tthis = ttab->entries[tindex];
 
@@ -3836,9 +3846,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 void usymtab_checkFinalScope (bool isReturn)
   /*@globals utab@*/
 {
-  bool mustFree = context_getFlag (FLG_MUSTFREEONLY) || context_getFlag (FLG_MUSTFREEFRESH); /*@i423 remove this mustFree */
   bool mustDefine = context_getFlag (FLG_MUSTDEFINE);
-  /* bool mustNotAlias = context_getFlag (FLG_MUSTNOTALIAS); */
   sRefSet checked = sRefSet_new ();
   usymtab stab = utab;
   int i;
@@ -3866,9 +3874,7 @@ void usymtab_checkFinalScope (bool isReturn)
 
 	      if (!uentry_sameObject (ce, oue))
 		{
-		  DPRINTF (("Skipping outer entry: %s / %s", uentry_unparseFull (ce),
-			    uentry_unparseFull (oue)));
-		  /*@i32  what if it is one an alternate branch? */
+		  /* what if it is one an alternate branch? */
 		  /*@innercontinue@*/ continue;
 		}
 	    }
@@ -3930,12 +3936,6 @@ void usymtab_checkFinalScope (bool isReturn)
 		    
 		    if (cstring_isDefined (msg)) 
 		      {
-			/*@i32 print extra info for assignments@*/
-			DPRINTF (("From: %s", sRef_unparseFull (sr)));
-			DPRINTF (("Null? %s / %s",
-				  bool_unparse (sRef_isDefinitelyNull (sr)),
-				  bool_unparse (usymtab_isGuarded (sr))));
-			
 			if (optgenerror 
 			    (FLG_STATETRANSFER,
 			     message
@@ -3957,133 +3957,126 @@ void usymtab_checkFinalScope (bool isReturn)
 	      } end_valueTable_elements;
 	    }
 
-	  DPRINTF (("Here 1"));
-
-	  if (mustFree)
+	  DPRINTF (("Check mustfree entry: %s", uentry_unparseFull (ce)));
+	  
+	  if (!sRefSet_member (checked, sr) && !sRef_isFileOrGlobalScope (rb))
 	    {
-	      DPRINTF (("Check mustfree entry: %s", uentry_unparseFull (ce)));
-	      
-	      if (!sRefSet_member (checked, sr) && !sRef_isFileOrGlobalScope (rb))
+	      if (ctype_isRealSU (uentry_getType (ce))
+		  && !uentry_isAnyParam (ce)
+		  && !uentry_isRefParam (ce)
+		  && !uentry_isStatic (ce)
+		  && !sRef_isDependent (sr)
+		  && !sRef_isOwned (sr))
 		{
-		  if (ctype_isRealSU (uentry_getType (ce))
-		      && !uentry_isAnyParam (ce)
-		      && !uentry_isRefParam (ce)
-		      && !uentry_isStatic (ce)
-		      && !sRef_isDependent (sr)
-		      && !sRef_isOwned (sr))
+		  sRefSet als = usymtab_allAliases (sr);
+		  
+		  if (sRefSet_isEmpty (als))
 		    {
-		      sRefSet als = usymtab_allAliases (sr);
-		      
-		      if (sRefSet_isEmpty (als))
-			{
-			  transferChecks_localDestroyed (sr, g_currentloc);
-			}
-		      else
-			{
-			  /* aliased, no problem */ ;
-			}
-
-		      sRefSet_free (als);
+		      transferChecks_localDestroyed (sr, g_currentloc);
 		    }
-		  else if
-		    (!uentry_isStatic (ce)
-		     && ((sRef_isNewRef (sr))
-			 || (((sRef_isOnly (sr) || sRef_isFresh (sr) 
-			       || sRef_isKeep (sr) || sRef_isOwned (sr))
-			      && !sRef_isDead (sr))
-			     && (!sRef_definitelyNull (sr))
-			     && (!usymtab_isDefinitelyNull (sr)))))
-		      {
-			bool hasError = TRUE;
-			
-			DPRINTF (("Checking: %s", sRef_unparseFull (sr)));
-
-			/*
-    	     	        ** If its a scope exit, check if there is an alias.
-			** If so, make it only.  If not, there is an error.
-			*/
-			
-			if (!isReturn)
-			  {
-			    if (transferChecks_canLoseReference (sr, g_currentloc))
-			      {
-				DPRINTF (("Can lose!"));
-				hasError = FALSE;
-			      }
-			  }
-			
-			if (hasError)
-			  {
-			    if (sRef_hasLastReference (sr))
-			      {
-				sRef ar = sRef_getAliasInfoRef (sr);
-				
-				if (optgenerror 
-				    (sRef_isFresh (ar) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
-				     message
-				     ("Last reference %q to %s storage %qnot %q before %q",
-				      sRef_unparse (sr),
-				      alkind_unparse (sRef_getAliasKind (sr)),
-				      sRef_unparseOpt (ar),
-				      cstring_makeLiteral (sRef_isKeep (sr) 
-							   ? "transferred" : "released"),
-				      cstring_makeLiteral (isReturn 
-							   ? "return" : "scope exit")),
-				     g_currentloc))
-				  {
-				    sRef_showRefLost (sr);
-				  }
-			      }
-			    else if (sRef_isNewRef (sr))
-			      {
-				if (optgenerror
-				    (sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
-				     message 
-				     ("%q %q not released before %q",
-				      cstring_makeLiteral 
-				      (alkind_isKillRef (sRef_getOrigAliasKind (sr))
-				       ? "Kill reference parameter" : "New reference"),
-				      uentry_getName (ce),
-				      cstring_makeLiteral (isReturn
-							   ? "return" : "scope exit")),
-				     g_currentloc))
-				  {
-				    sRef_showAliasInfo (sr);
-				  }
-			      }
-			    else 
-			      {
-				if (ctype_isRealSU (sRef_getType (sr)))
-				  {
-				    transferChecks_structDestroyed (sr, g_currentloc);
-				  }
-				else
-				  {
-				    DPRINTF (("Here we are: %s", sRef_unparseFull (sr)));
-
-				    if (optgenerror
-					(sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
-					 message 
-					 ("%s storage %q not %q before %q",
-					  alkind_capName (sRef_getAliasKind (sr)),
-					  uentry_getName (ce),
-					  cstring_makeLiteral (sRef_isKeep (sr) 
-							       ? "transferred" : "released"),
-					  cstring_makeLiteral (isReturn 
-							       ? "return" : "scope exit")),
-					 g_currentloc))
-				      {
-					sRef_showAliasInfo (sr);
-					DPRINTF (("Storage: %s", sRef_unparseFull (sr)));
-				      }
-				  }
-			      }
-			  }
-		      }
 		  else
 		    {
-		      ;
+		      /* aliased, no problem */ ;
 		    }
+		  
+		  sRefSet_free (als);
+		}
+	      else if
+		(!uentry_isStatic (ce)
+		 && ((sRef_isNewRef (sr))
+		     || (((sRef_isOnly (sr) || sRef_isFresh (sr) 
+			   || sRef_isKeep (sr) || sRef_isOwned (sr))
+			  && !sRef_isDead (sr))
+			 && (!sRef_definitelyNull (sr))
+			 && (!usymtab_isDefinitelyNull (sr)))))
+		{
+		  bool hasError = TRUE;
+		  
+		  DPRINTF (("Checking: %s", sRef_unparseFull (sr)));
+		  
+		  /*
+		  ** If its a scope exit, check if there is an alias.
+		  ** If so, make it only.  If not, there is an error.
+		  */
+		  
+		  if (!isReturn)
+		    {
+		      if (transferChecks_canLoseReference (sr, g_currentloc))
+			{
+			  DPRINTF (("Can lose!"));
+			  hasError = FALSE;
+			}
+		    }
+		  
+		  if (hasError)
+		    {
+		      if (sRef_hasLastReference (sr))
+			{
+			  sRef ar = sRef_getAliasInfoRef (sr);
+			  
+			  if (optgenerror 
+			      (sRef_isFresh (ar) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
+			       message
+			       ("Last reference %q to %s storage %qnot %q before %q",
+				sRef_unparse (sr),
+				alkind_unparse (sRef_getAliasKind (sr)),
+				sRef_unparseOpt (ar),
+				cstring_makeLiteral (sRef_isKeep (sr) 
+						     ? "transferred" : "released"),
+				cstring_makeLiteral (isReturn 
+						     ? "return" : "scope exit")),
+			       g_currentloc))
+			    {
+			      sRef_showRefLost (sr);
+			    }
+			}
+		      else if (sRef_isNewRef (sr))
+			{
+			  if (optgenerror
+			      (sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
+			       message 
+			       ("%q %q not released before %q",
+				cstring_makeLiteral 
+				(alkind_isKillRef (sRef_getOrigAliasKind (sr))
+				 ? "Kill reference parameter" : "New reference"),
+				uentry_getName (ce),
+				cstring_makeLiteral (isReturn
+						     ? "return" : "scope exit")),
+			       g_currentloc))
+			    {
+			      sRef_showAliasInfo (sr);
+			    }
+			}
+		      else 
+			{
+			  if (ctype_isRealSU (sRef_getType (sr)))
+			    {
+			      transferChecks_structDestroyed (sr, g_currentloc);
+			    }
+			  else
+			    {
+			      if (optgenerror
+				  (sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
+				   message 
+				   ("%s storage %q not %q before %q",
+				    alkind_capName (sRef_getAliasKind (sr)),
+				    uentry_getName (ce),
+				    cstring_makeLiteral (sRef_isKeep (sr) 
+							 ? "transferred" : "released"),
+				    cstring_makeLiteral (isReturn 
+							 ? "return" : "scope exit")),
+				   g_currentloc))
+				{
+				  sRef_showAliasInfo (sr);
+				  DPRINTF (("Storage: %s", sRef_unparseFull (sr)));
+				}
+			    }
+			}
+		    }
+		}
+	      else
+		{
+		  ;
 		}
 	    }
 
@@ -4526,7 +4519,7 @@ void usymtab_exitScope (exprNode expr)
 	  if (sRef_isCvar (el))
 	    {
 	      uentry current;
-	      int index = sRef_getScopeIndex (el);
+	      usymId index = sRef_getScopeIndex (el);
 	      
 	      if (sRef_isFileStatic (el))
 		{
@@ -4567,15 +4560,15 @@ void usymtab_exitScope (exprNode expr)
 # ifdef DEBUGSPLINT
   usymtab_checkAllValid ();
 # endif
-/*@i523@*/ }
+}
 /*@=globstate@*/
 
 /*
 ** yikes!  don't let the '170 kids see this one...
 */
 
-int
-uentry_directParamNo (uentry ue)
+usymId
+usymtab_directParamNo (uentry ue)
 {
   if (uentry_isVar (ue))
     {
@@ -4583,15 +4576,15 @@ uentry_directParamNo (uentry ue)
 
       if (sRef_lexLevel (sr) == functionScope)
 	{
-	  int index = sRef_getScopeIndex (sr);
+	  usymId index = sRef_getScopeIndex (sr);
 
-	  if (index < uentryList_size (context_getParams ()))
+	  if (index < usymId_fromInt (uentryList_size (context_getParams ())))
 	    {
 	      return index;
 	    }
 	}
     }
-  return -1;
+  return usymId_invalid;
 }
 
 /*@dependent@*/ /*@exposed@*/ uentry
@@ -4727,7 +4720,7 @@ static /*@dependent@*/ /*@exposed@*/ usymtab
       s = usymtab_dropEnv (s);
     }
  
-  if (index >= s->nentries)
+  if (index >= usymId_fromInt (s->nentries))
     {
       return uentry_undefined;
     }
@@ -4785,7 +4778,6 @@ usymtab_getRefNoisy (/*@notnull@*/ usymtab s, int level, usymId index)
   while (usymtab_isBranch (s) && s->lexlevel == level)
     {
       int eindex = refTable_lookup (s, level, index);
-
       
       if (eindex != NOT_FOUND)
 	{
@@ -4812,7 +4804,7 @@ usymtab_getRefNoisy (/*@notnull@*/ usymtab s, int level, usymId index)
       s = usymtab_dropEnv (s);
           }
 
-  if (s->lexlevel == level && (index < s->nentries))
+  if (s->lexlevel == level && (index < usymId_fromInt (s->nentries)))
     {
       ue = s->entries[index];
       
@@ -4841,7 +4833,7 @@ usymtab_getRefNoisy (/*@notnull@*/ usymtab s, int level, usymId index)
     }
 
   
-  if (index >= s->nentries)
+  if (index >= usymId_fromInt (s->nentries))
     {
       return uentry_undefined;
     }
@@ -4859,7 +4851,7 @@ usymtab_getRefNoisy (/*@notnull@*/ usymtab s, int level, usymId index)
 */
 
 static
-int refTable_lookup (/*@notnull@*/ usymtab ut, int level, int index)
+int refTable_lookup (/*@notnull@*/ usymtab ut, int level, usymId index)
 {
   refTable rt = ut->reftable;
   int i;
@@ -4868,7 +4860,7 @@ int refTable_lookup (/*@notnull@*/ usymtab ut, int level, int index)
 
   for (i = 0; i < ut->nentries; i++)
     {
-      if (rt[i]->level == level && rt[i]->index == index)
+      if (rt[i]->level == level && rt[i]->index == usymId_toInt (index))
 	{
 	  return i;
 	}
@@ -4891,7 +4883,6 @@ static
 static /*@dependent@*/ /*@exposed@*/ uentry
 usymtab_addRefEntry (/*@notnull@*/ usymtab s, cstring k)
 {
-  int eindex;
   usymtab ut = s;
 
   if (ut->reftable == NULL) 
@@ -4904,9 +4895,9 @@ usymtab_addRefEntry (/*@notnull@*/ usymtab s, cstring k)
   
   while (s != GLOBAL_ENV)
     {
-      eindex = usymtab_getIndex (s, k);
+      usymId eindex = usymtab_getIndex (s, k);
       
-      if (eindex != NOT_FOUND)
+      if (usymtab_indexFound (eindex))
 	{
 	  uentry current = s->entries[eindex];
 
@@ -4938,7 +4929,7 @@ usymtab_addRefEntry (/*@notnull@*/ usymtab s, cstring k)
 	      else
 		{
 		  ut->reftable[ut->nentries - 1] 
-		    = refentry_create (s->lexlevel, eindex);
+		    = refentry_create (s->lexlevel, usymId_toInt (eindex));
 		}
 	      
 	      return (ue);
@@ -4961,9 +4952,9 @@ static uentry usymtab_lookupAux (usymtab s, cstring k)
 
   while (s != GLOBAL_ENV)
     {
-      int eindex = usymtab_getIndex (s, k);
+      usymId eindex = usymtab_getIndex (s, k);
 
-      if (eindex != NOT_FOUND)
+      if (usymtab_indexFound (eindex))
 	{
 	  uentry ret = s->entries[eindex];
 # if 0	  
@@ -5004,13 +4995,11 @@ static uentry usymtab_lookupAux (usymtab s, cstring k)
 static /*@dependent@*/ /*@exposed@*/ uentry
 usymtab_lookupQuietAux (usymtab s, cstring k, bool noalt)
 {
-  int eindex;
-
   while (s != GLOBAL_ENV)
     {
-      eindex = usymtab_getIndex (s, k);
+      usymId eindex = usymtab_getIndex (s, k);
       
-      if (eindex != NOT_FOUND)
+      if (usymtab_indexFound (eindex))
 	{
 	  uentry ret = s->entries[eindex];
 	  return (ret);
@@ -5022,7 +5011,7 @@ usymtab_lookupQuietAux (usymtab s, cstring k, bool noalt)
 	}
       else
 	{
-	  llassert (s != NULL); /*@i523 should not need this? */
+	  llassert (s != NULL); 
 	  s = s->env;
 	}
     }
@@ -5114,9 +5103,9 @@ ctype
 usymtab_lookupType (cstring k)
    /*@globals globtab@*/
 {
-  usymId uid = usymtab_getTypeId (k);
+  typeId uid = usymtab_getTypeId (k);
 
-  if (uid == USYMIDINVALID)
+  if (typeId_isInvalid (uid))
     {
       llcontbug (message ("usymtab_lookupType: not found: %s", k));
       return ctype_unknown;
@@ -5128,9 +5117,9 @@ usymtab_lookupType (cstring k)
 ctype
 usymtab_lookupAbstractType (cstring k) /*@globals globtab@*/
 {
-  usymId uid = usymtab_getTypeId (k);
+  typeId uid = usymtab_getTypeId (k);
 
-  if (uid == USYMIDINVALID)
+  if (typeId_isInvalid (uid))
     {
       llcontbug (message ("usymtab_lookupType: not found: %s", k));
       return ctype_unknown; 
@@ -5393,8 +5382,7 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
     }
 
   sfree (u); /* evans 2002-07-12: was inside if */
-  /*:!!mustfree@*/
-} /*!@=mustfree@*/
+}
 
 static void
 usymtab_freeAux (/*@only@*/ usymtab u)
@@ -5418,7 +5406,8 @@ void usymtab_free ()
   dbgfree = TRUE;
   usymtab_freeAux (utab);
   utab = usymtab_undefined;
-/*@i523@*/ }
+  /*@-globstate@*/
+} /*@=globstate@*/ /* Splint cannot tell that utab is killed */
 
 static int usymtab_lexicalLevel (void) /*@globals utab@*/
 {
@@ -5449,7 +5438,7 @@ usymtab_replaceEntry (uentry s)
 }
 
 bool
-usymtab_matchForwardStruct (usymId u1, usymId u2)
+usymtab_matchForwardStruct (typeId u1, typeId u2)
    /*@globals globtab@*/
 {
   uentry ue1 = usymtab_getTypeEntry (u1);
@@ -5469,10 +5458,9 @@ usymtab_matchForwardStruct (usymId u1, usymId u2)
 
 	      if (u2 == rtuid) return TRUE;
 	      
-	      if (usymId_isValid (rtuid))
+	      if (typeId_isValid (rtuid))
 		{
-		  reptype = uentry_getType (usymtab_getTypeEntry (rtuid));
-		  
+		  reptype = uentry_getType (usymtab_getTypeEntry (rtuid));		  
 		  return (ctype_isUA (reptype) && (u2 == (ctype_typeId (reptype))));
 		}
 	    }

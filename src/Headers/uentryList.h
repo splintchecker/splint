@@ -58,6 +58,7 @@ extern cstring uentryList_unparseAbbrev (uentryList p_p) /*@*/ ;
 extern cstring uentryList_unparseParams (uentryList p_s) /*@*/ ;
 
 extern void uentryList_free (/*@only@*/ uentryList p_s) ;
+extern void uentryList_freeShallow (/*@only@*/ uentryList p_s) ;
 extern bool uentryList_isVoid (uentryList p_cl) /*@*/ ;
 extern /*@only@*/ uentryList uentryList_copy (uentryList p_s) /*@*/ ;
 extern void uentryList_fixMissingNames (uentryList p_cl) /*@modifies p_cl@*/ ;

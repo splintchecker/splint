@@ -35,7 +35,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "shift.h"
 
 /*@constant static int SHIFTMAX=200;@*/

@@ -37,7 +37,7 @@
  */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "osd.h"
 # include "version.h"
 
@@ -227,11 +227,10 @@ lcllib_isSkipHeader (cstring sname)
 	      /*@-nullstate@*/ 
 	      return TRUE; 
 	      /*@=nullstate@*/
-	      /*@i233@*/
+
 	      /* evans 2002-03-02: 
-		 the returned reference is possibly null,
-		 but this should not change the null state of the parameter
-		 investigate this warning 
+		   the returned reference is possibly null,
+  		   but this should not change the null state of the parameter
 	      */
 	    }
 	}
@@ -256,7 +255,7 @@ lcllib_isSkipHeader (cstring sname)
 
   cstring_free (xname);
   /*@noaccess cstring@*/
-  /*@-nullstate@*/ /*@i233@*/ /* same problem as above */
+  /*@-nullstate@*/ /* same problem as above */
   return FALSE;
   /*@=nullstate@*/
 }

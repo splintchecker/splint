@@ -33,7 +33,7 @@
 
 # include <stdio.h>
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "lslparse.h"
 # include "signature.h"
 

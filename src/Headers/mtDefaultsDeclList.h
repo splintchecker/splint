@@ -39,7 +39,7 @@ extern mtDefaultsDeclList
   /*@modifies p_s@*/ ;
 
 extern mtDefaultsDeclList 
-  mtDefaultsDeclList_prepend (/*@returned@*/ mtDefaultsDeclList p_s, /*@keep@*/ mtDefaultsDecl p_el) 
+  mtDefaultsDeclList_prepend (/*@only@*/ mtDefaultsDeclList p_s, /*@keep@*/ mtDefaultsDecl p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring 

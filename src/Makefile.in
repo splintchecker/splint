@@ -307,11 +307,11 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/letDeclNodeList.h        Headers/typeNameNodeList.h \
           Headers/lh.h                     Headers/typeNamePack.h \
           Headers/limwr.h                  Headers/typeNode.h \
-          Headers/llbasic.h                Headers/uentry.h \
+          	              Headers/uentry.h \
           Headers/llerror.h                Headers/uentryList.h \
           Headers/llglobals.h              Headers/usymId.h \
           Headers/llgrammar2.h             Headers/usymIdSet.h \
-          Headers/llgrammar_gen2.h         Headers/usymtab-branch.h \
+          Headers/llgrammar_gen2.h        \
           Headers/llgrammar_gen.h          Headers/usymtab.h \
           Headers/llgrammar.h              Headers/usymtab_interface.h \
           Headers/llmain.h                 Headers/valueMatrix.h \

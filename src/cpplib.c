@@ -93,7 +93,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <errno.h>
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "lcllib.h"
 # include "cpplib.h"
 # include "cpperror.h"
@@ -2756,15 +2756,17 @@ compare_defs (DEFINITION *d1, DEFINITION *d2)
   return FALSE;
 }
 
-/* Return TRUE if two parts of two macro definitions are effectively different.
-   One of the parts starts at BEG1 and has LEN1 chars;
-   the other has LEN2 chars at BEG2.
-   Any sequence of whitespace matches any other sequence of whitespace.
-   FIRST means these parts are the first of a macro definition;
-   so ignore leading whitespace entirely.
-   LAST means these parts are the last of a macro definition;
-   so ignore trailing whitespace entirely.  */
-  /*@i2@*/
+/*
+** Return TRUE if two parts of two macro definitions are effectively different.
+**    One of the parts starts at BEG1 and has LEN1 chars;
+**    the other has LEN2 chars at BEG2.
+**    Any sequence of whitespace matches any other sequence of whitespace.
+**    FIRST means these parts are the first of a macro definition;
+**    so ignore leading whitespace entirely.
+**    LAST means these parts are the last of a macro definition;
+**    so ignore trailing whitespace entirely.  
+*/
+
 static bool
 comp_def_part (bool first, char *beg1, int len1, char *beg2, int len2, bool last)
 {
@@ -2790,12 +2792,14 @@ comp_def_part (bool first, char *beg1, int len1, char *beg2, int len2, bool last
   return (beg1 != end1) || (beg2 != end2);
 }
 
-/* Process a #define command.
-   BUF points to the contents of the #define command, as a contiguous string.
-   LIMIT points to the first character past the end of the definition.
-   KEYWORD is the keyword-table entry for #define,
-   or NULL for a "predefined" macro.  */
-  /*@i2@*/
+/* 
+** Process a #define command.
+**    BUF points to the contents of the #define command, as a contiguous string.
+**    LIMIT points to the first character past the end of the definition.
+**    KEYWORD is the keyword-table entry for #define,
+**    or NULL for a "predefined" macro.  
+*/
+
 static int
 do_defineAux (cppReader *pfile, struct directive *keyword,
 	      /*@exposed@*/ char *buf, char *limit, bool noExpand)
@@ -2803,20 +2807,14 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
   int hashcode;
   macroDef mdef;
   hashNode hp;
-    /*@i2@*/
-  DPRINTF (("Define aux: %d", noExpand));
-  /*@i2@*/
+
   mdef = create_definition (buf, limit, pfile, keyword == NULL, noExpand);
 
   if (mdef.defn == 0)
     goto nope;
-  /*@i2@*/
+
   hashcode = cpphash_hashCode (mdef.symnam, mdef.symlen, CPP_HASHSIZE);
-  /*@i2@*/
-  DPRINTF (("Macro: %s / %s", 
-	    cstring_copyLength (mdef.symnam, mdef.symlen),
-	    bool_unparse (noExpand)));
-  /*@i2@*/
+
   if ((hp = cpphash_lookup (mdef.symnam, size_toInt (mdef.symlen), hashcode)) != NULL)
     {
       bool ok = FALSE;
@@ -2833,7 +2831,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       else {
 	BADBRANCH;
       }
-  /*@i2@*/
+
       /* Print the warning if it's not ok.  */
       if (!ok)
 	{
@@ -2849,7 +2847,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
 	    }
 
 	  cpp_setLocation (pfile);
-  /*@i2@*/
+
 	  if (hp->type == T_MACRO)
 	    {
 	      if (hp->value.defn->noExpand)
@@ -2874,7 +2872,6 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
 			    message ("Macro %q already defined",
 				     cstring_copyLength (mdef.symnam,
 							 mdef.symlen)));
-  /*@i2@*/
 	    }
 	}
 
@@ -2890,7 +2887,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       */
 
       hashNode hn;
-  /*@i2@*/
+
       if (CPPOPTIONS (pfile)->debug_output && (keyword != NULL))
 	{
 	  pass_thru_directive (buf, limit, pfile, keyword);
@@ -2904,9 +2901,8 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
     } /*@=branchstate@*/
 
   return 0;
-  /*@i2@*/
+
 nope:
-  /*@i2@*/
   return 1;
 }
 
@@ -2917,21 +2913,23 @@ do_define (cppReader *pfile, struct directive *keyword,
   DPRINTF (("Regular do define"));
   return do_defineAux (pfile, keyword, buf, limit, FALSE);
 }
-  /*@i2@*/
-/* This structure represents one parsed argument in a macro call.
-   `raw' points to the argument text as written (`raw_length' is its length).
-   `expanded' points to the argument's macro-expansion
-   (its length is `expand_length').
-   `stringified_length' is the length the argument would have
-   if stringified.
-   `use_count' is the number of times this macro arg is substituted
-   into the macro.  If the actual use count exceeds 10,
-   the value stored is 10.  */
-  /*@i2@*/
+
+/*
+** This structure represents one parsed argument in a macro call.
+** `raw' points to the argument text as written (`raw_length' is its length).
+** `expanded' points to the argument's macro-expansion
+** (its length is `expand_length').
+**  `stringified_length' is the length the argument would have
+** if stringified.
+**  `use_count' is the number of times this macro arg is substituted
+** into the macro.  If the actual use count exceeds 10,
+** the value stored is 10.  
+*/
+
 /* raw and expanded are relative to ARG_BASE */
 /*@notfunction@*/
 #define ARG_BASE ((pfile)->token_buffer)
-  /*@i2@*/
+
 struct argdata {
   /* Strings relative to pfile->token_buffer */
   long raw;
@@ -2944,11 +2942,13 @@ struct argdata {
   int use_count;
 };
 
-/* Allocate a new cppBuffer for PFILE, and push it on the input buffer stack.
-   If BUFFER != NULL, then use the LENGTH characters in BUFFER
-   as the new input buffer.
-   Return the new buffer, or NULL on failure.  */
-  /*@i2@*/
+/* 
+** Allocate a new cppBuffer for PFILE, and push it on the input buffer stack.
+**   If BUFFER != NULL, then use the LENGTH characters in BUFFER
+**   as the new input buffer.
+**   Return the new buffer, or NULL on failure.  
+*/
+
 /*@null@*/ /*@exposed@*/ cppBuffer *
 cppReader_pushBuffer (cppReader *pfile, char *buffer, size_t length)
 {
@@ -2990,7 +2990,7 @@ cppReader_pushBuffer (cppReader *pfile, char *buffer, size_t length)
 
   return buf;
 }
-  /*@i2@*/
+
 cppBuffer *
 cppReader_popBuffer (cppReader *pfile)
 {
@@ -3002,9 +3002,11 @@ cppReader_popBuffer (cppReader *pfile)
   return ++CPPBUFFER (pfile);
 }
 
-/* Scan until CPPBUFFER (PFILE) is exhausted into PFILE->token_buffer.
-   Pop the buffer when done.  */
-  /*@i2@*/
+/*
+** Scan until CPPBUFFER (PFILE) is exhausted into PFILE->token_buffer.
+** Pop the buffer when done.  
+*/
+
 void
 cppReader_scanBuffer (cppReader *pfile)
 {
@@ -3027,7 +3029,6 @@ cppReader_scanBuffer (cppReader *pfile)
 	}
     }
 }
-  /*@i2@*/
 
 /*
  * Rescan a string (which may have escape marks) into pfile's buffer.
@@ -4209,9 +4210,8 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 	    }
 	  else if (ap->raw_before || ap->raw_after || cppReader_isTraditional (pfile))
 	    {
-	      /* Add 4 for two newline-space markers to prevent
-		 token concatenation.  */
-	      assertSet (args); /*@i534 shouldn't need this */
+	      /* Add 4 for two newline-space markers to prevent token concatenation. */
+	      assertSet (args); /* Splint shouldn't need this */
 	      xbuf_len += args[ap->argno].raw_length + 4;
 	    }
 	  else
@@ -4219,7 +4219,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 	      /* We have an ordinary (expanded) occurrence of the arg.
 		 So compute its expansion, if we have not already.  */
 
-	      assertSet (args); /*@i534 shouldn't need this */
+	      assertSet (args); /* shouldn't need this */
 
 	      if (args[ap->argno].expand_length < 0)
 		{
@@ -4866,7 +4866,7 @@ do_include (cppReader *pfile, struct directive *keyword,
 	  
 	  if (f == IMPORT_FOUND)
 	    {
-	      return 0;			/* Already included this file */
+	      return 0; /* Already included this file */
 	    }
 #ifdef EACCES
 	  else if (f == IMPORT_NOT_FOUND && errno == EACCES)
@@ -7615,11 +7615,13 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	    nlist->got_name_map = 0;
 	    nlist->next = NULL;
 
-	    /*@i2523@*/ if (opts->first_system_include == NULL)
+	    /* Spurious warning reported for opts->first_system_include */
+	    /*@-usereleased@*/ if (opts->first_system_include == NULL) 
 	      {
 		opts->first_system_include = nlist;
 	      }
-	    
+	    /*@=usereleased@*/
+
 	    cppReader_addIncludeChain (pfile, nlist);
 	  }
       }
@@ -7630,11 +7632,14 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
   cppReader_appendIncludeChain (pfile, opts->after_include,
 				opts->last_after_include);
 
-  /*@i523@*/ if (opts->first_system_include == NULL)
+  /* Spurious warnings for opts->first_system_include */
+  /*@-usereleased@*/
+  if (opts->first_system_include == NULL)
     {
       opts->first_system_include = opts->after_include;
     }
-
+  /*@=usereleased@*/
+  
   /* With -v, print the list of dirs to search.  */
   if (opts->verbose) {
     struct file_name_list *p;

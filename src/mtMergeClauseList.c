@@ -94,10 +94,10 @@ mtMergeClauseList mtMergeClauseList_add (mtMergeClauseList s, /*@keep@*/ mtMerge
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 mtMergeClauseList mtMergeClauseList_prepend (mtMergeClauseList s, /*@keep@*/ mtMergeClause el)
@@ -106,7 +106,7 @@ mtMergeClauseList mtMergeClauseList_prepend (mtMergeClauseList s, /*@keep@*/ mtM
 
   if (!mtMergeClauseList_isDefined (s))
     {
-      /*@i32@*/ return mtMergeClauseList_single (el);
+      return mtMergeClauseList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ mtMergeClauseList mtMergeClauseList_prepend (mtMergeClauseList s, /*@keep@*/ mtM
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 cstring

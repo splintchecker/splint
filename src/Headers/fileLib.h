@@ -19,7 +19,7 @@ extern cstring fileLib_withoutExtension (cstring p_s, cstring p_suffix) /*@*/ ;
 extern cstring fileLib_removePath (cstring p_s) /*@*/ ;
 extern cstring fileLib_removePathFree (/*@only@*/ cstring p_s) /*@*/ ;
 extern cstring fileLib_removeAnyExtension (cstring p_s) /*@*/ ;
-extern /*@only@*/ cstring fileLib_cleanName (/*@temp@*/ cstring p_s) /*@*/ ;
+extern /*@only@*/ cstring fileLib_cleanName (/*@only@*/ cstring p_s) /*@*/ ;
 extern bool fileLib_hasExtension (cstring p_s, cstring p_ext) /*@*/ ;
 
 extern /*@observer@*/ cstring

@@ -40,7 +40,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "osd.h"
 # include "lh.h"
 # include "llmain.h"
@@ -276,7 +276,6 @@ lhCleanup (void)
       
       if (LhFile.f == NULL)
 	{
-	  /*@i25534  check this!  does it report the right filename? */
 	  lldiagmsg (message ("Cannot open lh file for output: %s", LhFile.name));
 	}
       else

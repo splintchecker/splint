@@ -343,7 +343,7 @@ static void sRef_checkValidAux (sRef s, sRefSet checkedsofar)
 
     case SK_PARAM:
       llassert (s->info->paramno >= -1);
-      llassert (s->info->paramno <= 50); /*@i32 bogus...*/
+      llassert (s->info->paramno <= 999); /* sanity check */
       break;
 
     case SK_ARRAYFETCH:
@@ -438,8 +438,8 @@ static /*@dependent@*/ /*@notnull@*/ /*@special@*/ sRef
 
   /* start modifications */
   s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
-  s->bufinfo.size = -1; /*@i24 unknown@*/
-  s->bufinfo.len = -1; /*@i24 unknown@*/
+  s->bufinfo.size = -1; 
+  s->bufinfo.len = -1; 
   /* end modifications */
 
   s->aliaskind = AK_UNKNOWN;
@@ -890,7 +890,7 @@ sRef_getBaseUentry (sRef s)
       switch (base->kind)
 	{
 	case SK_PARAM:
-	  res = usymtab_getRefQuiet (paramsScope, base->info->paramno);
+	  res = usymtab_getRefQuiet (paramsScope, usymId_fromInt (base->info->paramno));
 	  break;
 
 	case SK_CVAR:
@@ -1053,7 +1053,7 @@ sRef_getUentry (sRef s)
   switch (s->kind)
     {
     case SK_PARAM:
-      return (usymtab_getRefQuiet (paramsScope, s->info->paramno));
+      return (usymtab_getRefQuiet (paramsScope, usymId_fromInt (s->info->paramno)));
     case SK_CVAR:
       return (usymtab_getRefQuiet (s->info->cvar->lexlevel, s->info->cvar->index));
     case SK_CONJ:
@@ -1076,13 +1076,13 @@ sRef_getUentry (sRef s)
     }
 }
 
-int
+usymId
 sRef_getParam (sRef s)
 {
   llassert (sRef_isReasonable (s));
   llassert (s->kind == SK_PARAM);
 
-  return s->info->paramno;
+  return usymId_fromInt (s->info->paramno);
 }
 
 bool
@@ -2295,14 +2295,15 @@ sRef_closeEnough (sRef s1, sRef s2)
 	return ce;
       }
     case SK_PARAM:
-      llassert(exprNodeList_size (args) > s->info->paramno);
-	{
-	  exprNode e = exprNodeList_nth (args, s->info->paramno);
-
-	  llassert( !(exprNode_isError (e)) );
-	  ce = constraintExpr_makeExprNode (e);
-	  return ce;
-	}
+      {
+	exprNode e;
+	llassert (exprNodeList_size (args) > s->info->paramno);
+	e = exprNodeList_nth (args, s->info->paramno);
+	
+	llassert (!(exprNode_isError (e)));
+	ce = constraintExpr_makeExprNode (e);
+	return ce;
+      }
 
     default:
       {
@@ -3547,7 +3548,7 @@ static int sRef_depth (sRef s)
 sRef
 sRef_makeObject (ctype o)
 {
-  sRef s = sRef_newRef (); /*@i423 same line is bad...@*/
+  sRef s = sRef_newRef (); 
 
   s->kind = SK_OBJECT;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
@@ -3570,7 +3571,7 @@ sRef sRef_makeExternal (sRef t)
   s->kind = SK_EXTERNAL;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
   s->type = t->type;
-  s->info->ref = t; /* sRef_copy (t); */ /*@i32 was exposed@*/
+  s->info->ref = t;
   llassert (valueTable_isUndefined (s->state));
   s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_DECLARED));
   return s;
@@ -3584,7 +3585,7 @@ sRef sRef_makeExternal (sRef t)
       
       s->kind = SK_DERIVED;
       s->info = (sinfo) dmalloc (sizeof (*s->info));
-      s->info->ref = t; /* sRef_copy (t); */ /*@i32@*/ 
+      s->info->ref = t;
       
       s->type = t->type;
       llassert (valueTable_isUndefined (s->state));
@@ -4042,8 +4043,6 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
   ** Merge value table states
   */
 
-
-  /*@i3245@*/
 # if 0
   /*
   ** This doesn't do anything.  And its broken too...
@@ -4407,8 +4406,8 @@ sRef sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef a, /*@exposed@*/ sRef b)
       s->kind = SK_CONJ;
       s->info = (sinfo) dmalloc (sizeof (*s->info));
       s->info->conj = (cjinfo) dmalloc (sizeof (*s->info->conj));
-      s->info->conj->a = a; /* sRef_copy (a) */ /*@i32*/ ;
-      s->info->conj->b = b; /* sRef_copy (b);*/ /*@i32@*/ ;
+      s->info->conj->a = a;
+      s->info->conj->b = b;
       
       if (ctype_equal (a->type, b->type)) s->type = a->type;
       else s->type = ctype_makeConj (a->type, b->type);
@@ -6029,7 +6028,7 @@ bool sRef_isDirectParam (sRef s)
   return ((s->kind == SK_CVAR) &&
 	  (s->info->cvar->lexlevel == functionScope) &&
 	  (context_inFunction () && 
-	   (s->info->cvar->index <= uentryList_size (context_getParams ()))));
+	   (s->info->cvar->index <= usymId_fromInt (uentryList_size (context_getParams ())))));
 }
 
 bool sRef_isPointer (sRef s)
@@ -6113,7 +6112,7 @@ void sRef_free (/*@only@*/ sRef s)
       s->definfo = stateInfo_undefined;
       s->nullinfo = stateInfo_undefined;
 
-      /*@i32@*/ sfree (s);
+      sfree (s);
     }
 }
 
@@ -6290,7 +6289,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
       s->kind = SK_FIELD;
       s->info = (sinfo) dmalloc (sizeof (*s->info));
       s->info->field = (fldinfo) dmalloc (sizeof (*s->info->field));
-      s->info->field->rec = rec; /* sRef_copy (rec); */ /*@i32@*/
+      s->info->field->rec = rec;
       s->info->field->field = f; /* doesn't copy f */
       
       if (ctype_isKnown (ct) && ctype_isSU (ct))
@@ -6654,7 +6653,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       s->info->arrayfetch = (ainfo) dmalloc (sizeof (*s->info->arrayfetch));
       s->info->arrayfetch->indknown = FALSE;
       s->info->arrayfetch->ind = 0;
-      s->info->arrayfetch->arr = arr; /* sRef_copy (arr); */ /*@i32@*/
+      s->info->arrayfetch->arr = arr;
 
       sRef_setArrayFetchState (s, arr);
 
@@ -6721,7 +6720,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       s->kind = SK_ARRAYFETCH;
       s->info = (sinfo) dmalloc (sizeof (*s->info));
       s->info->arrayfetch = (ainfo) dmalloc (sizeof (*s->info->arrayfetch));
-      s->info->arrayfetch->arr = arr; /* sRef_copy (arr); */ /*@i32@*/
+      s->info->arrayfetch->arr = arr;
       s->info->arrayfetch->indknown = TRUE;
       s->info->arrayfetch->ind = i;
 
@@ -6930,7 +6929,7 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
 
   s->kind = SK_PTR;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
-  s->info->ref = t; /* sRef_copy (t); */ /*@i32*/
+  s->info->ref = t; 
   
   if (ctype_isRealAP (rt))
     {
@@ -7253,10 +7252,8 @@ sRef_copyState (sRef s1, sRef s2)
       s1->nullstate = s2->nullstate;
       s1->nullinfo = stateInfo_update (s1->nullinfo, s2->nullinfo);
 
-      /*@-mustfree@*/
-      /*@i834 don't free it: valueTable_free (s1->state); */
-      /*@i32@*/ s1->state = valueTable_copy (s2->state);
-      /*@=mustfree@*/
+      valueTable_free (s1->state);  
+      s1->state = valueTable_copy (s2->state);
       s1->safe = s2->safe;
     }
 }
@@ -9205,13 +9202,13 @@ static /*@null@*/ sinfo sinfo_copy (/*@notnull@*/ sRef s)
       ret->arrayfetch = (ainfo) dmalloc (sizeof (*ret->arrayfetch));
       ret->arrayfetch->indknown = s->info->arrayfetch->indknown;
       ret->arrayfetch->ind = s->info->arrayfetch->ind;
-      ret->arrayfetch->arr = s->info->arrayfetch->arr; /* sRef_copy (s->info->arrayfetch->arr); */ /*@i32@*/
+      ret->arrayfetch->arr = s->info->arrayfetch->arr; 
       break;
 
     case SK_FIELD:
       ret = (sinfo) dmalloc (sizeof (*ret));
       ret->field = (fldinfo) dmalloc (sizeof (*ret->field));
-      ret->field->rec = s->info->field->rec; /* sRef_copy (s->info->field->rec); */ /*@i32@*/
+      ret->field->rec = s->info->field->rec; 
       ret->field->field = s->info->field->field; 
       break;
 
@@ -9431,7 +9428,7 @@ static void sinfo_free (/*@special@*/ /*@temp@*/ /*@notnull@*/ sRef s)
     case SK_PTR:
     case SK_ADR:
     case SK_DERIVED:
-    case SK_EXTERNAL: /*@i32 is copy now! */
+    case SK_EXTERNAL: /* is copy now! */
       break;
 
     case SK_CONJ:
@@ -10013,7 +10010,7 @@ bool sRef_makeStateSpecial (sRef s)
   ** Default defined state can be made special.
   */
 
-  llassert (sRef_isReasonable (s)); /*@i523 why doesn't null-checking work!??? */
+  llassert (sRef_isReasonable (s));
 
   if (s->defstate == SS_UNKNOWN || s->defstate == SS_DEFINED || s->defstate == SS_SPECIAL)
     {

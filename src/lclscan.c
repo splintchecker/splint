@@ -43,7 +43,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 /*@-redecl@*/ /* from llgrammar.y */
 extern bool g_inTypeDef;

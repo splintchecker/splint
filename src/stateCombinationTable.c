@@ -28,7 +28,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 /*
 ** (key, value, value) => value
@@ -82,13 +82,15 @@ stateCombinationTable stateCombinationTable_create (int size)
 	  s->value = i;
 	  llassert (cstring_isUndefined (s->msg));
 	  
-	  /*@-usedef@*/ /*@i534 why necessary? */
+	  /*@-usedef@*/
 	  res->rows[i]->entries[j] = s;
 	  /*@=usedef@*/ 
 	}
     }
   
-  /*@i32@*/ return res;
+  /*@-compmempass@*/ /*@-compdef@*/
+  return res;
+  /*@=compmempass@*/ /*@=compdef@*/
 }
 
 cstring stateCombinationTable_unparse (stateCombinationTable t)
@@ -130,9 +132,10 @@ static void stateRow_free (/*@only@*/ stateRow r)
 {
   int i;
 
-  for (i = 0; i < r->size + 1; i++) {
-    /*@i32@*/ stateEntry_free (r->entries[i]);
-  }
+  for (i = 0; i < r->size + 1; i++) 
+    {
+      stateEntry_free (r->entries[i]);
+    }
 
   sfree (r->entries);
   sfree (r);
@@ -143,7 +146,7 @@ void stateCombinationTable_free (/*@only@*/ stateCombinationTable t)
   int i;
 
   for (i = 0; i < t->size; i++) {
-    /*@i32@*/ stateRow_free (t->rows[i]);
+    stateRow_free (t->rows[i]);
   }
 
   sfree (t->rows);
@@ -198,7 +201,7 @@ void stateCombinationTable_update (stateCombinationTable h,
 	    p_from, p_to, cstring_toCharsSafe (msg)));
 }
 
-int stateCombinationTable_lookup (stateCombinationTable h, int p_from, int p_to, /*@out@*/ cstring *msg)
+int stateCombinationTable_lookup (stateCombinationTable h, int p_from, int p_to, /*@out@*/ ob_cstring *msg)
 {
   stateEntry entry;
   llassert (p_from != stateValue_error);
@@ -207,10 +210,7 @@ int stateCombinationTable_lookup (stateCombinationTable h, int p_from, int p_to,
   entry = stateCombintationTable_getEntry (h, p_from, p_to);
   llassert (entry != NULL);
 
-  DPRINTF (("Lookup: %d / %d => %s [%p]",
-	    p_from, p_to, cstring_toCharsSafe (entry->msg), entry));
-
-  /*@i32@*/ *msg = entry->msg;
+  *msg = entry->msg;
   return entry->value;
 }
 

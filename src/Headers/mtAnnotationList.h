@@ -6,11 +6,13 @@
 # ifndef MTANNOTATIONLIST_H
 # define MTANNOTATIONLIST_H
 
+typedef /*@only@*/ mtAnnotationDecl o_mtAnnotationDecl;
+
 struct s_mtAnnotationList
 {
   int      nelements;
   int      nspace;
-  /*@reldef@*/ /*@relnull@*/ mtAnnotationDecl *elements;
+  /*@reldef@*/ /*@relnull@*/ o_mtAnnotationDecl *elements;
 } ;
 
 /*@constant null mtAnnotationList mtAnnotationList_undefined;@*/
@@ -29,14 +31,14 @@ extern cstring mtAnnotationList_unparseSep (mtAnnotationList p_s, cstring p_sep)
 
 extern /*@unused@*/ /*@only@*/ mtAnnotationList mtAnnotationList_new (void) /*@*/ ;
 
-extern /*@only@*/ mtAnnotationList mtAnnotationList_single (/*@keep@*/ mtAnnotationDecl p_el) /*@*/ ;
+extern /*@only@*/ mtAnnotationList mtAnnotationList_single (/*@only@*/ mtAnnotationDecl p_el) /*@*/ ;
 
 extern mtAnnotationList 
-  mtAnnotationList_add (/*@returned@*/ mtAnnotationList p_s, /*@keep@*/ mtAnnotationDecl p_el) 
+  mtAnnotationList_add (/*@returned@*/ mtAnnotationList p_s, /*@only@*/ mtAnnotationDecl p_el) 
   /*@modifies p_s@*/ ;
 
-extern mtAnnotationList 
-  mtAnnotationList_prepend (/*@returned@*/ mtAnnotationList p_s, /*@keep@*/ mtAnnotationDecl p_el) 
+extern /*@only@*/ mtAnnotationList 
+  mtAnnotationList_prepend (/*@only@*/ mtAnnotationList p_s, /*@only@*/ mtAnnotationDecl p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring mtAnnotationList_unparse (mtAnnotationList p_s) ;

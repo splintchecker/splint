@@ -108,7 +108,7 @@ static void uentry_convertVarFunction (uentry ue) /*@modifies ue@*/
 static /*@out@*/ /*@notnull@*/ uentry uentry_alloc (void) /*@*/ 
 {
   uentry ue = (uentry) dmalloc (sizeof (*ue));
-  ue->warn = warnClause_undefined; /*@i32@*/
+  ue->warn = warnClause_undefined; 
   nuentries++;
   totuentries++;
   
@@ -895,7 +895,8 @@ static void reflectImplicitFunctionQualifiers (/*@notnull@*/ uentry ue, bool spe
 			}
 		      else 
 			{
-			  if (ctype_isImmutableAbstract (ctype_getReturnType (ue->utype))) 
+			  if (ctype_isImmutableAbstract (ctype_getReturnType (ue->utype))
+			      || ctype_isNumAbstract (ctype_getReturnType (ue->utype)))
 			    {
 			      ; /* Immutable objects are not shared. */
 			    }
@@ -926,9 +927,7 @@ uentry_makeFunctionAux (cstring n, ctype t,
   uentry e = uentry_alloc ();
   ctype ret;
 
-  llassert (warnClause_isUndefined (warn)); /*@i325 remove parameter! */
-
-  DPRINTF (("Make function: %s", n));
+  llassert (warnClause_isUndefined (warn)); 
 
   if (ctype_isFunction (t))
     {
@@ -1104,7 +1103,7 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 	      **
 	      */
 
-	      uentry_combineModifies (ue, modifiesClause_takeMods (mlc)); /*@i32@*/
+	      uentry_combineModifies (ue, modifiesClause_takeMods (mlc)); 
 	    }
 	  else
 	    {
@@ -1313,7 +1312,7 @@ static void uentry_implicitParamAnnots (/*@notnull@*/ uentry e)
 
 static /*@only@*/ /*@notnull@*/ uentry 
 uentry_makeVariableParamAux (cstring n, ctype t, /*@dependent@*/ sRef s, 
-			     /*@only@*/ fileloc loc, sstate defstate) /*@i32 exposed*/
+			     /*@only@*/ fileloc loc, sstate defstate)
 {
   cstring pname = makeParam (n);
   uentry e;
@@ -1474,8 +1473,7 @@ uentry_fixupSref (uentry ue)
   
   if (uentry_isVariable (ue))
     {
-      
-           /*@i634 	  ue->sref = sRef_saveCopyShallow (ue->info->var->origsref); */
+      /* removed this: no need to copy? ue->sref = sRef_saveCopyShallow (ue->info->var->origsref); */
       sRef_setDefState (sr, ue->info->var->defstate, fileloc_undefined);
       sRef_setNullState (sr, ue->info->var->nullstate, fileloc_undefined);
     }
@@ -1485,7 +1483,7 @@ static void uentry_addStateClause (/*@notnull@*/ uentry ue, stateClause sc)
 {
   /*
   ** Okay to allow multiple clauses of the same kind.
-  */ /*@i834 is this true?@*/
+  */ 
 
   ue->info->fcn->specclauses = 
     stateClauseList_add (ue->info->fcn->specclauses, sc);
@@ -3154,7 +3152,7 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   e->utype = t;
   e->storageclass = SCNONE;
 
-  e->warn = warnClause_undefined; /*@i32 warnings for constants? */
+  e->warn = warnClause_undefined; /* Don't support warnings for constants */
 
   e->sref  = sRef_makeConst (t);
 
@@ -3315,7 +3313,7 @@ uentry uentry_makeVariableAux (cstring n, ctype t,
 
   e->storageclass = SCNONE;
 
-  e->warn = warnClause_undefined; /*@i32 warnings for variable @*/
+  e->warn = warnClause_undefined; /* Don't support warnings for variables yet @*/
 
   e->sref  = s;
 
@@ -3330,7 +3328,7 @@ uentry uentry_makeVariableAux (cstring n, ctype t,
   e->info->var = (uvinfo) dmalloc (sizeof (*e->info->var));
   e->info->var->kind = kind;
 
-  /*@i523 e->info->var->origsref = sRef_saveCopy (e->sref); */
+  /* removed: e->info->var->origsref = sRef_saveCopy (e->sref); */
   e->info->var->checked = CH_UNKNOWN;
 
   DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
@@ -3359,7 +3357,7 @@ uentry uentry_makeVariableAux (cstring n, ctype t,
   
   if (ctype_isArray (t) || ctype_isPointer(t))
     {
-      /*@i222@*/ e->info->var->bufinfo = dmalloc (sizeof (*e->info->var->bufinfo));
+      e->info->var->bufinfo = dmalloc (sizeof (*e->info->var->bufinfo));
       e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
       sRef_setNotNullTerminatedState (s);
     } 
@@ -3676,7 +3674,7 @@ void uentry_addAccessType (uentry ue, typeId tid)
 		       /*@only@*/ warnClause warn,
 		       fileloc f)
 {
-  llassert (warnClause_isUndefined (warn)); /*@i325 remove parameter! */
+  llassert (warnClause_isUndefined (warn));
   return (uentry_makeFunctionAux (n, t, 
 				  ((typeId_isInvalid (access)) ? typeIdSet_emptySet () 
 				   : typeIdSet_single (access)),
@@ -3801,7 +3799,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 
   uentry_setSpecDef (e, f);
 
-  e->warn = warnClause_undefined; /*@i634@*/ 
+  e->warn = warnClause_undefined; 
   e->uses = filelocList_new ();
   e->isPrivate = priv;
   e->hasNameError = FALSE;
@@ -3865,7 +3863,7 @@ static /*@only@*/ /*@notnull@*/ uentry
 
   uentry_setSpecDef (e, f);
 
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
   e->uses = filelocList_new ();
   e->isPrivate = FALSE;
   e->hasNameError = FALSE;
@@ -3910,8 +3908,8 @@ uentry_makeEndIterAux (cstring n, typeIdSet access, /*@only@*/ fileloc f)
   e->info->enditer = (ueinfo) dmalloc (sizeof (*e->info->enditer));
 
   e->info->enditer->access = access;
+  e->warn = warnClause_undefined; 
 
-  e->warn = warnClause_undefined; /*@i452@*/
   return (e);
 }
 
@@ -3958,7 +3956,7 @@ static /*@only@*/ /*@notnull@*/ uentry
   e->info->datatype->abs = qual_createUnknown ();
   e->info->datatype->mut = (kind == KENUMTAG) ? NO : MAYBE;
   e->info->datatype->type = t;
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined;
 
   if (uentry_isDeclared (e))
     {
@@ -4312,12 +4310,12 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
 
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
   e->info->uconst->access = access;
-  e->info->uconst->macro = FALSE; /*@i523! fix this when macro info added to library */
+  e->info->uconst->macro = FALSE; /* fix this when macro info added to library */
   uentry_setConstantValue (e, m);
   sRef_storeState (e->sref);
 
@@ -4360,7 +4358,7 @@ static /*@only@*/ uentry
   e->lset = FALSE;
 
   e->uses = filelocList_new ();
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->var = (uvinfo) dmalloc (sizeof (*e->info->var));
@@ -4445,9 +4443,7 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, qual abstract,
   
   e->isPrivate = FALSE;
   e->hasNameError = FALSE;
-
-  e->warn = warnClause_undefined; /*@i452@*/
-
+  e->warn = warnClause_undefined; 
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
@@ -4653,7 +4649,7 @@ static /*@only@*/ uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
@@ -4698,7 +4694,7 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->iter = (uiinfo) dmalloc (sizeof (*e->info->iter));
@@ -4742,7 +4738,7 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
-  e->warn = warnClause_undefined; /*@i452@*/
+  e->warn = warnClause_undefined; 
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->enditer = (ueinfo) dmalloc (sizeof (*e->info->enditer));
@@ -5526,10 +5522,19 @@ uentry_isMaybeAbstract (uentry e)
 bool
 uentry_isMutableDatatype (uentry e)
 {
-  bool res = uentry_isDatatype (e) 
-    && (ynm_toBoolRelaxed (e->info->datatype->mut));
-  
-  return res;
+  if (uentry_isDatatype (e))
+    {
+      if (ctype_isNumAbstract (e->info->datatype->type)) 
+	{
+	  return FALSE;
+	}
+      else
+	{
+	  return ynm_toBoolRelaxed (e->info->datatype->mut);
+	}
+    }
+
+  return FALSE;
 }
 
 bool
@@ -6233,7 +6238,8 @@ sRef uentry_getSref (uentry e)
 
 sRef uentry_getOrigSref (uentry e)
 {
-  /*@i523*/ /* evans 2001-09-09 - need to fix this 
+  /* evans 2003-04-12 - removed for now */
+  /* evans 2001-09-09 - need to fix this 
   if (uentry_isValid (e))
     {
       if (uentry_isVariable (e))
@@ -6433,7 +6439,7 @@ uentry_getAbstractType (uentry e)
 ctype uentry_getRealType (uentry e)
 {
   ctype ct;
-  typeId uid = USYMIDINVALID;
+  typeId uid = typeId_invalid;
 
   if (uentry_isInvalid (e))
     {
@@ -6475,9 +6481,9 @@ ctype uentry_getRealType (uentry e)
   
   if (ctype_isUA (ct))
     {
-      usymId iid = ctype_typeId (ct);
+      typeId iid = ctype_typeId (ct);
       
-      if (usymId_equal (iid, uid))
+      if (typeId_equal (iid, uid))
 	{	  
 	  llcontbug (message ("uentry_getRealType: recursive type! %s",
 			      ctype_unparse (ct)));
@@ -6506,7 +6512,7 @@ ctype uentry_getRealType (uentry e)
 ctype uentry_getForceRealType (uentry e)
 {
   ctype   ct;
-  typeId uid = USYMIDINVALID;
+  typeId uid = typeId_invalid;
 
   if (uentry_isInvalid (e))
     {
@@ -6540,9 +6546,9 @@ ctype uentry_getForceRealType (uentry e)
   
   if (ctype_isUA (ct))
     {
-      usymId iid = ctype_typeId (ct);
+      typeId iid = ctype_typeId (ct);
       
-      if (usymId_equal (iid, uid))
+      if (typeId_equal (iid, uid))
 	{	  
 	  llcontbug (message ("uentry_getRealType: recursive type! %s",
 			      ctype_unparse (ct)));
@@ -6588,7 +6594,7 @@ uentry uentry_nameCopy (cstring name, uentry e)
 }
 
 void
-uentry_setDatatype (uentry e, usymId uid)
+uentry_setDatatype (uentry e, typeId uid)
 {
   llassert (uentry_isDatatype (e));
 
@@ -8643,13 +8649,12 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	    }
 	  */
 
-	  /*@i23 need checking @*/ 
-
+	  /* need to add some checking @*/ 
 	  old->info->fcn->specclauses = unew->info->fcn->specclauses;
 	}
       else
 	{
-	  /*@i43 should be able to append? @*/
+	  /* should be able to append? */
 
 	  stateClauseList_checkEqual (old, unew);
 	  stateClauseList_free (unew->info->fcn->specclauses);
@@ -8657,7 +8662,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	  /*@-branchstate@*/ 
 	}
     }
-  /*@=branchstate@*/ /*@i23 shouldn't need this@*/
+  /*@=branchstate@*/ /* shouldn't need this */
 
   if (fileloc_isUndefined (old->whereDeclared))
     {
@@ -8671,7 +8676,8 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
     {
       /* no change */
     }
-/*@i523 @*/ }
+  /*@-compmempass@*/
+} /*@=compmempass@*/ /* I think this is a spurious warning */
 
 void
 uentry_mergeConstantValue (uentry ue, /*@only@*/ multiVal m)
@@ -9897,7 +9903,7 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
     }
   else
     {
-      fileloc_free (unew->whereSpecified); /*@i523 why no error without this? */
+      fileloc_free (unew->whereSpecified);
       unew->whereSpecified = fileloc_copy (old->whereSpecified);
     }
 
@@ -9908,7 +9914,7 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
     }
   else
     {
-      fileloc_free (unew->whereDefined); /*@i523 why no error without this? */
+      fileloc_free (unew->whereDefined); 
       unew->whereDefined = fileloc_copy (old->whereDefined);
     }
 
@@ -9919,7 +9925,7 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
     }
   else
     {
-      fileloc_free (unew->whereDeclared); /*@i523 why no error without this? */
+      fileloc_free (unew->whereDeclared); 
       unew->whereDeclared = fileloc_copy (old->whereDeclared);
     }
 
@@ -10454,8 +10460,6 @@ uentry_mergeValueStates (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other,
 
 		if (nval == stateValue_error)
 		  {
-		    /*@i32 print extra info for assignments@*/
-
 		    if (uentry_isGlobalMarker (res))
 		      {
 			if (optgenerror 
@@ -10635,8 +10639,6 @@ void uentry_setUsed (uentry e, fileloc loc)
 
   if (uentry_isValid (e))
     {
-      int dp;
-
       if (warnClause_isDefined (e->warn))
 	{
 	  flagSpec flg = warnClause_getFlag (e->warn);
@@ -10695,9 +10697,9 @@ void uentry_setUsed (uentry e, fileloc loc)
 	    }
 	}
       
-      if ((dp = uentry_directParamNo (e)) >= 0)
+      if (usymId_isValid (usymtab_directParamNo (e)))
 	{
-	  uentry_setUsed (usymtab_getParam (dp), loc);
+	  uentry_setUsed (usymtab_getParam (usymId_toInt (usymtab_directParamNo (e))), loc);
 	}
       
       e->used = TRUE;
@@ -10735,207 +10737,6 @@ bool uentry_isReturned (uentry u)
 	  && (u->info->var->kind == VKRETPARAM
 	      || u->info->var->kind == VKSEFRETPARAM));
 }
-
-/*@i52323@*/
-# if 0
-/*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args)
-{
-  llassert (uentry_isRealFunction (u));
-
-  if (ctype_isFunction (u->utype) && sRef_isStateSpecial (uentry_getSref (u)))
-    {
-      stateClauseList clauses = uentry_getStateClauseList (u);
-      sRef res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
-
-      DPRINTF (("Returned: %s", sRef_unparseFull (res)));
-      sRef_setAllocated (res, g_currentloc);
-
-      DPRINTF (("ensures clause: %s / %s", uentry_unparse (u), 
-		stateClauseList_unparse (clauses)));
-
-      /*
-      ** This should be in exprNode_reflectEnsuresClause
-      */
-
-      stateClauseList_postElements (clauses, cl)
-	{
-	  if (!stateClause_isGlobal (cl))
-	    {
-	      sRefSet refs = stateClause_getRefs (cl);
-	      sRefMod modf = stateClause_getEffectFunction (cl);
-	      
-	      sRefSet_elements (refs, el)
-		{
-		  sRef base = sRef_getRootBase (el);
-		  
-		  if (sRef_isResult (base))
-		    {
-		      if (modf != NULL)
-			{
-			  sRef sr = sRef_fixBase (el, res);
-			  modf (sr, g_currentloc);
-			}
-		    }
-		  else
-		    {
-		      ;
-		    }
-		} end_sRefSet_elements ;
-	    }
-	} end_stateClauseList_postElements ;
-	
-      return res;
-    }
-  else
-    {
-      uentryList params;
-      alkind ak;
-      sRefSet prefs = sRefSet_new ();
-      sRef res = sRef_undefined;
-      sRef tcref = sRef_undefined;
-      sRef tref = sRef_undefined;
-      int paramno = 0;
-      
-      params = uentry_getParams (u);
-
-      /*
-      ** Setting up aliases has to happen *after* setting null state!
-      */
-
-      uentryList_elements (params, current)
-	{
-	  if (uentry_isReturned (current))
-	    {
-	      if (exprNodeList_size (args) >= paramno)
-		{
-		  exprNode ecur = exprNodeList_nth (args, paramno);
-		  tref = exprNode_getSref (ecur);
-		  
-		  DPRINTF (("Returned reference: %s", sRef_unparseFull (tref)));
-
-		  if (sRef_isValid (tref))
-		    {
-		      tcref = sRef_copy (tref);
-		      
-		      if (sRef_isDead (tcref))
-			{
-			  sRef_setDefined (tcref, g_currentloc);
-			  sRef_setOnly (tcref, g_currentloc);
-			}
-		      
-		      if (sRef_isRefCounted (tcref))
-			{
-			  /* could be a new ref now (but only if its returned) */
-			  sRef_setAliasKindComplete (tcref, AK_ERROR, g_currentloc);
-			}
-		      
-		      sRef_makeSafe (tcref);
-		      prefs = sRefSet_insert (prefs, tcref);
-		    }
-		}
-	    }
-	  
-	  paramno++;
-	} end_uentryList_elements ;
-
-      if (sRefSet_size (prefs) > 0)
-	{
-	  nstate n = sRef_getNullState (u->sref);
-
-	  if (sRefSet_size (prefs) == 1)
-	    {
-	      sRef rref = sRefSet_choose (prefs);
-	      tref = rref;
-	      res = sRef_makeType (sRef_getType (rref));
-	      sRef_copyState (res, tref);
-	    }
-	  else
-	    {
-	      /* should this ever happen? */ /*@i534 evans 2001-05-27 */
-	      res = sRefSet_mergeIntoOne (prefs);
-	    }
-	  
-	  if (nstate_isKnown (n))
-	    {
-	      sRef_setNullState (res, n, g_currentloc);
-	      DPRINTF (("Setting null: %s", sRef_unparseFull (res)));
-	    }
-	}
-      else
-	{
-	  if (ctype_isFunction (u->utype))
-	    {
-	      DPRINTF (("Making new from %s  -->", uentry_unparseFull (u)));
-	      res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
-	    }
-	  else
-	    {
-	      DPRINTF (("Making new from %s  -->", uentry_unparseFull (u)));
-	      res = sRef_makeNew (ctype_unknown, u->sref, u->uname);
-	    }
-	  
-	  if (sRef_isRefCounted (res))
-	    {
-	      sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
-	    }
-	}
-      
-      if (sRef_getNullState (res) == NS_ABSNULL)
-	{
-	  ctype ct = ctype_realType (u->utype);
-	  
-	  if (ctype_isAbstract (ct))
-	    {
-	      sRef_setNotNull (res, g_currentloc);
-	    }
-	  else
-	    {
-	      if (ctype_isUser (ct))
-		{
-		  sRef_setStateFromUentry (res, usymtab_getTypeEntry (ctype_typeId (ct)));
-		}
-	      else
-		{
-		  sRef_setNotNull (res, g_currentloc);
-		}
-	    }
-	}
-      
-      if (sRef_isRefCounted (res))
-	{
-	  sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
-	}
-      else if (sRef_isKillRef (res))
-	{
-	  sRef_setAliasKind (res, AK_REFCOUNTED, g_currentloc);
-	}
-      else
-	{
-	  ;
-	}
-      
-      ak = sRef_getAliasKind (res);
-      
-      if (alkind_isImplicit (ak))
-	{
-	  sRef_setAliasKind (res, alkind_fixImplicit (ak), g_currentloc);
-	}
-
-# if 0
-      DPRINTF (("Aliasing: %s / %s", sRef_unparseFull (res), sRef_unparseFull (tref)));
-      usymtab_addReallyForceMustAlias (tref, res); /* evans 2001-05-27 */
-
-      /* evans 2002-03-03 - need to be symettric explicitly, since its not a local now */
-      usymtab_addReallyForceMustAlias (res, tref);
-# endif
-
-      sRefSet_free (prefs);
-      
-      DPRINTF (("Returns ref: %s", sRef_unparseFull (res)));
-      return res;
-    }
-}
-# endif
 
 /*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args, fileloc loc)
 {
@@ -11049,7 +10850,7 @@ bool uentry_isReturned (uentry u)
 	    }
 	  else
 	    {
-	      /* should this ever happen? */ /*@i534 evans 2001-05-27 */
+	      /* should this ever happen? */
 	      res = sRefSet_mergeIntoOne (prefs);
 	    }
 	  
@@ -11550,6 +11351,34 @@ metaStateConstraintList uentry_getMetaStateEnsures (uentry e)
 {
   llassert (uentry_isValid (e) && uentry_isFunction (e));
   return functionConstraint_getMetaStateConstraints (e->info->fcn->postconditions);
+}
+
+
+bool uentry_hasBufStateInfo (uentry ue)
+{
+  llassert (uentry_isValid (ue));
+  return (ue->info->var->bufinfo != NULL);
+}
+
+bool uentry_isNullTerminated (uentry ue)
+{
+  llassert (uentry_hasBufStateInfo (ue));
+  llassert (ue->info->var->bufinfo != NULL);
+  return ue->info->var->bufinfo->bufstate == BB_NULLTERMINATED;
+}
+
+bool uentry_isPossiblyNullTerminated (uentry ue)
+{
+  llassert (uentry_hasBufStateInfo (ue));
+  llassert (ue->info->var->bufinfo != NULL);
+  return (ue->info->var->bufinfo->bufstate == BB_POSSIBLYNULLTERMINATED);
+}
+
+bool uentry_isNotNullTerminated (uentry ue)
+{
+  llassert (uentry_hasBufStateInfo (ue));
+  llassert (ue->info->var->bufinfo != NULL);
+  return (ue->info->var->bufinfo->bufstate == BB_NOTNULLTERMINATED);
 }
 
 # ifdef DEBUGSPLINT

@@ -31,7 +31,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "checking.h"		/* for lslOp_equal */
 
 static bool lslOpSet_member (lslOpSet p_s, lslOp p_el);

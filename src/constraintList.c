@@ -31,7 +31,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 /*@iter constraintList_elements_private_only (sef constraintList x, yield only constraint el); @*/
 # define constraintList_elements_private_only(x, m_el) \

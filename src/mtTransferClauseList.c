@@ -74,7 +74,7 @@ mtTransferClauseList_grow (/*@notnull@*/ mtTransferClauseList s)
   s->elements = newelements;
 }
 
-mtTransferClauseList mtTransferClauseList_single (/*@keep@*/ mtTransferClause el) 
+mtTransferClauseList mtTransferClauseList_single (mtTransferClause el) 
 {
   mtTransferClauseList s = mtTransferClauseList_new ();
   s = mtTransferClauseList_add (s, el);
@@ -94,19 +94,19 @@ mtTransferClauseList mtTransferClauseList_add (mtTransferClauseList s, /*@keep@*
     }
   
   s->nspace--;
-  /*@i32@*/ s->elements[s->nelements] = el;
+  s->elements[s->nelements] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
-mtTransferClauseList mtTransferClauseList_prepend (mtTransferClauseList s, /*@keep@*/ mtTransferClause el)
+mtTransferClauseList mtTransferClauseList_prepend (mtTransferClauseList s, mtTransferClause el)
 {
   int i;
 
   if (!mtTransferClauseList_isDefined (s))
     {
-      /*@i32@*/ return mtTransferClauseList_single (el);
+      return mtTransferClauseList_single (el);
     }
 
   if (s->nspace <= 0)
@@ -121,10 +121,10 @@ mtTransferClauseList mtTransferClauseList_prepend (mtTransferClauseList s, /*@ke
       s->elements[i] = s->elements [i - 1];
     }
 
-  /*@i32@*/ s->elements[0] = el;
+  s->elements[0] = el;
   s->nelements++;
 
-  /*@i32@*/ return s;
+  return s;
 }
 
 cstring

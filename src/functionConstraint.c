@@ -28,7 +28,7 @@
 # include "splintMacros.nf"
 # include "basic.h"
 
-static /*@only@*/ /*@notnull@*/ /*@special@*/ functionConstraint  /*@i32 need special? @*/
+static /*@only@*/ /*@notnull@*/ /*@special@*/ functionConstraint 
 functionConstraint_alloc (functionConstraintKind kind) /*@defines result->kind@*/
 {
   functionConstraint res = (functionConstraint) dmalloc (sizeof (*res));
@@ -91,7 +91,7 @@ extern constraintList functionConstraint_getBufferConstraints (functionConstrain
     {
       if (node->kind == FCT_CONJUNCT)
 	{
-	  /*@i223*/ /*make sure this is safe*/
+	  /* make sure this is safe*/
 	  return constraintList_addListFree (functionConstraint_getBufferConstraints (node->constraint.conjunct.op1),
 					     functionConstraint_getBufferConstraints (node->constraint.conjunct.op2));
 	}

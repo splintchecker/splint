@@ -354,6 +354,8 @@ extern /*@exposed@*/ sRef uentry_getSref (/*@temp@*/ uentry p_e) /*@*/ ;
 extern /*@observer@*/ sRefSet uentry_getMods (uentry p_l) /*@*/ ;
 extern typeIdSet uentry_accessType (uentry p_e) /*@*/ ;
 extern /*@observer@*/ fileloc uentry_whereEither (uentry p_e) /*@*/ ;
+
+extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@only@*/ fileloc p_loc);
 extern /*@notnull@*/ uentry uentry_makeExpandedMacro (cstring p_s, 
 						      /*@temp@*/ fileloc p_f)
   /*@*/ ;
@@ -483,7 +485,7 @@ extern void uentry_resetParams (uentry p_ue, /*@only@*/ uentryList p_pn)
 extern /*@observer@*/ globSet uentry_getGlobs (uentry p_l) /*@*/ ;
 extern qual uentry_nullPred (uentry p_u);
 extern void uentry_free (/*@only@*/ /*@only@*/ uentry p_e);
-extern void uentry_setDatatype (uentry p_e, usymId p_uid);
+extern void uentry_setDatatype (uentry p_e, typeId p_uid);
 
 extern void uentry_setDefined (/*@special@*/ uentry p_e, fileloc p_f)
    /*@uses p_e->whereDefined, p_e->ukind, p_e->uname, p_e->info@*/
@@ -608,40 +610,22 @@ extern bool uentry_hasAccessType (uentry p_e);
 /*@constant cstring GLOBAL_MARKER_NAME@*/
 # define GLOBAL_MARKER_NAME cstring_makeLiteralTemp ("#GM#")
 
-/* functions for making modification to null-term info */
+/* Null Termination */
+
 extern void uentry_setNullTerminatedState (uentry p_e);
 extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
 extern void uentry_setSize(uentry p_e, int p_size);
 extern void uentry_setLen(uentry p_e, int p_len);
 
-/*@i66*/
-/*@-nullderef@*/
-extern bool uentry_hasBufStateInfo (uentry p_ue);
-# define uentry_hasBufStateInfo(p_ue) \
-  (((p_ue)->info->var->bufinfo != NULL) ? TRUE : FALSE)
+extern /*@falsewhennull@*/ bool uentry_hasBufStateInfo (uentry p_ue) /*@*/ ;
+extern bool uentry_isNullTerminated (uentry p_ue) /*@*/ ;
+extern bool uentry_isPossiblyNullTerminated (uentry p_ue) /*@*/ ;
+extern bool uentry_isNotNullTerminated (uentry p_ue) /*@*/ ;
 
-/*@unused@*/ extern bool uentry_isNullTerminated(/*@sef@*/uentry p_ue);
-# define uentry_isNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo((p_ue ) ) ? ((p_ue)->info->var->bufinfo->bufstate \
-               == BB_NULLTERMINATED) : FALSE)
-
-/*@unused@*/ extern bool uentry_isPossiblyNullTerminated( /*@sef@*/ uentry p_ue);
-# define uentry_isPossiblyNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo((p_ue)) ? ((p_ue)->info->var->bufinfo->bufstate \
-               == BB_POSSIBLYNULLTERMINATED) : FALSE)
-
-/*@unused@*/ extern bool uentry_isNotNullTerminated( /*@sef@*/ uentry p_ue);
-# define uentry_isNotNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo((p_ue) ) ? ((p_ue)->info->var->bufinfo->bufstate \
-               == BB_NOTNULLTERMINATED) : FALSE)
-/*@=nullderef@*/
-
-/* end modifications */
+/* Global Markers */
 
 extern uentry uentry_makeGlobalMarker (void) ;
 extern bool uentry_isGlobalMarker (uentry) /*@*/ ;
-
-extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@only@*/ fileloc p_loc);
 
 # ifdef DOANNOTS
 typedef enum 

@@ -35,7 +35,6 @@ extern long unsigned longUnsigned_fromInt (int p_x) /*@*/  /*@ensures result == 
 
 # include "mstring.h"
 
-
 extern int int_compare (/*@sef@*/ int p_x, /*@sef@*/ int p_y) /*@*/ ;
 # define int_compare(x,y) (((x) > (y)) ? 1 : (((x) < (y)) ? -1 : 0))
 

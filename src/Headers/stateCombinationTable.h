@@ -20,22 +20,20 @@ typedef struct {
     cstring msg;
 } *stateEntry;
 
-/*@i23 typedef @only@ stateEntry o_stateEntry; */
+typedef /*@only@*/ stateEntry o_stateEntry;
 
 typedef struct
 {
     int size;
-    /*@only@*/ stateEntry *entries;
+    /*@only@*/ o_stateEntry *entries;
 } *stateRow;
 
-# if 0
-this breaks comething? typedef /*@only@*/ stateRow o_stateRow; /*@i324*/
-# endif
+typedef /*@only@*/ stateRow o_stateRow;
 
 abst_typedef struct
 {
-    int size;
-    /*@only@*/ stateRow *rows;
+  int size;
+  /*@only@*/ o_stateRow *rows;
 } *stateCombinationTable;
 
 extern /*@only@*/ stateCombinationTable stateCombinationTable_create (int p_size);
@@ -52,7 +50,7 @@ extern void stateCombinationTable_update (stateCombinationTable p_h,
 
 extern int stateCombinationTable_lookup 
                (stateCombinationTable p_h, int p_from,
-		int p_to, /*@out@*/ /*@observer@*/ cstring *p_msg);
+		int p_to, /*@out@*/ ob_cstring *p_msg);
 
 extern int stateCombinationTable_lookupLoseReference 
                (stateCombinationTable p_h, int p_from,

@@ -28,7 +28,7 @@
 # include "splintMacros.nf"
 # include "basic.h"
 
-static /*@only@*/ /*@notnull@*/ /*@special@*/ functionClause  /*@i32 need special? @*/
+static /*@only@*/ /*@notnull@*/ /*@special@*/ functionClause  
 functionClause_alloc (functionClauseKind kind) /*@defines result->kind@*/
 {
   functionClause res = (functionClause) dmalloc (sizeof (*res));

@@ -30,7 +30,7 @@
 # include "splintMacros.nf"
 # include <string.h>
 # include <errno.h>
-# include "llbasic.h"
+# include "basic.h"
 # include "llmain.h"
 # include "cpperror.h"
 # include "Headers/version.h" /* Visual C++ finds a different version.h on some path! */
@@ -928,7 +928,22 @@ xllgenformattypeerror (char *srcFile, int srcLine,
 {
   if (!context_suppressFlagMsg (FLG_FORMATTYPE, fl))
     {
-      return llgentypeerroraux (srcFile, srcLine, FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
+      if (ctype_isInt (t1)
+	  && ctype_isNumAbstract (t2))
+	{
+	  if (!context_suppressFlagMsg (FLG_NUMABSTRACTPRINT, fl))
+	    {
+	      return llgentypeerroraux (srcFile, srcLine, FLG_NUMABSTRACTPRINT, t1, e1, t2, e2, s, fl);
+	    }
+	  else
+	    {
+	      return FALSE;
+	    }
+	}
+      else
+	{
+	  return llgentypeerroraux (srcFile, srcLine, FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
+	}
     }
   else
     {

@@ -405,7 +405,8 @@ static char macro_nextChar (void)
 	}
       else /* if (c == '@') */
 	{
-	  llassert (FALSE); /*@i23@*/
+	  llassert (FALSE); 
+
 	  if (cscannerHelp_handleLlSpecial () != BADTOK)
 	    {
 	      llerrorlit (FLG_SYNTAX, "Macro cannot use special syntax");
@@ -935,7 +936,9 @@ int cscannerHelp_handleLlSpecial (void)
 	  s = mstring_append (s, c);
 	  charsread++;
 	}
-      /*@i888@*/ }
+      /*@-branchstate@*/ 
+    } /* spurious (?) warnings about s */
+  /*@=branchstate@*/ 
 
   DPRINTF (("Read: %s / %s", s, fileloc_unparse (g_currentloc)));
 
@@ -1163,7 +1166,7 @@ int cscannerHelp_handleLlSpecial (void)
       
       if (annotationInfo_isDefined (ainfo)) {
 	DPRINTF (("Found annotation: %s", annotationInfo_unparse (ainfo)));
-	/*@i324@*/ yylval.annotation = ainfo;
+	yylval.annotation = ainfo;
 	s_tokLength = 0;
 	sfree (os);
 	sfree (t);
@@ -1433,7 +1436,9 @@ int cscannerHelp_handleLlSpecial (void)
 			message ("Semantic comment unrecognized: %s", 
 				 cstring_fromChars (os)),
 			loc);
-	  /*@i888@*/ }
+	  /*@-branchstate@*/
+	} /* spurious (?) warning about t */
+      /*@=branchstate@*/
       
       sfree (t);
     }
@@ -1575,7 +1580,7 @@ int cscannerHelp_processIdentifier (cstring id)
 	      if (annotationInfo_isDefined (ainfo)) 
 		{
 		  DPRINTF (("Found annotation: %s", annotationInfo_unparse (ainfo)));
-		  /*@i324@*/ yylval.annotation = ainfo;
+		  yylval.annotation = ainfo;
 		  return CANNOTATION;
 		}
 	      else
@@ -1774,12 +1779,12 @@ int cscannerHelp_processIdentifier (cstring id)
   
   if (uentry_isIter (le))
     {
-      /*@i32@*/ yylval.entry = le;
+      yylval.entry = le;
       return (ITER_NAME);
     }
   else if (uentry_isEndIter (le))
     {
-      /*@i32@*/ yylval.entry = le;
+      yylval.entry = le;
       return (ITER_ENDNAME);
     }
   else if (uentry_isUndefined (le))
@@ -1805,7 +1810,7 @@ int cscannerHelp_processIdentifier (cstring id)
 	}
       else
 	{
-	  /*@i32@*/ yylval.entry = le;	  	  
+	  yylval.entry = le;	  	  
 	  return (IDENTIFIER); 
 	}
     }
@@ -1827,7 +1832,7 @@ int cscannerHelp_processIdentifier (cstring id)
     }
   else
     {
-      /*@i32@*/ yylval.entry = le;            
+      yylval.entry = le;            
       return (IDENTIFIER); 
     }
 
@@ -2144,7 +2149,6 @@ bool cscannerHelp_isConstraintToken (int tok)
 {
   return (tok == QMAXSET || tok == QMAXREAD);
           /* || tok == QMINREAD || tok == QMINSET */
-  /*@i4523@*/
   /* uncomment the additional if statement tests when minSet and minRead are supported */
 }
 

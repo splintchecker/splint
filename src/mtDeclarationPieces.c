@@ -87,7 +87,7 @@ mtDeclarationPieces_findPiece (mtDeclarationPieces pieces, mtPieceKind kind)
 		 message ("Metastate declaration has duplicate pieces: %q / %q",
 			  mtDeclarationPiece_unparse (res),
 			  mtDeclarationPiece_unparse (pieces->thisPiece)),
-		 g_currentloc); /*@i43 pieces's should have locs! */
+		 g_currentloc);
 	    } 
 	  else 
 	    {

@@ -68,6 +68,8 @@
 # include "varKinds.h"
 # include "sRefSet.h"
 # include "ekind.h"
+# include "usymId.h"
+# include "typeId.h"
 # include "usymIdSet.h"
 # include "sRefList.h"
 # include "uentryList.h"
@@ -109,9 +111,9 @@
 # include "mtincludes.h"
 # include "functionConstraint.h"
 # include "fileIdList.h"
-
 # include "context.h"
 # include "constants.h"
+# include "llglobals.h"
 
 # else
 # error "Multiple include"

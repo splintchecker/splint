@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
  
 lsymbolSet lsymbolSet_new ()
 {

@@ -150,7 +150,7 @@ extern bool usymtab_existsTypeEither (cstring p_k)
    /*@globals internalState@*/ ;
 
 extern usymId usymtab_getId (cstring p_k) /*@globals internalState@*/ ;
-extern usymId usymtab_getTypeId (cstring p_k) /*@globals internalState@*/ ;
+extern typeId usymtab_getTypeId (cstring p_k) /*@globals internalState@*/ ;
 
 extern void usymtab_supEntry (/*@only@*/ uentry p_e)
   /*@modifies internalState, p_e@*/ ;
@@ -177,7 +177,7 @@ extern usymId usymtab_addEntry (/*@only@*/ uentry p_e)
 extern ctype usymtab_lookupAbstractType (cstring p_k) 
      /*@globals internalState@*/ /*@modifies nothing@*/ ;
 
-extern bool usymtab_matchForwardStruct (usymId p_u1, usymId p_u2)
+extern bool usymtab_matchForwardStruct (typeId p_u1, typeId p_u2)
      /*@globals internalState@*/ ;
 
 extern bool usymtab_existsEnumTag (cstring p_k)
@@ -186,27 +186,6 @@ extern bool usymtab_existsUnionTag (cstring p_k)
   /*@globals internalState@*/ ;
 extern bool usymtab_existsStructTag (cstring p_k) 
   /*@globals internalState@*/ ;
-
-extern usymId usymId_fromInt (int p_i) /*@*/ ;
-# define usymId_fromInt(i)   ((usymId)(i))
-
-extern bool usymId_isInvalid (usymId p_u) /*@*/ ;
-# define usymId_isInvalid(u) ((u) == USYMIDINVALID)
-
-extern bool usymId_isValid (usymId p_u) /*@*/ ;
-# define usymId_isValid(u)   ((u) != USYMIDINVALID)
-
-extern bool typeId_isInvalid (typeId p_u) /*@*/ ;
-# define typeId_isInvalid(u) ((u) == typeId_invalid)
-
-extern bool typeId_isValid (typeId p_u) /*@*/ ;
-# define typeId_isValid(u)   ((u) != typeId_invalid)
-
-extern bool typeId_equal (typeId p_u1, typeId p_u2) /*@*/ ;
-# define typeId_equal(u1,u2) ((u1) == (u2))
-
-extern typeId typeId_fromInt (int p_i);
-# define typeId_fromInt(i)   ((typeId)(i))
 
 /*@iter usymtab_entries (sef usymtab u, yield exposed uentry el); @*/
 # define usymtab_entries(x, m_i)   \
@@ -245,6 +224,7 @@ extern /*@observer@*/ uentry usymtab_lookupEnumTag (cstring p_k)
   /*@globals internalState@*/ ; 
 
 extern usymId usymtab_convertId (usymId p_uid) /*@globals internalState@*/ ;
+extern typeId usymtab_convertTypeId (typeId p_uid) /*@globals internalState@*/ ;
 extern void usymtab_initMod (void) /*@modifies internalState@*/ ;
 extern void usymtab_destroyMod (void) /*@modifies internalState@*/ ;
 extern void usymtab_initBool (void) /*@modifies internalState@*/ ;
@@ -315,7 +295,7 @@ extern /*@exposed@*/ uentry
   usymtab_supEntrySrefReturn (/*@only@*/ uentry p_e)
   /*@modifies internalState, p_e@*/ ;
 
-extern int uentry_directParamNo (uentry p_ue)
+extern usymId usymtab_directParamNo (uentry p_ue)
   /*@globals internalState@*/ ;
 
 extern bool usymtab_newCase (exprNode p_pred, exprNode p_last)

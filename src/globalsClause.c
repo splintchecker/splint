@@ -34,7 +34,8 @@ globalsClause_create (lltok tok, globSet gl)
   globalsClause res = (globalsClause) dmalloc (sizeof (*res));
   res->globs = gl;
   res->loc = fileloc_copy (lltok_getLoc (tok));
-  /*@i423@*/ return res; /* releases doesn't seem to work right here... */
+  lltok_free (tok); 
+  return res; /* releases doesn't seem to work right here... */
 }
 
 globSet globalsClause_getGlobs (globalsClause gclause)
@@ -53,7 +54,7 @@ extern void globalsClause_free (globalsClause gclause)
 {
   if (gclause == NULL)
     {
-      return; /*@i435 shouldn't ever need this? */
+      return; /* shouldn't ever need this? */
     }
 
   globSet_free (gclause->globs);

@@ -1124,7 +1124,7 @@ checkFileScopeName (/*@unused@*/ uentry ue)
   ** No file scope checks (yet)
   */
 
-  /*@i423 add a file scope naming convention policy? */
+  /* add a file scope naming convention policy? */
 
   return;
 }
@@ -1555,4 +1555,4 @@ void checkParamNames (uentry ue)
     }
 }
 
-/*@i523 POSIX p. 527 - applications should not declare any symbols that end _MAX @*/
+/* not yet checked: POSIX p. 527 - applications should not declare any symbols that end _MAX */

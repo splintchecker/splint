@@ -51,7 +51,7 @@ idDecl_free (idDecl t)
 {
   if (idDecl_isDefined (t))
     {
-      /*@i523 functionClauseList_free (t->clauses); */ /* evans 2002-01-03: splint catches this now! */
+      /* don't: functionClauseList_free (t->clauses); */ /* evans 2002-01-03: splint catches this now! */
       qtype_free (t->typ);
       cstring_free (t->id);
 

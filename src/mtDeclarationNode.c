@@ -86,7 +86,7 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
       mvals = mtValuesNode_getValues (mtv);
     }
 
-  /*@-usedef@*/ /*@i34 splint should figure this out... */
+  /*@-usedef@*/ /* splint should figure this out... */
   nvalues = cstringList_size (mvals);
   /*@=usedef@*/
 
@@ -492,7 +492,7 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 	    {
 	      for (j = low2index; j <= high2index; j++)
 		{
-		  /*@i32 check for multiple definitions! */
+		  /* Need to add checks for multiple definitions! */
 		  
 		  if (mtTransferAction_isError (taction))
 		    {

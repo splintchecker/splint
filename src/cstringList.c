@@ -349,12 +349,14 @@ cstringList_get (cstringList s, int index)
   return s->elements[index];
 }
 
-ob_mstring *
+ob_cstring *
 cstringList_getElements (cstringList s)
 {
   if (cstringList_isDefined (s))
     {
-      /*@i423@*/ return s->elements;
+      /*@-compmempass@*/
+      return s->elements;
+      /*@=compmempass@*/ /* This is exposed */
     }
   else
     {

@@ -48,7 +48,7 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "osd.h"
 # include "llmain.h"
 # include "portab.h"
@@ -328,7 +328,6 @@ fileTable_addFilePrim (fileTable ft, /*@temp@*/ cstring name,
   cstring absname = osd_absolutePath (NULL, name);
   int tindex = fileTable_getIndex (ft, absname);
   
-  /*@i534 fprintf (stderr, "Got abs path: %s", absname); */
   llassert (ft != fileTable_undefined);
 
   if (tindex != NOT_FOUND)

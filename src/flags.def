@@ -131,6 +131,16 @@ static flaglist flags =
     "a possibly null pointer.",
     0, 0
   },
+  {
+    FK_NULL, FK_MEMORY, plainFlag,
+    "nullinit",
+    FLG_NULLINIT,
+    "inconsistent initialization involving null pointer",
+    "A reference with no null annotation is initialized "
+    "to NULL.  Use /*@null@*/ to declare the reference as "
+    "a possibly null pointer.",
+    0, 0
+  },
 
   /*
   ** Undefined Values (Section 3)
@@ -502,7 +512,23 @@ static flaglist flags =
     "numabstractlit",
     FLG_NUMABSTRACTLIT,
     "numeric literal can used as numabstract type",
-    "A numeric literal can be used as a numabstract type.",
+    "To allow a numeric literal to be used as a numabstract type, use +numabstractlit.",
+    0, 0
+  },
+  {
+    FK_ABSTRACT, FK_TYPEEQ, modeFlag,
+    "numabstractindex",
+    FLG_NUMABSTRACTINDEX,
+    "a numabstract type can be used to index an array",
+    "To allow numabstract types to index arrays, use +numabstractindex.",
+    0, 0
+  },
+  {
+    FK_ABSTRACT, FK_NONE, modeFlag,
+    "numabstractprint",
+    FLG_NUMABSTRACTPRINT,
+    "a numabstract value is printed using %d format code",
+    "A numabstract value is printed usind %d format code in a printf.",
     0, 0
   },
   {

@@ -30,7 +30,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 /*@notnull@*/ /*@only@*/ ltokenList
 ltokenList_new ()

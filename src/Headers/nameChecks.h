@@ -14,7 +14,6 @@ extern void checkFileScopeName (uentry p_ue) /*@modifies g_warningstream, p_ue@*
 extern void checkPrefix (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
 extern void checkAnsiName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
 extern void checkParamNames (uentry p_ue) /*@modifies g_warningstream@*/;
-/*@i32! should get error without modifies p_ue@*/ 
 
 # else
 # error "Multiple include"

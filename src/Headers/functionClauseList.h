@@ -41,8 +41,8 @@ extern /*@unused@*/ functionClauseList
   functionClauseList_add (/*@returned@*/ functionClauseList p_s, /*@keep@*/ functionClause p_el) 
   /*@modifies p_s@*/ ;
 
-extern functionClauseList 
-  functionClauseList_prepend (/*@returned@*/ functionClauseList p_s, /*@keep@*/ functionClause p_el) 
+extern /*@only@*/ functionClauseList 
+  functionClauseList_prepend (/*@only@*/ functionClauseList p_s, /*@keep@*/ functionClause p_el) 
   /*@modifies p_s@*/ ;
 
 extern /*@unused@*/ /*@only@*/ cstring functionClauseList_unparse (functionClauseList p_s) ;

@@ -32,7 +32,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "lclscan.h"
 # include "signature.h"
 # include "signature2.h"

@@ -29,7 +29,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "lcltokentable.h"
 
 static long unsigned MaxToken; 

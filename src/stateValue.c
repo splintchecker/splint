@@ -26,7 +26,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 
 extern 
 /*@notnull@*/ stateValue stateValue_create (int value, stateInfo info) {

@@ -195,7 +195,10 @@ static void rcfiles_loadFile (/*:open:*/ FILE *rcfile, cstringList *passThroughA
 		      fileIdList_undefined,
 		      passThroughArgs,
 		      cstringList_size (args),
-		      cstringList_getElements (args));
+		      /*@-nullstate@*/ /*@-type@*/ /* exposes cstring type */ 
+		      cstringList_getElements (args)
+		      /*@=nullstate@*/ /*@=type@*/
+		      );
   cstringList_free (args);
   check (fileTable_closeFile (context_fileTable (), rcfile));
 }

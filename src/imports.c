@@ -32,7 +32,7 @@
 */
 
 # include "splintMacros.nf"
-# include "llbasic.h" 
+# include "basic.h" 
 # include "osd.h"
 # include "llgrammar.h" /* need simpleOp, MULOP and logicalOp in makeInfixTermNode */
 # include "lclscan.h"

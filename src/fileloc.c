@@ -34,7 +34,7 @@
  */
 
 # include "splintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "osd.h"
 # include "portab.h"
 
@@ -794,7 +794,7 @@ fileloc_unparse (fileloc f)
     {
       res = cstring_makeLiteral ("< Location unknown >");
     }
-  /*@=branchstate@*/ /*@i2523 this is a spurious warning because of the break */
+  /*@=branchstate@*/ /* this is a spurious warning because of the break */
   
   in_funparse = FALSE;
   return res;
