@@ -180,14 +180,14 @@ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
       else if (context_suppressFlagMsg(FLG_BOUNDSWRITE, loc) )
 	{
 	  DPRINTF ((message ("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
-			     constraint_print(elem))));
+			     constraint_unparse(elem))));
 	  constraint_free(elem);
 	}
       
       else if (!constraint_hasMaxSet(elem) && context_suppressFlagMsg(FLG_BOUNDSREAD, loc))
 	{
 	  DPRINTF ((message("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
-			    constraint_print(elem))));
+			    constraint_unparse(elem))));
 	  constraint_free(elem);
 	}
       else
@@ -203,15 +203,9 @@ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
   return ret;
 }
 
-
-extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList s) /*@*/
-{
-  return (constraintList_print(s));
-}
-
 # if 0
 static /*@only@*/ cstring
-constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
+constraintList_unparseLocation (/*@temp@*/ constraintList s) /*@*/
 {
   int i;
   cstring st = cstring_undefined;
@@ -236,7 +230,7 @@ constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
       if (constraint_isDefined(current) )
 	{
 	  cstring temp1;
-	      temp1 = constraint_printLocation(current);
+	      temp1 = constraint_unparseLocation(current);
 	  type = message ("%q %q\n", type, temp1 );
 	}
 
@@ -256,7 +250,7 @@ constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
 # endif
 
 /*@only@*/ cstring
-constraintList_print (/*@temp@*/ constraintList s) /*@*/
+constraintList_unparse (/*@temp@*/ constraintList s) /*@*/
 {
   int i;
   cstring st = cstring_undefined;
@@ -284,11 +278,11 @@ constraintList_print (/*@temp@*/ constraintList s) /*@*/
 
 	  if (context_getFlag (FLG_ORCONSTRAINT))
 	    {
-	      temp1 = constraint_printOr(current);
+	      temp1 = constraint_unparseOr(current);
 	    }
 	  else
 	    {
-	      temp1 = constraint_print (current);
+	      temp1 = constraint_unparse (current);
 	    }
 	  type = message ("%q %q\n", type, temp1 );
 	}
@@ -307,7 +301,7 @@ constraintList_print (/*@temp@*/ constraintList s) /*@*/
   return st;
 }
 
-void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
+void constraintList_unparseErrorPostConditions (constraintList s, fileloc loc)
 {
 
   constraintList_elements (s, elem)
@@ -321,7 +315,7 @@ void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
   return;
 }
 
-void constraintList_printError (constraintList s, fileloc loc)
+void constraintList_unparseError (constraintList s, fileloc loc)
 {
 
   constraintList_elements (s, elem)
@@ -340,7 +334,7 @@ void constraintList_printError (constraintList s, fileloc loc)
 
 
 cstring
-constraintList_printDetailed (constraintList s)
+constraintList_unparseDetailed (constraintList s)
 {
   int i;
   cstring st = cstring_undefined;
@@ -364,7 +358,7 @@ constraintList_printDetailed (constraintList s)
 
       if (constraint_isDefined(current ) )
 	{
-	  cstring temp1 = constraint_printDetailed (current);
+	  cstring temp1 = constraint_unparseDetailed (current);
 	  type = message ("%s %s\n", type, temp1 );
 	  cstring_free(temp1);
 	}
@@ -392,8 +386,8 @@ constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ const
   constraint temp;
   constraintList ret;
   DPRINTF ((message ("Logical or on %s and %s",
-		      constraintList_print(l1), 
-		      constraintList_print(l2)) ) );
+		      constraintList_unparse(l1), 
+		      constraintList_unparse(l2)) ) );
   
   ret = constraintList_makeNew();
   constraintList_elements (l1, el)
@@ -438,22 +432,22 @@ constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ const
 void
 constraintList_free (/*@only@*/ constraintList s)
 {
-  int i;
-
-  llassert(constraintList_isDefined(s) );
-
-  
-  for (i = 0; i < s->nelements; i++)
+  if (constraintList_isDefined (s))
     {
-      constraint_free (s->elements[i]); 
+      int i;
+      
+      for (i = 0; i < s->nelements; i++)
+	{
+	  constraint_free (s->elements[i]); 
+	}
+      
+      sfree (s->elements);
+      s->elements = NULL;
+      s->nelements = -1;
+      s->nspace = -1;
+      sfree (s);
+      s = NULL;
     }
-
-  sfree (s->elements);
-  s->elements = NULL;
-  s->nelements = -1;
-  s->nspace = -1;
-  sfree (s);
-  s = NULL;
 }
 
 constraintList
@@ -471,7 +465,7 @@ constraintList_copy (/*@observer@*/ /*@temp@*/ constraintList s)
 
 constraintList constraintList_preserveOrig (constraintList c)
 {
-  DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_print (c) ) ));
+  DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_unparse (c) ) ));
 
   constraintList_elements_private (c, el)
   {
@@ -483,7 +477,7 @@ constraintList constraintList_preserveOrig (constraintList c)
 
 constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,/*@observer@*/ /*@dependent@*/ /*@observer@*/  exprNode fcn)
 {
-  DPRINTF((message("constraintList_preserveCallInfo %s ", constraintList_print (c) ) ));
+  DPRINTF((message("constraintList_preserveCallInfo %s ", constraintList_unparse (c) ) ));
 
   constraintList_elements_private (c, el)
   {
@@ -508,7 +502,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c,/*@dependent@*
   
   constraintList_elements_private (c, el)
   {
-    DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_print(el), exprNode_unparse(e) )  ));
+    DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_unparse(el), exprNode_unparse(e) )  ));
     el = constraint_addGeneratingExpr (el, e);
   }
   end_constraintList_elements_private;

@@ -146,7 +146,7 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
     constraintList_free(c);
   }    
 
-  DPRINTF ((message ("e->requiresConstraints %s", constraintList_printDetailed (e->requiresConstraints))));
+  DPRINTF ((message ("e->requiresConstraints %s", constraintList_unparseDetailed (e->requiresConstraints))));
   return FALSE;
 }
 
@@ -252,8 +252,8 @@ static void exprNode_stmt (/*@temp@*/ exprNode e)
   e->ensuresConstraints  = exprNode_traversEnsuresConstraints(snode);
 
   DPRINTF ((message ("smtlist constraints are: pre: %s \n and \t post %s\n",
-		      constraintList_print(e->requiresConstraints),
-		      constraintList_print(e->ensuresConstraints))));
+		      constraintList_unparse(e->requiresConstraints),
+		      constraintList_unparse(e->ensuresConstraints))));
 
   return; 
 }
@@ -293,8 +293,8 @@ static void exprNode_stmtList  (/*@dependent@*/ exprNode e)
   exprNode_mergeResolve (e, stmt1, stmt2);
   
   DPRINTF ((message ("smtlist constraints are: pre: %s \n and \t post %s\n",
-		      constraintList_print(e->requiresConstraints),
-		      constraintList_print(e->ensuresConstraints))));
+		      constraintList_unparse(e->requiresConstraints),
+		      constraintList_unparse(e->ensuresConstraints))));
   return;
 }
 
@@ -309,23 +309,23 @@ static exprNode doIf (/*@returned@*/  exprNode e, /*@dependent@*/ exprNode test,
   llassert (exprNode_isDefined (body));
 
   
-      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints))));
+      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->ensuresConstraints))));
 
-      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints))));
+      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->ensuresConstraints))));
       
-      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->trueEnsuresConstraints))));
+      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->trueEnsuresConstraints))));
 
-      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->falseEnsuresConstraints))));
+      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->falseEnsuresConstraints))));
 
 
 
-      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->ensuresConstraints))));
+      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(test), constraintList_unparseDetailed(test->ensuresConstraints))));
 
-      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->ensuresConstraints))));
+      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(test), constraintList_unparseDetailed(test->ensuresConstraints))));
       
-      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->trueEnsuresConstraints))));
+      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_unparseDetailed(test->trueEnsuresConstraints))));
 
-      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->falseEnsuresConstraints))));
+      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_unparseDetailed(test->falseEnsuresConstraints))));
 
 
 
@@ -344,9 +344,9 @@ static exprNode doIf (/*@returned@*/  exprNode e, /*@dependent@*/ exprNode test,
 
   test->trueEnsuresConstraints = constraintList_substituteFreeTarget(test->trueEnsuresConstraints, test->ensuresConstraints);
   
-  DPRINTF ((message ("doIf: test ensures %s ", constraintList_print(test->ensuresConstraints))));
+  DPRINTF ((message ("doIf: test ensures %s ", constraintList_unparse(test->ensuresConstraints))));
     
-  DPRINTF ((message ("doIf: test true ensures %s ", constraintList_print(test->trueEnsuresConstraints))));
+  DPRINTF ((message ("doIf: test true ensures %s ", constraintList_unparse(test->trueEnsuresConstraints))));
   
   constraintList_free(e->requiresConstraints);
 
@@ -371,7 +371,7 @@ static exprNode doIf (/*@returned@*/  exprNode e, /*@dependent@*/ exprNode test,
 							test->falseEnsuresConstraints);
     }
   
-  DPRINTF ((message ("doIf: if requiers %s ", constraintList_print(e->requiresConstraints))));
+  DPRINTF ((message ("doIf: if requiers %s ", constraintList_unparse(e->requiresConstraints))));
   
   return e;
 }
@@ -434,8 +434,8 @@ static exprNode doIfElse (/*@returned@*/ exprNode e, /*@dependent@*/ exprNode p,
   constraintList_free(cons);
   constraintList_free(c1);
   
-  DPRINTF ((message ("doIfElse: if requires %q ", constraintList_print(e->requiresConstraints))));
-  DPRINTF ((message ("doIfElse: if ensures %q ", constraintList_print(e->ensuresConstraints))));
+  DPRINTF ((message ("doIfElse: if requires %q ", constraintList_unparse(e->requiresConstraints))));
+  DPRINTF ((message ("doIfElse: if ensures %q ", constraintList_unparse(e->ensuresConstraints))));
   
   return e;
 }
@@ -489,7 +489,7 @@ static exprNode doWhile (/*@returned@*/ exprNode e, /*@dependent@*/ exprNode tes
   end_sRefSet_elements ;
   
   DPRINTF((message("constraintList_makeFixedArrayConstraints returning %s",
-		    constraintList_print(ret))));
+		    constraintList_unparse(ret))));
   return ret;
 }
 
@@ -641,7 +641,7 @@ exprNode_doGenerateConstraintSwitch
 		  DPRINTF((message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
 				    "%s currentEnsures:%s",
 				    exprNode_unparse(switchExpr), exprNode_unparse(body),
-				    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
+				    constraintList_unparse(*currentRequires), constraintList_unparse(*currentEnsures)
 				   )));
 		  /*@-onlytrans@*/
 		  return;
@@ -692,7 +692,7 @@ exprNode_doGenerateConstraintSwitch
       DPRINTF((message("exprNode_doGenerateConstraintSwitch: (switch %s) %s savedRequires:"
 			"%s savedEnsures:%s",
 			exprNode_unparse(switchExpr), exprNode_unparse(body),
-			constraintList_print(*savedRequires), constraintList_print(*savedEnsures)
+			constraintList_unparse(*savedRequires), constraintList_unparse(*savedEnsures)
 			)));
 
     }
@@ -754,7 +754,7 @@ exprNode_doGenerateConstraintSwitch
   DPRINTF((message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
 		    "%s currentEnsures:%s",
 		    exprNode_unparse(switchExpr), exprNode_unparse(body),
-		    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
+		    constraintList_unparse(*currentRequires), constraintList_unparse(*currentEnsures)
 		   )));
   /*@-onlytrans@*/ 
   return;
@@ -825,8 +825,8 @@ static void exprNode_generateConstraintSwitch (/*@notnull@*/ exprNode switchStmt
   constraintList_free (lastEnsures);
 
   DPRINTF(((message(" exprNode_generateConstraintSwitch returning requires: %s and ensures %s",
-		     constraintList_print(switchStmt->requiresConstraints),
-		     constraintList_print(switchStmt->ensuresConstraints)
+		     constraintList_unparse(switchStmt->requiresConstraints),
+		     constraintList_unparse(switchStmt->ensuresConstraints)
 		    )
 	    )));
 }
@@ -955,7 +955,7 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
 
 
 
-      DPRINTF((message("p->trueEnsuresConstraints before substitue %s", constraintList_print(p->trueEnsuresConstraints)  )
+      DPRINTF((message("p->trueEnsuresConstraints before substitue %s", constraintList_unparse(p->trueEnsuresConstraints)  )
 	       ));
 
             /*drl 10/10/2002 this is a bit of a hack but the reason why we do this is so that any function post conditions or similar things get applied correctly to each branch.  e.g. in strlen(s) < 5 we want the trueEnsures to be maxRead(s) < 5*/
@@ -963,7 +963,7 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
       p->trueEnsuresConstraints = constraintList_substituteFreeTarget (p->trueEnsuresConstraints,
 								       p->ensuresConstraints);
       
-      DPRINTF(( message ("p->trueEnsuresConstraints after substitue %s", constraintList_print(p->trueEnsuresConstraints) )
+      DPRINTF(( message ("p->trueEnsuresConstraints after substitue %s", constraintList_unparse(p->trueEnsuresConstraints) )
 		));
       
       temp = p->falseEnsuresConstraints;
@@ -987,7 +987,7 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
       exprNode_generateConstraints (e2);
       exprNode_generateConstraints (e1);
       e = exprNode_copyConstraints (e, e2);
-      DPRINTF ((message ("e = %s  ", constraintList_print(e->requiresConstraints))));
+      DPRINTF ((message ("e = %s  ", constraintList_unparse(e->requiresConstraints))));
       
       break;
       
@@ -1594,13 +1594,13 @@ void exprNode_exprTraverse (/*@dependent@*/ exprNode e, bool definatelv, bool de
 
   e->requiresConstraints = constraintList_removeSurpressed(e->requiresConstraints);
   
-  DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints))));
+  DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->ensuresConstraints))));
 
-  DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints))));
+  DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->ensuresConstraints))));
   
-  DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->trueEnsuresConstraints))));
+  DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->trueEnsuresConstraints))));
 
-  DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->falseEnsuresConstraints))));
+  DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_unparseDetailed(e->falseEnsuresConstraints))));
 
   return;
 }
@@ -2037,7 +2037,7 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
   DPRINTF ((message ("exprnode_traversEnsuresConstraints call for %s with "
 		     "constraintList of %s",
 		     exprNode_unparse (e),
-		     constraintList_print(e->ensuresConstraints)
+		     constraintList_unparse(e->ensuresConstraints)
 		     )
 	    ));
   
@@ -2146,7 +2146,7 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
   DPRINTF((message ("exprnode_traversEnsuresConstraints call for %s with "
 		    "constraintList of  is returning %s",
 		    exprNode_unparse (e),
-		    constraintList_print(ret))));
+		    constraintList_unparse(ret))));
   
   return ret;
 }
@@ -2242,13 +2242,13 @@ we'll include it in a production release when its stable...
 	  invars = getInvariants(ct);
 
 
-	  TPRINTF((message ("findStructs has invariants %s ", constraintList_print (invars))
+	  TPRINTF((message ("findStructs has invariants %s ", constraintList_unparse (invars))
 		   ));
 	  
 	  invars = constraintList_doSRefFixStructConstraint(invars, exprNode_getSref(expr), ct);
 
 	  
-	  TPRINTF((message ("findStructs finded invariants to be %s ", constraintList_print (invars))
+	  TPRINTF((message ("findStructs finded invariants to be %s ", constraintList_unparse (invars))
 		   ));
 	}
     }
@@ -2317,7 +2317,7 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
     }
   
   DPRINTF ((message("Done checkCall\n")));
-  DPRINTF ((message("Returning list %q ", constraintList_printDetailed(preconditions))));
+  DPRINTF ((message("Returning list %q ", constraintList_unparseDetailed(preconditions))));
 
   /*
     drl we're going to comment this out for now

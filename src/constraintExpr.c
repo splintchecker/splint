@@ -1052,17 +1052,17 @@ bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2)
   BADEXIT;
 }
 
-bool constraintExpr_search (/*@observer@*/ constraintExpr c, /*@observer@*/ constraintExpr old)
+bool 
+constraintExpr_search (/*@observer@*/ constraintExpr c, 
+		       /*@observer@*/ constraintExpr old)
 {
   bool ret = FALSE;
   constraintExprKind kind;
   constraintExpr temp;
   
-  if ( constraintExpr_similar (c, old) )
+  if (constraintExpr_similar (c, old))
     {
-      DPRINTF((message ("Found  %q",
-			constraintExpr_unparse(old)
-			)));
+      DPRINTF (("Found  %q", constraintExpr_unparse (old)));
       return TRUE;
     }
 
@@ -1543,11 +1543,11 @@ cstring constraintExpr_unparse (/*@temp@*/ /*@observer@*/ constraintExpr ex) /*@
 
             if (context_getFlag (FLG_PARENCONSTRAINT) )
 	      {
-		st = message ("(%q) ", constraintTerm_print (constraintExprData_termGetTerm (ex->data)));
+		st = message ("(%q) ", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
 	      }
 	    else
 	      {
-		st = message ("%q", constraintTerm_print (constraintExprData_termGetTerm (ex->data)));
+		st = message ("%q", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
 	      }
       break;
     case unaryExpr:
@@ -1908,12 +1908,11 @@ doFixResultTerm (/*@only@*/ constraintExpr e, /*@exposed@*/ exprNode fcnCall)
   ret = e;
   switch (constraintTerm_getKind(t) )
     {
-    case EXPRNODE:
-      break;
-    case INTLITERAL:
+    case CTT_EXPR:
+    case CTT_INTLITERAL:
       break;
       
-    case SREF:
+    case CTT_SREF:
       s = constraintTerm_getSRef(t);
       if (sRef_isResult (s))
 	{
@@ -1957,21 +1956,21 @@ doSRefFixInvarConstraintTerm (/ *@only@* / constraintExpr e,
 
   switch (constraintTerm_getKind(t))
     {
-    case EXPRNODE:
-      DPRINTF((message ("%q @ %q ", constraintTerm_print(t),
+    case CTT_EXPR:
+      DPRINTF((message ("%q @ %q ", constraintTerm_unparse(t),
 			fileloc_unparse (constraintTerm_getFileloc(t) ) ) ));
       break;
-    case INTLITERAL:
-      DPRINTF((message (" %q ", constraintTerm_print (t)) ));
+    case CTT_INTLITERAL:
+      DPRINTF((message (" %q ", constraintTerm_unparse (t)) ));
       break;
       
-    case SREF:
+    case CTT_SREF:
       / * evans 2001-07-24: constants should use the original term * /
       if (!constraintTerm_canGetValue (t))
 	{
 	  sRef snew;
 	  DPRINTF ((message("Doing sRef_fixInvarConstraint for %q ", 
-			     constraintTerm_print (t) ) ));
+			     constraintTerm_unparse (t) ) ));
 
 	  snew = fixSref (ct, s, constraintTerm_getSRef(t));
 
@@ -2026,20 +2025,19 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, /*@observer@*/ /*@tem
 
   switch (constraintTerm_getKind(t))
     {
-    case EXPRNODE:
-      DPRINTF((message ("%q @ %q ", constraintTerm_print(t),
+    case CTT_EXPR:
+      DPRINTF((message ("%q @ %q ", constraintTerm_unparse(t),
 			fileloc_unparse (constraintTerm_getFileloc(t) ) ) ));
       break;
-    case INTLITERAL:
-      DPRINTF((message (" %q ", constraintTerm_print (t)) ));
+    case CTT_INTLITERAL:
+      DPRINTF((message (" %q ", constraintTerm_unparse (t)) ));
       break;
-      
-    case SREF:
+    case CTT_SREF:
       /* evans 2001-07-24: constants should use the original term */
       if (!constraintTerm_canGetValue (t))
 	{
 	  DPRINTF ((message("Doing sRef_fixConstraintParam for %q ", 
-			     constraintTerm_print (t) ) ));
+			     constraintTerm_unparse (t) ) ));
 	  ret = sRef_fixConstraintParam (constraintTerm_getSRef(t), arglist);
 	  
 	  constraintExpr_free (e);
