@@ -51,10 +51,10 @@ check: $(LCSFILES)
 ###
 
 clean: tidy
-	-@rm -f *.c.html *.lcl.html *.h.html *.lh.html *.lcs *.lh >& /dev/null
+	-@rm -f *.c.html *.lcl.html *.h.html *.lh.html *.lcs *.lh 1> /dev/null
 
 tidy:
-	-@rm -f ,* .,* *.CKP *.BAK .emacs_[0-9]* core a.out *.*~ *~ *.o drive >& /dev/null
+	-@rm -f ,* .,* *.CKP *.BAK .emacs_[0-9]* core a.out *.*~ *~ *.o drive 1>& /dev/null
 
 ### The following dependencies ensure that imported LCL specs 
 ### are checked before the specs that import them.

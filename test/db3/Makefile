@@ -18,7 +18,6 @@ MODULES = employee eref empset ereftab erc dbase drive.c bool.lcl check.lcl
 OBJS = dbase.o employee.o empset.o erc.o eref.o ereftab.o 
 
 test: 
-	@$(MAKE) -e clean
 	@$(MAKE) -e check
 
 ### Note there is a .splint file used for checking!
