@@ -1,6 +1,9 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 unreachable.c: (in function f)
-unreachable.c:6:4: Unreachable code: x++
+unreachable.c:5:3: Unrecognized identifier: exit
 unreachable.c: (in function tu)
 unreachable.c:21:7: Unreachable code: return
 unreachable.c: (in function s)
@@ -10,18 +13,14 @@ unreachable.c:45:4: Unreachable code: z++
 
 Finished LCLint checking --- 5 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+unreachable.c: (in function f)
+unreachable.c:5:3: Unrecognized identifier: exit
 unreachable.c: (in function s)
 unreachable.c:34:10: Fall through case (no preceding break)
 unreachable.c:46:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 2 code errors found, as expected
-
-switch.c: (in function f3)
-switch.c:31:2: Path with no return in function declared to return int
-switch.c: (in function f5)
-switch.c:49:6: Missing case in switch: THREE
-switch.c:50:2: Path with no return in function declared to return int
-switch.c: (in function f6)
-switch.c:70:2: Path with no return in function declared to return int
-
-Finished LCLint checking --- 4 code errors found, as expected
+Finished LCLint checking --- 3 code errors found, expected 2
+gmake[3]: *** [unreachable] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

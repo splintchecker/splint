@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:3:15: Body of if statement is empty
 blocks.c:4:10: Suspected infinite loop.  No value used in loop test (x) is
@@ -8,6 +11,8 @@ blocks.c:22:9: Body of else clause of if statement is empty
 
 Finished LCLint checking --- 4 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:3:15: Body of if statement is empty
 blocks.c:4:10: Suspected infinite loop.  No value used in loop test (x) is
@@ -20,6 +25,8 @@ blocks.c:22:9: Body of else clause of if statement is empty
 
 Finished LCLint checking --- 7 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:4:18: Body of while statement is empty
 blocks.c:4:10: Suspected infinite loop.  No value used in loop test (x) is
@@ -28,6 +35,8 @@ blocks.c:7:18: Body of while statement is not a block: x++
 
 Finished LCLint checking --- 3 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:4:10: Suspected infinite loop.  No value used in loop test (x) is
                   modified by test or loop body.
@@ -36,6 +45,8 @@ blocks.c:13:23: Body of for statement is not a block: x++
 
 Finished LCLint checking --- 3 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:3:15: Body of if statement is empty
 blocks.c:4:18: Body of while statement is empty
@@ -47,6 +58,8 @@ blocks.c:22:9: Body of else clause of if statement is empty
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 blocks.c: (in function f)
 blocks.c:3:15: Body of if statement is empty
 blocks.c:4:18: Body of while statement is empty
@@ -62,3 +75,4 @@ blocks.c:21:16: Body of if clause of if statement is empty
 blocks.c:22:9: Body of else clause of if statement is empty
 
 Finished LCLint checking --- 11 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

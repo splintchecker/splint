@@ -1,6 +1,11 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 release.c: (in function f)
-release.c:25:12: Owned storage z not released before return
-   release.c:22:7: Storage z becomes owned
+release.c:3:12: Unrecognized identifier: NULL
+release.c:8:17: Unrecognized identifier: malloc
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished LCLint checking --- 2 code errors found, expected 1
+gmake[3]: *** [release] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

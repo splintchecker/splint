@@ -10,13 +10,13 @@
 #define DEFAULT_LCLIMPORTDIR "/usr/local/share/lclint/imports"
 
 /* gcc's private include directory */
-#define GCC_INCLUDE_DIR "/usr/lib/gcc-lib/i386-linux/2.95.2/include"
+#define GCC_INCLUDE_DIR "/usr/cs/lib/gcc-lib/i686-pc-linux-gnu/3.0/include"
 
 /* the system's main include directory */
 #define GCC_INCLUDE_DIR2 "/usr/local/include"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux davesworld 2.2.19 #1 Sat Apr 28 00:01:25 EDT 2001 i686 unknown by drl7x"
+#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux matthews.cs.Virginia.EDU 2.4.3-12 #1 Fri Jun 8 13:35:30 EDT 2001 i686 unknown by drl7x"
 
 /* LCLint's version number */
 #define LCL_PARSE_VERSION "LCLint 3.0.0.19"

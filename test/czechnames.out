@@ -1,6 +1,12 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
+
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 
 Finished LCLint checking --- no code errors found
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 czechnames.c:5:5: Variable michelob_light name violates Czech naming
     convention.  Czech prefix michelob is not the name of a type.
   Variable name is not consistent with Czech naming convention. (Setting either
@@ -12,6 +18,8 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
 
 Finished LCLint checking --- 2 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
   Function or iterator name is not consistent with Czech naming convention.
@@ -19,6 +27,8 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
 
 Finished LCLint checking --- 1 code error found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 czechnames.c:4:5: Variable pivo_pyet name violates Czech naming convention.
     Czech prefix pivo names an abstract type that is not accessible.
   Use +accessczech to allow access to type <t> in functions named <t>_<name>.
@@ -41,3 +51,4 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
 
 Finished LCLint checking --- 6 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -152,7 +152,7 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	else \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
-	  $(CP) mtgrammar.c mtgrammar.c.der
+	  $(CP) mtgrammar.c mtgrammar.c.der; \
 	  -$(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
 	  $(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h; \
 	  $(RM) mtgrammar.tab.c mtgrammar.tab.h; \

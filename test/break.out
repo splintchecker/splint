@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 break.c: (in function f)
 break.c:12:4: Break preceded by loopbreak is breaking a switch
 break.c:17:14: Suspected infinite loop.  No value used in loop test (x) is
@@ -9,6 +12,8 @@ break.c:34:24: Break preceded by innerbreak is not in a deep loop
 
 Finished LCLint checking --- 4 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 break.c: (in function f)
 break.c:12:4: Break preceded by loopbreak is breaking a switch
 break.c:14:4: Break statement in switch inside loop
@@ -21,6 +26,8 @@ break.c:34:24: Break preceded by innerbreak is not in a deep loop
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 break.c: (in function f)
 break.c:12:4: Break preceded by loopbreak is breaking a switch
 break.c:14:4: Break statement in switch inside loop
@@ -31,3 +38,4 @@ break.c:3:10: Suspected infinite loop.  No value used in loop test (x) is
 break.c:34:24: Break preceded by innerbreak is not in a deep loop
 
 Finished LCLint checking --- 5 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

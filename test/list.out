@@ -1,11 +1,8 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
-list.c: (in function list_addh)
-list.c:24:5: Variable e is kept in true branch, but not kept in continuation.
-   list.c:23:7: Storage e becomes kept
-list.c:25:2: Storage *(l->next) reachable from parameter contains 1 undefined
-                field: next
-list.c: (in function list_addh2)
-list.c:39:2: Storage *(l->next) reachable from parameter contains 1 undefined
-                field: next
-
-Finished LCLint checking --- 3 code errors found, as expected
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+list.c:8:20: Old style declaration uses unlisted parameter: smalloc
+*** Cannot continue.
+gmake[3]: *** [list] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

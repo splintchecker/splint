@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 ud.c: (in function f)
 ud.c:8:7: Variable y used before definition
 ud.c:10:7: Variable z used before definition
@@ -12,10 +15,11 @@ ud.c:56:7: Variable z5 used before definition
 
 Finished LCLint checking --- 9 code errors found, as expected
 
-ud2.c: (in function g)
-ud2.c:9:6: Unallocated storage y passed as out parameter to f1: y
-ud2.c: (in function h)
-ud2.c:20:7: Passed storage &x not completely defined: f2 (&x)
-ud2.c:23:7: Variable y used before definition
-
-Finished LCLint checking --- 3 code errors found, as expected
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+Continuing without LCL init file: lclinit.lci
+Continuing without LSL init file: lslinit.lsi
+Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
+variable.
+gmake[3]: *** [ud] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

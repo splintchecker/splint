@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 controldepth.c: (in function f)
 controldepth.c:8:15: Maximum control nesting depth (2) exceeded
   Maximum number of control levels exceeded. (-controlnestdepth will suppress
@@ -7,6 +10,8 @@ controldepth.c:15:17: Maximum control nesting depth (2) exceeded
 
 Finished LCLint checking --- 2 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 controldepth.c: (in function f)
 controldepth.c:6:15: Maximum control nesting depth (1) exceeded
   Maximum number of control levels exceeded. (-controlnestdepth will suppress
@@ -14,3 +19,4 @@ controldepth.c:6:15: Maximum control nesting depth (1) exceeded
 controldepth.c:11:13: Maximum control nesting depth (1) exceeded
 
 Finished LCLint checking --- 2 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,42 +1,15 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 cases.c: (in function f)
+cases.c:11:7: Unrecognized identifier: printf
 cases.c:12:10: Fall through case (no preceding break)
 cases.c:13:11: Variable i used before definition
 cases.c:30:10: Fall through case (no preceding break)
 cases.c:37:13: Fall through case (no preceding break)
 cases.c:40:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 5 code errors found, as expected
-
-cases2.c: (in function f2)
-cases2.c:26:5: Variable x is released in one possible execution, but live in
-                  other possible execution.
-   cases2.c:23:16: Storage x is released
-cases2.c: (in function f3)
-cases2.c:37:5: Variable x is released in one possible execution, but live in
-                  other possible execution.
-   cases2.c:36:16: Storage x is released
-
-Finished LCLint checking --- 2 code errors found, as expected
-
-cases2.c: (in function f2)
-cases2.c:26:5: Variable x is released in one possible execution, but live in
-                  other possible execution.
-   cases2.c:23:16: Storage x is released
-cases2.c: (in function f3)
-cases2.c:37:5: Variable x is released in one possible execution, but live in
-                  other possible execution.
-   cases2.c:36:16: Storage x is released
-cases2.c:1:24: Function g declared but not defined
-
-Finished LCLint checking --- 3 code errors found, as expected
-
-cases2.c: (in function f2)
-cases2.c:28:12: Variable x used after being released
-   cases2.c:23:16: Storage x released
-cases2.c: (in function f3)
-cases2.c:39:12: Variable x used after being released
-   cases2.c:36:16: Storage x released
-cases2.c:1:24: Function g declared but not defined
-
-Finished LCLint checking --- 3 code errors found, as expected
+Finished LCLint checking --- 6 code errors found, expected 5
+gmake[3]: *** [cases] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 structassign.c: (in function copyrecord)
 structassign.c:15:15: Released storage x.name reachable from parameter at
                          return point
@@ -12,7 +15,14 @@ structassign.c:28:12: Released storage x.name reachable from parameter at
                          return point
    structassign.c:28:12: Storage x.name is released
 structassign.c: (in function main)
+structassign.c:37:21: Unrecognized identifier: malloc
+structassign.c:38:3: Unrecognized identifier: assert
+structassign.c:38:21: Unrecognized identifier: NULL
+structassign.c:39:3: Unrecognized identifier: strcpy
+structassign.c:43:3: Unrecognized identifier: printf
 structassign.c:45:14: Only storage rc.name (type char *) derived from variable
                          declared in this scope is not released (memory leak)
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished LCLint checking --- 9 code errors found, expected 4
+gmake[3]: *** [structassign] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

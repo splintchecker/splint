@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 charlit.c: (in function f)
 charlit.c:3:11: Variable x initialized to type char, expects int: 'a'
   A character constant is used as an int. Use +charintliteral to allow
@@ -11,6 +14,8 @@ charlit.c:12:14: Variable u initialized to type int, expects unsigned int: -3
 
 Finished LCLint checking --- 4 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 charlit.c: (in function f)
 charlit.c:3:11: Variable x initialized to type char, expects int: 'a'
   A character constant is used as an int. Use +charintliteral to allow
@@ -28,4 +33,8 @@ charlit.c:12:14: Variable u initialized to type int, expects unsigned int: -3
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+
 Finished LCLint checking --- no code errors found
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

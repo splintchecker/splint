@@ -1,34 +1,10 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
-macrosef.c: (in macro f)
-macrosef.c:2:14: Macro parameter y used more than once
-macrosef.c: (in function m)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     file system state: (printf("yo\n"), 3)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     *stdout: (printf("yo\n"), 3)
-macrosef.c:14:14: Parameter 1 to f is declared sef, but the argument may modify
-                     *p: g(p)
-
-Finished LCLint checking --- 4 code errors found, as expected
-
-macrosef.c: (in macro f)
-macrosef.c:2:14: Macro parameter y used more than once
-macrosef.c: (in function m)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     file system state: (printf("yo\n"), 3)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     *stdout: (printf("yo\n"), 3)
-
-Finished LCLint checking --- 3 code errors found, as expected
-
-macrosef.c: (in macro f)
-macrosef.c:2:14: Macro parameter y used more than once
-macrosef.c: (in function m)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     file system state: (printf("yo\n"), 3)
-macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
-                     *stdout: (printf("yo\n"), 3)
-macrosef.c:14:14: Parameter 1 to f is declared sef, but the argument calls
-    unconstrained function g (no guarantee it will not modify something): g(p)
-
-Finished LCLint checking --- 4 code errors found, as expected
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+Continuing without LCL init file: lclinit.lci
+Continuing without LSL init file: lslinit.lsi
+Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
+variable.
+gmake[3]: *** [macrosef] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

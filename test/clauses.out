@@ -1,40 +1,18 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 clauses.c: (in function f)
-clauses.c:6:5: Variable x is released in true branch, but live in continuation.
-   clauses.c:5:13: Storage x is released
-clauses.c:11:5: Variable y is released in while body, but live if loop is not
-                   taken.
-   clauses.c:10:13: Storage y is released
-clauses.c:20:5: Variable z2 is released in false branch, but live in true
-                   branch.
-   clauses.c:19:13: Storage z2 is released
-clauses.c:20:5: Variable z is released in true branch, but live in false
-                   branch.
-   clauses.c:15:13: Storage z is released
+clauses.c:5:7: Unrecognized identifier: free
+clauses.c:22:12: Only storage x not released before return
+   clauses.c:1:23: Storage x becomes only
+clauses.c:22:12: Only storage y not released before return
+   clauses.c:1:42: Storage y becomes only
+clauses.c:22:12: Only storage z not released before return
+   clauses.c:1:61: Storage z becomes only
+clauses.c:22:12: Only storage z2 not released before return
+   clauses.c:1:80: Storage z2 becomes only
 
-Finished LCLint checking --- 4 code errors found, as expected
-
-Finished LCLint checking --- no code errors found
-
-clauses3.c: (in function h)
-clauses3.c:48:5: Storage x->x is released in one path, but live in another.
-   clauses3.c:46:10: Storage x->x is released
-clauses3.c: (in function m)
-clauses3.c:61:5: Storage x->x is released in one path, but live in another.
-   clauses3.c:60:13: Storage x->x is released
-
-Finished LCLint checking --- 2 code errors found, as expected
-
-Warning: selecting unix library.  Unix library is ad hoc addition to POSIX
-library.  Recommend use +posixlib to select POSIX library instead. Use
--warnunixlib to suppress this message.
-clauses3.c: (in function h)
-clauses3.c:48:5: Storage x->x is released in one path, but live in another.
-   clauses3.c:46:10: Storage x->x is released
-clauses3.c: (in function m)
-clauses3.c:60:13: Possibly null storage x->x passed as non-null param:
-                     free (x->x)
-clauses3.c:61:5: Storage x->x is released in one path, but live in another.
-   clauses3.c:60:13: Storage x->x is released
-
-Finished LCLint checking --- 3 code errors found, as expected
+Finished LCLint checking --- 5 code errors found, expected 4
+gmake[3]: *** [clauses] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

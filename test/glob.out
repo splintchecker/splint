@@ -1,31 +1,10 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
-glob.c: (in function useGlob)
-glob.lcl:3: Global z listed but not used
-glob.c: (in function dontuseGlob)
-glob.c:13:11: Undocumented use of global x
-glob.c: (in function callsUseGlob)
-glob.c:23:11: Called procedure useGlob may access global y
-glob.c:23:11: Called procedure useGlob may access global z
-
-Finished LCLint checking --- 4 code errors found, as expected
-
-glob.c: (in function dontuseGlob)
-glob.c:13:11: Undocumented use of global x
-glob.c: (in function callsUseGlob)
-glob.c:23:11: Called procedure useGlob may access global y
-glob.c:23:11: Called procedure useGlob may access global z
-
-Finished LCLint checking --- 3 code errors found, as expected
-
-glob.c: (in function useGlob)
-glob.lcl:3: Global z listed but not used
-glob.c: (in function dontuseGlob)
-glob.c:13:11: Undocumented use of global x
-glob.c: (in function unspec)
-glob.c:18:11: Undocumented use of global y
-glob.c:18:15: Undocumented use of global z
-glob.c: (in function callsUseGlob)
-glob.c:23:11: Called procedure useGlob may access global y
-glob.c:23:11: Called procedure useGlob may access global z
-
-Finished LCLint checking --- 6 code errors found, as expected
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+Continuing without LCL init file: lclinit.lci
+Continuing without LSL init file: lslinit.lsi
+Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
+variable.
+gmake[3]: *** [glob] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 stack.c: (in function stack1)
 stack.c:10:2: Stack-allocated storage *x reachable from parameter x
    stack.c:9:3: Storage *x becomes stack
@@ -11,4 +14,8 @@ stack.c:35:11: Stack-allocated storage sa reachable from return value: &sa[0]
 
 Finished LCLint checking --- 5 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+
 Finished LCLint checking --- no code errors found
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

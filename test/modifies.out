@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 modifies.c:7:29: Modifies list uses internalState which is a variable and has
     special meaning in a modifies list.  (Special meaning assumed.)
    modifies.c:4:25: Declaration of internalState
@@ -20,3 +23,4 @@ modclient.c: (in function mod)
 modclient.c:3:3: Statement has no effect: (void)f1(p)
 
 Finished LCLint checking --- 7 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,6 +1,12 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
+
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 
 Finished LCLint checking --- no code errors found
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 6 characters because alphabetical case is ignored
    external.c:1:5: Declaration of func
@@ -34,19 +40,18 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
 
 Finished LCLint checking --- 3 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 3 characters because alphabetical case is ignored
    external.c:1:5: Declaration of func
 external.c:5:5: External identifier small2 is not distinguishable from small1
                    in the first 3 characters (sma)
    external.c:4:5: Declaration of small1
-external.c:7:5: External identifier longfunction1 is not distinguishable from
-    LONG_MAX in the first 3 characters because alphabetical case is ignored
-   load file ansi.lcd:785:1: Specification of LONG_MAX
-   One or more additional indistinguishable external names not reported
 external.c:8:5: External identifier longfunction2 is not distinguishable from
-    LONG_MAX in the first 3 characters because alphabetical case is ignored
-   load file ansi.lcd:785:1: Specification of LONG_MAX
-   One or more additional indistinguishable external names not reported
+                   longfunction1 in the first 3 characters (lon)
+   external.c:7:5: Declaration of longfunction1
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished LCLint checking --- 3 code errors found, expected 4
+gmake[3]: *** [external] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

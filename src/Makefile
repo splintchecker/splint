@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/lclint
 pkgincludedir = $(includedir)/lclint
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoheader
+ACLOCAL = ${SHELL} /tmp/LCLintDev/config/missing --run aclocal
+AUTOCONF = ${SHELL} /tmp/LCLintDev/config/missing --run autoconf
+AUTOMAKE = ${SHELL} /tmp/LCLintDev/config/missing --run automake
+AUTOHEADER = ${SHELL} /tmp/LCLintDev/config/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -57,7 +57,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = 
 host_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run tar
+AMTAR = ${SHELL} /tmp/LCLintDev/config/missing --run tar
 AWK = gawk
 BISON = bison
 CAT = cat
@@ -80,7 +80,7 @@ RM = rm
 VERSION = 3.0.0.19
 am__include = include
 am__quote = 
-install_sh = /net/af10/evans/LCLintDev/config/install-sh
+install_sh = /tmp/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
@@ -812,7 +812,7 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 	else \
 	  $(BISON) $(YFLAGS) -p lsl signature.y; \
 	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
-	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
+	  -$(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
 	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
 	  $(RM) signature.tab.c signature.tab.h; \
 	fi
@@ -825,18 +825,19 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
-	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
+	  -$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset >Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
 	fi
 
-Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.c.der mtgrammar.y
+Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	if test x$(BISON) = xno; then \
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
-	  $(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
+	  $(CP) mtgrammar.c mtgrammar.c.der; \
+	  -$(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
 	  $(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h; \
 	  $(RM) mtgrammar.tab.c mtgrammar.tab.h; \
 	fi
@@ -848,9 +849,9 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 	  echo '* Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
-	  $(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
+	  -$(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
 	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h; \
-	  $(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
+	  0$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
 	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h; \
 	  $(RM) llgrammar.tab.c llgrammar.tab.h; \
 	fi

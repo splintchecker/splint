@@ -1,11 +1,17 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+merge.c: (in function f1)
+merge.c:13:11: Unrecognized identifier: NULL
+merge.c:14:22: Unrecognized identifier: free
 merge.c: (in function f2)
-merge.c:33:4: Variable y used in inconsistent state
-   merge.c:30:28: Storage y becomes inconsistent (released on one branch)
 merge.c:33:4: Dereference of possibly null pointer y: *y
    merge.c:21:12: Storage y may become null
 merge.c: (in function f3)
 merge.c:51:4: Dereference of possibly null pointer y: *y
    merge.c:50:7: Storage y may become null
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished LCLint checking --- 4 code errors found, expected 3
+gmake[3]: *** [merge] Error 1
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

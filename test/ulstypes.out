@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 ulstypes.c:3:23: Contradictory long and short type qualifiers
 ulstypes.c: (in function f)
 ulstypes.c:10:12: Function f expects arg 1 to be unsigned int gets long int: li
@@ -13,8 +16,13 @@ ulstypes.c:20:19: Variable x3 initialized to type int, expects unsigned int:
 
 Finished LCLint checking --- 8 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
+
 Finished LCLint checking --- no code errors found
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 ulstypes.c:3:23: Contradictory long and short type qualifiers
 ulstypes.c: (in function f)
 ulstypes.c:7:19: Variable loli initialized to type int, expects long int: 12
@@ -52,3 +60,4 @@ ulstypes.c:5:10: Function exported but not used outside ulstypes: f
    ulstypes.c:16:1: Definition of f
 
 Finished LCLint checking --- 28 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

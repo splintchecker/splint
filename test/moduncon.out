@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 moduncon.c: (in function g)
 moduncon.c:12:10: Undetected modification possible from call to unconstrained
                      function umod: umod
@@ -11,6 +14,8 @@ moduncon.c:13:10: Undetected modification possible from call to unconstrained
 
 Finished LCLint checking --- 4 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 moduncon.c: (in function f)
 moduncon.c:6:22: Undetected modification possible from call to unconstrained
                     function umod: umod
@@ -55,3 +60,4 @@ moduncon.c:10:5: Function g exported but not declared in header file
    moduncon.c:15:1: Definition of g
 
 Finished LCLint checking --- 22 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'

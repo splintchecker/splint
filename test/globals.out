@@ -1,4 +1,7 @@
+gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 globals.c: (in function noglobs)
@@ -9,6 +12,8 @@ globals.c:21:3: Undocumented use of global checkstrict
 
 Finished LCLint checking --- 5 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 globals.c: (in function noglobs)
@@ -20,6 +25,8 @@ globals.c:21:3: Undocumented use of global checkstrict
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 globals.c: (in function noglobs)
@@ -31,11 +38,15 @@ globals.c:21:3: Undocumented use of global checkstrict
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 
 Finished LCLint checking --- 2 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 globals.c: (in function noglobs)
@@ -47,6 +58,8 @@ globals.c:21:3: Undocumented use of global checkstrict
 
 Finished LCLint checking --- 6 code errors found, as expected
 
+Cannot find standard library: ansi.lcd
+     Check LARCH_PATH environment variable.
 globals.c:5:41: Redundant checked qualifier on doubled
 globals.c:6:46: Contradictory checked and unchecked qualifiers on contradict
 globals.c: (in function noglobs)
@@ -59,3 +72,4 @@ globals.c:19:3: Undocumented use of global check
 globals.c:21:3: Undocumented use of global checkstrict
 
 Finished LCLint checking --- 8 code errors found, as expected
+gmake[3]: Leaving directory `/tmp/LCLintDev/test'
