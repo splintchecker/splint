@@ -520,12 +520,15 @@ int fflush (/*@null@*/ FILE *stream)
 /*@dependent@*/ /*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
   /*@modifies *stream, fileSystem, errno@*/ ;
 
-extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
-     /*@modifies fileSystem, *stream, *buf@*/ ;
+void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
+     /*@modifies fileSystem, *stream, *buf@*/ 
+     /*:errorcode != 0*/ ;
+     /*:requires maxSet(buf) >= (BUFSIZ - 1):*/ ;
 
-extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
-		    int mode, size_t size)
-     /*@modifies fileSystem, *stream, *buf@*/ ;
+int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
+	     int mode, size_t size)
+      /*@modifies fileSystem, *stream, *buf@*/
+     /*@requires maxSet(buf) >= (size - 1) @*/ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
@@ -539,7 +542,7 @@ int /*@alt void@*/ fprintf (FILE *stream, char *format, ...)
 
 /*@scanflike@*/ 
 int fscanf (FILE *stream, char *format, ...)
-   /*@modifies fileSystem, *stream@*/ ;
+   /*@modifies fileSystem, *stream, errno@*/ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
@@ -556,20 +559,29 @@ int /*@alt void@*/ printf (char *format, ...)
 /*@scanflike@*/
 int scanf(char *format, ...)
    /*@globals stdin@*/
-   /*@modifies fileSystem, *stdin@*/ ;
+   /*@modifies fileSystem, *stdin, errno@*/ ;
+   /*drl added errno 09-19-2001 */ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
 int sprintf (/*@out@*/ char *s, char *format, ...) 
+   /*@warn bufferoverflowhigh "Buffer overflow possible with sprintf.  Recommend using snprintf instead"@*/
    /*@modifies *s@*/ ;
 # else
 /*@printflike@*/ 
 int /*@alt void@*/ sprintf (/*@out@*/ char *s, char *format, ...) 
+   /*@warn bufferoverflowhigh "Buffer overflow possible with sprintf.  Recommend using snprintf instead"@*/
    /*@modifies *s@*/ ;
 # endif
 
+/* evans 2002-07-09: snprintf added to standard.h (from unix.h) */
+/*@printflike@*/
+int snprintf (/*@out@*/ char * restrict s, size_t n, const char * restrict format, ...)
+   /*@modifies s@*/
+   /*@requires maxSet(s) >= (n - 1)@*/ ;
+
 /*@scanflike@*/ 
-int sscanf (/*@out@*/ char *s, char *format, ...) /*@*/ ;
+int sscanf (/*@out@*/ char *s, char *format, ...) /*@modifies errno@*/ ;
    /* modifies extra arguments */
 
 int vprintf (const char *format, va_list arg)
@@ -584,7 +596,7 @@ int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
      /*@modifies str@*/ ;
 
 int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
-     /*@requires maxSet(str) >= size@*/
+     /*@requires maxSet(str) >= (size - 1)@*/ /* drl - this was size, size-1 in stdio.h */
      /*@modifies str@*/ ;
 
 int fgetc (FILE *stream) 
@@ -606,9 +618,9 @@ int fputs (char *s, FILE *stream)
 
 /* note use of sef --- stream may be evaluated more than once */
 int getc (/*@sef@*/ FILE *stream)
-  /*@modifies fileSystem, *stream@*/ ;
+  /*@modifies fileSystem, *stream, errno@*/ ;
 
-int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ ;
+int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin, errno@*/ ;
 
 /*@null@*/ char *gets (/*@out@*/ char *s) 
    /*@warn bufferoverflowhigh
@@ -617,29 +629,36 @@ int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ ;
 
 int putc (int /*@alt char@*/ c, /*@sef@*/ FILE *stream)
    /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stream;@*/ ;
+   /*@modifies fileSystem, *stream, errno;@*/ ;
 
 int putchar (int /*@alt char@*/ c)
    /*:errorcode EOF:*/
-   /*@globals stdout@*/ /*@modifies fileSystem, *stdout@*/ ; 
+   /*@globals stdout@*/ 
+   /*@modifies fileSystem, *stdout, errno@*/ ; 
 
 int puts (const char *s)
    /*:errorcode EOF:*/
    /*@globals stdout@*/
-   /*@modifies fileSystem, *stdout@*/ ; 
+   /*@modifies fileSystem, *stdout, errno@*/ ; 
 
 int ungetc (int /*@alt char@*/ c, FILE *stream)
-  /*@modifies fileSystem, *stream, errno@*/ ;
+  /*@modifies fileSystem, *stream@*/ ;
+      /*drl REMOVED errno 09-19-2001*/
 
 size_t 
   fread (/*@out@*/ void *ptr, size_t size, size_t nobj, FILE *stream)
-  /*@modifies fileSystem, *ptr, *stream, errno@*/ ;
+  /*@modifies fileSystem, *ptr, *stream, errno@*/ 
+  /*requires maxSet(ptr) >= (size - 1) @*/
+  /*@ensures maxRead(ptr) == (size - 1) @*/ ;
 
 size_t fwrite (void *ptr, size_t size, size_t nobj, FILE *stream)
-  /*@modifies fileSystem, *stream, errno@*/ ;
+  /*@modifies fileSystem, *stream, errno@*/ 
+  /*@requires maxRead(ptr) >= size @*/ ;
 
 int fgetpos (FILE *stream, /*@out@*/ fpos_t *pos)
-  /*@modifies *pos, errno@*/ ;
+   /*@modifies *pos, errno@*/
+   /*@requires maxSet(pos) >= 0@*/
+   /*@ensures maxRead(pos) >= 0 @*/;
 
 int fseek (FILE *stream, long int offset, int whence)
    /*:errorcode -1:*/

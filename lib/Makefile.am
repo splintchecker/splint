@@ -1,5 +1,9 @@
 ## Note: starting comments with ## means they don't end up in Makefile
 
+### Make phony, always remake everything.
+
+.PHONY: all standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
+
 AUTOMAKE_OPTIONS = 1.5 foreign
 
 ## Put these files in $prefix/share/splint/lib
@@ -29,6 +33,8 @@ SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
 $(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
+
+all: standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
 
 standard.lcd: standard.h $(SPLINT)
 	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard

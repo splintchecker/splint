@@ -3272,6 +3272,13 @@ static flaglist flags =
   },
   {
     FK_FORMAT, FK_DISPLAY, plainFlag,
+    "showloadloc",
+    FLG_SHOWLOADLOC,
+    "show location information for load files",
+    NULL, 0, 0
+  },
+  {
+    FK_FORMAT, FK_DISPLAY, plainFlag,
     "parenfileformat",
     FLG_PARENFILEFORMAT,
     "show column number where error is found",

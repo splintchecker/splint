@@ -300,7 +300,7 @@ summarizeErrors ()
 	      hadOne = TRUE;
 	    }
 
-	  sprintf (buf, "%s%7d   %9d", cstring_toCharsSafe (fs), nrep, nsup);
+	  (void) snprintf (buf, 128, "%s%7d   %9d", cstring_toCharsSafe (fs), nrep, nsup);
 
 	  sumrep += nrep;
 	  sumsup += nsup;
@@ -316,7 +316,7 @@ summarizeErrors ()
 
       llmsglit ("                          ========  =========");
 
-      sprintf (buf, "%s%7d   %9d", cstring_toCharsSafe (ts), sumrep, sumsup);
+      (void) snprintf (buf, 128, "%s%7d   %9d", cstring_toCharsSafe (ts), sumrep, sumsup);
       cstring_free (ts);
       llmsgplain (cstring_copy (cstring_fromChars (buf)));
     }

@@ -702,6 +702,12 @@ fileloc_unparse (fileloc f)
 	    if (f->kind == FL_LIB)
 	      {
 		fname = message ("load file %q", fileloc_outputFilename (f));
+
+		if (!context_getFlag (FLG_SHOWLOADLOC))
+		  {
+		    res = fname;
+		    break;
+		  }
 	      }
 	    else
 	      {
@@ -738,6 +744,7 @@ fileloc_unparse (fileloc f)
 		else
 		  {
 		    res = fname;
+		    /*@-branchstate@*/ /* spurious warnings reporteded because of break above */
 		  }
 	      }
 	    else if (fileloc_linenoDefined (f))
@@ -767,7 +774,8 @@ fileloc_unparse (fileloc f)
     {
       res = cstring_makeLiteral ("< Location unknown >");
     }
-
+  /*@=branchstate@*/ /*@i2523 this is a spurious warning because of the break */
+  
   in_funparse = FALSE;
   return res;
 }

@@ -269,6 +269,7 @@ static void setTokLengthT (size_t len)
 
 "volatile"	{ setTokLength (8); RETURN_TOK (QVOLATILE); }
 "const"		{ setTokLength (5); RETURN_TOK (QCONST); }
+"restrict"	{ setTokLength (8); RETURN_TOK (QRESTRICT); }
 
                         /* some systems expect this! [gack!] */ 
 "__const"	{ setTokLength (7); RETURN_TOK (QCONST); }

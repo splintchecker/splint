@@ -493,13 +493,14 @@ keep:
 ### libs
 ### 2001-05-22: 2 new errors found (fixed spec of signal)
 ### 2001-05-30: 3 new errors found (formatconst)
+### 2002-07-08: 2 new errors found (getc modifies errno)
 
 .PHONY: libs
 libs:
 	-$(SPLINTR) libs.c +longunsignedunsignedintegral -expect 18
 	-$(SPLINTR) libs.c -expect 22
 	-$(SPLINTR) libs.c +globunspec +modunspec -expect 25
-	-$(SPLINTR) libs.c +strictlib +globunspec +modunspec -expect 42
+	-$(SPLINTR) libs.c +strictlib +globunspec +modunspec -expect 44
 
 .PHONY: lintcomments
 lintcomments:

@@ -2,6 +2,9 @@
 employee.c: (in function employee_equal)
 employee.c:25: Function strncmp expects arg 3 to be size_t gets int:
                   maxEmployeeName
+employee.c: (in function employee_sprint)
+employee.c:33: Buffer overflow possible with sprintf.  Recommend using snprintf
+                  instead: sprintf
 empset.c: (in function empset_insert)
 empset.c:28: Variable er declared but not used
 empset.c: (in function empset_disjointUnion)
@@ -34,9 +37,17 @@ dbase.c: (in function query)
 dbase.c:210: Variable er declared but not used
 dbase.c:211: Variable e declared but not used
 drive.c: (in function main)
+drive.c:47: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:63: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:81: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:118: Buffer overflow possible with sprintf.  Recommend using snprintf
+                instead: sprintf
 drive.c:123: Return value (type db_status) ignored: hire(e)
 
-Finished checking --- 16 code warnings, as expected
+Finished checking --- 21 code warnings, as expected
 
 employee.h:2: Name EMPLOYEE_H is reserved for future library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
@@ -83,6 +94,8 @@ employee.c:31: Read-only string literal storage used as initial value for
                   unqualified storage: jobs[1] = "non-manager"
 employee.c:31: Read-only string literal storage used as initial value for
                   unqualified storage: jobs[2] = "?"
+employee.c:33: Buffer overflow possible with sprintf.  Recommend using snprintf
+                  instead: sprintf
 employee.c:34: Array fetch using non-integer, gender: gender[e.gen]
 employee.c:34: Array fetch using non-integer, job: jobs[e.j]
 employee.h: (in macro employee_initMod)
@@ -541,10 +554,16 @@ dbase.c:272: Incompatible types for <= (int, enum { mMGRS, fMGRS, mNON, fNON })
 drive.c: (in function main)
 drive.c:22: Statement has no effect: employee_initMod()
 drive.c:23: Statement has no effect: empset_initMod()
+drive.c:47: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:48: Return value (type bool) ignored: employee_setName...
 drive.c:49: Return value (type bool) ignored: empset_insert(em...
+drive.c:63: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:64: Return value (type bool) ignored: employee_setName...
 drive.c:65: Return value (type bool) ignored: empset_delete(em...
+drive.c:81: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:82: Return value (type bool) ignored: employee_setName...
 drive.c:83: Return value (type bool) ignored: empset_insert(em...
 drive.c:107: Return value (type bool) ignored: empset_delete(em...
@@ -553,6 +572,8 @@ drive.c:116: Body of else clause of if statement is not a block:
                 e.gen = FEMALE;
 drive.c:117: Body of if clause of if statement is not a block: e.j = NONMGR;
 drive.c:117: Body of else clause of if statement is not a block: e.j = MGR;
+drive.c:118: Buffer overflow possible with sprintf.  Recommend using snprintf
+                instead: sprintf
 drive.c:119: Return value (type bool) ignored: employee_setName...
 drive.c:123: Return value (type db_status) ignored: hire(e)
 drive.c:127: Assignment of db_status to int: j = hire(e)
@@ -653,7 +674,8 @@ type                         1           0
 enumindex                   24           0
 enumint                     15           0
 matchanyintegral             2           0
+bufferoverflowhigh           5           0
                           ========  =========
-Total                      333          73
+Total                      338          73
 
-Finished checking --- 333 code warnings, as expected
+Finished checking --- 338 code warnings, as expected

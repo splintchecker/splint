@@ -74,6 +74,13 @@ qualList_grow (/*@notnull@*/ qualList s)
   sfree (oldelements);
 }
 
+qualList qualList_single (qual el)
+{
+  /*@-unqualifiedtrans@*/ /* must be only */
+  return (qualList_add (qualList_undefined, el));
+  /*@=unqualifiedtrans@*/
+}
+
 qualList qualList_add (qualList s, qual el)
 {
   if (qualList_isUndefined (s))

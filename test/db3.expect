@@ -1,4 +1,16 @@
 
+employee.c: (in function employee_sprint)
+employee.c:38: Buffer overflow possible with sprintf.  Recommend using snprintf
+                  instead: sprintf
+drive.c: (in function main)
+drive.c:50: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:66: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:84: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
+drive.c:138: Buffer overflow possible with sprintf.  Recommend using snprintf
+                instead: sprintf
 
 Error Type                Reported  Suppressed
 ===================       ========  =========
@@ -9,11 +21,15 @@ formalarray                  0          24
 modfilesys                   0          25
 redecl                       0           7
 exporttype                   0           3
+bufferoverflowhigh           5           0
                           ========  =========
-Total                        0          64
+Total                        5          64
 
-Finished checking --- no warnings
+Finished checking --- 5 code warnings, as expected
 
+employee.c: (in function employee_sprint)
+employee.c:38: Buffer overflow possible with sprintf.  Recommend using snprintf
+                  instead: sprintf
 eref.c: (in function eref_alloc)
 eref.c:36: Called procedure printf may access global stdout
 eref.c:36: Undocumented modification of *stdout possible from call to printf:
@@ -65,14 +81,20 @@ drive.c:41: Called procedure printf may access global stdout
 drive.c:41: Undocumented modification of *stdout possible from call to printf:
                printf("Size should be 0.\n")
 drive.c:41: Return value (type int) ignored: printf("Size sho...
+drive.c:50: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:57: Called procedure printf may access global stdout
 drive.c:57: Undocumented modification of *stdout possible from call to printf:
                printf("Size should be 500.\n")
 drive.c:57: Return value (type int) ignored: printf("Size sho...
+drive.c:66: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:73: Called procedure printf may access global stdout
 drive.c:73: Undocumented modification of *stdout possible from call to printf:
                printf("Size should be 250.\n")
 drive.c:73: Return value (type int) ignored: printf("Size sho...
+drive.c:84: Buffer overflow possible with sprintf.  Recommend using snprintf
+               instead: sprintf
 drive.c:93: Called procedure printf may access global stdout
 drive.c:93: Undocumented modification of *stdout possible from call to printf:
                printf("Size should be 350.\n")
@@ -89,6 +111,8 @@ drive.c:109: Called procedure printf may access global stdout
 drive.c:109: Undocumented modification of *stdout possible from call to printf:
                 printf("%s\n", &(na[0]))
 drive.c:109: Return value (type int) ignored: printf("%s\n", &...
+drive.c:138: Buffer overflow possible with sprintf.  Recommend using snprintf
+                instead: sprintf
 drive.c:151: Called procedure printf may access global stdout
 drive.c:151: Undocumented modification of *stdout possible from call to printf:
     printf("Should print true: %s\n", bool_unparse(status == DBS_DUPLERR))
@@ -139,7 +163,8 @@ globs                       26           0
 retvalint                   25           0
 redecl                       0           7
 exporttype                   0           3
+bufferoverflowhigh           5           0
                           ========  =========
-Total                       77          64
+Total                       82          64
 
-Finished checking --- 77 code warnings, as expected
+Finished checking --- 82 code warnings, as expected

@@ -19,8 +19,9 @@
 
 typedef enum { 
   QU_UNKNOWN = 0,
-  QU_CONST, QU_VOLATILE, QU_INLINE, 
-  QU_EXTERN, QU_STATIC, QU_AUTO, QU_REGISTER, 
+  QU_CONST, QU_VOLATILE, QU_RESTRICT,
+  QU_INLINE, QU_EXTERN, QU_STATIC, 
+  QU_AUTO, QU_REGISTER, 
   QU_SHORT, QU_LONG, QU_SIGNED, QU_UNSIGNED, 
   QU_OUT, QU_IN,
   QU_ONLY, QU_IMPONLY,
@@ -91,6 +92,7 @@ extern bool qual_isNeverExit (qual) /*@*/ ;
 extern bool qual_isTrueExit (qual) /*@*/ ;
 extern bool qual_isFalseExit (qual) /*@*/ ;
 extern bool qual_isConst (qual) /*@*/ ;
+extern bool qual_isRestrict (qual) /*@*/ ;
 extern bool qual_isVolatile (qual) /*@*/ ;
 extern bool qual_isInline (qual) /*@*/ ;
 extern bool qual_isExtern (qual) /*@*/ ;
@@ -178,6 +180,7 @@ extern /*@observer@*/ annotationInfo qual_getAnnotationInfo (qual) /*@*/ ;
 # define qual_isTrueExit(q)   ((q)->kind == QU_TRUEEXIT)
 # define qual_isFalseExit(q)  ((q)->kind == QU_FALSEEXIT)
 # define qual_isConst(q)      ((q)->kind == QU_CONST)
+# define qual_isRestrict(q)   ((q)->kind == QU_RESTRICT)
 # define qual_isVolatile(q)   ((q)->kind == QU_VOLATILE)
 # define qual_isInline(q)     ((q)->kind == QU_INLINE)
 # define qual_isExtern(q)     ((q)->kind == QU_EXTERN)
@@ -248,6 +251,7 @@ extern qual qual_createNeverExit (void) /*@*/ ;
 extern qual qual_createFalseExit (void) /*@*/ ;    
 extern qual qual_createTrueExit (void) /*@*/ ;    
 extern qual qual_createConst (void) /*@*/ ;      
+extern qual qual_createRestrict (void) /*@*/ ;      
 extern qual qual_createVolatile (void) /*@*/ ;   
 extern qual qual_createInline (void) /*@*/ ;     
 extern qual qual_createExtern (void) /*@*/ ;     
@@ -319,6 +323,7 @@ extern qual qual_createMessageLike (void) /*@*/ ;
 # define qual_createTrueExit()   qual_createPlain (QU_TRUEEXIT)
 # define qual_createFalseExit()  qual_createPlain (QU_FALSEEXIT)
 # define qual_createConst()      qual_createPlain (QU_CONST)
+# define qual_createRestrict()   qual_createPlain (QU_RESTRICT)
 # define qual_createVolatile()   qual_createPlain (QU_VOLATILE)
 # define qual_createInline()     qual_createPlain (QU_INLINE)
 # define qual_createExtern()     qual_createPlain (QU_EXTERN)

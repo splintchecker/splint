@@ -22,9 +22,11 @@ test:
 	$(MAKE) -e check
 
 check: $(LCSFILES)
-	-$(SPLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude $(MODULES) -expect 15
-	-$(SPLINT) -exportlocal -showcol +allimponly $(MODULES) -expect 25
-	-$(SPLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude $(MODULES)
+	-$(SPLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude $(MODULES) -bufferoverflowhigh -expect 15
+	-$(SPLINT) -exportlocal -showcol +allimponly $(MODULES) -bufferoverflowhigh -expect 25
+	-$(SPLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude -bufferoverflowhigh $(MODULES)
+
+# evans 2002-07-09: added bufferoverflowhigh flags to suppress sprintf warnings
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

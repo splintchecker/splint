@@ -110,6 +110,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 /*@+boolint@*/
 /*@+charint@*/
 
+/* Warnings for using sprintf - suppress them all for now... */
+/*@-bufferoverflowhigh@*/
+
 #define NO_SHORTNAMES
 
 # ifdef open
@@ -8450,3 +8453,5 @@ void cppBuffer_forward (cppBuffer *buf, int n)
   llassert (buf->cur != NULL);
   buf->cur += n;
 }
+
+/*@=bufferoverflowhigh@*/

@@ -42,7 +42,7 @@ typedef enum
 
 /* char *s, anytype v */
 /*@notfunction@*/
-# define GETPRINTF(s,v) (sprintf (strbuf, s, v), mstring_copy (strbuf))
+# define GETPRINTF(s,v) (snprintf (strbuf, 64, s, v), mstring_copy (strbuf))
 
 /*
 ** returns control code indicated by *c, and

@@ -677,18 +677,16 @@ sort_makePtr (ltoken t, sort baseSort)
 }
 
 sort
-sort_makePtrN (sort s, int pointers)
+sort_makePtrN (sort s, pointers p)
 {
-  llassert (pointers >= 0);
-
-  if (pointers == 0)
+  if (pointers_isUndefined (p))
     {
       return s;
     }
   else
     {
       return sort_makePtrN (sort_makePtr (ltoken_undefined, s), 
-			    pointers - 1);
+			    pointers_getRest (p));
     }
 }
 

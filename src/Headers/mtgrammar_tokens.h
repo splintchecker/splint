@@ -71,11 +71,12 @@ typedef union {
   mtTransferAction mttransferaction;
   mtLoseReferenceList mtlosereferencelist;
   mtLoseReference mtlosereference;
-
+  pointers pointers;
   /*@only@*/ cstringList cstringlist;
   ctype ctyp;
   /*@only@*/ qtype qtyp;
-  int count;
+  qual qual;
+  qualList quals;
 } YYSTYPE;
 #define	MT_BADTOK	257
 #define	MT_END	258
@@ -121,8 +122,9 @@ typedef union {
 #define	MT_SIGNEDINTEGRALTYPE	298
 #define	MT_CONST	299
 #define	MT_VOLATILE	300
-#define	MT_STRINGLIT	301
-#define	MT_IDENT	302
+#define	MT_RESTRICT	301
+#define	MT_STRINGLIT	302
+#define	MT_IDENT	303
 
 /*
 ** Resets all flags in bison.head

@@ -99,13 +99,19 @@ taintedimplicit.c:17:18: Invalid transfer from tainted [result of taintme] to
 Finished checking --- 1 code warning, as expected
 
 sprintf.c: (in function sp)
+sprintf.c:7:3: Buffer overflow possible with sprintf.  Recommend using snprintf
+                  instead: sprintf
+sprintf.c:10:3: Buffer overflow possible with sprintf.  Recommend using
+                   snprintf instead: sprintf
 sprintf.c:11:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    sprintf.c:10:37: s becomes tainted
    tainted.xh:26:55: s1 becomes untainted
+sprintf.c:13:3: Buffer overflow possible with sprintf.  Recommend using
+                   snprintf instead: sprintf
 sprintf.c:14:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    sprintf.c:13:61: s becomes tainted
    tainted.xh:26:55: s1 becomes untainted
 
-Finished checking --- 2 code warnings, as expected
+Finished checking --- 5 code warnings, as expected

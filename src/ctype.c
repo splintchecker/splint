@@ -1998,13 +1998,14 @@ ctype_getBaseType (ctype c)
 }
 
 ctype
-ctype_adjustPointers (int np, ctype c)
+ctype_adjustPointers (pointers p, ctype c)
 {
-  
+  int np = pointers_depth (p);
+
   if (ctype_isFunction (c))
     {
       c = ctype_makeParamsFunction
-	 (ctype_adjustPointers (np, ctype_getReturnType (c)),
+	 (ctype_adjustPointers (p, ctype_getReturnType (c)),
 	 uentryList_copy (ctype_argsFunction (c)));
     }
   else

@@ -87,6 +87,7 @@ typedef union
   /*@only@*/ abstBodyNode abstbody;
   /*@only@*/ abstractNode abstract;
   /*@only@*/ exposedNode exposed;
+  /*@only@*/ pointers pointers;
   /*    taggedUnionNode taggedunion; */
   /*@only@*/ globalList globals;
   /*@only@*/ constDeclarationNode constdeclaration;

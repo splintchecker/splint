@@ -121,7 +121,8 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
-       metaStateExpression.c metaStateSpecifier.c functionConstraint.c
+       metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
+       pointers.c	
 
 
 SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
@@ -408,11 +409,12 @@ am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	functionClause.$(OBJEXT) functionClauseList.$(OBJEXT) \
 	metaStateConstraint.$(OBJEXT) metaStateConstraintList.$(OBJEXT) \
 	metaStateExpression.$(OBJEXT) metaStateSpecifier.$(OBJEXT) \
-	functionConstraint.$(OBJEXT) structNames.$(OBJEXT) \
-	transferChecks.$(OBJEXT) varKinds.$(OBJEXT) \
-	nameChecks.$(OBJEXT) exprData.$(OBJEXT) cstring.$(OBJEXT) \
-	fileloc.$(OBJEXT) message.$(OBJEXT) inputStream.$(OBJEXT) \
-	fileTable.$(OBJEXT) cstringTable.$(OBJEXT) valueTable.$(OBJEXT) \
+	functionConstraint.$(OBJEXT) pointers.$(OBJEXT) \
+	structNames.$(OBJEXT) transferChecks.$(OBJEXT) \
+	varKinds.$(OBJEXT) nameChecks.$(OBJEXT) exprData.$(OBJEXT) \
+	cstring.$(OBJEXT) fileloc.$(OBJEXT) message.$(OBJEXT) \
+	inputStream.$(OBJEXT) fileTable.$(OBJEXT) \
+	cstringTable.$(OBJEXT) valueTable.$(OBJEXT) \
 	stateValue.$(OBJEXT) llerror.$(OBJEXT) messageLog.$(OBJEXT) \
 	flagMarker.$(OBJEXT) aliasTable.$(OBJEXT) ynm.$(OBJEXT) \
 	sRefTable.$(OBJEXT) genericTable.$(OBJEXT) ekind.$(OBJEXT) \
@@ -544,7 +546,7 @@ depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 @AMDEP_TRUE@	$(DEPDIR)/mttok.Po $(DEPDIR)/multiVal.Po \
 @AMDEP_TRUE@	$(DEPDIR)/nameChecks.Po $(DEPDIR)/osd.Po \
 @AMDEP_TRUE@	$(DEPDIR)/pairNodeList.Po \
-@AMDEP_TRUE@	$(DEPDIR)/paramNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/paramNodeList.Po $(DEPDIR)/pointers.Po \
 @AMDEP_TRUE@	$(DEPDIR)/programNodeList.Po $(DEPDIR)/qtype.Po \
 @AMDEP_TRUE@	$(DEPDIR)/qual.Po $(DEPDIR)/qualList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/quantifierNodeList.Po \
@@ -763,6 +765,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/osd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pairNodeList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/paramNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pointers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/programNodeList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qtype.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qual.Po@am__quote@

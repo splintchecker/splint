@@ -24,6 +24,7 @@ abst_typedef /*@null@*/ struct s_genericTable *genericTable;
 abst_typedef /*@null@*/ struct s_annotationInfo *annotationInfo;
 abst_typedef /*@null@*/ struct s_inputStream *inputStream;
 abst_typedef /*@null@*/ struct s_stateValue *stateValue;
+abst_typedef /*@null@*/ struct s_pointers *pointers;
 abst_typedef /*@null@*/ genericTable valueTable;
 abst_typedef /*@null@*/ genericTable metaStateTable;
 abst_typedef /*@null@*/ genericTable annotationTable;

@@ -154,7 +154,10 @@ libs.c:33:7: Undocumented modification of *f possible from call to fgetc:
 libs.c:33:7: Undocumented modification of errno possible from call to fgetc:
                 fgetc(f)
 libs.c:33:3: Assignment of int to char: c = fgetc(f)
+libs.c:34:7: Called procedure getc may access global errno
 libs.c:34:7: Undocumented modification of *f possible from call to getc:
+                getc(f)
+libs.c:34:7: Undocumented modification of errno possible from call to getc:
                 getc(f)
 libs.c:34:3: Assignment of int to char: c = getc(f)
 libs.c: (in function main)
@@ -193,4 +196,4 @@ libs.c:55:3: Undocumented modification of errno possible from call to signal:
 libs.c:55:3: Return value (type [function (int) returns void]) ignored:
                 signal(SIGHUP, l...
 
-Finished checking --- 42 code warnings, as expected
+Finished checking --- 44 code warnings, as expected

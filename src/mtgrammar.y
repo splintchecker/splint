@@ -80,11 +80,12 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
   mtTransferAction mttransferaction;
   mtLoseReferenceList mtlosereferencelist;
   mtLoseReference mtlosereference;
-
+  pointers pointers;
   /*@only@*/ cstringList cstringlist;
   ctype ctyp;
   /*@only@*/ qtype qtyp;
-  int count;
+  qual qual;
+  qualList quals;
 }
 
 /* Don't forget to enter all tokens in mtscanner.c */
@@ -117,11 +118,11 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 
 %token <tok> MT_CHAR MT_INT MT_FLOAT MT_DOUBLE MT_VOID  MT_ANYTYPE MT_INTEGRALTYPE MT_UNSIGNEDINTEGRALTYPE
 %token <tok> MT_SIGNEDINTEGRALTYPE 
-%token <tok> MT_CONST MT_VOLATILE
+%token <tok> MT_CONST MT_VOLATILE MT_RESTRICT
 %token <tok> MT_STRINGLIT
 %token <tok> MT_IDENT
 
-%type <count> pointers
+%type <pointers> pointers
 %type <ctyp> optType typeSpecifier typeName abstractDecl abstractDeclBase 
 %type <qtyp> typeExpression
 %type <qtyp> completeType completeTypeAux optCompleteType
@@ -148,7 +149,8 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 %type <mtdecl> declarationNode
 %type <mtpieces> declarationPieces
 %type <tok> valueChoice
-
+%type <quals> innerModsList
+%type <qual> innerMods
 
 %start file
 
@@ -232,18 +234,19 @@ abstractDecl
  | pointers abstractDeclBase { $$ = ctype_adjustPointers ($1, $2); }
 
 pointers
- : MT_STAR { $$ = 1; }
- | MT_STAR innerModsList { $$ = 1; }
- | MT_STAR pointers { $$ = 1 + $2; }
- | MT_STAR innerModsList pointers { $$ = 1 + $3; }
+ : MT_STAR { $$ = pointers_createMt ($1); }
+ | MT_STAR innerModsList { $$ = pointers_createModsMt ($1, $2); }
+ | MT_STAR pointers { $$ = pointers_extend (pointers_createMt ($1), $2); }
+ | MT_STAR innerModsList pointers { $$ = pointers_extend (pointers_createModsMt ($1, $2), $3); }
 
 innerMods
- : MT_CONST    { /* ignored for now */; }
- | MT_VOLATILE { ; }
+ : MT_CONST    { $$ = qual_createConst (); }
+ | MT_VOLATILE { $$ = qual_createVolatile (); }
+ | MT_RESTRICT { $$ = qual_createRestrict (); }
 
 innerModsList
- : innerMods { ; }
- | innerModsList innerMods { ; }
+ : innerMods { $$ = qualList_single ($1); }
+ | innerModsList innerMods { $$ = qualList_add ($1, $2); }
 
 abstractDeclBase
  : MT_LPAREN abstractDecl MT_RPAREN { $$ = ctype_expectFunction ($2); }

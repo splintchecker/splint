@@ -192,8 +192,8 @@ char *FormatInt (int i)
 {
   char temp[255]; /* assume the integer has at most 254 digits */
   char *outs;
-
-  sprintf (temp, "%i", i);
+  int sres = snprintf (temp, 255, "%i", i);
+  check (sres >= 0 && sres <= 255);
   outs = (char *) dmalloc (sizeof (*outs) * (1 + strlen (temp)));
   strcpy (outs, temp);
 

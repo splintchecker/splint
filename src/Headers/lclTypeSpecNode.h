@@ -27,7 +27,7 @@ struct s_lclTypeSpecNode {
     /*@null@*/ enumSpecNode enumspec;
     lclconj conj;
   } content;
-  int pointers;
+  pointers pointers;
 } ;
 
 /*@constant null lclTypeSpecNode lclTypeSpecNode_undefined; @*/

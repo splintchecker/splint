@@ -13,6 +13,8 @@
 
 @SET_MAKE@
 
+### Make phony, always remake everything.
+
 SHELL = @SHELL@
 
 srcdir = @srcdir@
@@ -245,8 +247,12 @@ uninstall-am: uninstall-info-am uninstall-splintlibDATA
 	uninstall-splintlibDATA
 
 
+.PHONY: all standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
+
 $(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
+
+all: standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
 
 standard.lcd: standard.h $(SPLINT)
 	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard

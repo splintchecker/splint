@@ -232,7 +232,7 @@ extern ctkind ctkind_fromInt (int p_i) /*@*/ ;
 
 extern bool ctype_matchDef (ctype p_c1, ctype p_c2) /*@*/ ;
 extern ctype ctype_undump (char **p_c);
-extern ctype ctype_adjustPointers(int p_np, ctype p_c);
+extern ctype ctype_adjustPointers (pointers p_p, ctype p_c);
 extern ctype ctype_baseArrayPtr (ctype p_c) /*@*/ ;
 extern ctype ctype_combine (ctype p_dominant, ctype p_modifier) ;
 

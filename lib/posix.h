@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.15 2002/03/25 18:55:48 evans1629 Exp $
+ * $Id: posix.h,v 1.16 2002/07/08 18:10:24 evans1629 Exp $
  */
 
 /*
@@ -229,13 +229,13 @@ struct group {
   char **gr_mem;
 };
 
-	extern /*@null@*/ struct group *
-getgrgid (gid_t gid)
-	/*@modifies errno@*/;
+/* evans 2002-07-09: added observer annotation (reported by Enrico Scholz). */
 
-	extern /*@null@*/ struct group *
-getgrnam (const char *nm)
-	/*@modifies errno@*/;
+/*@observer@*/ /*@null@*/ struct group * getgrgid (gid_t gid)
+   /*@modifies errno@*/;
+
+/*@observer@*/ /*@null@*/ struct group *getgrnam (const char *nm)
+   /*@modifies errno@*/;
 
 /*
 ** limits.h
@@ -301,13 +301,11 @@ struct passwd {
   char *pw_shell;
 } ;
 
-	extern /*@observer@*/ /*@null@*/ struct passwd *
-	getpwnam (const char *)
-     	/*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
+/*@observer@*/ /*@null@*/ struct passwd *getpwnam (const char *)
+   /*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
 
-	extern /*@observer@*/ /*@null@*/ struct passwd *
-getpwuid (uid_t uid)
-	/*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
+/*@observer@*/ /*@null@*/ struct passwd *getpwuid (uid_t uid)
+   /*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
 
 /*
 ** setjmp.h
@@ -315,13 +313,9 @@ getpwuid (uid_t uid)
 
 typedef /*@abstract@*/ /*@mutable@*/ void *sigjmp_buf;
 
-	extern /*@mayexit@*/ void
-siglongjmp (sigjmp_buf env, int val)
-	/*@*/;
+/*@mayexit@*/ void siglongjmp (sigjmp_buf env, int val)	/*@*/;
 
-	extern int
-sigsetjmp (/*@out@*/ sigjmp_buf env, int savemask)
-	/*@modifies env@*/;
+int sigsetjmp (/*@out@*/ sigjmp_buf env, int savemask) /*@modifies env@*/;
 
 /*
 ** signal.h

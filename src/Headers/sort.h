@@ -101,7 +101,7 @@ extern sort sort_makeSyn (ltoken p_t, sort p_s, lsymbol p_n) /*@*/ ;
 extern sort sort_makeFormal (sort p_insort) /*@*/ ;
 extern sort sort_makeGlobal (sort p_insort) /*@*/ ;
 extern sort sort_makePtr (ltoken p_t, sort p_baseSort) /*@*/ ;
-extern sort sort_makePtrN (sort p_s, int p_pointers) /*@*/ ;
+extern sort sort_makePtrN (sort p_s, pointers p_p) /*@*/ ;
 extern sort sort_makeVal (sort p_sor) /*@*/ ;
 extern sort sort_makeObj (sort p_sor) /*@*/ ;
 

@@ -84,6 +84,7 @@ static void mtscanner_initMod (void)
   cstringTable_insert (tokenTable, cstring_makeLiteral ("signedintegraltype"), MT_SIGNEDINTEGRALTYPE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("const"), MT_CONST);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("volatile"), MT_VOLATILE);
+  cstringTable_insert (tokenTable, cstring_makeLiteral ("restrict"), MT_RESTRICT);
 
   /*
   ** Punctuation

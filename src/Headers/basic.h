@@ -47,6 +47,7 @@
 # include "fileLib.h"
 # include "inputStream.h"
 # include "qualList.h"
+# include "pointers.h"
 
 # ifndef NOLCL
 # include "code.h"

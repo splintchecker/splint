@@ -210,12 +210,15 @@ qtype qtype_newQbase (qtype q1, qtype q2)
   return q1;
 }
 
-void qtype_adjustPointers (int n, qtype q)
+void qtype_adjustPointers (pointers n, qtype q)
 {
   if (qtype_isDefined (q))
     {
+      DPRINTF (("Pointers: %s %s", pointers_unparse (n), qtype_unparse (q)));
       q->type = ctype_adjustPointers (n, q->type);
     }
+
+  pointers_free (n);
 }
 
 # ifndef NOLCL

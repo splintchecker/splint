@@ -105,6 +105,7 @@ bool g_inTypeDef = FALSE;
   /*@only@*/ abstBodyNode abstbody;
   /*@only@*/ abstractNode abstract;
   /*@only@*/ exposedNode exposed;
+  /*@only@*/ pointers pointers;
   /*    taggedUnionNode taggedunion; */
   /*@only@*/ globalList globals;
   /*@only@*/ constDeclarationNode constdeclaration;
@@ -318,7 +319,8 @@ bool g_inTypeDef = FALSE;
 %type <opform> opForm
 %type <signature> signature
 %type <typname> typeName
-%type <count> middle placeList pointers 
+%type <count> middle placeList 
+%type <pointers> pointers 
 %type <abstDecl> optAbstDeclarator 
 %type <lcltypespec> lclTypeSpec lclType sortSpec
 %type <ltokenList> enumeratorList postfixOps
@@ -885,8 +887,8 @@ lclType
      $1->pointers = $2; $$ = $1; }
 
 pointers   
- : LLT_MULOP          { $$ = 1; }
- | pointers LLT_MULOP { $$ = $1 + 1; } 
+ : LLT_MULOP          { $$ = pointers_createLt ($1); }
+ | pointers LLT_MULOP { $$ = pointers_extend ($1, pointers_createLt ($2)); }
 
 structOrUnionSpec  
  : LLT_STRUCT optTagId 

@@ -1674,7 +1674,7 @@ makeLclTypeSpecNodeConj (/*@null@*/ lclTypeSpecNode a, /*@null@*/ lclTypeSpecNod
   lclTypeSpecNode n = (lclTypeSpecNode) dmalloc (sizeof (*n));
 
   n->kind = LTS_CONJ;
-  n->pointers = 0;
+  n->pointers = pointers_undefined;
   n->quals = qualList_new ();
   n->content.conj = (lclconj) dmalloc (sizeof (*n->content.conj));
   n->content.conj->a = a;
@@ -1689,7 +1689,7 @@ makeLclTypeSpecNodeType (/*@null@*/ CTypesNode x)
   lclTypeSpecNode n = (lclTypeSpecNode) dmalloc (sizeof (*n));
 
   n->kind = LTS_TYPE;
-  n->pointers = 0;
+  n->pointers = pointers_undefined;
   n->content.type = x;
   n->quals = qualList_new ();
   return (n);
@@ -1701,7 +1701,7 @@ makeLclTypeSpecNodeSU (/*@null@*/ strOrUnionNode x)
   lclTypeSpecNode n = (lclTypeSpecNode) dmalloc (sizeof (*n));
 
   n->kind = LTS_STRUCTUNION;
-  n->pointers = 0;
+  n->pointers = pointers_undefined;
   n->content.structorunion = x;
   n->quals = qualList_new ();
   return (n);
@@ -1714,7 +1714,7 @@ makeLclTypeSpecNodeEnum (/*@null@*/ enumSpecNode x)
 
   n->quals = qualList_new ();
   n->kind = LTS_ENUM;
-  n->pointers = 0;
+  n->pointers = pointers_undefined;
   n->content.enumspec = x;
   return (n);
 }
@@ -3235,7 +3235,7 @@ paramNode_checkQualifiers (lclTypeSpecNode t, typeExpr d)
 
   llassert (lclTypeSpecNode_isDefined (t));
 
-  if (t->pointers == 0 
+  if (pointers_isUndefined (t->pointers)
       && (d != (typeExpr)0 && d->kind != TEXPR_PTR) && d->kind != TEXPR_ARRAY)
     {
       if (t->kind == LTS_TYPE)
@@ -5179,12 +5179,10 @@ lclTypeSpecNode2sort (lclTypeSpecNode type)
 	  return sort_makePtrN (type->content.type->sort, type->pointers);
 	case LTS_STRUCTUNION:
 	  llassert (type->content.structorunion != NULL);
-	  return sort_makePtrN (type->content.structorunion->sort,
-				type->pointers);
+	  return sort_makePtrN (type->content.structorunion->sort, type->pointers);
 	case LTS_ENUM:
 	  llassert (type->content.enumspec != NULL);
-	  return sort_makePtrN (type->content.enumspec->sort, 
-				type->pointers);
+	  return sort_makePtrN (type->content.enumspec->sort, type->pointers);
 	case LTS_CONJ:
 	  return (lclTypeSpecNode2sort (type->content.conj->a));
 	}

@@ -51,7 +51,7 @@ extern qtype qtype_combine (/*@returned@*/ qtype p_q1, ctype p_ct);
 extern qtype qtype_mergeAlt (/*@returned@*/ qtype p_q1, /*@only@*/ qtype p_q2);
 
 extern qtype qtype_resolve (/*@returned@*/ qtype p_q);
-extern void qtype_adjustPointers (int p_n, /*@returned@*/ qtype p_q);
+extern void qtype_adjustPointers (/*@only@*/ pointers p_n, /*@returned@*/ qtype p_q);
 extern /*@only@*/ cstring qtype_unparse (qtype p_q) /*@*/ ;
 extern qtype qtype_newBase (/*@returned@*/ qtype p_q, ctype p_ct);
 extern qtype qtype_newQbase (/*@returned@*/ qtype p_q1, qtype p_q2);

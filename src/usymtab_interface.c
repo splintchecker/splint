@@ -553,7 +553,7 @@ static /*@only@*/ qtype
       
       result = qtype_addQualList (result, n->quals);
 
-      if (n->pointers > 0)
+      if (pointers_isDefined (n->pointers))
 	{
 	  qtype_adjustPointers (n->pointers, result);
 	}

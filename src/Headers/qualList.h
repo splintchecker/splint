@@ -37,6 +37,9 @@ extern bool qualList_isEmpty (/*@sef@*/ qualList p_s);
 # define qualList_isEmpty(s) (qualList_size(s) == 0)
 
 extern qualList qualList_new (void) /*@*/ ;
+
+extern qualList qualList_single (qual p_el) /*@*/ ;
+
 extern qualList qualList_add (/*@returned@*/ qualList p_s, qual p_el) 
    /*@modifies p_s@*/;
 

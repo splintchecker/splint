@@ -264,7 +264,6 @@ typedef char *addr_t;
 typedef long physadr_t;
 typedef short cnt_t;
 typedef	int chan_t;	
-typedef unsigned long rlim_t;
 typedef	int paddr_t;
 typedef	void *mid_t;
 typedef char slab_t[12];	
@@ -1168,152 +1167,10 @@ extern int shmdt (void *addr)
 extern int shmget (key_t key, int size, int flag)
      /*@modifies errno@*/ ;
 
-# if 0
-     /*
-     ** this is in stdio.h!
-     */
 
 /*
-** stdio.h
+** stdio.h - in separte file stdio.h
 */
-
-/*
-** evans 2001-12-30: added from http://www.opengroup.org/onlinepubs/007908799/xsh/stdio.h.html
-*/
-
-/*@constant unsignedintegraltype BUFSIZ@*/ 
-/*@constant unsignedintegraltype FILENAME_MAX@*/
-/*@constant unsignedintegraltype FOPEN_MAX@*/
-/*@constant bool _IOFBF@*/
-/*@constant bool _IOLBF@*/
-/*@constant bool _IONBF@*/
-/*@constant unsignedintegraltype L_ctermid@*/
-/*@constant unsignedintegraltype L_cuserid@*/
-/*@constant unsignedintegraltype L_tmpnam@*/
-/*@constant unsignedintegraltype SEEK_CUR@*/
-/*@constant unsignedintegraltype SEEK_END@*/
-/*@constant unsignedintegraltype SEEK_SET@*/
-/*@constant unsignedintegraltype TMP_MAX@*/
-
-/* EOF */
-/* NULL */
-
-/*@constant observer char *P_tmpdir@*/
-
-void clearerr (FILE *s) 
-   /*@modifies s@*/ ;
-
-/*@dependent@*/ char *ctermid (/*@returned@*/ /*@null@*/ char *) /*@*/ ;
-   /* Result may be static pointer if parameter is NULL, otherwise is fresh. */
-
-char *cuserid (/*@null@*/ /*@returned@*/ char *) 
-  /*@warn legacy "cuserid is obsolete"@*/ /*@*/ ;
-
-/* fclose in standard.h */
-
-/*@null@*/ FILE *fdopen (int, const char *)
-  /*@modifies errno, fileSystem@*/ ;
-
-/* feof, ferror fflush, fgetc, fgetpos, fgets - in standard.h */
-
-int fileno (/*@notnull@*/ FILE *)
-  /*:errorcode -1:*/ 
-  /*@modifies errno@*/ ;
-
-void flockfile (/*@notnull@*/ FILE *f)
-   /*@modifies f, fileSystem@*/ ;
-
-int fseeko (FILE *stream, off_t offset, int whence)
-   /*:errorcode -1:*/
-   /*@modifies stream, errno@*/ ;
-
-off_t ftello(FILE *stream)
-   /*:errorcode -1:*/ /*@modifies errno*/ ;
-
-int ftrylockfile(FILE *stream)
-   /*:errorcode !0:*/
-   /*@modifies stream, fileSystem, errno*/ ;
-
-void funlockfile (FILE *stream)
-   /*@modifies stream, fileSystem*/ ;
-
-int getc_unlocked(FILE *stream)
-   /*@warn multithreaded "getc_unlocked is a thread unsafe version of getc"@*/
-   /*@modifies *stream, fileSystem, errno@*/ ;
-
-int getchar_unlocked (void)
-   /*@warn multithreaded "getchar_unlocked is a thread unsafe version of getchar"@*/
-   /*@globals stdin@*/
-   /*@modifies *stdin, fileSystem@*/ ;
-
-int getopt (int, char * const[], const char)
-   /*@warn legacy@*/ ;
-
-int getw (FILE *stream)
-   /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stream, errno@*/ ;
-
-int pclose(FILE *stream)
-   /*:errorcode -1:*/
-   /*@modifies *stream, errno@*/ ;
-
-/*@null@*/ FILE *popen (const char *command, const char *mode)
-   /*:errorcode NULL:*/
-   /*@modifies fileSystem, errno@*/ ;
-
-int putc_unlocked (int, FILE *stream)
-   /*@warn multithreaded "putc_unlocked is a thread unsafe version of putc"@*/
-   /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stream, errno@*/ ;
-
-int putchar_unlocked(int)
-   /*@warn multithreaded "putchar_unlocked is a thread unsafe version of putchar"@*/
-   /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stdout, errno@*/ ;
-
-int putw(int, FILE *stream)
-   /*:errorcode EOF:*/
-   /*@modifies fileSystem, *stdout, errno@*/ ;
-
-int remove (const char *)
-   /*@modifies fileSystem@*/ ;
-
-int rename (const char *, const char *)
-   /*@modifies fileSystem@*/ ;
-
-void rewind (FILE *stream)
-   /*@modifies *stream@*/ ;
-
-void setbuf (FILE *stream, /*@null@*/ /*@dependent@*/ /*@exposed@*/ char *buf)
-     /*@modifies stream@*/
-
-int setvbuf (FILE *stream, /*@null@*/ /*@dependent@*/ /*@exposed@*/ char *buf, int type, size_t size)
-     /*@modifies stream@*/ 
-     /*:errorcode !0:*/ ;
-     
-int snprintf (char *s, size_t n, const char *format, ...);
-
-     int      sprintf(char *, const char *, ...);
-     int      sscanf(const char *, const char *, int ...);
-     char    *tempnam(const char *, const char *);
-     FILE    *tmpfile(void);
-     char    *tmpnam(char *);
-     int      ungetc(int, FILE *);
-     int      vfprintf(FILE *, const char *, va_list);
-     int      vprintf(const char *, va_list);
-     int      vsnprintf(char *, size_t, const char *, va_list);
-     int      vsprintf(char *, const char *, va_list);
-
-
-     The following external variables are defined: 
-
-
-     extern char  *optarg;    )
-     extern int    opterr;    )
-     extern int    optind;    ) (LEGACY)
-     extern int    optopt;    )
-
-# endif
 
 /*
 ** syslog.h
@@ -1397,29 +1254,20 @@ setpassent (int stayopen)
 setpwent (void)
 	/*@modifies internalState@*/;
 
-/*________________________________________________________________________
- * grp.h
- */
+/*
+** grp.h
+*/
 
-	extern void
-endgrent (void)
-	/*@modifies internalState@*/;
+void endgrent (void) /*@modifies internalState@*/;
 
-	extern /*@null@*/ struct group *
-getgrent (void)
-	/*@modifies internalState@*/;
+/*@null@*/ /*@observer@*/ struct group *getgrent (void)
+   /*@modifies internalState@*/;
 
-	extern int
-setgrent (void)
-	/*@modifies internalState@*/;
+int setgrent (void) /*@modifies internalState@*/;
 
-	extern void
-setgrfile (const char *name)
-	/*@modifies internalState@*/;
+void setgrfile (const char *name) /*@modifies internalState@*/;
 
-	extern int
-setgroupent (int stayopen)
-	/*@modifies internalState@*/;
+int setgroupent (int stayopen) /*@modifies internalState@*/;
 
 /*
 ** sys/stat.h
@@ -1608,78 +1456,59 @@ putmsg (int fd, const struct strbuf *c, const struct strbuf *d, int *f)
 extern int putpmsg (int fd, const struct strbuf *c, const struct strbuf *d, int b, int *f)
    /*@modifies internalState, errno@*/;
 
-/*________________________________________________________________________
- * sys/resource.h
- */
+/*
+** sys/resource.h
+**
+** Update 2002-07-09 from
+** http://www.opengroup.org/onlinepubs/007904975/basedefs/sys/resource.h.html
+*/
 
-/*@constant int RLIMIT_CPU@*/
-/*@constant int RLIMIT_FSIZE@*/
-/*@constant int RLIMIT_DATA@*/
-/*@constant int RLIMIT_STACK@*/
-/*@constant int RLIMIT_CORE@*/
-/*@constant int RLIMIT_RSS@*/
-/*@constant int RLIMIT_MEMLOCK@*/
-/*@constant int RLIMIT_NPROC@*/
-/*@constant int RLIMIT_NOFILE@*/
-/*@constant int RLIM_NLIMITS@*/
-/*@constant int RLIM_INFINITY@*/
-/*@constant int PRIO_MIN@*/
-/*@constant int PRIO_MAX@*/
 /*@constant int PRIO_PROCESS@*/
 /*@constant int PRIO_PGRP@*/
 /*@constant int PRIO_USER@*/
+
+typedef /*@unsignedintegraltype@*/ rlim_t;
+
+/*@constant rlim_t RLIM_INFINITY@*/
+/*@constant rlim_t RLIM_SAVED_MAX@*/
+/*@constant rlim_t RLIM_SAVED_CUR@*/
+
 /*@constant int RUSAGE_SELF@*/
 /*@constant int RUSAGE_CHILDREN@*/
 
- struct rusage {
-	struct timeval ru_utime;        /* user time used */
-	struct timeval ru_stime;        /* system time used */
-	long    ru_maxrss;              /* max resident set size */
-	long    ru_ixrss;               /* integral shared memory size */
-	long    ru_idrss;               /* integral unshared data " */
-	long    ru_isrss;               /* integral unshared stack " */
-	long    ru_minflt;              /* page reclaims */
-	long    ru_majflt;              /* page faults */
-	long    ru_nswap;               /* swaps */
-	long    ru_inblock;             /* block input operations */
-	long    ru_oublock;             /* block output operations */
-	long    ru_msgsnd;              /* messages sent */
-	long    ru_msgrcv;              /* messages received */
-	long    ru_nsignals;            /* signals received */
-	long    ru_nvcsw;               /* voluntary context switches */
-	long    ru_nivcsw;              /* involuntary " */
+struct rlimit {
+  rlim_t rlim_cur;
+  rlim_t rlim_max;
 };
 
- struct rlimit {
-	long  rlim_cur;
-	long  rlim_max;
+struct rusage {
+  struct timeval ru_utime;        /* user time used */
+  struct timeval ru_stime;        /* system time used */
+  /* other members optional */
 };
 
- struct loadavg {
-	unsigned long ldavg[3];
-	long fscale;
-};
+/*@constant int RLIMIT_CORE@*/
+/*@constant int RLIMIT_CPU@*/
+/*@constant int RLIMIT_DATA@*/
+/*@constant int RLIMIT_FSIZE@*/
+/*@constant int RLIMIT_NOFILE@*/
+/*@constant int RLIMIT_STACK@*/
+/*@constant int RLIMIT_AS@*/
 
-	extern int
-getpriority (int which, int who)
-	/*@modifies errno@*/;
+int getpriority (int which, id_t who)
+   /*@modifies errno@*/;
 
-	extern int
-getrlimit (int res, /*@out@*/ struct rlimit *rlp)
-	/*@modifies *rlp, errno@*/;
+int getrlimit (int res, /*@out@*/ struct rlimit *rlp)
+   /*@modifies *rlp, errno@*/;
 
-	extern int
-getrusage (int who, /*@out@*/ struct rusage *rusage)
-	/*@modifies *rusage, errno@*/;
+int getrusage (int who, /*@out@*/ struct rusage *rusage)
+   /*@modifies *rusage, errno@*/;
 
-	extern int
-setpriority (int which, int who, int prio)
-	/*@modifies errno, internalState@*/;
+int setpriority (int which, id_t who, int prio)
+   /*@modifies errno, internalState@*/;
 
-	extern int
-setrlimit (int resource, const struct rlimit *rlp)
-	/*@modifies errno, internalState@*/;
-
+int setrlimit (int resource, const struct rlimit *rlp)
+   /*@modifies errno, internalState@*/;
 
 /*
 ** in <netdb.h>

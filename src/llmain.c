@@ -1124,24 +1124,24 @@ int main (int argc, char *argv[])
 	  
 	  if (anylcl)
 	    {
-	      sprintf (msg, 
-		       "Time distribution (percent): initialize %.2f / lcl %.2f / "
-		       "pre-process %.2f / c check %.2f / finalize %.2f \n", 
-		       (100.0 * (double) (libtime - before) / ttime),
-		       (100.0 * (double) (lcltime - libtime) / ttime),
-		       (100.0 * (double) (pptime - lcltime) / ttime),
-		       (100.0 * (double) (cptime - pptime) / ttime),
-		       (100.0 * (double) (rstime - cptime) / ttime));
+	      (void) snprintf (msg, 256,
+			"Time distribution (percent): initialize %.2f / lcl %.2f / "
+			"pre-process %.2f / c check %.2f / finalize %.2f \n", 
+			(100.0 * (double) (libtime - before) / ttime),
+			(100.0 * (double) (lcltime - libtime) / ttime),
+			(100.0 * (double) (pptime - lcltime) / ttime),
+			(100.0 * (double) (cptime - pptime) / ttime),
+			(100.0 * (double) (rstime - cptime) / ttime));
 	    }
 	  else
 	    {
-	      sprintf (msg, 
-		       "Time distribution (percent): initialize %.2f / "
-		       "pre-process %.2f / c check %.2f / finalize %.2f \n", 
-		       (100.0 * (double) (libtime - before) / ttime),
-		       (100.0 * (double) (pptime - libtime) / ttime),
-		       (100.0 * (double) (cptime - pptime) / ttime),
-		       (100.0 * (double) (rstime - cptime) / ttime));
+	      (void) snprintf (msg, 256,
+			"Time distribution (percent): initialize %.2f / "
+			"pre-process %.2f / c check %.2f / finalize %.2f \n", 
+			(100.0 * (double) (libtime - before) / ttime),
+			(100.0 * (double) (pptime - libtime) / ttime),
+			(100.0 * (double) (cptime - pptime) / ttime),
+			(100.0 * (double) (rstime - cptime) / ttime));
 	    }
 	  
 	  llgenindentmsgnoloc (cstring_fromCharsO (msg));

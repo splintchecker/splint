@@ -94,7 +94,7 @@ extern void yyerror (char *);
   /*@only@*/ modifiesClause modsclause;
   /*@only@*/ warnClause warnclause;
   /*@only@*/ stateClause stateclause;
-
+  /*@only@*/ pointers pointers;
   /*@only@*/ functionConstraint fcnconstraint; 
 
   /*@only@*/ metaStateConstraint msconstraint;
@@ -183,7 +183,7 @@ extern void yyerror (char *);
 %token <tok> QNOTREACHED
 
 /* type qualifiers: */
-%token <tok> QCONST QVOLATILE QINLINE QEXTENSION QEXTERN QSTATIC QAUTO QREGISTER
+%token <tok> QCONST QRESTRICT QVOLATILE QINLINE QEXTENSION QEXTERN QSTATIC QAUTO QREGISTER
 %token <tok> QOUT QIN QYIELD QONLY QTEMP QSHARED QREF QUNIQUE
 %token <tok> QCHECKED QUNCHECKED QCHECKEDSTRICT QCHECKMOD
 %token <tok> QKEEP QKEPT QPARTIAL QSPECIAL QOWNED QDEPENDENT
@@ -237,7 +237,7 @@ extern void yyerror (char *);
 %token <msinfo> METASTATE_NAME 
 %type <msinfo> metaStateName
 %type <cname> enumerator newId  /*@-varuse@*/ /* yacc declares yytranslate here */
-%type <count> pointers /*@=varuse@*/
+%type <pointers> pointers /*@=varuse@*/
 
 %type <tok> doHeader stateTag conditionTag startConditionClause
 %type <typequal> exitsQualifier checkQualifier stateQualifier 
@@ -312,8 +312,8 @@ extern void yyerror (char *);
 
 %type <expr> designator designatorList designation
 
-%type <typequal> storageSpecifier typeQualifier typeModifier globQual
-%type <tquallist> optGlobQuals
+%type <typequal> storageSpecifier typeQualifier typeModifier globQual innerMods
+%type <tquallist> optGlobQuals innerModsList
 %type <qtyp> completeType completeTypeSpecifier optCompleteType
 %type <qtyp> completeTypeSpecifierAux altType typeExpression 
 
@@ -961,8 +961,8 @@ initializer
 
 instanceDecl
  : completeTypeSpecifier IsType TSEMI 
-   { $$ = exprNode_makeError (); }
-    /*
+   { $$ = exprNode_makeError (); } 
+     /*
      ** This causes r/r conflicts with function definitions.
      ** Instead we need to snarf one first. (gack)
      **
@@ -1213,6 +1213,7 @@ definedQualifier
 typeQualifier
  : QCONST IsType       { $$ = qual_createConst (); }
  | QVOLATILE IsType    { $$ = qual_createVolatile (); }
+ | QRESTRICT IsType    { $$ = qual_createRestrict (); }
  | definedQualifier IsType { $$ = $1; } 
  | stateQualifier IsType { $$ = $1; } 
  | exitsQualifier IsType { $$ = $1; }
@@ -1365,7 +1366,6 @@ optNamedDecl
  | pointers TYPE_NAME    
    { 
      qtype qt = qtype_unknown ();
-
      qtype_adjustPointers ($1, qt);
      $$ = idDecl_create (cstring_copy (LastIdentifier ()), qt);
    }
@@ -1382,18 +1382,19 @@ genericParamList
  | NotType paramIdList { $$ = handleParamIdList ($2); }  
 
 innerMods
- : QCONST    { /* ignored for now */; }
- | QVOLATILE { ; }
+ : QCONST    { $$ = qual_createConst (); }
+ | QRESTRICT { $$ = qual_createRestrict (); }
+ | QVOLATILE { $$ = qual_createVolatile (); }
 
 innerModsList
- : innerMods { ; }
- | innerModsList innerMods { ; }
+ : innerMods { $$ = qualList_single ($1); }
+ | innerModsList innerMods { $$ = qualList_add ($1, $2); }
 
 pointers
- : TMULT { $$ = 1; }
- | TMULT innerModsList { $$ = 1; }
- | TMULT pointers { $$ = 1 + $2; }
- | TMULT innerModsList pointers { $$ = 1 + $3; }
+ : TMULT { $$ = pointers_create ($1); }
+ | TMULT innerModsList { $$ = pointers_createMods ($1, $2); }
+ | TMULT pointers { $$ = pointers_extend (pointers_create ($1), $2); } 
+ | TMULT innerModsList pointers { $$ = pointers_extend (pointers_createMods ($1, $2), $3); }
 
 paramIdList
  : idList 

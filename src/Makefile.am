@@ -40,7 +40,8 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
-       metaStateExpression.c metaStateSpecifier.c functionConstraint.c
+       metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
+       pointers.c	
 
 SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c

@@ -23,8 +23,10 @@ test:
 ### Note there is a .splint file used for checking!
 
 check: $(LCSFILES)
-	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
-	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
+	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ -expect 5
+	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 82
+
+# evans 2002-07-09: 5 new sprintf warnings
 
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
