@@ -3758,17 +3758,19 @@ operations are provided that modify the value of an
 "_Ref343109614">4.3.3<span style=
 'font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 Semi-Abstract Types</a></h2>
-
-Sometimes it is useful to have a type that is abstract in some ways, but can be used with the standard numerical operators.  Splint supports numabstract types for this purpose.  The /*@numabstract@*/ annotation denotes a numabstract type.  Splint will report warnings when numabstract types are used inconsistently, but allow binary numeric operators to operate on two values of the same numabstract type.
+<p class="TextFontCX">
+Sometimes it is useful to have a type that is abstract in some ways, but can be used with the standard numerical operators.  Splint supports numabstract types for this purpose.  The <span class="CodeText"><span style='font-size:10.0pt'>/*@numabstract@*/</span></span> annotation denotes a numabstract type.  Splint will report warnings when numabstract types are used inconsistently, but allow binary numeric operators to operate on two values of the same numabstract type.
 
 Several flags control the strictness of type checking for numabstract types:
-<span class="flag">numabstract, numabstractcast, numabstractlit,  numabstractindex,
-</span>
+<span class="flag"><span style=
+      'font-size:10.0pt'>numabstract, numabstractcast, numabstractlit,  numabstractindex,
+</span></span>
  and
-<span class="flag"> numabstractprint
-</span>
+<span class="flag"><span style=
+      'font-size:10.0pt'> numabstractprint
+</span></span>.
+</p>
 
- .
 
 <h2 style='margin-left:0in;text-indent:0in'><a name=
 "_Toc534974956"></a><a name="_Toc344355422"></a><a name=
@@ -6962,6 +6964,7 @@ is:</p>
 "_Toc534975001">9.3<span style=
 'font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 Less Stringent Checking</a></h2>
+<p class="TextFontCX">
 For some programs, Splint's standard bounds checking produces an
 unacceptably high number of warnings. Because of this, Splint now
 prioritizes warnings using a simple heuristic. The flags
@@ -6987,7 +6990,7 @@ recognize them as spurious. These flags generate significantly
 fewer errors (an order of magnitude in some cases), and the errors
 generated are easier to understand. However, this does not come
 without cost. The checking is significantly less precise and is
-likely to miss real errors. 
+likely to miss real errors.</p>
 <h2 style='margin-left:0in;text-indent:0in'><a name=
 "_Toc534975001">9.4<span style=
 'font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -10136,17 +10139,7 @@ Send fatal errors to standard output stream.
 Send fatal errors to standard error stream.
 </p>
 
-
-<p class="TextFontCX"><span class="Flag"><span style=
-'font-size:10.0pt'>limit</span></span> <span class=
-"Flag"><span style=
-'font-size:10.0pt'><i>&lt;number&gt;</i></span></span></p>
-<p class="IndentText">At most <span class=
-      "Flag"><i><span style='font-size:10.0pt'>&lt;number&gt;</span></i></span>
-      similar errors are reported consecutively.&nbsp; Further
-      errors are suppressed, and a message showing the number of
-      suppressed messages is printed.</p>
-          
+        
 <p class="MsoHeading9" style='margin-left:0in;text-indent:0in'>
 <a name="_Toc534975046">Expected Errors</a></p>
 <p class="beforelist">Normally, Splint will expect to report no
@@ -10942,7 +10935,7 @@ A string literal is assigned to a char array too small to hold it.
       "Keyword"><span style='font-size:10.0pt'>-+++</span></span></p></td></tr></table></div>
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>
-string-literal--no-room
+string-literal-no-room
 </span></span></p>
 <p class="IndentText">
 A string literal is assigned to a char array that is not big enough to hold the null terminator. 
@@ -10961,7 +10954,7 @@ A string literal is assigned to a char array that is not big enough to hold the 
       "Keyword"><span style='font-size:10.0pt'>++++</span></span></p></td></tr></table></div>
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>
-string-literal--no-room-final-null
+string-literal-no-room-final-null
 </span></span></p>
 <p class="IndentText">
 A string literal is assigned to a char array that is not big enough to
@@ -11900,7 +11893,7 @@ integral type (e.g., <span class="CodeText"><span style=
 <p class="IndentText">Literal <span class=
       "CodeText"><span style='font-size:10.0pt'>0</span></span> may
       be used as a pointer.</p>
-div>
+<div>
 <table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
        height="14" align="left">
 <tr>
@@ -11928,13 +11921,7 @@ div>
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>relax-types</span></span></p>
 <p class="IndentText">Allow all numeric types to match.</p>
-<p class="Heading10"><a name="_Toc534975052">Abstract Types</a>
-<span class="TextFontCXChar"><span style=
-'font-size:11.0pt; font-weight:normal'>(Section</span></span>
-<span class="TextFontCXChar"><span style=
-'font-size:11.0pt; font-weight:normal'>4.3</span></span><span class="TextFontCXChar">
-<span style=
-'font-size:11.0pt; font-weight:normal'>)</span></span></p>
+</p>
 
 <div>
 <table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
