@@ -90,13 +90,15 @@ constraintList constraintList_addList (constraintList s, constraintList new)
     return s;
   
   constraintList_elements(new, elem)
+    {
     s = constraintList_add (s, elem);
+    }
   end_constraintList_elements
     return s;
 }
 
 cstring
-constraintList_print (constraintList s)
+constraintList_print (constraintList s) /*@*/
 {
   int i;
   cstring st = cstring_undefined;
@@ -129,6 +131,29 @@ constraintList_print (constraintList s)
   return st;
 }
 
+void constraintList_printError (constraintList s, fileloc loc)
+{
+
+  int i;
+  cstring st = cstring_undefined;
+  bool first = TRUE;
+
+  if (s->nelements == 0)
+    {
+      return;
+    }
+  
+  for (i = 0; i < s->nelements; i++)
+    {
+      constraint current = s->elements[i];
+
+      if (current != NULL)
+	{
+	  constraint_printError (current,loc);
+	}
+    }
+  return;
+}
 
 cstring
 constraintList_printDetailed (constraintList s)
@@ -234,7 +259,7 @@ constraintList_copy (constraintList s)
 
 constraintList constraintList_preserveOrig (constraintList c)
 {
-  constraintList_elements (c, el);
+  constraintList_elements (c, el)
   {
     el = constraint_preserveOrig (el);
   }

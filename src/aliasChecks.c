@@ -3825,7 +3825,7 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
               if (sRef_isPossiblyNullTerminated (fref)) {
 	        if (lloptgenerror
 		  (FLG_NULLTERMINATEDWARNING, 
-		  message ("%s %q initialized to %q value: %q",
+		  message ("%s %q initialized to %s value: %q",
 			    sRef_getScopeName (tref),
 			    sRef_unparse (tref),
 			    sRef_ntMessage (fref),
@@ -3841,7 +3841,7 @@ checkTransferNullTerminatedAux (sRef fref, exprNode fexp,
 	      
 	        if (lloptgenerror
 		  (FLG_NULLTERMINATED, 
-		  message ("%s %q initialized to %q value: %q",
+		  message ("%s %q initialized to %s value: %q",
 			    sRef_getScopeName (tref),
 			    sRef_unparse (tref),
 			    sRef_ntMessage (fref),

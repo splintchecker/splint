@@ -2,6 +2,8 @@
 ** constraintExpr.c
 */
 
+//#define DEBUGPRINT 1
+
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -17,6 +19,9 @@
 /*@-czechfcns@*/
 
 //#include "constraintExpr.h"
+
+
+
 
 bool constraintTerm_isIntLiteral (constraintTerm term)
 {
@@ -138,7 +143,7 @@ constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeL
   
 }
 
-cstring constraintTerm_print (constraintTerm term)
+cstring constraintTerm_print (constraintTerm term)  /*@*/
 {
   cstring s;
   s = cstring_undefined;

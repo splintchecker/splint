@@ -57,7 +57,7 @@ static flaglist flags = {
 {	
   FK_ABSTRACT, FK_BOOL, plainFlag,
   "bool",
-  FLG_ABSTRACTBOOL,
+  F*//*Hide flag from makefile grep*//*LG_ABSTRACTBOOL,
   "boolean type is abstract",
   NULL, 0, 0
   },
@@ -2767,6 +2767,46 @@ NULL, NULL,
   "A possibly non-nullterminated string/memory is used/referenced as a nullterminated one,  ",
   0, 0
 },
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "bufferoverflow",
+  FLG_BUFFEROVERFLOW,
+  "possible buffer overflow",
+  "A possibly buffer overflow has been detected,  ",
+  0, 0
+},
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "arrayread",
+  FLG_ARRAYREAD,
+  "possible out of bounds read",
+  "An array or pointer access references memory beyond the array or buffer,  ",
+  0, 0
+},
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "arraywrite",
+  FLG_ARRAYWRITE,
+  "possible buffer overflow from an out of bounds write",
+  "Memory is set past the end of an array or or after the allocated buffer,  ",
+  0, 0
+},
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "fcnpost",
+  FLG_FUNCTIONPOST,
+  "Function has the post condition",
+  "LCLint has determined that the following statement true after the function,  ",
+  0, 0
+},
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "fcnconstraint",
+  FLG_FUNCTIONCONSTRAINT,
+  "unresolved constraint",
+  "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
+  0, 0
+},  
 {
   FK_NT, FK_MEMORY, modeFlag,
   "nullterminated",

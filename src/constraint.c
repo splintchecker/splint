@@ -2,6 +2,8 @@
 ** constraintList.c
 */
 
+//#define DEBUGPRINT 1
+
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -27,8 +29,8 @@ constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant)
   int c;
   constraint ret;
   ret = constraint_makeNew();
-  llassert (x);
-  if (!x)
+  llassert (sRef_isValid(x) );
+  if (!sRef_isValid(x))
     return ret;
  
     
@@ -391,10 +393,27 @@ cstring arithType_print (arithType ar)
   return st;
 }
 
+void constraint_printError (constraint c, fileloc loc)
+{
+  cstring string;
+
+  string = constraint_printDetailed (c);
+  
+  if (c->post)
+    {
+       voptgenerror (FLG_FUNCTIONPOST, string, loc);
+    }
+  else
+    {
+      voptgenerror (FLG_FUNCTIONCONSTRAINT, string, loc);
+    }
+      
+}
 
 cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
+
 
   if (!c->post)
     {
@@ -414,7 +433,7 @@ cstring  constraint_printDetailed (constraint c)
   return st;
 }
 
-cstring  constraint_print (constraint c)
+cstring  constraint_print (constraint c) /*@*/
 {
   cstring st = cstring_undefined;
   cstring type = cstring_undefined;

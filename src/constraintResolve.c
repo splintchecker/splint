@@ -3,6 +3,8 @@
 ** constraintResolve.c
 */
 
+//#define DEBUGPRINT 1
+
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -15,6 +17,8 @@
 //# include "exprData.i"
 
 #include "constraintExpr.h"
+
+
 
 constraintList reflectChanges (constraintList pre2, constraintList post1);
 constraint substitute (constraint c, constraintList p);
@@ -30,7 +34,7 @@ constraintList constraintList_fixConflicts (constraintList list1, constraintList
 constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2);
 
 constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
-
+constraint  inequalitySubstitute  (constraint c, constraintList p);
 
 /*********************************************/
 

@@ -579,8 +579,15 @@ constraintList uentry_getFcnPreconditions (uentry ue)
 				  uentry_unparse (ue) ) ) );
 	      return constraintList_undefined;
 	    }
-	  
-	   return ue->info->fcn->preconditions;
+
+	  if (ue->info->fcn->preconditions)
+	    {
+	   return constraintList_copy (ue->info->fcn->preconditions);
+	    }
+	  else
+	    {
+	      return NULL;
+	    }
 	}
 	
     }
@@ -895,6 +902,11 @@ uentry_makeFunctionAux (cstring n, ctype t,
   
   e->info->fcn->mods = sRefSet_undefined;
   e->info->fcn->specclauses = NULL;
+
+  /*drl 11 29 2000*/
+  e->info->fcn->preconditions = NULL;
+  /*end drl*/
+  
   checkGlobalsModifies (e, mods);
   e->info->fcn->mods = mods;
 
@@ -3933,6 +3945,10 @@ static uentry
 
   sRef_storeState (e->sref);
 
+  /*drl 111  30 2000*/
+  e->info->fcn->preconditions = NULL;
+    /* end drl */
+  
   return (e);
 }
 
@@ -5907,6 +5923,10 @@ ufinfo_copy (ufinfo u)
   ret->defparams = u->defparams;
   ret->specclauses = specialClauses_copy (u->specclauses);
 
+  /*drl 11 30 2000 */
+  ret->preconditions = u->preconditions? constraintList_copy(u->preconditions): NULL;
+  /* end drl */
+  
   return ret;
 }
 
@@ -9604,7 +9624,7 @@ void uentry_checkName (uentry ue)
 
 void uentry_testInRange (uentry p_e, uentry cconstant)  {
   if( uentry_isValid(p_e) ) {
-    if( p_e->sref != NULL) {
+    if( sRef_isValid (p_e->sref) ) {
       char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
       int index = atoi( t );
       free (t);

@@ -246,6 +246,10 @@ endif
 	@$(MAKE) -e opt
 	@echo '//  Done Release '`cat $(VERSION_NUMBER)`
 
+
+flags: flags.def
+	grep "FLG_" flags.def > Headers/flag_codes.gen
+
 ###
 ### cleaning
 ###
@@ -304,7 +308,8 @@ $(CHECKS): lclint.lcd
 ### 
 
 lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude -mustfree -namechecks -abstract -boolops -protoparammatch  $(ALLSRC) -dump lclint
+
 
 
 

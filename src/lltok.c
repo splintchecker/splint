@@ -94,6 +94,19 @@ bool lltok_isLe_Op (lltok tok)
 /* end drl7x added */
 
 
+/*drl7x added 11 30 2000*/
+bool  lltok_isPlus_Op (lltok tok)
+{
+  return (tok.tok ==  TPLUS);
+}
+
+bool  lltok_isMinus_Op (lltok tok)
+{
+  return (tok.tok ==  TMINUS);
+}
+
+/*end drl added */
+
 cstring
 lltok_unparse (lltok tok)
 {

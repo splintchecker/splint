@@ -3,6 +3,8 @@
 ** constraintList.c
 */
 
+//#define DEBUGPRINT 1
+
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -14,7 +16,18 @@
 # include "exprNodeSList.h"
 
 # include "exprData.i"
-# include "exprDataQuite.i"
+//# include "exprDataQuite.i"
+
+#ifndef exprNode_isError
+#warning wtf
+# define exprNode_isError(e)          ((e) == exprNode_undefined)
+#else
+#warning strange
+#endif
+
+#define myexprNode_isError(e)        ((e) == exprNode_undefined)
+
+
 
 bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
 static bool exprNode_handleError( exprNode p_e);
@@ -35,6 +48,17 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2);
 exprNode makeDataTypeConstraints (exprNode e);
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
 constraintList checkCall (exprNode fcn, exprNodeList arglist);
+
+bool exprNode_testd()
+{
+  /*        if ( ( (exprNode_isError  ) ) )
+	  {
+	  }
+        if ( ( (e_1  ) ) )
+	  {
+	  }
+  */
+}
 
 bool exprNode_isUnhandled (exprNode e)
 {
@@ -395,9 +419,13 @@ bool exprNode_multiStatement (exprNode e)
       test =   exprData_getTripleTest (forPred->edata);
       inc  =   exprData_getTripleInc (forPred->edata);
 
-      if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) || (exprNode_isError) ) ) )
+      //      if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) || (exprNode_isError) ) ) )
+      //            if ( ( (myexprNode_isError (test) || (myexprNode_isError(init) ) || (myexprNode_isError) ) ) )
+
+      //if ( ( (exprNode_isError  ) ) )
+            if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) ) || (exprNode_isError (inc) ) ) )
 	{
-	  BPRINTF (("strange for statement:%s, ignoring it", exprNode_unparse(e) ) );
+	  BPRINTF ((message ("strange for statement:%s, ignoring it", exprNode_unparse(e) ) ) );
 	  return ret;
 	}
       
@@ -1265,3 +1293,10 @@ DPRINTF( (message (
   return ret;
 }
 
+
+#ifndef exprNode_isError
+#warning wtf
+# define exprNode_isError(e)          ((e) == exprNode_undefined)
+#else
+#warning strange
+#endif

@@ -54,7 +54,7 @@
 /*drl*/
 static  constraintList fcnConstraints = NULL;
 
-static  constraintList fcnPreConditions = NULL;
+//static  constraintList fcnPreConditions = NULL;
 
 
 static /*@only@*/ sRefSet fcnModifies = sRefSet_undefined;
@@ -280,7 +280,7 @@ void setFunctionSpecialClause (lltok stok, sRefSet s,
   DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
 }
 
-constraintList getFunctionConstraints ()
+constraintList getFunctionConstraints (void)
 {
   return constraintList_copy (fcnConstraints);
 }

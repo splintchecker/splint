@@ -2382,7 +2382,7 @@ ctype_widest (ctype c1, ctype c2)
 /* requires that the type is an fixed array */
 /* return the size of the array */
 
-int ctype_getArraySize (ctype c)
+long int ctype_getArraySize (ctype c)
 {
   ctentry cte = ctype_getCtentry (c);
   ctbase ctb;

@@ -931,9 +931,12 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
        DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
      }
 
-   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
+   constraintList_printError(body->requiresConstraints, g_currentloc);
+   constraintList_printError(body->ensuresConstraints, g_currentloc);
+   
+   //   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
 
-   ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
+   //   ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
   
      //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
      //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
