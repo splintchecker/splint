@@ -3,6 +3,6 @@
 SPLINT = splint -exportlocal
  
 check:
-	$(SPLINT) +arraybounds +arrayboundsread for.c -expect 1
+	$(SPLINT) +bounds for.c -expect 1
 
 

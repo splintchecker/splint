@@ -577,12 +577,12 @@ static constraintList uentry_getFunctionConditions (uentry ue, bool isPost)
     {
       functionConstraint constraint;
 
-      DPRINTF( (message ("called uentry_getFcnPostconditions on  %s",
+      DPRINTF((message ("called uentry_getFcnPostconditions on  %s",
 			 uentry_unparse (ue) ) ) );
       
       if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
 	{
-	  DPRINTF( (message ("called uentry_getFunctionConditions on nonfunction %s",
+	  DPRINTF((message ("called uentry_getFunctionConditions on nonfunction %s",
 			     uentry_unparse (ue) ) ) );
 	  if (!uentry_isFunction (ue) )
 	    {
@@ -598,7 +598,7 @@ static constraintList uentry_getFunctionConditions (uentry ue, bool isPost)
       if (!uentry_isFunction(ue))
 	{
 	  
-	  DPRINTF( (message ("called uentry_getFunctionConditions on non function  %s",
+	  DPRINTF((message ("called uentry_getFunctionConditions on non function  %s",
 			     uentry_unparse (ue) ) ) );
 	  return constraintList_undefined;
 	  
@@ -1042,7 +1042,9 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 	    }
 	  else
 	    {
+	      DPRINTF (("Taking globs: %s", globalsClause_unparse (glc)));
 	      uentry_setGlobals (ue, globalsClause_takeGlobs (glc));
+	      DPRINTF (("Taking globs after: %s", globalsClause_unparse (glc)));
 	    }
 	}
       else if (functionClause_isModifies (el))
@@ -1641,7 +1643,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
     }
   else
     {
-      llfatalbug ( (message("uentry_setPreconditions called with invalid uentry") ));
+      llfatalbug ((message("uentry_setPreconditions called with invalid uentry") ));
     }
 }
 
@@ -1678,7 +1680,7 @@ uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postcondition
     }
   else
     {
-      llfatalbug ( (message("uentry_setPostconditions called with invalid uentry") ));
+      llfatalbug ((message("uentry_setPostconditions called with invalid uentry") ));
     }
 }
 

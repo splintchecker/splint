@@ -28,7 +28,7 @@ extern /*@nullwhentrue@*/ /*@unused@*/ bool constraintList_isError (constraintLi
 
 extern bool constraintList_isEmpty (/*@sef@*/ constraintList p_e) /*@*/;
 
-# define constraintList_isEmpty(e)      ( (constraintList_isUndefined((e)) ) ||( ( (e)->nelements == 0) ) )
+# define constraintList_isEmpty(e)      ((constraintList_isUndefined((e)) ) ||(( (e)->nelements == 0) ) )
 
 extern constraintList constraintList_single (/*@only@*/ constraint) ;
 

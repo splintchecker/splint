@@ -23,11 +23,11 @@
 struct s_functionClause {
   functionClauseKind kind;
   union {
-    globalsClause globals;
-    modifiesClause modifies;
-    warnClause warn;
-    stateClause state;
-    functionConstraint constraint;
+    /*@null@*/ globalsClause globals;
+    /*@null@*/ modifiesClause modifies;
+    /*@null@*/ warnClause warn;
+    /*@null@*/ stateClause state;
+    /*@null@*/ functionConstraint constraint;
   } val;
 } ;
 

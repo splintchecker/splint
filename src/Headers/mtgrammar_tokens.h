@@ -41,11 +41,13 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-nullpass@*/
+/*@-nullptrarith*/
+/*@-usereleased@*/
 /*@-declundef@*/
 
 /*drl added 11/27/2001*/
-/*@-arraybounds@*/
-/*@-arrayboundsread@*/
+/*@-bounds@*/
 /* < end of bison.head > */
 
 typedef union {
@@ -168,5 +170,4 @@ typedef union {
 
 
 /*drl added 11/27/2001*/
-/*@=arraybounds@*/
-/*@=arrayboundsread@*/
+/*@=bounds@*/

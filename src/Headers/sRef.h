@@ -645,7 +645,7 @@ extern bool sRef_isNullTerminated(/*@sef@*/sRef p_s);
 
 extern bool sRef_isPossiblyNullTerminated(/*@sef@*/sRef p_s);
 # define sRef_isPossiblyNullTerminated(p_s) \
-   ( sRef_hasBufStateInfo((p_s)) ? ( (p_s)->bufinfo.bufstate \
+   ( sRef_hasBufStateInfo((p_s)) ? ((p_s)->bufinfo.bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
 extern bool sRef_isNotNullTerminated(/*@sef@*/sRef p_s);

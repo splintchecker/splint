@@ -3,5 +3,5 @@
 SPLINT = splint -exportlocal
  
 check:
-	$(SPLINT) +arraybounds maxsetannotations.c
-	$(SPLINT) +arraybounds maxsetnoannotations.c -expect 1
+	$(SPLINT) +boundswrite maxsetannotations.c
+	$(SPLINT) +boundswrite maxsetnoannotations.c -expect 1

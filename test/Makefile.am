@@ -266,7 +266,7 @@ compdestroy:
 
 .PHONY: constannot
 constannot:
-	${SPLINTRN} constannot.c +arraybounds  -exportlocal -expect 2
+	${SPLINTRN} constannot.c +boundswrite -exportlocal -expect 2
 
 .PHONY: csyntax
 csyntax:
@@ -514,7 +514,7 @@ mongoincludes:
 
 .PHONY: mystrncat
 mystrncat:
-	-$(SPLINTR) mystrncat.c +arraybounds  +arrayboundsread -expect 4 
+	-$(SPLINTR) mystrncat.c +boundsread +boundswrite -expect 4 
 
 .PHONY: noeffect
 noeffect:
@@ -821,13 +821,11 @@ freearray:
 
 .PHONY: sizeof
 sizeof:
-	-$(SPLINTR) +arraybounds +arrayboundsread sizeof.c -expect 1
+	-$(SPLINTR) +bounds sizeof.c -expect 1
 
 .PHONY: buffertest
 buffertest:
-	-$(SPLINTR) +arraybounds +arrayboundsread buffertest1.c -expect 5
-
-
+	-$(SPLINTR) +bounds buffertest1.c -expect 5
 
 ## Integration Tests
 

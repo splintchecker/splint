@@ -624,17 +624,17 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 
 /*@unused@*/ extern bool uentry_isNullTerminated(/*@sef@*/uentry p_ue);
 # define uentry_isNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo( (p_ue ) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo((p_ue ) ) ? ((p_ue)->info->var->bufinfo->bufstate \
                == BB_NULLTERMINATED) : FALSE)
 
 /*@unused@*/ extern bool uentry_isPossiblyNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isPossiblyNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo((p_ue)) ? ( (p_ue)->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo((p_ue)) ? ((p_ue)->info->var->bufinfo->bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
 /*@unused@*/ extern bool uentry_isNotNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isNotNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo( (p_ue) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo((p_ue) ) ? ((p_ue)->info->var->bufinfo->bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)
 /*@=nullderef@*/
 

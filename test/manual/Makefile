@@ -146,22 +146,22 @@ names: names.c
 
 .PHONY: setChar
 setChar: setChar.c
-	$(SPLINT) $(SPLINTFLAGS) setChar.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+	$(SPLINT) $(SPLINTFLAGS) setChar.c +bounds -exportlocal +showconstraintlocation -expect 1
 
 
 .PHONY: multiError
 multiError: multiError.c
-	$(SPLINT) $(SPLINTFLAGS) multiError.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+	$(SPLINT) $(SPLINTFLAGS) multiError.c +bounds -exportlocal +showconstraintlocation -expect 1
 
 
 .PHONY: updateMyEnv
 updateMyEnv: updateMyEnv.c
-	$(SPLINT) $(SPLINTFLAGS) updateMyEnv.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 1
+	$(SPLINT) $(SPLINTFLAGS) updateMyEnv.c +bounds -exportlocal +showconstraintlocation -expect 1
 
 
 .PHONY: updateMyEnvGood
 updateMyEnvGood: updateMyEnvGood.c
-	$(SPLINT) $(SPLINTFLAGS) updateMyEnvGood.c +arraybounds +arrayboundsread -exportlocal +constraintlocation -expect 0
+	$(SPLINT) $(SPLINTFLAGS) updateMyEnvGood.c +bounds -exportlocal +showconstraintlocation -expect 0
 
 clean: 
 	-rm -f core a.out *.*~

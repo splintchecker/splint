@@ -755,7 +755,7 @@ lscanLineInit (void)
   ltoken_compose = LSLReserveToken (LST_COMPOSESYM, "\\composeSort");
   ltoken_if = LSLReserveToken (LST_ifTOKEN, "if");
 
-  (void) LSLReserveToken (LST_LPAR, "(");
+  (void) LSLReserveToken (LST_LPAR, " (");
   (void) LSLReserveToken (LST_RPAR, ")");
   (void) LSLReserveToken (LST_COMMA, ",");
   (void) LSLReserveToken (LST_COLON, ":");
@@ -803,20 +803,20 @@ lscanLineCleanup (void)
 
 charCode lscanCharClass (char c)
 {
-  return charClass[(int)(c)].code;
+  return charClass[ (int) (c)].code;
 }
 
 bool LSLIsEndComment (char c)
 {
-  return charClass[(int)(c)].endCommentChar;
+  return charClass[ (int) (c)].endCommentChar;
 }
 
 void lsetCharClass (char c, charCode cod)
 {
-  charClass[(int)(c)].code = cod;
+  charClass[ (int) (c)].code = cod;
 }
 
 void lsetEndCommentChar (char c, bool flag)
 {
-  charClass[(int)(c)].endCommentChar = flag;
+  charClass[ (int) (c)].endCommentChar = flag;
 }

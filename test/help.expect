@@ -75,12 +75,9 @@ Finished checking --- no code processed
    allglobs                    
    allimponly                  
    allmacros                   
+   alwaysexits                 
    annotationerror             
    ansi89limits                
-   arraybounds                 
-   arrayboundsread             
-   arrayread                   
-   arraywrite                  
    assignexpose                
    badflag                     
    bitwisesigned               
@@ -90,6 +87,9 @@ Finished checking --- no code processed
    boolops                     
    booltrue                    
    booltype                    
+   bounds                      
+   boundsread                  
+   boundswrite                 
    branchstate                 
    bufferoverflow              
    bufferoverflowhigh          
@@ -115,7 +115,6 @@ Finished checking --- no code processed
    constmacros                 
    constprefix                 
    constprefixexclude          
-   constraintlocation          
    constuse                    
    continuecomment             
    controlnestdepth            
@@ -140,8 +139,10 @@ Finished checking --- no code processed
    distinctexternalnames       
    distinctinternalnames       
    dump                        
+   duplicatecases              
    duplicatequals              
    elseifcomplete              
+   emptyreturn                 
    enumindex                   
    enumint                     
    enummembers                 
@@ -168,7 +169,6 @@ Finished checking --- no code processed
    externalprefix              
    externalprefixexclude       
    f                           
-   fcnconstraint               
    fcnderef                    
    fcnmacros                   
    fcnpost                     
@@ -201,6 +201,7 @@ Finished checking --- no code processed
    globstate                   
    globuse                     
    gnuextensions               
+   grammar                     
    hasyield                    
    help                        
    hints                       
@@ -244,14 +245,17 @@ Finished checking --- no code processed
    isolib                      
    isoreserved                 
    isoreservedinternal         
+   iterbalance                 
    iterloopexec                
    iterprefix                  
    iterprefixexclude           
+   iteryield                   
    its4low                     
    its4moderate                
    its4mostrisky               
    its4risky                   
    its4veryrisky               
+   keep                        
    keeptrans                   
    kepttrans                   
    larchpath                   
@@ -285,6 +289,7 @@ Finished checking --- no code processed
    macroparams                 
    macroparens                 
    macroredef                  
+   macroreturn                 
    macrostmt                   
    macrounrecog                
    macrovarprefix              
@@ -336,6 +341,7 @@ Finished checking --- no code processed
    nof                         
    nolib                       
    noparams                    
+   nopp                        
    noret                       
    null                        
    nullassign                  
@@ -359,7 +365,6 @@ Finished checking --- no code processed
    ownedtrans                  
    paramimptemp                
    paramuse                    
-   parenconstraint             
    parenfileformat             
    partial                     
    passunknown                 
@@ -371,6 +376,7 @@ Finished checking --- no code processed
    predboolint                 
    predboolothers              
    predboolptr                 
+   preproc                     
    protoparammatch             
    protoparamname              
    protoparamprefix            
@@ -406,8 +412,11 @@ Finished checking --- no code processed
    showallconjs                
    showalluses                 
    showcolumn                  
+   showconstraintlocation      
+   showconstraintparens        
    showfunc                    
    showscan                    
+   showsourceloc               
    showsummary                 
    singleinclude               
    sizeofformalarray           
@@ -504,19 +513,131 @@ Finished checking --- no code processed
    zerobool                    
 
 
+null --- misuses of null pointer
+nullderef --- possible dereferencce of null pointer
+nullpass --- possibly null pointer passed as formal with no null annotation
+nullret --- possibly null pointer returned as result with no null annotation
+nullstate --- possibly null pointer reachable from a reference with no null
+annotation
+nullassign --- inconsistent assignment or initialization involving null pointer
+usedef --- use before definition
+mustdefine --- out storage not defined before return or scope exit
+uniondef --- at least one field of a union must be defined
+compdef --- parameter, return value or global completely defined
+impouts --- pointer parameters to unspecified functions may be implicit out
+parameters
+incondefs --- function, variable or constant redefined with inconsistent type
+matchfields --- struct or enum type redefined with inconsistent fields or
+members
+fcnderef --- dereferencce of a function type
+realcompare --- dangerous comparison between reals (dangerous because of
+inexact floating point representations)
+unsignedcompare --- comparison using <, <=, >= between an unsigned integral and
+zero constant
+ptrarith --- arithmetic involving pointer and integer
+nullptrarith --- arithmetic involving possibly null pointer and integer
+ptrcompare --- comparison between pointer and number
+strictops --- primitive operation does not type check strictly
+bitwisesigned --- a bitwise logical operator does not have unsigned operands
+shiftnegative --- a shift right operand may be negative
+shiftimplementation --- a shift left operand may be negative
+sizeoftype --- sizeof operator has a type argument
+sizeofformalarray --- sizeof operator has an array formal parameter argument
+fixedformalarray --- formal parameter of type array is declared with size
+incompletetype --- formal parameter has an incomplete type
+formalarray --- formal parameter is an array
+booltype --- set name of boolean type (default bool)
+boolfalse --- set name of boolean false (default FALSE)
+booltrue --- set name of boolean true (default TRUE)
 likelybool --- type name is probably a boolean type but does not match default
 boolean type name, "bool", and alternate name is not set
+boolcompare --- comparison between bools (dangerous because of multiple TRUE
+values)
+boolops --- primitive operation (!, && or ||) does not has a boolean argument
+ptrnegate --- allow ! to be used on pointer operand
+predassign --- condition test (if, while or for) is an assignment
+predbool --- type of condition test (if, while or for) not bool (sets
+predboolint, predboolptr and predboolothers)
+predboolint --- type of condition test (if, while or for) is an integral type
+predboolptr --- type of condition test (if, while or for) is a pointer
+predboolothers --- type of condition test (if, while or for) not bool, int or
+pointer
+abstract --- data abstraction barriers
 impabstract --- assume user type definitions are abstract (unless
 /*@concrete@*/ is used)
-accessall --- set accessmodule, accessfile and accessczech
 accessmodule --- allow access to abstract types in definition module
 accessfile --- allow access to abstract types by file name convention
 accessczech --- allow access to abstract types by czech naming convention
 accessslovak --- allow access to abstract types by slovak naming convention
 accessczechoslovak --- allow access to abstract types by czechoslovak naming
 convention
-abstract --- data abstraction barriers
+accessall --- set accessmodule, accessfile and accessczech
 mutrep --- representation of mutable type has sharing semantics
+mustfreefresh --- freshly allocated storage not released before return or scope
+exit
+mustfreeonly --- only storage not released before return or scope exit
+mustfree --- fresh or only storage not released before return or scope exit
+(sets mustfreefresh and mustfreeonly)
+usereleased --- storage used after release
+strictusereleased --- element used after it may have been released
+compdestroy --- all only references derivable from void pointer out only
+parameter are released
+strictdestroy --- report complete destruction errors for array elements that
+may have been released
+deparrays --- array elements are dependent storage
+branchstate --- storage has inconsistent states of alternate paths through a
+branch
+strictbranchstate --- storage through array fetch has inconsistent states of
+alternate paths through a branch
+memchecks --- sets all dynamic memory checking flags (memimplicit, mustfree,
+mustdefine, mustnotalias, null, memtrans)
+compmempass --- actual parameter matches alias kind of formal parameter
+completely 
+stackref --- external reference to stack-allocated storage is created
+memtrans --- memory transfer errors (sets all *trans flags)
+dependenttrans --- dependent transfer errors
+newreftrans --- new reference transfer to reference counted reference
+onlytrans --- only storage transferred to non-only reference (memory leak)
+onlyunqglobaltrans --- only storage transferred to an unqualified global or
+static reference (memory leak)
+ownedtrans --- owned storage transferred to non-owned reference (memory leak)
+freshtrans --- fresh storage transferred to non-only reference (memory leak)
+sharedtrans --- shared storage transferred to non-shared reference
+temptrans --- temp storage transferred to non-temporary reference
+kepttrans --- kept storage transferred to non-temporary reference
+keeptrans --- keep storage transferred inconsistently
+immediatetrans --- an immediate address (result of &) is transferred
+inconsistently
+refcounttrans --- reference counted storage is transferred in an inconsistent
+way
+statictrans --- static storage is transferred in an inconsistent way
+unqualifiedtrans --- unqualified storage is transferred in an inconsistent way
+staticinittrans --- static storage is used as an initial value in an
+inconsistent way
+unqualifiedinittrans --- unqualified storage is used as an initial value in an
+inconsistent way
+readonlytrans --- report memory transfer errors for initializations to
+read-only string literals
+passunknown --- passing a value as an un-annotated parameter clears its
+annotation
+readonlystrings --- string literals are read-only (error if one is modified or
+released)
+memimp --- memory errors for unqualified storage
+paramimptemp --- assume unannotated parameter is temp
+allimponly --- sets globimponly, retimponly, structimponly, specglobimponly,
+specretimponly and specstructimponly
+codeimponly --- sets globimponly, retimponly and structimponly
+specimponly --- sets specglobimponly, specretimponly and specstructimponly
+globimponly --- assume unannotated global storage is only
+retimponly --- assume unannotated returned storage is only
+structimponly --- assume unannotated structure field is only
+specglobimponly --- assume unannotated global storage is only
+specretimponly --- assume unannotated returned storage is only
+specstructimponly --- assume unannotated structure field is only
+aliasunique --- unique parameter is aliased
+mayaliasunique --- unique parameter may be aliased
+mustnotalias --- temp storage aliased at return point or scope exit
+retalias --- function returns alias to parameter or global
 globalias --- function returns with global aliasing external state (sets
 checkstrictglobalias, checkedglobalias, checkmodglobalias and
 uncheckedglobalias)
@@ -528,147 +649,36 @@ checkmodglobalias --- function returns with a checkmod global aliasing external
 state
 uncheckedglobalias --- function returns with an unchecked global aliasing
 external state
-aliasunique --- unique parameter is aliased
-mayaliasunique --- unique parameter may be aliased
-mustnotalias --- temp storage aliased at return point or scope exit
-retalias --- function returns alias to parameter or global
-noparams --- function declaration has no parameter list
-oldstyle --- old style function definition
-gnuextensions --- support some gnu (gcc) language extensions
-usevarargs --- non-standard <varargs.h> included
-warnposixheaders --- a POSIX header is included, but the POSIX library is not
-used
-exitarg --- argument to exit has implementation defined behavior
-evalorder --- code has unspecified or implementation-dependent behavior because
-of order of evaluation
-evalorderuncon --- code involving call to unspecified function has undefined or
-implementation-dependent behavior
-boolfalse --- set name of boolean false (default FALSE)
-booltype --- set name of boolean type (default bool)
-booltrue --- set name of boolean true (default TRUE)
-noaccess --- ignore access comments
-nocomments --- ignore all stylized comments
-unrecogcomments --- stylized comment is unrecognized
-unrecogflagcomments --- stylized flag comment uses an unrecognized flag
-continuecomment --- line continuation marker (\) in comment before */ on same
-line
-slashslashcomment --- C++ style // comment
-nestcomment --- comment begins inside comment
-tmpcomments --- interpret t comments (ignore errors in lines marked with
-/*@t<n>@*/
-lintcomments --- interpret traditional lint comments (/*FALLTHROUGH*/,
-/*NOTREACHED*/)
-warnlintcomments --- print a warning and suggest an alternative when a
-traditional lint comment is used
-declundef --- function or variable declared but never defined
-specundef --- function or variable specified but never defined
-specundecl --- function or variable specified but never declared in a source
-file
-loopexec --- assume all loops execute at least once (sets forloopexec,
-whileloopexec and iterloopexec)
-forloopexec --- assume all for loops execute at least once
-whileloopexec --- assume all while loops execute at least once
-iterloopexec --- assume all iterator loops execute at least once
-obviousloopexec --- assume loop that can be determined to always execute always
-does
-infloops --- likely infinite loop is detected
-infloopsuncon --- likely infinite loop is detected (may result from
-unconstrained function)
-deepbreak --- break inside nested while or for or switch
-looploopbreak --- break inside nested while or for
-switchloopbreak --- break in loop inside switch
-loopswitchbreak --- break in switch inside loop
-switchswitchbreak --- break in switch inside switch
-looploopcontinue --- continue inside nested loop
-unreachable --- unreachable code detected
-whileempty --- a while statement has no body
-whileblock --- the body of a while statement is not a block
-forempty --- a for statement has no body
-forblock --- the body of a for statement is not a block
-ifempty --- an if statement has no body
-ifblock --- the body of an if statement is not a block
-allempty --- an if, while or for statement has no body (sets ifempty,
-whileempty and forempty
-allblock --- the body of an if, while or for statement is not a block (sets
-ifblock, whileblock and forblock)
-elseifcomplete --- if ... else if chains must have final else
-noret --- path with no return detected in non-void function
-casebreak --- non-empty case in a switch without preceding break
-misscase --- switch on enum type missing case for some value
-firstcase --- first statement in switch is not a case
-shadow --- declaration reuses name visible in outer scope
-incondefslib --- function, variable or constant defined in a library is
-redefined with inconsistent type
-overload --- library function overloaded
-nestedextern --- an extern declaration is inside a function scope
-redecl --- function or variable redeclared
-redef --- function or variable redefined
-incondefs --- function, variable or constant redefined with inconsistent type
-imptype --- variable declaration has unknown (implicitly int) type
-matchfields --- struct or enum type redefined with inconsistent fields or
-members
-usedef --- use before definition
-impouts --- pointer parameters to unspecified functions may be implicit out
-parameters
-tmpdir --- set directory for writing temp files
-larchpath --- set path for searching for library files (overrides LARCH_PATH
-environment variable)
-lclimportdir --- set directory to search for LCL import files (overrides
-LCLIMPORTDIR)
-sysdirs --- set directories for system files (default /usr/include). Separate
-directories with path separator (colons in Unix, semi-colons in Windows). Flag
-settings propagate to files in a system directory. If -sysdirerrors is set, no
-errors are reported for files in system directories.
-skipansiheaders --- prevent inclusion of header files in a system directory
-with names that match standard ANSI headers. The symbolic information in the
-standard library is used instead.  Flag in effect only if a library including
-the ANSI library is loaded.  The ANSI headers are:
-assert, ctype, errno, float, limits, locale, math, setjmp, signal, stdarg,
-stddef, stdio, stdlib, strings, string, time, and wchar.
-skipposixheaders --- prevent inclusion of header files in a system directory
-with names that match standard POSIX headers. The symbolic information in the
-posix library is used instead.  The POSIX headers are:
-dirent, fcntl, grp, pwd, termios, sys/stat, sys/times, sys/types, sys/utsname,
-sys/wait, unistd, and utime.
-sysdirerrors --- report errors in files in system directories (set by -sysdirs)
-sysdirexpandmacros --- expand macros in system directories regardless of other
-settings, except for macros corresponding to names defined in a load library
-I<directory> --- add to C include path
-S<directory> --- add to spec path
-quiet --- suppress herald and error count
-usestderr --- send error messages to standard error (instead of standard out)
-showsummary --- show summary of all errors reported and suppressed
-showscan --- show file names are they are processed
-stats --- display lines processed and time
-timedist --- display time distribution
-showalluses --- show sorted list of uses of all globals
-noeffect --- statement with no effect
-noeffectuncon --- statement with no effect (except possibly through call to
-unconstrained function)
-exportany --- variable, function or type exported but not specified
-exportfcn --- function exported but not specified
-exportmacro --- expanded macro exported but not specified
-exporttype --- type definition exported but not specified
-exportvar --- variable exported but not specified
-exportconst --- constant exported but not specified
-exportiter --- constant exported but not specified
+exposetrans --- exposure transfer errors
+observertrans --- observer transfer errors
 repexpose --- abstract representation is exposed (sets assignexpose, retexpose,
 and castexpose)
 retexpose --- abstract representation is exposed (return values only)
 assignexpose --- abstract representation is exposed (assignments only)
 castexpose --- abstract representation is exposed through a cast
-linelen --- set length of messages (number of chars)
-indentspaces --- set number of spaces to indent sub-messages
-showcolumn --- show column number where error is found
-parenfileformat --- show column number where error is found
-showfunc --- show name of function containing error
-showallconjs --- show all possible types
-impconj --- make all alternate types implicit (useful for making system
-libraries
-expect --- expect <int> code errors
-lclexpect --- expect <int> spec errors
-partial --- check as partial system (-specundef, -declundef, -exportlocal,
-don't check macros in headers without corresponding .c files)
+redundantsharequal --- declaration uses observer qualifier that is always true
+misplacedsharequal --- declaration of unsharable storage uses sharing
+annotation
+mods --- unspecified modification of caller-visible state
+mustmod --- specified modification is not detected
+modobserver --- possible modification of observer storage
+modobserveruncon --- possible modification of observer storage through
+unconstrained call
+modinternalstrict --- possible modification of internal storage through
+function call
+modfilesys --- report undocumented file system modifications (applies to
+unspecified functions if modnomods is set)
+modunspec --- modification in unspecified functions (sets modnomods,
+modglobunspec and modstrictglobsunspec)
+modnomods --- modification in a function with no modifies clause
+moduncon --- possible modification through a call to an unconstrained function
+modunconnomods --- possible modification through a call to an unconstrained
+function in a function with no modifies clause
+globsimpmodsnothing --- functions declared with a globals list but no modifies
+clause are assumed to modify nothing
+modsimpnoglobs --- functions declared with a modifies clause but no globals
+list are assumed to use no globals
+globstate --- returns with global in inconsistent state (null or undefined)
 globs --- undocumented use of a checked global variable
 globuse --- global listed for a function not used
 internalglobs --- use of internalState
@@ -711,151 +721,94 @@ modstrictglobsnomods --- undocumented modification of a strict checked global
 variable in a function declared with no modifies clause
 modglobsunchecked --- undocumented modification of an unchecked checked global
 variable
-lh --- generate .lh files
-lcs --- generate .lcs files
-singleinclude --- optimize header inclusion to eliminate redundant includes
-neverinclude --- optimize header inclusion to not include any header files
-skipsysheaders --- do not include header files in system directories (set by
--sysdirs)
-warnflags --- warn when command line sets flag in abnormal way
-warnrc --- warn when there are problems with reading the initialization files
-warnunixlib --- warn when the unix library is used
-badflag --- warn about bad command line flags
-forcehints --- provide a hint for every warnings
-help --- -help <flags> will describe flags
-hints --- provide a hint the first time a particular warning appears
+noret --- path with no return detected in non-void function
+emptyreturn --- empty return in function declared to return value
+alwaysexits --- loop predicate always exits
+loopexec --- assume all loops execute at least once (sets forloopexec,
+whileloopexec and iterloopexec)
+forloopexec --- assume all for loops execute at least once
+whileloopexec --- assume all while loops execute at least once
+iterloopexec --- assume all iterator loops execute at least once
+obviousloopexec --- assume loop that can be determined to always execute always
+does
+evalorder --- code has unspecified or implementation-dependent behavior because
+of order of evaluation
+evalorderuncon --- code involving call to unspecified function has undefined or
+implementation-dependent behavior
+infloops --- likely infinite loop is detected
+infloopsuncon --- likely infinite loop is detected (may result from
+unconstrained function)
+casebreak --- non-empty case in a switch without preceding break
+misscase --- switch on enum type missing case for some value
+firstcase --- first statement in switch is not a case
+duplicatecases --- duplicate cases in switch
+deepbreak --- break inside nested while or for or switch
+looploopbreak --- break inside nested while or for
+switchloopbreak --- break in loop inside switch
+loopswitchbreak --- break in switch inside loop
+switchswitchbreak --- break in switch inside switch
+looploopcontinue --- continue inside nested loop
+whileempty --- a while statement has no body
+whileblock --- the body of a while statement is not a block
+forempty --- a for statement has no body
+forblock --- the body of a for statement is not a block
+ifempty --- an if statement has no body
+ifblock --- the body of an if statement is not a block
+allempty --- an if, while or for statement has no body (sets ifempty,
+whileempty and forempty
+allblock --- the body of an if, while or for statement is not a block (sets
+ifblock, whileblock and forblock)
+elseifcomplete --- if ... else if chains must have final else
+unreachable --- unreachable code detected
+noeffect --- statement with no effect
+noeffectuncon --- statement with no effect (except possibly through call to
+unconstrained function)
 retval --- return value ignored (sets retvalint, retvalbool and retvalother)
 retvalother --- return value of type other than bool or int ignored
 retvalbool --- return value of manifest type bool ignored
 retvalint --- return value of type int ignored
-f --- read an options file (default ~/.splintrc not loaded)
-i --- set LCL initilization file
-nof --- do not read options file
-needspec --- information in specifications is not also included in syntactic
-comments
-newdecl --- report new global declarations in source files
-hasyield --- iter declaration has no yield parameters
-dump --- save state for merging (default suffix .lcd)
-load --- load state from dump file (default suffix .lcd)
-nolib --- do not load standard library
-isolib --- use normal standard library
-strictlib --- interpret standard library strictly
-unixlib --- use UNIX (sort-of) standard library
-unixstrictlib --- use strict version of UNIX (sort-of) library
-posixlib --- use POSIX standard library
-posixstrictlib --- use strict POSIX standard library
-whichlib --- show standard library filename
+nullterminated --- misuse of nullterminated allocation
+bounds --- memory bounds checking (sets boundsread and boundswrite)
+boundsread --- possible out of bounds read
+boundswrite --- possible buffer overflow from an out of bounds write
+fcnpost --- display function post conditions
+checkpost --- unable to verify predicate in ensures clause
+implictconstraint --- generate implicit constraints for functions
+orconstraint --- use limited OR expressions to resolve constraints
+nullterminated --- misuse of nullterminated allocation
+showconstraintparens --- display parentheses around constraint terms
+showconstraintlocation --- display location for every constraint generated
 mts --- load meta state declaration and corresponding xh file
-commentchar --- set marker character for syntactic comments (default is '@')
-allmacros --- sets fcnmacros and constmacros
-libmacros --- check all macros with declarations in library as functions
-specmacros --- check all macros corresponding to specified functions or
-constants
-fcnmacros --- check all macros with parameter lists as functions
-constmacros --- check all macros without parameter lists as constants
-macromatchname --- macro definition does not match iter or constant declaration
-nextlinemacros --- the line after a constant or iter declaration must be a
-macro definition
+statetransfer --- storage has been transfered with invalid state
+statemerge --- control paths merge with storage in incompatible states
+macroredef --- macro redefined
+macrounrecog --- unrecognized identifier in macro
+macroconstdecl --- non-parameterized macro without prototype or specification
 macrostmt --- macro definition is syntactically not equivalent to function
 macroempty --- macro definition for is empty
 macroparams --- macro parameter not used exactly once
+macroreturn --- return statement in macro body
 macroassign --- assignment to a macro parameter
-sefparams --- a parameter with side-effects is passed as a sef parameter
-sefuncon --- a parameter with unconstrained side-effects is passed as a sef
-parameter
 macroparens --- macro parameter used without parentheses (in potentially
 dangerous context)
 macrodecl --- macro without prototype or specification (sets macrofcndecl and
 macroconstdecl)
 macrofcndecl --- parameterized macro without prototype or specification
-macroconstdecl --- non-parameterized macro without prototype or specification
-macroredef --- macro redefined
-macrounrecog --- unrecognized identifier in macro
-stackref --- external reference to stack-allocated storage is created
-usereleased --- storage used after release
-strictusereleased --- element used after it may have been released
-compdef --- parameter, return value or global completely defined
-compmempass --- actual parameter matches alias kind of formal parameter
-completely 
-mustdefine --- out storage not defined before return or scope exit
-uniondef --- at least one field of a union must be defined
-memimp --- memory errors for unqualified storage
-paramimptemp --- assume unannotated parameter is temp
-allimponly --- sets globimponly, retimponly, structimponly, specglobimponly,
-specretimponly and specstructimponly
-codeimponly --- sets globimponly, retimponly and structimponly
-specimponly --- sets specglobimponly, specretimponly and specstructimponly
-globimponly --- assume unannotated global storage is only
-retimponly --- assume unannotated returned storage is only
-structimponly --- assume unannotated structure field is only
-specglobimponly --- assume unannotated global storage is only
-specretimponly --- assume unannotated returned storage is only
-specstructimponly --- assume unannotated structure field is only
-deparrays --- array elements are dependent storage
-compdestroy --- all only references derivable from void pointer out only
-parameter are released
-strictdestroy --- report complete destruction errors for array elements that
-may have been released
-mustfreefresh --- freshly allocated storage not released before return or scope
-exit
-mustfreeonly --- only storage not released before return or scope exit
-mustfree --- fresh or only storage not released before return or scope exit
-(sets mustfreefresh and mustfreeonly)
-branchstate --- storage has inconsistent states of alternate paths through a
-branch
-strictbranchstate --- storage through array fetch has inconsistent states of
-alternate paths through a branch
-memchecks --- sets all dynamic memory checking flags (memimplicit, mustfree,
-mustdefine, mustnotalias, null, memtrans)
-memtrans --- memory transfer errors (sets all *trans flags)
-exposetrans --- exposure transfer errors
-observertrans --- observer transfer errors
-dependenttrans --- dependent transfer errors
-newreftrans --- new reference transfer to reference counted reference
-onlytrans --- only storage transferred to non-only reference (memory leak)
-onlyunqglobaltrans --- only storage transferred to an unqualified global or
-static reference (memory leak)
-ownedtrans --- owned storage transferred to non-owned reference (memory leak)
-freshtrans --- fresh storage transferred to non-only reference (memory leak)
-sharedtrans --- shared storage transferred to non-shared reference
-temptrans --- temp storage transferred to non-temporary reference
-kepttrans --- kept storage transferred to non-temporary reference
-keeptrans --- keep storage transferred inconsistently
-immediatetrans --- an immediate address (result of &) is transferred
-inconsistently
-refcounttrans --- reference counted storage is transferred in an inconsistent
-way
-statictrans --- static storage is transferred in an inconsistent way
-unqualifiedtrans --- unqualified storage is transferred in an inconsistent way
-staticinittrans --- static storage is used as an initial value in an
-inconsistent way
-unqualifiedinittrans --- unqualified storage is used as an initial value in an
-inconsistent way
-readonlystrings --- string literals are read-only (error if one is modified or
-released)
-readonlytrans --- report memory transfer errors for initializations to
-read-only string literals
-passunknown --- passing a value as an un-annotated parameter clears its
-annotation
-mods --- unspecified modification of caller-visible state
-mustmod --- specified modification is not detected
-modobserver --- possible modification of observer storage
-modobserveruncon --- possible modification of observer storage through
-unconstrained call
-modinternalstrict --- possible modification of internal storage through
-function call
-modfilesys --- report undocumented file system modifications (applies to
-unspecified functions if modnomods is set)
-modunspec --- modification in unspecified functions (sets modnomods,
-modglobunspec and modstrictglobsunspec)
-modnomods --- modification in a function with no modifies clause
-moduncon --- possible modification through a call to an unconstrained function
-modunconnomods --- possible modification through a call to an unconstrained
-function in a function with no modifies clause
-globsimpmodsnothing --- functions declared with a globals list but no modifies
-clause are assumed to modify nothing
-modsimpnoglobs --- functions declared with a modifies clause but no globals
-list are assumed to use no globals
+sefparams --- a parameter with side-effects is passed as a sef parameter
+sefuncon --- a parameter with unconstrained side-effects is passed as a sef
+parameter
+constmacros --- check all macros without parameter lists as constants
+fcnmacros --- check all macros with parameter lists as functions
+allmacros --- sets fcnmacros and constmacros
+libmacros --- check all macros with declarations in library as functions
+specmacros --- check all macros corresponding to specified functions or
+constants
+macromatchname --- macro definition does not match iter or constant declaration
+nextlinemacros --- the line after a constant or iter declaration must be a
+macro definition
+iterbalance --- iter is not balanced with end_<iter>
+iteryield --- iter yield parameter is inappropriate
+hasyield --- iter declaration has no yield parameters
 namechecks --- controls name checking without changing other settings
 czech --- czech naming convention (sets accessczech, czechfunctions, czechvars,
 czechconstants, czechenums, and czechmacros)
@@ -885,24 +838,6 @@ czechoslovakconsts --- czechoslovak naming convention violated in a constant
 declaration
 czechoslovaktypes --- czechoslovak naming convention violated in a user-defined
 type definition
-isoreserved --- external name conflicts with name reserved for system or
-standard library
-cppnames --- external or internal name is a C++ keyword or reserved word
-isoreservedinternal --- internal name conflicts with name reserved for system
-or standard library
-distinctexternalnames --- external name is not distinguishable from another
-external name using the number of significant characters
-externalnamelen --- set the number of significant characters in an external
-name
-externalnamecaseinsensitive --- alphabetic comparisons for external names are
-case-insensitive
-distinctinternalnames --- internal name is not distinguishable from another
-internal name using the number of significant characters
-internalnamelen --- set the number of significant characters in an internal
-name
-internalnamecaseinsensitive --- set whether case is significant an internal
-names (-internalnamecaseinsensitive means case is significant)
-internalnamelookalike --- lookalike characters match in internal names
 macrovarprefix --- set namespace prefix for variables declared in a macro body
 macrovarprefixexclude --- the macrovarprefix may not be used for non-macro
 variables
@@ -936,11 +871,137 @@ iterprefix --- set namespace prefix for iterators
 iterprefixexclude --- the iterprefix may not be used for non-iter identifiers
 protoparamprefix --- set namespace prefix for parameters in function prototype
 declarations
+isoreserved --- external name conflicts with name reserved for system or
+standard library
+cppnames --- external or internal name is a C++ keyword or reserved word
+isoreservedinternal --- internal name conflicts with name reserved for system
+or standard library
+distinctexternalnames --- external name is not distinguishable from another
+external name using the number of significant characters
+externalnamelen --- set the number of significant characters in an external
+name
+externalnamecaseinsensitive --- alphabetic comparisons for external names are
+case-insensitive
+distinctinternalnames --- internal name is not distinguishable from another
+internal name using the number of significant characters
+internalnamelen --- set the number of significant characters in an internal
+name
+internalnamecaseinsensitive --- set whether case is significant an internal
+names (-internalnamecaseinsensitive means case is significant)
+internalnamelookalike --- lookalike characters match in internal names
 protoparamname --- a parameter in a function prototype has a name
 protoparammatch --- the name of a parameter in a function prototype and
 corresponding declaration must match (after removing the protoparamprefix
 protoparamprefixexclude --- the protoparamprefix may not be used for
 non-declaraction parameter identifiers
+topuse --- declaration at top level not used
+exportlocal --- a declaration is exported but not used outside this module
+exportheader --- a declaration is exported but does not appear in a header file
+exportheadervar --- a variable declaration is exported but does not appear in a
+header file
+fielduse --- field of structure type not used
+enummemuse --- member of an enum type not used
+constuse --- constant declared but not used
+fcnuse --- function declared but not used
+paramuse --- function parameter not used 
+typeuse --- type declared but not used
+varuse --- variable declared but not used
+unusedspecial --- unused declaration in special file (corresponding to .l or .y
+file)
+declundef --- function or variable declared but never defined
+specundef --- function or variable specified but never defined
+specundecl --- function or variable specified but never declared in a source
+file
+newdecl --- report new global declarations in source files
+needspec --- information in specifications is not also included in syntactic
+comments
+nolib --- do not load standard library
+isolib --- use normal standard library
+strictlib --- interpret standard library strictly
+unixlib --- use UNIX (sort-of) standard library
+unixstrictlib --- use strict version of UNIX (sort-of) library
+posixlib --- use POSIX standard library
+posixstrictlib --- use strict POSIX standard library
+whichlib --- show standard library filename
+warnposixheaders --- a POSIX header is included, but the POSIX library is not
+used
+warnunixlib --- warn when the unix library is used
+usevarargs --- non-standard <varargs.h> included
+dump --- save state for merging (default suffix .lcd)
+load --- load state from dump file (default suffix .lcd)
+singleinclude --- optimize header inclusion to eliminate redundant includes
+neverinclude --- optimize header inclusion to not include any header files
+skipsysheaders --- do not include header files in system directories (set by
+-sysdirs)
+gnuextensions --- support some gnu (gcc) language extensions
+noparams --- function declaration has no parameter list
+oldstyle --- old style function definition
+maintype --- type of main does not match expected type
+exitarg --- argument to exit has implementation defined behavior
+shadow --- declaration reuses name visible in outer scope
+incondefslib --- function, variable or constant defined in a library is
+redefined with inconsistent type
+overload --- library function overloaded
+nestedextern --- an extern declaration is inside a function scope
+redecl --- function or variable redeclared
+redef --- function or variable redefined
+imptype --- variable declaration has unknown (implicitly int) type
+tmpdir --- set directory for writing temp files
+larchpath --- set path for searching for library files (overrides LARCH_PATH
+environment variable)
+lclimportdir --- set directory to search for LCL import files (overrides
+LCLIMPORTDIR)
+sysdirs --- set directories for system files (default /usr/include). Separate
+directories with path separator (colons in Unix, semi-colons in Windows). Flag
+settings propagate to files in a system directory. If -sysdirerrors is set, no
+errors are reported for files in system directories.
+skipansiheaders --- prevent inclusion of header files in a system directory
+with names that match standard ANSI headers. The symbolic information in the
+standard library is used instead.  Flag in effect only if a library including
+the ANSI library is loaded.  The ANSI headers are:
+assert, ctype, errno, float, limits, locale, math, setjmp, signal, stdarg,
+stddef, stdio, stdlib, strings, string, time, and wchar.
+skipposixheaders --- prevent inclusion of header files in a system directory
+with names that match standard POSIX headers. The symbolic information in the
+posix library is used instead.  The POSIX headers are:
+dirent, fcntl, grp, pwd, termios, sys/stat, sys/times, sys/types, sys/utsname,
+sys/wait, unistd, and utime.
+sysdirerrors --- report errors in files in system directories (set by -sysdirs)
+sysdirexpandmacros --- expand macros in system directories regardless of other
+settings, except for macros corresponding to names defined in a load library
+I<directory> --- add to C include path
+S<directory> --- add to spec path
+exportany --- variable, function or type exported but not specified
+exportfcn --- function exported but not specified
+exportmacro --- expanded macro exported but not specified
+exporttype --- type definition exported but not specified
+exportvar --- variable exported but not specified
+exportconst --- constant exported but not specified
+exportiter --- constant exported but not specified
+linelen --- set length of messages (number of chars)
+indentspaces --- set number of spaces to indent sub-messages
+showcolumn --- show column number where error is found
+parenfileformat --- show column number where error is found
+showfunc --- show name of function containing error
+showallconjs --- show all possible types
+impconj --- make all alternate types implicit (useful for making system
+libraries
+expect --- expect <int> code errors
+lclexpect --- expect <int> spec errors
+partial --- check as partial system (-specundef, -declundef, -exportlocal,
+don't check macros in headers without corresponding .c files)
+lh --- generate .lh files
+lcs --- generate .lcs files
+warnflags --- warn when command line sets flag in abnormal way
+warnrc --- warn when there are problems with reading the initialization files
+badflag --- warn about bad command line flags
+fileextensions --- warn when command line file does not have a recognized
+extension
+help --- -help <flags> will describe flags
+f --- read an options file (default ~/.splintrc not loaded)
+i --- set LCL initilization file
+nof --- do not read options file
+commentchar --- set marker character for syntactic comments (default is '@')
 controlnestdepth --- set maximum nesting depth of compound statements,
 iteration control structures, and selection control structures (ANSI89 minimum
 is 15; ISO99 is 63)
@@ -957,64 +1018,15 @@ standard
 iso99limits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers) based on ISO99
 standard
-null --- misuses of null pointer
-nullterminated --- misuse of nullterminated allocation
-arrayread --- possible out of bounds read
-arraywrite --- possible buffer overflow from an out of bounds write
-fcnpost --- Function has the post condition
-parenconstraint --- parenthesize constraint term
-debugfcnconstraint --- debuging constraint flas
-arraybounds --- Possible out-of-bounds store.  Unable to resolve constraint:
-arrayboundsread --- Possible out-of-bounds read.  Unable to resolve constraint:
-fcnconstraint --- unresolved constraint
-checkpost --- unable to verify ensures annotation
-constraintlocation --- display full c expression for every constraint generated
-implictconstraint --- Try to generate implicit constraints for functions
-orconstraint --- Use limited OR expressions to resolve constraints
-nullterminated --- misuse of nullterminated allocation
-nullderef --- possible dereferencce of null pointer
-fcnderef --- dereferencce of a function type
-nullpass --- possibly null pointer passed as formal with no null annotation
-nullret --- possibly null pointer returned as result with no null annotation
-nullstate --- possibly null pointer reachable from a reference with no null
-annotation
-nullassign --- inconsistent assignment or initialization involving null pointer
-boolcompare --- comparison between bools (dangerous because of multiple TRUE
-values)
-realcompare --- dangerous comparison between reals (dangerous because of
-inexact floating point representations)
-unsignedcompare --- comparison using <, <=, >= between an unsigned integral and
-zero constant
-ptrarith --- arithmetic involving pointer and integer
-nullptrarith --- arithmetic involving possibly null pointer and integer
-ptrcompare --- comparison between pointer and number
-strictops --- primitive operation does not type check strictly
-bitwisesigned --- a bitwise logical operator does not have unsigned operands
-shiftnegative --- a shift right operand may be negative
-shiftimplementation --- a shift left operand may be negative
-boolops --- primitive operation (!, && or ||) does not has a boolean argument
-ptrnegate --- allow ! to be used on pointer operand
-sizeoftype --- sizeof operator has a type argument
-sizeofformalarray --- sizeof operator has an array formal parameter argument
-fixedformalarray --- formal parameter of type array is declared with size
-incompletetype --- formal parameter has an incomplete type
-formalarray --- formal parameter is an array
-predassign --- condition test (if, while or for) is an assignment
-predbool --- type of condition test (if, while or for) not bool (sets
-predboolint, predboolptr and predboolothers)
-predboolint --- type of condition test (if, while or for) is an integral type
-predboolothers --- type of condition test (if, while or for) not bool, int or
-pointer
-predboolptr --- type of condition test (if, while or for) is a pointer
 D<initializer> --- passed to pre-processor
 U<initializer> --- passed to pre-processor
 unrecogdirective --- unrecognized pre-processor directive
-globstate --- returns with global in inconsistent state (null or undefined)
 supcounts --- The number of errors detected does not match number in
 /*@i<n>@*/.
 limit --- limit <int> consecutive repeated errors
 syntax --- syntax error in parsing
 trytorecover --- try to recover from parse error
+preproc --- preprocessing error
 type --- type mismatch
 fullinitblock --- initializer sets all fields
 initallelements --- initializer defines all array elements
@@ -1024,7 +1036,6 @@ stringliteralnoroom --- string literal leaves no room for null terminator
 stringliteralsmaller --- string literal is smaller than the char array it is
 assigned to
 enummembers --- enum members must be int values
-maintype --- type of main does not match expected type
 formattype --- type-mismatch in parameter corresponding to format code in a
 printf or scanf-like function
 formatconst --- format parameter is not a string constant (hence variable
@@ -1061,50 +1072,56 @@ longunsignedunsignedintegral --- allow long unsigned type to match an arbitrary
 unsigned integral type (e.g., size_t)
 longsignedintegral --- allow long type to match an arbitrary signed integral
 type (e.g., ssize_t)
-zeroptr --- 0 is treated as a pointer
-zerobool --- 0 is treated as a boolean
+zeroptr --- tread 0 as a pointer
+zerobool --- treat 0 as a boolean
 repeatunrecog --- do not suppress repeated unrecognized identifier messages
 (instead of only reporting the first error)
 sysunrecog --- report unrecognized identifiers with system (__) prefix
 unrecog --- unrecognized identifier
-topuse --- declaration at top level not used
-exportlocal --- a declaration is exported but not used outside this module
-exportheader --- a declaration is exported but does not appear in a header file
-exportheadervar --- a variable declaration is exported but does not appear in a
-header file
-fielduse --- field of structure type not used
-enummemuse --- member of an enum type not used
-constuse --- constant declared but not used
-fcnuse --- function declared but not used
-paramuse --- function parameter not used 
-typeuse --- type declared but not used
-varuse --- variable declared but not used
-unusedspecial --- unused declaration in special file (corresponding to .l or .y
-file)
-redundantsharequal --- declaration uses observer qualifier that is always true
-misplacedsharequal --- declaration of unsharable storage uses sharing
-annotation
 annotationerror --- annotation is used in inconsistent location
 commenterror --- inconsistent syntactic comment
-bugslimit --- set maximum number of bugs detected before giving up
-fileextensions --- warn when command line file does not have a recognized
-extension
 warnuse --- warn when declaration marked with warn is used
-statetransfer --- storage has been transfered with invalid state
-statemerge --- control paths merge with storage in incompatible states
+bufferoverflow --- possible buffer overflow vulnerability
+bufferoverflowhigh --- likely buffer overflow vulnerability
+implementationoptional --- declarator is implementation optional (ISO99 does
+not require an implementation to provide it)
+legacy --- legacy declaration in Unix Standard
+multithreaded --- function is not reentrant
+portability --- function may have undefined behavior
+superuser --- function is restricted to superusers
+toctou --- possible time of check, time of use vulnerability
+unixstandard --- function is not required in Standard UNIX Specification
 its4mostrisky --- most risky security vulnerabilities (from its4 database)
 its4veryrisky --- very risky security vulnerabilities (from its4 database)
 its4risky --- risky security vulnerabilities (from its4 database)
 its4moderate --- moderately risky security vulnerabilities (from its4 database)
 its4low --- risky security vulnerabilities (from its4 database)
-bufferoverflowhigh --- likely buffer overflow vulnerability
-bufferoverflow --- possible buffer overflow vulnerability
-toctou --- possible time of check, time of use vulnerability
-multithreaded --- function is not reentrant
-portability --- function may have undefined behavior
-unixstandard --- function is not required in Standard UNIX Specification
-superuser --- function is restricted to superusers
-implementationoptional --- declarator is implementation optional (ISO99 does
-not require an implementation to provide it)
-legacy --- legacy declaration in Unix Standard
+nocomments --- ignore all stylized comments
+noaccess --- ignore access comments
+unrecogcomments --- stylized comment is unrecognized
+unrecogflagcomments --- stylized flag comment uses an unrecognized flag
+tmpcomments --- interpret t comments (ignore errors in lines marked with
+/*@t<n>@*/
+lintcomments --- interpret traditional lint comments (/*FALLTHROUGH*/,
+/*NOTREACHED*/)
+warnlintcomments --- warn when a traditional lint comment is used
+continuecomment --- line continuation marker (\) in comment before */ on same
+line
+slashslashcomment --- use of // comment
+nestcomment --- comment begins inside comment
+quiet --- suppress herald and error count
+usestderr --- send error messages to standard error (instead of standard out)
+showsummary --- show summary of all errors reported and suppressed
+showscan --- show file names are they are processed
+stats --- display lines processed and time
+timedist --- display time distribution
+showalluses --- show sorted list of uses of all globals
+hints --- provide a hint the first time a particular warning appears
+forcehints --- provide a hint for every warnings
+showsourceloc --- display the source code location where a warning is produced
+bugslimit --- set maximum number of bugs detected before giving up
+debugfcnconstraint --- debug function constraints
+grammar --- debug parsing
+nopp --- do not pre-process input files
+keep --- do not delete temporary files
 

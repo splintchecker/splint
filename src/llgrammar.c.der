@@ -41,11 +41,13 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-nullpass@*/
+/*@-nullptrarith*/
+/*@-usereleased@*/
 /*@-declundef@*/
 
 /*drl added 11/27/2001*/
-/*@-arraybounds@*/
-/*@-arrayboundsread@*/
+/*@-bounds@*/
 /* < end of bison.head > */
 
 
@@ -3583,5 +3585,4 @@ static void yyprint (FILE *f, int t, YYSTYPE value)
 
 
 /*drl added 11/27/2001*/
-/*@=arraybounds@*/
-/*@=arrayboundsread@*/
+/*@=bounds@*/

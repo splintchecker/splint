@@ -41,11 +41,13 @@
 /*@-dependenttrans@*/
 /*@-unqualifiedtrans@*/
 /*@-nullassign@*/
+/*@-nullpass@*/
+/*@-nullptrarith*/
+/*@-usereleased@*/
 /*@-declundef@*/
 
 /*drl added 11/27/2001*/
-/*@-arraybounds@*/
-/*@-arrayboundsread@*/
+/*@-bounds@*/
 /* < end of bison.head > */
 
 
@@ -123,7 +125,7 @@ extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
     # include "mtscanner.h"
   */
 
-static /*@noreturn@*/ void mterror (char *);
+static /*@exits@*/ void mterror (char *);
 
 /*@-noparams@*/ /* Can't list params since YYSTYPE isn't defined yet. */
 static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
@@ -1514,5 +1516,4 @@ static void yyprint (FILE *file, int type, YYSTYPE value)
 
 
 /*drl added 11/27/2001*/
-/*@=arraybounds@*/
-/*@=arrayboundsread@*/
+/*@=bounds@*/

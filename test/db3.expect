@@ -2,13 +2,13 @@
 
 Error Type                Reported  Suppressed
 ===================       ========  =========
-redecl                       0           7
-incondefs                    0           1
 usedef                       0           1
-exporttype                   0           3
 compdef                      0           3
-modfilesys                   0          25
+incondefs                    0           1
 formalarray                  0          24
+modfilesys                   0          25
+redecl                       0           7
+exporttype                   0           3
                           ========  =========
 Total                        0          64
 
@@ -129,16 +129,16 @@ drive.c:185: Undocumented modification of *stdout possible from call to
 
 Error Type                Reported  Suppressed
 ===================       ========  =========
-redecl                       0           7
-incondefs                    0           1
 usedef                       0           1
-exporttype                   0           3
-globs                       26           0
-retvalint                   25           0
 compdef                      0           3
+incondefs                    0           1
+formalarray                  0          24
 mods                        26           0
 modfilesys                   0          25
-formalarray                  0          24
+globs                       26           0
+retvalint                   25           0
+redecl                       0           7
+exporttype                   0           3
                           ========  =========
 Total                       77          64
 

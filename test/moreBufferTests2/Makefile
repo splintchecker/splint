@@ -3,5 +3,5 @@
 #SPLINT = splint
  
 check:
-	$(SPLINT) -exportlocal +arraybounds +arrayboundsread unknownsize.c arrayConstExpr.c -expect 1
+	$(SPLINT) -exportlocal +bounds unknownsize.c arrayConstExpr.c -expect 1
 

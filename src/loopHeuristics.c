@@ -50,7 +50,7 @@
 static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
 {
   
-  llassert(constraintExpr_isDefined(c) );
+  llassert (constraintExpr_isDefined (c) );
  if (c->kind == binaryexpr )
     {
       constraintExprBinaryOpKind binOP;
@@ -80,7 +80,7 @@ static bool incVar (/*@notnull@*/ constraint c) /*@*/
   if (! isInc (c->expr ) )
     return FALSE;
 
-  llassert (constraintExpr_isDefined(c->expr) );
+  llassert (constraintExpr_isDefined (c->expr) );
   llassert (c->expr->kind == binaryexpr);
 
   t1 = constraintExprData_binaryExprGetExpr1 (c->expr->data);
@@ -95,9 +95,9 @@ static bool incVar (/*@notnull@*/ constraint c) /*@*/
 static bool increments (/*@observer@*/ constraint c,
 			/*@observer@*/ constraintExpr var)
 {
-  llassert(constraint_isDefined(c) );
+  llassert (constraint_isDefined (c) );
 
-  if (constraint_isUndefined(c) )
+  if (constraint_isUndefined (c) )
     {
       return FALSE;
     }
@@ -115,23 +115,23 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
   exprNode init, test, inc, t1, t2;
   lltok tok;
   
-  llassert(exprNode_isDefined (forPred) );
-  llassert(exprNode_isDefined (forBody) );
+  llassert (exprNode_isDefined (forPred) );
+  llassert (exprNode_isDefined (forBody) );
 
   init  =  exprData_getTripleInit (forPred->edata);
   test  =   exprData_getTripleTest (forPred->edata);
   inc   =   exprData_getTripleInc (forPred->edata);
 
-  llassert(exprNode_isDefined(test) );
+  llassert (exprNode_isDefined (test) );
 
-  if (exprNode_isUndefined(test) )
+  if (exprNode_isUndefined (test) )
     {
       return FALSE;
     }
 
-  llassert(exprNode_isDefined(inc) );
+  llassert (exprNode_isDefined (inc) );
 
-  if (exprNode_isUndefined(inc) )
+  if (exprNode_isUndefined (inc) )
     {
       return FALSE;
     }
@@ -156,9 +156,9 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
       {
 	t1 = exprData_getUopNode (test->edata);
 	t2 = exprData_getUopNode (inc->edata);
-	llassert(exprNode_isDefined(t2) && exprNode_isDefined(t2)  );
+	llassert (exprNode_isDefined (t2) && exprNode_isDefined (t2)  );
 
-	if (exprNode_isUndefined(t1) || exprNode_isUndefined(t2)  )
+	if (exprNode_isUndefined (t1) || exprNode_isUndefined (t2)  )
 	  {
 	    return FALSE;
 	  }
@@ -175,17 +175,17 @@ static /*@only@*/ constraintList getLessThanConstraints (/*@observer@*/ constrai
 {
   constraintList ret;
 
-  ret = constraintList_makeNew();
+  ret = constraintList_makeNew ();
   constraintList_elements (c, el)
     {
-      llassert(constraint_isDefined(el));
-      if ( constraint_isUndefined(el)  )
+      llassert (constraint_isDefined (el));
+      if ( constraint_isUndefined (el)  )
       	continue;
       
       if (el->ar == LT || el->ar == LTE)
 	{
 	  constraint temp;
-	  temp = constraint_copy(el);
+	  temp = constraint_copy (el);
 
 	  ret = constraintList_add (ret, temp);
 	}
@@ -199,7 +199,7 @@ static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintLis
 {
   constraintList ret;
 
-  ret = constraintList_makeNew();
+  ret = constraintList_makeNew ();
   constraintList_elements (c, el)
     {
       llassert (constraint_isDefined (el));
@@ -207,7 +207,7 @@ static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintLis
       if (incVar (el) )
 	{
 	  constraint temp;
-	  temp = constraint_copy(el);
+	  temp = constraint_copy (el);
 	  ret = constraintList_add (ret, temp);
 	}
     }
@@ -230,41 +230,41 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
   test  =  exprData_getTripleTest (forPred->edata);
   inc   =  exprData_getTripleInc (forPred->edata);
 
-  llassert(exprNode_isDefined(test) );
-  llassert(exprNode_isDefined(inc) );
+  llassert (exprNode_isDefined (test) );
+  llassert (exprNode_isDefined (inc) );
   
   ltCon =  getLessThanConstraints (test->trueEnsuresConstraints);
   incCon = getIncConstraints (inc->ensuresConstraints);
   
-  DPRINTF(( message ("getForTimes: ltCon: %s from %s", constraintList_print(ltCon), constraintList_print(test->trueEnsuresConstraints) ) ));
+  DPRINTF (( message ("getForTimes: ltCon: %s from %s", constraintList_print (ltCon), constraintList_print (test->trueEnsuresConstraints) ) ));
   
-  DPRINTF(( message ("getForTimes: incCon: %s from %s", constraintList_print(incCon), constraintList_print(inc->ensuresConstraints) ) ));
+  DPRINTF (( message ("getForTimes: incCon: %s from %s", constraintList_print (incCon), constraintList_print (inc->ensuresConstraints) ) ));
    
   constraintList_elements (ltCon, el) 
     {
-      constraintList_elements(incCon, el2)
+      constraintList_elements (incCon, el2)
       {
-	if ( increments(el2, el->lexpr) )
+	if ( increments (el2, el->lexpr) )
 	  {
-	    DPRINTF(( message ("getForTimes: %s increments %s", constraint_print(el2), constraint_print(el) ) ));
+	    DPRINTF (( message ("getForTimes: %s increments %s", constraint_print (el2), constraint_print (el) ) ));
 	    ret =  constraintExpr_copy (el->expr);
-	    constraintList_free(ltCon);
-	    constraintList_free(incCon);
+	    constraintList_free (ltCon);
+	    constraintList_free (incCon);
 	    return ret;
 
 	  }
 	else
-	  DPRINTF(( message ("getForTimes: %s doesn't increment %s", constraint_print(el2), constraint_print(el) )   ));
+	  DPRINTF (( message ("getForTimes: %s doesn't increment %s", constraint_print (el2), constraint_print (el) )   ));
       }
       end_constraintList_elements;
     }
 
   end_constraintList_elements;
 
-  constraintList_free(ltCon);
-  constraintList_free(incCon);
+  constraintList_free (ltCon);
+  constraintList_free (incCon);
   
-  DPRINTF (( message ("getForTimes: %s  %s resorting to ugly hack", exprNode_unparse(forPred), exprNode_unparse(forBody) ) ));
+  DPRINTF (( message ("getForTimes: %s  %s resorting to ugly hack", exprNode_unparse (forPred), exprNode_unparse (forBody) ) ));
   if (! canGetForTimes (forPred, forBody) )
     {
       return NULL;
@@ -296,7 +296,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
 	    return (constraintExpr_makeMaxSetExpr (t1) );
 	  }
       }
-  llassert( FALSE);
+  llassert ( FALSE);
   BADEXIT;
 }
 
@@ -307,8 +307,8 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
   constraintExprKind kind;
   constraintExpr temp;
 
-  DPRINTF(( message ("Doing constraintExpr_searchAndAdd  %s %s %s ",
-		     constraintExpr_unparse(c), constraintExpr_unparse(find), constraintExpr_unparse(add) ) ) );
+  DPRINTF (( message ("Doing constraintExpr_searchAndAdd  %s %s %s ",
+		     constraintExpr_unparse (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
   
   if ( constraintExpr_similar (c, find) )
     {
@@ -317,13 +317,13 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
       
       cstring cPrint;
       
-      cPrint = constraintExpr_unparse(c);
+      cPrint = constraintExpr_unparse (c);
       
       
-      newExpr = constraintExpr_makeAddExpr (c, constraintExpr_copy(add) );
+      newExpr = constraintExpr_makeAddExpr (c, constraintExpr_copy (add) );
 
-      DPRINTF((message ("Replacing %q with %q",
-			cPrint, constraintExpr_unparse(newExpr)
+      DPRINTF ((message ("Replacing %q with %q",
+			cPrint, constraintExpr_unparse (newExpr)
 			)));
       return newExpr;
     }
@@ -336,21 +336,21 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
       break;      
     case unaryExpr:
       temp = constraintExprData_unaryExprGetExpr (c->data);
-      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy (temp), find, add);
       c->data = constraintExprData_unaryExprSetExpr (c->data, temp);
       break;           
     case binaryexpr:
       
       temp = constraintExprData_binaryExprGetExpr1 (c->data);
-      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy (temp), find, add);
       c->data = constraintExprData_binaryExprSetExpr1 (c->data, temp);
        
       temp = constraintExprData_binaryExprGetExpr2 (c->data);
-      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy (temp), find, add);
       c->data = constraintExprData_binaryExprSetExpr2 (c->data, temp);
       break;
     default:
-      llassert(FALSE);
+      llassert (FALSE);
     }
   return c;
   
@@ -362,8 +362,8 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
 {
   
   llassert (constraint_search (c, find)  );
-  DPRINTF(( message ("Doing constraint_searchAndAdd  %s %s %s ",
-		     constraint_print(c), constraintExpr_unparse(find), constraintExpr_unparse(add) ) ) );
+  DPRINTF (( message ("Doing constraint_searchAndAdd  %s %s %s ",
+		     constraint_print (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
   
   c->lexpr = constraintExpr_searchAndAdd (c->lexpr, find, add);
   c->expr =  constraintExpr_searchAndAdd (c->expr, find, add);
@@ -381,7 +381,7 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
   constraintList newConstraints;
   constraintList ret;
   
-  newConstraints = constraintList_makeNew();
+  newConstraints = constraintList_makeNew ();
   
   constraintList_elements (list, el)
     {
@@ -402,22 +402,22 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
   return ret;
 }
 
-static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@observer@*/ exprNode forBody, /*@observer@*/ constraintExpr iterations)
+static void doAdjust (/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@observer@*/ exprNode forBody, /*@observer@*/ constraintExpr iterations)
 {
   
   constraintList_elements (forBody->ensuresConstraints, el)
     {
       /* look for var = var + 1 */
-      if (incVar(el) )
+      if (incVar (el) )
 	{
-	  DPRINTF((message ("Found inc variable constraint : %s", constraint_print (el) )  ));
-	  forBody->requiresConstraints = constraintList_searchAndAdd(forBody->requiresConstraints, el->lexpr, iterations);
+	  DPRINTF ((message ("Found inc variable constraint : %s", constraint_print (el) )  ));
+	  forBody->requiresConstraints = constraintList_searchAndAdd (forBody->requiresConstraints, el->lexpr, iterations);
 	}
     }
   end_constraintList_elements;
 }
 
-void exprNode_forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
+void exprNode_forLoopHeuristics ( exprNode e, exprNode forPred, exprNode forBody)
 {
   exprNode init, test, inc;
 
@@ -435,7 +435,7 @@ void exprNode_forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
   if (constraintExpr_isDefined (iterations) )
     {
       doAdjust ( e, forPred, forBody, iterations);
-      constraintExpr_free(iterations);
+      constraintExpr_free (iterations);
     }
 }
 
@@ -445,7 +445,7 @@ void exprNode_forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
 /*        DPRINTF (("Can't get for time ")); */
 /*      } */
   
-/*    if (exprNode_isError(init) ) */
+/*    if (exprNode_isError (init) ) */
 /*      { */
 /*        return; */
 /*      } */
@@ -466,15 +466,15 @@ void exprNode_forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
 /*        t3 = exprData_getPairA (test->edata); */
 /*        t4 = exprData_getPairB (test->edata); */
       
-/*        if (sRef_sameName(t1->sref, t4->sref) ) */
+/*        if (sRef_sameName (t1->sref, t4->sref) ) */
 /*  	{ */
-/*  	  DPRINTF((message ("Found a for loop matching heuristic:%s", exprNode_unparse (forPred) ) )); */
-/*  	  con = constraint_makeEnsureLteMaxRead(t1, t3); */
-/*  	  forPred->ensuresConstraints = constraintList_add(forPred->ensuresConstraints, con);	   */
+/*  	  DPRINTF ((message ("Found a for loop matching heuristic:%s", exprNode_unparse (forPred) ) )); */
+/*  	  con = constraint_makeEnsureLteMaxRead (t1, t3); */
+/*  	  forPred->ensuresConstraints = constraintList_add (forPred->ensuresConstraints, con);	   */
 /*  	} */
 /*        else */
 /*  	{ */
-/*  	  DPRINTF((message ("Didn't Find a for loop matching heuristic:%s %s and %s differ", exprNode_unparse (forPred), exprNode_unparse(t1), exprNode_unparse(t3) ) )); */
+/*  	  DPRINTF ((message ("Didn't Find a for loop matching heuristic:%s %s and %s differ", exprNode_unparse (forPred), exprNode_unparse (t1), exprNode_unparse (t3) ) )); */
 /*  	} */
 /*        return; */
 /*      } */
