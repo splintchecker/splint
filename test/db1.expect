@@ -172,16 +172,17 @@ eref.c:62: Undocumented use of global eref_Pool
 eref.c:62: Parameter to sizeof is type employee: sizeof(employee)
 eref.c:62: Undocumented modification of eref_Pool.conts:
               eref_Pool.conts = (employee *)malloc(size * sizeof(employee))
-eref.c:62: Implicitly only storage eref_Pool.conts not released before
-    assignment: eref_Pool.conts = (employee *)malloc(size * sizeof(employee))
+eref.c:62: Implicitly only storage eref_Pool.conts (type employee *) not
+    released before assignment: eref_Pool.conts = (employee *)malloc(size *
+    sizeof(employee))
 eref.c:64: Undocumented use of global eref_Pool
 eref.c:67: Argument to exit has implementation defined behavior: 1
 eref.c:70: Undocumented use of global eref_Pool
 eref.c:70: Parameter to sizeof is type eref_status: sizeof(eref_status)
 eref.c:70: Undocumented modification of eref_Pool.status:
     eref_Pool.status = (eref_status *)malloc(size * sizeof(eref_status))
-eref.c:70: Implicitly only storage eref_Pool.status not released before
-    assignment: eref_Pool.status = (eref_status *)malloc(size *
+eref.c:70: Implicitly only storage eref_Pool.status (type eref_status *) not
+    released before assignment: eref_Pool.status = (eref_status *)malloc(size *
     sizeof(eref_status))
 eref.c:72: Undocumented use of global eref_Pool
 eref.c:75: Argument to exit has implementation defined behavior: 1
@@ -209,6 +210,8 @@ eref.h: (in macro eref_equal)
 eref.h:26: Macro parameter used without parentheses: er1
 eref.h:26: Macro parameter used without parentheses: er2
 < checking empset.c >
+erc.h:6: Name _elem is in the implementation name space (any identifier
+            beginning with underscore)
 erc.h:6: Type exported, but not specified: ercElem
 erc.h:7: Type exported, but not specified: ercList
 erc.h:8: Type exported, but not specified: ercInfo
@@ -307,17 +310,11 @@ erc.c:55: Parameter to sizeof is type ercElem: sizeof(ercElem)
 erc.c:60: Argument to exit has implementation defined behavior: 1
 erc.c: (in function erc_delete)
 erc.c:78: Operands of == are abstract type (eref): elem->val == er
-erc.c:83: Implicitly only storage prev->next not released before assignment:
-             prev->next = elem->next
-erc.c:83: Clauses exit with elem referencing implicitly only storage in true
+erc.c:83: Implicitly only storage prev->next (type struct _elem *) not released
+             before assignment: prev->next = elem->next
+erc.c:84: Clauses exit with elem referencing implicitly only storage in true
              branch, local storage in false branch
    erc.c:81: Storage elem becomes implicitly only
-erc.c:83: Storage c->vals->next is kept in one path, but live in another.
-   erc.c:83: Storage c->vals->next becomes kept
-erc.c:81: Body of if clause of if statement is not a block:
-             c->vals = elem->next
-erc.c:83: Body of else clause of if statement is not a block:
-             prev->next = elem->next
 erc.c:87: Released storage c->vals reachable from parameter at return point
    erc.c:85: Storage c->vals is released
 erc.c: (in function erc_iterStart)
@@ -352,6 +349,8 @@ erc.h:16: Undocumented modification of internal state possible from call to
              bool_initMod: bool_initMod()
 erc.h:16: Statement has no effect: employee_initMod()
 erc.h: (in macro erc_iterFinal)
+erc.h:20: Only storage *it->next (type struct _elem *) derived from released
+             storage is not released (memory leak): it
 erc.h:20: Implicitly temp storage it passed as only param: free (it)
 < checking dbase.c >
 dbase.c: (in function db_initMod)
@@ -640,7 +639,7 @@ exitarg                      8           0
 unreachable                  1           0
 forempty                     1           0
 forblock                    11           0
-ifblock                     24           0
+ifblock                     22           0
 usedef                       1           0
 noeffect                    11           0
 exporttype                   5           0
@@ -654,8 +653,9 @@ retvalbool                  16           0
 macroparens                  4           0
 usereleased                  1           0
 compdef                      2           0
+compdestroy                  1           0
 mustfree                     3           0
-branchstate                  3           2
+branchstate                  2           1
 onlytrans                    1           0
 freshtrans                   3           0
 temptrans                    3           2
@@ -666,14 +666,14 @@ modfilesys                   0          25
 modnomods                    4           0
 moduncon                    20           0
 modunconnomods               1           0
-ansireserved                 9           0
+ansireserved                10           0
 nullret                      1           0
 nullstate                    1           0
 sizeoftype                   7           0
 formalarray                  0          17
 type                         1           0
 enumindex                   24           0
-relaxtypes                  15           0
+enumint                     15           0
 matchanyintegral             2           0
 exportlocal                 15           0
 exportheader                 4           0
@@ -682,6 +682,6 @@ paramuse                     1           0
 typeuse                      1           0
 varuse                       4           0
                           ========  =========
-Total                      331          53
+Total                      330          52
 
-Finished LCLint checking --- 331 code errors found, as expected
+Finished LCLint checking --- 330 code errors found, as expected

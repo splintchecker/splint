@@ -27,9 +27,9 @@ Finished LCLint checking --- 2 code errors found, as expected
 
 decl.c:3:21: Structure struct tm declared with fields { int x; }, specified
                 with fields { int tm_sec; int tm_min; int tm_hour;, ... }
-   load file ansi.lcd: Specification of struct tm
+   load file ansi.lcd:930:1: Specification of struct tm
    decl.c:3:17: Field tm_sec in specified corresponds to x in declaration
-   load file ansi.lcd: Specification of tm_sec
+   load file ansi.lcd:635:1: Specification of tm_sec
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -55,8 +55,6 @@ nestext.c:3:26: Declaration using extern inside function scope: int test(void)
 
 Finished LCLint checking --- 1 code error found, as expected
 
-Finished LCLint checking --- no code errors found
-
 sizeofarray.c:1:12: Function parameter x declared as manifest array (size
                        constant is meaningless)
 sizeofarray.c: (in function f)
@@ -70,8 +68,16 @@ Finished LCLint checking --- 3 code errors found, as expected
 rex.c: (in function main)
 rex.c:19:12: Only storage re.parent (type struct rx_hash *) derived from
                 variable declared in this scope is not released (memory leak)
+rex.c:19:12: Only storage *(re.children)->parent (type struct rx_hash *)
+    derived from variable declared in this scope is not released (memory leak)
+rex.c:19:12: Only storage *(*(re.children)->children)->parent (type struct
+    rx_hash *) derived from variable declared in this scope is not released
+    (memory leak)
+rex.c:19:12: Only storage *(*(*(re.children)->children)->children)->parent
+    (type struct rx_hash *) derived from variable declared in this scope is not
+    released (memory leak)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished LCLint checking --- 4 code errors found, as expected
 
 struct.c:13:6: Function main declared to return void, should return int
 

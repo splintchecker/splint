@@ -1,4 +1,4 @@
-typedef struct _stx
+typedef struct 
 {
   /*@only@*/ char *name;
   int   val;

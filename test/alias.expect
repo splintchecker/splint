@@ -116,7 +116,8 @@ alias5.c: (in function incx2)
 alias5.c:22:2: Fresh storage p2 not released before return
    alias5.c:20:3: Fresh storage p2 allocated
 alias5.c: (in function incx3)
-alias5.c:27:3: Only storage p2->x not released before assignment: p2->x = p->x
+alias5.c:27:3: Only storage p2->x (type int *) not released before assignment:
+                  p2->x = p->x
 alias5.c:28:3: Possible undocumented modification of *(p->x) through alias
                   *(p2->x): *(p2->x) = 3
 alias5.c:30:2: Storage p->x reachable from parameter is kept (should be only)

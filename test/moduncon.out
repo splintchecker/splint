@@ -14,12 +14,12 @@ Finished LCLint checking --- 4 code errors found, as expected
 moduncon.c: (in function f)
 moduncon.c:6:22: Undetected modification possible from call to unconstrained
                     function umod: umod
-moduncon.c:6:22: New fresh storage passed as implicitly temp (not released):
-                    umod(x)
+moduncon.c:6:22: New fresh storage (type int *) passed as implicitly temp (not
+                    released): umod(x)
 moduncon.c:6:16: Undetected modification possible from call to unconstrained
                     function mmod: mmod
-moduncon.c:6:16: New fresh storage passed as implicitly temp (not released):
-                    mmod(umod(x))
+moduncon.c:6:16: New fresh storage (type int *) passed as implicitly temp (not
+                    released): mmod(umod(x))
 moduncon.c:6:10: Undetected modification possible from call to unconstrained
                     function umod: umod
 moduncon.c:6:3: Statement has no effect (possible undected modification through
@@ -31,12 +31,12 @@ moduncon.c:12:3: Statement has no effect (possible undected modification
                     through call to unconstrained function umod): (void)umod(x)
 moduncon.c:13:22: Undetected modification possible from call to unconstrained
                      function umod: umod
-moduncon.c:13:22: New fresh storage passed as implicitly temp (not released):
-                     umod(x)
+moduncon.c:13:22: New fresh storage (type int *) passed as implicitly temp (not
+                     released): umod(x)
 moduncon.c:13:16: Undetected modification possible from call to unconstrained
                      function mmod: mmod
-moduncon.c:13:16: New fresh storage passed as implicitly temp (not released):
-                     mmod(umod(x))
+moduncon.c:13:16: New fresh storage (type int *) passed as implicitly temp (not
+                     released): mmod(umod(x))
 moduncon.c:13:10: Undetected modification possible from call to unconstrained
                      function umod: umod
 moduncon.c:13:3: Statement has no effect (possible undected modification

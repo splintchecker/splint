@@ -1,7 +1,10 @@
 
 Finished LCLint checking --- no code errors found
 
-Finished LCLint checking --- no code errors found
+enumtest.c:1:9: Variable exported but not used outside enumtest: sig_func
+enumtest.c:2:10: Variable exported but not used outside enumtest: sig_func1
+
+Finished LCLint checking --- 2 code errors found, as expected
 
 duffs.c: (in function send)
 duffs.c:7:8: Fall through case (no preceeding break)
@@ -12,7 +15,7 @@ duffs.c:11:8: Fall through case (no preceeding break)
 duffs.c:12:8: Fall through case (no preceeding break)
 duffs.c:13:8: Fall through case (no preceeding break)
 
-Finished LCLint checking --- 7 code errors found
+Finished LCLint checking --- 7 code errors found, as expected
 
 Finished LCLint checking --- no code errors found
 
@@ -32,7 +35,7 @@ bug3.c:8:8: Fall through case (no preceeding break)
 bug3.c:12:21: Variable j used before definition
 bug3.c:13:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 3 code errors found
+Finished LCLint checking --- 3 code errors found, as expected
 
 Finished LCLint checking --- no code errors found
 
@@ -45,8 +48,6 @@ hexconstants.c:5:10: Return value type unsigned int does not match declared
                         type int: m1 + m2
 
 Finished LCLint checking --- 1 code error found, as expected
-Command Line: Setting mode checks after setting mode flags will override set
-                 values of flags: exportlocal
 
 hexconstants.c: (in function f)
 hexconstants.c:2:21: Variable m1 initialized to type int, expects unsigned int:
@@ -87,12 +88,12 @@ ulrich.c: (in function utl_calloc)
 ulrich.c:14:13: Possibly null storage newblock returned as non-null: newblock
    ulrich.c:12:16: Storage newblock may become null
 
-Finished LCLint checking --- 1 code error found
+Finished LCLint checking --- 1 code error found, as expected
 
 cpptest.c: (in function test)
 cpptest.c:2:11: Variable x initialized to type char, expects int: 'a'
 
-Finished LCLint checking --- 1 code error found
+Finished LCLint checking --- 1 code error found, as expected
 
 longlong.c: (in function llf)
 longlong.c:2:11: Variable m initialized to type long long, expects int: llx

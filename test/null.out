@@ -72,10 +72,11 @@ null3.c:52:4: Dereference of possibly null pointer gnip: *gnip
    null3.c:51:10: Storage gnip may become null
 null3.c:53:9: Variable z used after being released
    null3.c:51:3: Storage z released
-null3.c:53:3: Only storage gip not released before assignment (z aliases gnip):
-                 gip = z
+null3.c:53:3: Only storage gip (type int *) not released before assignment (z
+                 aliases gnip): gip = z
    null3.c:5:17: Storage gip becomes only
-null3.c:55:3: Only storage gnip not released before assignment: gnip = aip
+null3.c:55:3: Only storage gnip (type nip) not released before assignment:
+                 gnip = aip
    null3.c:53:3: Storage gnip becomes only
 null3.c:60:14: Returned storage y not completely defined (*y is undefined): y
 null3.c:60:16: Function returns with non-null global gip referencing null
@@ -109,10 +110,11 @@ null3.c:52:4: Dereference of possibly null pointer gnip: *gnip
    null3.c:51:10: Storage gnip may become null
 null3.c:53:9: Variable z used after being released
    null3.c:51:3: Storage z released
-null3.c:53:3: Only storage gip not released before assignment (z aliases gnip):
-                 gip = z
+null3.c:53:3: Only storage gip (type int *) not released before assignment (z
+                 aliases gnip): gip = z
    null3.c:5:17: Storage gip becomes only
-null3.c:55:3: Only storage gnip not released before assignment: gnip = aip
+null3.c:55:3: Only storage gnip (type nip) not released before assignment:
+                 gnip = aip
    null3.c:53:3: Storage gnip becomes only
 null3.c:60:14: Returned storage y not completely defined (*y is undefined): y
 null3.c:60:16: Function returns with non-null global gip referencing null
@@ -131,14 +133,15 @@ null3.c:73:4: Dereference of possibly null pointer gnip: *gnip
 Finished LCLint checking --- 16 code errors found, as expected
 
 null4.c: (in function g)
-null4.c:43:3: Only storage p not released before assignment: p = malloc(24)
+null4.c:43:3: Only storage p (type int *) not released before assignment:
+                 p = malloc(24)
    null4.c:3:28: Storage p becomes only
 
 Finished LCLint checking --- 1 code error found, as expected
 
-null5.c:5:57: Qualifier falsenull used with function returning char (should
+null5.c:5:29: Qualifier falsenull used with function returning char (should
                  return bool)
-null5.c:6:66: Qualifier falsenull used with function having 2 arguments (should
+null5.c:6:29: Qualifier falsenull used with function having 2 arguments (should
                  have 1)
 null5.c: (in function g2)
 null5.c:26:15: Dereference of possibly null pointer y: *y

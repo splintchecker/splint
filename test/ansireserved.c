@@ -13,7 +13,7 @@ int isaFish (void)
   /*@unused@*/ int powl;
   /*@unused@*/ float mem; /* okay */
   /*@unused@*/ float memory;
-  /*@unused@*/ int wctomb;
+  /*@unused@*/ int wctomb; /* okay as local */
 
   return 3;
 }

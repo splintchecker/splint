@@ -12,7 +12,7 @@
 %LCLsort _char_Vec vec char __char_Obj_Arr
 %LCLsort float primitive nil nil
 %LCLsort double primitive nil nil
-%LCLsort _salias30s_Struct str salias30s nil
+%LCLsort _s_st_Struct str s_st nil
 %LCLsort b strMem ___int_Obj_Ptr_Obj nil
 %LCLsort a strMem _int_Obj nil
 %LCLsort strEnd nil nil nil
@@ -21,28 +21,28 @@
 %LCLsort __int_Obj_Arr arr _int_Obj nil
 %LCLsort _int_Vec vec int __int_Obj_Arr
 %LCLsort ___int_Obj_Ptr_Obj obj __int_Obj_Ptr nil
-%LCLsort _salias30s_Struct_Tuple tup _salias30s_Struct nil
-%LCLsort __salias30s_Struct_Ptr ptr _salias30s_Struct nil
-%LCLsort __salias30s_Struct_Arr arr _salias30s_Struct nil
-%LCLsort __salias30s_Struct_Tuple_Vec vec _salias30s_Struct_Tuple __salias30s_Struct_Arr
-%LCLsort _st synonym _salias30s_Struct nil
-%LCLsort _ualias30u_Union union ualias30u nil
+%LCLsort _s_st_Struct_Tuple tup _s_st_Struct nil
+%LCLsort __s_st_Struct_Ptr ptr _s_st_Struct nil
+%LCLsort __s_st_Struct_Arr arr _s_st_Struct nil
+%LCLsort __s_st_Struct_Tuple_Vec vec _s_st_Struct_Tuple __s_st_Struct_Arr
+%LCLsort _st synonym _s_st_Struct nil
+%LCLsort _s_ut_Union union s_ut nil
 %LCLsort c unionMem _____int_Obj_Ptr_Obj_Ptr_Obj nil
-%LCLsort t unionMem ___salias30s_Struct_Ptr_Obj nil
-%LCLsort s unionMem _salias30s_Struct nil
+%LCLsort t unionMem ___s_st_Struct_Ptr_Obj nil
+%LCLsort s unionMem _s_st_Struct nil
 %LCLsort a unionMem _int_Obj nil
 %LCLsort unionEnd nil nil nil
-%LCLsort ___salias30s_Struct_Ptr_Obj obj __salias30s_Struct_Ptr nil
+%LCLsort ___s_st_Struct_Ptr_Obj obj __s_st_Struct_Ptr nil
 %LCLsort ____int_Obj_Ptr_Obj_Ptr ptr ___int_Obj_Ptr_Obj nil
 %LCLsort ____int_Obj_Ptr_Obj_Arr arr ___int_Obj_Ptr_Obj nil
 %LCLsort ___int_Obj_Ptr_Vec vec __int_Obj_Ptr ____int_Obj_Ptr_Obj_Arr
 %LCLsort _____int_Obj_Ptr_Obj_Ptr_Obj obj ____int_Obj_Ptr_Obj_Ptr nil
-%LCLsort _ualias30u_Union_UnionVal unionval _ualias30u_Union nil
-%LCLsort __ualias30u_Union_Ptr ptr _ualias30u_Union nil
-%LCLsort __ualias30u_Union_Arr arr _ualias30u_Union nil
-%LCLsort __ualias30u_Union_UnionVal_Vec vec _ualias30u_Union_UnionVal __ualias30u_Union_Arr
-%LCLsort _ut synonym _ualias30u_Union nil
-%LCLsort ___ualias30u_Union_Ptr_Obj obj __ualias30u_Union_Ptr nil
+%LCLsort _s_ut_Union_UnionVal unionval _s_ut_Union nil
+%LCLsort __s_ut_Union_Ptr ptr _s_ut_Union nil
+%LCLsort __s_ut_Union_Arr arr _s_ut_Union nil
+%LCLsort __s_ut_Union_UnionVal_Vec vec _s_ut_Union_UnionVal __s_ut_Union_Arr
+%LCLsort _ut synonym _s_ut_Union nil
+%LCLsort ___s_ut_Union_Ptr_Obj obj __s_ut_Union_Ptr nil
 %LCLSortTableEnd
 %LCLSymbolTable
 %LCLop min :int, int -> int
@@ -91,6 +91,7 @@
 %LCLop 7 : -> int
 %LCLop 8 : -> int
 %LCLop 9 : -> int
+%LCLtag s_st struct
 %LCLop __ * __  :int, int -> int
 %LCLop __ * __  :double, double -> double
 %LCLop true : -> bool
@@ -109,56 +110,57 @@
 %LCLop __ \neq __  :_char_Vec, _char_Vec -> bool
 %LCLop __ \neq __  :char, char -> bool
 %LCLop { __ } :char -> _char_Vec
-%LCLop [__, __] :__int_Obj_Ptr, int -> _salias30s_Struct_Tuple
-%LCLop __ \select a :_salias30s_Struct_Tuple -> int
-%LCLop __ \select a :_salias30s_Struct -> _int_Obj
-%LCLop __ \select a :_ualias30u_Union_UnionVal -> int
-%LCLop __ \select a :_ualias30u_Union -> _int_Obj
+%LCLtag s_ut union
+%LCLop [__, __] :__int_Obj_Ptr, int -> _s_st_Struct_Tuple
 %LCLop __ [] :__char_Obj_Ptr -> __char_Obj_Arr
 %LCLop __ [] :__int_Obj_Ptr -> __int_Obj_Arr
-%LCLop __ [] :__salias30s_Struct_Ptr -> __salias30s_Struct_Arr
+%LCLop __ [] :__s_st_Struct_Ptr -> __s_st_Struct_Arr
 %LCLop __ [] :____int_Obj_Ptr_Obj_Ptr -> ____int_Obj_Ptr_Obj_Arr
-%LCLop __ [] :__ualias30u_Union_Ptr -> __ualias30u_Union_Arr
-%LCLop __ \select b :_salias30s_Struct_Tuple -> __int_Obj_Ptr
-%LCLop __ \select b :_salias30s_Struct -> ___int_Obj_Ptr_Obj
+%LCLop __ [] :__s_ut_Union_Ptr -> __s_ut_Union_Arr
+%LCLop __ \select a :_s_st_Struct_Tuple -> int
+%LCLop __ \select a :_s_st_Struct -> _int_Obj
+%LCLop __ \select a :_s_ut_Union_UnionVal -> int
+%LCLop __ \select a :_s_ut_Union -> _int_Obj
 %LCLop __ |- __  :_char_Vec, char -> _char_Vec
-%LCLop __ \field_arrow a :__salias30s_Struct_Ptr -> _int_Obj
-%LCLop __ \field_arrow a :__ualias30u_Union_Ptr -> int
-%LCLop __ \field_arrow a :__ualias30u_Union_Ptr -> _int_Obj
+%LCLop __ \select b :_s_st_Struct_Tuple -> __int_Obj_Ptr
+%LCLop __ \select b :_s_st_Struct -> ___int_Obj_Ptr_Obj
 %LCLop __ [__] :_char_Vec, int -> char
 %LCLop __ [__] :__char_Obj_Arr, int -> _char_Obj
 %LCLop __ [__] :_int_Vec, int -> int
 %LCLop __ [__] :__int_Obj_Arr, int -> _int_Obj
-%LCLop __ [__] :__salias30s_Struct_Tuple_Vec, int -> _salias30s_Struct_Tuple
-%LCLop __ [__] :__salias30s_Struct_Arr, int -> _salias30s_Struct
+%LCLop __ [__] :__s_st_Struct_Tuple_Vec, int -> _s_st_Struct_Tuple
+%LCLop __ [__] :__s_st_Struct_Arr, int -> _s_st_Struct
 %LCLop __ [__] :___int_Obj_Ptr_Vec, int -> __int_Obj_Ptr
 %LCLop __ [__] :____int_Obj_Ptr_Obj_Arr, int -> ___int_Obj_Ptr_Obj
-%LCLop __ [__] :__ualias30u_Union_UnionVal_Vec, int -> _ualias30u_Union_UnionVal
-%LCLop __ [__] :__ualias30u_Union_Arr, int -> _ualias30u_Union
-%LCLop __ \field_arrow b :__salias30s_Struct_Ptr -> ___int_Obj_Ptr_Obj
+%LCLop __ [__] :__s_ut_Union_UnionVal_Vec, int -> _s_ut_Union_UnionVal
+%LCLop __ [__] :__s_ut_Union_Arr, int -> _s_ut_Union
+%LCLop __ \field_arrow a :__s_st_Struct_Ptr -> _int_Obj
+%LCLop __ \field_arrow a :__s_ut_Union_Ptr -> int
+%LCLop __ \field_arrow a :__s_ut_Union_Ptr -> _int_Obj
 %LCLop __ -| __  :char, _char_Vec -> _char_Vec
+%LCLop __ \field_arrow b :__s_st_Struct_Ptr -> ___int_Obj_Ptr_Obj
 %LCLop __ \leq __  :int, int -> bool
 %LCLop __ \leq __  :double, double -> bool
 %LCLop __ \geq __  :int, int -> bool
 %LCLop __ \geq __  :double, double -> bool
 %LCLop null : -> char
-%LCLop __ \select s :_ualias30u_Union_UnionVal -> _salias30s_Struct_Tuple
-%LCLop __ \select s :_ualias30u_Union -> _salias30s_Struct
-%LCLop __ \select t :_ualias30u_Union_UnionVal -> __salias30s_Struct_Ptr
-%LCLop __ \select t :_ualias30u_Union -> ___salias30s_Struct_Ptr_Obj
-%LCLop __ \field_arrow s :__ualias30u_Union_Ptr -> _salias30s_Struct_Tuple
-%LCLop __ \field_arrow s :__ualias30u_Union_Ptr -> _salias30s_Struct
-%LCLop __ \select c :_ualias30u_Union_UnionVal -> ____int_Obj_Ptr_Obj_Ptr
-%LCLop __ \select c :_ualias30u_Union -> _____int_Obj_Ptr_Obj_Ptr_Obj
-%LCLop __ \field_arrow t :__ualias30u_Union_Ptr -> __salias30s_Struct_Ptr
-%LCLop __ \field_arrow t :__ualias30u_Union_Ptr -> ___salias30s_Struct_Ptr_Obj
-%LCLop __ \field_arrow c :__ualias30u_Union_Ptr -> ____int_Obj_Ptr_Obj_Ptr
-%LCLop __ \field_arrow c :__ualias30u_Union_Ptr -> _____int_Obj_Ptr_Obj_Ptr_Obj
+%LCLop __ \select s :_s_ut_Union_UnionVal -> _s_st_Struct_Tuple
+%LCLop __ \select s :_s_ut_Union -> _s_st_Struct
+%LCLop __ \select t :_s_ut_Union_UnionVal -> __s_st_Struct_Ptr
+%LCLop __ \select t :_s_ut_Union -> ___s_st_Struct_Ptr_Obj
+%LCLop __ \field_arrow s :__s_ut_Union_Ptr -> _s_st_Struct_Tuple
+%LCLop __ \field_arrow s :__s_ut_Union_Ptr -> _s_st_Struct
+%LCLop __ \select c :_s_ut_Union_UnionVal -> ____int_Obj_Ptr_Obj_Ptr
+%LCLop __ \select c :_s_ut_Union -> _____int_Obj_Ptr_Obj_Ptr_Obj
+%LCLop __ \field_arrow t :__s_ut_Union_Ptr -> __s_st_Struct_Ptr
+%LCLop __ \field_arrow t :__s_ut_Union_Ptr -> ___s_st_Struct_Ptr_Obj
+%LCLop __ \field_arrow c :__s_ut_Union_Ptr -> ____int_Obj_Ptr_Obj_Ptr
+%LCLop __ \field_arrow c :__s_ut_Union_Ptr -> _____int_Obj_Ptr_Obj_Ptr_Obj
 %LCLop NIL : -> __char_Obj_Ptr
 %LCLop NIL : -> __int_Obj_Ptr
-%LCLop NIL : -> __salias30s_Struct_Ptr
+%LCLop NIL : -> __s_st_Struct_Ptr
 %LCLop NIL : -> ____int_Obj_Ptr_Obj_Ptr
-%LCLop NIL : -> __ualias30u_Union_Ptr
+%LCLop NIL : -> __s_ut_Union_Ptr
 %LCLop - __  :int -> int
 %LCLop - __  :double -> double
 %LCLop __ + __  :__char_Obj_Ptr, int -> __char_Obj_Ptr
@@ -167,24 +169,24 @@
 %LCLop __ + __  :double, double -> double
 %LCLop __ + __  :__int_Obj_Ptr, int -> __int_Obj_Ptr
 %LCLop __ + __  :int, __int_Obj_Ptr -> __int_Obj_Ptr
-%LCLop __ + __  :__salias30s_Struct_Ptr, int -> __salias30s_Struct_Ptr
-%LCLop __ + __  :int, __salias30s_Struct_Ptr -> __salias30s_Struct_Ptr
+%LCLop __ + __  :__s_st_Struct_Ptr, int -> __s_st_Struct_Ptr
+%LCLop __ + __  :int, __s_st_Struct_Ptr -> __s_st_Struct_Ptr
 %LCLop __ + __  :____int_Obj_Ptr_Obj_Ptr, int -> ____int_Obj_Ptr_Obj_Ptr
 %LCLop __ + __  :int, ____int_Obj_Ptr_Obj_Ptr -> ____int_Obj_Ptr_Obj_Ptr
-%LCLop __ + __  :__ualias30u_Union_Ptr, int -> __ualias30u_Union_Ptr
-%LCLop __ + __  :int, __ualias30u_Union_Ptr -> __ualias30u_Union_Ptr
+%LCLop __ + __  :__s_ut_Union_Ptr, int -> __s_ut_Union_Ptr
+%LCLop __ + __  :int, __s_ut_Union_Ptr -> __s_ut_Union_Ptr
 %LCLop __ - __  :__char_Obj_Ptr, int -> __char_Obj_Ptr
 %LCLop __ - __  :__char_Obj_Ptr, __char_Obj_Ptr -> int
 %LCLop __ - __  :int, int -> int
 %LCLop __ - __  :double, double -> double
 %LCLop __ - __  :__int_Obj_Ptr, int -> __int_Obj_Ptr
 %LCLop __ - __  :__int_Obj_Ptr, __int_Obj_Ptr -> int
-%LCLop __ - __  :__salias30s_Struct_Ptr, int -> __salias30s_Struct_Ptr
-%LCLop __ - __  :__salias30s_Struct_Ptr, __salias30s_Struct_Ptr -> int
+%LCLop __ - __  :__s_st_Struct_Ptr, int -> __s_st_Struct_Ptr
+%LCLop __ - __  :__s_st_Struct_Ptr, __s_st_Struct_Ptr -> int
 %LCLop __ - __  :____int_Obj_Ptr_Obj_Ptr, int -> ____int_Obj_Ptr_Obj_Ptr
 %LCLop __ - __  :____int_Obj_Ptr_Obj_Ptr, ____int_Obj_Ptr_Obj_Ptr -> int
-%LCLop __ - __  :__ualias30u_Union_Ptr, int -> __ualias30u_Union_Ptr
-%LCLop __ - __  :__ualias30u_Union_Ptr, __ualias30u_Union_Ptr -> int
+%LCLop __ - __  :__s_ut_Union_Ptr, int -> __s_ut_Union_Ptr
+%LCLop __ - __  :__s_ut_Union_Ptr, __s_ut_Union_Ptr -> int
 %LCLop sizeof :bool -> int
 %LCLop sizeof :int -> int
 %LCLop sizeof :char -> int
@@ -195,12 +197,12 @@
 %LCLop isSub :__char_Obj_Arr, int -> bool
 %LCLop isSub :_int_Vec, int -> bool
 %LCLop isSub :__int_Obj_Arr, int -> bool
-%LCLop isSub :__salias30s_Struct_Tuple_Vec, int -> bool
-%LCLop isSub :__salias30s_Struct_Arr, int -> bool
+%LCLop isSub :__s_st_Struct_Tuple_Vec, int -> bool
+%LCLop isSub :__s_st_Struct_Arr, int -> bool
 %LCLop isSub :___int_Obj_Ptr_Vec, int -> bool
 %LCLop isSub :____int_Obj_Ptr_Obj_Arr, int -> bool
-%LCLop isSub :__ualias30u_Union_UnionVal_Vec, int -> bool
-%LCLop isSub :__ualias30u_Union_Arr, int -> bool
+%LCLop isSub :__s_ut_Union_UnionVal_Vec, int -> bool
+%LCLop isSub :__s_ut_Union_Arr, int -> bool
 %LCLop succ :int -> int
 %LCLop pred :int -> int
 %LCLop abs :int -> int
@@ -213,14 +215,14 @@
 %LCLconst TRUE bool
 %LCLtype st _st exposed
 %LCLtype ut _ut exposed
-%LCLvar gst _salias30s_Struct
-%LCLvar gu ___ualias30u_Union_Ptr_Obj
-%LCLfcn f : __int_Obj_Arr, _salias30s_Struct_Tuple, __ualias30u_Union_Ptr -> int 
-%LCLfcnGlobals _salias30s_Struct gst; ___ualias30u_Union_Ptr_Obj gu; 
+%LCLvar gst _s_st_Struct
+%LCLvar gu ___s_ut_Union_Ptr_Obj
+%LCLfcn f : __int_Obj_Arr, _s_st_Struct_Tuple, __s_ut_Union_Ptr -> int 
+%LCLfcnGlobals _s_st_Struct gst; ___s_ut_Union_Ptr_Obj gu; 
 %LCLfcn model : __int_Obj_Arr -> void 
-%LCLfcnGlobals _salias30s_Struct gst; ___ualias30u_Union_Ptr_Obj gu; 
-%LCLfcn modst : _salias30s_Struct_Tuple -> void 
+%LCLfcnGlobals _s_st_Struct gst; ___s_ut_Union_Ptr_Obj gu; 
+%LCLfcn modst : _s_st_Struct_Tuple -> void 
 %LCLfcnGlobals 
-%LCLfcn modu : __ualias30u_Union_Ptr -> void 
+%LCLfcn modu : __s_ut_Union_Ptr -> void 
 %LCLfcnGlobals 
 %LCLSymbolTableEnd

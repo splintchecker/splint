@@ -22,5 +22,12 @@ impabstract.c:2:28: Datatype cint inconsistently declared as concrete type
   A function, variable or constant is redefined with a different type.
   (-incondefs will suppress message)
    impabstract.lcl:2:1: Specification of cint
+impabstract.c: (in function f)
+impabstract.c:6:7: Left operand of > is abstract type (cint): c > 3
+  An abstraction barrier is broken. If necessary, use /*@access <type>@*/ to
+  allow access to an abstract type. (-abstract will suppress message)
+impabstract.c:8:14: Return value type cint does not match declared type int: c
+  Underlying types match, but cint is an abstract type that is not accessible
+  here.
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished LCLint checking --- 4 code errors found, as expected

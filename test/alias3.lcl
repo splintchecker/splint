@@ -1,5 +1,5 @@
-typedef struct { int a; int *b; } st;
-typedef union  { int a; st s; st *t; int **c; } ut;
+typedef struct s_st { int a; int *b; } st;
+typedef union  s_ut { int a; st s; st *t; int **c; } ut;
 
 st gst;
 ut *gu;

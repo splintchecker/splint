@@ -1,5 +1,5 @@
-typedef int mint;
-typedef /*@concrete@*/ int cint;
+typedef int mint;  /* Concrete in impabstract.lcl */
+typedef /*@concrete@*/ int cint; /* Abstract in impabstract.lcl */
 
 int f (mint m, cint c)
 {

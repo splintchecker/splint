@@ -1,5 +1,5 @@
 
-iter.lcl:3,6: Iterator has no yield parameters: noYield
+iter.lcl:3:6: Iterator has no yield parameters: noYield
 iter.c: (in function test)
 iter.c:9:14: Unrecognized identifier: x
 iter.c:14:16: Yield parameter shadows local declaration: i

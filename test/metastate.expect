@@ -1,0 +1,183 @@
+
+file1.c: (in function main)
+file1.c:10:14: Invalid transfer from implicitly unopen fle to open (unopen file
+                  passed as open): fle
+file1.c:19:16: Invalid transfer from implicitly open fle to unopen (open file
+                  passed as unopen): fle
+   file1.c:12:3: Meta state fle becomes implicitly open
+file1.c:23:14: Invalid transfer from unopen fle to open (unopen file passed as
+                  open): fle
+   file1.c:22:10: Meta state fle becomes unopen
+file1.c:7:8: Variable s declared but not used
+
+Finished LCLint checking --- 4 code errors found, as expected
+
+file2.c: (in function main)
+file2.c:11:6: Scope exit loses reference fle2 in invalid state implicitly open
+                 (open file not closed)
+   file2.c:9:41: State becomes implicitly open
+file2.c:13:12: Return loses reference fle1 in invalid state implicitly open
+                  (open file not closed)
+   file2.c:5:37: State becomes implicitly open
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+file3.c: (in function main)
+file3.c:10:22: Possibly null storage fle1 passed as non-null param:
+                  fclose (fle1)
+   file3.c:6:16: Storage fle1 may become null
+file3.c:11:5: Control branches merge with incompatible states for fle1 (unopen
+                 and implicitly open): files merge in inconsistent state
+   file3.c:6:37: Meta state fle1 becomes implicitly open
+   file3.c:10:14: Meta state fle1 becomes unopen
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+file4.c: (in function main)
+file4.c:15:14: Invalid transfer from implicitly unopen fle to open (unopen file
+                  passed as open): fle
+
+Finished LCLint checking --- 1 code error found, as expected
+
+file5.c: (in function passOpen)
+file5.c:8:2: Ensures clause not satisfied by f (state is open):
+                ensures closed f
+   file5.c:4:35: Meta state f becomes open
+file5.c: (in function returnOpen)
+file5.c:16:10: Result state fle does not satisfy ensures clause:
+                  ensures open result (state is unopen, should be open): fle
+   file5.c:13:30: Storage fle becomes dependent
+file5.c:16:10: Dependent storage fle returned as implicitly temp: fle
+   file5.c:13:30: Storage fle becomes dependent
+file5.c: (in function main)
+file5.c:25:14: Invalid transfer from implicitly unopen fle to open (unopen file
+                  passed as open): fle
+file5.c:35:18: Invalid transfer from unopen fle to open (unopen file passed as
+                  open): fle
+   file5.c:34:3: Meta state fle becomes unopen
+
+Finished LCLint checking --- 5 code errors found, as expected
+
+file6.c: (in function newOpenBad)
+file6.c:20:10: Invalid transfer from unopen res to open (unopen file passed as
+                  open): return res
+   file6.c:19:10: Meta state res becomes unopen
+file6.c: (in function main)
+file6.c:30:12: Return loses reference fle in invalid state implicitly open
+                  (open file not closed)
+   file6.c:27:3: State becomes implicitly open
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+filebad.c:1:23: Meta state anntation open used in inconsistent context:
+                   int badOpen(FILE *)
+filebad.c:3:12: Meta state anntation open used on inappropriate reference p_x
+                   in ensures open clause of badEnsures: ensures open p_x
+filebad.c:3:12: Meta state anntation closed used on inappropriate reference p_x
+                   in requires closed clause of badEnsures: requires closed p_x
+
+Finished LCLint checking --- 3 code errors found, as expected
+
+sockets.c: (in function test1)
+sockets.c:13:3: Requires clause of called function useSockets not satisfied
+                   (state is uninitialized): requires sockets_initialized 
+sockets.c: (in function test5)
+sockets.c:37:3: Requires clause of called function useSockets not satisfied
+                   (state is uninitialized): requires sockets_initialized 
+sockets.c: (in function test6)
+sockets.c:42:3: Requires clause of called function useSockets not satisfied
+                   (state is uninitialized): requires sockets_initialized 
+
+Finished LCLint checking --- 3 code errors found, as expected
+
+sockets2.c: (in function test1)
+sockets2.c:15:4: Control branches merge with incompatible global states
+    (initialized and uninitialized): Sockets initialized on true branch,
+    uninitialized on false branch.
+   sockets2.c:11:24: Meta state <global marker> becomes uninitialized
+   sockets2.c:14:5: Meta state <global marker> becomes initialized
+sockets2.c: (in function test2)
+sockets2.c:24:3: Control branches merge with incompatible global states
+    (uninitialized and initialized): Sockets uninitialized on false branch,
+    initialized on true branch.
+   sockets2.c:20:24: Meta state <global marker> becomes initialized
+   sockets2.c:23:5: Meta state <global marker> becomes uninitialized
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+struct.c: (in function source_badClose)
+struct.c:25:2: Invalid transfer from unopen s->file to open
+   struct.c:24:10: Meta state s->file becomes unopen
+
+Finished LCLint checking --- 1 code error found, as expected
+
+nullbranch.c: (in function ftest2)
+nullbranch.c:30:22: Possibly null storage f passed as non-null param:
+                       fclose (f)
+   nullbranch.c:22:7: Storage f may become null
+nullbranch.c:32:2: Return loses reference f in invalid state open (open file
+                      not closed)
+   nullbranch.c:31:5: State becomes open
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+tainted.c: (in function f)
+tainted.c:3:20: Invalid transfer from tainted s to untainted (Possibly tainted
+                   storage used as untainted.): s
+   tainted.c:1:48: Meta state s becomes tainted
+tainted.c: (in function test)
+tainted.c:9:18: Invalid transfer from tainted s to untainted (Possibly tainted
+                   storage used as untainted.): s
+   tainted.c:7:34: Meta state s becomes tainted
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+tainted-bad.mts:18:7: Transfer clause uses unrecognized result state peach:
+                         untainted as tainted ==> peach
+tainted-bad.mts:14:17: Merge clause uses unrecognized second value junky:
+                          tainted X junky ==> error "Splat!"
+tainted-bad.mts:11:7: Annotation declaration uses unrecognized value name blue:
+                         maybetainted reference ==> blue
+tainted-bad.mts:5:21: Defaults declaration uses unrecognized value name
+                         stainted: stainted reference
+tainted-bad.mts:7:21: Duplicate defaults declaration for context param:
+                         untainted param
+tainted.c: (in function f)
+tainted.c:3:20: Invalid transfer from tainted s to untainted (Possibly tainted
+                   storage used as untainted.): s
+   tainted.c:1:48: Meta state s becomes tainted
+tainted.c: (in function test)
+tainted.c:9:18: Invalid transfer from tainted s to untainted (Possibly tainted
+                   storage used as untainted.): s
+   tainted.c:7:34: Meta state s becomes tainted
+
+Finished LCLint checking --- 7 code errors found, as expected
+
+tainted2.c: (in function test)
+tainted2.c:20:10: Invalid transfer from tainted stk to implicitly untainted
+                     (Possibly tainted storage used as untainted.): return stk
+   tainted2.c:17:14: Meta state stk becomes tainted
+
+Finished LCLint checking --- 1 code error found, as expected
+
+tainted3.c: (in function test)
+tainted3.c:7:3: Requires clause of called function checkUntainted not satisfied
+                   by def (state is tainted): requires untainted def
+
+Finished LCLint checking --- 1 code error found, as expected
+
+tainted4.c: (in function test)
+tainted4.c:6:17: Invalid transfer from tainted def to implicitly untainted
+   tainted4.c:4:36: Meta state def becomes tainted
+tainted4.c:7:19: Invalid transfer from tainted def to implicitly untainted
+   tainted4.c:4:36: Meta state def becomes tainted
+tainted4.c:7:3: Requires clause of called function checkUntainted not satisfied
+                   by def (state is tainted): requires untainted *def
+
+Finished LCLint checking --- 3 code errors found, expected 1
+
+osd.c: (in function osd_fileIsReadable)
+osd.c:9:7: Return value (type int) ignored: fclose(fl)
+osd.c:10:14: Return value type bool does not match declared type int: (TRUE)
+
+Finished LCLint checking --- 2 code errors found, as expected

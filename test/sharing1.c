@@ -22,7 +22,7 @@ int f2(/*@temp@*/ int *x, /*@only@*/ int *y)
 void f3(/*@only@*/ int *x)
 {
   globshared1 = x; /* 4. bad shared globshared1 <- only x */
-} /* 5. Only storage x not released before return */
+} /* 5. only not released */
 
 void f4(/*@only@*/ int *x)
 {

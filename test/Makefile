@@ -11,19 +11,22 @@
 .PHONY: argorder args blocks break cases cast charlit 
 .PHONY: clauses commentchar 
 .PHONY: compdestroy controldepth csyntax czechnames czechoslovaknames 
-.PHONY: decl enum exports external fields flags funcpointer glob globals 
+.PHONY: deadparam decl enum exports external fields flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
 .PHONY: list macros macrosef merge modifies modtest moduncon mongoincludes 
 .PHONY: null observer oldstyle outglob outparam preds prefixes printflike rc 
-.PHONY: refcounts release repexpose sharing slovaknames special
-.PHONY: specclauses stack staticarray
-.PHONY: strings structassign
-.PHONY: typequals ud ulstypes union unreachable unused 
+.PHONY: refcounts release repexpose returned sharing slovaknames special
+.PHONY: specclauses stack staticarray 
+.PHONY: strings structassign nullret
+.PHONY: typequals ud ulstypes union unreachable unused ullint void
 .PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
+.PHONY: metastate warnuse
+.PHONY: linked freearray
 .PHONY: sizeoftest
 .PHONY: bufferTest
 .PHONY: simplebufferConstraintTests
+.PHONY: moreBufferTests
 .PHONY: maxset
 .PHONY: globalbufferannotation
 .PHONY: strchr
@@ -42,9 +45,14 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal
 
-UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null  observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
-
-#UNITTEST = bufferTest
+UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
+   charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
+   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
+   init inparam internal iter keep libs linked lintcomments list macros macrosef merge metastate modifies \
+   modtest moduncon mongoincludes null nullret nullassign observer oldstyle outglob outparam preds prefixes \
+   printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
+   staticarray strings structassign typequals ud ulstypes union unreachable unused ullint void warnuse \
+   tests2.2 tests2.2a tests2.4 tests2.5 
 
 UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
 
@@ -145,10 +153,19 @@ alias:
 alttypes:
 	$(LCLINTR) alttypes.c -expect 2
 
+###
+### evans 2001-06-07 - updated nameCheck.c to reflect C9X.
+### Reports one new errors for ansireserved.c - wctomb is bad even as a local variable.
+###    (could be a macro?)
+### Reports 3 additional errors for +checks; no longer suppresses name errors in the
+###    presense of other errors.
+###
+
 ansireserved:
-	$(LCLINTR) ansireserved.c +ansireserved -nolib -expect 8
+	$(LCLINTR) ansireserved.c +ansireserved -nolib -expect 9
 	$(LCLINTR) ansireserved.c +ansireserved +ansireservedlocal -nolib -expect 11
-	$(LCLINTRN) ansireserved.c +checks -exportlocal -exportheadervar -exportheader -expect 9
+	$(LCLINTRN) ansireserved.c +checks -exportlocal -exportheadervar -exportheader -expect 12
+	$(LCLINTR) ansireserved2.c +ansireserved -expect 1
 
 argorder:
 	$(LCLINTR) argorder.c -expect 4
@@ -241,6 +258,13 @@ czechoslovaknames:
 	$(LCLINTR) +hints +czechoslovak slovaknames.c -expect 1
 	$(LCLINTR) +hints +czechoslovak +slovakvars slovaknames.c -expect 2
 
+###
+### deadparam added 2001-05-27
+###
+
+deadparam:
+	${LCLINTR} deadparam.c -expect 3
+
 #
 # Was expect 3 before 2.4.  Earlier versions did not handle implicit
 # function pointers correctly.
@@ -276,6 +300,16 @@ flags:
 	$(LCLINTR) flags.c -expect 8
 	$(LCLINTR) +nocomments flags.c -expect 2
 
+### Added 2001-06-02
+
+forbody:
+	${LCLINTR} forbody.c -expect 2
+
+### Added 2001-06-03
+format:
+	${LCLINTR} format.c -expect 3
+	${LCLINTR} format.c -formatconst 
+
 # two new errors (invalid lhs)
 
 funcpointer:
@@ -294,10 +328,11 @@ globals:
 	$(LCLINTR) -modifies globals.c +globunspec -expect 6
 	$(LCLINTR) -modifies globals.c +globunspec +allglobals -expect 8
 
-impabstract:
-	$(LCLINTR) -accessfile impabstract.c 
-	$(LCLINTR) -accessfile +hints +impabstract impabstract.c -expect 2
-	$(LCLINTR) -accessfile +hints +impabstract impabstract -expect 2
+# Was -accessfile
+impabstract: 
+	$(LCLINTR) -accessmodule impabstract.c 
+	$(LCLINTR) -accessmodule +hints +impabstract impabstract.c -expect 2
+	$(LCLINTR) -accessmodule +hints +impabstract impabstract -expect 4
 
 init:
 	$(LCLINTR) init.c -expect 12
@@ -314,6 +349,11 @@ internal:
 	$(LCLINTR) internal.c +internalnamecaseinsensitive -expect 3
 	$(LCLINTR) internal.c +internalnamecaseinsensitive +internalnamelookalike -expect 11
 
+###
+### iter
+### 2001-06-06: Error message for iter.lcl:3,6 fixed to iter.lcl:3:6
+### 
+
 iter:
 	$(LCLINTR) iter -expect 14 -lclexpect 1
 	$(LCLINTR) iter2.c -expect 12
@@ -321,15 +361,15 @@ iter:
 keep:
 	$(LCLINTR) keep.c +memchecks -expect 6
 
-#
-# 2 new errors found (fixed spec of signal)
-#
+### libs
+### 2001-05-22: 2 new errors found (fixed spec of signal)
+### 2001-05-30: 3 new errors found (formatconst)
 
 libs:
-	$(LCLINTR) libs.c +longunsignedunsignedintegral -expect 15
-	$(LCLINTR) libs.c -expect 19
-	$(LCLINTR) libs.c +globunspec +modunspec -expect 22
-	$(LCLINTR) libs.c +strictlib +globunspec +modunspec -expect 39
+	$(LCLINTR) libs.c +longunsignedunsignedintegral -expect 18
+	$(LCLINTR) libs.c -expect 22
+	$(LCLINTR) libs.c +globunspec +modunspec -expect 25
+	$(LCLINTR) libs.c +strictlib +globunspec +modunspec -expect 42
 
 lintcomments:
 	$(LCLINTR) lintcomments.c -expect 4
@@ -383,6 +423,17 @@ null:
 	$(LCLINTR) null6 -expect 4
 	$(LCLINTR) +quiet null6.lcl -dump null6
 	$(LCLINTR) null6.c -load null6 -expect 4
+
+### Added for 3.0 (bugs reported by Kevin Broady)
+
+nullret:
+	$(LCLINTR) nullret.c -expect 2
+	$(LCLINTR) -nullret nullret.c -expect 1
+
+nullassign:
+	$(LCLINTR) nullassign.c -expect 2
+	$(LCLINTR) -nullassign nullassign.c -expect 1
+
 
 #
 # Before 2.4, expected one more because error was reported both as 
@@ -448,6 +499,12 @@ repexpose:
 	$(LCLINTR) repexpose +memchecks +retalias -expect 15
 	$(LCLINTRN) repexpose +checks -exportlocal -expect 27
 
+### returned added 2001-05-27
+### (Bug discovered checking lclint sources.)
+
+returned:
+	${LCLINTR} returned.c -expect 1
+
 sharing: 
 	$(LCLINTR) sharing1.c -expect 21
 	$(LCLINTR) sharing3.c -expect  3
@@ -510,32 +567,46 @@ unreachable:
 	$(LCLINTR) -unreachable unreachable.c -expect 2
 	$(LCLINTR) switch.c -expect 4
 
+###
+### 2001-06-08 evans: 2 new errors after fixing ansireserved name checks
+###
+
 unused:
-	$(LCLINTRN) unused.c +checks -exportlocal -expect 3
-	$(LCLINTRN) unused.c +checks -exportlocal +topuse -expect 6
+	$(LCLINTRN) unused.c +checks -exportlocal -expect 5
+	$(LCLINTRN) unused.c +checks -exportlocal +topuse -expect 8
+
+###
+### 2001-06-10: Provided by Jim Zalenka
+###
+
+ullint:
+	${LCLINTRN} ullint.c -expect 5
+	${LCLINTRN} ullint.c +charint +charintliteral -expect 2
+
+void:
+	${LCLINTRN} void.c -expect 2
+
+###
+### New since 2.5q:
+###
+
+linked:
+	${LCLINTR} linked.c -expect 4
+	${LCLINTR} linked2.c -expect 3
+	${LCLINTR} linked3.c -expect 5
+	${LCLINTR} linked4.c -expect 6
+	${LCLINTR} linked5.c -expect 4
+	${LCLINTR} linked6.c -expect 4
+
+freearray:
+	${LCLINTR} freearray.c -expect 1
 
 ###
 ### Bugs fixed and new features since version 2.1b
 ###
 
 tests2.2:
-	@cd tests2.2 ; \
-	$(LCLINTR) boolops.c -expect 1 ; \
-        $(LCLINTR) bool.lcl booldef.c -expect 1 ; \
-	$(LCLINTR) boolenum.c -booltype BOOLEAN -expect 1 ; \
-        $(LCLINTR) break.c -expect 1 ; \
-        $(LCLINTR) bstring.c -expect 2 ; \
-        $(LCLINTR) decl.c -expect 1 ; \
-        $(LCLINTR) enumbool.c -expect 2 ; \
-        $(LCLINTR) enumbool.c -booltrue "true" -boolfalse "false" ; \
-	$(LCLINTR) extension.c ; \
-	$(LCLINTR) -gnuextensions extension.c ; \
-	$(LCLINTR) modarray.c ; \
-	$(LCLINTR) nestext.c -expect 1 ; \
-	$(LCLINTR) offsetof.c ; \
-	$(LCLINTR) sizeofarray.c -expect 3 ; \
-	$(LCLINTR) rex.c -expect 1 ; \
-	$(LCLINTR) struct.c -expect 1
+	setenv LCLINT '$(LCLINTRN)'; cd tests2.2 ; $(MAKE) -e
 
 tests2.2a:
 	@cd tests2.2a ; \
@@ -558,34 +629,7 @@ tests2.2a:
 	$(LCLINTR) popik.c -expect 11
 
 tests2.4:
-	@cd tests2.4 ; \
-	$(LCLINTR) emptycase.c ; \
-	$(LCLINTR) enumtest.c ; \
-	$(LCLINTR) duffs.c ; \
-	$(LCLINTR) bitfields.c ; \
-	$(LCLINTR) bug1.c ; \
-	$(LCLINTR) bug2.c -expect 5 ; \
-	$(LCLINTR) bug3.c ; \
-	$(LCLINTR) test0.c ; \
-	$(LCLINTR) test1.c ; \
-	$(LCLINTR) test2.c ; \
-	$(LCLINTR) hexconstants.c -expect 1 ; \
-	$(LCLINTR) +checks hexconstants.c -expect 4 ; \
-	$(LCLINTR) innercomment.c ; \
-	$(LCLINTR) nothing.c ; \
-	$(LCLINTR) offsetof.c -expect 2 ; \
-	$(LCLINTR) komazi.c ; \
-	$(LCLINTR) print.c ; \
-	$(LCLINTR) syslog.c -warnunixlib +unixlib ; \
-	$(LCLINTR) error.c -expect 1 ; \
-	$(LCLINTR) ulrich.c ; \
-	$(LCLINTR) cpptest.c '-D__P(x)=x' ; \
-	$(LCLINTR) longlong.c -expect 4; \
-	$(LCLINTR) subdir/main.c subdir/main.lcl ; \
-	$(LCLINTR) fink.c ; \
-	$(LCLINTR) driverstub.c ; \
-	$(LCLINTR) alignof.c -expect 2 ; \
-	$(LCLINTR) -D DBL_MANT_DIG=25 source.c
+	setenv LCLINT '$(LCLINTRN)'; cd tests2.4 ; $(MAKE) -e
 
 sizeoftest:
 	@cd sizeoftest; \
@@ -598,6 +642,10 @@ bufferTest:
 simplebufferConstraintTests:
 	@cd simplebufferConstraintTests; \
 	$(LCLINTR) +functionconstraint m.c  sizeof.c  test3.c  test7.c
+
+moreBufferTests:
+	@cd moreBufferTests; \
+	$(LCLINTR) +functionconstraint unrecogCall.c strrchr.c
 
 maxset:
 	@cd maxset; \
@@ -622,12 +670,24 @@ for:
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e
 
+metastate:
+	setenv LCLINT '$(LCLINTRN)'; cd metastate ; $(MAKE) -e
+
+warnuse:
+	setenv LCLINT '$(LCLINTRN)'; cd warnuse ; $(MAKE) -e
+
 ###
 ### Integration Tests
 ###
 
 db1:
 	setenv LCLINT '$(LCLINTRN)'; cd db1; $(MAKE) -e test
+
+
+### evans 2000-12-22
+### 2 errors are no longer reported, since eref is immutable.
+### Need to clarify what it means for an object to be immutable;
+### there should be 2 types with different storage requirements.
 
 db2:
 	setenv LCLINT '$(LCLINTRN)'; cd db2; $(MAKE) -e test

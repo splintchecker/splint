@@ -1,6 +1,6 @@
 
 repexpose.c: (in function abst_create)
-repexpose.c:8:3: Arrow access from possibly null pointer a: a->name
+repexpose.c:8:4: Arrow access from possibly null pointer a: a->name
    repexpose.c:5:12: Storage a may become null
 repexpose.c:13:3: Possible undocumented modification of p->parent through alias
                      a->parent: a->parent = b->parent
@@ -32,7 +32,7 @@ repexpose.c:57:3: Undocumented modification of a->im: a->im = im
 Finished LCLint checking --- 12 code errors found, as expected
 
 repexpose.c: (in function abst_create)
-repexpose.c:8:3: Arrow access from possibly null pointer a: a->name
+repexpose.c:8:4: Arrow access from possibly null pointer a: a->name
    repexpose.c:5:12: Storage a may become null
 repexpose.c:13:3: Possible undocumented modification of p->parent through alias
                      a->parent: a->parent = b->parent
@@ -68,7 +68,7 @@ repexpose.c:57:3: Undocumented modification of a->im: a->im = im
 Finished LCLint checking --- 15 code errors found, as expected
 
 repexpose.c: (in function abst_create)
-repexpose.c:8:3: Arrow access from possibly null pointer a: a->name
+repexpose.c:8:4: Arrow access from possibly null pointer a: a->name
    repexpose.c:5:12: Storage a may become null
 repexpose.c:10:3: Assignment of mutable parameter p to component of abstract
                      type abst exposes rep: a->parent = p

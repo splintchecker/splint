@@ -33,3 +33,21 @@ booltest.c: (in function f)
 booltest.c:9:12: Return value type int does not match declared type bool: i
 
 Finished LCLint checking --- 1 code error found, as expected
+
+Finished LCLint checking --- no code errors found
+
+Finished LCLint checking --- no code errors found
+
+immutable.c: (in function immutable_create)
+immutable.c:7:6: Arrow access from possibly null pointer res: res->x
+   immutable.c:5:19: Storage res may become null
+immutable.c:8:10: Fresh storage returned as unqualified (should be only): res
+   immutable.c:5:54: Fresh storage res allocated
+
+Finished LCLint checking --- 2 code errors found, as expected
+
+impabsmodule.c: (in function isTwo)
+impabsmodule.c:10:7: Variable var used before definition
+impabsmodule.c:10:12: Variable var2 used before definition
+
+Finished LCLint checking --- 2 code errors found, as expected

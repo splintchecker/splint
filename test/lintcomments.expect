@@ -2,14 +2,14 @@
 lintcomments.c: (in function f)
 lintcomments.c:8:33: Traditional lint comment /*FALLTHROUGH*/ used.  This is
     interpreted by LCLint in the same way as most Unix lints, but it is
-    preferable to replace it with the /*@fallthrough@*/ stylized comment
+    preferable to replace it with the /*@fallthrough@*/ semantic comment
 lintcomments.c:9:30: Traditional lint comment /*FALLTHRU*/ used.  This is
     interpreted by LCLint in the same way as most Unix lints, but it is
-    preferable to replace it with the /*@fallthrough@*/ stylized comment
+    preferable to replace it with the /*@fallthrough@*/ semantic comment
 lintcomments.c:11:13: Fall through case (no preceeding break)
 lintcomments.c:23:21: Traditional lint comment /*NOTREACHED*/ used.  This is
     interpreted by LCLint in the same way as most Unix lints, but it is
-    preferable to replace it with the /*@notreached@*/ stylized comment.
+    preferable to replace it with the /*@notreached@*/ semantic comment.
 
 Finished LCLint checking --- 4 code errors found, as expected
 

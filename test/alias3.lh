@@ -3,7 +3,7 @@
 
 
 # ifndef EXPOSED_TYPE_st
-typedef struct {
+typedef struct s_st {
     int a;
     int *b;
     } st;
@@ -11,7 +11,7 @@ typedef struct {
 
 
 # ifndef EXPOSED_TYPE_ut
-typedef union {
+typedef union s_ut {
     int a;
     st s;
     st *t;

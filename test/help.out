@@ -78,6 +78,7 @@ Finished LCLint checking --- no code processed
    allglobs                    
    allimponly                  
    allmacros                   
+   annotationerror             
    ansilib                     
    ansilimits                  
    ansireserved                
@@ -95,6 +96,8 @@ Finished LCLint checking --- no code processed
    booltype                    
    branchstate                 
    bufferoverflow              
+   bufferoverflowhigh          
+   bugslimit                   
    casebreak                   
    castexpose                  
    castfcnptr                  
@@ -109,6 +112,7 @@ Finished LCLint checking --- no code processed
    checkstrictglobs            
    codeimponly                 
    commentchar                 
+   commenterror                
    compdef                     
    compdestroy                 
    compmempass                 
@@ -173,6 +177,7 @@ Finished LCLint checking --- no code processed
    fcnpost                     
    fcnuse                      
    fielduse                    
+   fileextensions              
    filestaticprefix            
    filestaticprefixexclude     
    firstcase                   
@@ -183,6 +188,7 @@ Finished LCLint checking --- no code processed
    forempty                    
    formalarray                 
    formatcode                  
+   formatconst                 
    formattype                  
    forwarddecl                 
    freshtrans                  
@@ -225,6 +231,7 @@ Finished LCLint checking --- no code processed
    incompletetype              
    incondefs                   
    incondefslib                
+   indentspaces                
    infloops                    
    infloopsuncon               
    internalglobs               
@@ -234,6 +241,11 @@ Finished LCLint checking --- no code processed
    internalnamelookalike       
    iterprefix                  
    iterprefixexclude           
+   its4low                     
+   its4moderate                
+   its4mostrisky               
+   its4risky                   
+   its4veryrisky               
    keeptrans                   
    kepttrans                   
    larchpath                   
@@ -277,6 +289,7 @@ Finished LCLint checking --- no code processed
    memchecks                   
    memimp                      
    memtrans                    
+   misplacedsharequal          
    misscase                    
    modfilesys                  
    modglobs                    
@@ -292,6 +305,7 @@ Finished LCLint checking --- no code processed
    moduncon                    
    modunconnomods              
    modunspec                   
+   mts                         
    mustdefine                  
    mustfree                    
    mustmod                     
@@ -357,6 +371,7 @@ Finished LCLint checking --- no code processed
    realcompare                 
    redecl                      
    redef                       
+   redundantsharequal          
    refcounttrans               
    relaxquals                  
    relaxtypes                  
@@ -400,6 +415,8 @@ Finished LCLint checking --- no code processed
    specundecl                  
    specundef                   
    stackref                    
+   statemerge                  
+   statetransfer               
    staticinittrans             
    statictrans                 
    stats                       
@@ -424,6 +441,7 @@ Finished LCLint checking --- no code processed
    timedist                    
    tmpcomments                 
    tmpdir                      
+   toctou                      
    topuse                      
    trytorecover                
    type                        
@@ -454,6 +472,7 @@ Finished LCLint checking --- no code processed
    warnmissingglobsnoglobs     
    warnposixheaders            
    warnunixlib                 
+   warnuse                     
    whichlib                    
    whileblock                  
    whileempty                  
@@ -606,6 +625,7 @@ retexpose --- abstract representation is exposed (return values only)
 assignexpose --- abstract representation is exposed (assignments only)
 castexpose --- abstract representation is exposed through a cast
 linelen --- set length of messages (number of chars)
+indentspaces --- set number of spaces to indent sub-messages
 showcolumn --- show column number where error is found
 parenfileformat --- show column number where error is found
 showfunc --- show name of function containing error
@@ -692,6 +712,7 @@ unixstrictlib --- use strict version of UNIX (sort-of) library
 posixlib --- use POSIX standard library
 posixstrictlib --- use strict POSIX standard library
 whichlib --- show standard library filename
+mts --- load meta state declaration and corresponding xh file
 commentchar --- set marker character for syntactic comments (default is '@')
 allmacros --- sets fcnmacros and constmacros
 libmacros --- check all macros with declarations in library as functions
@@ -897,7 +918,6 @@ ansilimits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers)
 null --- misuses of null pointer
 nullterminated --- misuse of nullterminated allocation
-bufferoverflow --- possible buffer overflow
 arrayread --- possible out of bounds read
 arraywrite --- possible buffer overflow from an out of bounds write
 fcnpost --- Function has the post condition
@@ -952,6 +972,8 @@ enummembers --- enum members must be int values
 maintype --- type of main does not match expected type
 formattype --- type-mismatch in parameter corresponding to format code in a
 printf or scanf-like function
+formatconst --- format parameter is not a string constant (hence variable
+arguments cannot be typechecked)
 formatcode --- invalid format code in format string for printf or scanf-like
 function
 forwarddecl --- forward declarations of pointers to abstract representation
@@ -1004,4 +1026,23 @@ typeuse --- type declared but not used
 varuse --- variable declared but not used
 unusedspecial --- unused declaration in special file (corresponding to .l or .y
 file)
+redundantsharequal --- declaration uses observer qualifier that is always true
+misplacedsharequal --- declaration of unsharable storage uses sharing
+annotation
+annotationerror --- annotation is used in inconsistent location
+commenterror --- inconsistent syntactic comment
+bugslimit --- set maximum number of bugs detected before giving up
+fileextensions --- warn when command line file does not have a recognized
+extension
+warnuse --- warn when declaration marked with warn is used
+statetransfer --- storage has been transfered with invalid state
+statemerge --- control paths merge with storage in incompatible states
+its4mostrisky --- most risky security vulnerabilities (from its4 database)
+its4veryrisky --- very risky security vulnerabilities (from its4 database)
+its4risky --- risky security vulnerabilities (from its4 database)
+its4moderate --- moderately risky security vulnerabilities (from its4 database)
+its4low --- risky security vulnerabilities (from its4 database)
+bufferoverflowhigh --- likely buffer overflow vulnerability
+bufferoverflow --- possible buffer overflow vulnerability
+toctou --- possible time of check, time of use vulnerability
 

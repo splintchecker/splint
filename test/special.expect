@@ -5,13 +5,15 @@ special.c:19:31: Format argument 1 to printf (%d) expects int gets long int: li
    special.c:19:17: Corresponding format code
 special.c:20:46: Format argument 2 to printf (%d) expects int gets long int: li
    special.c:20:21: Corresponding format code
-special.c:20:50: Format argument 3 to printf (%d) expects short int gets int: i
+special.c:20:50: Format argument 3 to printf (%hd) expects short int gets int:
+                    i
    special.c:20:25: Corresponding format code
 special.c:27:19: Variable s used before definition
-special.c:29:28: Format argument 1 to printf (%i) expects int gets char: c
+special.c:29:28: Format argument 1 to printf (%+14.3i) expects int gets char: c
    special.c:29:24: Corresponding format code
 special.c:29:3: Format string for printf has 1 arg, given 2
-special.c:30:38: Format argument 1 to fprintf (%i) expects int gets char: c
+special.c:30:38: Format argument 1 to fprintf (%+14.33i) expects int gets char:
+                    c
    special.c:30:34: Corresponding format code
 special.c:30:3: Format string for fprintf has 1 arg, given 2
 special.c:31:25: Format argument 1 to printf (%d) expects int gets char: c
@@ -45,20 +47,22 @@ special.c: (in function f)
 special.c:17:34: Variable c used before definition
 special.c:19:31: Format argument 1 to printf (%d) expects int gets long int: li
    special.c:19:17: Corresponding format code
-special.c:20:43: Format argument 1 to printf (%d) expects long int gets int: i
+special.c:20:43: Format argument 1 to printf (%ld) expects long int gets int: i
    special.c:20:18: Corresponding format code
 special.c:20:46: Format argument 2 to printf (%d) expects int gets long int: li
    special.c:20:21: Corresponding format code
-special.c:20:50: Format argument 3 to printf (%d) expects short int gets int: i
+special.c:20:50: Format argument 3 to printf (%hd) expects short int gets int:
+                    i
    special.c:20:25: Corresponding format code
 special.c:20:60: Format argument 5 to printf (%d) expects int gets short int:
                     silly
    special.c:20:32: Corresponding format code
 special.c:27:19: Variable s used before definition
-special.c:29:28: Format argument 1 to printf (%i) expects int gets char: c
+special.c:29:28: Format argument 1 to printf (%+14.3i) expects int gets char: c
    special.c:29:24: Corresponding format code
 special.c:29:3: Format string for printf has 1 arg, given 2
-special.c:30:38: Format argument 1 to fprintf (%i) expects int gets char: c
+special.c:30:38: Format argument 1 to fprintf (%+14.33i) expects int gets char:
+                    c
    special.c:30:34: Corresponding format code
 special.c:30:3: Format string for fprintf has 1 arg, given 2
 special.c:31:25: Format argument 1 to printf (%d) expects int gets char: c

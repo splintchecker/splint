@@ -1,14 +1,14 @@
 # include "bool.h"
 
-typedef struct _abst *abst;
+typedef struct s_abst *abst;
 
-typedef struct _immut
+typedef struct 
 {
   char *name;
   int val;
 } *immut;
 
-struct _abst
+struct s_abst
 {
   char *name;
   int   val;

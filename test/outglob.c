@@ -38,7 +38,12 @@ int f()
 	}
     }
 
-  return 12; /* NO! [9, 10. returns with x2 and x3 undefined (x1 IS defined on all branches!)] */
+  return 12; 
+  /* No errors to report.  Previously, 
+        [9, 10. returns with x2 and x3 undefined (x1 IS defined on all branches!)] 
+     but this is not correct; all branches that can reach the return do define 
+     x1, x2 and x3.
+  */
 }
 
 int h (void)

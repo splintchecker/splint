@@ -15,7 +15,8 @@ fields.c:55:10: Storage p->y reachable from return value is dependent (should
                    be owned)
    fields.c:54:3: Storage p->y becomes dependent
 fields.c: (in function f)
-fields.c:60:3: Owned storage p->x not released before assignment: p->x = NULL
+fields.c:60:3: Owned storage p->x (type int *) not released before assignment:
+                  p->x = NULL
 fields.c:62:18: Function returns with null storage derivable from parameter
                    p->x
    fields.c:60:10: Storage p->x becomes null

@@ -1,0 +1,7 @@
+
+unrecogCall.c: (in function foo)
+unrecogCall.c:8:3: Unrecognized identifier: bar
+strrchr.c: (in function bar)
+strrchr.c:9:9: Variable ot declared but not used
+
+Finished LCLint checking --- 2 code errors found
