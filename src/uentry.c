@@ -575,11 +575,11 @@ constraintList uentry_getFcnPreconditions (uentry ue)
   //llassert ((ue->info->fcn->preconditions));
 	  if (!uentry_isFunction (ue))
 	    {
-	      TPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
+	      DPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
 				  uentry_unparse (ue) ) ) );
 	      	  if (!uentry_isSpecified (ue) )
 		    {
-		      TPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
+		      DPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
 					uentry_unparse (ue) ) ));
 		      return constraintList_undefined;
 		    }
@@ -629,7 +629,7 @@ constraintList uentry_getFcnPostconditions (uentry ue)
 	  
 	  if (!uentry_isFunction (ue))
 	    {
-	      /*llcontbug*/ TPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
+	      /*llcontbug*/ DPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
 				  uentry_unparse (ue) ) ) );
 	      return constraintList_undefined;
 	    }

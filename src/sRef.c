@@ -9173,7 +9173,8 @@ bool sRef_isFixedArray (sRef p_s) /*@*/ {
 long int sRef_getArraySize (sRef p_s) /*@*/ {
   ctype c;
   llassert (sRef_isFixedArray(p_s) );
-
+  DPRINTF (( message ("sRef_getArraySize getting array size for %s", sRef_unparse(p_s) )  ));
+  
   c = sRef_getType (p_s);
 
   return (ctype_getArraySize (c) );
