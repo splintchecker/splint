@@ -1061,6 +1061,11 @@ orExpr
 
 conditionalExpr 
  : orExpr 
+ | orExpr TQUEST 
+   { /* GCC extension: conditional with empty if */
+     exprNode_produceGuards ($1); context_enterTrueClause ($1); } TCOLON 
+   { context_enterFalseClause ($1); } conditionalExpr
+   { $$ = exprNode_condIfOmit ($1, $6); context_exitClause ($1, exprNode_undefined, $6); }
  | orExpr TQUEST { exprNode_produceGuards ($1); context_enterTrueClause ($1); } expr TCOLON 
    { context_enterFalseClause ($1); } conditionalExpr
    { $$ = exprNode_cond ($1, $4, $7); context_exitClause ($1, $4, $7); }
@@ -2110,6 +2115,9 @@ orIterExpr
 
 conditionalIterExpr 
  : orIterExpr 
+ | orExpr TQUEST { context_enterTrueClause ($1); } 
+   TCOLON { context_enterFalseClause ($1); } conditionalExpr
+   { $$ = exprNode_condIfOmit ($1, $6); }
  | orExpr TQUEST { context_enterTrueClause ($1); } 
    expr TCOLON { context_enterFalseClause ($1); } conditionalExpr
    { $$ = exprNode_cond ($1, $4, $7); }

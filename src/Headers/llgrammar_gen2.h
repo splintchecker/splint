@@ -54,314 +54,12 @@
 
 /* < end of bison.head > */
 
-/* A Bison parser, made by GNU Bison 1.875a.  */
+#ifndef BISON_LLGRAMMAR_TAB_H
+# define BISON_LLGRAMMAR_TAB_H
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
-
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
-
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     simpleOp = 258,
-     PREFIX_OP = 259,
-     POSTFIX_OP = 260,
-     LLT_MULOP = 261,
-     LLT_SEMI = 262,
-     LLT_VERTICALBAR = 263,
-     ITERATION_OP = 264,
-     selectSym = 265,
-     LLT_LBRACKET = 266,
-     LLT_LPAR = 267,
-     LLT_IF_THEN_ELSE = 268,
-     logicalOp = 269,
-     eqSepSym = 270,
-     equationSym = 271,
-     commentSym = 272,
-     LLT_WHITESPACE = 273,
-     LLT_EOL = 274,
-     LLT_TYPEDEF_NAME = 275,
-     quantifierSym = 276,
-     openSym = 277,
-     closeSym = 278,
-     sepSym = 279,
-     simpleId = 280,
-     mapSym = 281,
-     markerSym = 282,
-     preSym = 283,
-     postSym = 284,
-     anySym = 285,
-     LLT_COLON = 286,
-     LLT_COMMA = 287,
-     LLT_EQUALS = 288,
-     LLT_LBRACE = 289,
-     LLT_RBRACE = 290,
-     LLT_RBRACKET = 291,
-     LLT_RPAR = 292,
-     LLT_QUOTE = 293,
-     eqOp = 294,
-     LLT_CCHAR = 295,
-     LLT_CFLOAT = 296,
-     LLT_CINTEGER = 297,
-     LLT_LCSTRING = 298,
-     LLT_ALL = 299,
-     LLT_ANYTHING = 300,
-     LLT_BE = 301,
-     LLT_BODY = 302,
-     LLT_CLAIMS = 303,
-     LLT_CHECKS = 304,
-     LLT_CONSTANT = 305,
-     LLT_ELSE = 306,
-     LLT_ENSURES = 307,
-     LLT_FOR = 308,
-     LLT_FRESH = 309,
-     LLT_IF = 310,
-     LLT_IMMUTABLE = 311,
-     LLT_IMPORTS = 312,
-     LLT_CONSTRAINT = 313,
-     LLT_ISSUB = 314,
-     LLT_LET = 315,
-     LLT_MODIFIES = 316,
-     LLT_MUTABLE = 317,
-     LLT_NOTHING = 318,
-     LLT_INTERNAL = 319,
-     LLT_FILESYS = 320,
-     LLT_OBJ = 321,
-     LLT_OUT = 322,
-     LLT_SEF = 323,
-     LLT_ONLY = 324,
-     LLT_PARTIAL = 325,
-     LLT_OWNED = 326,
-     LLT_DEPENDENT = 327,
-     LLT_KEEP = 328,
-     LLT_KEPT = 329,
-     LLT_TEMP = 330,
-     LLT_SHARED = 331,
-     LLT_UNIQUE = 332,
-     LLT_UNUSED = 333,
-     LLT_EXITS = 334,
-     LLT_MAYEXIT = 335,
-     LLT_NEVEREXIT = 336,
-     LLT_TRUEEXIT = 337,
-     LLT_FALSEEXIT = 338,
-     LLT_UNDEF = 339,
-     LLT_KILLED = 340,
-     LLT_CHECKMOD = 341,
-     LLT_CHECKED = 342,
-     LLT_UNCHECKED = 343,
-     LLT_CHECKEDSTRICT = 344,
-     LLT_TRUENULL = 345,
-     LLT_FALSENULL = 346,
-     LLT_LNULL = 347,
-     LLT_LNOTNULL = 348,
-     LLT_RETURNED = 349,
-     LLT_OBSERVER = 350,
-     LLT_EXPOSED = 351,
-     LLT_REFCOUNTED = 352,
-     LLT_REFS = 353,
-     LLT_RELNULL = 354,
-     LLT_RELDEF = 355,
-     LLT_KILLREF = 356,
-     LLT_NULLTERMINATED = 357,
-     LLT_TEMPREF = 358,
-     LLT_NEWREF = 359,
-     LLT_PRIVATE = 360,
-     LLT_REQUIRES = 361,
-     LLT_RESULT = 362,
-     LLT_SIZEOF = 363,
-     LLT_SPEC = 364,
-     LLT_TAGGEDUNION = 365,
-     LLT_THEN = 366,
-     LLT_TYPE = 367,
-     LLT_TYPEDEF = 368,
-     LLT_UNCHANGED = 369,
-     LLT_USES = 370,
-     LLT_CHAR = 371,
-     LLT_CONST = 372,
-     LLT_DOUBLE = 373,
-     LLT_ENUM = 374,
-     LLT_FLOAT = 375,
-     LLT_INT = 376,
-     LLT_ITER = 377,
-     LLT_YIELD = 378,
-     LLT_LONG = 379,
-     LLT_SHORT = 380,
-     LLT_SIGNED = 381,
-     LLT_UNKNOWN = 382,
-     LLT_STRUCT = 383,
-     LLT_TELIPSIS = 384,
-     LLT_UNION = 385,
-     LLT_UNSIGNED = 386,
-     LLT_VOID = 387,
-     LLT_VOLATILE = 388,
-     LLT_PRINTFLIKE = 389,
-     LLT_SCANFLIKE = 390,
-     LLT_MESSAGELIKE = 391
-   };
-#endif
-#define simpleOp 258
-#define PREFIX_OP 259
-#define POSTFIX_OP 260
-#define LLT_MULOP 261
-#define LLT_SEMI 262
-#define LLT_VERTICALBAR 263
-#define ITERATION_OP 264
-#define selectSym 265
-#define LLT_LBRACKET 266
-#define LLT_LPAR 267
-#define LLT_IF_THEN_ELSE 268
-#define logicalOp 269
-#define eqSepSym 270
-#define equationSym 271
-#define commentSym 272
-#define LLT_WHITESPACE 273
-#define LLT_EOL 274
-#define LLT_TYPEDEF_NAME 275
-#define quantifierSym 276
-#define openSym 277
-#define closeSym 278
-#define sepSym 279
-#define simpleId 280
-#define mapSym 281
-#define markerSym 282
-#define preSym 283
-#define postSym 284
-#define anySym 285
-#define LLT_COLON 286
-#define LLT_COMMA 287
-#define LLT_EQUALS 288
-#define LLT_LBRACE 289
-#define LLT_RBRACE 290
-#define LLT_RBRACKET 291
-#define LLT_RPAR 292
-#define LLT_QUOTE 293
-#define eqOp 294
-#define LLT_CCHAR 295
-#define LLT_CFLOAT 296
-#define LLT_CINTEGER 297
-#define LLT_LCSTRING 298
-#define LLT_ALL 299
-#define LLT_ANYTHING 300
-#define LLT_BE 301
-#define LLT_BODY 302
-#define LLT_CLAIMS 303
-#define LLT_CHECKS 304
-#define LLT_CONSTANT 305
-#define LLT_ELSE 306
-#define LLT_ENSURES 307
-#define LLT_FOR 308
-#define LLT_FRESH 309
-#define LLT_IF 310
-#define LLT_IMMUTABLE 311
-#define LLT_IMPORTS 312
-#define LLT_CONSTRAINT 313
-#define LLT_ISSUB 314
-#define LLT_LET 315
-#define LLT_MODIFIES 316
-#define LLT_MUTABLE 317
-#define LLT_NOTHING 318
-#define LLT_INTERNAL 319
-#define LLT_FILESYS 320
-#define LLT_OBJ 321
-#define LLT_OUT 322
-#define LLT_SEF 323
-#define LLT_ONLY 324
-#define LLT_PARTIAL 325
-#define LLT_OWNED 326
-#define LLT_DEPENDENT 327
-#define LLT_KEEP 328
-#define LLT_KEPT 329
-#define LLT_TEMP 330
-#define LLT_SHARED 331
-#define LLT_UNIQUE 332
-#define LLT_UNUSED 333
-#define LLT_EXITS 334
-#define LLT_MAYEXIT 335
-#define LLT_NEVEREXIT 336
-#define LLT_TRUEEXIT 337
-#define LLT_FALSEEXIT 338
-#define LLT_UNDEF 339
-#define LLT_KILLED 340
-#define LLT_CHECKMOD 341
-#define LLT_CHECKED 342
-#define LLT_UNCHECKED 343
-#define LLT_CHECKEDSTRICT 344
-#define LLT_TRUENULL 345
-#define LLT_FALSENULL 346
-#define LLT_LNULL 347
-#define LLT_LNOTNULL 348
-#define LLT_RETURNED 349
-#define LLT_OBSERVER 350
-#define LLT_EXPOSED 351
-#define LLT_REFCOUNTED 352
-#define LLT_REFS 353
-#define LLT_RELNULL 354
-#define LLT_RELDEF 355
-#define LLT_KILLREF 356
-#define LLT_NULLTERMINATED 357
-#define LLT_TEMPREF 358
-#define LLT_NEWREF 359
-#define LLT_PRIVATE 360
-#define LLT_REQUIRES 361
-#define LLT_RESULT 362
-#define LLT_SIZEOF 363
-#define LLT_SPEC 364
-#define LLT_TAGGEDUNION 365
-#define LLT_THEN 366
-#define LLT_TYPE 367
-#define LLT_TYPEDEF 368
-#define LLT_UNCHANGED 369
-#define LLT_USES 370
-#define LLT_CHAR 371
-#define LLT_CONST 372
-#define LLT_DOUBLE 373
-#define LLT_ENUM 374
-#define LLT_FLOAT 375
-#define LLT_INT 376
-#define LLT_ITER 377
-#define LLT_YIELD 378
-#define LLT_LONG 379
-#define LLT_SHORT 380
-#define LLT_SIGNED 381
-#define LLT_UNKNOWN 382
-#define LLT_STRUCT 383
-#define LLT_TELIPSIS 384
-#define LLT_UNION 385
-#define LLT_UNSIGNED 386
-#define LLT_VOID 387
-#define LLT_VOLATILE 388
-#define LLT_PRINTFLIKE 389
-#define LLT_SCANFLIKE 390
-#define LLT_MESSAGELIKE 391
-
-
-
-
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-
-typedef union YYSTYPE {
+#ifndef YYSTYPE
+typedef union 
+{
   ltoken ltok;  /* a leaf is also an ltoken */
   qual typequal;
   unsigned int count;
@@ -426,18 +124,149 @@ typedef union YYSTYPE {
   /*@only@*/ interfaceNodeList interfacelist; 
   /*@only@*/ CTypesNode ctypes;
   /*@-redef@*/
-} YYSTYPE;
-/* Line 1240 of yacc.c.  */
-
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+} yystype;
+# define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
+# define	simpleOp	257
+# define	PREFIX_OP	258
+# define	POSTFIX_OP	259
+# define	LLT_MULOP	260
+# define	LLT_SEMI	261
+# define	LLT_VERTICALBAR	262
+# define	ITERATION_OP	263
+# define	LLT_LPAR	264
+# define	LLT_LBRACKET	265
+# define	selectSym	266
+# define	LLT_IF_THEN_ELSE	267
+# define	logicalOp	268
+# define	eqSepSym	269
+# define	equationSym	270
+# define	commentSym	271
+# define	LLT_WHITESPACE	272
+# define	LLT_EOL	273
+# define	LLT_TYPEDEF_NAME	274
+# define	quantifierSym	275
+# define	openSym	276
+# define	closeSym	277
+# define	sepSym	278
+# define	simpleId	279
+# define	mapSym	280
+# define	markerSym	281
+# define	preSym	282
+# define	postSym	283
+# define	anySym	284
+# define	LLT_COLON	285
+# define	LLT_COMMA	286
+# define	LLT_EQUALS	287
+# define	LLT_LBRACE	288
+# define	LLT_RBRACE	289
+# define	LLT_RBRACKET	290
+# define	LLT_RPAR	291
+# define	LLT_QUOTE	292
+# define	eqOp	293
+# define	LLT_CCHAR	294
+# define	LLT_CFLOAT	295
+# define	LLT_CINTEGER	296
+# define	LLT_LCSTRING	297
+# define	LLT_ALL	298
+# define	LLT_ANYTHING	299
+# define	LLT_BE	300
+# define	LLT_BODY	301
+# define	LLT_CLAIMS	302
+# define	LLT_CHECKS	303
+# define	LLT_CONSTANT	304
+# define	LLT_ELSE	305
+# define	LLT_ENSURES	306
+# define	LLT_FOR	307
+# define	LLT_FRESH	308
+# define	LLT_IF	309
+# define	LLT_IMMUTABLE	310
+# define	LLT_IMPORTS	311
+# define	LLT_CONSTRAINT	312
+# define	LLT_ISSUB	313
+# define	LLT_LET	314
+# define	LLT_MODIFIES	315
+# define	LLT_MUTABLE	316
+# define	LLT_NOTHING	317
+# define	LLT_INTERNAL	318
+# define	LLT_FILESYS	319
+# define	LLT_OBJ	320
+# define	LLT_OUT	321
+# define	LLT_SEF	322
+# define	LLT_ONLY	323
+# define	LLT_PARTIAL	324
+# define	LLT_OWNED	325
+# define	LLT_DEPENDENT	326
+# define	LLT_KEEP	327
+# define	LLT_KEPT	328
+# define	LLT_TEMP	329
+# define	LLT_SHARED	330
+# define	LLT_UNIQUE	331
+# define	LLT_UNUSED	332
+# define	LLT_EXITS	333
+# define	LLT_MAYEXIT	334
+# define	LLT_NEVEREXIT	335
+# define	LLT_TRUEEXIT	336
+# define	LLT_FALSEEXIT	337
+# define	LLT_UNDEF	338
+# define	LLT_KILLED	339
+# define	LLT_CHECKMOD	340
+# define	LLT_CHECKED	341
+# define	LLT_UNCHECKED	342
+# define	LLT_CHECKEDSTRICT	343
+# define	LLT_TRUENULL	344
+# define	LLT_FALSENULL	345
+# define	LLT_LNULL	346
+# define	LLT_LNOTNULL	347
+# define	LLT_RETURNED	348
+# define	LLT_OBSERVER	349
+# define	LLT_EXPOSED	350
+# define	LLT_REFCOUNTED	351
+# define	LLT_REFS	352
+# define	LLT_RELNULL	353
+# define	LLT_RELDEF	354
+# define	LLT_KILLREF	355
+# define	LLT_NULLTERMINATED	356
+# define	LLT_TEMPREF	357
+# define	LLT_NEWREF	358
+# define	LLT_PRIVATE	359
+# define	LLT_REQUIRES	360
+# define	LLT_RESULT	361
+# define	LLT_SIZEOF	362
+# define	LLT_SPEC	363
+# define	LLT_TAGGEDUNION	364
+# define	LLT_THEN	365
+# define	LLT_TYPE	366
+# define	LLT_TYPEDEF	367
+# define	LLT_UNCHANGED	368
+# define	LLT_USES	369
+# define	LLT_CHAR	370
+# define	LLT_CONST	371
+# define	LLT_DOUBLE	372
+# define	LLT_ENUM	373
+# define	LLT_FLOAT	374
+# define	LLT_INT	375
+# define	LLT_ITER	376
+# define	LLT_YIELD	377
+# define	LLT_LONG	378
+# define	LLT_SHORT	379
+# define	LLT_SIGNED	380
+# define	LLT_UNKNOWN	381
+# define	LLT_STRUCT	382
+# define	LLT_TELIPSIS	383
+# define	LLT_UNION	384
+# define	LLT_UNSIGNED	385
+# define	LLT_VOID	386
+# define	LLT_VOLATILE	387
+# define	LLT_PRINTFLIKE	388
+# define	LLT_SCANFLIKE	389
+# define	LLT_MESSAGELIKE	390
+
 
 extern YYSTYPE yllval;
 
-
-
+#endif /* not BISON_LLGRAMMAR_TAB_H */
 /*
 ** Resets all flags in bison.head
 */

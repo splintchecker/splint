@@ -54,136 +54,11 @@
 
 /* < end of bison.head > */
 
-/* A Bison parser, made by GNU Bison 1.875a.  */
+#ifndef BISON_SIGNATURE_TAB_H
+# define BISON_SIGNATURE_TAB_H
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
-
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
-
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     LST_SIMPLEID = 258,
-     LST_LOGICALOP = 259,
-     LST_EQOP = 260,
-     LST_SIMPLEOP = 261,
-     LST_MAPSYM = 262,
-     LST_FIELDMAPSYM = 263,
-     LST_MARKERSYM = 264,
-     LST_ifTOKEN = 265,
-     LST_thenTOKEN = 266,
-     LST_elseTOKEN = 267,
-     LST_LBRACKET = 268,
-     LST_RBRACKET = 269,
-     LST_SELECTSYM = 270,
-     LST_SEPSYM = 271,
-     LST_OPENSYM = 272,
-     LST_CLOSESYM = 273,
-     LST_COLON = 274,
-     LST_COMMA = 275,
-     LST_EOL = 276,
-     LST_COMMENTSYM = 277,
-     LST_WHITESPACE = 278,
-     LST_QUANTIFIERSYM = 279,
-     LST_EQUATIONSYM = 280,
-     LST_EQSEPSYM = 281,
-     LST_COMPOSESYM = 282,
-     LST_LPAR = 283,
-     LST_RPAR = 284,
-     LST_assertsTOKEN = 285,
-     LST_assumesTOKEN = 286,
-     LST_byTOKEN = 287,
-     LST_convertsTOKEN = 288,
-     LST_enumerationTOKEN = 289,
-     LST_equationsTOKEN = 290,
-     LST_exemptingTOKEN = 291,
-     LST_forTOKEN = 292,
-     LST_generatedTOKEN = 293,
-     LST_impliesTOKEN = 294,
-     LST_includesTOKEN = 295,
-     LST_introducesTOKEN = 296,
-     LST_ofTOKEN = 297,
-     LST_partitionedTOKEN = 298,
-     LST_traitTOKEN = 299,
-     LST_tupleTOKEN = 300,
-     LST_unionTOKEN = 301,
-     LST_BADTOKEN = 302
-   };
-#endif
-#define LST_SIMPLEID 258
-#define LST_LOGICALOP 259
-#define LST_EQOP 260
-#define LST_SIMPLEOP 261
-#define LST_MAPSYM 262
-#define LST_FIELDMAPSYM 263
-#define LST_MARKERSYM 264
-#define LST_ifTOKEN 265
-#define LST_thenTOKEN 266
-#define LST_elseTOKEN 267
-#define LST_LBRACKET 268
-#define LST_RBRACKET 269
-#define LST_SELECTSYM 270
-#define LST_SEPSYM 271
-#define LST_OPENSYM 272
-#define LST_CLOSESYM 273
-#define LST_COLON 274
-#define LST_COMMA 275
-#define LST_EOL 276
-#define LST_COMMENTSYM 277
-#define LST_WHITESPACE 278
-#define LST_QUANTIFIERSYM 279
-#define LST_EQUATIONSYM 280
-#define LST_EQSEPSYM 281
-#define LST_COMPOSESYM 282
-#define LST_LPAR 283
-#define LST_RPAR 284
-#define LST_assertsTOKEN 285
-#define LST_assumesTOKEN 286
-#define LST_byTOKEN 287
-#define LST_convertsTOKEN 288
-#define LST_enumerationTOKEN 289
-#define LST_equationsTOKEN 290
-#define LST_exemptingTOKEN 291
-#define LST_forTOKEN 292
-#define LST_generatedTOKEN 293
-#define LST_impliesTOKEN 294
-#define LST_includesTOKEN 295
-#define LST_introducesTOKEN 296
-#define LST_ofTOKEN 297
-#define LST_partitionedTOKEN 298
-#define LST_traitTOKEN 299
-#define LST_tupleTOKEN 300
-#define LST_unionTOKEN 301
-#define LST_BADTOKEN 302
-
-
-
-
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-
-typedef union YYSTYPE {
+#ifndef YYSTYPE
+typedef union {
   ltoken ltok;  /* a leaf is also an ltoken */
   unsigned int count;
   /*@only@*/  ltokenList ltokenList;
@@ -193,18 +68,58 @@ typedef union YYSTYPE {
   /*@owned@*/ lslOp operator;
   /*@only@*/  lslOpList operators;
   /*@-redef@*/ /*@-matchfields@*/ 
-} YYSTYPE;
-/* Line 1240 of yacc.c.  */
-
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+} yystype;
+# define YYSTYPE yystype
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
+# define	LST_SIMPLEID	257
+# define	LST_LOGICALOP	258
+# define	LST_EQOP	259
+# define	LST_SIMPLEOP	260
+# define	LST_MAPSYM	261
+# define	LST_FIELDMAPSYM	262
+# define	LST_MARKERSYM	263
+# define	LST_ifTOKEN	264
+# define	LST_thenTOKEN	265
+# define	LST_elseTOKEN	266
+# define	LST_LBRACKET	267
+# define	LST_RBRACKET	268
+# define	LST_SELECTSYM	269
+# define	LST_SEPSYM	270
+# define	LST_OPENSYM	271
+# define	LST_CLOSESYM	272
+# define	LST_COLON	273
+# define	LST_COMMA	274
+# define	LST_EOL	275
+# define	LST_COMMENTSYM	276
+# define	LST_WHITESPACE	277
+# define	LST_QUANTIFIERSYM	278
+# define	LST_EQUATIONSYM	279
+# define	LST_EQSEPSYM	280
+# define	LST_COMPOSESYM	281
+# define	LST_LPAR	282
+# define	LST_RPAR	283
+# define	LST_assertsTOKEN	284
+# define	LST_assumesTOKEN	285
+# define	LST_byTOKEN	286
+# define	LST_convertsTOKEN	287
+# define	LST_enumerationTOKEN	288
+# define	LST_equationsTOKEN	289
+# define	LST_exemptingTOKEN	290
+# define	LST_forTOKEN	291
+# define	LST_generatedTOKEN	292
+# define	LST_impliesTOKEN	293
+# define	LST_includesTOKEN	294
+# define	LST_introducesTOKEN	295
+# define	LST_ofTOKEN	296
+# define	LST_partitionedTOKEN	297
+# define	LST_traitTOKEN	298
+# define	LST_tupleTOKEN	299
+# define	LST_unionTOKEN	300
+# define	LST_BADTOKEN	301
 
 
-
-
-
+#endif /* not BISON_SIGNATURE_TAB_H */
 /*
 ** Resets all flags in bison.head
 */

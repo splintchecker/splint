@@ -6473,6 +6473,26 @@ exprNode_cond (/*@keep@*/ exprNode pred, /*@keep@*/ exprNode ifclause,
 }
 
 exprNode
+exprNode_condIfOmit (/*@keep@*/ exprNode pred, 
+		     /*@keep@*/ exprNode elseclause)
+{
+  exprNode ifclause = exprNode_createPartialCopy (pred);
+
+  if (!context_flagOn (FLG_GNUEXTENSIONS, exprNode_loc (pred)))
+    {
+      (void) llgenhinterror 
+	(FLG_SYNTAX,
+	 message ("Conditionals with Omitted Operands is not supported by ISO C99"),
+	 message ("Use +gnuextensions to allow compound statement "
+		  "expressions (and other GNU language extensions) "
+		  "without this warning"),
+	 exprNode_loc (pred));
+    }
+  
+  return exprNode_cond(pred, ifclause, elseclause);
+}
+
+exprNode
 exprNode_vaArg (/*@only@*/ lltok tok, /*@only@*/ exprNode arg, /*@only@*/ qtype qt)
 {
   ctype totype = qtype_getType (qt);

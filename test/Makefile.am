@@ -42,7 +42,7 @@ UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
-  compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  compoundliterals compoundstmt condifomit constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init innerarray inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
@@ -318,6 +318,11 @@ compoundliterals:
 .PHONY: compoundstmt
 compoundstmt:
 	${SPLINTRN} compoundstmt.c -expect 3
+
+.PHONY: condifomit
+condifomit:
+	${SPLINTRN} -gnuextensions condifomit.c -expect 4
+	${SPLINTRN} +gnuextensions condifomit.c -expect 1
 
 .PHONY: constannot
 constannot:
@@ -1087,6 +1092,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./compdestroy.c \
               ./compoundliterals.c ./compoundliterals.expect \
               ./compoundstmt.c ./compoundstmt.expect \
+              ./condifomit.c \
               ./csyntax.c \
               ./constannot.c \
               ./controldepth.c \

@@ -237,6 +237,11 @@ extern /*@observer@*/ exprNode exprNode_makeMustExit (void) /*@*/ ;
 extern exprNode 
   exprNode_cond (/*@keep@*/ exprNode p_pred, /*@keep@*/ exprNode p_ifclause, 
 		 /*@keep@*/ exprNode p_elseclause) /*@*/ ;
+
+extern exprNode 
+exprNode_condIfOmit (/*@keep@*/ exprNode p_pred, 
+		     /*@keep@*/ exprNode p_elseclause) /*@*/ ;
+
 extern exprNode exprNode_makeError(void) /*@*/ ;
 
 extern exprNode exprNode_makeInitBlock (lltok p_brace, /*@only@*/ exprNodeList p_inits) /*@*/ ;

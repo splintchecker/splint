@@ -1660,9 +1660,16 @@ flags_processFlags (bool inCommandLine,
       if (*thisarg == '-' || *thisarg == '+')
 	{
 	  bool set = (*thisarg == '+');
-	  cstring flagname = cstring_fromChars (thisarg + 1); /* skip '-' or '+' */
-	  flagcode opt = flags_identifyFlag (flagname);
+	  cstring flagname;
+	  flagcode opt;
 
+	  if (*(thisarg + 1) == '-') { /* allow -- before flags */
+	    flagname = cstring_fromChars (thisarg + 2);
+	  } else {
+	    flagname = cstring_fromChars (thisarg + 1);
+	  }
+
+	  opt = flags_identifyFlag (flagname);
 	  DPRINTF (("Flag [%s]: %s", flagname, flagcode_unparse (opt)));
 	  
 	  if (flagcode_isInvalid (opt))
