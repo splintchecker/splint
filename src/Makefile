@@ -221,8 +221,9 @@ betarelease:
 	cp -r ../imports ~/temp/lclint-`cat ${VERSION_NUMBER}`/imports
 	cp -r ../test ~/temp/lclint-`cat ${VERSION_NUMBER}`/test
 	cp ../configure ../Makefile* ../README ~/temp/lclint-`cat ${VERSION_NUMBER}`/
-	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm */*.core ; tar zcvf ~/public_html/lclint/lclint-`cat ~/lclint-dev/src/${VERSION_NUMBER}`-beta.tgz *
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm */*.core ; tar zcvf ~/public_html/lclint/lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`-beta.tgz *
 	chmod 644 ~/public_html/lclint/lclint-`cat ${VERSION_NUMBER}`.tgz
+	@echo "Make release lclint-`cat ${VERSION_NUMBER}`
 
 opt :
 ifneq (,$(findstring csh, $(SHELL)))

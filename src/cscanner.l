@@ -269,6 +269,7 @@ static void setTokLengthT (size_t len)
 "static"	{ setTokLength (6); RETURN_TOK (QSTATIC); }
 
 \"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ()); }
+L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ()); }
 "out"                   { return (processSpec (QOUT)); }
 "in"                    { return (processSpec (QIN)); }
 "partial"               { return (processSpec (QPARTIAL)); }
