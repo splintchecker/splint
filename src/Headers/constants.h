@@ -97,7 +97,11 @@
 # define PPMRCODE "@@MR@@"  
 
 /*@constant observer char *DEFAULT_SYSTEMDIR; @*/
+# ifdef OS2
+# define DEFAULT_SYSTEMDIR "/os2/"
+# else                            
 # define DEFAULT_SYSTEMDIR "/usr/"
+# endif
 
 /*@constant char DEFAULT_COMMENTCHAR; @*/
 # define DEFAULT_COMMENTCHAR '@'

@@ -36,11 +36,11 @@ UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-  decl divzero enum exports external fields flags forbody format freearray \
+  decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
-  linked lintcomments list loopexec looptesteffect \
+  linked lintcomments list longint loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
-  mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
+  mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts sizesigns slovaknames \
   specclauses \
@@ -53,10 +53,12 @@ UNITTESTS = \
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 ### warnuse doesn't work yet!
-SUBDIRTESTS = metastate mergestate tainted fileio \
+SUBDIRTESTS1 = metastate mergestate fileio \
    simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
-   maxset strchr for manual\
-tests2.2 tests2.4 tests2.5 db1 db2 db3
+   maxset strchr sizeoftest for manual
+SUBDIRTESTS1 = tests2.5 db1 db2 db3
+SUBDIRTESTS2 = tainted tests2.2 tests2.4 
+SUBDIRTESTS = $(SUBDIRTESTS1) $(SUBDIRTESTS2)
 
 SPLINTTESTS = $(UNITTESTS) $(SUBDIRTESTS)
 
@@ -75,11 +77,12 @@ quicktest: $(SPLINTTESTS)
 
 help:
 	-@$(SPLINT)
-	#@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
-	@$(SPLINT) -help
-	@$(SPLINTP) -asdf
-	@$(SPLINTP) +boolint +boolint 
-	@$(SPLINT) -help flags alpha
+	-@$(SPLINT) -help
+	-@$(SPLINTP) -asdf
+	-@$(SPLINTP) +boolint +boolint 
+	-@$(SPLINT) -help flags alpha
+
+### Rules for tests start here
 
 .PHONY: abstptr
 abstptr:
@@ -175,15 +178,16 @@ cast:
 
 .PHONY: chararraylit
 chararraylit:
-	-$(SPLINTR) chararraylit.c -expect 2
+	$(SPLINTR) chararraylit.c -expect 2
 
 ### Two addition errors detected with 2.5 with -numliteral.
 
+### evans 2002-12-15: finds one more but in charlit
 .PHONY: charlit
 charlit:
 	$(SPLINTR) +hints charlit.c -expect 4
 	$(SPLINTR) +hints -numliteral charlit.c -expect 6
-	$(SPLINTR) +hints charlit.c +charintliteral +ignoresigns
+	$(SPLINTR) +hints charlit.c +charintliteral +ignoresigns -expect 1
 
 .PHONY: clauses
 clauses: 
@@ -284,7 +288,7 @@ enum:
 
 .PHONY: enumtag
 enumtag:
-	-$(SPLINTR) enumtag.c -expect 2
+	$(SPLINTR) enumtag.c -expect 2
 
 .PHONY: exports
 exports:
@@ -400,13 +404,14 @@ keep:
 ### libs
 ### 2001-05-22: 2 new errors found (fixed spec of signal)
 ### 2001-05-30: 3 new errors found (formatconst)
+### 2002-07-08: 2 new errors found (getc modifies errno)
 
 .PHONY: libs
 libs:
 	$(SPLINTR) libs.c +longunsignedunsignedintegral -expect 18
 	$(SPLINTR) libs.c -expect 22
 	$(SPLINTR) libs.c +globunspec +modunspec -expect 25
-	$(SPLINTR) libs.c +strictlib +globunspec +modunspec -expect 42
+	$(SPLINTR) libs.c +strictlib +globunspec +modunspec -expect 44
 
 .PHONY: lintcomments
 lintcomments:
@@ -417,6 +422,17 @@ lintcomments:
 .PHONY: list
 list:
 	$(SPLINTR) list.c -expect 3
+
+###
+### 2002-12-12: Added test case for +longint and +shortint flags
+###
+
+.PHONY: longint
+longint:
+	$(SPLINTR) longint.c -expect 3
+	$(SPLINTR) longint.c +longint -expect 2
+	$(SPLINTR) longint.c +shortint -expect 2
+	$(SPLINTR) longint.c +shortint +longint -expect 0
 
 ###
 ### 2002-01-01: Added test case for obvious loop execution.
@@ -493,7 +509,7 @@ null:
 	$(SPLINTR) null1.c -null -mustdefine -expect 4
 	$(SPLINTR) null2.c -expect 11
 	$(SPLINTR) null3.c -expect 15
-	$(SPLINTR) null3.c -warnunixlib +unixlib -expect 16
+	$(SPLINTR) null3.c +unixlib -expect 16
 	$(SPLINTR) null4.c -expect 1
 	$(SPLINTR) null5.c -expect 4
 	$(SPLINTR) null6 -expect 4
@@ -505,12 +521,20 @@ null:
 .PHONY: nullret
 nullret:
 	$(SPLINTR) nullret.c -expect 2
-	$(SPLINTR) -nullret nullret.c -expect 1
+	$(SPLINTR) -nullret nullret.c -expect 0
 
 .PHONY: nullassign
 nullassign:
 	$(SPLINTR) nullassign.c -expect 2
 	$(SPLINTR) -nullassign nullassign.c -expect 1
+
+### Added for 3.1 - evans 2002-12-14
+
+.PHONY: numabstract
+numabstract:
+	$(SPLINTR) numabstract.c -expect 11
+	$(SPLINTR) numabstract.c +numabstractlit -expect 9
+	$(SPLINTR) numabstract.c -numabstractcast -expect 10
 
 #
 # Before 2.4, expected one more because error was reported both as 
@@ -554,7 +578,7 @@ parentype:
 preds:
 	$(SPLINTR) +hints preds.c -expect 6
 	$(SPLINTRN) +hints preds.c -weak -expect 1
-	$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 12
+	$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 10
 
 .PHONY: prefixes
 prefixes:
@@ -573,7 +597,7 @@ prefixes:
 	$(SPLINTR) prefixes.c -globalprefix "&G?_^" -expect 1
 	$(SPLINTR) prefixes.c -externalprefix "G" -expect 5
 	$(SPLINTR) prefixes.c -typeprefix "T" -externalprefix "G" -expect 4
-#	herbert: unsolved problem with quoting the '*' here!
+#	Herbert: this does not work under OS/2
 #	$(SPLINTR) prefixes.c -localprefix "?*" +localprefixexclude -expect 13
 
 .PHONY: printflike
@@ -592,7 +616,7 @@ rc:
 
 .PHONY: rcfiles
 rcfiles:
-	cd rcfiles; ${MAKE} SPLINT="$(SPLINTPNEST)"
+	cd rcfiles; ${MAKE} SPLINT="-$(SPLINTPNEST)"
 
 .PHONY: refcounts
 refcounts:
@@ -629,12 +653,12 @@ shifts:
 	$(SPLINTR) shifts.c -shiftimplementation -expect 3
 	$(SPLINTR) shifts.c -shiftnegative -expect 1
 
+#drl comment this out until sizesigns is added to cvs
+
 ### evans - added 2002-08-17: check warnings with arbitrary integral types
 sizesigns:
-	-$(SPLINTR) +strict sizesigns.c
-	-$(SPLINTR) +strict +ignoresigns sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
+	$(SPLINTR) +strict sizesigns.c -expect 5
+	$(SPLINTR) +strict +matchanyintegral sizesigns.c -expect 4
 
 .PHONY: slovaknames
 slovaknames:
@@ -775,6 +799,8 @@ ullint:
 ###
 ### 2001-12-30: Poor warnings reported by Peter Deutsch
 ###
+### 2002-07-03: removed warnings for datatype/macro definitions
+###
 
 .PHONY: utypes
 utypes:
@@ -819,7 +845,15 @@ sizeof:
 buffertest:
 	$(SPLINTR) +bounds buffertest1.c -expect 5
 
-.PHONY: $(SUBDIRTESTS)
-$(SUBDIRTESTS):
-	$(MAKE) -C $@ SPLINT="$(SPLINTRNNEST)" 
+.PHONY: $(SUBDIRTESTS1)
+$(SUBDIRTESTS1):
+	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)"
 
+.PHONY: $(SUBDIRTESTS2)
+$(SUBDIRTESTS2):
+	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)" -f Makefile.os2
+
+#		sizesigns.c sizesigns.expect \
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

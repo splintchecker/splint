@@ -6,13 +6,38 @@
 
 include ../os2/make.vars
 
-DATAFILES = standard.h standard.lcd standardstrict.lcd posix.h posix.lcd \
-	posixstrict.lcd unix.h unix.lcd unixstrict.lcd 
-SPLINT = ../bin/splint$(EXEEXT)
+top_builddir = ..
 
-all: $(DATAFILES)
+UnixHeaders = stdio.h stdlib.h
 
-clean: $(RM) -f $(DATAFILES)
+splintlib_DATA = \
+  standard.h standard.lcd standardstrict.lcd posix.h posix.lcd posixstrict.lcd\
+  unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
+  file.mts file.xh filerw.mts filerw.xh \
+  lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh \
+  stdio.h stdlib.h $(UnixHeaders)
+
+EXTRA_DIST = $(splintlib_DATA)
+
+CLEANFILES = posix.lcd standard.lcd unix.lcd \
+             posixstrict.lcd  standardstrict.lcd  unixstrict.lcd
+
+
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
+
+subdir = lib
+CONFIG_HEADER = $(top_builddir)/config.h
+DATA = $(splintlib_DATA)
+
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+
+all: $(DATA)
+
+$(SPLINT):
+	cd $(top_builddir)/src; $(MAKE) -f Makefile.os2
+
+clean: 
+	$(RM) -f $(CLEANFILES)
 
 standard.lcd: standard.h $(SPLINT)
 	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard

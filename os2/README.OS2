@@ -1,5 +1,5 @@
-splint 3.0.0.16 for OS/2
-========================
+splint 3.1.1 for OS/2
+=====================
 
 This file is originally part of the binary distribution of splint for OS/2.
 
@@ -93,6 +93,10 @@ History:
 
 The following things specific to the OS/2 version of splint have changed / 
 fixed since the first official release:
+
+version 3.1.1
+- Set the default system directory to `/os2/'.
+- Bugfixes.
 
 version 3.0.0.16:
 - Finally fully united the OS/2 port with the main source tree.

@@ -7,7 +7,7 @@
 
 # define BOOL_H
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 # ifndef FALSE
 /*@constant bool FALSE=false@*/
 # define FALSE 0

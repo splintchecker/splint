@@ -3,7 +3,7 @@
 
 # include "lclForwardTypes.h"
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 /* Microsoft doesn't support ISO C99 yet */
 /*@-namechecks@*/
 typedef int bool; 

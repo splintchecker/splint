@@ -452,7 +452,7 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
 # endif
 }
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 extern /*@external@*/ int _flushall (void) /*@modifies fileSystem@*/ ;
 # endif
 
@@ -463,7 +463,7 @@ int osd_system (cstring cmd)
 {
   int res;
     /* system ("printenv"); */
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   (void) _flushall (); 
 # endif
 

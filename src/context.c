@@ -935,7 +935,7 @@ context_resetAllFlags (void)
   ** On by default for Win32, but not Unix
   */
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2)
   gc.flags[FLG_PARENFILEFORMAT] = TRUE;
   gc.flags[FLG_CASEINSENSITIVEFILENAMES] = TRUE;
 # endif

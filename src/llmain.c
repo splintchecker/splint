@@ -823,7 +823,7 @@ int main (int argc, char *argv[])
   */
 
   {
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
     int nfiles = /*@-unrecog@*/ _fcloseall (); /*@=unrecog@*/
 
     if (nfiles != 0) 
@@ -1258,7 +1258,7 @@ cleanupFiles (void)
     }
   else
     {
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
       int nfiles = /*@-unrecog@*/ _fcloseall (); /*@=unrecog@*/
       
       if (nfiles != 0) 
@@ -1281,7 +1281,7 @@ llexit (int status)
 {
   DPRINTF (("llexit: %d", status));
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   if (status == LLFAILURE) 
     {
       _fcloseall ();
