@@ -43,8 +43,7 @@ void mtreader_readFile (cstring infile)
   if (!inputStream_getPath (context_getLarchPath (), sourceFile))
     {
       lldiagmsg
-	(message ("Metastate definition: can't find file %s",
-		  inputStream_fileName (sourceFile)));
+	(message ("Cannot find metastate file: %s", inputStream_fileName (sourceFile)));
       inputStream_free (sourceFile);
       return;
     }

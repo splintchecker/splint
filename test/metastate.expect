@@ -61,7 +61,7 @@ file5.c:25:14: Invalid transfer from implicitly unopen fle to open (unopen file
 file5.c:35:18: Invalid transfer from unopen fle to open (unopen file passed as
                   open): fclose(..., fle, ...)
    file5.c:34:3: fle becomes unopen
-   ./file.xh:1:44: parameter 1 becomes open
+   file.xh:1:44: parameter 1 becomes open
 
 Finished LCLint checking --- 4 code errors found, as expected
 

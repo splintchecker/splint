@@ -85,8 +85,13 @@ fileType_unparse (fileType ft)
 static int
 fileTable_getIndex (fileTable ft, cstring s)
 {
+  int res;
+  cstring abspath;
   if (ft == NULL) return NOT_FOUND;
-  return (cstringTable_lookup (ft->htable, s));
+  abspath = osd_absolutePath (cstring_undefined, s);
+  res = cstringTable_lookup (ft->htable, abspath);
+  cstring_free (abspath);
+  return res;
 }
 
 /*@only@*/ cstring
@@ -271,38 +276,37 @@ void fileTable_noDelete (fileTable ft, cstring name)
 }
 
 static fileId
-fileTable_addFilePrim (fileTable ft, /*@only@*/ cstring name, 
+fileTable_addFilePrim (fileTable ft, /*@temp@*/ cstring name, 
 		       bool temp, fileType typ, fileId der)
    /*@modifies ft@*/
 {
-  int tindex = fileTable_getIndex (ft, name);
+  cstring absname = osd_absolutePath (NULL, name);
+  int tindex = fileTable_getIndex (ft, absname);
 
   llassert (ft != fileTable_undefined);
 
   if (tindex != NOT_FOUND)
     {
-      llcontbug (message ("fileTable_addFilePrim: duplicate entry: %q", name));
-
+      llcontbug (message ("fileTable_addFilePrim: duplicate entry: %q", absname));
       return tindex;
     }
   else
     {
-      ftentry e = ftentry_create (name, temp, typ, der);
+      ftentry e = ftentry_create (absname, temp, typ, der);
 
       if (der == fileId_invalid)
 	{
 	  llassert (cstring_isUndefined (e->basename));
 
-	  e->basename = fileLib_removePathFree (fileLib_removeAnyExtension (name));
-	  e->fsystem = context_isSystemDir (name);
-	  e->fspecial = context_isSpecialFile (name);
+	  e->basename = fileLib_removePathFree (fileLib_removeAnyExtension (absname));
+	  e->fsystem = context_isSystemDir (absname);
+	  e->fspecial = context_isSpecialFile (absname);
 
 	  if (e->fspecial)
 	    {
-	      cstring srcname = cstring_concatFree1 (fileLib_removeAnyExtension (name), 
+	      cstring srcname = cstring_concatFree1 (fileLib_removeAnyExtension (absname), 
 						     C_EXTENSION);
 	      fileId fid = fileTable_lookup (ft, srcname);
-
 	      cstring_free (srcname);
 
 	      if (fileId_isValid (fid))
@@ -335,25 +339,22 @@ fileTable_addFilePrim (fileTable ft, /*@only@*/ cstring name,
 fileId
 fileTable_addFile (fileTable ft, cstring name)
 {
-  /* while (*name == '.' && *(name + 1) == '/') name += 2; */
-
-  return (fileTable_addFilePrim (ft, cstring_copy (name), 
-				 FALSE, FILE_NORMAL, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_NORMAL, fileId_invalid));
 }
 
 fileId
 fileTable_addFileOnly (fileTable ft, /*@only@*/ cstring name)
 {
-  return (fileTable_addFilePrim (ft, name, FALSE, FILE_NORMAL, fileId_invalid));
+  fileId res = fileTable_addFilePrim (ft, name, FALSE, FILE_NORMAL, fileId_invalid);
+  cstring_free (name);
+  return res;
 }
 
 fileId
 fileTable_addHeaderFile (fileTable ft, cstring name)
 {
   fileId res;
-
-  res = fileTable_addFilePrim (ft, cstring_copy (name), FALSE, 
-			       FILE_HEADER, fileId_invalid);
+  res = fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid);
   return res;
 
 }
@@ -416,30 +417,26 @@ fileTable_isSpecialFile (fileTable ft, fileId fid)
 fileId
 fileTable_addLibraryFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name),
-				 FALSE, FILE_HEADER, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid));
 }
 
 fileId
 fileTable_addXHFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name),
-				 FALSE, FILE_XH, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_XH, fileId_invalid));
 }
 
 # ifndef NOLCL
 fileId
 fileTable_addImportFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name), 
-				 FALSE, FILE_HEADER, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid));
 }
 
 fileId
 fileTable_addLCLFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name), 
-				 FALSE, FILE_HEADER, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid));
 }
 # endif
 
@@ -453,15 +450,15 @@ fileTable_addMacrosFile (fileTable ft)
   cstring newname =
     makeTempName (context_tmpdir (), cstring_makeLiteralTemp ("lmx"),
 		  cstring_makeLiteralTemp (".llm"));
-
-  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_MACROS, fileId_invalid));
+  fileId res = fileTable_addFilePrim (ft, newname, TRUE, FILE_MACROS, fileId_invalid);
+  cstring_free (newname);
+  return res;
 }
 
 fileId
 fileTable_addMetastateFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name), 
-				 FALSE, FILE_METASTATE, fileId_invalid));
+  return (fileTable_addFilePrim (ft, name, FALSE, FILE_METASTATE, fileId_invalid));
 }
 
 fileId
@@ -470,6 +467,7 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
   cstring newname =
     makeTempName (context_tmpdir (), cstring_makeLiteralTemp ("cl"), 
 		  C_EXTENSION);
+  fileId res;
 
   llassert (fileTable_isDefined (ft));
 
@@ -477,26 +475,29 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
     {
       if (fileTable_isXHFile (ft, fid))
 	{
-	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_XH, fid));
+	  res = fileTable_addFilePrim (ft, newname, TRUE, FILE_XH, fid);
 	}
       else
 	{
-	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL, fid));
+	  res = fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL, fid);
 	}
     }
   else 
     {
       if (fileTable_isXHFile (ft, fid))
 	{
-	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_XH,
-					 ft->elements[fid]->fder));
+	  res = fileTable_addFilePrim (ft, newname, TRUE, FILE_XH,
+				       ft->elements[fid]->fder);
 	}
       else
 	{
-	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL,
-					 ft->elements[fid]->fder));
+	  res = fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL,
+				       ft->elements[fid]->fder);
 	}
     }
+
+  cstring_free (newname);
+  return res;
 }
 
 # ifndef NOLCL
@@ -542,8 +543,7 @@ fileTable_addltemp (fileTable ft)
   ** since cstring is abstract.  Should make it an only?
   */
 
-  ret = fileTable_addFilePrim (ft, cstring_copy (newname),
-			       TRUE, FILE_LSLTEMP, fileId_invalid);
+  ret = fileTable_addFilePrim (ft, newname, TRUE, FILE_LSLTEMP, fileId_invalid);
   cstring_free (newname);
   return (ret);
 }

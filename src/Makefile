@@ -197,8 +197,7 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 
 
 CHECKS = $(subst .c,.check,$(lclint_SOURCES))
-
-CLEANFILES = $(top_builddir)/bin/lclint$(EXEEXT)
+CLEANFILES = lclint$(EXEEXT)
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -869,7 +868,7 @@ nocheck:
 
 .PHONY: test
 test:
-	cd ../; ${MAKE} check
+	cd ../test; ${MAKE} --no-print-directory
 
 ### Automake generates wrong tags
 .PHONY: etags
@@ -885,9 +884,7 @@ lintnew:
 purify: $(lclint_OBJECTS)
 	purify $(LINK) -o lclint$(EXEEXT) $^ $(lclint_LDADD)
 
-all: $(top_builddir)/bin/lclint$(EXEEXT)
-$(top_builddir)/bin/lclint$(EXEEXT): lclint$(EXEEXT)
-	$(CP) $< $@
+all: lclint$(EXEEXT)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

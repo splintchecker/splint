@@ -16,6 +16,7 @@
 # include <string.h>
 # include <ctype.h>
 # include <float.h>
+# include <limits.h>
 # include "general.h"
 # include "ynm.h"
 # include "message.h" 

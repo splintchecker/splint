@@ -324,12 +324,12 @@ lslProcess (fileIdList lclfiles)
 	{
 	  if (mstring_equal (g_localSpecPath, "."))
 	    {
-	      lldiagmsg (message ("Spec file not found: %s", fname));
+	      lldiagmsg (message ("Spec file not found: %q", osd_outputPath (fname)));
 	    }
 	  else
 	    {
-	      lldiagmsg (message ("Spec file not found: %s (on %s)", 
-				  fname, 
+	      lldiagmsg (message ("Spec file not found: %q (on %s)", 
+				  osd_outputPath (fname), 
 				  cstring_fromChars (g_localSpecPath)));
 	    }
 	}
@@ -367,8 +367,8 @@ lslProcess (fileIdList lclfiles)
 	  
 	  if (!inputStream_open (specFile))
 	    {
-	      lldiagmsg (message ("Cannot open file: %s",
-				  inputStream_fileName (specFile)));
+	      lldiagmsg (message ("Cannot open file: %q",
+				  osd_outputPath (inputStream_fileName (specFile))));
 	      inputStream_free (specFile);
 	    }
 	  else
@@ -527,6 +527,54 @@ void showHerald (void)
     }
 }
 
+static cstring findLarchPathFile (/*@temp@*/ cstring s)
+{
+  cstring pathName;
+  filestatus status;
+  
+  status = osd_getPath (context_getLarchPath (), s, &pathName);
+  
+  if (status == OSD_FILEFOUND)
+    {
+      return pathName;
+    }
+  else if (status == OSD_FILENOTFOUND)
+    {
+      showHerald ();
+      lldiagmsg	(message ("Cannot find file on LARCHPATH: %s", s));
+    }
+  else if (status == OSD_PATHTOOLONG)
+    {
+      /* Directory and filename are too long.  Report error. */
+      llbuglit ("soure_getPath: Filename plus directory from search path too long");
+    }
+  else
+    {
+      BADBRANCH;
+    }
+
+  return cstring_undefined;
+}
+
+static void addLarchPathFile (fileIdList files, /*@temp@*/ cstring s)
+{
+  cstring pathName = findLarchPathFile (s);
+
+  if (cstring_isDefined (pathName))
+    {
+      if (fileTable_exists (context_fileTable (), pathName))
+	{
+	  showHerald ();
+	  lldiagmsg (message ("File listed multiple times: %s", pathName));
+	  cstring_free (pathName);
+	}
+      else
+	{
+	  fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), pathName));
+	}
+    }
+}
+
 static void addFile (fileIdList files, /*@only@*/ cstring s)
 {
   if (fileTable_exists (context_fileTable (), s))
@@ -541,19 +589,24 @@ static void addFile (fileIdList files, /*@only@*/ cstring s)
     }
 }
 
-static void addXHFile (fileIdList files, /*@only@*/ cstring s)
+static void addXHFile (fileIdList files, /*@temp@*/ cstring s)
 {
-  if (fileTable_exists (context_fileTable (), s))
+  cstring pathName = findLarchPathFile (s);
+
+  if (cstring_isDefined (pathName))
     {
-      showHerald ();
-      lldiagmsg (message ("File listed multiple times: %s", s));
-      cstring_free (s);
+      if (fileTable_exists (context_fileTable (), pathName))
+	{
+	  showHerald ();
+	  lldiagmsg (message ("File listed multiple times: %s", s));
+	}
+      else
+	{
+	  fileIdList_add (files, fileTable_addXHFile (context_fileTable (), pathName));
+	}
     }
-  else
-    {
-      fileIdList_add (files, fileTable_addXHFile (context_fileTable (), s));
-      cstring_free (s);
-    }
+
+  cstring_free (pathName);
 }
 
 /*
@@ -620,6 +673,8 @@ int main (int argc, char *argv[])
   clabstract_initMod ();
   typeIdSet_initMod ();
   cppReader_initMod ();
+  osd_initMod ();
+
   setCodePoint ();
   
   g_currentloc = fileloc_createBuiltin ();
@@ -1028,9 +1083,12 @@ int main (int argc, char *argv[])
 				      /*
 				      ** arg identifies mts files
 				      */
-				      
-				      addFile (mtfiles, message ("%s%s", arg, MTS_EXTENSION));
-				      addXHFile (xfiles, message ("%s%s", arg, XH_EXTENSION));
+				      cstring tmp =  message ("%s%s", arg, MTS_EXTENSION);
+				      addLarchPathFile (mtfiles, tmp);
+				      cstring_free (tmp);
+				      tmp = message ("%s%s", arg, XH_EXTENSION);
+				      addXHFile (xfiles, tmp);
+				      cstring_free (tmp);
 				    }
 				  else
 				    {
@@ -1080,7 +1138,7 @@ int main (int argc, char *argv[])
 	}
       else if (cstring_equal (ext, XH_EXTENSION))
 	{
-	  addXHFile (xfiles, cstring_copy (current));
+	  addXHFile (xfiles, current);
 	}
       else if (cstring_equal (ext, PP_EXTENSION))
 	{
@@ -1105,7 +1163,7 @@ int main (int argc, char *argv[])
 	}
       else if (cstring_equal (ext, MTS_EXTENSION))
 	{
-	  addFile (mtfiles, cstring_copy (current));
+	  addLarchPathFile (mtfiles, current);
 	}
       else 
 	{
@@ -1322,7 +1380,7 @@ int main (int argc, char *argv[])
 
 	  if (context_getFlag (FLG_SHOWSCAN))
 	    {
-	      lldiagmsg (message ("< checking %s >", rootFileName (fid)));
+	      lldiagmsg (message ("< checking %q >", osd_outputPath (rootFileName (fid))));
 	    }
 	  
 	  /*
@@ -2517,43 +2575,21 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
     {
       cstring ppfname = fileName (fid);
 
-      if (xhfiles)
+      if (!(osd_fileIsReadable (ppfname)))
 	{
-	  cstring fpath;
-	  
-	  if (osd_findOnLarchPath (ppfname, &fpath) == OSD_FILEFOUND)
-	    {
-	      if (cstring_equal (ppfname, fpath))
-		{
-		  ;
-		}
-	      else
-		{
-		  DPRINTF (("xh file: %s", fpath));
-		  ppfname = fpath;
-		  fileTable_setFilePath (context_fileTable (), fid, fpath);
-		}
-	    }
-	  else
-	    {
-	      lldiagmsg (message ("Cannot find .xh file on LARCH_PATH: %s", ppfname));
-	      lldiagmsg (cstring_makeLiteral ("     Check LARCH_PATH environment variable."));
-	      ppfname = cstring_undefined;
-	    }
-	}
-      else
-	{
-	  if (!(osd_fileIsReadable (ppfname)))
-	    {
-	      lldiagmsg (message ("Cannot open file: %s", ppfname));
-	      ppfname = cstring_undefined;
-	    }
+	  lldiagmsg (message ("Cannot open file: %s", osd_outputPath (ppfname)));
+	  ppfname = cstring_undefined;
 	}
 
       if (cstring_isDefined (ppfname))
 	{
 	  fileId dfile = fileTable_addCTempFile (context_fileTable (), fid);
-	  
+
+	  if (xhfiles)
+	    {
+	      llassert (fileTable_isXHFile (context_fileTable (), dfile));
+	    }
+
 	  llassert (cstring_isNonEmpty (ppfname));
 	  
 	  if (msg)

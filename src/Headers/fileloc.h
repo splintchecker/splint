@@ -166,6 +166,8 @@ extern fileloc fileloc_updateFileId (/*@only@*/ fileloc p_old, fileId p_s) /*@*/
 extern fileloc fileloc_makePreproc (fileloc p_loc) /*@*/ ;
 extern fileloc fileloc_makePreprocPrevious (fileloc p_loc) /*@*/ ;
 
+extern /*@only@*/ cstring fileloc_outputFilename (fileloc) /*@*/ ;
+
 extern bool fileloc_isStandardLibrary (fileloc p_f) /*@*/ ;
 extern bool fileloc_isStandardLib (fileloc p_f) /*@*/ ;
 

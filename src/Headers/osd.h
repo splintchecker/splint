@@ -38,12 +38,17 @@
 
 /*
 ** MAXPATHLEN defines the longest permissable path length.
-** Is defined in <sys/param.h> in MIPS/Ultrix, but it not defined on the VAX.
-** Define here so available on both systems.
+**
+** POSIX defines PATHMAX in limits.h
 */
 
-/*@constant int MAXPATHLEN; @*/
-# define MAXPATHLEN      1024
+# ifdef PATH_MAX
+/*@constant size_t MAXPATHLEN; @*/
+# define MAXPATHLEN PATH_MAX
+# else
+/*@constant size_t MAXPATHLEN; @*/
+# define MAXPATHLEN 1024
+# endif
 
 typedef enum {
   OSD_FILEFOUND,
@@ -76,6 +81,10 @@ extern /*@observer@*/ cstring osd_getEnvironmentVariable (cstring) ;
 # define CALL_SUCCESS 0
 extern int osd_system (cstring p_cmd) /*@modifies fileSystem@*/ ;
 # endif
+
+extern cstring osd_absolutePath (cstring p_cwd, cstring p_filename) /*@*/ ;
+extern cstring osd_outputPath (cstring p_filename) /*@*/ ;
+extern void osd_initMod (void) /*@modifies internalState@*/ ;
 
 extern bool osd_equalCanonicalPrefix (cstring p_dirpath, cstring p_prefixpath) /*@*/ ;
 

@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.9 2001/10/14 01:16:03 evans1629 Exp $
+ * $Id: posix.h,v 1.10 2001/10/16 00:24:47 evans1629 Exp $
  */
 
 /*
@@ -250,12 +250,12 @@ getgrnam (const char *nm)
 /*@constant long CHILD_MAX@*/
 /*@constant long LINK_MAX@*/
 /*@constant long MAX_CANON@*/
-/*@constant long MAX_INPUT@*/
-/*@constant long NAME_MAX@*/
+/*@constant size_t MAX_INPUT@*/ /* evans 2001-10-15 changed type to size_t from long */
+/*@constant size_t NAME_MAX@*/ /* evans 2001-10-15 changed type to size_t from long */
 /*@constant long NGROUPS_MAX@*/
 /*@constant long OPEN_MAX@*/
-/*@constant long PATH_MAX@*/
-/*@constant long PIPE_BUF@*/
+/*@constant size_t PATH_MAX@*/ /* evans 2001-10-15 changed type to size_t from long */
+/*@constant size_t PIPE_BUF@*/ /* evans 2001-10-15 changed type to size_t from long */
 /*@constant long SSIZE_MAX@*/
 /*@constant long STREAM_MAX@*/
 /*@constant long TZNAME_MAX@*/
@@ -692,25 +692,16 @@ tzset (void)
 /*@constant int _SC_TZNAME_MAX@*/
 /*@constant int _SC_VERSION@*/
 
-	extern /*@exits@*/ void
-_exit (int status)
-	/*@*/;
+extern /*@exits@*/ void _exit (int status) /*@*/;
 
-	extern int
-access (const char *path, int mode)
-	/*@modifies errno@*/;
+extern int access (const char *path, int mode) /*@modifies errno@*/;
 
-	extern unsigned int
-alarm (unsigned int)
-	/*@modifies systemState@*/;
+extern unsigned int alarm (unsigned int) /*@modifies systemState@*/;
 
-	extern int
-chdir (const char *path)
-	/*@modifies errno@*/;
+extern int chdir (const char *path) /*@modifies errno@*/;
 
-	extern int
-chown (const char *path, uid_t owner, gid_t group)
-	/*@modifies fileSystem, errno@*/;
+extern int chown (const char *path, uid_t owner, gid_t group)
+     /*@modifies fileSystem, errno@*/;
 
 	extern int
 close (int fd)
@@ -766,9 +757,8 @@ fork (void)
 fpathconf (int fd, int name)
 	/*@modifies errno@*/;
 
-	extern char *
-getcwd (/*@returned@*/ /*@out@*/ char *buf, size_t size)
-	/*@modifies errno, *buf@*/;
+extern /*@null@*/ char *getcwd (/*@returned@*/ /*@out@*/ /*@notnull@*/ char *buf, size_t size)
+     /*@requires maxSet(buf) >= size@*/ /*@modifies errno, *buf@*/ ;
 
 	extern gid_t
 getegid (void)

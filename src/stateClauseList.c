@@ -361,6 +361,8 @@ void stateClauseList_checkAll (uentry ue)
 			}
 		      else
 			{
+			  TPRINTF (("Not xh: %s", fileloc_unparse (uentry_whereLast (ue))));
+
 			  voptgenerror 
 			    (FLG_INCONDEFS,
 			     message ("Reference %q used in %q clause of %q, "

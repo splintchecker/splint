@@ -1,11 +1,4 @@
 /*
-See
-http://src.openresources.com/debian/src/devel/HTML/S/altgcc_2.7.2.2.orig%20altgcc-2.7.2.2.orig%20protoize.c.html
-static char *
-abspath (cwd, rel_filename)
-
-*/
-/*
 ** LCLint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
@@ -7488,8 +7481,20 @@ static int cpp_openIncludeFile (char *filename)
       if (!fileTable_exists (context_fileTable (),
 			     cstring_fromChars (filename)))
 	{
-	  (void) fileTable_addHeaderFile (context_fileTable (),
+	  if (fileloc_isXHFile (g_currentloc))
+	    {
+	      /*
+	      ** Files includes by XH files are also XH files
+	      */
+
+	      (void) fileTable_addXHFile (context_fileTable (),
 					  cstring_fromChars (filename));
+	    }
+	  else
+	    {
+	      (void) fileTable_addHeaderFile (context_fileTable (),
+					      cstring_fromChars (filename));
+	    }
 	}
       else
 	{

@@ -187,7 +187,7 @@ nocheck:
 
 .PHONY: test
 test:
-	cd ../; ${MAKE} check
+	cd ../test; ${MAKE} --no-print-directory
 
 ### Automake generates wrong tags
 .PHONY: etags
@@ -205,11 +205,5 @@ lintnew:
 purify: $(lclint_OBJECTS)
 	purify $(LINK) -o lclint$(EXEEXT) $^ $(lclint_LDADD)
 
-## This ensures that lclint can be run from ../bin
-## $(CP) was $(Ln_S) but that doesn't work for me...
-
-all: $(top_builddir)/bin/lclint$(EXEEXT)
-$(top_builddir)/bin/lclint$(EXEEXT): lclint$(EXEEXT)
-	$(CP) $< $@
-
-CLEANFILES = $(top_builddir)/bin/lclint$(EXEEXT)
+all: lclint$(EXEEXT)
+CLEANFILES = lclint$(EXEEXT)

@@ -768,3 +768,324 @@ osd_dirAbsolute (char *str)
 }
 
 # endif
+
+/*
+** absolute paths
+**
+** This code is adapted from:
+**
+** http://src.openresources.com/debian/src/devel/HTML/S/altgcc_2.7.2.2.orig%20altgcc-2.7.2.2.orig%20protoize.c.html#1297
+**
+**
+**  Protoize program - Original version by Ron Guilmette (rfg@segfault.us.com).
+**   Copyright (C) 1989, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
+**
+** This file is part of GNU CC.
+**
+** GNU CC is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2, or (at your option)
+** any later version.
+**
+** GNU CC is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+** 
+** You should have received a copy of the GNU General Public License
+** along with GNU CC; see the file COPYING.  If not, write to
+** the Free Software Foundation, 59 Temple Place - Suite 330,
+** Boston, MA 02111-1307, USA.  
+*/
+
+/* 
+** Return the absolutized filename for the given relative
+** filename.  Note that if that filename is already absolute, it may
+** still be returned in a modified form because this routine also
+** eliminates redundant slashes and single dots and eliminates double
+** dots to get a shortest possible filename from the given input
+** filename.  The absolutization of relative filenames is made by
+** assuming that the given filename is to be taken as relative to
+** the first argument (cwd) or to the current directory if cwd is
+** NULL.  
+*/
+
+/* A pointer to the current directory filename (used by abspath).  */
+static /*@only@*/ cstring osd_cwd = cstring_undefined;
+
+static void osd_setWorkingDirectory (void)
+{
+# ifdef UNIX
+  char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
+  char *cwd = getcwd (buf, MAXPATHLEN);
+
+  llassert (cstring_isUndefined (osd_cwd));
+
+  if (cwd == NULL)
+    {
+      lldiagmsg (message ("Cannot get working directory: %s\n",
+			  lldecodeerror (errno)));
+    }
+  else
+    {
+      osd_cwd = cstring_fromCharsNew (cwd);
+    }
+
+  sfree (buf);
+# else
+  ; /* Don't know how to do this for non-POSIX platforms */
+# endif
+}
+
+void osd_initMod (void)
+{
+  osd_setWorkingDirectory ();
+}
+
+cstring osd_absolutePath (cstring cwd, cstring filename)
+{
+# ifdef UNIX
+  /* Setup the current working directory as needed.  */
+  cstring cwd2 = cstring_isDefined (cwd) ? cwd : osd_cwd;
+  char *abs_buffer;
+  char *endp, *outp, *inp;
+
+  /*@access cstring@*/
+  llassert (cstring_isDefined (cwd2));
+  llassert (cstring_isDefined (filename));
+
+  abs_buffer = (char *) dmalloc (size_fromInt (cstring_length (cwd2) + cstring_length (filename) + 2));
+  endp = abs_buffer;
+  
+  /*
+  ** Copy the  filename (possibly preceded by the current working
+  ** directory name) into the absolutization buffer.  
+  */
+  
+  {
+    const char *src_p;
+
+    if (filename[0] != '/')
+      {
+        src_p = cwd2;
+
+        while ((*endp++ = *src_p++) != '\0') 
+	  {
+	    continue;
+	  }
+
+        *(endp-1) = '/';                        /* overwrite null */
+      }
+
+    src_p = filename;
+
+    while ((*endp++ = *src_p++) != '\0')
+      {
+	continue;
+      }
+  }
+  
+  /* Now make a copy of abs_buffer into abs_buffer, shortening the
+     filename (by taking out slashes and dots) as we go.  */
+  
+  outp = inp = abs_buffer;
+  *outp++ = *inp++;             /* copy first slash */
+#ifdef apollo
+  if (inp[0] == '/')
+    *outp++ = *inp++;           /* copy second slash */
+#endif
+  for (;;)
+    {
+      if (inp[0] == '\0')
+	{
+	  break;
+	}
+      else if (inp[0] == '/' && outp[-1] == '/')
+	{
+	  inp++;
+	  continue;
+	}
+      else if (inp[0] == '.' && outp[-1] == '/')
+	{
+	  if (inp[1] == '\0')
+	    {
+	      break;
+	    }
+	  else if (inp[1] == '/')
+	    {
+	      inp += 2;
+	      continue;
+	    }
+	  else if ((inp[1] == '.') 
+		   && (inp[2] == '\0' || inp[2] == '/'))
+	    {
+	      inp += (inp[2] == '/') ? 3 : 2;
+	      outp -= 2;
+	
+	      while (outp >= abs_buffer && *outp != '/')
+		{
+		  outp--;
+		}
+
+	      if (outp < abs_buffer)
+		{
+		  /* Catch cases like /.. where we try to backup to a
+                     point above the absolute root of the logical file
+                     system.  */
+		  
+		  llfatalbug (message ("Invalid file name: %s", filename));
+		}
+
+	      *++outp = '\0';
+	      continue;
+	    }
+	  else
+	    {
+	      ;
+	    }
+	}
+      else
+	{
+	  ;
+	}
+
+      *outp++ = *inp++;
+    }
+  
+  /* On exit, make sure that there is a trailing null, and make sure that
+     the last character of the returned string is *not* a slash.  */
+  
+  *outp = '\0';
+  if (outp[-1] == '/')
+    *--outp  = '\0';
+  
+  /*@noaccess cstring@*/
+  return cstring_fromChars (abs_buffer);
+# else
+  return cstring_copy (filename);
+# endif
+}
+
+/* 
+** Given a filename (and possibly a directory name from which the filename
+** is relative) return a string which is the shortest possible
+** equivalent for the corresponding full (absolutized) filename.  The
+** shortest possible equivalent may be constructed by converting the
+** absolutized filename to be a relative filename (i.e. relative to
+** the actual current working directory).  However if a relative filename
+** is longer, then the full absolute filename is returned.
+**
+** KNOWN BUG:   subpart of the original filename is actually a symbolic link.  
+*/
+
+cstring osd_outputPath (cstring filename)
+{
+# ifdef UNIX
+  char *rel_buffer;
+  char *rel_buf_p;
+  cstring cwd_p = osd_cwd;
+  char *path_p;
+  int unmatched_slash_count = 0;
+  size_t filename_len = size_fromInt (cstring_length (filename));
+  
+  /*@access cstring@*/
+  path_p = filename;
+  rel_buf_p = rel_buffer = (char *) dmalloc (filename_len);
+
+  llassert (cwd_p != NULL);
+  llassert (path_p != NULL);
+
+  while ((*cwd_p != '\0') && (*cwd_p == *path_p))
+    {
+      cwd_p++;
+      path_p++;
+    }
+  
+  if ((*cwd_p == '\0') && (*path_p == '\0' || *path_p == '/'))  /* whole pwd matched */
+    {
+      if (*path_p == '\0')             /* input *is* the current path! */
+	return cstring_makeLiteral (".");
+      else
+	{
+	  /*@i324 ! lclint didn't report an errors for: return ++path_p; */
+	  return cstring_fromCharsNew (++path_p);
+	}
+    }
+  else
+    {
+      if (*path_p != '\0')
+        {
+          --cwd_p;
+          --path_p;
+          while (*cwd_p != '/')         /* backup to last slash */
+            {
+              --cwd_p;
+              --path_p;
+            }
+          cwd_p++;
+          path_p++;
+          unmatched_slash_count++;
+        }
+      
+      /* Find out how many directory levels in cwd were *not* matched.  */
+      while (*cwd_p != '\0')
+	{
+	  if (*cwd_p++ == '/')
+	    unmatched_slash_count++;
+	}
+      
+      /* Now we know how long the "short name" will be.
+         Reject it if longer than the input.  */
+      if (unmatched_slash_count * 3 + strlen (path_p) >= filename_len)
+	{
+	  return cstring_copy (filename);
+	}
+      
+      /*
+      ** evans 2001-10-15
+      ** I'm trusting the code on this one...don't see how this is guaranteed though.
+      */
+
+      assertSet (rel_buffer);
+
+      /* For each of them, put a `../' at the beginning of the short name.  */
+      while (unmatched_slash_count-- > 0)
+        {
+          /* Give up if the result gets to be longer
+             than the absolute path name.  */
+          if (rel_buffer + filename_len <= rel_buf_p + 3)
+	    {
+	      sfree (rel_buffer);
+	      return cstring_copy (filename);
+	    }
+
+          *rel_buf_p++ = '.';
+          *rel_buf_p++ = '.';
+          *rel_buf_p++ = '/';
+        }
+      
+      /* Then tack on the unmatched part of the desired file's name.  */
+      do
+        {
+          if (rel_buffer + filename_len <= rel_buf_p)
+	    {
+	      cstring_free (rel_buffer);
+	      return cstring_copy (filename);
+	    }
+        }
+      while ((*rel_buf_p++ = *path_p++) != '\0') ;
+      
+      --rel_buf_p;
+      if (*(rel_buf_p-1) == '/')
+        *--rel_buf_p = '\0';
+
+      return rel_buffer;
+    }
+  /*@noaccess cstring@*/
+# else
+  return cstring_copy (filename);
+# endif
+}
+
+
+

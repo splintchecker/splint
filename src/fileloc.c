@@ -36,6 +36,7 @@
 # include "lclintMacros.nf"
 # include "llbasic.h"
 # include "fileIdList.h"
+# include "osd.h"
 # include "portab.h"
 
 static /*@only@*/ fileloc fileloc_createPrim (flkind p_kind, fileId p_fid, int p_line, int p_col);
@@ -590,8 +591,19 @@ fileloc fileloc_create (fileId fid, int line, int col)
 /*@observer@*/ cstring
 fileloc_filename (fileloc f)
 {
-  return (fileloc_isDefined (f)
-	  ? rootFileName (f->fid) : cstring_makeLiteralTemp ("<unknown>"));
+  return (fileloc_isDefined (f) ? rootFileName (f->fid) : cstring_makeLiteralTemp ("<unknown>"));
+}
+
+/*@only@*/ cstring fileloc_outputFilename (fileloc f)
+{
+  if (fileloc_isDefined (f))
+    {
+      return osd_outputPath (rootFileName (f->fid));
+    }
+  else
+    {
+      return cstring_makeLiteral ("<unknown>");
+    }
 }
 
 cstring
@@ -602,15 +614,15 @@ fileloc_unparseFilename (fileloc f)
       switch (f->kind)
 	{
 	case FL_LIB:
-	  return (message ("load file %s", fileloc_filename (f)));
+	  return (message ("load file %q", fileloc_outputFilename (f)));
 	case FL_BUILTIN:
 	  return (cstring_makeLiteral ("# builtin #"));
 	case FL_IMPORT:
-	  return (message ("import file %s", fileloc_filename (f)));
+	  return (message ("import file %q", fileloc_outputFilename (f)));
 	case FL_EXTERNAL:
 	  return (cstring_makeLiteral ("<external>"));
 	default: 
-	  return (cstring_copy (fileloc_filename (f)));
+	  return (fileloc_outputFilename (f));
 	}
     }
   return cstring_undefined;
@@ -642,35 +654,34 @@ fileloc_unparse (fileloc f)
 	case FL_IMPORT:
 	  if (parenFormat)
 	    {
-	      return (message ("import file %s(%d)", rootFileName (f->fid), f->lineno));
+	      return (message ("import file %q(%d)", fileloc_outputFilename (f), f->lineno));
 	    }
 	  else
 	    {
-	      return (message ("import file %s:%d", rootFileName (f->fid), f->lineno));
+	      return (message ("import file %q:%d", fileloc_outputFilename (f), f->lineno));
 	    }
 	case FL_PREPROC:
 	  if (parenFormat)
 	    {
-	      return (message ("%s(%d)", rootFileName (f->fid), f->lineno));
+	      return (message ("%q(%d)", fileloc_outputFilename (f), f->lineno));
 	    }
 	  else
 	    {
-	      return (message ("%s:%d", rootFileName (f->fid), f->lineno));
+	      return (message ("%q:%d", fileloc_outputFilename (f), f->lineno));
 	    }
 	case FL_EXTERNAL:
 	  return (cstring_makeLiteral ("<external>"));
 	default:
 	  {
 	    cstring fname;
-
+	    
 	    if (f->kind == FL_LIB)
 	      {
-		fname = message ("load file %s", rootFileName (f->fid));
-		cstring_markOwned (fname); /*@i32 memory leak...@*/
+		fname = message ("load file %q", fileloc_outputFilename (f));
 	      }
 	    else
 	      {
-		fname = rootFileName (f->fid);
+		fname = fileloc_outputFilename (f);
 	      }
 
 	    if (context_getFlag (FLG_SHOWCOL))
@@ -681,41 +692,42 @@ fileloc_unparse (fileloc f)
 		      {
 			if (parenFormat)
 			  {
-			    return (message ("%s(%d,%d)", fname, f->lineno, f->column));
+			    return (message ("%q(%d,%d)", fname, f->lineno, f->column));
 			  }
 			else
 			  {
-			    return (message ("%s:%d:%d", fname, f->lineno, f->column));
+			    return (message ("%q:%d:%d", fname, f->lineno, f->column));
 			  }
 		      }
 		    else
 		      {
 			if (parenFormat)
 			  {
-			    return (message ("%s(%d)", fname, f->lineno));
+			    return (message ("%q(%d)", fname, f->lineno));
 			  }
 			else
 			  {
-			    return (message ("%s:%d", fname, f->lineno));
+			    return (message ("%q:%d", fname, f->lineno));
 			  }
 		      }
 		  }
-		return (cstring_copy (fname));
+		
+		return fname;
 	      }
 	    else if (fileloc_linenoDefined (f))
 	      {
 		if (parenFormat)
 		  {
-		    return (message ("%s(%d)", fname, f->lineno));
+		    return (message ("%q(%d)", fname, f->lineno));
 		  }
 		else
 		  {
-		    return (message ("%s:%d", fname, f->lineno));
+		    return (message ("%q:%d", fname, f->lineno));
 		  }
 	      }
 	    else
 	      {
-		return (cstring_copy (fname));
+		return fname;
 	      }
 	  }
 	}
@@ -731,11 +743,11 @@ fileloc_unparseRaw (cstring fname, int lineno)
 
   if (parenFormat)
     {
-      return (message ("%s(%d)", fname, lineno));
+      return (message ("%q(%d)", osd_outputPath (fname), lineno));
     }
   else
     {
-      return (message ("%s:%d", fname, lineno));
+      return (message ("%q:%d", osd_outputPath (fname), lineno));
     }
 }
 
@@ -748,11 +760,11 @@ fileloc_unparseRawCol (cstring fname, int lineno, int col)
       
       if (parenFormat)
 	{
-	  return (message ("%s(%d,%d)", fname, lineno, col));
+	  return (message ("%q(%d,%d)", osd_outputPath (fname), lineno, col));
 	}
       else
 	{
-	  return (message ("%s:%d:%d", fname, lineno, col));
+	  return (message ("%q:%d:%d", osd_outputPath (fname), lineno, col));
 	}
     }
   else

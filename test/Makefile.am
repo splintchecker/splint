@@ -8,10 +8,10 @@ DIFFFLAGS = -u
 
 ## Set up the lclint commands
 
-LCLINT    = $(top_builddir)/bin/lclint$(EXEEXT)
+LCLINT    = $(top_builddir)/src/lclint$(EXEEXT)
 
 ### This is horrible!  Can't we make top_builddir absolute?
-LCLINTNEST = ../$(top_builddir)/bin/lclint$(EXEEXT)
+LCLINTNEST = ../$(top_builddir)/src/lclint$(EXEEXT)
 
 LCLINTPNEST = @$(LCLINTNEST)
 LCLINTP   = @$(LCLINT)

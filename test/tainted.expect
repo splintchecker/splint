@@ -8,15 +8,15 @@ tainted.c: (in function test)
 tainted.c:12:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    tainted.c:9:34: s becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 tainted.c:17:18: Invalid transfer from tainted t to untainted (Possibly tainted
                     storage used as untainted.): system(..., t, ...)
    tainted.c:15:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 tainted.c:20:18: Invalid transfer from tainted t to untainted (Possibly tainted
                     storage used as untainted.): system(..., t, ...)
    tainted.c:19:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 
 Finished LCLint checking --- 4 code errors found, as expected
 
@@ -39,15 +39,15 @@ tainted.c: (in function test)
 tainted.c:12:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    tainted.c:9:34: s becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 tainted.c:17:18: Invalid transfer from tainted t to untainted (Possibly tainted
                     storage used as untainted.): system(..., t, ...)
    tainted.c:15:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 tainted.c:20:18: Invalid transfer from tainted t to untainted (Possibly tainted
                     storage used as untainted.): system(..., t, ...)
    tainted.c:15:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 
 Finished LCLint checking --- 9 code errors found, as expected
 
@@ -80,11 +80,11 @@ taintedmerge.c: (in function f)
 taintedmerge.c:11:18: Invalid transfer from tainted t to untainted (Possibly
     tainted storage used as untainted.): system(..., t, ...)
    taintedmerge.c:10:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 taintedmerge.c:14:18: Invalid transfer from tainted t to untainted (Possibly
     tainted storage used as untainted.): system(..., t, ...)
    taintedmerge.c:13:3: t becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 taintedmerge.c:16:10: Stack-allocated storage t reachable from return value: t
 
 Finished LCLint checking --- 3 code errors found, as expected
@@ -94,7 +94,7 @@ taintedimplicit.c:17:18: Invalid transfer from tainted [result of taintme] to
     untainted (Possibly tainted storage used as untainted.):
     system(..., taintme(s), ...)
    taintedimplicit.c:17:18: becomes tainted
-   ./tainted.xh:26:55: s becomes untainted
+   tainted.xh:26:55: s becomes untainted
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -102,10 +102,10 @@ sprintf.c: (in function sp)
 sprintf.c:11:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    sprintf.c:10:37: s becomes tainted
-   ./tainted.xh:26:55: s1 becomes untainted
+   tainted.xh:26:55: s1 becomes untainted
 sprintf.c:14:18: Invalid transfer from tainted s to untainted (Possibly tainted
                     storage used as untainted.): system(..., s, ...)
    sprintf.c:13:61: s becomes tainted
-   ./tainted.xh:26:55: s1 becomes untainted
+   tainted.xh:26:55: s1 becomes untainted
 
 Finished LCLint checking --- 2 code errors found, as expected
