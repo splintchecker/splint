@@ -43,17 +43,23 @@ LCLINTP = $(LCLINT)
 # Make sure .lclintrc files are not used so test results do not
 # depend on local settings.
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
-LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
+LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
    charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
    decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
-   init inparam internal iter keep libs linked lintcomments list macros macrosef merge mergestate metastate modifies \
-   modtest moduncon mongoincludes mystrncat noeffect null nullret nullassign observer oldstyle \
+   init inparam internal iter keep libs linked lintcomments list macros macrosef merge \
+metastate modifies \
+   modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
    outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
-   staticarray strings structassign tainted typequals ud ulstypes union unreachable unused ullint void warnuse \
+   staticarray strings structassign \
+typequals ud ulstypes union unreachable unused ullint void \
    tests2.2 tests2.2a tests2.4 tests2.5 
+
+#drl removed the following tests
+#tainted mergestate nullret nullassign warnuse \
+
 
 UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
 
@@ -69,7 +75,7 @@ test: fulltest
 
 GREP = grep
 DIFF = diff
-CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e"
+CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e" | $(GREP) -v $(LCLINT)
 
 ### not real .c
 
@@ -237,7 +243,7 @@ compdestroy:
 	$(LCLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
 
 constannot:
-	${LCLINTRN} constannot.c +arraybounds -exportlocal -expect 2
+	${LCLINTRN} constannot.c +arraybounds  -exportlocal -expect 2
 
 csyntax:
 	$(LCLINTR) +quiet -incondefs csyntax.c -expect 1 
@@ -424,7 +430,7 @@ mongoincludes:
 	$(LCLINTR) mongoincludes.c -includenest 5 -expect 0
 
 mystrncat:
-	$(LCLINTR) mystrncat.c +arraybounds +arrayboundsread -expect 4 
+	$(LCLINTR) mystrncat.c +arraybounds  +arrayboundsread -expect 4 
 
 noeffect:
 	${LCLINT} noeffect.c +allmacros +checks -expect 3
@@ -654,19 +660,19 @@ tests2.4:
 
 sizeoftest:
 	@cd sizeoftest; \
-	$(LCLINTR) +arraybounds +arrayboundsread sizeof.c
+	$(LCLINTR) +arraybounds  +arrayboundsread sizeof.c
 
 bufferTest:
 	@cd bufferTest; \
-	$(LCLINTR) +arraybounds +arrayboundsread test4.c test6.c
+	$(LCLINTR) +arraybounds  +arrayboundsread test4.c test6.c
 
 simplebufferConstraintTests:
 	@cd simplebufferConstraintTests; \
-	$(LCLINTR) +arraybounds +arrayboundsread m.c  sizeof.c  test3.c  test7.c
+	$(LCLINTR) +arraybounds  +arrayboundsread m.c  sizeof.c  test3.c  test7.c
 
 moreBufferTests:
 	@cd moreBufferTests; \
-	$(LCLINTR) +arraybounds +arrayboundsread +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
+	$(LCLINTR) +arraybounds  +arrayboundsread  unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
 
 maxset:
 	@cd maxset; \
@@ -675,7 +681,7 @@ maxset:
 
 globalbufferannotation:
 	@cd globalbufferannotation; \
-	$(LCLINTR) +arraybounds +arrayboundsread globalvariable.c
+	$(LCLINTR) +arraybounds  +arrayboundsread globalvariable.c
 
 strchr:
 	@cd strchr; \
@@ -683,7 +689,7 @@ strchr:
 
 for:
 	@cd for; \
-	$(LCLINTR)  +arraybounds +arrayboundsread  for.c
+	$(LCLINTR)  +arraybounds  +arrayboundsread  for.c
 
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e

@@ -1,8 +1,8 @@
 
 sizeof.c: (in function main)
 sizeof.c:6:2: Possible out-of-bounds store.  Unable to resolve constraint:
-    requires: : ( 2 )   >=  ( 3 ) 
+    requires 2 >= 3
      needed to satisfy precondition:
-    requires: : maxSet ((x @ sizeof.c:6:2 ) )  >=  ( 3 ) 
+    requires maxSet(x @ sizeof.c:6:2) >= 3
 
 Finished LCLint checking --- 1 code error found
