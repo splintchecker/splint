@@ -893,10 +893,10 @@ extern /*@null@*/ void *memchr (void *s, int c, size_t n) /*@*/ ;
 
 # ifdef STRICT
 extern /*@exposed@*/ /*@null@*/ char *
-strchr (char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
+strchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
 # else
 extern /*@exposed@*/ /*@null@*/ char *
-  strchr ( char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/ ;
+  strchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/ ;
 # endif
 
 extern size_t strcspn (char *s1, char *s2) /*@*/ ;

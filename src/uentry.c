@@ -2439,7 +2439,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	{
 	  if (optgenerror
 	      (FLG_ANNOTATIONERROR,
-	       message ("Meta state annotation %s used in inconsistent context: %q",
+	       message ("Attribute annotation %s used in inconsistent context: %q",
 			qual_unparse (qel),
 			uentry_unparse (ue)),
 	       uentry_whereLast (ue)))

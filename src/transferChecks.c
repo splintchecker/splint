@@ -37,6 +37,7 @@ static void checkMetaStateConsistent (/*@exposed@*/ sRef p_fref, sRef p_tref,
 static void checkLeaveTrans (uentry p_actual, transferKind p_transferType);
 static void checkTransfer (exprNode p_fexp, /*@dependent@*/ sRef p_fref,
 			   exprNode p_texp, /*@dependent@*/ sRef p_tref, 
+			   exprNode p_fcn, /* for printing better error messages */
 			   fileloc p_loc, transferKind p_transferType);
 static void checkGlobTrans (uentry p_glob, transferKind p_type);
 
@@ -94,7 +95,7 @@ transferErrorMessage (transferKind transferType, alkind tkind) /*@*/
 }
 
 static /*@only@*/ cstring
-transferErrorExcerpt (transferKind transferType, exprNode fexp, exprNode texp) /*@*/ 
+transferErrorExcerpt (transferKind transferType, exprNode fexp, exprNode texp, exprNode fcn) /*@*/ 
 {
   switch (transferType)
     {
@@ -105,8 +106,16 @@ transferErrorExcerpt (transferKind transferType, exprNode fexp, exprNode texp) /
     case TT_GLOBINIT:
       return (message ("%s = %s", exprNode_unparse (texp), exprNode_unparse (fexp)));
     case TT_FCNPASS:
-      /*@i32 make it so called fcn is known here! */
-      return cstring_copy (exprNode_unparse (fexp)); 
+      if (exprNode_isDefined (fcn))
+	{
+	  return message ("%s(..., %s, ...)",
+			  exprNode_unparse (fcn),
+			  exprNode_unparse (fexp));
+	}
+      else
+	{
+	  return cstring_copy (exprNode_unparse (fexp));  
+	}
     BADDEFAULT;
     }
   BADEXIT;
@@ -1724,6 +1733,7 @@ checkReturnTransfer (exprNode fexp, uentry rval)
     {
       (void) checkTransfer (fexp, exprNode_getSref (fexp),
 			    exprNode_undefined, rref, 
+			    exprNode_undefined,
 			    exprNode_loc (fexp), TT_FCNRETURN);
     }
 }
@@ -2145,6 +2155,7 @@ checkPassTransfer (exprNode fexp, uentry arg, bool isSpec,
   
   (void) checkTransfer (fexp, exprNode_getSref (fexp),
 			exprNode_undefined, tref,
+			fcn,
 			exprNode_loc (fexp), TT_FCNPASS);
 
   setCodePoint ();
@@ -2319,6 +2330,7 @@ static void checkStructTransfer (exprNode lhs, sRef slhs, exprNode rhs, sRef srh
 			  sRef lfld = sRef_makeField (slhs, fieldname);
 
 			  (void) checkTransfer (rhs, sr, lhs, lfld, 
+						exprNode_undefined,
 						exprNode_loc (lhs), tt);
 			}
 		    } end_sRefSet_realElements ;
@@ -2331,7 +2343,9 @@ static void checkStructTransfer (exprNode lhs, sRef slhs, exprNode rhs, sRef srh
 		    {
 		      sRef rfld = sRef_makeField (srhs, uentry_rawName (field));
 		      sRef lfld = sRef_makeField (slhs, uentry_rawName (field));
-		      (void) checkTransfer (rhs, rfld, lhs, lfld, exprNode_loc (lhs), tt);
+		      (void) checkTransfer (rhs, rfld, lhs, lfld, 
+					    exprNode_undefined,
+					    exprNode_loc (lhs), tt);
 		    } end_uentryList_elements ;
 		}
 
@@ -2352,7 +2366,9 @@ checkInitTransfer (exprNode lhs, exprNode rhs)
   if (sRef_isFileOrGlobalScope (slhs) || (!sRef_isCvar (slhs)))
     {
       (void) checkTransfer (rhs, exprNode_getSref (rhs), 
-			    lhs, slhs, exprNode_loc (rhs), TT_GLOBINIT);
+			    lhs, slhs, 
+			    exprNode_undefined,
+			    exprNode_loc (rhs), TT_GLOBINIT);
     }
   else
     {
@@ -2382,6 +2398,7 @@ checkAssignTransfer (exprNode lhs, exprNode rhs)
       DPRINTF (("lhs: %s", sRef_unparseFull (slhs)));
       DPRINTF (("rhs: %s", sRef_unparseFull (srhs)));
       (void) checkTransfer (rhs, srhs, lhs, slhs, 
+			    exprNode_undefined,
 			    exprNode_loc (lhs), TT_DOASSIGN);
       DPRINTF (("lhs: %s", sRef_unparseFull (slhs)));
       DPRINTF (("rhs: %s", sRef_unparseFull (srhs)));
@@ -4068,6 +4085,7 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 
 static void
 checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref, 
+			exprNode fcn,
 			fileloc loc, transferKind /*@i32@*/ transferType)
 {
   valueTable fvalues = sRef_getValueTable (fref);
@@ -4176,7 +4194,7 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 			  sRef_unparse (fref),
 			  stateValue_unparseValue (tval, minfo),
 			  msg,
-			  transferErrorExcerpt (transferType, fexp, texp)),
+			  transferErrorExcerpt (transferType, fexp, texp, fcn)),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
@@ -4224,6 +4242,7 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 static void
 checkTransfer (exprNode fexp, /*@dependent@*/ sRef fref, 
 	       exprNode texp, /*@dependent@*/ sRef tref, 
+	       exprNode fcn,
 	       fileloc loc, transferKind transferType)
 {
   setCodePoint ();
@@ -4240,7 +4259,8 @@ checkTransfer (exprNode fexp, /*@dependent@*/ sRef fref,
 	    exprNode_unparse (fexp),
 	    exprNode_unparse (texp)));
 
-  checkMetaStateTransfer (fexp, fref, texp, tref, loc, transferType);
+  checkMetaStateTransfer (fexp, fref, texp, tref, fcn,
+			  loc, transferType);
 
   /*
   ** for local references, we need to check

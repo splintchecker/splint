@@ -273,7 +273,7 @@ void stateClauseList_checkAll (uentry ue)
 		    {
 		      if (optgenerror
 			  (FLG_ANNOTATIONERROR,
-			   message ("Meta state annotation %s used on inappropriate reference %q in %q clause of %q: %q",
+			   message ("Attribute annotation %s used on inappropriate reference %q in %q clause of %q: %q",
 				    qual_unparse (q),
 				    sRef_unparse (el),
 				    stateClause_unparseKind (cl),

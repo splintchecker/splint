@@ -561,9 +561,9 @@
 3 f0 (20|$#,5|$#,63|$#,)!
 3 f19 (20|$#,5|$#,63|$#,)!
 3 f20 (20|$#,5|$#,63|$#,)!
-3 f0 (23|$#,4|$#,)!
-3 f19 (23|$#,4|$#,)!
-3 f23 (23|$#,4|$#,)!
+3 f0 (23|@5|$#,4|$#,)!
+3 f19 (23|@5|$#,4|$#,)!
+3 f23 (23|@5|$#,4|$#,)!
 3 f0 (23|$#,23|$#,)!
 3 f63 (23|$#,23|$#,)!
 3 f0 (23|@5|$#,23|$#,)!
@@ -795,7 +795,7 @@
 ^171 227@6@0@1@2@0^$@0#sscanf
 ^172 229$@1@g18@6@0,s3@1@s3,tg18$@0#vprintf
 ^173 231$@0@s3,g22@6@0@1@s3,tp0,p2,g22$@0#vfprintf
-^174 233$@0@@1@p0$@0@W:bufferoverflowhigh#Use vsnprintf instead.##vsprintf
+^174 233$@0@@1@p0$@0@W:bufferoverflowhigh#Use vsnprintf instead##vsprintf
 ^175 235$@0@@1@p0$@0#vsnprintf
 ^176 237$@0@s3,g22@6@0@1@s3,tp0,g22$@0#fgetc
 ^177 240@6@5@1@0@0@0@s3,g22@6@0@1@s3,tp0,tp2,g22$@0#fgets
@@ -803,7 +803,7 @@
 ^179 245$@0@s3@1@s3,tp1$@0#fputs
 ^180 247$@0@s3@1@s3,tp0$@0#getc
 ^181 249$@1@g17@6@0,s3@1@s3,tg17$@0#getchar
-^182 252@6@5@1@0@0@1@g17@6@0,s3,g22@6@0@1@s3,tp0,tg17,g22@3@0@0@W:bufferoverflowhigh#Use of gets leads to a buffer overflow vulnerability.  Use fgets instead.##gets
+^182 252@6@5@1@0@0@1@g17@6@0,s3,g22@6@0@1@s3,tp0,tg17,g22@3@0@0@W:bufferoverflowhigh#Use of gets leads to a buffer overflow vulnerability.  Use fgets instead##gets
 ^183 254$@0@s3@1@s3,tp1$@0#putc
 ^184 256$@1@g18@6@0,s3@1@s3,tg18$@0#putchar
 ^185 258$@1@g18@6@0,s3@1@s3,tg18$@0#puts
