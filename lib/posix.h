@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.17 2003/04/20 20:07:53 evans1629 Exp $
+ * $Id: posix.h,v 1.18 2003/06/13 21:40:56 evans1629 Exp $
  */
 
 /*
@@ -318,10 +318,38 @@ typedef /*@abstract@*/ /*@mutable@*/ void *sigjmp_buf;
 int sigsetjmp (/*@out@*/ sigjmp_buf env, int savemask) /*@modifies env@*/;
 
 /*
-** signal.h
+** moved up from signal.h
 */
 
 typedef /*@abstract@*/ sigset_t;
+
+typedef struct {
+  void *ss_sp;
+  size_t ss_size;
+  int ss_flags;
+} stack_t;
+
+/*
+** ucontext.h
+*/
+
+typedef /*@abstract@*/ mcontext_t;
+
+typedef struct s_ucontext_t {
+  /*@null@*/ struct s_ucontext_t *uc_link;
+  sigset_t uc_sigmask;
+  stack_t uc_stack;
+  mcontext_t uc_mcontext;
+} ucontext_t;
+
+int  getcontext(ucontext_t *);
+int  setcontext(const ucontext_t *);
+void makecontext(ucontext_t *, void (*)(void), int, ...);
+int  swapcontext(ucontext_t *restrict, const ucontext_t *restrict);
+
+/*
+** signal.h
+*/
 
 /*@constant int SA_NOCLDSTOP@*/
 /*@constant int SIG_BLOCK@*/
@@ -341,10 +369,33 @@ typedef /*@abstract@*/ sigset_t;
 /*@constant int SIGUSR1@*/
 /*@constant int SIGUSR2@*/
 
+struct sigstack {
+  int ss_onstack;
+  void *ss_sp;
+} ;
+
+typedef struct {
+  int si_signo;
+  int si_errno;
+  int si_code;
+  pid_t si_pid;
+  uid_t si_uid;
+  void *si_addr;
+  int si_status;
+  long si_band;
+  union sigval si_value;
+} siginfo_t;
+
+typedef union {
+  int    sival_int;
+  void  *sival_ptr;    
+} sigval;
+
 struct sigaction {
   void (*sa_handler)();
   sigset_t sa_mask;
   int sa_flags;
+  void (*sa_sigaction)(int, siginfo_t *, void *); /* Added 2003-06-13: Noticed by Jerry James */
 } ;
  
 	extern /*@mayexit@*/ int
