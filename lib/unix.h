@@ -1671,10 +1671,44 @@ extern char * stpncpy(/*@out@*/ /*@returned@*/ char * dest,
    /*@requires MaxSet(dest) >= ( n - 1 ); @*/ /*@ensures MaxRead (src) >= MaxRead(dest) /\ MaxRead (dest) <= n; @*/
   ; 
 
+  /* drl added 09-25-001
+     Alexander Ma pointed out these were missing 
+  */
+  
 int usleep (useconds_t useconds) /*@modifies systemState, errno@*/
      /*error -1 sucess 0 */
      /* warn opengroup unix specification recommends using setitimer(), timer_create(), timer_delete(), timer_getoverrun(), timer_gettime() or
      timer_settime() instead of this interface. 
      */
      ;
+
+     extern  double hypot(double x, double y) /*@modifies errno@*/ /*error errno only*/;
+
+
+     extern double j0(double x) /*@modifies errno @*/ /*error 0 or NaN */;
+ extern      double j1(double x) /*@modifies errno @*/ /*error 0 or NaN */;
+ extern      double jn(int n, double x) /*@modifies errno @*/ /*error 0 or NaN */;
+
+     extern double y0(double x) /*@modifies errno @*/  /*error NaN -HUGE_VAL 0.0 */     ;
+     extern      double y1 (double x) /*@modifies errno @*/  /*error NaN -HUGE_VAL 0.0 */;
+     extern      double yn (int n, double x)  /*@modifies errno @*/  /*error NaN -HUGE_VAL 0.0 */;
+
+     extern       double acosh(double x)  /*@modifies errno @*/ /*error errno and implementation-dependent(NaN if present) */ /*error NaN and may errno*/;
+     extern       double asinh(double x) /*@modifies errno @*/  /*error NaN and may errno */;
+     
+  extern        double atanh(double x) /*@modifies errno @*/ /*error errno and implementation-dependent(NaN if present) */ /*error NaN and may errno */ ;
+
+     extern         double lgamma(double x)  /*@modifies errno @*/  /*error NaN or HUGE_VAL may set errno */;
+     
+     extern int signgam ;
+     
+      extern      double erf(double x)  /*@modifies errno @*/  /*error NaN or 0 may set errno */;
+
+   extern      double erfc (double x) /*@modifies errno @*/  /*error NaN or 0
+					may set errno */;
+
+     
+
+     
+     
 
