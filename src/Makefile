@@ -397,7 +397,7 @@ lintnew:
 	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
 lintfcn: 
-	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +fcnconstraint
+	${LCLINT} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds  +arrayboundsread
 
 linttest: 
 	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude cpphash.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +partial

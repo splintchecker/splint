@@ -1671,3 +1671,10 @@ extern char * stpncpy(/*@out@*/ /*@returned@*/ char * dest,
    /*@requires MaxSet(dest) >= ( n - 1 ); @*/ /*@ensures MaxRead (src) >= MaxRead(dest) /\ MaxRead (dest) <= n; @*/
   ; 
 
+int usleep (useconds_t useconds) /*@modifies systemState, errno@*/
+     /*error -1 sucess 0 */
+     /* warn opengroup unix specification recommends using setitimer(), timer_create(), timer_delete(), timer_getoverrun(), timer_gettime() or
+     timer_settime() instead of this interface. 
+     */
+     ;
+

@@ -4,9 +4,9 @@
 /*@constant int RAND_MAX; @*/
 /*@constant size_t MB_CUR_MAX; @*/
 
-     div_t Structure type returned by div() function. 
-     ldiv_t
-         Structure type returned by ldiv() function.
+//     div_t Structure type returned by div() function. 
+//   ldiv_t
+//       Structure type returned by ldiv() function.
 
      
      long a64l(const char *s)     ;
@@ -139,7 +139,7 @@ extern int rand_r(unsigned int *seed) /*@modifies seed@*/   /*drl 09-20-01 added
    realloc (/*@null@*/ /*@only@*/ /*@out@*/ /*@returned@*/ void *p, size_t size)      /*@modifies *p, errno @*/ /*@ensures MaxSet(result) == (size - 1) @*/;
 
 extern char *realpath(const char *file_name, /*@out@*/ char *resolved_name)
-     /*@requires maxSet(resolved_name) >=  (PATH_MAX - 1) @*/
+     //     /*@requires maxSet(resolved_name) >=  (PATH_MAX - 1) @*/
      ;
 
 unsigned short int *seed48 (unsigned short int seed16v[3]) /*@modifies internalState@*/
@@ -157,7 +157,7 @@ unsigned short int *seed48 (unsigned short int seed16v[3]) /*@modifies internalS
      
 extern void srand48 (long int seedval) /*@modifies internalState@*/ ;
 
-ertern void srandom(unsigned int seed) /*@modifies internalState@*/ /*drl added 09-20-001 */
+extern void srandom(unsigned int seed) /*@modifies internalState@*/ /*drl added 09-20-001 */
      ;
 extern double strtod (const char *s, /*@null@*/ /*@out@*/ char **endp)
   /*@modifies *endp, errno@*/ ;
@@ -185,7 +185,7 @@ extern long strtol (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
      
 extern void *valloc(size_t size)/*@modifes errno@*/
      /*drl 09-20-001 */
-     /*@ensures MaxSet(result) == (size - 1); @*/ ;
+     /*@ensures MaxSet(result) == (size - 1); @*/ 
     /*legacy*/   ;
 
 extern size_t wcstombs (/*@out@*/ char *s, wchar_t *pwcs, size_t n)
