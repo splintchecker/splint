@@ -1101,3 +1101,37 @@ void constraint_dump (/*@observer@*/ constraint c,  FILE *f)
 }
 
 
+int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * c1, /*@observer@*/ /*@temp@*/ constraint * c2) /*@*/
+{
+  fileloc loc1, loc2;
+
+  int ret;
+  
+  llassert(constraint_isDefined(*c1) );
+  llassert(constraint_isDefined(*c2) );
+
+  if (constraint_isUndefined(*c1) )
+    {
+        if (constraint_isUndefined(*c2) )
+	  return 0;
+	else
+	  return 1;
+    }
+
+  if (constraint_isUndefined(*c2) )
+    {
+      return -1;
+    }
+    
+  loc1 = constraint_getFileloc(*c1);
+  loc2 = constraint_getFileloc(*c2);
+
+  ret = fileloc_compare(loc1, loc2);
+
+  fileloc_free(loc1);
+  fileloc_free(loc2);
+    
+  return ret;
+}
+
+

@@ -928,7 +928,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
 
   body = fcnBody;
 
-  // if we're not going to printing any errors for buffer buffer flows
+  // if we're not going to be printing any errors for buffer overflows
   //we can skip the checking to improve performance
   //
   //FLG_DEBUGFUNCTIONCONSTRAINT controls wheather we perform the check anyway
@@ -1010,6 +1010,8 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
 		body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, implicitFcnConstraints );
 	      }
      }
+
+   body->requiresConstraints = constraintList_sort (body->requiresConstraints);
    
    constraintList_printError(body->requiresConstraints, g_currentloc);
    
@@ -1054,6 +1056,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
    if (constraintList_isDefined(post) )
      constraintList_free(post);
    
+   body->ensuresConstraints = constraintList_sort(body->ensuresConstraints);
    
    constraintList_printError(body->ensuresConstraints, g_currentloc);
    

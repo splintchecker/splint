@@ -264,7 +264,7 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
 		   fileloc_unparse (term->loc) );
       break;
     case INTLITERAL:
-      s = message (" %ld ", term->value.intlit);
+      s = message (" %d ", (int)term->value.intlit);
       break;
       
     case SREF:

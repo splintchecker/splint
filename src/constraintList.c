@@ -524,3 +524,9 @@ void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
 }
 
 
+constraintList constraintList_sort (/*@returned@*/ constraintList ret)
+{
+  qsort (ret->elements, (size_t) ret->nelements,
+	 (sizeof (*ret->elements) ), constraint_compare);
+  return ret;
+}
