@@ -1,4 +1,6 @@
 
-strchr.c:1:47: Cannot find include file /home/drl7x/re/LCLintDev/lib/ansi.h
-Preprocessing error for file: strchr.c
-*** Cannot continue.
+strchr.c: (in function func)
+strchr.c:6:4: Dereference of possibly null pointer c: *c
+   strchr.c:5:7: Storage c may become null
+
+Finished LCLint checking --- 1 code error found
