@@ -1092,6 +1092,11 @@ fixUnnamedDecl (qtype q)
 
       return (uentryList_copy (res));
     }
+  else if (ctype_isEnum (ct))
+    {
+      /* evans 2002-02-05: nothing to do for unnamed enum lists */
+      return uentryList_undefined;
+    }
   else
     {      
       BADBRANCHCONT;
