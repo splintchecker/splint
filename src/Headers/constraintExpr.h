@@ -138,7 +138,7 @@ constraintExprData  constraintExprData_unaryExprSetOp (constraintExprData data, 
 constraintExprData  constraintExprData_unaryExprSetExpr (constraintExprData data, constraintExpr expr);
 
 
-constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data); /*@*/
+constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data) /*@*/;
 
 constraintExpr  constraintExprData_binaryExprGetExpr1 (constraintExprData data)/*@*/;
 
@@ -169,5 +169,9 @@ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr);
 constraintExpr constraintExpr_parseMakeBinaryOp (constraintExpr expr1, lltok op, constraintExpr expr2);
 
 bool constraintExpr_hasMaxSet (constraintExpr expr);
+
+constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
+						/*@out@*/ bool * propagate,
+						  /*@out@*/ int *literal);
 
 #endif

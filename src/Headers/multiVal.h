@@ -17,6 +17,7 @@ typedef /*@null@*/ struct _multiVal
       double       fval;
       /*@only@*/ cstring sval;
     } value;
+
 } *multiVal;
 
 extern /*@falsenull@*/ bool multiVal_isDefined (multiVal p_m) /*@*/ ;

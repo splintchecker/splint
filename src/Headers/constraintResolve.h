@@ -16,3 +16,4 @@ extern constraintList constraintList_subsumeEnsures (constraintList list1, const
 extern constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
 
 bool constraint_isAlwaysTrue (constraint c);
+constraintList constraintList_mergeRequires (constraintList list1, constraintList list2);

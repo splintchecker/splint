@@ -92,7 +92,7 @@ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, file
 
 /*drl add 11/28/2000 */
 constraint constraint_makeSRefWriteSafeInt (sRef s, int ind);
-
+constraint constraint_makeSRefReadSafeInt (sRef s, int ind);
 /*drl add 11/26/2000 */
 void constraint_printError (constraint c, fileloc loc);
 constraint constraint_doSRefFixConstraintParam (constraint precondition,
@@ -112,6 +112,14 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
 constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e);
 
 bool constraint_hasMaxSet(constraint c);
+
+/*from constraintGenreation.c*/
+bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint);
+
+constraintList exprNode_traversRequiresConstraints (exprNode e);
+constraintList exprNode_traversEnsuresConstraints (exprNode e);
+
+
 
 /*@=czechfcns*/
 //#warning take this out
