@@ -240,6 +240,9 @@ EXTRA_DIST = ./abst_t.lcl \
               ./db3/erc.lcl \
               ./db3/eref.lcl \
               ./db3/ereftab.lcl \
+              ./db3/README \
+              ./db3/clean \
+              ./db3/tidy \
               ./tq.lcl \
               ./ud2.lcl \
               ./for/.splintrc \

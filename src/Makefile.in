@@ -237,7 +237,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/declaratorInvNodeList.h  Headers/pairNodeList.h \
           Headers/declaratorNode.h         Headers/paramNode.h \
           Headers/declaratorNodeList.h     Headers/paramNodeList.h \
-          Headers/dmalloc.h                Headers/portab.h \
+          Headers/dmalloc.h                Headers/osd.h \
           Headers/ekind.h                  Headers/pp.h \
           Headers/enumNameList.h           Headers/privateNode.h \
           Headers/enumNameSList.h          Headers/programNode.h \
@@ -325,6 +325,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbolList.h            Headers/warnClause.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
           Headers/ltoken.h   Headers/splintMacros.nf  \
+          Headers/typeId.h \
           Headers/pointers.h   Headers/mstring.h   Headers/help.h
 
 

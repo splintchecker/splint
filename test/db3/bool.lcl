@@ -1,7 +1,9 @@
-immutable type bool;
+/*immutable type bool;
+
 
 constant bool TRUE;
 constant bool FALSE;
+*/
 
 void bool_initMod (void) internalState; { modifies internalState; }
 observer char *bool_unparse (bool b) { modifies nothing; } 
