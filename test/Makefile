@@ -22,6 +22,8 @@
 .PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
 .PHONY: sizeoftest
+.PHONY: bufferTest
+.PHONY: simplebufferConstraintTests
 
 .SUFFIXES: .out .expect .c .lcl .h .lh .diff
 
@@ -36,7 +38,7 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal
 
-UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null sizeoftest bufferTest observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
+UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null sizeoftest bufferTest simplebufferConstraintTests observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
 
 #UNITTEST = bufferTest
 
@@ -584,6 +586,14 @@ tests2.4:
 sizeoftest:
 	@cd sizeoftest; \
 	$(LCLINTR) +functionconstraint sizeof.c
+
+bufferTest:
+	@cd bufferTest; \
+	$(LCLINTR) +functionconstraint test4.c test6.c
+
+simplebufferConstraintTests:
+	@cd simplebufferConstraintTests; \
+	$(LCLINTR) +functionconstraint m.c  sizeof.c  test3.c  test7.c
 
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e
