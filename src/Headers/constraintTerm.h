@@ -11,14 +11,6 @@ typedef union
 
 /*@-namechecks@*/
 
-void constraintTermValue_copy (/*@out@*/ constraintTermValue src, constraintTermValue dst);
-
-/*@-macroassign*/
-
-#define constraintTermValue_copy(dst, src)     ((dst) = (src))
-
-/*@=macroassign*/
-
 typedef enum
 {
   ERRORBADCONSTRAINTTERMTYPE,

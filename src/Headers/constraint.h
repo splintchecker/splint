@@ -16,7 +16,7 @@ struct s_constraint {
   arithType       ar;
   constraintExpr  expr;
   bool post;
-  /*@observer@*/ /*@dependent@*/ exprNode generatingExpr;
+  /*@observer@*/ /*@exposed@*/ /*@dependent@*/ exprNode generatingExpr;
 } ;
 
 /*@constant null constraint constraint_undefined; @*/
