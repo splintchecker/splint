@@ -134,6 +134,9 @@ void constraint_dump (/*@observer@*/ constraint p_c,  FILE * p_f);
 
 extern void exprNode_forLoopHeuristics( /*@dependent@*/ exprNode p_e, /*@dependent@*/ exprNode p_forPred, /*@dependent@*/ exprNode p_forBody);
 
+int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * p_c1, /*@observer@*/ /*@temp@*/ constraint * p_c2) /*@*/;
+
+
 /*@=czechfcns*/
 ////drl possible problem : warning take this out
 
