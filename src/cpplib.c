@@ -130,7 +130,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "lclintMacros.nf"
 # include "llbasic.h"
 # include "lcllib.h"
-# include "cpp.h"
 # include "cpplib.h"
 # include "cpperror.h"
 # include "cpphash.h"
@@ -184,7 +183,7 @@ static void cpp_setLocation (cppReader *p_pfile)
 
 static enum cpp_token cpp_handleComment (cppReader *p_pfile,
 					 struct parse_marker *p_smark)
-     /*@modifies *p_pfile, *p_smark@*/;
+     /*@modifies p_pfile, p_smark@*/;
 
 static bool cpp_shouldCheckMacro (cppReader *p_pfile, char *p_p) /*@*/ ;
 
@@ -969,7 +968,6 @@ cppOptions_init (cppOptions *opts)
   opts->for_lint = 0;
   opts->chill = 0;
   opts->pedantic_errors = 0;
-  opts->inhibit_warnings = 0;
   opts->warn_comments = 0;
   opts->warnings_are_errors = 0;
 
@@ -1554,7 +1552,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
 
   if (limit - p >= 2 && p[0] == '#' && p[1] == '#') {
     cppReader_errorLit (pfile,
-		  cstring_makeLiteralTemp ("`##' at start of macro definition"));
+			cstring_makeLiteralTemp ("`##' at start of macro definition"));
     p += 2;
   }
 
@@ -7476,13 +7474,9 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 		if (start[i] == '/'
 		    && i < len - 1
 		    && start[i + 1] == '*') {
-		  /*@i32 make vgenopterror work in cpp... @*/
-		  if (context_getFlag (FLG_NESTCOMMENT)) 
-		    {
-		      cppReader_warning 
-			(pfile,
-			 message ("Comment starts inside comment"));
-		    }
+		  (void) cppoptgenerror (FLG_NESTCOMMENT,
+					 message ("Comment starts inside comment"),
+					 pfile);
 		}
 		
 		if (start[i] != '\n')

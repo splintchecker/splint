@@ -59,7 +59,6 @@ Written by Per Bothner 1994.  */
 # include <string.h> 
 # include "lclintMacros.nf"
 # include "llbasic.h"
-# include "cpp.h"
 # include "cpplib.h"
 # include "cpphash.h"
 # include "cppexp.h"

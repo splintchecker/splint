@@ -1312,7 +1312,7 @@ static bool processMacro (void)
 		      
 		      uentry_showWhereSpecified (e2);
 		      uentry_setType (e2, ctype_unknown);
-		      uentry_makeVarFunction (e2);
+		      uentry_makeConstantFunction (e2);
 		      uentry_setDefined (e2, g_currentloc);
 		      uentry_setFunctionDefined (e2, g_currentloc);
 		      context_enterUnknownMacro (e2); 

@@ -7586,6 +7586,8 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 	  int i = 0;
 	  int nerrors = 0;
 
+	  /*@i423 check number of entries int a[3] = { 1, 2, 3, 4 } ; */
+
 	  exprNodeList_elements (vals, oneval)
 	    {
 	      cstring istring = message ("%d", i);
@@ -7809,7 +7811,7 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
   uentry ue = usymtab_lookup (idDecl_observeId (t));
   exprNode ret = exprNode_makeInitializationAux (t);
   fileloc loc = exprNode_loc (e);
-
+  
   if (exprNode_isError (e)) 
     {
       e = exprNode_createUnknown ();

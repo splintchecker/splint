@@ -54,7 +54,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "lclintMacros.nf"
 # include "llbasic.h"
 # include <string.h>
-# include "cpp.h"
 # include "cpplib.h"
 # include "cpphash.h"
 

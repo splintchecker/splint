@@ -44,7 +44,7 @@ include Makefile.sys
 ### (can't be 1 unless you have lclint already!)
 ###
 
-CHECK = 0 ### set to 1
+CHECK = 1 ### set to 1
 
 #LCLINT = //tmp/lclint-2.5q/bin/lclint
 #LCLINTNEW = //afs/cert.org/usr/dlaroche/evLCLintDev/bin/lclint

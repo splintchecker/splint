@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.3 2000/11/29 09:51:30 drl7x Exp $
+ * $Id: posix.h,v 1.4 2001/07/20 00:52:10 evans Exp $
  */
 
 /*
@@ -887,4 +887,69 @@ struct utimbuf {
 	extern int
 utime (const char *path, /*@null@*/ const struct utimbuf *times)
 	/*@modifies fileSystem, errno@*/;
+
+/*
+** regex.h
+*/
+
+typedef /*@abstract@*/ /*@mutable@*/ void *regex_t;
+typedef /*@integraltype@*/ regoff_t;
+
+typedef struct
+{
+  regoff_t rm_so;
+  regoff_t rm_eo;
+} regmatch_t;
+
+int regcomp (/*@out@*/ regex_t *preg, /*@nullterminated@*/ const char *regex, int cflags)
+   /*:statusreturn@*/ 
+   /*@modifies preg@*/ ;
+
+int regexec (const regex_t *preg, /*@nullterminated@*/ const char *string, size_t nmatch, /*@out@*/ regmatch_t pmatch[], int eflags)
+   /*@requires maxSet(pmatch) >= nmatch@*/ 
+   /*@modifies pmatch@*/ ;
+
+size_t regerror (int errcode, const regex_t *preg, /*@out@*/ char *errbuf, size_t errbuf_size)
+   /*@requires maxSet(errbuf) >= errbuf_size@*/
+   /*@modifies errbuf@*/ ;
+
+void regfree (/*@only@*/ regex_t *preg) ;
+
+/* regcomp flags */
+/*@constant int	REG_BASIC@*/
+/*@constant int	REG_EXTENDED@*/
+/*@constant int	REG_ICASE@*/
+/*@constant int	REG_NOSUB@*/
+/*@constant int	REG_NEWLINE@*/
+/*@constant int	REG_NOSPEC@*/
+/*@constant int	REG_PEND@*/
+/*@constant int	REG_DUMP@*/
+
+/* regerror flags */
+/*@constant int	REG_NOMATCH@*/
+/*@constant int	REG_BADPAT@*/
+/*@constant int	REG_ECOLLATE@*/
+/*@constant int	REG_ECTYPE@*/
+/*@constant int	REG_EESCAPE@*/
+/*@constant int	REG_ESUBREG@*/
+/*@constant int	REG_EBRACK@*/
+/*@constant int	REG_EPAREN@*/
+/*@constant int	REG_EBRACE@*/
+/*@constant int	REG_BADBR@*/
+/*@constant int	REG_ERANGE@*/
+/*@constant int	REG_ESPACE@*/
+/*@constant int	REG_BADRPT@*/
+/*@constant int	REG_EMPTY@*/
+/*@constant int	REG_ASSERT@*/
+/*@constant int	REG_INVARG@*/
+/*@constant int	REG_ATOI@*/ /* non standard */
+/*@constant int	REG_ITOA@*/ /* non standard */
+
+/* regexec flags */
+/*@constant int	REG_NOTBOL@*/
+/*@constant int	REG_NOTEOL@*/
+/*@constant int	REG_STARTEND@*/
+/*@constant int	REG_TRACE@*/
+/*@constant int	REG_LARGE@*/
+/*@constant int	REG_BACKR@*/
 

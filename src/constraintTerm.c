@@ -518,7 +518,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	
 	if (strcmp (term, "Result") == 0 )
 	  {
-	    s = sRef_makeResult();
+	    s = sRef_makeResult (ctype_unknown);
 	  }
 	else if (strcmp (term, "Param" ) == 0 )
 	  {

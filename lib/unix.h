@@ -252,10 +252,6 @@ int ttyname_r (int fg, /*@out@*/ char *buffer, int len) /*@modifies buffer@*/ ;
 int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg) 
    /*@modifies *arg, errno@*/ ;  /* depends on request! */
 
-int gethostname (/*@out@*/ char *address, size_t address_len) 
-   /*:errorstatus@*/
-   /*@modifies address@*/ ;
-
 pid_t vfork (void) /*@modifies fileSystem@*/ ;
 
 
@@ -822,13 +818,12 @@ fsync (int fd)
 ftruncate (int fd, off_t length)
 	/*@modifies errno, fileSystem@*/;
 
-	extern int
-gethostname (/*@out@*/ char *name, int namlen)
-	/*@modifies *name@*/;
+int gethostname (/*@out@*/ char *address, size_t address_len) 
+   /*:errorstatus@*/
+   /*@modifies address@*/ ;
 
-	extern int
-initgroups (const char *name, int basegid)
-	/*@modifies internalState@*/;
+int initgroups (const char *name, int basegid)
+   /*@modifies internalState@*/;
 
 	extern int
 lchown (const char *path, uid_t owner, gid_t group)
@@ -1091,79 +1086,6 @@ shmdt (void *addr)
 	extern int
 shmget (key_t key, int size, int flag)
 	/*@modifies errno@*/;
-
-
-/*________________________________________________________________________
- * regex.h  --  intended to be POSIX 1003.2 compliant
- */
-
- typedef off_t regoff_t;
-
- typedef struct {
-	int re_magic;
-	size_t re_nsub;       /* number of parenthesized subexpressions */
-	char *re_endp;        /* end pointer for REG_PEND */
-	struct re_guts *re_g; /* none of your business :-) */
-} regex_t;
-
- typedef struct {
-	regoff_t rm_so;		/* start of match */
-	regoff_t rm_eo;		/* end of match */
-} regmatch_t;
-
-/* regcomp() flags */
-/*@constant int	REG_BASIC@*/
-/*@constant int	REG_EXTENDED@*/
-/*@constant int	REG_ICASE@*/
-/*@constant int	REG_NOSUB@*/
-/*@constant int	REG_NEWLINE@*/
-/*@constant int	REG_NOSPEC@*/
-/*@constant int	REG_PEND@*/
-/*@constant int	REG_DUMP@*/
-
-/* regerror() flags */
-/*@constant int	REG_NOMATCH@*/
-/*@constant int	REG_BADPAT@*/
-/*@constant int	REG_ECOLLATE@*/
-/*@constant int	REG_ECTYPE@*/
-/*@constant int	REG_EESCAPE@*/
-/*@constant int	REG_ESUBREG@*/
-/*@constant int	REG_EBRACK@*/
-/*@constant int	REG_EPAREN@*/
-/*@constant int	REG_EBRACE@*/
-/*@constant int	REG_BADBR@*/
-/*@constant int	REG_ERANGE@*/
-/*@constant int	REG_ESPACE@*/
-/*@constant int	REG_BADRPT@*/
-/*@constant int	REG_EMPTY@*/
-/*@constant int	REG_ASSERT@*/
-/*@constant int	REG_INVARG@*/
-/*@constant int	REG_ATOI@*/ /* non standard */
-/*@constant int	REG_ITOA@*/ /* non standard */
-
-/* regexec() flags */
-/*@constant int	REG_NOTBOL@*/
-/*@constant int	REG_NOTEOL@*/
-/*@constant int	REG_STARTEND@*/
-/*@constant int	REG_TRACE@*/
-/*@constant int	REG_LARGE@*/
-/*@constant int	REG_BACKR@*/
-
-	extern int
-regcomp (/*@out@*/ regex_t *preg, const char *pattern, int flags)
-	/*@modifies *preg@*/;
-
-	extern size_t
-regerror (int code, const regex_t *re, /*@out@*/ char *errbuf, size_t bufsize)
-	/*@modifies *errbuf@*/;
-
-	extern int
-regexec (const regex_t *preg, const char *s, size_t n, /*@out@*/ regmatch_t *m, int f)
-	/*@modifies *m@*/;
-
-	extern void
-regfree (regex_t *p)
-	/*@modifies *p@*/;
 
 /*________________________________________________________________________
  * syslog.h

@@ -159,9 +159,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
   else
     BADEXIT;
 
-  constraintExpr_free(expr2);
-
-  
+  /*@i834@*/ constraintExpr_free(expr2);
   
   expr->data = constraintExprData_binaryExprSetExpr2(expr->data, temp);
   expr->data = constraintExprData_binaryExprSetOp(expr->data, op);
@@ -469,7 +467,6 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    }
   return ret;
 }
-
 
 /*@only@*/  constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
 {

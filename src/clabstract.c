@@ -2139,7 +2139,7 @@ sRef fixStateClausesId (cstring s)
 
   if (cstring_equalLit (s, "result"))
     {
-      ret = sRef_makeResult ();
+      ret = sRef_makeResult (ctype_unknown);
     }
   else
     {

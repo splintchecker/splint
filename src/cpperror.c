@@ -86,7 +86,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 # include "lclintMacros.nf"
 # include "llbasic.h"
-# include "cpp.h"
 # include "cpplib.h"
 # include "cpperror.h"
 
@@ -98,7 +97,7 @@ static void cppReader_warningWithLine (cppReader *p_pfile,
 /* Print the file names and line numbers of the #include
    commands which led to the current file.  */
 
-static void cppReader_printContainingFiles (cppReader *pfile)
+void cppReader_printContainingFiles (cppReader *pfile)
 {
   cppBuffer *ip;
   int first = 1;
@@ -136,21 +135,21 @@ static void cppReader_printContainingFiles (cppReader *pfile)
 	  if (first)
 	    {
 	      first = 0;
-	      fprintf (stderr, "In file included");
+	      fprintf (g_msgstream, "   In file included");
 	    }
 	  else
-	    fprintf (stderr, ",\n                ");
+	    fprintf (g_msgstream, ",\n                ");
 	}
 
-      fprintf (stderr, "  from %s", 
+      fprintf (g_msgstream, " from %s", 
 	       cstring_toCharsSafe (temps = fileloc_unparseRaw (ip->nominal_fname, line)));
-
+      
       cstring_free (temps);
     }
   
   if (!first)
     {
-      fprintf (stderr, ":\n");
+      fprintf (g_msgstream, "\n");
     }
 
   /* Record we have printed the status as of this time.  */
@@ -245,6 +244,29 @@ cppReader_pfatalWithName (cppReader *pfile, cstring name)
   exit (FATAL_EXIT_CODE);
 }
 
+/*@only@*/ fileloc
+cppReader_getLoc (cppReader *pfile)
+{
+  cppBuffer *ip = cppReader_fileBuffer (pfile);
+
+  if (ip != NULL)
+    {
+      int line, col;
+      cstring fname = ip->nominal_fname;
+      fileId fid = fileTable_lookup (context_fileTable (), fname);
+
+      llassert (fileId_isValid (fid));
+	  
+      cppBuffer_lineAndColumn (ip, &line, &col);
+      
+      return fileloc_create (fid, line, col);
+    }
+  else
+    {
+      return fileloc_createBuiltin ();
+    }
+}
+
 void
 cppReader_printFileAndLine (cppReader *pfile)
 {
@@ -291,12 +313,9 @@ cppReader_warningLit (cppReader *pfile, cstring msg)
 void
 cppReader_warning (cppReader *pfile, /*@only@*/ cstring msg)
 {
-  if (CPPOPTIONS (pfile)->inhibit_warnings)
-    return;
-
   if (CPPOPTIONS (pfile)->warnings_are_errors)
     pfile->errors++;
-
+  
   prepareMessage ();
   cppReader_printContainingFiles (pfile);
   cppReader_printFileAndLine (pfile);
@@ -347,9 +366,6 @@ cppReader_warningWithLine (cppReader *pfile,
 		       /*@only@*/ cstring msg)
 {
   cppBuffer *ip;
-
-  if (CPPOPTIONS (pfile)->inhibit_warnings)
-    return;
 
   if (CPPOPTIONS (pfile)->warnings_are_errors)
     pfile->errors++;

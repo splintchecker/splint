@@ -897,6 +897,21 @@
 1 t891|891&
 3 f0 (23|$#,892|0@5@7&#,)!
 3 f5 (23|$#,892|0@5@7&#,)!
+0 a688|-1 900 -1
+0 s689|&
+3 S!4{896|@1|^#rm_so,896|@1|^#rm_eo,}!
+0 s690|&
+0 s691|-1 -1 903
+1 t895|895&
+3 f0 (900|4@0@7&#,23|$#,5|$#,)!
+3 f5 (900|4@0@7&#,23|$#,5|$#,)!
+2 y899|899&
+3 f0 (900|$#,23|$#,63|$#,903|4@0@7&#,5|$#,)!
+3 f5 (900|$#,23|$#,63|$#,903|4@0@7&#,5|$#,)!
+3 f0 (5|$#,900|$#,23|4@0@7&#,63|$#,)!
+3 f63 (5|$#,900|$#,23|4@0@7&#,63|$#,)!
+3 f0 (900|0@0@2&#,)!
+3 f1 (900|0@0@2&#,)!
 ;;tistable
 0
 28
@@ -913,6 +928,8 @@
 462
 350,462,465
 465
+350,462,465,688
+688
 ;;symTable
 *0 (Datatype)
 ^0 2@+@-@0@0@0@0@2#lltX_bool
@@ -1437,6 +1454,20 @@
 ^686 890@891#@utimbuf
 *4 (Function)
 ^687 894$@0@s3,g22@6@0@1@s3,g22$@0#utime
+*0 (Datatype)
+^688 20@+@+@0@0@0@0@895#regex_t
+^689 13@-@-@0@0@0@0@896#regoff_t
+*7 (Struct tag)
+^690 897@898#@!4
+*0 (Datatype)
+^691 897@-@-@0@0@0@0@899#regmatch_t
+*4 (Function)
+^692 902$@0@@1@p0$@0#regcomp
+^693 905$@0@@1@p3$@0#regexec
+^694 907$@0@@1@p2$@0#regerror
+^695 909$$$@0#regfree
+*1 (Constant)
+^696 5$#REG_BASIC#REG_EXTENDED#REG_ICASE#REG_NOSUB#REG_NEWLINE#REG_NOSPEC#REG_PEND#REG_DUMP#REG_NOMATCH#REG_BADPAT#REG_ECOLLATE#REG_ECTYPE#REG_EESCAPE#REG_ESUBREG#REG_EBRACK#REG_EPAREN#REG_EBRACE#REG_BADBR#REG_ERANGE#REG_ESPACE#REG_BADRPT#REG_EMPTY#REG_ASSERT#REG_INVARG#REG_ATOI#REG_ITOA#REG_NOTBOL#REG_NOTEOL#REG_STARTEND#REG_TRACE#REG_LARGE#REG_BACKR
 ;; Library constraints
 fgets
 pre:
@@ -2110,9 +2141,41 @@ r
 3
 25
 ;; end precondition constraints
+regexec
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 903 3
+r
+2
+2
+Param 63 2
+;; end precondition constraints
+post:EMPTY
+regerror
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 2
+r
+2
+2
+Param 63 3
+;; end precondition constraints
+post:EMPTY
 ;; Modules access
 lltX_bool#1@
 types#1@
 ansi#9@
-posix#14@
+posix#16@
 ;;End
