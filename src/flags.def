@@ -171,6 +171,30 @@ static flaglist flags =
     "storage which need not be defined.",
     0, 0
   },
+  {
+    FK_DEF, FK_NONE, plainFlag,
+    "fullinitblock",
+    FLG_FULLINITBLOCK,
+    "initializer sets all fields",
+    "Initializer does not set every field in the structure.",
+    0, 0
+  },
+  {
+    FK_DEF, FK_NONE, plainFlag,
+    "initallelements",
+    FLG_INITALLELEMENTS,
+    "initializer defines all array elements",
+    "Initializer does not define all elements of a declared array.",
+    0, 0
+  },
+  {
+    FK_DEF, FK_NONE, plainFlag,
+    "initsize",
+    FLG_INITSIZE,
+    "initializer defines extra array elements",
+    "Initializer block contains more elements than the size of a declared array.",
+    0, 0
+  },
 
   {
     FK_DEF, FK_IMPLICIT, modeFlag,
@@ -752,8 +776,8 @@ static flaglist flags =
     "kepttrans",
     FLG_KEPTTRANS,
     "kept storage transferred to non-temporary reference",
-    "Kept storage is transferred "
-    "to a non-temporary reference. The storage may be released "
+    "storage is transferred "
+    "to a non-temporary reference after being passed as keep parameter. The storage may be released "
     "or new aliases created.",
     0, 0
   },
@@ -3413,7 +3437,7 @@ static flaglist flags =
     FK_LIMITS, FK_ANSI, modeValueFlag,
     "includenest",
     FLG_INCLUDENEST,
-    "set maximum number of nested #include files",
+    "set maximum number of nested #include files (ANSI89 minimum is 8; ISO99 is 63)",
     "Maximum number of nested #include files exceeded.",
     0, 0
   },
@@ -3494,6 +3518,7 @@ static flaglist flags =
     "preprocessing error", NULL,
     0, 0
   },
+
   {
     FK_TYPE, FK_NONE, plainFlag,
     "type",
@@ -3502,30 +3527,7 @@ static flaglist flags =
     "Types are incompatible.",
     0, 0
   },
-  {
-    FK_TYPE, FK_NONE, plainFlag,
-    "fullinitblock",
-    FLG_FULLINITBLOCK,
-    "initializer sets all fields",
-    "Initializer does not set every field in the structure.",
-    0, 0
-  },
-  {
-    FK_TYPE, FK_NONE, plainFlag,
-    "initallelements",
-    FLG_INITALLELEMENTS,
-    "initializer defines all array elements",
-    "Initializer does not define all elements of a declared array.",
-    0, 0
-  },
-  {
-    FK_TYPE, FK_NONE, plainFlag,
-    "initsize",
-    FLG_INITSIZE,
-    "initializer defines extra array elements",
-    "Initializer block contains more elements than the size of a declared array.",
-    0, 0
-  },
+
   {
     FK_TYPE, FK_NONE, plainFlag,
     "stringliteraltoolong",
@@ -3664,9 +3666,8 @@ static flaglist flags =
     FK_TYPEEQ, FK_SYNTAX, plainFlag,
     "duplicatequals",
     FLG_DUPLICATEQUALS,
-    "report duplicate type qualifiers (e.g., long long)",
-    "Duplicate type qualifiers not supported by ANSI. Some "
-    "compilers (e.g., gcc) do support duplicate qualifiers.",
+    "report duplicate type qualifiers (e.g., unsigned unsigned)",
+    "Duplicate type qualifiers not supported by ISO standard.",
     0, 0
   },
   {
@@ -3816,19 +3817,19 @@ static flaglist flags =
     "A syntactic comment is used inconsistently.",
     0, 0
   } ,
+
+  /*
+  ** Use Warnings
+  */
+
   {
-    FK_DECL, FK_NONE, plainFlag,
+    FK_WARNUSE, FK_NONE, plainFlag,
     "warnuse",
     FLG_WARNUSE,
     "warn when declaration marked with warn is used",
     "Declaration marked with warn clause is used (can be suppresed by more specific flags).",
     0, 0
   },
-
-  /*
-  ** Use Warnings
-  */
-
   {
     FK_WARNUSE, FK_SECURITY, modeFlag,
     "bufferoverflow",
@@ -4123,13 +4124,6 @@ static flaglist flags =
   */
 
   {
-    FK_DEBUG, FK_NONE, debugFlag,
-    "showsourceloc",
-    FLG_SHOWSOURCELOC,
-    "display the source code location where a warning is produced", NULL,
-    0, 0
-  },
-  {
     FK_DEBUG, FK_NONE, valueFlag,
     "bugslimit",
     FLG_BUGSLIMIT,
@@ -4153,20 +4147,25 @@ static flaglist flags =
   },
   {
     FK_DEBUG, FK_NONE, debugFlag,
+    "keep",
+    FLG_KEEP,
+    "do not delete temporary files", NULL,
+    0, 0
+  },
+  {
+    FK_DEBUG, FK_NONE, debugFlag,
     "nopp",
     FLG_NOPP,
     "do not pre-process input files", NULL,
     0, 0
   },
   {
-    FK_HEADERS, FK_DEBUG, debugFlag,
-    "keep",
-    FLG_KEEP,
-    "do not delete temporary files", NULL,
+    FK_DEBUG, FK_NONE, debugFlag,
+    "showsourceloc",
+    FLG_SHOWSOURCELOC,
+    "display the source code location where a warning is produced", NULL,
     0, 0
   },
-
-
 } ;
 
 

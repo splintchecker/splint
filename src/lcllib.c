@@ -50,7 +50,7 @@ extern /*:open:*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
 /*@constant int NUMLIBS; @*/
-# define NUMLIBS 17
+# define NUMLIBS 25
 
 /*@constant int NUMPOSIXLIBS; @*/
 # define NUMPOSIXLIBS 18
@@ -80,22 +80,30 @@ static ob_mstring posixlibs[NUMPOSIXLIBS] =
 static ob_mstring stdlibs[NUMLIBS] =
 {
   "assert", 
+  "complex"
   "ctype",
   "errno",
-  "float", 
+  "fenv",
+  "float",
+  "inttypes",
+  "iso646",
   "limits",
   "locale",
   "math", 
   "setjmp",
   "signal",
   "stdarg",
+  "stdbool",
   "stddef",
+  "stdint",
   "stdio",
   "stdlib",
-  "strings", 
   "string",
+  "strings", /* some systems use this...they shouldn't */
+  "tgmath",
   "time",
-  "wchar"
+  "wchar",
+  "wctype"
 } ;
 
 static bool loadLCDFile (FILE * p_f, cstring p_name);

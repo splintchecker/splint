@@ -21,7 +21,7 @@ DIFF = diff
 
 all: sample null mstring usedef bool palindrome only stack rstring unique \
      exposure modify globals annotglobs clauses order loop switch noeffect \
-     ignore setChar multiError updateMyEnv updateMyEnvGood
+     ignore setChar multiError bounds
 
 ### In line example
 .PHONY: sample
@@ -154,14 +154,9 @@ multiError: multiError.c
 	$(SPLINT) $(SPLINTFLAGS) multiError.c +bounds -exportlocal +showconstraintlocation -expect 1
 
 
-.PHONY: updateMyEnv
-updateMyEnv: updateMyEnv.c
-	$(SPLINT) $(SPLINTFLAGS) updateMyEnv.c +bounds -exportlocal +showconstraintlocation -expect 1
-
-
-.PHONY: updateMyEnvGood
-updateMyEnvGood: updateMyEnvGood.c
-	$(SPLINT) $(SPLINTFLAGS) updateMyEnvGood.c +bounds -exportlocal +showconstraintlocation -expect 0
+.PHONY: bounds
+bounds: bounds.c
+	$(SPLINT) $(SPLINTFLAGS) bounds.c +bounds -exportlocal +showconstraintlocation -expect 1 -linelen 50
 
 clean: 
 	-rm -f core a.out *.*~

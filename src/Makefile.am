@@ -364,7 +364,7 @@ nocheck:
 
 .PHONY: test
 test:
-	cd ../test; ${MAKE} --no-print-directory
+	${MAKE} ; cd ../test; ${MAKE} --no-print-directory
 
 ### Automake generates wrong tags
 .PHONY: etags

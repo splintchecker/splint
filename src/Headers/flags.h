@@ -30,7 +30,7 @@ typedef enum
 extern void listAllCategories (void);
 extern void printAlphaFlags (void);
 extern void printAllFlags (bool p_desc, bool p_full);
-extern void printFlagManual (void);
+extern void printFlagManual (bool p_html);
 
 extern void flagcode_recordError (flagcode p_f);
 extern void flagcode_recordSuppressed (flagcode p_f);

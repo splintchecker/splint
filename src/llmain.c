@@ -1783,7 +1783,12 @@ specialFlagsHelp (char *next)
 	}
       else if (mstring_equal (next, "manual"))
 	{
-	  printFlagManual ();
+	  printFlagManual (FALSE);
+	  return TRUE;
+	}
+      else if (mstring_equal (next, "webmanual"))
+	{
+	  printFlagManual (TRUE);
 	  return TRUE;
 	}
       else
@@ -1841,10 +1846,10 @@ printParseErrors (void)
   llmsglit ("Otherwise, you may need to either manually define the problematic "
 	    "type (e.g., add -Dmlink_t=int to your .splintrc file) or force "
 	    "splint to process the header file that defines it. This is done "
-	    "by setting -skipansiheaders or -skipposixheaders before "
+	    "by setting -skipisoheaders or -skipposixheaders before "
 	    "the file that defines the type is #include'd.");
   llmsglit ("(See splint -help "
-	    "skipansiheaders and splint -help skipposixheaders for a list of "
+	    "skipisoheaders and splint -help skipposixheaders for a list of "
 	    "standard headers.)  For example, if <sys/local.h> uses a type "
 	    "defined by posix header <sys/types.h> but not defined by the "
 	    "posix library, we might do: ");

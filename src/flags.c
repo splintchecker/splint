@@ -481,7 +481,7 @@ printAllFlags (bool desc, bool full)
 }
 
 void
-printFlagManual (void)
+printFlagManual (bool html)
 {
   /*
   ** Prints all flags by category, in order they appear in flags.def
@@ -495,68 +495,158 @@ printFlagManual (void)
 
     if (f.main != lastCategory)
       {
-	llmsg (message ("\n%s\n%s\n",
-			categoryName (f.main),
-			cstring_makeLiteralTemp ("===================================")));
+	if (html)
+	  {
+	    llmsg (message ("\n<h4>%s</h4>\n", categoryName (f.main)));
+	  }
+	else
+	  {
+	    llmsg (message ("\n%s\n%s\n",
+			    categoryName (f.main),
+			    cstring_makeLiteralTemp ("===================================")));
+	  }
 
 	lastCategory = f.main;
       }
 
     if (f.argtype == ARG_NONE || f.argtype == ARG_SPECIAL)
       {
-	flagname = cstring_fromCharsNew (f.flag);
+	if (html) 
+	  {
+	    flagname = message ("<tt>%s</tt>", cstring_fromChars (f.flag));
+	  }
+	else
+	  {
+	    flagname = cstring_fromCharsNew (f.flag);
+	  }
       }
     else
       {
 	if (flagcode_hasString (f.code)) 
 	  {
-	    flagname = message ("%s <%s>", cstring_fromChars (f.flag), argcode_unparse (f.argtype));
-
+	    if (html)
+	      {
+		flagname = message ("<tt>%s <em>&lt;%s&gt;</em></tt>",
+				    cstring_fromChars (f.flag), argcode_unparse (f.argtype));
+	      }
+	    else
+	      {
+		flagname = message ("%s <%s>", cstring_fromChars (f.flag), argcode_unparse (f.argtype));
+	      }
+	    
 	    if (cstring_isDefined (context_getString (f.code)))
 	      {
-		flagname = message ("%q [%s]", flagname,
-				    context_getString (f.code));
+		if (html)
+		  {
+		    flagname = message ("%q <font color=\"blue\">[%s]</font>", flagname,
+					context_getString (f.code));
+		  }
+		else
+		  {
+		    flagname = message ("%q [%s]", flagname,
+					context_getString (f.code));
+		  }
 	      }
 	  }
 	else if (f.argtype == ARG_CHAR)
 	  {
-	    flagname = message ("%s <%s> [%c]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
-				(char) context_getValue (f.code));
+	    if (html)
+	      {
+		flagname = message ("<tt>%s <em>&lt;%s&gt;</em></tt> <font color=\"blue\">[%c]</font>",
+				    cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				    (char) context_getValue (f.code));
+	      }
+	    else
+	      {
+		flagname = message ("%s <%s> [%c]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				    (char) context_getValue (f.code));
+	      }
 	  }
 	else 
 	  {
 	    llassert (f.argtype == ARG_NUMBER);
-	    flagname = message ("%s <%s> [%d]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
-				context_getValue (f.code));
+
+	    if (html)
+	      {
+		flagname = message ("<tt>%s <em>&lt;%s&gt;</em> <font color=\"blue\">[%d]</font>",
+				    cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				    context_getValue (f.code));
+	      }
+	    else
+	      {
+		flagname = message ("%s <%s> [%d]", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				    context_getValue (f.code));
+	      }
 	  }
       }
 
     if (f.isIdem)
       {
-	flagtype = message("%q<->", flagtype);
+	if (html)
+	  {
+	    flagtype = message("%q<font color=\"green\">-</font>", flagtype);
+	  }
+	else
+	  {
+	    flagtype = message("%q<->", flagtype);
+	  }
       }
     
     if (f.isGlobal)
       {
-	flagtype = message ("%q<G>", flagtype);
+	if (html)
+	  {
+	    flagtype = message ("%q<font color=\"green\"><em>global</em></font>", flagtype);
+	  }
+	else
+	  {
+	    flagtype = message ("%q<G>", flagtype);
+	  }
       }
 
     if (f.isSpecial)
       {
-	flagtype = message("%q<S>", flagtype);
+	if (html)
+	  {
+	    flagtype = message ("%q<font color=\"orange\"><em>shortcut</em></font>", flagtype);
+	  }
+	else
+	  {
+	    flagtype = message("%q<S>", flagtype);
+	  }
       }
     
     if (f.isModeFlag)
       {
-	flagtype = message ("%q<M:%q>", flagtype, getFlagModeSettings (f.code));
+	if (html)
+	  {
+	    flagtype = message ("%q mode:<tt>%q</tt>>", flagtype, getFlagModeSettings (f.code));
+	  }
+	else
+	  {
+	    flagtype = message ("%q<M:%q>", flagtype, getFlagModeSettings (f.code));
+	  }
       }
     else /* its a plain flag */
       {
-	flagtype = message ("%q<P:%s>", flagtype,
-			    cstring_makeLiteralTemp (context_getFlag (f.code) ? "+" : "-"));
+	if (html)
+	  {
+	    flagtype = message ("%q plain:<tt>%s</tt>", flagtype,
+				cstring_makeLiteralTemp (context_getFlag (f.code) ? "+" : "-"));
+	  }
+	else
+	  {
+	    flagtype = message ("%q<P:%s>", flagtype,
+				cstring_makeLiteralTemp (context_getFlag (f.code) ? "+" : "-"));
+	  }
       }
     
     llmsg (message ("%s: %s", flagname, flagtype));
+
+    if (html)
+      {
+	llgenindentmsgnoloc (cstring_makeLiteral ("<blockquote>"));
+      }
 
     if (mstring_isDefined (f.hint))
       {
@@ -565,6 +655,11 @@ printFlagManual (void)
     else
       {
 	llgenindentmsgnoloc (message ("%q.", cstring_capitalize (cstring_fromChars (f.desc))));
+      }
+
+    if (html)
+      {
+	llgenindentmsgnoloc (cstring_makeLiteral ("</blockquote>"));
       }
   } end_allFlags ;
 }

@@ -217,17 +217,16 @@ multiError.c:4: Possible out-of-bounds store:
 
 Finished checking --- 1 code warning, as expected
 
-updateMyEnv.c:16: Possible out-of-bounds store:
+bounds.c:9: Possible out-of-bounds store:
     strcpy(str, tmp)
     Unable to resolve constraint:
-    requires maxSet(str @ updateMyEnv.c:16) >=
-    maxRead(getenv("MYENV") @ updateMyEnv.c:14)
+    requires maxSet(str @ bounds.c:9) >=
+    maxRead(getenv("MYENV") @ bounds.c:7)
      needed to satisfy precondition:
-    requires maxSet(str @ updateMyEnv.c:16) >=
-    maxRead(tmp @ updateMyEnv.c:16)
+    requires maxSet(str @ bounds.c:9) >=
+    maxRead(tmp @ bounds.c:9)
      derived from strcpy precondition: requires
-    maxSet(<parameter 1>) >= maxRead(<parameter 2>)
+    maxSet(<parameter 1>) >= maxRead(<parameter
+    2>)
 
 Finished checking --- 1 code warning, as expected
-
-Finished checking --- no warnings

@@ -524,6 +524,9 @@ usedef --- use before definition
 mustdefine --- out storage not defined before return or scope exit
 uniondef --- at least one field of a union must be defined
 compdef --- parameter, return value or global completely defined
+fullinitblock --- initializer sets all fields
+initallelements --- initializer defines all array elements
+initsize --- initializer defines extra array elements
 impouts --- pointer parameters to unspecified functions may be implicit out
 parameters
 incondefs --- function, variable or constant redefined with inconsistent type
@@ -1011,7 +1014,8 @@ numstructfields --- set maximum number of fields in a struct or union (ANSI89
 minimum is 127; ISO99 is 1023)
 numenummembers --- set maximum number of members of an enum (ANSI89 minimum is
 127; ISO99 is 1023)
-includenest --- set maximum number of nested #include files
+includenest --- set maximum number of nested #include files (ANSI89 minimum is
+8; ISO99 is 63)
 ansi89limits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers) based on ANSI89
 standard
@@ -1028,9 +1032,6 @@ syntax --- syntax error in parsing
 trytorecover --- try to recover from parse error
 preproc --- preprocessing error
 type --- type mismatch
-fullinitblock --- initializer sets all fields
-initallelements --- initializer defines all array elements
-initsize --- initializer defines extra array elements
 stringliteraltoolong --- string literal too long for character array
 stringliteralnoroom --- string literal leaves no room for null terminator
 stringliteralsmaller --- string literal is smaller than the char array it is
@@ -1055,7 +1056,7 @@ charint --- char and int are equivalent
 enumint --- enum and int are equivalent
 floatdouble --- float and double are equivalent
 ignorequals --- ignore type qualifiers (long, short, unsigned)
-duplicatequals --- report duplicate type qualifiers (e.g., long long)
+duplicatequals --- report duplicate type qualifiers (e.g., unsigned unsigned)
 ignoresigns --- ignore signs in type comparisons (unsigned matches signed)
 numliteral --- int literals can be reals
 charintliteral --- character constants (e.g., 'a') can be used as ints
@@ -1118,10 +1119,10 @@ timedist --- display time distribution
 showalluses --- show sorted list of uses of all globals
 hints --- provide a hint the first time a particular warning appears
 forcehints --- provide a hint for every warnings
-showsourceloc --- display the source code location where a warning is produced
 bugslimit --- set maximum number of bugs detected before giving up
 debugfcnconstraint --- debug function constraints
 grammar --- debug parsing
-nopp --- do not pre-process input files
 keep --- do not delete temporary files
+nopp --- do not pre-process input files
+showsourceloc --- display the source code location where a warning is produced
 
