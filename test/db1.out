@@ -218,6 +218,7 @@ empset.c:5: Name _empset_get is in the implementation name space (any
 empset.c: (in function _empset_get)
 empset.c:11: Undocumented modification of s possible from call to
                 erc_iterStart: erc_iterStart(s)
+empset.c:15: Test expression for while not bool, type int: 0
 empset.c:15: Body of if statement is not a block:
                 do { { erc_iterFinal(it) } } while (0)
 empset.c: (in function empset_insert)
@@ -256,6 +257,7 @@ empset.c:128: Body of for statement is not a block: erc_delete(s1, er)
 empset.c: (in function empset_subset)
 empset.c:139: Undocumented modification of s1 possible from call to
                  erc_iterStart: erc_iterStart(s1)
+empset.c:141: Test expression for while not bool, type int: 0
 empset.c:141: Body of if statement is not a block:
                  do { { erc_iterFinal(it) } } while (0)
 empset.c:140: Body of for statement is not a block:
@@ -350,6 +352,7 @@ erc.h:16: Called procedure bool_initMod may access internal state, but globals
 erc.h:16: Undocumented modification of internal state possible from call to
              bool_initMod: bool_initMod()
 erc.h:16: Statement has no effect: employee_initMod()
+erc.h:16: Test expression for while not bool, type int: 0
 erc.h: (in macro erc_iterFinal)
 erc.h:20: Implicitly temp storage it passed as only param: free (it)
 < checking dbase.c >
@@ -372,6 +375,7 @@ dbase.c:40: Name _db_ercKeyGet is in the implementation name space (any
 dbase.c: (in function _db_ercKeyGet)
 dbase.c:45: Undocumented modification of c possible from call to erc_iterStart:
                erc_iterStart(c)
+dbase.c:49: Test expression for while not bool, type int: 0
 dbase.c:56: Name _db_keyGet is in the implementation name space (any identifier
                beginning with underscore)
 dbase.c: (in function _db_keyGet)
@@ -670,6 +674,7 @@ nullret                      1           0
 nullstate                    1           0
 sizeoftype                   7           0
 formalarray                  0          17
+predboolptr                  4           0
 type                         1           0
 enumindex                   24           0
 relaxtypes                  15           0
@@ -681,6 +686,6 @@ paramuse                     1           0
 typeuse                      1           0
 varuse                       4           0
                           ========  =========
-Total                      331          53
+Total                      335          53
 
-Finished LCLint checking --- 331 code errors found, as expected
+Finished LCLint checking --- 335 code errors found, expected 331

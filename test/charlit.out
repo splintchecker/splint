@@ -27,5 +27,3 @@ charlit.c:12:14: Variable u initialized to type int, expects unsigned int: -3
   To ignore signs in type comparisons use +ignoresigns
 
 Finished LCLint checking --- 6 code errors found, expected 5
-
-Finished LCLint checking --- no code errors found
