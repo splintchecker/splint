@@ -1,6 +1,6 @@
 
 Finished LCLint checking --- no code errors found
-/a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/test/maxset
+/a/apollo/af9/drl7x/re/LCLintDev/test/maxset
 
 maxsetnoannotations.c: (in function noancopy)
 maxsetnoannotations.c:4:1: Unresolved constraint:
