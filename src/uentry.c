@@ -43,6 +43,8 @@ static bool uentry_isReallySpecified (uentry p_e) /*@*/ ;
 static void uentry_checkIterArgs (uentry p_ue);
 static cstring uentry_dumpAux (uentry p_v, bool p_isParam);
 
+static void uentry_showWhereLastKind (uentry p_spec) /*@*/ ; 
+
 static void uentry_combineModifies (uentry p_ue, /*@owned@*/ sRefSet p_sr) 
      /*@modifies p_ue@*/ ;
 
@@ -6822,9 +6824,9 @@ KindConformanceError (/*@unique@*/ uentry old, uentry unew, bool mustConform)
 				    uentry_getName (unew),
 				    ekind_unparseLong (unew->ukind),
 				    unew->utype),
-			   uentry_whereDeclared (unew)))
+			   uentry_whereLast (unew)))  /* evans 2001-12-30: was uentry_whereDeclared */
 			{
-			  uentry_showWhereLast (old);
+			  uentry_showWhereLastKind (old);
 			}
 		    }
 		  else
@@ -6841,9 +6843,9 @@ KindConformanceError (/*@unique@*/ uentry old, uentry unew, bool mustConform)
 				uentry_getName (unew),
 				ekind_unparseLong (unew->ukind),
 				unew->utype),
-		       uentry_whereDeclared (unew)))
+		       uentry_whereLast (unew))) /* evans 2001-12-30: was uentry_whereDeclared */
 		    {
-		      uentry_showWhereLast (old);
+		      uentry_showWhereLastKind (old);
 		    }
 		}
 	    }
@@ -6851,15 +6853,18 @@ KindConformanceError (/*@unique@*/ uentry old, uentry unew, bool mustConform)
 	    {
 	      llassert (uentry_isDeclared (unew));
 
+	      DPRINTF (("Old: \n\t%s", uentry_unparseFull (old)));
+	      DPRINTF (("New: \n\t%s", uentry_unparseFull (unew)));
+
 	      if (optgenerror
 		  (FLG_INCONDEFS,
 		   message ("%s %q inconsistently redeclared as %s",
 			    ekind_capName (old->ukind),
 			    uentry_getName (unew),
 			    ekind_unparseLong (unew->ukind)),
-		   uentry_whereDeclared (unew)))
+		   uentry_whereLast (unew))) /* evans 2001-12-30: was uentry_whereDeclared */
 		{
-		  uentry_showWhereLast (old);
+		  uentry_showWhereLastKind (old);
 		}
 	    }
 	}
@@ -6883,7 +6888,7 @@ uentry_showWhereLast (uentry spec)
     {
       if (fileloc_isDefined (spec->whereDefined)
 	  && !fileloc_isLib (spec->whereDefined)
-	  && !fileloc_isPreproc (spec->whereDefined))
+	  /*!! && !fileloc_isPreproc (spec->whereDefined) */ )
 	{
 	  llgenindentmsg (message ("Previous definition of %q: %t", 
 				   uentry_getName (spec),
@@ -6909,6 +6914,54 @@ uentry_showWhereLast (uentry spec)
 	  else
 	    {
 	      llgenindentmsg (message ("Specification: %t", uentry_getType (spec)),
+			      uentry_whereSpecified (spec));
+	    }
+	}
+      else
+	{
+	  /* nothing to show */
+	}
+    }
+}
+
+static void
+uentry_showWhereLastKind (uentry spec)
+{
+  if (uentry_isValid (spec))
+    {
+      if (fileloc_isDefined (spec->whereDefined)
+	  && !fileloc_isLib (spec->whereDefined)
+	  /*!! && !fileloc_isPreproc (spec->whereDefined) */ )
+	{
+	  llgenindentmsg (message ("Previous definition of %q as %s: %t", 
+				   uentry_getName (spec),
+				   ekind_unparseLong (spec->ukind),
+				   uentry_getType (spec)),
+			  uentry_whereDefined (spec));
+	}
+      else if (uentry_isDeclared (spec))
+	{
+	  llgenindentmsg (message ("Previous declaration of %q as %s: %t", 
+				   uentry_getName (spec),
+				   ekind_unparseLong (spec->ukind),
+				   uentry_getType (spec)),
+			  uentry_whereDeclared (spec));
+	}
+      else if (uentry_isSpecified (spec))
+	{
+	  if (uentry_hasName (spec))
+	    {
+	      llgenindentmsg (message ("Specification of %q as %s: %t", 
+				       uentry_getName (spec),
+				       ekind_unparseLong (spec->ukind),
+				       uentry_getType (spec)),
+			      uentry_whereSpecified (spec));
+	    }
+	  else
+	    {
+	      llgenindentmsg (message ("Specification as %s: %t",
+				       ekind_unparseLong (spec->ukind),
+				       uentry_getType (spec)),
 			      uentry_whereSpecified (spec));
 	    }
 	}

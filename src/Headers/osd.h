@@ -93,6 +93,7 @@ extern cstring osd_fixDefine (cstring);
 extern bool osd_fileIsReadable (cstring);
 
 extern bool osd_isConnectChar (char) /*@*/ ;
+extern /*@observer@*/ cstring osd_getCurrentDirectory (void) /*@*/ ;
 
 # ifdef WIN32
 extern int osd_getPid (void) ;

@@ -17,15 +17,15 @@ unexport LCLIMPORTDIR
 ### This is horrible!  Can't we make top_builddir absolute?
 SPLINTNEST = ../$(top_builddir)/src/splint$(EXEEXT)
 
-SPLINTPNEST = @$(SPLINTNEST)
-SPLINTP   = @$(SPLINT)
+SPLINTPNEST = @$(SPLINTNEST) -nof
+SPLINTP   = @$(SPLINT) -nof
 
 # Make sure .splintrc files are not used so test results do not
 # depend on local settings.
-SPLINTRN  = $(SPLINTP) -nof -hints -booltype "bool"
+SPLINTRN  = $(SPLINTP) -hints -booltype "bool"
 SPLINTR   = $(SPLINTRN) -exportlocal +debugfcnconstraint
 
-SPLINTRNNEST  = $(SPLINTPNEST) -nof -hints -booltype "bool"
+SPLINTRNNEST  = $(SPLINTPNEST) -hints -booltype "bool"
 SPLINTRNEST   = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 
 ## Currently disabled tests:
@@ -33,12 +33,8 @@ SPLINTRNEST   = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 ##  nullret nullassign warnuse
 
 ###
-### !!! 
-### These tests have been temporarily removed because of problems with the new build process:
-###   fileio tainted mergestate metastate \
-###   tests2.2 tests2.2a tests2.4 tests2.5 
-###  
-###   maxset strchr for
+### rcfiles not included becuase file names will not match exactly
+###
 
 UNITTESTS = \
   help \
@@ -53,10 +49,10 @@ UNITTESTS = \
   funcpointer glob globals impabstract init inparam internal iter keep libs \
   linked lintcomments list macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
-  postnotnull preds prefixes printflike rc rcfiles refcounts release repexpose \
+  postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing slovaknames specclauses special stack staticarray strings \
   structassign typequals ud ulstypes union unreachable unsignedcompare \
-  unused ullint void
+  unused ullint utypes void
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 INTEGTESTS = db1 db2 db3
@@ -75,8 +71,8 @@ version:
 
 .PHONY: help
 help:
-	-@$(SPLINTP)
-	-@LARCH_PATH=/dev/null; $(SPLINT) empty.lcl
+	-@$(SPLINT)
+	-@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
 	-@$(SPLINTP) -help
 	-@$(SPLINTP) -asdf
 	-@$(SPLINTP) +boolint +boolint 
@@ -727,6 +723,16 @@ unused:
 ullint:
 	${SPLINTRN} ullint.c -expect 5
 	${SPLINTRN} ullint.c +charint +charintliteral -expect 2
+
+###
+### 2001-12-30: Poor warnings reported by Peter Deutsch
+###
+
+.PHONY: utypes
+utypes:
+	${SPLINTRN} utypes.c -expect 6
+
+###
 
 .PHONY: void
 void:

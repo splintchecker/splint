@@ -8,10 +8,10 @@
 /* Splint's imports directory */
 #undef DEFAULT_LCLIMPORTDIR
 
-/* gcc's private include directory */
+/* system include directory */
 #undef GCC_INCLUDE_DIR
 
-/* the system's main include directory */
+/* alternate include directory */
 #undef GCC_INCLUDE_DIR2
 
 /* String describing who compiled this binary and how */
@@ -20,11 +20,11 @@
 /* Splint's version number */
 #undef LCL_PARSE_VERSION
 
-/* Splint's version number and release date */
-#undef LCL_VERSION
-
 /* Define to disable support LCL files */
 #undef NOLCL
+
+/* Splint's version number and release date */
+#undef SPLINT_VERSION
 
 /* The system's main include directory */
 #undef SYSTEM_LIBDIR

@@ -104,13 +104,14 @@ if test x$ac_cv_c_compiler_gnu = xyes; then
 
 # This breaks on gcc-3.0 on redhat fixing drl 11-15-2001
 #  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/'`
- GCC_INCLUDE_DIR=/usr/lib/gcc-lib/i386-linux/2.7.2.1/include
+GCC_INCLUDE_DIR=/usr/include
+# was /usr/lib/gcc-lib/i386-linux/2.7.2.1/include
 #  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -n -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/p'`
   AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "$GCC_INCLUDE_DIR",
-                     [gcc's private include directory])
+                     [system include directory])
 fi
 AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR2, "$myprefix/include",
-                   [the system's main include directory])
+                   [alternate include directory])
 
 # These used to be in local_constants.h
 AC_DEFINE_UNQUOTED(SYSTEM_LIBDIR, "$myprefix/include",
@@ -123,7 +124,7 @@ AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, ".$PATH_SEPARATOR$myprefix/share/splint
 
 # These used to be in herald.h
 LCL_PARSE_VERSION="AC_PACKAGE_NAME AC_PACKAGE_VERSION"
-AC_DEFINE_UNQUOTED(LCL_VERSION,
+AC_DEFINE_UNQUOTED(SPLINT_VERSION,
                    "$LCL_PARSE_VERSION --- `cat $srcdir/src/DATE`",
                    [Splint's version number and release date])
 AC_DEFINE_UNQUOTED(LCL_PARSE_VERSION, "$LCL_PARSE_VERSION",

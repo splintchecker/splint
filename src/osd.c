@@ -1087,5 +1087,14 @@ cstring osd_outputPath (cstring filename)
 # endif
 }
 
+cstring osd_getCurrentDirectory ()
+{
+# if defined(MSDOS) || defined(OS2)
+  return cstring_makeLiteralTemp ("");
+# else
+  return cstring_makeLiteralTemp ("./");
+# endif
+}
+
 
 

@@ -98,6 +98,7 @@ static bool s_needsPrepare = TRUE;
 void prepareMessage (void)
 {
   DPRINTF (("Prepare message: %s", bool_unparse (context_loadingLibrary ())));
+  showHerald ();
 
   if ((context_isPreprocessing () || context_loadingLibrary ())
       && s_needsPrepare

@@ -89,6 +89,7 @@ fileTable_getIndex (fileTable ft, cstring s)
   cstring abspath;
   if (ft == NULL) return NOT_FOUND;
   abspath = osd_absolutePath (cstring_undefined, s);
+  DPRINTF (("Absolute path: %s: %s", s, abspath));
   res = cstringTable_lookup (ft->htable, abspath);
   cstring_free (abspath);
   return res;
@@ -257,6 +258,7 @@ fileTable_internAddEntry (fileTable ft, /*@only@*/ ftentry e)
 
   ft->nspace--;
 
+  DPRINTF (("Adding: %s", e->fname));
   cstringTable_insert (ft->htable, e->fname, ft->nentries);
   ft->elements[ft->nentries] = e;
 
@@ -555,9 +557,14 @@ fileTable_exists (fileTable ft, cstring s)
   int tindex = fileTable_getIndex (ft, s);
 
   if (tindex == NOT_FOUND)
-    return FALSE;
+    {
+      DPRINTF (("Not found: %s", s));
+      return FALSE;
+    }
   else
-    return TRUE;
+    {
+      return TRUE;
+    }
 }
 
 fileId

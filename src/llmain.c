@@ -91,8 +91,14 @@ static void cleanupFiles (void);
 static void showHelp (void);
 static void interrupt (int p_i);
 
+static bool readOptionsFile (cstring p_fname,
+			     cstringSList *p_passThroughArgs,
+			     bool p_report) 
+   /*@modifies fileSystem, internalState, *p_passThroughArgs@*/ ;
+   
 static void loadrc (FILE *p_rcfile, cstringSList *p_passThroughArgs)
-     /*@ensures closed p_rcfile@*/ ;
+   /*@modifies *p_passThroughArgs@*/
+   /*@ensures closed p_rcfile@*/ ;
 
 static void describeVars (void);
 static bool specialFlagsHelp (char *p_next);
@@ -778,34 +784,31 @@ int main (int argc, char *argv[])
 	
 	if (*thisarg == '-' || *thisarg == '+')
 	  {
-	    thisarg++;
+	    bool set = (*thisarg == '+');
+	    flagcode opt;
 
-	    if (mstring_equal (thisarg, "nof"))
+	    thisarg++;
+	    opt = identifyFlag (cstring_fromChars (thisarg));
+
+	    if (opt == FLG_NOF)
 	      {
 		nof = TRUE;
 	      }
-	    else if (mstring_equal (thisarg, "f"))
+	    else if (opt == FLG_SHOWSCAN || opt == FLG_WARNRC)
+	      {
+		/*
+		** Need to set it immediately, so rc file scan is displayed
+		*/
+
+		context_userSetFlag (opt, set);
+	      }
+	    else if (opt == FLG_OPTF)
 	      {
 		if (++i < argc)
 		  {
 		    defaultf = FALSE;
 		    fname = cstring_fromChars (argv[i]);
-		    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
-
-		    if (rcfile != NULL)
-		      {
-			fileloc oloc = g_currentloc;
-			
-			g_currentloc = fileloc_createRc (cstring_fromChars (fname));
-			loadrc (rcfile, &passThroughArgs);
-			fileloc_reallyFree (g_currentloc); 
-			g_currentloc = oloc;
-		      }
-		    else 
-		      {
-			showHerald ();
-			lldiagmsg (message ("Options file not found: %s", fname));
-		      }
+		    readOptionsFile (fname, &passThroughArgs, TRUE);
 		  }
 		else
 		  llfatalerror
@@ -818,94 +821,72 @@ int main (int argc, char *argv[])
 	      }
 	  }
       }
-    
-    if (cstring_isUndefined (fname))
-      {
-	if (!cstring_isEmpty (home)) {
-	  fname = message ("%s%h%s", home, CONNECTCHAR,
-			   cstring_fromChars (RCFILE));
-	  cstring_markOwned (fname);
-	}
-      }
-
+        
     setCodePoint ();
 
     if (!nof && defaultf)
       {
-	if (!cstring_isEmpty (fname)) 
-	  {
-	    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
-	    
-	    if (rcfile != NULL)
-	      {
-		fileloc oloc = g_currentloc;
-		
-		g_currentloc = fileloc_createRc (fname);
-		loadrc (rcfile, &passThroughArgs);
-		fileloc_reallyFree (g_currentloc);
-		g_currentloc = oloc;
-	      }
-	  }
-	
-# if defined(MSDOS) || defined(OS2)
-	fname = message ("%s",cstring_fromChars (RCFILE));
-# else
-	fname = message ("./%s", cstring_fromChars (RCFILE));
-# endif
-	
-	rcfile = fileTable_openFile (context_fileTable (), fname, "r");
-
 	/*
-	** If no RCFILE, try ALTRCFILE
+	** No explicit rc file, first try reading ~/.splintrc
 	*/
 
-	if (rcfile == NULL)
+	if (cstring_isUndefined (fname))
 	  {
-	    cstring_free (fname);
-# if defined(MSDOS) || defined(OS2)
-	    fname = message ("%s", cstring_fromChars (ALTRCFILE));
-# else
-	    fname = message ("./%s", cstring_fromChars (ALTRCFILE));
-# endif
-	    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
-	  }
-	else
-	  {
-	    /*
-	    ** Warn if ALTRCFILE also exists
-	    */
-	    cstring afname;
-	    FILE *arcfile;
-	    
-# if defined(MSDOS) || defined(OS2)
-	    afname = message ("%s", cstring_fromChars (ALTRCFILE));
-# else
-	    afname = message ("./%s", cstring_fromChars (ALTRCFILE));
-# endif
-	    arcfile = fileTable_openFile (context_fileTable (), afname, "r");
-	    
-	    if (arcfile != NULL)
+	    if (!cstring_isEmpty (home)) 
 	      {
-		voptgenerror (FLG_WARNRC,
-			      message ("Found both %s and %s files.  Using %s file only.",
-				       fname, afname, fname),
-			      g_currentloc);
+		bool readhomerc, readaltrc;
+		cstring homename, altname;
+
+		homename = message ("%s%h%s", home, CONNECTCHAR,
+				 cstring_fromChars (RCFILE));
+		readhomerc = readOptionsFile (homename, &passThroughArgs, FALSE);
 		
-		fileTable_closeFile (context_fileTable (), arcfile);
+		/*
+		** Try ~/.lclintrc also for historical accuracy
+		*/
+		
+		altname = message ("%s%h%s", home, CONNECTCHAR,
+				 cstring_fromChars (ALTRCFILE));
+		readaltrc = readOptionsFile (altname, &passThroughArgs, FALSE);
+
+		if (readhomerc && readaltrc)
+		  {
+
+		    voptgenerror 
+		      (FLG_WARNRC,
+		       message ("Found both %s and %s files. Using both files, "
+				"but recommend using only %s to avoid confusion.",
+				homename, altname, homename),
+		       g_currentloc);
+		  }
 	      }
 	  }
 	
-	if (rcfile != NULL)
-	  {
-	    fileloc oloc = g_currentloc;
+	/*
+	** Next, read .splintrc in the current working directory
+	*/
+	
+	{
+	  cstring rcname = message ("%s%s",osd_getCurrentDirectory (), cstring_fromChars (RCFILE));
+	  cstring altname = message ("%s%s",osd_getCurrentDirectory (), cstring_fromChars (ALTRCFILE));
+	  bool readrc, readaltrc;
+	  
+	  readrc = readOptionsFile (rcname, &passThroughArgs, FALSE);
+	  readaltrc = readOptionsFile (altname, &passThroughArgs, FALSE);
+	  
+	  if (readrc && readaltrc)
+	    {
+	      voptgenerror (FLG_WARNRC,
+			    message ("Found both %s and %s files. Using both files, "
+				     "but recommend using only %s to avoid confusion.",
+				     rcname, altname, rcname),
+			    g_currentloc);
+	      
+	    }
 
-	    g_currentloc = fileloc_createRc (cstring_fromChars (fname));
-	    loadrc (rcfile, &passThroughArgs);
-	    fileloc_reallyFree (g_currentloc);
-	    g_currentloc = oloc;
-	  }
-
-	sfree (fname); 
+	  cstring_free (rcname);
+	  cstring_free (altname);
+	}
       }
   }
   
@@ -1020,8 +1001,9 @@ int main (int argc, char *argv[])
 	      opt = identifyFlag (flagname);
 	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
 
-	      if (flagcode_isSkip (opt))
+	      if (flagcode_isSkip (opt) || opt == FLG_SHOWSCAN || opt == FLG_WARNRC)
 		{
+		  /* showscan already processed */
 		  DPRINTF (("Skipping!"));
 		}
 	      else if (flagcode_isInvalid (opt))
@@ -1158,7 +1140,8 @@ int main (int argc, char *argv[])
     }
 
   setCodePoint ();  
-
+  showHerald (); 
+  
   /*
   ** create lists of C and LCL files
   */
@@ -1214,8 +1197,6 @@ int main (int argc, char *argv[])
 	  addFile (cfiles, cstring_copy (current));
 	}
     } end_cstringSList_elements;
-  
-    showHerald (); /*@i723 move earlier? */
   
   if (showhelp)
     {
@@ -2264,6 +2245,55 @@ llexit (int status)
   exit ((status == LLSUCCESS) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
+{
+  bool res = FALSE;
+
+  if (fileTable_exists (context_fileTable (), fname))
+    {
+      if (report)
+	{
+	  voptgenerror
+	    (FLG_WARNRC, 
+	     message ("Multiple attempts to read options file: %s", fname),
+	     g_currentloc);
+	}
+    }
+  else
+    {
+      FILE *innerf = fileTable_openFile (context_fileTable (), fname, "r");
+      
+      if (innerf != NULL)
+	{
+	  fileloc fc = g_currentloc;
+	  g_currentloc = fileloc_createRc (fname);
+
+	  if (context_getFlag (FLG_SHOWSCAN))
+	    {
+	      lldiagmsg (message ("< reading options from %s >", 
+				  fileloc_outputFilename (g_currentloc)));
+	    }
+	  
+	  loadrc (innerf, passThroughArgs);
+	  fileloc_reallyFree (g_currentloc);
+	  g_currentloc = fc;
+	  res = TRUE;
+	}
+      else 
+	{
+	  if (report)
+	    {
+	      voptgenerror
+		(FLG_WARNRC, 
+		 message ("Cannot open options file: %s", fname),
+		 g_currentloc);
+	    }
+	}
+    }
+
+  return res;
+}
+
 /*
 ** This shouldn't be necessary, but Apple Darwin can't handle '"''s.
 */
@@ -2274,7 +2304,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 {
   char *s = mstring_create (MAX_LINE_LENGTH);
   char *os = s;
-
+  
   DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
 
   s = os;
@@ -2499,26 +2529,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			    }
 			  else if (opt == FLG_OPTF)
 			    {
-			      FILE *innerf = fileTable_openFile (context_fileTable (), extra, "r");
-			      cstring_markOwned (extra);
-			      
-			      if (innerf != NULL)
-				{
-				  fileloc fc = g_currentloc;
-				  g_currentloc = fileloc_createRc (extra);
-				  loadrc (innerf, passThroughArgs);
-				  fileloc_reallyFree (g_currentloc);
-				  g_currentloc = fc;
-				}
-			      else 
-				{
-				  showHerald ();
-				  voptgenerror
-				    (FLG_BADFLAG, 
-				     message ("Options file not found: %s", 
-					      extra),
-				     g_currentloc);
-				}
+			      (void) readOptionsFile (extra, passThroughArgs, TRUE);
 			    }
 			  else if (opt == FLG_INIT)
 			    {

@@ -9,10 +9,10 @@
 /* Splint's imports directory */
 #define DEFAULT_LCLIMPORTDIR ".:/usr/local/share/splint/imports:/af10/evans/LCLintDev/imports"
 
-/* gcc's private include directory */
-#define GCC_INCLUDE_DIR "/usr/lib/gcc-lib/i386-linux/2.7.2.1/include"
+/* system include directory */
+#define GCC_INCLUDE_DIR "/usr/include"
 
-/* the system's main include directory */
+/* alternate include directory */
 #define GCC_INCLUDE_DIR2 "/usr/local/include"
 
 /* String describing who compiled this binary and how */
@@ -21,11 +21,11 @@
 /* Splint's version number */
 #define LCL_PARSE_VERSION "Splint 3.0.0.20"
 
-/* Splint's version number and release date */
-#define LCL_VERSION "Splint 3.0.0.20 --- 5 October 2001"
-
 /* Define to disable support LCL files */
 /* #undef NOLCL */
+
+/* Splint's version number and release date */
+#define SPLINT_VERSION "Splint 3.0.0.20 --- 29 December 2001"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "/usr/local/include"
