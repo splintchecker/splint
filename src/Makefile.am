@@ -233,7 +233,9 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
 IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 
 ## Non-built files we need to distribute
-EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC) flags.def cscanner.l flex.head flex.reset $(IFILES) 256_random_numbers.nf  lclintMacros.nf	reservedNames.nf
+EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
+            flags.def cscanner.l flex.head flex.reset $(IFILES) \
+ Headers/256_random_numbers.nf  Headers/lclintMacros.nf	Headers/reservedNames.nf
 
 
 #Files that are used on systems that do not have bison or yacc
