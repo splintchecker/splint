@@ -66,6 +66,10 @@ lclint : $(OBJ)
 	@echo '// '
 	$(CC) -o lclint $(OBJ) $(LINKFLAGS)
 
+object: $(OBJ)
+
+mylint:
+	CC="$(LCLINT)" ; export CC ; $(MAKE) -e object
 ###
 ### grammars
 ###
@@ -241,7 +245,7 @@ endif
 	@echo '// '
 	@$(MAKE) -e opt
 	@echo '//  Done Release '`cat $(VERSION_NUMBER)`
-	
+
 ###
 ### cleaning
 ###

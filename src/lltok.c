@@ -47,6 +47,29 @@ bool lltok_isInc_Op (lltok tok)
 {
   return (tok.tok == INC_OP);
 }
+
+/* DRL added this function 10/23/2000 for boolean stuff */
+bool lltok_isEq_Op (lltok tok)
+{
+  return (tok.tok == EQ_OP);
+}
+
+/* DRL added this function 10/25/2000 for boolean stuff */
+bool lltok_isAnd_Op (lltok tok)
+{
+  return (tok.tok == AND_OP);
+}
+
+bool lltok_isOr_Op (lltok tok)
+{
+  return (tok.tok == OR_OP);
+}
+
+bool lltok_isNot_Op (lltok tok)
+{
+  return (tok.tok ==  TEXCL);
+}
+
 cstring
 lltok_unparse (lltok tok)
 {
@@ -170,3 +193,4 @@ void lltok_release (lltok t)
 {
   fileloc_free (t.loc);
 }
+

@@ -86,7 +86,7 @@ cstring constraint_parseKind (constraintType kind)
 
 void constraintList_debugPrint ( char * s )
 {
-  TPRINTF((s) );
+  DPRINTF((s) );
 }
 
 void constraint_print (constraint c)
@@ -318,13 +318,13 @@ static cstring exprNode_findConstraints ( exprNode e)
           e->constraints = constraintList_exprNodemerge (exprData_getUopNode (e->edata), exprNode_undefined);
 	  if (lltok_isInc_Op (exprData_getUopTok (data) ) )
 	    {
-	      TPRINTF(("++  -- will be implemented later"));
+	      DPRINTF(("++  -- will be implemented later"));
 	      // e->constraints = constraintList_add( e->constraints,
 	      // constraint_makeInc_Op (exprData_getUopNode (data) ) );
 	    }
       break;
     default:
-      TPRINTF(("no special constraint generation"));
+      DPRINTF(("no special constraint generation"));
       ret = NULL;
     }
 

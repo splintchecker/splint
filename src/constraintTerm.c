@@ -166,7 +166,7 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
       return FALSE;
     }
       
- TPRINTF ( (message
+ DPRINTF ( (message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
@@ -179,7 +179,7 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
    }
  else
    {
-     TPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+     DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
      return FALSE;
    }     
     

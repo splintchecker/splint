@@ -1,9 +1,3 @@
-###
-### If I was smarter, I'd figure out how to get configure to fill in the
-### variables here instead of using environment variables to override
-### them.  The way I do it is pretty lame....
-###
-
 ################################################
 ###
 ### Generic system dependant Makefile
@@ -18,14 +12,25 @@ LS = ls
 OFILES = $(LS) *.o | $(WC) -l
 SFILES = $(LS) *.c | $(WC) -l
 
+## on mamba
+#BISON     = /usr/local/bin/bison
+#FLEX      = /usr/local/bin/flex
+
+BISON = /usr/bin/bison
+FLEX = /usr/bin/flex
+
+# ${HOME}/bison-1.28/bin/bison
+
+
 ###
 ### Compiler and compiler flags
 ###
 ### NOTE: CC is set in top level Makefile
 ###       
 
-CC              = gcc
-CCOPT           = gcc -O2
+CC              = /usr/local/bin/gcc  -Wall -g
+CCOPT           = /usr/local/bin/gcc -Wall -g
+# -O4 doesn't work with bison 1.25 
 
 ###
 ### CPPFLAGS also used by lclint --- it should only include -I, -D and
@@ -35,8 +40,10 @@ CCOPT           = gcc -O2
 CPPFLAGS     = -I$(HEADERDIR) -DUNIX -DNOSTDLIB=0 -DUGS=1
 ### -DUGS=1 is needed for AIX (should be set by configure)
 
-### lex library (overrode by configure environment variable)
-LINKFLAGS     = -ll
+### lex library
+
+LINKFLAGS     = -lfl
+
 
 ifeq ($(CC), gcc)
   CFLAGS       = $(CPPFLAGS) -Wpointer-arith -Wcast-qual -Wcomment -Wswitch -Wunused -Wreturn-type -ansi -pedantic
@@ -46,12 +53,9 @@ endif
 
 DEBUGFLAGS = -DYYDEBUG=1 -DYYIMPURE=1 # don't change this
 
-BISON = /af10/evans/bison-1.28/bin/bison
-FLEX = /usr/bin/flex
-
 ### bison flags
 
-YFLAGS          = -v -t -d
+YFLAGS          = -v -t -d --debug
 
 ###
 ### controls lclint checking (uncomment this line to have
@@ -78,6 +82,11 @@ LASTBACKUP      = lastbackup
 VERSION_NUMBER  = lastversion
 
 
+###
+### Defaults (overrode by environment varialbles for local build)
+###
 
-
+SYSTEM_LIBDIR   = /usr/include
+DEFAULT_LARCHPATH = /usr/local/lclint-2.5m/lib
+DEFAULT_LCLIMPORTDIR = /usr/local/lclint-2.5m/imports
 

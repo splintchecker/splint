@@ -69,6 +69,9 @@ void constraintList_exprNodemerge()
 constraintList 
 constraintList_add (constraintList s, constraint el)
 {
+  if (resolve (el, s) )
+    return s;
+  
   if (s->nspace <= 0)
     constraintList_grow (s);
 
@@ -153,6 +156,48 @@ constraintList_printDetailed (constraintList s)
 	}
     }
   return st;
+}
+
+/*{ x: constraint | (x in l1 -> resolve (x, l2) || (x in l2 -> resolve (x, l1)
+} */
+
+constraintList
+constraintList_logicalOr (constraintList l1, constraintList l2)
+{
+  constraint temp;
+  constraintList ret;
+  TPRINTF ( (message ("Logical of on %s and %s",
+		      constraintList_print(l1), 
+		      constraintList_print(l2)) ) );
+  
+  ret = constraintList_new();
+  constraintList_elements (l1, el)
+    {
+      temp = substitute (el, l2);
+      
+      if (resolve (el, l2) || resolve(temp,l2) )
+	{   /*avoid redundant constraints*/
+	  if (!resolve (el, ret) )
+	    ret = constraintList_add (ret, el);
+	}
+    }
+  end_constraintList_elements;
+
+   constraintList_elements (l2, el)
+    {
+      temp = substitute (el, l1);
+      
+      if (resolve (el, l1) || resolve(temp,l1) )
+	{
+	  /*avoid redundant constraints*/
+	  if (!resolve (el, ret) )
+	    ret = constraintList_add (ret, el);
+	}
+    }
+  end_constraintList_elements;
+
+  
+  return ret;
 }
 
 void

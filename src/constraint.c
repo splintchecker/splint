@@ -146,6 +146,36 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode e1, exprNode t2, filelo
 }
 
 
+/* make constraint ensures e1 == e2 */
+
+constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+  constraint ret = constraint_makeNew();
+  exprNode e;
+  
+  e = exprNode_fakeCopy(e1);
+  ret->lexpr = constraintExpr_makeValueExpr (e);
+  ret->ar = EQ;
+  ret->post = TRUE;
+  e = exprNode_fakeCopy(e2);
+  ret->expr =  constraintExpr_makeValueExpr (e);
+  
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
+  return ret;
+}
+
+
+exprNode exprNode_copyConstraints (exprNode dst, exprNode src)
+{
+  dst->ensuresConstraints = constraintList_copy (src->ensuresConstraints );
+  dst->requiresConstraints = constraintList_copy (src->requiresConstraints );
+  dst->trueEnsuresConstraints = constraintList_copy (src->trueEnsuresConstraints );
+  dst->falseEnsuresConstraints = constraintList_copy (src->falseEnsuresConstraints );
+  return dst;
+}
+
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
@@ -158,11 +188,13 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
   ret->expr =  constraintExpr_makeValueExpr (e);
   ret->expr =  constraintExpr_makeIncConstraintExpr (ret->expr);
 
-  ret->expr = constraintExpr_setFileloc (ret->expr, sequencePoint);
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
 //   fileloc_incColumn (  ret->lexpr->term->loc);
 //   fileloc_incColumn (  ret->lexpr->term->loc);
   return ret;
 }
+
+
 
 // constraint constraint_makeMaxReadSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
 // {
@@ -224,7 +256,7 @@ cstring  constraint_printDetailed (constraint c)
     }
   else
     {
-    st = message ("Function Post condition:\nThis function appears to have the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
+    st = message ("Block Post condition:\nThis function block has the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
     }
   return st;
 }

@@ -9959,7 +9959,10 @@ long exprNode_getLongValue (exprNode e) {
 
 fileloc exprNode_getfileloc (exprNode p_e)
 {
-  return fileloc_copy ( p_e->loc );
+  if (p_e)
+    return fileloc_copy ( p_e->loc );
+  else
+    return fileloc_undefined;
 }
 
 fileloc exprNode_getNextSequencePoint (exprNode e)
@@ -9974,8 +9977,10 @@ fileloc exprNode_getNextSequencePoint (exprNode e)
     lltok t = exprData_getUopTok (e->edata);
     return lltok_getLoc (t);
   } else {
-    llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));
+    #warning fix
+    //    llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));
     return fileloc_undefined;
   }
  }
+
 

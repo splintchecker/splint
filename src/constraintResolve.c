@@ -1,5 +1,5 @@
 /*
-/*
+*
 ** constraintResolve.c
 */
 
@@ -25,12 +25,43 @@ bool resolve (constraint c, constraintList p);
 constraintList reflectChangesEnsures (constraintList pre2, constraintList post1);
 constraint constraint_simplify (constraint c);
 
+constraintList constraintList_fixConflicts (constraintList list1, constraintList list2);
+
+constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2);
+
+constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
+
+
+/*********************************************/
+
+					    
+constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2)
+{
+  constraintList ret;
+  constraintList temp;
+  ret = constraintList_new();
+  
+  ret = reflectChangesEnsures (list1, list2);
+  ret = constraintList_fixConflicts (ret, list2);
+  ret = constraintList_subsumeEnsures (ret, list2);
+  list2 = constraintList_subsumeEnsures (list2, ret);
+  temp = constraintList_copy(list2);
+
+  temp = constraintList_addList (temp, ret);
+  return temp;
+  //ret = constraintList_addList (ret, list2);
+  //return ret;
+}
+
 void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 {
   constraintList temp;
-  TPRINTF( (message ("magically merging constraint into parent:%s for children:  %s and %s", exprNode_unparse (parent), exprNode_unparse (child1), exprNode_unparse(child2) )
-	    ) );
-   if (exprNode_isError (child1)  || exprNode_isError(child2) )
+
+  TPRINTF( (message ("magically merging constraint into parent:%s for", exprNode_unparse (parent) )));
+
+  TPRINTF( (message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
+
+  if (exprNode_isError (child1)  || exprNode_isError(child2) )
      {
        if (exprNode_isError (child1) && !exprNode_isError(child2) )
 	 {
@@ -69,14 +100,8 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   temp = reflectChanges (child2->requiresConstraints, child1->ensuresConstraints);
   parent->requiresConstraints = constraintList_addList (parent->requiresConstraints, temp);
 
-  
-  temp = reflectChangesEnsures (child1->ensuresConstraints, child2->ensuresConstraints);
-  // temp = constraintList_copy (child1->ensuresConstraints);
-
-  temp = constraintList_fixConflicts (temp, child2->ensuresConstraints);
-  
-  parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
-  parent->ensuresConstraints = constraintList_addList (parent->ensuresConstraints, temp);
+  parent->ensuresConstraints = constraintList_mergeEnsures(child1->ensuresConstraints,
+							   child2->ensuresConstraints);
   
   TPRINTF( (message ("Parent constraints are %s and %s ",
 		     constraintList_print (parent->requiresConstraints),
@@ -87,6 +112,29 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
 
   
+  
+constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2)
+{
+  constraintList ret;
+  ret = constraintList_new();
+  constraintList_elements (list1, el)
+    {
+      
+      TPRINTF ((message ("Examining %s", constraint_print (el) ) ) );
+      if (!resolve (el, list2) )
+	{
+	    ret = constraintList_add (ret, el);
+	}
+      else
+	{
+	  TPRINTF ( (message ("Subsuming %s", constraint_print (el) ) ) );
+	}
+    } end_constraintList_elements;
+
+    return ret;
+}
+
+
 constraintList reflectChanges (constraintList pre2, constraintList post1)
 {
   
@@ -98,7 +146,8 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
       if (!resolve (el, post1) )
 	{
 	  temp = substitute (el, post1);
-	  ret = constraintList_add (ret, temp);
+	  if (!resolve (temp, post1) )
+	    ret = constraintList_add (ret, temp);
 	}
     } end_constraintList_elements;
 
@@ -117,8 +166,14 @@ constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
       if (!resolve (el, post1) )
 	{
 	  temp = substitute (el, post1);
-	  if (temp != NULL)
+	  llassert (temp != NULL);
+
+	  if (!resolve (temp, post1) )
 	    ret = constraintList_add (ret, temp);
+	}
+      else
+	{
+	  TPRINTF ( (message ("Resolved away %s ", constraint_print(el) ) ) );
 	}
     } end_constraintList_elements;
 
@@ -131,14 +186,15 @@ bool constraint_conflict (constraint c1, constraint c2)
   
   if (constraintExpr_similar(c1->lexpr, c2->lexpr) )
     {
-      if (c1->ar == c2->ar)
-	{
-	  TPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
-	  return TRUE;
-	}
+      if (c1->ar == EQ)
+	if (c1->ar == c2->ar)
+	  {
+	    TPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+	    return TRUE;
+	  }
     }  
 
-  TPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+  DPRINTF ( (message ("%s doesn't conflict with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 
   return FALSE; 
 
@@ -204,7 +260,7 @@ bool resolve (constraint c, constraintList p)
 	}
     }
   end_constraintList_elements;
-  TPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
+  DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
   return FALSE;
 }
 
@@ -225,48 +281,85 @@ bool satifies (constraint pre, constraint post)
   return rangeCheck (pre->ar, pre->expr, post->ar, post->expr);
 }
 
+bool arithType_canResolve (arithType ar1, arithType ar2)
+{
+  switch (ar1)
+    {
+    case GTE:
+    case GT:
+      if ( (ar2 == GT) || (ar2 == GTE) || (ar2 == EQ) )
+	{
+	  return TRUE;
+	}
+      break;
+
+    case EQ:
+      if (ar2 == EQ)
+	return TRUE;
+      break;
+
+    case LT:
+    case LTE:
+      llassert(FALSE); 
+      if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
+	return TRUE;
+    }
+  return FALSE;	  
+}
 
 bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2)
 
 {
-  TPRINTF ((message ("Doing Range CHECK %s and %s", constraintExpr_unparse(expr1), constraintExpr_unparse(expr2) ) ));
+  DPRINTF ((message ("Doing Range CHECK %s and %s", constraintExpr_unparse(expr1), constraintExpr_unparse(expr2) ) ));
+
+  if (! arithType_canResolve (ar1, ar2) )
+    return FALSE;
+  
   switch (ar1)
  {
  case GTE:
  case GT:
-      /*irst constraint is > only > => or == cosntraint can satify it */
-      if ( (ar2 == GT) || (ar2 == GTE) || (ar2 == EQ) )
-	{
-	  if (! constraintExpr_canGetValue (expr1) )
-	    {
-	      TPRINTF( ("Can't Get value"));
-	      return FALSE;
-	    }
-	  if (! constraintExpr_canGetValue (expr2) )
-	    {
-	      TPRINTF( ("Can't Get value"));
-	      return FALSE;
-	    }
-	  
-	  if (constraintExpr_compare (expr2, expr1) >= 0)
-	    return TRUE;
-	  
-	}
-      
-      return FALSE;
+   if (!  (constraintExpr_canGetValue (expr1) &&
+	   constraintExpr_canGetValue (expr2) ) )
+     {
+       DPRINTF( ("Can't Get value"));
+       return FALSE;
+     }
+   
+   if (constraintExpr_compare (expr2, expr1) >= 0)
+     return TRUE;
+  
+  return FALSE;
+ case EQ:
+   if (constraintExpr_similar (expr1, expr2) )
+	 return TRUE;
+   
+   return FALSE;
+   
  default:
-   TPRINTF(("case not handled"));
+   DPRINTF(("case not handled"));
  }
   return FALSE;
 }
 
+
 constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new)
 {
-  TPRINTF (("Doing replace for lexpr") );
+  DPRINTF (("Doing replace for lexpr") );
   c->lexpr = constraintExpr_searchandreplace (c->lexpr, old, new);
-  TPRINTF (("Doing replace for expr") );
+  DPRINTF (("Doing replace for expr") );
   c->expr = constraintExpr_searchandreplace (c->expr, old, new);
   return c;
+}
+
+bool constraint_search (constraint c, constraintExpr old)
+{
+  bool ret;
+  ret = FALSE;
+
+  ret  = constraintExpr_search (c->lexpr, old);
+  ret = ret || constraintExpr_search (c->expr, old);
+  return ret;
 }
 
 
@@ -274,15 +367,24 @@ constraint constraint_adjust (constraint substitute, constraint old)
 {
   fileloc loc1, loc2, loc3;
 
+  DPRINTF ( (message("Start adjust on %s and %s", constraint_print(substitute),
+		     constraint_print(old))
+		   ));
+
   loc1 = constraint_getFileloc (old);
 
   loc2 = constraintExpr_getFileloc (substitute->lexpr);
 
   loc3 = constraintExpr_getFileloc (substitute->expr);
 
-  if (fileloc_closer (loc1, loc3, loc2))
+  
+  // special case of an equality that "contains itself"
+  if (constraintExpr_search (substitute->expr, substitute->lexpr) )
+      if (fileloc_closer (loc1, loc3, loc2))
       {
 	constraintExpr temp;
+	DPRINTF ( (message("Doing adjust on %s", constraint_print(substitute) )
+		   ));
 	temp = substitute->lexpr;
 	substitute->lexpr = substitute->expr;
 	substitute->expr  = temp;
@@ -301,13 +403,17 @@ constraint substitute (constraint c, constraintList p)
 	 if (!constraint_conflict (c, el) )
 
 	   {
-	  
 	     constraint temp;
 	     temp = constraint_copy(el);
 	     
 	     temp = constraint_adjust(temp, c);
+
+	     DPRINTF((message ("Substituting %s for %s",
+			       constraint_print (temp), constraint_print (c)
+			       ) ) );
+			       
 	  
-	     c = constraint_searchandreplace (c, el->lexpr, el->expr);
+	     c = constraint_searchandreplace (c, temp->lexpr, temp->expr);
 	   }
     }
   end_constraintList_elements;
@@ -319,9 +425,9 @@ constraint substitute (constraint c, constraintList p)
 
 constraint constraint_solve (constraint c)
 {
-  TPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
+  DPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
   c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);
-  TPRINTF( (message ("Solved and got %s\n", constraint_print(c) ) ) );
+  DPRINTF( (message ("Solved and got %s\n", constraint_print(c) ) ) );
 
   return c;
 }
@@ -333,10 +439,10 @@ constraint constraint_simplify (constraint c)
   c->expr  = constraintExpr_simplify (c->expr);
   
   c = constraint_solve (c);
-  /*
+  
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
-  */
+  
   return c;
 }
 
@@ -376,4 +482,5 @@ bool fileloc_closer (fileloc  loc1, fileloc  loc2, fileloc  loc3)
    llassert(FALSE);
    return FALSE;
 }
+
 
