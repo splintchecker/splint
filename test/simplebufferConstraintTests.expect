@@ -3,7 +3,7 @@ m.c: (in function t)
 m.c:9:1: Index of possibly null pointer f: f
    m.c:8:5: Storage f may become null
 sizeof.c: (in function f)
-sizeof.c:17:1: Possible out-of-bounds store:
+sizeof.c:17:1: Likely out-of-bounds store:
     x[(sizeof(x))]
     Unable to resolve constraint:
     requires 2 >= 3
@@ -12,7 +12,7 @@ sizeof.c:17:1: Possible out-of-bounds store:
 test3.c:2:6: Function t defined more than once
    m.c:11:1: Previous definition of t
 test3.c: (in function t)
-test3.c:9:3: Possible out-of-bounds store:
+test3.c:9:3: Likely out-of-bounds store:
     g[101]
     Unable to resolve constraint:
     requires 99 >= 101

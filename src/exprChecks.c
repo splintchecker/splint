@@ -960,8 +960,10 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
       /* check if errors will printed */
       if (!(context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
 	    context_getFlag(FLG_BOUNDSWRITE) ||
-	    context_getFlag(FLG_BOUNDSREAD) ||
-	    context_getFlag(FLG_CHECKPOST)))
+	    context_getFlag(FLG_BOUNDSREAD)  ||
+	    context_getFlag(FLG_LIKELYBOUNDSWRITE) ||
+	    context_getFlag(FLG_LIKELYBOUNDSREAD)  ||
+	    context_getFlag(FLG_CHECKPOST) ))
 	{
 	  exprNode_free (body);
 	  context_exitInnerPlain();

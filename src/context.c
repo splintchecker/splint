@@ -4140,11 +4140,24 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
       DOSET (FLG_ALLMACROS, b);
       DOSET (FLG_FCNMACROS, b);
       DOSET (FLG_CONSTMACROS, b);
-      break;
+      break;      
     case FLG_BOUNDS:
       DOSET (FLG_BOUNDSREAD, b);
       DOSET (FLG_BOUNDSWRITE, b);
+      DOSET (FLG_LIKELYBOUNDSREAD, b);
+      DOSET (FLG_LIKELYBOUNDSWRITE, b);
       break;
+    case FLG_BOUNDSREAD:
+      DOSET (FLG_LIKELYBOUNDSREAD, b);
+      break;
+    case FLG_BOUNDSWRITE:
+      DOSET (FLG_LIKELYBOUNDSWRITE, b);
+      break;
+    case FLG_LIKELYBOUNDS:
+      DOSET (FLG_LIKELYBOUNDSREAD, b);
+      DOSET (FLG_LIKELYBOUNDSWRITE, b);
+      break;
+      
     case FLG_CZECH:
       if (b) { DOSET (FLG_ACCESSCZECH, b); }
       DOSET (FLG_CZECHFUNCTIONS, b);

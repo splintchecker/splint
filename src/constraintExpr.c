@@ -2500,3 +2500,68 @@ static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast(/*@only@*/ c
   return e;
 }
 
+
+bool  constraintExpr_isConstantOnly ( constraintExpr e )
+{
+  DPRINTF(( (message("constraintExpr_isConstantOnly %s ",
+		     constraintExpr_unparse(e) ) )
+	    ));
+
+  switch (e->kind)
+    {
+    case term:
+      {
+	constraintTerm t;
+	
+	t = constraintExprData_termGetTerm(e->data);
+	
+	
+	if (constraintTerm_isConstantOnly (t) )
+	  {
+	    return TRUE;
+	  }
+	else
+	  {
+	    return FALSE;
+	  }
+      }
+      
+    case binaryexpr:
+      {
+	constraintExpr temp1, temp2;
+	
+	temp1 = constraintExprData_binaryExprGetExpr1 (e->data);
+	
+	temp2 = constraintExprData_binaryExprGetExpr2 (e->data);
+	
+	if (constraintExpr_isConstantOnly(temp1) &&
+	    constraintExpr_isConstantOnly(temp2) )
+	  {
+	    return TRUE;
+	  }
+	else
+	  {
+	    return FALSE;
+	  }
+      }
+      
+    case unaryExpr:
+      {
+	constraintExpr temp;
+	
+	temp = constraintExprData_unaryExprGetExpr (e->data );
+
+	if (constraintExpr_isConstantOnly(temp) )
+	  {
+	    return TRUE;
+	  }
+	else
+	  {
+	    return FALSE;
+	  }
+      }
+    default:
+      BADEXIT;
+    }
+}
+

@@ -1886,6 +1886,30 @@ static flaglist flags =
     "Memory read or write may be out of bounds of allocated storage.", 0, 0
   },
   {
+    FK_BOUNDS, FK_MEMORY, specialFlag,
+    "likelybounds",
+    FLG_LIKELYBOUNDS,
+    "memory bounds checking (sets likelyboundsread and likelyboundswrite)",
+    "Memory read or write may be out of bounds of allocated storage.", 0, 0
+  },
+  {
+    FK_BOUNDS, FK_MEMORY, plainFlag,
+    "likely-boundsread",
+    FLG_LIKELYBOUNDSREAD,
+    "likely out of bounds read",
+    "A memory read references memory beyond the allocated storage.",
+    0, 0
+  },
+  {
+    FK_BOUNDS, FK_MEMORY, plainFlag,
+    "likely-boundswrite",
+    FLG_LIKELYBOUNDSWRITE,
+    "likely buffer overflow from an out of bounds write",
+    "A memory write may write to an address beyond the allocated buffer.",
+    0, 0
+  },
+  
+  {
     FK_BOUNDS, FK_MEMORY, plainFlag,
     "boundsread",
     FLG_BOUNDSREAD,

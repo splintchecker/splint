@@ -736,3 +736,37 @@ ctype constraintTerm_getCType (constraintTerm term)
   return ct;
 }
 
+bool constraintTerm_isConstantOnly (constraintTerm term)
+{  
+  switch (term->kind)
+    {
+    case EXPRNODE:
+      if (exprNode_isNumLiteral (term->value.expr) ||
+	  exprNode_isStringLiteral (term->value.expr) ||
+	  exprNode_isCharLiteral  (term->value.expr) )
+	{
+	  return TRUE;
+	}
+      else
+	{
+	  return FALSE;
+	}
+
+    case INTLITERAL:
+      return TRUE;
+            
+    case SREF:
+      if ( sRef_isConst (term->value.sref) )
+	{
+	  return TRUE;
+	}
+      else
+	{
+	  return FALSE;
+	}
+    default:
+      BADEXIT;
+    }
+  
+  BADEXIT;
+}

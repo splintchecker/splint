@@ -159,7 +159,9 @@ void exprNode_findValue( exprNode p_e);
 /*drl 1/6/2001: I didn't think these functions were solid enough to include in the   stable  release of splint.*/
 /*drl added 12/30/01 */
 /* extern / *@only@* / constraint  constraint_doSRefFixInvarConstraint(constraint p_invar, sRef p_s, ctype p_ct ); */
-     
+
+/*drl added 12/19 */
+bool constraint_isConstantOnly (constraint p_c);
 /*@=czechfcns*/
 /* drl possible problem : warning take this out */
 

@@ -86,6 +86,9 @@ extern ctype constraintTerm_getCType (constraintTerm term);
 
 /*@=namechecks@*/
 
+/*drl added 12/19/2002*/
+bool  constraintTerm_isConstantOnly ( constraintTerm p_term );
+     
 #else
 
 #error Multiple Include

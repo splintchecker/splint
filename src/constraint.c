@@ -724,6 +724,7 @@ void constraint_printError (constraint c, fileloc loc)
   cstring string;
   fileloc errorLoc, temp;
 
+  bool isLikely;
 
   /*drl 11/26/2001 avoid printing tautological constraints */
   if (constraint_isAlwaysTrue (c))
@@ -756,8 +757,30 @@ void constraint_printError (constraint c, fileloc loc)
       string = cstring_replaceChar(string, '\n', ' ');
     }
 
+  /*drl added 12/19/2002 print
+    a different error fro "likely" bounds-errors*/
+  
+  isLikely = constraint_isConstantOnly(c);
 
-  if (c->post)
+  if (isLikely)
+    {
+      if (c->post)
+	{
+	  voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
+	}
+      else
+	{
+	  if (constraint_hasMaxSet (c))
+	    {
+	      voptgenerror (FLG_LIKELYBOUNDSWRITE, string, errorLoc);
+	    }
+	  else
+	    {
+	      voptgenerror (FLG_LIKELYBOUNDSREAD, string, errorLoc);
+	    }
+	}
+    }
+  else if (c->post)
     {
       voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
     }
@@ -844,6 +867,7 @@ cstring  constraint_printDetailed (constraint c)
   cstring st = cstring_undefined;
   cstring temp = cstring_undefined;
   cstring genExpr;
+  bool isLikely;
   
   if (!c->post)
     {
@@ -854,13 +878,30 @@ cstring  constraint_printDetailed (constraint c)
       st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_printDeep (c));
     }
 
-  if (constraint_hasMaxSet (c))
+  isLikely = constraint_isConstantOnly(c);
+
+  if (isLikely)
     {
-      temp = cstring_makeLiteral ("Possible out-of-bounds store:\n");
+      if (constraint_hasMaxSet (c))
+	{
+	  temp = cstring_makeLiteral ("Likely out-of-bounds store:\n");
+	}
+      else
+	{
+	  temp = cstring_makeLiteral ("Likely out-of-bounds read:\n");
+	}
     }
   else
     {
-      temp = cstring_makeLiteral ("Possible out-of-bounds read:\n");
+      
+      if (constraint_hasMaxSet (c))
+	{
+	  temp = cstring_makeLiteral ("Possible out-of-bounds store:\n");
+	}
+      else
+	{
+	  temp = cstring_makeLiteral ("Possible out-of-bounds read:\n");
+	}
     }
   
   genExpr = exprNode_unparse (c->generatingExpr);
@@ -1214,5 +1255,27 @@ bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint c)
     }
 
   return FALSE;
+  
+}
+
+/*drl added 12/19/2002*/
+/*whether constraints consist only of
+  terms which are constants*/
+bool constraint_isConstantOnly (constraint c)
+{
+  bool l, r;
+
+  l = constraintExpr_isConstantOnly(c->lexpr);
+  r = constraintExpr_isConstantOnly(c->expr);
+
+  if (l && r)
+    {
+      return TRUE;
+    }
+
+  else
+    {
+      return FALSE;
+    }
   
 }

@@ -128,7 +128,11 @@ int constraintExpr_getDepth (/*@observer@*/ /*@temp@*/ constraintExpr p_ex);
 /* drl added 12/30/001*/
 /* extern / *@only@* / constraintExpr constraintExpr_doSRefFixInvarConstraint (/ *@only@* / constraintExpr p_expr, sRef p_s, ctype p_ct); */
 
-   
+
+
+/*drl added 12/19 */
+bool  constraintExpr_isConstantOnly ( constraintExpr p_e );
+
 #else
 # error "Multiple include"
 #endif

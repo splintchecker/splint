@@ -202,7 +202,7 @@ ignore.c:10: Return value (type bool) ignored: fb()
 
 Finished checking --- 1 code warning, as expected
 
-setChar.c:5: Possible out-of-bounds store:
+setChar.c:5: Likely out-of-bounds store:
     buf[10]
     Unable to resolve constraint:
     requires 9 >= 10
