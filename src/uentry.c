@@ -288,8 +288,7 @@ void printAnnots ()
     }
   printf ("\n");
 
-  printf ("Total Annotations: %d (%d decls, %d sharable, %d indirect)\n", alltotals, totdecls, totshdecls, totidecls);
-}
+  printf ("Total Annotations: %d (%d decls, %d sharable, %d indirect)\n", alltotals, totdecls, totshdecls, totidecls); }
 
 extern void uentry_tallyAnnots (uentry u, ancontext kind)
 {
@@ -567,7 +566,8 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 	{
 	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
 	    {
-	      uentry_makeVarFunction (ue);
+	      TPRINTF(( (message( "Function pointer %s not doing  uentry_makeVarFunction", uentry_unparse(ue) )) ));
+	      //  uentry_makeVarFunction (ue);
 	    }
 
 	  //llassert (uentry_isFunction (ue));
@@ -588,7 +588,7 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 		  return constraintList_undefined;
 	    }
 
-	  if (ue->info->fcn->preconditions)
+	  if (ue->info->fcn->preconditions != NULL)
 	    {
 	   return constraintList_copy (ue->info->fcn->preconditions);
 	    }
@@ -615,7 +615,8 @@ constraintList uentry_getFcnPostconditions (uentry ue)
 	{
 	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
 	    {
-	      uentry_makeVarFunction (ue);
+	      TPRINTF(( (message( "Function pointer %s not doing  uentry_makeVarFunction", uentry_unparse(ue) )) ));
+	      //uentry_makeVarFunction (ue);
 	    }
 
 	  //llassert (uentry_isFunction (ue));

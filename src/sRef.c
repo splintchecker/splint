@@ -2044,7 +2044,7 @@ sRef_closeEnough (sRef s1, sRef s2)
   s is an sRef of a formal paramenter in a function call constraint
   we trys to return a constraint expression derived from the actual parementer of a function call.
 */
-/*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ exprNodeList args)
+/*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ /*@temp@*/ exprNodeList args)
 {
   constraintExpr ce;
 
@@ -2055,7 +2055,7 @@ sRef_closeEnough (sRef s1, sRef s2)
     {
     case SK_RESULT:
       {
-	s = sRef_saveCopy(s);
+	//	s = sRef_saveCopy(s);
 	ce = constraintExpr_makeTermsRef (s);
 	return ce;
       }
@@ -2065,14 +2065,14 @@ sRef_closeEnough (sRef s1, sRef s2)
 	
 	temp = (sRef_makeField (sRef_fixBaseParam (s->info->field->rec, args),
 			      s->info->field->field));
-	ce = constraintExpr_makeTermsRef (sRef_saveCopy(temp));
+	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }
     case SK_PTR:
       {
 	sRef temp;
 	temp = (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
-	temp = sRef_saveCopy(temp);
+	//temp = sRef_saveCopy(temp);
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }

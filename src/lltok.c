@@ -113,12 +113,29 @@ bool  lltok_isMinus_Op (lltok tok)
 
 /*drl7x added 6 6 2001 */
 
+
 bool  lltok_isAmpersand_Op (lltok tok)
 {
   return (tok.tok == TAMPERSAND);
 }
 
 /*end drl added */
+
+/*drl7x added 6 15 2001 */
+
+bool  lltok_isExcl_Op (lltok tok)
+{
+  return (tok.tok == TEXCL);
+}
+
+bool  lltok_isTilde_Op (lltok tok)
+{
+  return (tok.tok == TTILDE);
+}
+
+/*end drl added */
+
+
 
 cstring
 lltok_unparse (lltok tok)
