@@ -1341,8 +1341,14 @@ uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
 	  
 	  llassertfatal (uentry_isFunction (ue));
 	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
-	  
-	  ue->info->fcn->preconditions = preconditions;
+	
+	  if ((ue->info->fcn->preconditions) != NULL )
+	    {
+	      constraintList_free(ue->info->fcn->preconditions);
+	      ue->info->fcn->preconditions = preconditions;
+	    }
+	  else
+	      ue->info->fcn->preconditions = preconditions;
 	}
 	
     }
@@ -1379,8 +1385,15 @@ uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions)
 	  
 	  llassertfatal (uentry_isFunction (ue));
 	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
-	  
-	  ue->info->fcn->postconditions = postconditions;
+
+	  if ((ue->info->fcn->postconditions ) == NULL)
+	    	  ue->info->fcn->postconditions = postconditions;
+	  else
+	    {
+	    constraintList_free(ue->info->fcn->postconditions);
+	    ue->info->fcn->postconditions = postconditions;
+	    }	    
+
 	}
 	
     }
@@ -5959,6 +5972,13 @@ ufinfo_free (/*@only@*/ ufinfo u)
   sRefSet_free (u->mods);
   specialClauses_free (u->specclauses);
 
+  /*@i33*/
+  /*fix up if this is the right way to handle this --drl*/
+  if (u->preconditions)
+    constraintList_free(u->preconditions);
+  if (u->postconditions)
+    constraintList_free(u->postconditions);
+
   sfree (u);
 }
 
@@ -9743,23 +9763,23 @@ void uentry_testInRange (uentry p_e, uentry cconstant)  {
 }
 */
 
-void uentry_setStringLength (uentry p_e, uentry cconstant)  {
-if( uentry_isValid(p_e) ) {
-  if( p_e->info != NULL) {
-    if( p_e->info->var != NULL) {
-      char *t =  cstring_toCharsSafe (uentry_unparse(cconstant));
-      int length = atoi( t );
-      free (t);
-      p_e->info->var->bufinfo->len = length; 
-      p_e->sref->bufinfo.len = length;
-      printf("Set string length of buff to %d \n",  p_e->sref->bufinfo.size);
-    }//end if
-  }//endif
-}//end if
-}
+/*  void uentry_setStringLength (uentry p_e, uentry cconstant)  { */
+/*  if( uentry_isValid(p_e) ) { */
+/*    if( p_e->info != NULL) { */
+/*      if( p_e->info->var != NULL) { */
+/*        char *t =  cstring_toCharsSafe (uentry_unparse(cconstant)); */
+/*        int length = atoi( t ); */
+/*        free (t); */
+/*        p_e->info->var->bufinfo->len = length;  */
+/*        p_e->sref->bufinfo.len = length; */
+/*        printf("Set string length of buff to %d \n",  p_e->sref->bufinfo.size); */
+/*      }//end if */
+/*    }//endif */
+/*  }//end if */
+/*  } */
 
 
-void uentry_setBufferSize (uentry p_e, exprNode cconstant) {
+static void uentry_setBufferSize (uentry p_e, exprNode cconstant) {
 if( uentry_isValid(p_e) ) {
   if( p_e->info != NULL) {
     if( p_e->info->var != NULL) {
@@ -9824,19 +9844,19 @@ modifies: p_e
 effects: sets the state of the variable
 */
 
-void uentry_setNotNullTerminatedState (uentry p_e)  {
-  if( uentry_isValid(p_e) ) {
-    if( p_e->info != NULL) {
-      if( p_e->info->var != NULL) {
-        p_e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
-        p_e->sref->bufinfo.bufstate = BB_NOTNULLTERMINATED;
-        return;
-      }//End if
-    }//End if
-  }//End if
+/*  void uentry_setNotNullTerminatedState (uentry p_e)  { */
+/*    if( uentry_isValid(p_e) ) { */
+/*      if( p_e->info != NULL) { */
+/*        if( p_e->info->var != NULL) { */
+/*          p_e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED; */
+/*          p_e->sref->bufinfo.bufstate = BB_NOTNULLTERMINATED; */
+/*          return; */
+/*        }//End if */
+/*      }//End if */
+/*    }//End if */
 
-  fprintf(stderr, "uentry:Error in setNotNullTerminatedState\n");
-}
+/*    fprintf(stderr, "uentry:Error in setNotNullTerminatedState\n"); */
+/*  } */
 
 
 /*
@@ -9866,7 +9886,7 @@ modifies: p_e
 effects: sets the length of the buffer
 */
 
-void uentry_setLen (uentry p_e, int len)  {
+ void uentry_setLen (uentry p_e, int len)  {
   if( uentry_isValid(p_e) ) {
     if( p_e->info != NULL) {
       if( p_e->info->var != NULL) {

@@ -2072,6 +2072,7 @@ sRef_closeEnough (sRef s1, sRef s2)
       {
 	sRef temp;
 	temp = (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
+	temp = sRef_saveCopy(temp);
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }
@@ -2079,13 +2080,18 @@ sRef_closeEnough (sRef s1, sRef s2)
     case SK_ARRAYFETCH:
        {
 	sRef temp;
-	temp = sRef_fixBaseParam (s, args);
+	temp = sRef_saveCopy(s);
+	temp = sRef_fixBaseParam (temp, args);
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }
     case SK_CVAR:
-       ce = constraintExpr_makeTermsRef (s);
-       return ce;
+      {
+	sRef temp;
+	temp = sRef_saveCopy(s);
+	ce = constraintExpr_makeTermsRef (temp);
+	return ce;
+      }
     case SK_PARAM:
       llassert(exprNodeList_size (args) > s->info->paramno);
 	{
@@ -2097,9 +2103,13 @@ sRef_closeEnough (sRef s1, sRef s2)
 	}
 
     default:
-      llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %s for function with arguments %s", sRef_unparse (s), exprNodeList_unparse(args) ) ));
-      ce = constraintExpr_makeTermsRef (s);
+      {
+	sRef temp;
+      llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %q for function with arguments %q", sRef_unparse (s), exprNodeList_unparse(args) ) ));
+      temp = sRef_saveCopy(s);
+      ce = constraintExpr_makeTermsRef (temp);
       return ce;
+      }
     }
 
   
