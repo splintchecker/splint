@@ -3694,6 +3694,22 @@ static flaglist flags =
   },
   {
     FK_TYPEEQ, FK_NONE, modeFlag,
+    "longint",
+    FLG_LONGINT,
+    "long int and int are equivalent",
+    "To make long int and int types equivalent, use +longint.",
+    0, 0
+  },
+  {
+    FK_TYPEEQ, FK_NONE, modeFlag,
+    "shortint",
+    FLG_SHORTINT,
+    "short int and int are equivalent",
+    "To make short int and int types equivalent, use +shortint.",
+    0, 0
+  },
+  {
+    FK_TYPEEQ, FK_NONE, modeFlag,
     "floatdouble",
     FLG_FLOATDOUBLE,
     "float and double are equivalent",

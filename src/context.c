@@ -1109,7 +1109,7 @@ context_setModeAux (cstring s, bool warn)
     {
       flagcode modeflags[] = 
 	{ 
-	  FLG_BOOLINT, FLG_CHARINT, FLG_FLOATDOUBLE,
+	  FLG_BOOLINT, FLG_CHARINT, FLG_FLOATDOUBLE, FLG_LONGINT, FLG_SHORTINT,
 	  FLG_ENUMINT, FLG_RELAXQUALS, FLG_FORWARDDECL, 
 	  FLG_CHARINDEX, FLG_ABSTVOIDP, FLG_USEALLGLOBS, 
 	  FLG_CHARUNSIGNEDCHAR,
@@ -4368,32 +4368,42 @@ context_destroyMod (void)
 }
 
 /*
-** Flag shortcuts.
+** Flag shortcuts
 */
 
 bool context_msgBoolInt (void)
 {
-  return gc.flags [FLG_BOOLINT];
+  return context_flagOn (FLG_BOOLINT, g_currentloc);
 }
 
 bool context_msgCharInt (void)
 {
-  return gc.flags [FLG_CHARINT];
+  return context_flagOn (FLG_CHARINT, g_currentloc);
 }
 
 bool context_msgEnumInt (void)
 {
-  return gc.flags [FLG_ENUMINT];
+  return context_flagOn (FLG_ENUMINT, g_currentloc);
+}
+
+bool context_msgLongInt (void)
+{
+  return context_flagOn (FLG_LONGINT, g_currentloc);
+}
+
+bool context_msgShortInt (void)
+{
+  return context_flagOn (FLG_SHORTINT, g_currentloc);
 }
 
 bool context_msgPointerArith (void) 
 {
-  return gc.flags [FLG_POINTERARITH];
+  return context_flagOn (FLG_POINTERARITH, g_currentloc);
 }
 
 bool context_msgStrictOps (void) 
 {
-  return gc.flags [FLG_STRICTOPS];
+  return context_flagOn (FLG_STRICTOPS, g_currentloc);
 }
 
 bool context_msgLh (void)           

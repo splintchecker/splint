@@ -237,6 +237,8 @@ extern void context_quietExitFunction (void);
 extern bool context_msgBoolInt (void) /*@*/ ;
 extern bool context_msgCharInt (void) /*@*/ ;
 extern bool context_msgEnumInt (void) /*@*/ ;
+extern bool context_msgLongInt (void) /*@*/ ;
+extern bool context_msgShortInt (void) /*@*/ ;
 extern bool context_msgPointerArith (void) /*@*/ ;
 extern bool context_msgStrictOps (void) /*@*/ ;
 

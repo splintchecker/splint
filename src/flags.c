@@ -1111,6 +1111,14 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	{
 	  res = FLG_ENUMINT;
 	}
+      else if (cstring_equalLit (cflag, "intlong"))
+	{
+	  res = FLG_LONGINT;
+	}
+      else if (cstring_equalLit (cflag, "intshort"))
+	{
+	  res = FLG_SHORTINT;
+	}
       /*
       ** Backwards compatibility for our American friends...
       */

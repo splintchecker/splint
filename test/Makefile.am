@@ -45,7 +45,7 @@ UNITTESTS = \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
-  linked lintcomments list loopexec looptesteffect \
+  linked lintcomments list longint loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
@@ -518,6 +518,17 @@ lintcomments:
 .PHONY: list
 list:
 	-$(SPLINTR) list.c -expect 3
+
+###
+### 2002-12-12: Added test case for +longint and +shortint flags
+###
+
+.PHONY: longint
+longint:
+	-$(SPLINTR) longint.c -expect 3
+	-$(SPLINTR) longint.c +longint -expect 2
+	-$(SPLINTR) longint.c +shortint -expect 2
+	-$(SPLINTR) longint.c +shortint +longint -expect 0
 
 ###
 ### 2002-01-01: Added test case for obvious loop execution.
@@ -1539,7 +1550,7 @@ EXTRA_DIST =  ./abst_t.lcl \
                 unioninit.expect  unioninit.c utypes.c \
                 utypes.expect widestrings.expect  widestrings.c  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
-                loopexec.c looptesteffect.c mergenull.c shifts.c \
+                longint.c loopexec.c looptesteffect.c mergenull.c shifts.c \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \

@@ -82,6 +82,8 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 {
   if (c1 == c2) return TRUE;
 
+  DPRINTF (("cprim close: %s / %s", cprim_unparse (c1), cprim_unparse (c2)));
+
   if (c1 == CTX_ANYINTEGRAL)
     {
       if (context_getFlag (FLG_MATCHANYINTEGRAL)
@@ -203,6 +205,9 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	}
     }
 
+
+  DPRINTF (("cprim close: %s / %s", cprim_unparse (c1), cprim_unparse (c2)));
+
   if (context_getFlag (FLG_RELAXTYPES))
     {
       if (cprim_isNumeric (c1) && cprim_isNumeric (c2)) return TRUE;
@@ -214,12 +219,18 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	{
 	case CTX_CHAR:
 	case CTX_UCHAR:
-	  return (cprim_isAnyChar (c2) 
-		  || (cprim_isAnyInt (c2) && (context_msgCharInt ())));
+	  if (cprim_isAnyChar (c2) 
+	      || (cprim_isAnyInt (c2) && (context_msgCharInt ()))) {
+	    return TRUE;
+	  } 
+	  break;
 	case CTX_DOUBLE:
 	case CTX_FLOAT:
 	case CTX_LDOUBLE:
-	  return (c2 == CTX_DOUBLE || c2 == CTX_FLOAT || c2 == CTX_LDOUBLE);
+	  if (c2 == CTX_DOUBLE || c2 == CTX_FLOAT || c2 == CTX_LDOUBLE) {
+	    return TRUE;
+	  }
+	  break;
 	case CTX_INT:
 	case CTX_LINT:
 	case CTX_LLINT:
@@ -228,156 +239,179 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	case CTX_UINT:
 	case CTX_ULINT:
 	case CTX_USINT:
-	  return (cprim_isAnyInt (c2) 
+	  if (cprim_isAnyInt (c2) 
+	      || (cprim_isAnyChar (c2) && context_msgCharInt ())) {
+	    return TRUE;
+	  }
+	default:
+	  ;
+	}
+    }
+
+  if (context_getFlag (FLG_IGNORESIGNS))
+    {
+      if (c1 == CTX_UCHAR)  
+	{
+	  c1 = CTX_CHAR;
+	}
+      else if (c1 == CTX_UINT)  
+	{
+	  c1 = CTX_INT;
+	}
+      else if (c1 == CTX_ULINT) 
+	{
+	  c1 = CTX_LINT;
+	}
+      /* 2001-06-10: This fix provided by Jim Zelenka: */
+      else if (c1 == CTX_ULLINT) 
+	{
+	  c1 = CTX_LLINT;
+	}
+      /* End fix */
+      else if (c1 == CTX_USINT)  
+	{
+	  c1 = CTX_SINT;
+	}
+      else
+	{
+	  ;
+	}
+      
+      if (c2 == CTX_UCHAR)  
+	{
+	  c2 = CTX_CHAR;
+	}
+      else if (c2 == CTX_UINT)   
+	{
+	  c2 = CTX_INT;
+	}
+      else if (c2 == CTX_ULINT) 
+	{
+	  c2 = CTX_LINT;
+	}
+      /* 2001-06-10: This fix provided by Jim Zelenka: */
+      else if (c2 == CTX_ULLINT)
+	{
+	  c2 = CTX_LLINT;
+	}
+      /* End fix */
+      else if (c2 == CTX_USINT)  
+	{
+	  c2 = CTX_SINT;
+	}
+      else
+	{
+	  ;
+	}
+    }
+
+  if (c1 == c2) return TRUE;
+  
+  if (context_getFlag (FLG_FLOATDOUBLE))
+    {
+      if (c1 == CTX_FLOAT && c2 == CTX_DOUBLE) 
+	{
+	  return TRUE;
+	}
+      if (c2 == CTX_FLOAT && c1 == CTX_DOUBLE)
+	{
+	  return TRUE;
+	}
+    }
+  
+  DPRINTF (("cprim close: %s / %s", cprim_unparse (c1), cprim_unparse (c2)));
+  
+  if (!deep && context_getFlag (FLG_RELAXQUALS))
+    {
+      switch (c1)
+	{
+	case CTX_DOUBLE:
+	  return (c2 == CTX_FLOAT);
+	case CTX_LDOUBLE:
+	  return (c2 == CTX_DOUBLE || c2 == CTX_FLOAT);
+	case CTX_SINT:
+	  return ((c2 == CTX_CHAR && context_msgCharInt ()) 
+		  || (c2 == CTX_INT && context_msgShortInt ())
+		  || (c2 == CTX_LINT && context_msgShortInt () && context_msgLongInt ()));
+
+	case CTX_INT:
+	  return ((c2 == CTX_SINT
+		   || (cprim_isAnyChar (c2) && context_msgCharInt ())
+		   || (c2 == CTX_LINT && context_msgLongInt ())));
+
+	case CTX_LLINT:
+	  return (c2 == CTX_SINT
+		  || c2 == CTX_INT 
+		      || c2 == CTX_LINT
 		  || (cprim_isAnyChar (c2) && context_msgCharInt ()));
+	case CTX_ULLINT:
+	  return (c2 == CTX_USINT
+		  || c2 == CTX_UINT 
+		  || c2 == CTX_ULINT
+		  /* 2001-06-10: This fix provided by Jim Zelenka: */
+		  || (cprim_isAnyChar (c2) && context_msgCharInt ()));
+	case CTX_LINT:
+	  return (c2 == CTX_SINT
+		  || c2 == CTX_INT 
+		  || (cprim_isAnyChar (c2) && context_msgCharInt ()));
+	case CTX_UINT:
+	  return (c2 == CTX_USINT 
+		  || (c2 == CTX_UCHAR && context_msgCharInt ()));
+	case CTX_USINT:
+	  return (c2 == CTX_UCHAR && context_msgCharInt ());
+	case CTX_ULINT:
+	  /* 2001-06-10: This fix provided by Jim Zelenka: */
+	  return (c2 == CTX_UINT || c2 == CTX_USINT
+		  || (c2 == CTX_UCHAR && context_msgCharInt()));
+	case CTX_UCHAR:
+	  return (c2 == CTX_UINT && context_msgCharInt ());
+	case CTX_CHAR:
+	  return ((c2 == CTX_INT || c2 == CTX_SINT)
+		  && context_msgCharInt ());
 	default:
 	  return FALSE;
 	}
     }
-  else 
+  else
     {
-      if (context_getFlag (FLG_IGNORESIGNS))
+      switch (c1)
 	{
-	  if (c1 == CTX_UCHAR)  
-	    {
-	      c1 = CTX_CHAR;
-	    }
-	  else if (c1 == CTX_UINT)  
-	    {
-	      c1 = CTX_INT;
-	    }
-	  else if (c1 == CTX_ULINT) 
-	    {
-	      c1 = CTX_LINT;
-	    }
-	  /* 2001-06-10: This fix provided by Jim Zelenka: */
-	  else if (c1 == CTX_ULLINT) 
-	    {
-	      c1 = CTX_LLINT;
-	    }
-	  /* End fix */
-	  else if (c1 == CTX_USINT)  
-	    {
-	      c1 = CTX_SINT;
-	    }
-	  else
-	    {
-	      ;
-	    }
-
-	  if (c2 == CTX_UCHAR)  
-	    {
-	      c2 = CTX_CHAR;
-	    }
-	  else if (c2 == CTX_UINT)   
-	    {
-	      c2 = CTX_INT;
-	    }
-	  else if (c2 == CTX_ULINT) 
-	    {
-	      c2 = CTX_LINT;
-	    }
-	  /* 2001-06-10: This fix provided by Jim Zelenka: */
-	  else if (c2 == CTX_ULLINT)
-	    {
-	      c2 = CTX_LLINT;
-	    }
-	  /* End fix */
-	  else if (c2 == CTX_USINT)  
-	    {
-	      c2 = CTX_SINT;
-	    }
-	  else
-	    {
-	      ;
-	    }
-	}
-
-      if (c1 == c2) return TRUE;
-
-      if (context_getFlag (FLG_FLOATDOUBLE))
-	{
-	  if (c1 == CTX_FLOAT && c2 == CTX_DOUBLE) 
-	    {
-	      return TRUE;
-	    }
-	  if (c2 == CTX_FLOAT && c1 == CTX_DOUBLE)
-	    {
-	      return TRUE;
-	    }
-	}
-
-      if (!deep && context_getFlag (FLG_RELAXQUALS))
-	{
-	  switch (c1)
-	    {
-	    case CTX_DOUBLE:
-	      return (c2 == CTX_FLOAT);
-	    case CTX_LDOUBLE:
-	      return (c2 == CTX_DOUBLE || c2 == CTX_FLOAT);
-	    case CTX_SINT:
-	      return (c2 == CTX_CHAR && context_msgCharInt ());
-	    case CTX_INT:
-	      return (c2 == CTX_SINT
-		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
-	    case CTX_LLINT:
-	      return (c2 == CTX_SINT
-		      || c2 == CTX_INT 
-		      || c2 == CTX_LINT
-		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
-	    case CTX_ULLINT:
-	      return (c2 == CTX_USINT
-		      || c2 == CTX_UINT 
-		      || c2 == CTX_ULINT
-		      /* 2001-06-10: This fix provided by Jim Zelenka: */
-		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
-	    case CTX_LINT:
-	      return (c2 == CTX_SINT
-		      || c2 == CTX_INT 
-		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
-	    case CTX_UINT:
-	      return (c2 == CTX_USINT 
-		      || (c2 == CTX_UCHAR && context_msgCharInt ()));
-	    case CTX_USINT:
-	      return (c2 == CTX_UCHAR && context_msgCharInt ());
-	    case CTX_ULINT:
-	      /* 2001-06-10: This fix provided by Jim Zelenka: */
-	      return (c2 == CTX_UINT || c2 == CTX_USINT
-                      || (c2 == CTX_UCHAR && context_msgCharInt()));
-	    case CTX_UCHAR:
-	      return (c2 == CTX_UINT && context_msgCharInt ());
-	    case CTX_CHAR:
-	      return ((c2 == CTX_INT || c2 == CTX_SINT)
-		      && context_msgCharInt ());
-	    default:
-	      return FALSE;
-	    }
-	}
-      else
-	{
-	  switch (c1)
-	    {
-	    case CTX_DOUBLE:
-	    case CTX_LDOUBLE:
-	      return FALSE;
-	    case CTX_SINT:
-	    case CTX_INT:
-	    case CTX_LINT:
-	    case CTX_LLINT:
-	      return (c2 == CTX_CHAR && context_msgCharInt ());
-	    case CTX_UINT:
-	    case CTX_USINT:
-	    case CTX_ULINT:
-	    case CTX_ULLINT:
-	      return (c2 == CTX_UCHAR && context_msgCharInt ());
-	    case CTX_UCHAR:
-	      return (c2 == CTX_UINT && context_msgCharInt ());
-	    case CTX_CHAR:
-	      return ((c2 == CTX_INT || c2 == CTX_SINT)
-		      && context_msgCharInt ());
-	    default:
-	      return FALSE;
-	    }
+	case CTX_DOUBLE:
+	case CTX_LDOUBLE:
+	  return FALSE;
+	case CTX_SINT:
+	  if (c2 == CTX_INT && context_msgShortInt ()) {
+	    return TRUE;
+	  }
+	  /*@fallthrough@*/
+	case CTX_INT:
+	  if (c2 == CTX_INT && context_msgLongInt ()) {
+	    return TRUE;
+	  }
+	  
+	  if (c2 == CTX_SINT && context_msgShortInt ()) {
+	    return TRUE;
+	  }
+	  /*@fallthrough@*/
+	case CTX_LINT:
+	  if (c2 == CTX_INT && context_msgLongInt ()) {
+	    return TRUE;
+	  }
+	  /*@fallthrough@*/
+	case CTX_LLINT:
+	  return (c2 == CTX_CHAR && context_msgCharInt ());
+	case CTX_UINT:
+	case CTX_USINT:
+	case CTX_ULINT:
+	case CTX_ULLINT:
+	  return (c2 == CTX_UCHAR && context_msgCharInt ());
+	case CTX_UCHAR:
+	  return (c2 == CTX_UINT && context_msgCharInt ());
+	case CTX_CHAR:
+	  return ((c2 == CTX_INT || c2 == CTX_SINT)
+		  && context_msgCharInt ());
+	default:
+	  return FALSE;
 	}
     }
 }
