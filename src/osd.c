@@ -1133,7 +1133,7 @@ cstring osd_outputPath (cstring filename)
         {
           /* Give up if the result gets to be longer
              than the absolute path name.  */
-          /*@i423@*/ if (rel_buffer + filename_len <= rel_buf_p + 3)
+          if (rel_buffer + filename_len <= rel_buf_p + 3)
 	    {
 	      sfree (rel_buffer);
 	      return cstring_copy (filename);

@@ -663,7 +663,7 @@ static bool constraint_conflict (constraint c1, constraint c2)
      strlen(str) == maxRead(s) + strlen(str);
   */
 
-  /*@i324234*/ /*this code is functional but it may be worth cleaning up at some point. */
+  /*this code is functional but it may be worth cleaning up at some point. */
   
   if (c1->ar == EQ)
     if (c1->ar == c2->ar)
@@ -850,11 +850,12 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
 
   s2 = constraintTerm_getsRef(constraintExprData_termGetTerm(buf1->data) );
 
-  /*@i223@*/ /*this may be the wronge thing to test for */
+  /*drl this may be the wronge thing to test for but this
+    seems to work correctly*/
   if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
     {
-      /*@i22*/ /* get rid of this test of now */
-      /* if (ctype_isFixedArray (sRef_getType (s2) ) ) */
+      /* origly checked that ctype_isFixedArray(sRef_getType(s2)) but
+	 removed that test */
 	return TRUE;
     }
   return FALSE;
@@ -864,7 +865,8 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
    maxSet(buf) >= sizeof(buf) - 1
 */
 
-/*@i223@*/ /*need to add some type checking */
+/*drl eventually it would be good to check that
+  buf is of type char.*/
 
 static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
 {
@@ -944,8 +946,6 @@ static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
     {
      return FALSE;
     } 
-    
-
 }
 /*@noaccess constraintExpr@*/
 
@@ -1249,12 +1249,9 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
       llassert(constraint_isDefined(el) );
       
       if ((el->ar == LT )  )
-	/* if (!constraint_conflict (c, el) ) */ /*@i523 explain this! */
 	   {
 	     constraintExpr  temp2;
 	     
-	     /*@i22*/
-
 	     if (constraintExpr_same (el->expr, c->expr) )
 	       {
 		 DPRINTF((message ("inequalitySubstitute Replacing %q in %q with  %q",
@@ -1310,12 +1307,9 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
 
       llassert(constraint_isDefined(el) );
       if ((el->ar == LT ) ||  (el->ar == LTE )  )
-	/* if (!constraint_conflict (c, el) ) */ /*@i523@*/
 	   {
 	     constraintExpr  temp2;
 	     
-	     /*@i22*/
-
 	     if (constraintExpr_same (el->lexpr, c->expr) )
 	       {
 		 DPRINTF((message ("inequalitySubstitute Replacing %s in %s with  %s",
@@ -1367,7 +1361,6 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
 
       DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
        if (( el->ar == LTE) || (el->ar == LT) )
-	 /* if (!constraint_conflict (c, el) ) */ /*@i532@*/
 	   {
 	     constraintExpr  temp2;
 

@@ -901,9 +901,6 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   return cstring_undefined;
 }
 
-/*@i3534 @*/
-/*@ignore@*/ /* !!! DRL don't ignore large segments like this without a good reason! */
-
 /* changes strings like "sdf" "sdfsd" into "sdfsdfsd"*/
 /* This function understands that "sdf\"  \"sdfsdf" is okay*/
 static mstring doMergeString (cstring s)
@@ -1163,7 +1160,7 @@ cstring cstring_replaceChar(/*@returned@*/ cstring c, char oldChar, char newChar
 
   return c;
 }
-/*@end@*/
+
 
 
 

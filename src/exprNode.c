@@ -4420,8 +4420,6 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
   /*DRL 6/8/01 I decided to disable all Splint warnings here since the code 
     probably needs a rewrite any way */
 
-  /*@i65234@*/
-  /*@ignore@*/
 
   /* updateEnvironmentForPostOp (e); */
   
@@ -4455,6 +4453,8 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 	  printf ("ret->sref is Possibly Null Terminated\n");
 	else if (sRef_isNotNullTerminated (ret->sref))
 	  printf ("ret->sref is Not Null Terminated\n");
+	else
+	  {}
       }
     }
     
@@ -4466,7 +4466,6 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
       }
     }
   }
-  /*@end@*/
   /* end modifications */
 
   return ret;

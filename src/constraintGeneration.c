@@ -780,19 +780,18 @@ static void exprNode_generateConstraintSwitch (/*@notnull@*/ exprNode switchStmt
       return;
     }
 
-  /*@i22*/
   DPRINTF((message("")));
   
   if (body->kind == XPR_BLOCK)
     body = exprData_getSingle(body->edata);
 
-  /*
+  
   constraintsRequires = constraintList_undefined;
   constraintsEnsures = constraintList_undefined;
 
   lastRequires = constraintList_makeNew();
   lastEnsures = constraintList_makeNew();
-  */
+  
 
   /*@-mustfree@*/ 
   /*@i6534 - evans 2002-01-01: spurious warnings for these becuase of stack allocated storage */
@@ -1251,7 +1250,6 @@ void exprNode_exprTraverse (/*@dependent@*/ exprNode e, bool definatelv, bool de
       exprNode_exprTraverse (exprData_getPairA (data), FALSE, TRUE, sequencePoint);
       exprNode_exprTraverse (exprData_getPairB (data), FALSE, TRUE, sequencePoint);
       
-      /*@i325 Should check which is array/index. */
       break;
       
     case XPR_PARENS: 
@@ -1333,7 +1331,7 @@ void exprNode_exprTraverse (/*@dependent@*/ exprNode e, bool definatelv, bool de
 
       break;
     case XPR_SIZEOFT:
-      /*@i43 drl possible problem : warning make sure the case can be ignored.. */
+      /*drl 4-11-03 I think this is the same as the next case...*/
       
       break;
       
@@ -1694,7 +1692,6 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret,
 				     exprNode_traversTrueEnsuresConstraints
 				    (exprData_getFcn (data)));
-      /*@i11*/  /* exprNodeList_unparse (exprData_getArgs (data)); */
       break;
       
     case XPR_RETURN:
@@ -1827,7 +1824,6 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret,
 				     exprNode_traversFalseEnsuresConstraints
 				    (exprData_getFcn (data)));
-      /*@i11*/ /* exprNodeList_unparse (exprData_getArgs (data)); */
       break;
       
     case XPR_RETURN:
@@ -1963,7 +1959,6 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret,
 				     exprNode_traversRequiresConstraints
 				    (exprData_getFcn (data)));
-      /*@i11*/ /* exprNodeList_unparse (exprData_getArgs (data)); */
       break;
       
     case XPR_RETURN:
@@ -2106,7 +2101,6 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret,
 					exprNode_traversEnsuresConstraints
 					(exprData_getFcn (data)));
-      /*@i11*/ /* exprNodeList_unparse (exprData_getArgs (data)); */
       break;
     case XPR_RETURN:
       ret = constraintList_addListFree (ret,
