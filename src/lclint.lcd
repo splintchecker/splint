@@ -29708,6 +29708,8 @@ e2
 2
 3
 -1
+;; end precondition constraints
+post:
 C
 0@1@1
 l
@@ -29727,8 +29729,6 @@ e2
 2
 3
 -1
-;; end precondition constraints
-post:
 ;; end precondition constraints
 read
 pre:

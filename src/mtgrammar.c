@@ -43,6 +43,9 @@
 /*@-nullassign@*/
 /*@-declundef@*/
 
+/*drl added 11/27/2001*/
+/*@-arraybounds@*/
+/*@-arrayboundsread@*/
 /* < end of bison.head > */
 
 
@@ -1598,3 +1601,8 @@ static void yyprint (FILE *file, int type, YYSTYPE value)
 /*@=dependenttrans@*/
 /*@=unqualifiedtrans@*/
 /*@=declundef@*/
+
+
+/*drl added 11/27/2001*/
+/*@=arraybounds@*/
+/*@=arrayboundsread@*/
