@@ -47,8 +47,7 @@
 /*@-declundef@*/
 
 /*drl added 11/27/2001*/
-/*@-arraybounds@*/
-/*@-arrayboundsread@*/
+/*@-bounds@*/
 /* < end of bison.head > */
 
 
@@ -5406,5 +5405,4 @@ void yyerror (/*@unused@*/ char *s)
 
 
 /*drl added 11/27/2001*/
-/*@=arraybounds@*/
-/*@=arrayboundsread@*/
+/*@=bounds@*/

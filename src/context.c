@@ -888,8 +888,12 @@ context_resetAllFlags (void)
   gc.flags[FLG_TYPE] = TRUE;
   gc.flags[FLG_INCOMPLETETYPE] = TRUE;
   gc.flags[FLG_ABSTRACT] = TRUE;
-  gc.flags[FLG_ITER] = TRUE;
-  gc.flags[FLG_CONTROL] = TRUE;
+  gc.flags[FLG_ITERBALANCE] = TRUE;
+  gc.flags[FLG_ITERYIELD] = TRUE;
+  gc.flags[FLG_DUPLICATECASES] = TRUE;
+  gc.flags[FLG_ALWAYSEXITS] = TRUE;
+  gc.flags[FLG_EMPTYRETURN] = TRUE;
+  gc.flags[FLG_MACRORETURN] = TRUE;
   gc.flags[FLG_UNRECOG] = TRUE;
   gc.flags[FLG_SYSTEMUNRECOG] = TRUE;
   gc.flags[FLG_LINTCOMMENTS] = TRUE;
@@ -4012,6 +4016,10 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
       DOSET (FLG_ALLMACROS, b);
       DOSET (FLG_FCNMACROS, b);
       DOSET (FLG_CONSTMACROS, b);
+      break;
+    case FLG_BOUNDS:
+      DOSET (FLG_BOUNDSREAD, b);
+      DOSET (FLG_BOUNDSWRITE, b);
       break;
     case FLG_CZECH:
       if (b) { DOSET (FLG_ACCESSCZECH, b); }

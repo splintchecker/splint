@@ -51,6 +51,11 @@ globSet globalsClause_takeGlobs (globalsClause gclause)
 
 extern void globalsClause_free (globalsClause gclause)
 {
+  if (gclause == NULL)
+    {
+      return; /*@i435 shouldn't ever need this? */
+    }
+
   globSet_free (gclause->globs);
   sfree (gclause);
 }

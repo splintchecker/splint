@@ -267,18 +267,16 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
     /*@globals stdout@*/
     /*@modifies fileSystem, *stdout@*/ ;
 
-    int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
+ int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
+     /*@modifies str@*/ 
+     /*@requires maxSet(str) >= (size - 1) @*/ ;
 
-     /*@modifies str@*/   /*@requires maxSet(str) >= (size - 1) @*/
-   ;
-
-  int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
-   /*@warn bufferoverflowhigh "Use vsnprintf instead"@*/
-      /*@modifies str@*/  ;
-
-
-      extern char  *optarg; 
-      extern int    opterr; 
-      extern int    optind;  /*(LEGACY)*/
-      extern int    optopt;   
+int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
+     /*@warn bufferoverflowhigh "Use vsnprintf instead"@*/
+     /*@modifies str@*/  ;
+     
+extern char  *optarg; 
+extern int    opterr; 
+extern int    optind;  /*(LEGACY)*/
+extern int    optopt;   
 

@@ -807,8 +807,6 @@ distclean-compile:
 
 distclean-depend:
 	-rm -rf $(DEPDIR)
-
-.c.o:
 @AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
@@ -964,9 +962,10 @@ lcl$(EXEEXT):
 	 echo "Use configure's --with-lcl option to enable lcl"
 
 Headers/signature_gen.h signature.c: signature.c.der signature.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) signature.c.der signature.c; \
 	else \
+	  echo '* Making signature.c'; \
 	  $(BISON) $(YFLAGS) -p lsl signature.y; \
 	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
 	  $(CP) signature.c signature.c.der; \
@@ -976,9 +975,10 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 	fi
 
 Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
+	  echo '* Making cgrammar.c'; \
 	  echo '* Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
@@ -990,9 +990,10 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	fi
 
 Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
+	  echo '* Making mygrammar.c'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -1002,9 +1003,10 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	fi
 
 Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der llgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) llgrammar.c.der llgrammar.c; \
 	else \
+	  echo '* Making llgrammar.c'; \
 	  echo '* Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
@@ -1022,6 +1024,8 @@ cscanner.c: cscanner.l
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
+	$(MAKE)
+	cd ../lib; $(MAKE)
 
 .PHONY: nocheck
 nocheck:
@@ -1049,6 +1053,13 @@ lintbuffercheck:
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint
 
 all: splint$(EXEEXT)
+
+.c.o:
+	@echo "Compiling "$<"..."; \
+	source='$<' object='$@' libtool=no \
+	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
+	$(CCDEPMODE) $(depcomp) \
+	$(COMPILE) -c `test -f $< || echo '$(srcdir)/'`$<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

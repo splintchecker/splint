@@ -7021,7 +7021,7 @@ checkSwitchExpr (exprNode test, /*@dependent@*/ exprNode e, /*@out@*/ bool *allp
 	      if (hasDefault)
 		{
 		  voptgenerror 
-		    (FLG_CONTROL,
+		    (FLG_DUPLICATECASES,
 		     message ("Duplicate default cases in switch"),
 		     exprNode_loc (current));
 		}          
@@ -7049,7 +7049,7 @@ checkSwitchExpr (exprNode test, /*@dependent@*/ exprNode e, /*@out@*/ bool *allp
 				  (/*@-usedef@*/usedEnums/*@=usedef@*/, cname))
 				{
 				  voptgenerror
-				    (FLG_CONTROL,
+				    (FLG_DUPLICATECASES,
 				     message ("Duplicate case in switch: %s", 
 					      cname),
 				     current->loc);
@@ -7383,7 +7383,7 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
   if (exprNode_isDefined (t) && exprNode_mustEscape (t))
     {
       voptgenerror
-	(FLG_CONTROL,
+	(FLG_ALWAYSEXITS,
 	 message ("Predicate always exits: %s", exprNode_unparse (t)),
 	 exprNode_loc (t));
     }
@@ -8519,7 +8519,7 @@ exprNode exprNode_iter (/*@observer@*/ uentry name,
 
   if (uentry_isInvalid (end))
     {
-      llerror (FLG_ITER,
+      llerror (FLG_ITERBALANCE,
 	       message ("Iter %s not balanced with end_%s", iname, iname));
     }
   else
@@ -8528,14 +8528,14 @@ exprNode exprNode_iter (/*@observer@*/ uentry name,
 
       if (!cstring_equalPrefixLit (ename, "end_"))
 	{
-	  llerror (FLG_ITER, message ("Iter %s not balanced with end_%s: %s", 
+	  llerror (FLG_ITERBALANCE, message ("Iter %s not balanced with end_%s: %s", 
 				      iname, iname, ename));
 	}
       else
 	{
 	  if (!cstring_equal (iname, cstring_suffix (ename, 4)))
 	    {
-	      llerror (FLG_ITER, 
+	      llerror (FLG_ITERBALANCE, 
 		       message ("Iter %s not balanced with end_%s: %s", 
 				iname, iname, ename));
 	    }
@@ -8662,7 +8662,7 @@ exprNode_iterExpr (/*@returned@*/ exprNode e)
 	  if (fileloc_isDefined (e->loc))
 	    {
 	      voptgenerror
-		(FLG_ITER,
+		(FLG_ITERYIELD,
 		 message ("Yield parameter is not simple identifier: %s", 
 			  exprNode_unparse (e)),
 		 e->loc);
@@ -8670,7 +8670,7 @@ exprNode_iterExpr (/*@returned@*/ exprNode e)
 	  else
 	    {
 	      voptgenerror
-		(FLG_ITER,
+		(FLG_ITERYIELD,
 		 message ("Yield parameter is not simple identifier: %s",
 			  exprNode_unparse (e)),
 		 g_currentloc);
@@ -8713,7 +8713,7 @@ exprNode_iterId (/*@observer@*/ uentry c)
       if (!context_inHeader ())
 	{
 	  if (optgenerror
-	      (FLG_ITER,
+	      (FLG_ITERYIELD,
 	       message ("Yield parameter shadows local declaration: %q",
 			uentry_getName (c)),
 	       fileloc_isDefined (e->loc) ? e->loc : g_currentloc))

@@ -214,7 +214,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
   op = constraintExprData_binaryExprGetOp (expr->data);
 
-  DPRINTF( (message("constraintExpr_propagateConstants: binaryexpr: %s", constraintExpr_unparse(expr) ) ) );
+  DPRINTF((message("constraintExpr_propagateConstants: binaryexpr: %s", constraintExpr_unparse(expr) ) ) );
 
   expr = removeZero(expr);
   
@@ -253,9 +253,9 @@ static bool isZeroBinaryOp (constraintExpr expr)
       constraintExpr_free (expr2);
 
       if (op == BINARYOP_PLUS )
-	return (constraintExpr_makeIntLiteral ( (t1+t2) ));
+	return (constraintExpr_makeIntLiteral ((t1+t2) ));
       else if (op ==  BINARYOP_MINUS)
-	return (constraintExpr_makeIntLiteral ( (t1-t2) ));
+	return (constraintExpr_makeIntLiteral ((t1-t2) ));
       else
 	BADEXIT;
     }
@@ -312,7 +312,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
       return expr1;
     }
   
-  DPRINTF( (message("constraintExpr_propagateConstants returning: %s", constraintExpr_unparse(expr) ) ) );
+  DPRINTF((message("constraintExpr_propagateConstants returning: %s", constraintExpr_unparse(expr) ) ) );
 
   expr->data = constraintExprData_binaryExprSetExpr1 (expr->data, expr1);
   expr->data = constraintExprData_binaryExprSetExpr2 (expr->data, expr2);
@@ -326,7 +326,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
   bool propagate;
   int literal;
 
-  DPRINTF ( (message ("Before combine %s", constraintExpr_unparse(expr) ) ) );
+  DPRINTF ((message ("Before combine %s", constraintExpr_unparse(expr) ) ) );
   expr = constraintExpr_propagateConstants (expr, &propagate, &literal);
  
 
@@ -340,7 +340,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 	  expr = ret;
 	}
     }
-   DPRINTF ( (message ("After combine %s", constraintExpr_unparse(expr) ) ) );
+   DPRINTF ((message ("After combine %s", constraintExpr_unparse(expr) ) ) );
   return expr;
 }
 
@@ -804,7 +804,7 @@ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr ex
 {
   constraintExpr  ret;
   
-  DPRINTF ( (message ("Making  subtract expression") ) );
+  DPRINTF ((message ("Making  subtract expression") ) );
 
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
   ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_MINUS);
@@ -818,7 +818,7 @@ constraintExpr addent)
 {
   constraintExpr  ret;
   
-  DPRINTF ( (message ("Doing addTerm simplification") ) );
+  DPRINTF ((message ("Doing addTerm simplification") ) );
 
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
   ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_PLUS);
@@ -1230,7 +1230,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 
   DPRINTF ((message ("Doing constraintExpr_simplifyunaryExpr:%s", constraintExpr_unparse (c) ) ) );
   
-  if ( (constraintExprData_unaryExprGetOp (c->data) != MAXSET) &&
+  if ((constraintExprData_unaryExprGetOp (c->data) != MAXSET) &&
        (constraintExprData_unaryExprGetOp (c->data) != MAXREAD) )
     {
       return c;
@@ -1315,7 +1315,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 	
 	  constraintExpr  temp, temp2;
 
-	  DPRINTF ( (message ("Doing fancy simplification") ) );
+	  DPRINTF ((message ("Doing fancy simplification") ) );
 
 	  temp = constraintExprData_binaryExprGetExpr2 (exp->data);
 
@@ -1329,11 +1329,11 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 
 	  c = constraintExpr_makeSubtractExpr (c, temp);
 
-	  DPRINTF ( (message ("Done fancy simplification:%s", constraintExpr_unparse (c) ) ) );
+	  DPRINTF ((message ("Done fancy simplification:%s", constraintExpr_unparse (c) ) ) );
 	}
     }
   
-  DPRINTF ( (message ("constraintExpr_simplifyUnaryExpr: Done simplification:%s", constraintExpr_unparse (c) ) ) );
+  DPRINTF ((message ("constraintExpr_simplifyUnaryExpr: Done simplification:%s", constraintExpr_unparse (c) ) ) );
 
   constraintExpr_free(exp);
   return c;
@@ -1346,7 +1346,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
   constraintExpr ret;
   constraintTerm t;
   
-  DPRINTF ( (message ("Doing constraintExpr_simplify:%s", constraintExpr_unparse (c) ) ) );  
+  DPRINTF ((message ("Doing constraintExpr_simplify:%s", constraintExpr_unparse (c) ) ) );  
   
 
   /*@i22*/
@@ -1384,7 +1384,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
       llassert(FALSE);
     }    
   
-  DPRINTF ( (message ("constraintExpr_simplify returning :%s", constraintExpr_unparse (ret) ) ) );  
+  DPRINTF ((message ("constraintExpr_simplify returning :%s", constraintExpr_unparse (ret) ) ) );  
   return ret;
   
 }
@@ -1794,7 +1794,7 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, /*@observer@*/ /*@tem
 /*   if (constraintTerm_hasTerm (expr->term, term) ) */
 /*     return TRUE; */
 
-/*   if ( (expr->expr) != NULL) */
+/*   if ((expr->expr) != NULL) */
 /*     { */
 /*       return ( constraintExpr_includesTerm (expr->expr, term) ); */
 /*     } */

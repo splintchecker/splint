@@ -51,10 +51,11 @@ idDecl_free (idDecl t)
 {
   if (idDecl_isDefined (t))
     {
-      cstring_free (t->id);
+      /*@i523 functionClauseList_free (t->clauses); */ /* evans 2002-01-03: splint catches this now! */
       qtype_free (t->typ);
-      functionClauseList_free (t->clauses); /* evans 2002-01-03: splint catches this now! */
-      sfree (t);
+      cstring_free (t->id);
+
+      /*@-compdestroy@*/ sfree (t); /*@=compdestroy@*/
     }
 }
 

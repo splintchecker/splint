@@ -279,9 +279,10 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 ## Grammars
 
 Headers/signature_gen.h signature.c: signature.c.der signature.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) signature.c.der signature.c; \
 	else \
+	  echo '* Making signature.c'; \
 	  $(BISON) $(YFLAGS) -p lsl signature.y; \
 	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
 	  $(CP) signature.c signature.c.der; \
@@ -293,9 +294,10 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 ## 11/29/001 drl added copy so that the file cgrammar.c.der is created
 
 Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
+	  echo '* Making cgrammar.c'; \
 	  echo '* Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
@@ -310,9 +312,10 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 ## also removed the dependency for this file on mtgrammary.c  
 
 Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
+	  echo '* Making mygrammar.c'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -324,9 +327,10 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 ## 11/29/001 drl added copy so that the file llgrammar.c.der is created
 
 Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der llgrammar.y
-	if test x$(BISON) = xno; then \
+	@if test x$(BISON) = xno; then \
 	  $(CP) llgrammar.c.der llgrammar.c; \
 	else \
+	  echo '* Making llgrammar.c'; \
 	  echo '* Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
@@ -344,6 +348,8 @@ cscanner.c: cscanner.l
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
+	$(MAKE)
+	cd ../lib; $(MAKE)
 
 ## Checking rules
 
@@ -379,3 +385,10 @@ lintbuffercheck:
 
 all: splint$(EXEEXT)
 CLEANFILES = splint$(EXEEXT)
+
+.c.o:
+	@echo "Compiling "$<"..."; \
+	source='$<' object='$@' libtool=no \
+	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
+	$(CCDEPMODE) $(depcomp) \
+	$(COMPILE) -c `test -f $< || echo '$(srcdir)/'`$<

@@ -101,7 +101,7 @@ extern functionClause functionClause_createWarn (warnClause node) /*@*/
     case FCK_REQUIRES:
       return message ("requires %q", functionConstraint_unparse (p->val.constraint));
     case FCK_DEAD:
-      BADBRANCH;
+      return cstring_makeLiteral ("<dead clause>");
     }
 
   BADBRANCHRET (cstring_undefined);
@@ -219,6 +219,8 @@ extern void functionClause_free (/*@only@*/ functionClause node)
 {
   if (node != NULL)
     {
+      DPRINTF (("free: %s", functionClause_unparse (node)));
+
       switch (node->kind)
 	{
 	case FCK_GLOBALS:

@@ -146,9 +146,9 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 {
   constraintList temp, temp2;
 
-  DPRINTF( (message ("magically merging constraint into parent:%s for", exprNode_unparse (parent) )) );
+  DPRINTF((message ("magically merging constraint into parent:%s for", exprNode_unparse (parent) )) );
 
-  DPRINTF( (message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
+  DPRINTF((message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
 
   if (exprNode_isError (child1)  || exprNode_isError(child2) )
     {
@@ -176,7 +176,7 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
    llassert(!exprNode_isError (child1)  && ! exprNode_isError(child2) );
    
-   DPRINTF( (message ("Child constraints are %s %s and %s %s",
+   DPRINTF((message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
 		     constraintList_print (child1->ensuresConstraints),
 		     constraintList_print (child2->requiresConstraints),
@@ -199,7 +199,7 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   
   parent->requiresConstraints = temp2;
 
-  DPRINTF( (message ("Parent requires constraints are %s  ",
+  DPRINTF((message ("Parent requires constraints are %s  ",
 		     constraintList_print (parent->requiresConstraints)
 		     ) ) );
 
@@ -209,7 +209,7 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 							   child2->ensuresConstraints);
 
   
-  DPRINTF( (message ("Parent constraints are %s and %s ",
+  DPRINTF((message ("Parent constraints are %s and %s ",
 		     constraintList_print (parent->requiresConstraints),
 		     constraintList_print (parent->ensuresConstraints)
 		     ) ) );
@@ -235,7 +235,7 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 	}
       else
 	{
-	  DPRINTF ( (message ("Subsuming %s", constraint_print (el) ) ) );
+	  DPRINTF ((message ("Subsuming %s", constraint_print (el) ) ) );
 	}
     } end_constraintList_elements;
 
@@ -547,7 +547,7 @@ static /*@only@*/ constraintList reflectChangesEnsures (/*@observer@*/ constrain
 	}
       else
 	{
-	  DPRINTF ( (message ("Resolved away %s ", constraint_print(el) ) ) );
+	  DPRINTF ((message ("Resolved away %s ", constraint_print(el) ) ) );
 	}
     } end_constraintList_elements;
 
@@ -575,7 +575,7 @@ static bool constraint_conflict (constraint c1, constraint c2)
       if (c1->ar == EQ)
 	if (c1->ar == c2->ar)
 	  {
-	    DPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+	    DPRINTF ((message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 	    return TRUE;
 	  }
     }  
@@ -598,7 +598,7 @@ static bool constraint_conflict (constraint c1, constraint c2)
 
 	      if (constraintTerm_isExprNode(term) )
 		{
-		  DPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+		  DPRINTF ((message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 		  return TRUE;
 		}
 	    }
@@ -606,11 +606,11 @@ static bool constraint_conflict (constraint c1, constraint c2)
 
   if (constraint_tooDeep(c1) || constraint_tooDeep(c2) )
     	{
-	  DPRINTF ( (message ("%s conflicts with %s (constraint is too deep", constraint_print (c1), constraint_print(c2) ) ) );
+	  DPRINTF ((message ("%s conflicts with %s (constraint is too deep", constraint_print (c1), constraint_print(c2) ) ) );
 	  return TRUE;
 	}
   
-  DPRINTF ( (message ("%s doesn't conflict with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+  DPRINTF ((message ("%s doesn't conflict with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 
   return FALSE; 
 
@@ -692,13 +692,13 @@ bool constraintList_resolve (/*@temp@*/ /*@observer@*/ constraint c, /*@temp@*/ 
     {
       if ( satifies (c, el) )
 	{
-	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
+	  DPRINTF ((message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
 	  return TRUE;
 	}
-        DPRINTF ( (message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
+        DPRINTF ((message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
     }
   end_constraintList_elements;
-  DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
+  DPRINTF ((message ("no constraints satify %s", constraint_print(c) ) ));
   return FALSE;
 }
 
@@ -708,7 +708,7 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
     {
     case GTE:
     case GT:
-      if ( (ar2 == GT) || (ar2 == GTE) || (ar2 == EQ) )
+      if ((ar2 == GT) || (ar2 == GTE) || (ar2 == EQ) )
 	{
 	  return TRUE;
 	}
@@ -721,7 +721,7 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
 
     case LT:
     case LTE:
-      if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
+      if ((ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
 	return TRUE;
       break;
     default:
@@ -738,7 +738,7 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
   sRef s1, s2;
   /*@access constraintExpr@*/
   
-  if ( (expr2->kind != term) && (buf1->kind != term) )
+  if ((expr2->kind != term) && (buf1->kind != term) )
     return FALSE;
 
   
@@ -782,7 +782,7 @@ static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
   l = c->lexpr;
   r = c->expr;
 
-  if (!( (c->ar == EQ) || (c->ar == GTE) || (c->ar == LTE) ) )
+  if (!((c->ar == EQ) || (c->ar == GTE) || (c->ar == LTE) ) )
     return FALSE;
 
   /*check if the constraintExpr is MaxSet(buf) */
@@ -997,7 +997,7 @@ static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arit
 				         return TRUE;
 				       }
 		      }
-	          DPRINTF( ("Can't Get value"));
+	          DPRINTF(("Can't Get value"));
 
 	          constraintExpr_free(e1);
 	          constraintExpr_free(e2);
@@ -1051,7 +1051,7 @@ static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arit
 	           constraintExpr_free(e1);
 	           constraintExpr_free(e2);
 
-	           DPRINTF( ("Can't Get value"));
+	           DPRINTF(("Can't Get value"));
 	           return FALSE;
 	         }
 
@@ -1090,7 +1090,7 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
 {
   fileloc loc1, loc2, loc3;
 
-  DPRINTF ( (message("Start adjust on %s and %s", constraint_print(substitute),
+  DPRINTF ((message("Start adjust on %s and %s", constraint_print(substitute),
 		     constraint_print(old))
 		   ));
 
@@ -1103,7 +1103,7 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
       if (fileloc_closer (loc1, loc3, loc2))
       {
 	constraintExpr temp;
-	DPRINTF ( (message("Doing adjust on %s", constraint_print(substitute) )
+	DPRINTF ((message("Doing adjust on %s", constraint_print(substitute) )
 		   ));
 	temp = substitute->lexpr;
 	substitute->lexpr = substitute->expr;
@@ -1133,7 +1133,7 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
   
   constraintList_elements (p, el)
     {
-      if ( (el->ar == LT )  )
+      if ((el->ar == LT )  )
 	/* if (!constraint_conflict (c, el) ) */ /*@i523 explain this! */
 	   {
 	     constraintExpr  temp2;
@@ -1185,7 +1185,7 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
     {
       DPRINTF (( message ("inequalitySubstituteStrong examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
 
-      if ( (el->ar == LT ) ||  (el->ar == LTE )  )
+      if ((el->ar == LT ) ||  (el->ar == LTE )  )
 	/* if (!constraint_conflict (c, el) ) */ /*@i523@*/
 	   {
 	     constraintExpr  temp2;
@@ -1201,7 +1201,7 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
 			  ));
 		 temp2   = constraintExpr_copy (el->expr);
 		 constraintExpr_free(c->expr);
-		 if ( (el->ar == LTE ) )
+		 if ((el->ar == LTE ) )
 		   {
 		     c->expr = temp2;
 		   }
@@ -1237,7 +1237,7 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
   constraintList_elements (p, el)
     {
   DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
-       if ( ( el->ar == LTE) || (el->ar == LT) )
+       if (( el->ar == LTE) || (el->ar == LT) )
 	 /* if (!constraint_conflict (c, el) ) */ /*@i532@*/
 	   {
 	     constraintExpr  temp2;
@@ -1332,9 +1332,9 @@ return ret;
 
 static constraint constraint_solve (/*@returned@*/ constraint c)
 {
-  DPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
+  DPRINTF((message ("Solving %s\n", constraint_print(c) ) ) );
   c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);
-  DPRINTF( (message ("Solved and got %s\n", constraint_print(c) ) ) );
+  DPRINTF((message ("Solved and got %s\n", constraint_print(c) ) ) );
 
   return c;
 }

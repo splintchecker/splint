@@ -54,7 +54,8 @@ static flagcatinfo categories[] =
   { FK_ANSI, "ansi", "violations of constraints imposed by ANSI/ISO standard" } ,
   { FK_ARRAY, "arrays", "special checking involving arrays" } ,
   { FK_BOOL, "booleans", "checking and naming of boolean types" } ,
-  { FK_COMMENTS, "comments", "interpretation of semantic comments" } ,
+  { FK_COMMENTS, "comments", "warnings about (normal) comments" } ,
+  { FK_SYNCOMMENTS, "syncomments", "interpretation of annotation comments" } ,
   { FK_COMPLETE, "complete", "completely defined, used, or specified system" } ,
   { FK_CONTROL, "controlflow", "suspicious control structures" } ,
   { FK_DEBUG, "debug", "flags for debugging lclint" } ,
@@ -66,11 +67,15 @@ static flagcatinfo categories[] =
   { FK_ERRORS, "errors", "control expected errors, summary reporting" } ,
   { FK_EXPORT, "export", "control what may be exported" } ,
   { FK_EXPOSURE, "exposure", "representation exposure" } ,
+  { FK_EXTENSIBLE, "extensible", "user-defined checks and annotations" },
   { FK_FILES, "files", "control system files" } ,
   { FK_FORMAT, "format", "control format of warning messages" } ,
   { FK_GLOBALS, "globals", "use of global and file static variables" },
   { FK_HEADERS, "headers", "control inclusion and generation of header files" },
   { FK_HELP, "help", "on-line help" },
+  { FK_BOUNDS, "memorybounds", "out-of-bounds memory accesses" },
+  { FK_HINTS, "hints", "control display of warning hints" },
+  { FK_SYSTEMFUNCTIONS, "systemfunctions", "special properties of exit and main" },
   { FK_IMPLICIT, "implicit", "control implicit annotations and interpretations" } ,
   { FK_INIT, "initializations", "initialization files" } ,
   { FK_ITER, "iterators", "checking iterator definitions and uses" } ,
@@ -101,6 +106,7 @@ static flagcatinfo categories[] =
   { FK_UNRECOG, "unrecognized", "unrecognized identifiers" } ,
   { FK_UNSPEC, "unconstrained", "checking in the presence of unconstrained functions" } ,
   { FK_WARNUSE, "warnuse", "use of possibly problematic function" } ,
+  { FK_ITS4, "its4", "its4 compatibility flags (report warnings for uses of possibly insecure functions)" } ,
   { FK_SYNTAX, NULL, NULL } ,
   { FK_TYPE, NULL, NULL } ,
   { FK_SECRET, NULL, NULL } ,
@@ -549,8 +555,17 @@ printFlagManual (void)
 	flagtype = message ("%q<P:%s>", flagtype,
 			    cstring_makeLiteralTemp (context_getFlag (f.code) ? "+" : "-"));
       }
-
+    
     llmsg (message ("%s: %s", flagname, flagtype));
+
+    if (mstring_isDefined (f.hint))
+      {
+	llgenindentmsgnoloc (cstring_fromCharsNew (f.hint));
+      }
+    else
+      {
+	llgenindentmsgnoloc (message ("%q.", cstring_capitalize (cstring_fromChars (f.desc))));
+      }
   } end_allFlags ;
 }
 
@@ -569,7 +584,6 @@ describeFlagCode (flagcode flag)
   
   f = flags[flag];
   ret = cstring_copy (cstring_fromChars (f.desc));
-  
   
   if (f.sub != FK_NONE)
     {

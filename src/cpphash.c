@@ -172,7 +172,7 @@ static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node)
 	      
 	      for (ap = d->pattern; ap != NULL; ap = nextap) 
 		{
-		  struct reflist *npattern = dmalloc (sizeof (*(nd->pattern)));
+		  struct reflist *npattern = dmalloc (sizeof (* (nd->pattern)));
 		  
 		  nextap = ap->next;
 		  
@@ -182,7 +182,7 @@ static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node)
 		      /*@-branchstate@*/ 
 		    } /*@=branchstate@*/ /* npattern is propagated through loop */
 		  
-		  last = &(npattern->next);
+		  last = & (npattern->next);
 		  npattern->next = NULL; /* will get filled in */
 		  npattern->stringify = d->pattern->stringify;
 		  npattern->raw_before = d->pattern->raw_before;

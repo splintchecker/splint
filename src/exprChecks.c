@@ -385,13 +385,13 @@ exprChecks_checkNullReturn (fileloc loc)
 	      if (ctype_isUnknown (tr))
 		{
 		  voptgenerror
-		    (FLG_CONTROL,
+		    (FLG_EMPTYRETURN,
 		     cstring_makeLiteral ("Empty return in function declared to implicitly return int"),
 		     loc);
 		}
 	      else
 		{
-		  voptgenerror (FLG_CONTROL,
+		  voptgenerror (FLG_EMPTYRETURN,
 				message ("Empty return in function declared to return %t", tr),
 				loc);
 		}
@@ -409,7 +409,7 @@ exprNode_checkReturn (exprNode e)
 	{
 	  if (context_inMacro ())
 	    {
-	      llerror (FLG_CONTROL,
+	      llerror (FLG_MACRORETURN,
 		       message ("Macro %s uses return (not functional)",
 				context_inFunctionName ()));
 	    }
@@ -933,129 +933,125 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
     in order to find potential problems like assert failures and seg faults...
   */
 
-  if  (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT)  )
-    /* check if errors will printed */
-    if (! (context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
-	   context_getFlag(FLG_FUNCTIONCONSTRAINT) ||
-	   context_getFlag(FLG_ARRAYBOUNDS) ||
-	   context_getFlag(FLG_ARRAYBOUNDSREAD) ||
-	   context_getFlag(FLG_CHECKPOST) 
-	   )
-	)
-      {
-	exprNode_free (body);
-	context_exitInnerPlain();
-
-	return;
-      }
+  if (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT))
+    {
+      /* check if errors will printed */
+      if (!(context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
+	    context_getFlag(FLG_BOUNDSWRITE) ||
+	    context_getFlag(FLG_BOUNDSREAD) ||
+	    context_getFlag(FLG_CHECKPOST)))
+	{
+	  exprNode_free (body);
+	  context_exitInnerPlain();
+	  
+	  return;
+	}
+    }
   
   exprNode_generateConstraints (body);
-
   
   c =   uentry_getFcnPreconditions (ue);
   DPRINTF(("function constraints\n"));
   DPRINTF (("\n\n\n\n\n\n\n"));
-
   
-   if (constraintList_isDefined(c) )
-     {
+  if (constraintList_isDefined(c) )
+    {
+      DPRINTF ((message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
+      
+      body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, c);
+      
+      c2  =  constraintList_copy (c);
+      fix =  constraintList_makeFixedArrayConstraints (body->uses);
+      c2  =  constraintList_reflectChangesFreePre (c2, fix);
+      constraintList_free (fix);
+      
+      if (context_getFlag (FLG_ORCONSTRAINT))
+	{
+	  t = constraintList_reflectChangesOr (body->requiresConstraints, c2 );
+	}
+      else
+	{
+	  t = constraintList_reflectChanges(body->requiresConstraints, c2);
+	}
+      
+      constraintList_free (body->requiresConstraints);
+      DPRINTF ((message ("The body has the required constraints: %s", constraintList_printDetailed (t) ) ) );
+      
+      body->requiresConstraints = t;
+      
+      t = constraintList_mergeEnsures (c, body->ensuresConstraints);
+      constraintList_free(body->ensuresConstraints);
+      
+      body->ensuresConstraints = t;
+      
+      DPRINTF ((message ("The body has the ensures constraints: %s", constraintList_printDetailed (t) ) ) );
+      constraintList_free(c2);
+    }
+  
+  if (constraintList_isDefined(c))
+    {
+      DPRINTF ((message ("The Function %s has the preconditions %s", 
+			 uentry_unparse(ue), constraintList_printDetailed(c))));
+    }
+  else
+    {
+      DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue))));
+    }
+  
+  implicitFcnConstraints = getImplicitFcnConstraints();
+  
+  if (constraintList_isDefined(implicitFcnConstraints) )
+    {
+      if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
+	{
+	  body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, 
+									    implicitFcnConstraints );
+	}
+    }
+  
+  body->requiresConstraints = constraintList_sort (body->requiresConstraints);
+  
+  constraintList_printError(body->requiresConstraints, g_currentloc);
+  
+  post = uentry_getFcnPostconditions (ue);
+  
+  if (context_getFlag (FLG_CHECKPOST))
+    {
+      if (constraintList_isDefined (post))
+	{
+	  constraintList post2;
+	  
+	  DPRINTF ((message ("The declared function postconditions are %s \n\n\n\n\n", 
+			     constraintList_printDetailed (post) ) ) );
+	  
+	  post = constraintList_reflectChangesFreePre (post, body->ensuresConstraints);
+	  
+	  post2  =  constraintList_copy (post);
+	  fix =  constraintList_makeFixedArrayConstraints (body->uses);
+	  post2  =  constraintList_reflectChangesFreePre (post2, fix);
+	  constraintList_free(fix);
+	  if ( context_getFlag (FLG_ORCONSTRAINT) )
+	    {
+	      t = constraintList_reflectChangesOr (post2, body->ensuresConstraints);
+	    }
+	  else
+	    {
+	      t = constraintList_reflectChanges(post2, body->ensuresConstraints);
+	    }
+	  
+	  constraintList_free(post2);
+	  constraintList_free(post);
+	  post = t;
 
-       DPRINTF ( (message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
-       
-       body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, c);
-       
-       c2  =  constraintList_copy (c);
-       fix =  constraintList_makeFixedArrayConstraints (body->uses);
-       c2  =  constraintList_reflectChangesFreePre (c2, fix);
-       constraintList_free(fix);
-       if ( context_getFlag (FLG_ORCONSTRAINT) )
-	 {
-	   t = constraintList_reflectChangesOr (body->requiresConstraints, c2 );
-	 }
-       else
-	 {
-	   t = constraintList_reflectChanges(body->requiresConstraints, c2);
-	 }
-   
-       constraintList_free(body->requiresConstraints);
-       DPRINTF ( (message ("The body has the required constraints: %s", constraintList_printDetailed (t) ) ) );
-
-       body->requiresConstraints = t;
-       
-       t = constraintList_mergeEnsures (c, body->ensuresConstraints);
-       constraintList_free(body->ensuresConstraints);
-       
-       body->ensuresConstraints = t;
-       
-       DPRINTF ( (message ("The body has the ensures constraints: %s", constraintList_printDetailed (t) ) ) );
-       constraintList_free(c2);
-     }
-   
-   if (constraintList_isDefined(c) )
-     {
-       DPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
-     }
-   else
-     {
-       DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
-     }
-
-   implicitFcnConstraints = getImplicitFcnConstraints();
-   
-   if (constraintList_isDefined(implicitFcnConstraints) )
-     {
-          if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
-	      {
-		body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, implicitFcnConstraints );
-	      }
-     }
-
-   body->requiresConstraints = constraintList_sort (body->requiresConstraints);
-   
-   constraintList_printError(body->requiresConstraints, g_currentloc);
-   
-   post =   uentry_getFcnPostconditions (ue);
-
-   if ( context_getFlag (FLG_CHECKPOST) )
-     {
-       if (constraintList_isDefined(post) )
-	 {
-	   
-	   constraintList post2;
-	   
-	   DPRINTF ( (message ("The declared function postconditions are %s \n\n\n\n\n", constraintList_printDetailed (post) ) ) );
-	   
-	   post = constraintList_reflectChangesFreePre (post, body->ensuresConstraints);
-	   
-	   post2  =  constraintList_copy (post);
-	   fix =  constraintList_makeFixedArrayConstraints (body->uses);
-	   post2  =  constraintList_reflectChangesFreePre (post2, fix);
-	   constraintList_free(fix);
-	   if ( context_getFlag (FLG_ORCONSTRAINT) )
-	     {
-	       t = constraintList_reflectChangesOr (post2, body->ensuresConstraints);
-	     }
-	   else
-	     {
-	       t = constraintList_reflectChanges(post2, body->ensuresConstraints);
-	     }
-	   
-	   constraintList_free(post2);
-	   
-	   constraintList_free(post);
-	   post = t;
-	   
-	 
-
-       printf("Unresolved post conditions\n");
-       constraintList_printErrorPostConditions(post, g_currentloc);
-	 }
-     }
-   
-   if (constraintList_isDefined(post) )
-     {
-       constraintList_free(post);
-     }
+	  printf("Unresolved post conditions\n");
+	  constraintList_printErrorPostConditions(post, g_currentloc);
+	}
+    }
+  
+  if (constraintList_isDefined (post))
+    {
+      constraintList_free (post);
+    }
    
    body->ensuresConstraints = constraintList_sort(body->ensuresConstraints);
 

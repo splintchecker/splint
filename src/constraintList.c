@@ -173,20 +173,22 @@ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
     {
       loc = constraint_getFileloc(elem);
 
-      if(fileloc_isUndefined(loc) )
+      if (fileloc_isUndefined(loc))
 	{
 	  ret = constraintList_add (ret, elem);
 	}
       
-      else if (context_suppressFlagMsg(FLG_ARRAYBOUNDS, loc) )
+      else if (context_suppressFlagMsg(FLG_BOUNDSWRITE, loc) )
 	{
-	  DPRINTF(( message("constraintList_removeSurpressed getting rid of surpressed constraint %q", constraint_print(elem) ) ));
+	  DPRINTF ((message ("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
+			     constraint_print(elem))));
 	  constraint_free(elem);
 	}
       
-      else if ( (! constraint_hasMaxSet(elem) ) && context_suppressFlagMsg(FLG_ARRAYBOUNDSREAD, loc) )
+      else if (!constraint_hasMaxSet(elem) && context_suppressFlagMsg(FLG_BOUNDSREAD, loc))
 	{
-	  DPRINTF(( message("constraintList_removeSurpressed getting rid of surpressed constraint %q", constraint_print(elem) ) ));
+	  DPRINTF ((message("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
+			    constraint_print(elem))));
 	  constraint_free(elem);
 	}
       else
@@ -385,7 +387,7 @@ constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ const
 {
   constraint temp;
   constraintList ret;
-  DPRINTF ( (message ("Logical or on %s and %s",
+  DPRINTF ((message ("Logical or on %s and %s",
 		      constraintList_print(l1), 
 		      constraintList_print(l2)) ) );
   

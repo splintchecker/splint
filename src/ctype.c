@@ -52,12 +52,12 @@ static ctype ctype_getConjB (ctype p_c) /*@*/ ;
 
 static bool ctype_isComplex (ctype c)
 {
-  return (ctentry_isComplex (ctype_getCtentry(c)));
+  return (ctentry_isComplex (ctype_getCtentry (c)));
 }
 
 static bool ctype_isPlain (ctype c)
 {
-  return (ctentry_isPlain (ctype_getCtentry(c)));
+  return (ctentry_isPlain (ctype_getCtentry (c)));
 }
 
 static bool ctype_isBroken (ctype c)
@@ -194,7 +194,7 @@ ctype_realType (ctype c)
 bool
 ctype_isSimple (ctype c)
 {
-  return (!(ctype_isPointer (c) 
+  return (! (ctype_isPointer (c) 
 	    || ctype_isArray (c)
 	    || ctype_isFunction (c)));
 }
@@ -224,7 +224,7 @@ ctype_realishType (ctype c)
       else
 	{
 	  ctype r = uentry_getRealType (usymtab_getTypeEntry 
-					(ctype_typeId (c)));
+					 (ctype_typeId (c)));
 	  return (r);
 	}
     }
@@ -1310,7 +1310,7 @@ ctype_makeConj (ctype c1, ctype c2)
 		  if (iv == ctype_unknown)
 		    {
 		      iv = cttable_addComplex
-			(ctbase_makeConj (ctype_int, 
+			 (ctbase_makeConj (ctype_int, 
 					  ctype_voidPointer,
 					  FALSE));
 		    }
@@ -1725,7 +1725,7 @@ ctype_typeId (ctype c)
 cstring
 ctype_unparseDeclaration (ctype c, /*@only@*/ cstring name)
 {
-  llassert (!(ctype_isElips (c) || ctype_isMissingParamsMarker (c)));
+  llassert (! (ctype_isElips (c) || ctype_isMissingParamsMarker (c)));
 
   if (ctype_isUnknown (c))
     {
@@ -1826,7 +1826,7 @@ ctype_dump (ctype c)
   if (ctype_isUA (c))
     {
       cstring tname = usymtab_getTypeEntryName 
-	(usymtab_convertId (ctype_typeId (c)));
+	 (usymtab_convertId (ctype_typeId (c)));
       
       if (cstring_equal (tname, context_getBoolName ()))
 	{
@@ -1905,7 +1905,7 @@ ctype_adjustPointers (int np, ctype c)
   if (ctype_isFunction (c))
     {
       c = ctype_makeParamsFunction
-	(ctype_adjustPointers (np, ctype_getReturnType (c)),
+	 (ctype_adjustPointers (np, ctype_getReturnType (c)),
 	 uentryList_copy (ctype_argsFunction (c)));
     }
   else
@@ -2662,7 +2662,7 @@ long int ctype_getArraySize (ctype c)
   ctbase ctb;
 
   llassert (ctype_isFixedArray (c));
-  llassert ((ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind(cte) == CTK_ARRAY));
+  llassert ((ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind (cte) == CTK_ARRAY));
 
   ctb = cte->ctbase;
   size = ctbase_getArraySize (ctb);

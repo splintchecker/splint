@@ -458,7 +458,7 @@ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2)
 
   llassert (term1 !=NULL && term2 !=NULL);
      
- DPRINTF ( (message
+ DPRINTF ((message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
@@ -510,7 +510,7 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
       return FALSE;
     }
   
-  DPRINTF( (message
+  DPRINTF((message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
