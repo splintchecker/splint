@@ -6,7 +6,7 @@ int fixedArrayTouch()
 {
   Array buffer;
 
-  buffer[sizeof(Array)-1] = 1;
+  buffer[ sizeof(Array)-1] = 1;
 
   return 0;
 }

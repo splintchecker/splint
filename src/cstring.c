@@ -904,6 +904,78 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   return cstring_undefined;
 }
 
+/* changes strings like "sdf" "sdfsd" into "sdfsdfsd"*/
+/* This function understands that "sdf\"  \"sdfsdf" is okay*/
+static mstring doMergeString (cstring s)
+{
+  char *ptr;
+  mstring ret;
+  char * retPtr;
+  bool escape;
+  
+  llassert(cstring_isDefined (s));
+  
+  ret = mstring_create (cstring_length(s) );
+
+  ptr = s;
+
+  retPtr = ret;
+  /*
+  llassert(*ptr == '\"');
+
+  *retPtr = *ptr;
+
+  retPtr++;
+  ptr++;
+  */
+
+  while (*ptr != '\0')
+    {
+      escape = FALSE;
+      
+      if (*ptr == '\\')
+	{
+	  *retPtr = *ptr;
+	  
+	  if (!escape)
+	    escape = TRUE;
+	  else
+	    /* case of escaped \ ('\\')  */
+	    escape = FALSE;
+	}
+      else if ( (*ptr == '\"') && (!escape) )
+	{
+	  while ( (ptr[1] != '\"') && (ptr[1] != '\0') )
+	    {
+	      ptr++;
+	    }
+	  if (ptr[1] == '\0')
+	    {
+	      llassert(*ptr == '\"');
+	      *retPtr =  '\"';
+	      retPtr++;
+	      *retPtr = '\0';
+	      BADEXIT;
+	      return ret;
+	    }
+	  else
+	    {
+	      ptr++;
+	    }
+	}
+      else
+	{
+	  *retPtr = *ptr;
+	}
+
+      retPtr++;
+      ptr++;
+      
+    }/* end while */
+  retPtr = '\0';
+  return ret;
+}
+
 static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
 {
   char *ptr;
@@ -1063,11 +1135,14 @@ int  cstring_lengthExpandEscapes (cstring s)
 {
   int len;
 
-  mstring tmpStr;
-  
-  tmpStr = doExpandEscapes (s, &len);
+  mstring tmpStr, tmpStr2;
 
+  tmpStr = doMergeString (s);
+  tmpStr2 = doExpandEscapes (tmpStr, &len);
+
+  
   cstring_free(tmpStr);
+  cstring_free(tmpStr2);
 
   return len;
 }

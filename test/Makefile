@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/splint
 pkgincludedir = $(includedir)/splint
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoheader
+ACLOCAL = ${SHELL} /af9/drl7x/reTmp/LCLintDev/config/missing --run aclocal
+AUTOCONF = ${SHELL} /af9/drl7x/reTmp/LCLintDev/config/missing --run autoconf
+AUTOMAKE = ${SHELL} /af9/drl7x/reTmp/LCLintDev/config/missing --run automake
+AUTOHEADER = ${SHELL} /af9/drl7x/reTmp/LCLintDev/config/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -61,7 +61,7 @@ host_alias =
 host_triplet = i686-pc-linux-gnu
 target_alias = 
 target_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run tar
+AMTAR = ${SHELL} /af9/drl7x/reTmp/LCLintDev/config/missing --run tar
 AWK = gawk
 BISON = bison
 CAT = cat
@@ -80,10 +80,10 @@ MV = mv
 OBJEXT = o
 PACKAGE = splint
 RM = rm
-VERSION = 3.0.1.6
+VERSION = 3.0.1.7
 am__include = include
 am__quote = 
-install_sh = /net/af9/drl7x/reTmp/LCLintDev/config/install-sh
+install_sh = /af9/drl7x/reTmp/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
@@ -115,7 +115,7 @@ UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
-  constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  compoundliterals constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
@@ -1097,6 +1097,10 @@ compdestroy:
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
 	-$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+
+.PHONY: compoundliterals
+compoundliterals:
+	${SPLINTRN} compoundliterals.c 
 
 .PHONY: constannot
 constannot:
