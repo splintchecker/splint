@@ -132,10 +132,18 @@ bool  lltok_isTilde_Op (lltok tok)
 {
   return (tok.tok == TTILDE);
 }
-
 /*end drl added */
 
 
+bool lltok_isEnsures (lltok tok)
+{
+  return (tok.tok == QPOSTCLAUSE);
+}
+
+bool lltok_isRequires (lltok tok)
+{
+  return (tok.tok == QPRECLAUSE);
+}
 
 cstring
 lltok_unparse (lltok tok)
@@ -222,6 +230,8 @@ lltok_unparse (lltok tok)
     case QCHECKEDSTRICT: lit = "checkedstrict"; break;
     case QCHECKMOD:  lit = "checkmod"; break;
     case QUNCHECKED: lit = "unchecked"; break;
+    case QPRECLAUSE: lit = "requires"; break;
+    case QPOSTCLAUSE: lit = "ensures"; break;
     case QTRUENULL:  lit = "truenull"; break;
     case QFALSENULL: lit = "falsenull"; break;
     case QRETURNED:  lit = "returned"; break;

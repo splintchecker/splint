@@ -15,6 +15,8 @@
   FCK_MODIFIES,
   FCK_WARN,
   FCK_STATE,
+  FCK_ENSURES,
+  FCK_REQUIRES,
   FCK_DEAD
 } functionClauseKind;
 
@@ -25,6 +27,8 @@ struct s_functionClause {
     modifiesClause modifies;
     warnClause warn;
     stateClause state;
+    constraintList ensures;
+    constraintList requires;
   } val;
 } ;
 
@@ -50,6 +54,12 @@ extern bool functionClause_isState (functionClause) /*@*/ ;
 extern bool functionClause_isWarn (functionClause) /*@*/ ;
 # define functionClause_isWarn(p_h) (functionClause_matchKind(p_h, FCK_WARN))
 
+extern bool functionClause_isEnsures (functionClause) /*@*/ ;
+# define functionClause_isEnsures(p_h) (functionClause_matchKind(p_h, FCK_ENSURES))
+
+extern bool functionClause_isRequires (functionClause) /*@*/ ;
+# define functionClause_isRequires(p_h) (functionClause_matchKind(p_h, FCK_REQUIRES))
+
 extern /*@truenull@*/ bool functionClause_isUndefined(functionClause) /*@*/ ;
 # define functionClause_isUndefined(p_h) ((p_h) == functionClause_undefined)
 
@@ -57,13 +67,19 @@ extern functionClause functionClause_createGlobals (/*@only@*/ globalsClause) /*
 extern functionClause functionClause_createModifies (/*@only@*/ modifiesClause) /*@*/ ;
 extern functionClause functionClause_createWarn (/*@only@*/ warnClause) /*@*/ ;
 extern functionClause functionClause_createState (/*@only@*/ stateClause) /*@*/ ;
+extern functionClause functionClause_createEnsures (/*@only@*/ constraintList) /*@*/ ;
+extern functionClause functionClause_createRequires (/*@only@*/ constraintList) /*@*/ ;
 
 extern /*@exposed@*/ globalsClause functionClause_getGlobals (functionClause) /*@*/ ;
 extern /*@exposed@*/ modifiesClause functionClause_getModifies (functionClause) /*@*/ ;
 extern /*@exposed@*/ stateClause functionClause_getState (functionClause) /*@*/ ;
 extern /*@exposed@*/ warnClause functionClause_getWarn (functionClause) /*@*/ ;
+extern /*@exposed@*/ constraintList functionClause_getEnsures (functionClause) /*@*/ ;
+extern /*@exposed@*/ constraintList functionClause_getRequires (functionClause) /*@*/ ;
 
 extern /*@only@*/ stateClause functionClause_takeState (functionClause p_fc) /*@modifies p_fc@*/ ;
+extern /*@only@*/ constraintList functionClause_takeEnsures (functionClause p_fc) /*@modifies p_fc@*/ ;
+extern /*@only@*/ constraintList functionClause_takeRequires (functionClause p_fc) /*@modifies p_fc@*/ ;
 extern /*@only@*/ warnClause functionClause_takeWarn (functionClause p_fc) /*@modifies p_fc@*/ ;
 
 extern bool functionClause_matchKind (functionClause p_p, functionClauseKind p_kind) /*@*/ ;

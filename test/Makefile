@@ -681,6 +681,9 @@ fileio:
 warnuse:
 	setenv LCLINT '$(LCLINTRN)'; cd warnuse ; $(MAKE) -e
 
+ensuresclauses:
+	setenv LCLINT '$(LCLINTRN)'; cd ensuresclauses ; $(MAKE) -e
+
 ###
 ### Integration Tests
 ###

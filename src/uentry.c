@@ -1087,6 +1087,16 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 	      uentry_setModifies (ue, modifiesClause_takeMods (mlc));
 	    }
 	}
+      else if (functionClause_isEnsures (el))
+	{
+	  constraintList cl = functionClause_takeEnsures (el);
+	  uentry_setPostconditions (ue, cl);
+	}
+      else if (functionClause_isRequires (el))
+	{
+	  constraintList cl = functionClause_takeRequires (el);
+	  uentry_setPreconditions (ue, cl);
+	}
       else if (functionClause_isState (el))
 	{
 	  stateClause sc = functionClause_takeState (el);

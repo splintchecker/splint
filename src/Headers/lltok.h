@@ -46,13 +46,10 @@ extern bool lltok_isNot_Op (lltok p_tok);
 
 /*drl7x added this function 11/20/00 */
 
-bool lltok_isLt_Op (lltok p_tok);
-
-bool lltok_isGt_Op (lltok p_tok);
-  
-bool lltok_isGe_Op (lltok p_tok);
-
-bool lltok_isLe_Op (lltok p_tok);
+extern bool lltok_isLt_Op (lltok p_tok);
+extern bool lltok_isGt_Op (lltok p_tok);
+extern bool lltok_isGe_Op (lltok p_tok);
+extern bool lltok_isLe_Op (lltok p_tok);
 
 /* end drl7x added */
 
@@ -72,6 +69,9 @@ bool lltok_isAmpersand_Op (lltok p_tok);
 
 extern bool lltok_isExcl_Op (lltok p_tok);
 extern bool lltok_isTilde_Op (lltok p_tok);
+
+extern bool lltok_isEnsures (lltok p_tok);
+extern bool lltok_isRequires (lltok p_tok);
 
 # else
 # error "Multiple include"

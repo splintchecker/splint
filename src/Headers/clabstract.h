@@ -96,10 +96,6 @@ extern void declareStaticFunction (/*@only@*/ idDecl p_tid)
      (added to clabstract earilier
    */
    
-extern constraintList getFunctionConstraints (void);
-extern constraintList getEnsuresConstraints (void);
-extern void setEnsuresConstraints (constraintList p_c);
-extern void setFunctionConstraints (constraintList p_c);
 extern sRef checkbufferConstraintClausesId (uentry p_ue);
 extern void setImplictfcnConstraints (void);
 
