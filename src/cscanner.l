@@ -428,6 +428,10 @@ static void setTokLengthT (size_t len)
 "|"		{ setTokLength (1); RETURN_TOK (TBAR); }
 "?"		{ setTokLength (1); RETURN_TOK (TQUEST); }
 
+
+"/\\"		{ setTokLength (1); RETURN_TOK (TCAND); }
+
+
 [ \t\v\f]	{ incColumn (); }
 \n              { context_incLineno ();
 		  if (continueLine)
@@ -565,8 +569,8 @@ struct skeyword s_parsetable[] = {
   { "pre", QPRECLAUSE } ,
   { "post", QPOSTCLAUSE } ,
   {"setBufferSize", QSETBUFFERSIZE},
-  {"bufferConstraint", QBUFFERCONSTRAINT},
-  {"ensuresConstraint", QENSURESCONSTRAINT},
+  {"requires", QBUFFERCONSTRAINT},
+  {"ensures", QENSURESCONSTRAINT},
   {"setStringLength", QSETSTRINGLENGTH},
   {"testinRange", QTESTINRANGE},
   { NULL, BADTOK }
@@ -613,8 +617,8 @@ struct skeyword s_keytable[] = {
   { "relnull", QRELNULL } ,
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
-  { "bufferConstraint", QBUFFERCONSTRAINT },
-  { "ensuresConstraint", QENSURESCONSTRAINT },
+  { "requires", QBUFFERCONSTRAINT },
+  { "ensures", QENSURESCONSTRAINT },
   { "testInRange", QTESTINRANGE},
   { "MaxSet", QMAXSET},
   { "MaxRead", QMAXREAD},

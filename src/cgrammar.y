@@ -177,6 +177,7 @@ void yyerror (char *s);
 %token <tok> QMAXREAD
 %token <tok> QTESTINRANGE
 
+%token <tok> TCAND
 
 
 /* identifiers, literals */
@@ -417,7 +418,7 @@ optGlobEnsuresConstraintsAux
 context_setProtectVars (); enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
 
-}  QENSURESCONSTRAINT BufConstraintList  QENDMACRO
+}  QENSURESCONSTRAINT BufConstraintList optSemi QENDMACRO
 {
   setEnsuresConstraints ($3);
   exitParamsTemp ();
@@ -433,7 +434,7 @@ optGlobBufConstraintsAux
 context_setProtectVars (); enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
 
-}  QBUFFERCONSTRAINT BufConstraintList  QENDMACRO
+}  QBUFFERCONSTRAINT BufConstraintList optSemi QENDMACRO
 {
   setFunctionConstraints ($3);
   exitParamsTemp ();
@@ -443,11 +444,11 @@ context_setProtectVars (); enterParamsTemp ();
  | /*empty*/
 
 BufConstraintList
-: BufConstraint BufConstraintList{ $$ = constraintList_add ($2, $1); }
+: BufConstraint TCAND BufConstraintList { $$ = constraintList_add ($3, $1); }
 | BufConstraint {constraintList c; c = constraintList_makeNew(); c = constraintList_add (c, $1); $$ = c}
 
 BufConstraint
-:  BufConstraintExpr relationalOp BufConstraintExpr TSEMI  {
+:  BufConstraintExpr relationalOp BufConstraintExpr {
  $$ = makeConstraintParse3 ($1, $2, $3);
  DPRINTF(("Done BufConstraint1\n")); }
 
