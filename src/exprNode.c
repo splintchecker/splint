@@ -11527,3 +11527,22 @@ bool exprNode_isInitBlock (exprNode e)
 {
   return (exprNode_isDefined(e) && e->kind == XPR_INITBLOCK);
 }
+
+/*drl 3/2/2003 moved this function out of constraint.c */
+exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src)
+{
+    
+  llassert (exprNode_isDefined (dst) );
+  llassert (exprNode_isDefined (src) ); 
+
+  constraintList_free (dst->ensuresConstraints);
+  constraintList_free (dst->requiresConstraints);
+  constraintList_free (dst->trueEnsuresConstraints);
+  constraintList_free (dst->falseEnsuresConstraints);
+  
+  dst->ensuresConstraints = constraintList_copy (src->ensuresConstraints);
+  dst->requiresConstraints = constraintList_copy (src->requiresConstraints);
+  dst->trueEnsuresConstraints = constraintList_copy (src->trueEnsuresConstraints);
+  dst->falseEnsuresConstraints = constraintList_copy (src->falseEnsuresConstraints);
+  return dst;
+}

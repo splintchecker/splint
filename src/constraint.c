@@ -37,12 +37,6 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@i33*/
-
-/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
-/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
 static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
 
@@ -185,7 +179,7 @@ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
 
 void constraint_overWrite (constraint c1, constraint c2) 
 {
-  llassert (constraint_isDefined (c1));
+  llassert (constraint_isDefined (c1) && constraint_isDefined (c2));
 
   llassert (c1 != c2);
 
@@ -243,9 +237,13 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
   return ret;
 }
 
+/*@access exprNode@*/ 
+
 constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, /*@exposed@*/ exprNode e)
 {
-    
+  
+  llassert (constraint_isDefined (c) );
+  
   if (c->generatingExpr == NULL)
     {
       c->generatingExpr = e;
@@ -257,10 +255,12 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, /*@exposed
     }
   return c;
 }
+/*@noaccess exprNode@*/ 
 
 constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint c, exprNode e)
 {
-
+  llassert (constraint_isDefined (c) );
+ 
   if (c->orig != constraint_undefined)
     {
       c->orig = constraint_addGeneratingExpr (c->orig, e);
@@ -275,6 +275,8 @@ constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint c, exprNo
 constraint constraint_setFcnPre (/*@returned@*/ constraint c)
 {
 
+  llassert (constraint_isDefined (c) );
+ 
   if (c->orig != constraint_undefined)
     {
       c->orig->fcnPre = TRUE;
@@ -292,16 +294,22 @@ constraint constraint_setFcnPre (/*@returned@*/ constraint c)
 
 fileloc constraint_getFileloc (constraint c)
 {
+ 
+  llassert (constraint_isDefined (c) );
+ 
   if (exprNode_isDefined (c->generatingExpr))
     return (fileloc_copy (exprNode_getfileloc (c->generatingExpr)));
-	    
+  
   return (constraintExpr_getFileloc (c->lexpr));
-
+  
 
 }
 
 static bool checkForMaxSet (constraint c)
 {
+  
+  llassert (constraint_isDefined (c) );
+ 
   if (constraintExpr_hasMaxSet (c->lexpr) || constraintExpr_hasMaxSet (c->expr))
     return TRUE;
 
@@ -310,6 +318,9 @@ static bool checkForMaxSet (constraint c)
 
 bool constraint_hasMaxSet (constraint c)
 {
+  
+  llassert (constraint_isDefined (c) );
+ 
   if (checkForMaxSet (c))
     return TRUE;
   
@@ -422,7 +433,9 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, filelo
 {
   constraint ret;
   
-  ret = constraint_makeReadSafeExprNode (t1, t2);
+  ret = constraint_makeReadSafeExprNode (t1, t2);   
+  llassert (constraint_isDefined (ret) );
+ 
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);  
   ret->post = TRUE;  
 
@@ -527,19 +540,6 @@ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, file
 }
 
 
-exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src)
-{
-  constraintList_free (dst->ensuresConstraints);
-  constraintList_free (dst->requiresConstraints);
-  constraintList_free (dst->trueEnsuresConstraints);
-  constraintList_free (dst->falseEnsuresConstraints);
-  
-  dst->ensuresConstraints = constraintList_copy (src->ensuresConstraints);
-  dst->requiresConstraints = constraintList_copy (src->requiresConstraints);
-  dst->trueEnsuresConstraints = constraintList_copy (src->trueEnsuresConstraints);
-  dst->falseEnsuresConstraints = constraintList_copy (src->falseEnsuresConstraints);
-  return dst;
-}
 
 /* Makes the constraint e = e + f */
 constraint constraint_makeAddAssign (exprNode e, exprNode f, fileloc sequencePoint)
@@ -726,6 +726,9 @@ void constraint_printError (constraint c, fileloc loc)
 
   bool isLikely;
 
+    
+  llassert (constraint_isDefined (c) );
+ 
   /*drl 11/26/2001 avoid printing tautological constraints */
   if (constraint_isAlwaysTrue (c))
     {
@@ -804,6 +807,10 @@ static cstring constraint_printDeep (constraint c)
   cstring genExpr;
   cstring st = cstring_undefined;
 
+     
+  llassert (constraint_isDefined (c) );
+ 
+
   st = constraint_print(c);
   
   if (c->orig != constraint_undefined)
@@ -839,7 +846,10 @@ static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/
 {
   cstring st = cstring_undefined;
   cstring genExpr;
-  
+
+     
+  llassert (constraint_isDefined (c) );
+ 
   st = message ("Unsatisfied ensures constraint condition:\nSplint is unable to verify the constraint %q", constraint_printDeep (c));
 
   genExpr = exprNode_unparse (c->generatingExpr);
@@ -868,7 +878,9 @@ cstring  constraint_printDetailed (constraint c)
   cstring temp = cstring_undefined;
   cstring genExpr;
   bool isLikely;
-  
+   
+  llassert (constraint_isDefined (c) );
+   
   if (!c->post)
     {
       st = message ("Unable to resolve constraint:\n%q", constraint_printDeep (c));
@@ -973,6 +985,9 @@ cstring  constraint_printOr (constraint c) /*@*/
   constraint temp;
 
   ret = cstring_undefined;
+     
+  llassert (constraint_isDefined (c) );
+ 
   temp = c;
 
   ret = cstring_concatFree (ret, constraint_print (temp));
@@ -993,6 +1008,9 @@ cstring  constraint_printOr (constraint c) /*@*/
 /*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,
 						   exprNodeList arglist)
 {
+   
+  llassert (constraint_isDefined (precondition) );
+ 
   precondition->lexpr = constraintExpr_doSRefFixBaseParam (precondition->lexpr,
 							   arglist);
   precondition->expr = constraintExpr_doSRefFixBaseParam (precondition->expr,
@@ -1005,6 +1023,10 @@ cstring  constraint_printOr (constraint c) /*@*/
 constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exprNode fcnCall)
 {
   postcondition = constraint_copy (postcondition);
+
+  llassert (constraint_isDefined (postcondition) );
+ 
+  
   postcondition->lexpr = constraintExpr_doFixResult (postcondition->lexpr, fcnCall);
   postcondition->expr = constraintExpr_doFixResult (postcondition->expr, fcnCall);
 
@@ -1028,6 +1050,9 @@ constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exp
 {
 
   precondition = constraint_copy (precondition);
+
+  llassert (constraint_isDefined (precondition) );
+ 
   precondition->lexpr = constraintExpr_doSRefFixConstraintParam (precondition->lexpr, arglist);
   precondition->expr = constraintExpr_doSRefFixConstraintParam (precondition->expr, arglist);
 
@@ -1039,7 +1064,9 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
 {
 
   DPRINTF ((message ("Doing constraint_preserverOrig for %q ", constraint_printDetailed (c))));
-  
+
+  llassert (constraint_isDefined (c) );
+ 
   if (c->orig == constraint_undefined)
     c->orig = constraint_copy (c);
 
@@ -1052,6 +1079,9 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
       /* avoid infinite loop */
       c->orig = NULL;
       c->orig = constraint_copy (c);
+      /*drl 03/2/2003 if c != NULL then the copy of c will != null*/
+      llassert (constraint_isDefined (c->orig) );
+
       if (c->orig->orig == NULL)
 	{
 	  c->orig->orig = temp;
@@ -1081,12 +1111,16 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
 
 constraint constraint_togglePost (/*@returned@*/ constraint c)
 {
+  llassert (constraint_isDefined (c) );
+ 
   c->post = !c->post;
   return c;
 }
 
 constraint constraint_togglePostOrig (/*@returned@*/ constraint c)
 {
+  llassert (constraint_isDefined (c) );
+ 
   if (c->orig != NULL)
     c->orig = constraint_togglePost (c->orig);
   return c;
@@ -1094,7 +1128,10 @@ constraint constraint_togglePostOrig (/*@returned@*/ constraint c)
 
 bool constraint_hasOrig ( /*@observer@*/ /*@temp@*/ constraint c)
 {
-  if (c->orig == NULL)
+
+  llassert (constraint_isDefined (c) );
+ 
+   if (c->orig == NULL)
     return FALSE;
   else
     return TRUE;
@@ -1120,7 +1157,10 @@ constraint constraint_undump (FILE *f)
 
   s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
-  /*@i33*/ /*this should probably be wrappered...*/
+  if (! mstring_isDefined(s) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
   
   fcnPre = (bool) reader_getInt (&s);
   advanceField (&s);
@@ -1130,6 +1170,11 @@ constraint constraint_undump (FILE *f)
 
   s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
+  if (! mstring_isDefined(s) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
+  
   reader_checkChar (&s, 'l');
 
   lexpr = constraintExpr_undump (f);
@@ -1137,6 +1182,12 @@ constraint constraint_undump (FILE *f)
   s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
   reader_checkChar (&s, 'r');
+  
+  if (! mstring_isDefined(s) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
+  
   expr = constraintExpr_undump (f);
 
   c = constraint_makeNew ();
@@ -1163,7 +1214,8 @@ void constraint_dump (/*@observer@*/ constraint c,  FILE *f)
   constraintExpr lexpr;
   constraintExpr  expr;
 
-
+  llassert (constraint_isDefined (c) );
+ 
   fcnPre = c->fcnPre;
   post   = c->post;
   ar     = c->ar;
@@ -1226,7 +1278,9 @@ bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint c)
 static int constraint_getDepth (/*@observer@*/ /*@temp@*/ constraint c)
 {
   int l , r;
-
+  
+  llassert (constraint_isDefined (c) );
+ 
   l = constraintExpr_getDepth (c->lexpr);
   r = constraintExpr_getDepth (c->expr);
 
@@ -1264,7 +1318,9 @@ bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint c)
 bool constraint_isConstantOnly (constraint c)
 {
   bool l, r;
-
+  
+  llassert (constraint_isDefined (c) );
+ 
   l = constraintExpr_isConstantOnly(c->lexpr);
   r = constraintExpr_isConstantOnly(c->expr);
 
