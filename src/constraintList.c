@@ -286,10 +286,15 @@ constraintList_print (/*@temp@*/ constraintList s) /*@*/
       if (constraint_isDefined(current) )
 	{
 	  cstring temp1;
-	    if ( context_getFlag (FLG_ORCONSTRAINT) )
+
+	  if (context_getFlag (FLG_ORCONSTRAINT))
+	    {
 	      temp1 = constraint_printOr(current);
-	    else
-	      temp1 = constraint_print(current);
+	    }
+	  else
+	    {
+	      temp1 = constraint_print (current);
+	    }
 	  type = message ("%q %q\n", type, temp1 );
 	}
 

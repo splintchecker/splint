@@ -1056,7 +1056,8 @@ splintme:
 splintsome: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude lcllib.c  -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +partial
 
-/* $(LINTSRC) $(LCLSRC)*/
+# drl changed to use # for comment
+#/* $(LINTSRC) $(LCLSRC)*/
 
 splinttest: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude cpplib.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +keep +supcounts +partial -null

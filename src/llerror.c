@@ -381,7 +381,7 @@ mstring_split (/*@returned@*/ char **sp,
   **
   **    if there is a newline in first maxline characters, split there
   **    if line len is <= maxline, return no split
-  **    if there is a ':' or ';' followed by ' ' in first maxline characters,
+  **    if there is a ':' or ';' or ',' followed by ' ' in first maxline characters,
   **       split there unless the ' ' is followed by a '}', then
   **       split after '}'
   **       of the ';' is inside quotation marks
@@ -421,8 +421,9 @@ mstring_split (/*@returned@*/ char **sp,
     {
       int i = 0;
       char savechar;
-      char *lcolon, *lsemi, *splitat;
-
+      char *lcolon, *lsemi, *lcomma;
+      char *splitat;
+      
       splitat = NULL;
 
       t = s + maxline - 1;
@@ -431,6 +432,8 @@ mstring_split (/*@returned@*/ char **sp,
       *t = '\0';
       lcolon = strrchr (s, ':');
       lsemi = strrchr (s, ';');
+      lcomma = strrchr (s, ',');
+
       *t = savechar;
 
       splitat = maxcp (lcolon, lsemi);
@@ -438,7 +441,9 @@ mstring_split (/*@returned@*/ char **sp,
       if (splitat != NULL && ((int)(splitat - s) > MINLINE)
 	  && *(splitat) != '\0'
 	  && *(splitat + 1) == ' ' 
-	  && (*(splitat + 2) != '}' && (*(splitat + 2) != '\0'))) 
+	  && (*(splitat + 2) != '}'
+	      && *(splitat + 2) != ',' 
+	      && (*(splitat + 2) != '\0'))) 
 	{
 	  *(splitat + 1) = '\0';
 	  t = splitat + 2;
@@ -447,6 +452,24 @@ mstring_split (/*@returned@*/ char **sp,
 	  return;
 	}
 
+      if (lcomma != NULL && ((lcomma - s) > maxline - 5))
+	{
+	  splitat = lcomma;
+	  
+	  if (splitat != NULL && ((int)(splitat - s) > MINLINE)
+	      && *(splitat) != '\0'
+	      && *(splitat + 1) == ' ' 
+	      && (*(splitat + 2) != '}'
+		  && (*(splitat + 2) != '\0'))) 
+	    {
+	      *(splitat + 1) = '\0';
+	      t = splitat + 2;
+	      *tp = t;
+	      llassertprotect (*tp == NULL || (*tp > osp));
+	      return;
+	    }
+	}
+      
       while (*t != ' ' && *t != '\t' && i < MAXSEARCH)
 	{
 	  t--;

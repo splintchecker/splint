@@ -133,7 +133,7 @@ bool flagMarker_equal (flagMarker f1, flagMarker f2)
       return (flagcode_equal (f1->code, f2->code));
     }
 
-  BADBRANCH;
+  BADBRANCHRET (FALSE);
 }
 
 cstring flagMarker_unparse (flagMarker c)

@@ -22,13 +22,13 @@
 #define LCL_COMPILE "Compiled using Microsoft Visual C++ 6.0"
 
 /* Splint's version number */
-#define LCL_PARSE_VERSION "Splint 3.0.1.6"
+#define LCL_PARSE_VERSION "Splint 3.0.1.7"
 
 /* Define to disable support LCL files */
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.1.6 --- 11 Feb 2002"
+#define SPLINT_VERSION "Splint 3.0.1.7 --- 11 Mar 2002"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "C:/include"
