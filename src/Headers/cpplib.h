@@ -27,8 +27,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern "C" {
 #endif
 
-typedef struct hashnode HASHNODE;
-
 typedef enum cpp_token (*parseUnderflow) (cppReader *);
 typedef void (*parseCleanup) (cppBuffer *, cppReader *);
 
@@ -89,7 +87,7 @@ struct cppBuffer {
   parseUnderflow underflow;
   parseCleanup cleanup;
 
-  /*@dependent@*/ HASHNODE *hnode;
+  /*@dependent@*/ hashNode hnode;
   /*@dependent@*/ /*@null@*/ struct parse_marker *marks;
   /* Value of if_stack at start of this file.
      Used to prohibit unmatched #endif (etc) in an include file.  */

@@ -743,6 +743,8 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 				      sRef_undefined, TT_FCNPASS)),
 	       loc))
 	    {
+	      DPRINTF (("fref: %s", sRef_unparseFull (fref)));
+	      DPRINTF (("tref: %s", sRef_unparseFull (tref)));
 	      sRef_showNullInfo (fref);
 	      sRef_setNullError (fref);
 	    }
@@ -907,11 +909,14 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
       else
 	{
 	  DPRINTF (("Here fref: %s", sRef_unparseFull (fref)));
+	  DPRINTF (("Here tref: %s", sRef_unparseFull (tref)));
 
 	  if (ctype_isAP (tct) || ctype_isUnknown (tct))
 	    {
 	      sRef fptr = sRef_constructDeref (fref);
 	      sRef tptr = sRef_constructDeref (tref);
+
+	      DPRINTF (("Here tptr: %s", sRef_unparseFull (tptr)));
 
 	      return (checkCompletelyDefined (fexp, fptr, ofref,
 					      texp, tptr,

@@ -3,7 +3,6 @@
 
 typedef struct cppBuffer cppBuffer;
 typedef struct cppOptions cppOptions;
-typedef struct hashnode cppHashNode;
 
 enum cpp_token {
   CPP_EOF = -1,

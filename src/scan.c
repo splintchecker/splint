@@ -69,9 +69,13 @@ ltoken LSLScanNextToken (void)
 {
   if (nextToken < lastToken)
     {	
-      /*@-retalias@*/
-      return TokenList[nextToken++];
-      /*@=retalias@*/
+      ltoken res = TokenList[nextToken];
+      TokenList[nextToken] = ltoken_undefined;
+      nextToken++;
+      /*@-dependenttrans@*/
+      return res; /* Its the only reference now. */
+      /*@=dependenttrans@*/
+
     }
   else
     {

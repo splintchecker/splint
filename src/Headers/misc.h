@@ -20,6 +20,10 @@ extern void assertSet (/*@special@*/ /*@sef@*/ /*@unused@*/ void *p_x)
    /*@sets p_x, *p_x@*/ ;
 # define assertSet(x) ;
 
+extern void assertDefined (/*@sef@*/ /*@unused@*/ void *p_x) ;
+# define assertDefined(x) ;
+
+
 /*@-czechfcns@*/
 extern int size_toInt (size_t p_x) /*@*/ ;
 extern long size_toLong (size_t p_x) /*@*/ ;

@@ -7,6 +7,7 @@
 
 abst_typedef /*@null@*/ struct s_sRef *sRef;
 abst_typedef /*@null@*/ struct s_uentry *uentry;
+typedef struct s_hashNode *hashNode;
 immut_typedef int typeIdSet;
 typedef /*@only@*/ uentry o_uentry;
 abst_typedef struct s_mttok *mttok;

@@ -6,16 +6,16 @@
 
 /* different kinds of things that can appear in the value field
    of a hash node.  Actually, this may be useless now. */
-union hashval {
+typedef union u_hashvalue {
   int ival;
   /*@owned@*/ char *cpval;
   /*@owned@*/ DEFINITION *defn;
-} ;
+} hashValue;
 
-struct hashnode {
+struct s_hashNode {
   /* double links for easy deletion */
-  /*@only@*/ /*@null@*/ struct hashnode *next;
-  /*@dependent@*/ /*@null@*/ struct hashnode *prev;
+  /*@only@*/ /*@null@*/ hashNode next;
+  /*@dependent@*/ /*@null@*/ hashNode prev;
 
   /*
   ** Also, a back pointer to this node's hash
@@ -23,13 +23,13 @@ struct hashnode {
   ** of the chain and gets deleted. 
   */
 
-  /*@null@*/ /*@dependent@*/ struct hashnode **bucket_hdr;
+  /*@null@*/ /*@dependent@*/ hashNode *bucket_hdr;
 
   enum node_type type;		/* type of special token */
   int length;			/* length of token, for quick comparison */
   cstring name;			/* the actual name */
-  union hashval value;		/* pointer to expansion, or whatever */
-};
+  hashValue value;		/* pointer to expansion, or whatever */
+} ;
 
 /* Some definitions for the hash table.  The hash function MUST be
    computed as shown in hashf () below.  That is because the rescan
@@ -38,22 +38,22 @@ struct hashnode {
    the hashf () function.  Hashf () only exists for the sake of
    politeness, for use when speed isn't so important. */
 
-extern void cppReader_deleteMacro (/*@exposed@*/ HASHNODE *p_hp) 
+extern void cppReader_deleteMacro (/*@exposed@*/ hashNode p_hp) 
      /*@modifies internalState, *p_hp@*/;
 
-extern /*@exposed@*/ HASHNODE *cppReader_install (char *, int, 
+extern /*@exposed@*/ hashNode cppReader_install (char *, int, 
 						  enum node_type, int, 
 						  /*@only@*/ /*@null@*/ char *, int);
 
 extern void cppReader_hashCleanup (void);
-extern /*@null@*/ /*@exposed@*/ cppHashNode *cppReader_lookup (char *, int, int); 
-extern /*@null@*/ /*@exposed@*/ cppHashNode *cppReader_lookupExpand (char *, int, int); 
+extern /*@null@*/ /*@exposed@*/ hashNode cppReader_lookup (char *, int, int); 
+extern /*@null@*/ /*@exposed@*/ hashNode cppReader_lookupExpand (char *, int, int); 
 
 extern void cppReader_saveHashtab (void);
 extern void cppReader_restoreHashtab (void);
 extern int hashf (const char *p_name, int p_len, int p_hashsize);
 
-extern /*@exposed@*/ HASHNODE *
+extern /*@exposed@*/ hashNode 
 cppReader_installMacro (char *p_name, int p_len, 
 			/*@only@*/ struct definition *p_defn, int p_hash);
 

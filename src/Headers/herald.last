@@ -1,6 +1,6 @@
 /* herald.h - created automatically by gmake updateversion */
 /*@constant observer char *LCL_VERSION;@*/
-# define LCL_VERSION "LCLint 3.0.0.7 --- 20 June 2001"
+# define LCL_VERSION "LCLint 3.0.0.7 --- 12 July 2001"
 /*@constant observer char *LCL_PARSE_VERSION;@*/
 # define LCL_PARSE_VERSION "LCLint 3.0.0.7"
 /*@constant observer char *LCL_COMPILE;@*/

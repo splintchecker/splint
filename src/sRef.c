@@ -5010,6 +5010,8 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
   
   s->defstate = SS_DEFINED;
   
+  DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
+
   /* e.g., if x is allocated, *x = 3 defines x */
   
   if (s->kind == SK_PTR)
@@ -5095,7 +5097,17 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
   if (clear)
     {
       sRef_clearDerived (s);
-    }  
+    } 
+  else
+    {
+      /* evans 2001-07-12: need to define the derived references */
+      sRefSet_elements (s->deriv, el)
+	{
+	  el->defstate = SS_DEFINED;
+	} end_sRefSet_elements ;
+    }
+
+  DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
 }
 
 static void sRef_setPartialDefined (sRef s, fileloc loc)

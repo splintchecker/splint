@@ -82,7 +82,9 @@ stateCombinationTable stateCombinationTable_create (int size)
 	  s->value = i;
 	  llassert (cstring_isUndefined (s->msg));
 	  
+	  /*@-usedef@*/ /*@i534 why necessary? */
 	  res->rows[i]->entries[j] = s;
+	  /*@=usedef@*/ 
 	}
     }
   
