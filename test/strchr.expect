@@ -1,0 +1,6 @@
+
+strchr.c: (in function func)
+strchr.c:6:4: Dereference of possibly null pointer c: *c
+   strchr.c:5:7: Storage c may become null
+
+Finished LCLint checking --- 1 code error found

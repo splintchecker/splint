@@ -24,6 +24,10 @@
 .PHONY: sizeoftest
 .PHONY: bufferTest
 .PHONY: simplebufferConstraintTests
+.PHONY: maxset
+.PHONY: globalbufferannotation
+.PHONY: strchr
+.PHONY: for
 
 .SUFFIXES: .out .expect .c .lcl .h .lh .diff
 
@@ -38,7 +42,7 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal
 
-UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null sizeoftest bufferTest simplebufferConstraintTests observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
+UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null  observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
 
 #UNITTEST = bufferTest
 
@@ -594,6 +598,26 @@ bufferTest:
 simplebufferConstraintTests:
 	@cd simplebufferConstraintTests; \
 	$(LCLINTR) +functionconstraint m.c  sizeof.c  test3.c  test7.c
+
+maxset:
+	@cd maxset; \
+	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" maxsetannotations.c; \
+	pwd; \
+	echo $(LCLINTR); \
+	$(LCLINTR) -f .lclintrc -booltype "lltX_bool"  maxsetnoannotations.c
+
+globalbufferannotation:
+	@cd globalbufferannotation; \
+	$(LCLINTR) +functionconstraint globalvariable.c
+
+
+strchr:
+	@cd strchr; \
+	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" strchr.c
+
+for:
+	@cd for; \
+	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" for.c
 
 tests2.5:
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e

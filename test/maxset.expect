@@ -1,0 +1,12 @@
+
+Finished LCLint checking --- no code errors found
+/a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/test/maxset
+
+maxsetnoannotations.c: (in function noancopy)
+maxsetnoannotations.c:5:2: Unresolved constraint:
+    Lclint is unable to resolve Requires: : MAXSET ((a @ maxsetnoannotations.c:4
+    :9 ) )  >=  MAXREAD ((b @ maxsetnoannotations.c:4:11 ) ) needed to satisfy
+    Requires: : MAXSET ((a @ maxsetnoannotations.c:4:9 ) )  >=  MAXREAD ((b @
+    maxsetnoannotations.c:4:11 ) )
+
+Finished LCLint checking --- 1 code error found

@@ -60,7 +60,7 @@
 2 y17|17&
 2 y18|18&
 -2 ?!
-0 a2|&
+0 s2|&
 0 s3|&
 0 s4|&
 0 s5|&
@@ -659,7 +659,6 @@
 0 a1|&
 0 s14|&
 ;;tistable
-2
 0
 0,17
 17
@@ -674,7 +673,7 @@
 *0 (Datatype)
 0@+@=@0@7@0@0@67#mbstate_t
 0@+@+@0@7@0@0@654#mnull
-2@+@-@0@0@0@0@2#lltX_bool
+2@-@-@0@0@0@0@2#lltX_bool
 13@-@-@0@0@0@0@59#__SIZE_TYPE__
 13@-@-@0@0@0@0@60#__PTRDIFF_TYPE__
 13@-@-@0@0@0@0@61#__WCHAR_TYPE__
@@ -697,8 +696,8 @@
 372@-@-@0@0@0@0@374#ldiv_t
 *1 (Constant)
 0@i0@0@6#NULL
-2@i1@0@0#TRUE
 2$#NDEBUG
+2@i1@0@0#TRUE
 2@i0@0@6#FALSE
 3$#UCHAR_MAX#UCHAR_MIN
 4$#CHAR_MAX#CHAR_MIN#SCHAR_MAX#SCHAR_MIN
@@ -763,8 +762,8 @@
 423$@0@s3,g125@0@0@1@s3,tg125$@0#vwprintf
 388$@0@s3@1@s3,tp1$@0#fputws
 434$@1@@1@s0$@0#wcscmp#wcscoll
-499@6@0@1@1@0@1@g125@0@0,g113@0@0@1@g113,tg125$@0#wprintf
 501@6@0@1@2@0@1@g124@0@0,g113@0@0@1@g113,tg124$@0#wscanf
+499@6@0@1@1@0@1@g125@0@0,g113@0@0@1@g113,tg125$@0#wprintf
 265$@0@s3,g113@0@0@1@s3,tp1,g113$@0#fputc#ungetc
 276$@0@s3@1@s3,tp1$@0#putc
 364$@1@@1@s0$@0#abs
@@ -782,8 +781,8 @@
 344$@0@s1@1@s1$@0#atexit
 405$@1@@1@s0$@0#mbsinit
 278$@1@g125@0@0,s3@1@s3,tg125$@0#putchar
-271$@1@g124@0@0,s3@1@s3,tg124$@0#getchar
 321$@0@s1@1@s1$@0#rand
+271$@1@g124@0@0,s3@1@s3,tg124$@0#getchar
 317$@0@g113@0@0@1@tp1,g113$@0#strtol
 477$@0@@1@tp1$@0#wcstol
 371$@1@@1@s0$@0#labs
@@ -890,8 +889,6 @@
 630@442#@tm
 118@119#@lconv
 ;; Modules access
-lltX_bool#1@
-types#1@
-ansi#9@
-null6#11@
+ansi#8@
+null6#10@
 ;;End

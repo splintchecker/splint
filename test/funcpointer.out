@@ -28,5 +28,8 @@ funcpointer.c:48:10: Function (t6) called with 0 args, expects 2
 funcpointer.c:49:10: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:11: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:10: Function ((t6)(3)) called with 0 args, expects 1
+uentry.c:579 [funcpointer.c:54:2]: >> called uentry_getFcnPreconditions on nonfunction f2 t2
+uentry.c:583 [funcpointer.c:54:2]: >> called uentry_getFcnPreconditions on nonfunction f2 t2
+uentry.c:633 [funcpointer.c:54:2]: >> called uentry_getFcnPostconditions on nonfunction f2 t2
 
 Finished LCLint checking --- 18 code errors found, as expected
