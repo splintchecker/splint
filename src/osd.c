@@ -1133,7 +1133,16 @@ cstring osd_outputPath (cstring filename)
         {
           /* Give up if the result gets to be longer
              than the absolute path name.  */
-          if (rel_buffer + filename_len <= rel_buf_p + 3)
+	  char * temp_rel_buf_p;
+
+	  /*drl This comment is necessary because for some reason Splint
+	    does not realize that the pasts where rel_buf_p is released
+	    do not reach here*/
+	  /*@-usereleased@*/
+	  temp_rel_buf_p = rel_buf_p;
+	  /*@-usereleased@*/
+	  
+          if (rel_buffer + filename_len <= temp_rel_buf_p + 3)
 	    {
 	      sfree (rel_buffer);
 	      return cstring_copy (filename);
