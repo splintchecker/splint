@@ -1057,30 +1057,56 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 
   if (ctype_isFixedArray (t1))
     {
+      cstring escapedS;
       int nelements = long_toInt (ctype_getArraySize (t1));
       
       llassert (multiVal_isString (mval));
       slit = multiVal_forceString (mval);
-      len = cstring_length (slit);
+      //      escapedS = cstring_expandEscapes(slit );
+      //      len = cstring_length (escapedS );
+      //      cstring_free(escapedS);
+      
+      len = cstring_lengthExpandEscapes (slit);
+      
       
       if (len == nelements)
 	{
+	  mstring temp;
+
+	  temp = cstring_expandEscapes(slit);
+
+	  if (temp[len-1] == '\0')
+	    {
+	      voptgenerror 
+		(FLG_STRINGLITNOROOMFINALNULL,
+		 message ("String literal with %d character%& "
+			  "is assigned to %s (no room for final null terminator): %s",
+			  len + 1,
+			  ctype_unparse (t1),
+			  exprNode_unparse (e2)),
+		 e2->loc);
+	    }
+	  else
+	    {
+	  
+	  
 	  voptgenerror 
 	    (FLG_STRINGLITNOROOM,
 	     message ("String literal with %d character%& "
 		      "is assigned to %s (no room for null terminator): %s",
-		      cstring_length (slit),
+		      len + 1,
 		      ctype_unparse (t1),
 		      exprNode_unparse (e2)),
-	     e2->loc);	  		      
+	     e2->loc);
+	    }
 	}
       else if (len > nelements) 
 	{
 	  voptgenerror 
 	    (FLG_STRINGLITTOOLONG,
-	     message ("Stirng literal with %d character%& (counting null terminator) "
+	     message ("String literal with %d character%& (counting null terminator) "
 		      "is assigned to %s (insufficient storage available): %s",
-		      cstring_length (slit),
+		      len + 1,
 		      ctype_unparse (t1),
 		      exprNode_unparse (e2)),
 	     e2->loc);	  		      
@@ -1090,7 +1116,7 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 	  voptgenerror 
 	    (FLG_STRINGLITSMALLER,
 	     message ("String literal with %d character%& is assigned to %s (possible waste of storage): %s",
-		      cstring_length (slit),
+		      len + 1,
 		      ctype_unparse (t1),
 		      exprNode_unparse (e2)),
 	     e2->loc);	  

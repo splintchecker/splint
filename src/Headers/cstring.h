@@ -192,6 +192,16 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring) /*@*/ ;
 extern /*@only@*/ /*@notnull@*/ cstring
 cstring_copySegment (cstring p_s, int p_findex, int p_tindex) /*@*/ ;
 
+/*drl added 01/22/2001  Expands the escape squences i.e "\\n\\t\\000"
+ becomes "\n\t0"  */
+extern cstring  cstring_expandEscapes (cstring p_s);
+
+/*drl added 01/23/2001  Gives you the number of characters in an
+  expanded escape squences.  This can be different from strlen bc/ of
+  escaped nulls.  */
+int  cstring_lengthExpandEscapes (cstring p_s);
+
+
 extern bool cstring_containsLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;
 # define cstring_containsLit(c,sub) \
   (cstring_contains (c, cstring_fromChars (sub)))

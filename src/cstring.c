@@ -900,6 +900,174 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   
   return cstring_undefined;
 }
-    
+
+static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
+{
+  char *ptr;
+  mstring ret;
+  char * retPtr;
+
+  
+  llassert(cstring_isDefined (s));
+  
+  ret = mstring_create (cstring_length(s) );
+
+  ptr = s;
+
+  retPtr = ret;
+  while (*ptr != '\0')
+    {
+      if (*ptr != '\\')
+	{
+	  *retPtr = *ptr;
+	  retPtr++;
+	  ptr++;
+	  continue;
+	}
+      
+      if (*ptr == '\\')
+	{
+	  ptr++;
+	  if (*ptr == '\0')
+	    {
+	      /*not a legal escape sequence but try to handle it in a sesible way*/
+	      *retPtr = '\\';
+	      retPtr++;
+	    }
+	  
+	  // Handle Octal escapes 
+	  else if (*ptr >= '0' && *ptr <= '9' )
+	    {
+	      int total;
+	      total = (int)(*ptr - '0');
+	      ptr++;
+	      /*octal can only be 3 characters long */
+	      if (*ptr != '\0' &&  (*ptr >= '0' && *ptr <= '9' ) )
+		{
+		  total *= 8;
+		  ptr++;
+		  if (*ptr != '\0' &&  (*ptr >= '0' && *ptr <= '9' ) )
+		    {
+		      total *= 8;
+		      total += (int) (*ptr - '0');
+		      ptr++;
+		    }
+		}
+	      
+	      *retPtr =  (char) total;
+	      retPtr++;
+	    }
+	  
+	  else if (*ptr == 'x')
+	    {
+	      int total;
+	      total = 0;
+	      ptr++;
+	      if (!(*ptr != '\0' &&
+		    ( (*ptr >= '0' && *ptr <= '9' ) ||
+		      (toupper(*ptr) >= (int)('A') && toupper(*ptr) <= (int)('F') ) )
+		      ))
+		{
+		  total = (int)'x';
+		}
+	      else
+		{
+		  while (*ptr != '\0' &&
+		    ( (*ptr >= '0' && *ptr <= '9' ) ||
+		      (toupper(*ptr) >= ((int)('A')) && toupper(*ptr) <= ((int)'F') ) )
+			 )
+		    {
+		      total *= 16;
+		      if (*ptr >= '0' && *ptr <= '9' )
+			total += (int)(*ptr - '0');
+		      else
+			total += ( (toupper(*ptr) - 'A') + 10);
+		      ptr++;
+		    }
+		}
+	      *retPtr =  (char) total;
+	      retPtr++;
+	    }
+	  else
+	    {
+	      switch ( *ptr )
+		{
+		case 'a':
+		  *retPtr = '\a';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+
+		case 'b':
+		  *retPtr = '\b';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+
+		case 'f':
+		  *retPtr = '\f';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+
+		case 'n':
+		  *retPtr = '\n';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+
+		case 'r':
+		  *retPtr = '\r';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+
+		case 't':
+		  *retPtr = '\t';
+		  retPtr++;
+		  /*@switchbreak@*/ break;
+		  /* ' " ? \ */
+		  /* we assume invalid sequences are handled somewhere else
+		     so we handle an invalid sequence of the form \char by replacing
+		     it with char (this is what gcc does) the C standard says a diagnostic is
+		     required..*/
+		default:
+		  *retPtr = *ptr;
+		  retPtr++;
+		}
+	      ptr++;
+	    }
+	  
+	}/*end outer if*/
+      
+    }/*end while */
+
+  /* add the null character */
+  *retPtr = '\0';
+
+  *len = retPtr - ret;
+  return ret;
+}
+
+
+/*this function is like sctring_expandEscapses */
+mstring cstring_expandEscapes (cstring s)
+{
+  int len;
+
+  mstring ret;
+  
+  ret = doExpandEscapes (s, &len);
+  return ret;
+}
+
+int  cstring_lengthExpandEscapes (cstring s)
+{
+  int len;
+
+  mstring tmpStr;
+  
+  tmpStr = doExpandEscapes (s, &len);
+
+  cstring_free(tmpStr);
+
+  return len;
+}
+
 
 

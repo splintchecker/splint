@@ -3546,6 +3546,14 @@ static flaglist flags =
   },
   {
     FK_TYPE, FK_NONE, modeFlag,
+    "stringliteralnoroomfinalnull",
+    FLG_STRINGLITNOROOMFINALNULL,
+    "string literal leaves no room for null terminator",
+    "A string literal is assigned to a char array that is not big enough to hold the final null terminator.  This may not be a problem because a null character has been explictedly included in the string literal using an escape sequence",
+    0, 0
+  },
+  {
+    FK_TYPE, FK_NONE, modeFlag,
     "stringliteralnoroom",
     FLG_STRINGLITNOROOM,
     "string literal leaves no room for null terminator",
