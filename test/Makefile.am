@@ -12,9 +12,9 @@ DIFFFLAGS =
 
 SPLINT    = $(top_builddir)/src/splint$(EXEEXT)
 
-unexport LARCH_PATH
-unexport LCLIMPORTDIR
-
+### These are shell-specific
+## unexport LARCH_PATH
+## unexport LCLIMPORTDIR
 
 ### This is horrible!  Can't we make top_builddir absolute?
 SPLINTNEST = ../$(top_builddir)/src/splint$(EXEEXT)
