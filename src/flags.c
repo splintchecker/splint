@@ -468,7 +468,11 @@ printAllFlags (bool desc, bool full)
 
       cstringSList_elements (fl, el)
 	{
-	  llmsg (message ("%q\n\n", describeFlag (el)));
+	  /*@i22@*/ /*find out why this is necessary*/
+	  cstring tmp;
+	  tmp = cstring_copy(el);
+	  llmsg (message ("%q\n\n", describeFlag (tmp)));
+	  cstring_free(tmp);
 	} end_cstringSList_elements ;
 
       cstringSList_free (fl);
