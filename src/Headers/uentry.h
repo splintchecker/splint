@@ -103,6 +103,9 @@ typedef struct _ufinfo
   /*@dependent@*/ uentryList defparams; 
   bool hasGlobs BOOLBITS;
   bool hasMods  BOOLBITS;
+
+  constraintList preconditions;
+  
 } *ufinfo ;
 
 typedef struct _uiinfo
@@ -628,6 +631,9 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 
 /* start modifications */
 extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
+/*drl7x*/
+constraintList uentry_getFcnPreconditions (uentry ue);
+     /*end mods*/
 
 # else
 # error "Multiple include"

@@ -22,6 +22,8 @@ abst_typedef /*@null@*/ struct __fileloc *fileloc;
 abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
 
 abst_typedef /*@null@*/ struct _constraint *constraint;
+abst_typedef struct _constraintList  *constraintList;
+
 
 /* DRL modified 9 26 00 */
 

@@ -39,6 +39,12 @@ bool constraintTerm_isIntLiteral (constraintTerm term);
 
 cstring constraintTerm_print (constraintTerm term);
 
+constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s);
+
+bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2);
+
+
+constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist);
 #endif
 
 

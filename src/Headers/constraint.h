@@ -23,6 +23,10 @@ abst_typedef struct _constraintTerm * constraintTerm;
 
 //constraint constraint_create (exprNode e1, exprNode e2,  arithType restriction, constraintType kind);
 
+
+constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
+
+
 constraint constraint_createReadSafe (exprNode p_e1, exprNode p_e2);
 
 constraint constraint_makeInc_Op (exprNode p_e1);
@@ -75,6 +79,12 @@ exprNode exprNode_copyConstraints (exprNode dst, exprNode src);
 constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
 
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint);
+
+constraint constraint_preserveOrig (constraint c);
+constraint constraint_doSRefFixBaseParam (constraint precondition,
+						   exprNodeList arglist);
+
+cstring  constraint_printDetailed (constraint c);
 
 /*@=czechfcns*/
 #warning take this out

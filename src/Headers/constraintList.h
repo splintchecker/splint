@@ -7,12 +7,15 @@
 
 typedef /*@only@*/ constraint o_constraint;
 
-abst_typedef struct _constraintList
+struct _constraintList
 {
   int nelements;
   int nspace;
   /*@reldef@*/ /*@relnull@*/ o_constraint  *elements;
-} *constraintList;
+} ;
+
+/*@constant null constraintList constraintList_undefined;@*/
+# define constraintList_undefined ((constraintList) 0)
 
 /*@iter constraintList_elements (sef constraintList x, yield exposed constraint el); @*/
 # define constraintList_elements(x, m_el) \
@@ -49,6 +52,7 @@ extern constraintList constraintList_preserveOrig (constraintList c);
 
 /*@constant int constraintListBASESIZE;@*/
 
+extern constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist);
 
 # define constraintListBASESIZE SMALLBASESIZE
 
