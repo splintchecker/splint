@@ -1,317 +1,255 @@
-##################################################
-###                                         
-### Makefile for LCLint                     
-###                                         
-### designed for use with gmake (GNU make)  
-###                                         
-### original version based on LCL Makefile  
-### completely revised December 1993        
-### revised for 1.4a, November 1994         
-### revised for 2.0, February 1996
-### revised for 2.2, August 1996
-###                                         
-### This file should not need to be edited. 
+# Generated automatically from Makefile.in by configure.
 ###
-### Compilers and tools set using the top-level Makefile override settings
-### in this file when make is run from the top directory.
+### Makefile for building and installing LCLint 2.5
 ###
-### Commands:
-###
-### make all 
-###    builds a release version of lclint from scratch using optimizations
-###
-### make quick
-###    builds a local version of lclint (no optimizations)
-###    (does not remake files)
-###
-### make test
-###    runs the test suite 
-###    (must have installed test suite from lclint.test.tar.Z)
+### Updated for LCLint 2.5:  23 May 2000
+### Updated for LCLint 2.4:  12 April 1998
+### Updated for LCLint 2.2:  25 August 1996
+### Updated for LCLint 2.1a: 17 April 1996
+### Updated for LCLint 2.0:  24 February 1996
+### Updated for LCLint 1.4:  29 January 1995
+### Original for LCLint 1.0: 20 February 1994
 ###
 
-.SUFFIXES : .h .c .o .l .check
-.PHONY    : all dorerelease retest rerelease homeversion
-.IGNORE   : dorerelease retest rerelease
-
 ###
-### system information (compilers, flags, directories, etc.)
+### This makefile assumes the gnu version of make is available.
 ###
-
-include Makefile.sys
-
+### Run: make 		to build LCLint.
+###      make install   to install.
 ###
-### check files before compiling
-### (can't be 1 unless you have lclint already!)
 ###
-
-CHECK = 0 ### set to 1
-
+### These constants will be compiled into the lclint binary.  
 ###
-### source files
+### They may be overridden by environment variables, but these
+### constants set the default values when no environment variables
+### are set.
 ###
 
-include Makefile.sources
+### Command to run C preprocessor:
+
+DEFAULT_CPPCMD  = gcc -E
+
+### Directory containing system include files:
+
+SYSTEM_LIBDIR   = "/usr/include"
 
 ###
-### top level
+### Select installation directories:
+###
+### The LIBDIR and IMPORTSDIR are compiled into the binary to 
+### select the default LARCH_PATH and LCLIMPORTDIR, which can 
+### also be overridden by environment variables.
 ### 
 
-all : dorelease
+### directory for lclint libraries
+LIBDIR     = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/lib
 
-quick: lclint
+### directory for lclint standard imports
+IMPORTSDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/imports
 
-lclint : $(OBJ) 
-	@echo '// '
-	@echo '//  Linking:'
-	@echo '// '
-	$(CC) -o lclint $(OBJ) $(LINKFLAGS)
+### directory for lclint binary
+INSTALLDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev/bin
 
-object: $(OBJ)
+### this should be the complete path for the directory where this
+### Makefile is, with no trailing / or spaces.
 
-mylint:
-	CC="$(LCLINT)" ; export CC ; $(MAKE) -e object
-###
-### grammars
-###
+BASEDIR = /a/apollo.cs.Virginia.EDU/af9/drl7x/re/LCLintDev
 
 ###
-### -p xx flag to bison renames yyparse ==> xxparse, xxlex ==> xxlex
-### this is probably NOT compatible with yacc.
+### Then, run:
+###
+###	make
+###
+### I recommend doing this in an emacs shell (or buffered terminal) so
+### you can scroll through the output.
+###
+### This should (hopefully) work on most systems without further changes.
+###
+### If you do not have gcc, set CC = cc (or some other compiler)
+### later in this file. 
+###
+### It should:
+###     o build lclint
+###     o put lclint in BASEDIR/bin/lclint
+###
+### If you have installed the test suite, then do:
+###
+###	make test
+###
+### to verify lclint.
 ###
 
-signature.c : signature.c.der signature.y
-ifdef BISON
-	@$(BISON) $(YFLAGS) -p lsl signature.y
-	@$(CAT) bison.head signature.tab.c > signature.c
-	@$(MV) Headers/signature_gen.h Headers/signature_gen.bak
-	@$(CAT) bison.head signature.tab.h > Headers/signature_gen.h
-else
-	$(CP) signature.c.der signature.c
-endif
+###
+### shell --- should work with /bin/sh or similar shells too.
+###
 
-cgrammar.c : cgrammar.c.der cgrammar.y
-ifdef BISON
-	$(BISON) $(YFLAGS) cgrammar.y
-	@echo '//           Expect 119 shift/reduce conflicts and 114 reduce/reduce conflicts.'
-	@echo '//           (see cgrammar.y for explanation)'
-	@$(CAT) bison.head cgrammar.tab.c > cgrammar.c
-	@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
-	@$(CAT) bison.head cgrammar.tab.h > Headers/cgrammar_tokens.h
-else
-	$(CP) cgrammar.c.der cgrammar.c
-endif
-
-### llgrammar2.h is necessary so +singleinclude may be used
-
-llgrammar.c  : llgrammar.c.der llgrammar.y
-ifdef BISON
-	$(BISON) $(YFLAGS) -p yl llgrammar.y
-	@echo '//            Expect 2 shift/reduce conflicts.'
-	@$(CAT) bison.head llgrammar.tab.c > llgrammar.c
-	@$(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak
-	@$(CAT) bison.head llgrammar.tab.h > Headers/llgrammar_gen2.h
-	@$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak
-	@$(CAT) bison.head llgrammar.tab.h > Headers/llgrammar_gen.h
-else
-	$(CP) llgrammar.c.der llgrammar.c
-endif
-
-cscanner.c : cscanner.c.der cscanner.l
-ifdef FLEX				
-	$(FLEX) $(LFLAGS) cscanner.l 
-	$(CAT) flex.head lex.yy.c > cscanner.c
-else
-	$(CP) cscanner.c.der cscanner.c
-endif
+SHELL  = /bin/csh
 
 ###
-### compile without warnings
+### If you wish to install lclint in some other directory, set these 
+### variables, and do 
+###
+###	make install
+###
+
+### installation command
+INSTALL      = /usr/bin/install -c
+INSTALLFLAGS =           
+
+### this works with nfs, change to whatever is needed to make
+### a file executable on your system
+
+MAKEEXE = chmod 755
+
+###
+### end of installation variables
+###
+
+###
+### compiler --- gcc is recommended, but lclint has been compiled
+###              without changes using cc on several platforms.
+###
+
+CC = gcc  -DSTDC_HEADERS=1
+
+###
+### optimizing compiler --- add optimization flags here
 ### 
 
-signature.o : signature.c
-	$(CC) $(CPPFLAGS) -c $*.c
-
-cgrammar.o : cgrammar.c
-	$(CC) $(CPPFLAGS) -c $*.c
-
-llgrammar.o : llgrammar.c
-	$(CC) $(CPPFLAGS) -c $*.c
-
-cscanner.o : cscanner.c
-	$(CC) $(CPPFLAGS) -c $*.c
+CCOPT = $(CC) -O2
 
 ###
-### header files dependant on grammars
+### link flags --- this links the lex or flex library
 ###
 
-Headers/signature2.h : signature.c
-Headers/cgrammar2.h : cgrammar.c
-Headers/llgrammar.h : llgrammar.c
+LINKFLAGS = -ll
 
 ###
-### defaults
+### do you have bison and/or flex?
+### (Note: yacc will probably not work; lex might work but is not recommended.)
 ###
 
-### Flags for checking a single file
-SINGLEFLAGS = +neverinclude -supcounts +partial -showsummary -load lclint.lcd
-
-.c.check: lclint.lcd lclint
-	$(LCLINT) $(LINTFLAGS) $(SINGLEFLAGS) $*.c
-
-.c.o:
-ifeq ($(CHECK), 1)
-	$(LCLINT) $(LINTFLAGS) $(SINGLEFLAGS) $*.c
-endif
-	@echo '//  Compiling '$*.c' / compiled: '`$(OFILES)`'  (of 120 files)'
-	@$(CC) $(CFLAGS) -c $*.c
+BISON     = /usr/bin/bison
+FLEX      = /usr/bin/flex
 
 ###
-### alternatives (tests, releases, backups, etc.)
+### is the test suite available? (must be full path here)
 ###
 
-### -e option makes environment variables take precedence
-
-.PHONY : test quicktest opt up 
-
-opt :
-ifneq (,$(findstring csh, $(SHELL)))
-	setenv CC '$(CCOPT)' ; $(MAKE) -e lclint
-else
-	CC="$(CCOPT)" ; export CC ; $(MAKE) -e lclint
-endif
-
-updateversion:
-	@$(MV) Headers/herald.h Headers/herald.last
-	@echo '/* herald.h - created automatically by gmake updateversion */' > Headers/herald.h
-	@echo '/*@constant observer char *LCL_VERSION;@*/' >> Headers/herald.h
-	@echo '# define LCL_VERSION "LCLint '`cat $(VERSION_NUMBER)`' --- '`cat DATE`'"' \
-              >> Headers/herald.h
-	@echo '/*@constant observer char *LCL_PARSE_VERSION;@*/' >> Headers/herald.h
-	@echo '# define LCL_PARSE_VERSION "LCLint '`cat $(VERSION_NUMBER)`'"' \
-              >> Headers/herald.h
-	@echo '/*@constant observer char *LCL_COMPILE;@*/' >> Headers/herald.h
-	@echo '# define LCL_COMPILE "Compiled using '$(CC)' on '`uname -a`' by '`whoami`'"' >> Headers/herald.h
-
-localconstants:
-	@$(MV) Headers/local_constants.h Headers/local_constants.last
-	@echo '/* local_constants.h - created automatically by gmake localconstants */' \
-                > Headers/local_constants.h
-ifndef SYSTEM_LIBDIR
-	@echo '*** Fatal Error: SYSTEM_LIBDIR not defined.'
-else
-	@echo '/*@constant observer char *SYSTEM_LIBDIR;@*/' >> Headers/local_constants.h
-	@echo '# define SYSTEM_LIBDIR $(SYSTEM_LIBDIR)' >> Headers/local_constants.h
-ifndef DEFAULT_LARCHPATH
-	@echo '*** Fatal Error: DEFAULT_LARCHPATH not defined.'
-else
-	@echo '/*@constant observer char *DEFAULT_LARCHPATH;@*/' >> Headers/local_constants.h
-	@echo '# define DEFAULT_LARCHPATH $(DEFAULT_LARCHPATH)' >> Headers/local_constants.h
-ifndef DEFAULT_LCLIMPORTDIR
-	@echo '*** Fatal Error: DEFAULT_LARCHPATH not defined.'
-else
-	@echo '/*@constant observer char *DEFAULT_LCLIMPORTDIR;@*/' >> Headers/local_constants.h
-	@echo '# define DEFAULT_LCLIMPORTDIR $(DEFAULT_LCLIMPORTDIR)' >> Headers/local_constants.h
-endif
-endif
-endif
-
-dorelease: 
-	@echo '// '
-	@echo '//  Making LCLint'
-	@echo '//  Version '`cat $(VERSION_NUMBER)`
-	@echo '// '
-	@echo '//  Compiler: '$(CCOPT)
-ifdef BISON
-	@echo '//  Bison: '$(BISON)
-else
-	@echo '//  Use derived bison files'
-endif
-ifdef FLEX
-	@echo '//  Flex: '$(FLEX)
-else
-	@echo '//  Use derived flex files'
-endif
-	@echo '//  Default cpp command: '$(DEFAULT_CPPCMD)
-	@echo '//  System include directory: '$(SYSTEM_LIBDIR)
-	@echo '//  Default Larch path: '$(DEFAULT_LARCHPATH)
-	@echo '//  Default imports directory: '$(DEFAULT_LCLIMPORTDIR)
-	@echo '// '
-	@echo 'Making tags'
-	./maketags
-	@echo '// '
-	@echo '//  Updating version information'
-	@$(MAKE) -e updateversion
-	@echo '//  Updating local constants'
-###	@$(MAKE) -e localconstants
-	@echo '// '
-	@echo '//  Compiling:'
-	@echo '// '
-	@$(MAKE) -e opt
-	@echo '//  Done Release '`cat $(VERSION_NUMBER)`
-
-
-flags: flags.def
-	grep "FLG_" flags.def > Headers/flag_codes.gen
-
-###
-### cleaning
-###
-### Standard entries to remove files from the directories
-###    up       --- remove .o files and grammar derivatives
-###    tidy     --- eliminate unwanted files
-###    clean    --- delete derived files, except for spec-derived files
-###    pristine --- delete all derived files
-###
-
-.PHONY .IGNORE : up tidy clean pristine
-
-pristine: clean
-	-$(RM) -f *.lcs *.lslo
-
-clean: tidy
-	-$(RM) core lclint 
-	-$(RM) *.out *.output *.bib *.dvi *.idx *.log *.o *.toc
-	-$(RM) cgrammar.c cscanner.c
-	-$(RM) test* Headers/*~ Headers/#* 
-
-tidy:
-	-$(RM) ,* .,* *.CKP *.BAK .emacs_[0-9]* core a.out *.*~
-
-up: 
-	-$(RM) cgrammar.c llgrammar.c signature.c cscanner.c 
-	-$(RM) *.o
-
-###
-### dependancies
-###
-
-depend:
-	$(MAKEDEPEND) $(CINCLUDES) $(CFLAGS) -f Makefile.depend $(SRC) $(GRAMS)
-
-###
-### analysing dependancies takes a long time and doesn't work terribly
-### well, so the are NOT included here.  NOTE carefully, this means if a
-### header file is changed manual recompilation may be necessary.
-###
-
-### include Makefile.depend
-
-###
-### LCLint checking
-###
+TESTDIR   = $(BASEDIR)/test
 
 ### 
-### A library is used for the specifications
+### if this Makefile is used with one of the
+### standard installation packages, no changes should be 
+### necessary below this line.
 ###
 
-$(CHECKS): lclint.lcd
+.PHONY: install dobinaries dolibraries doimports test 
 
 ###
-### other flags are in .lclintrc file
-### 
+### set this to a different directory
+### to install binaries elsewhere
+###
 
-lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude -mustfree -namechecks -abstract -boolops -protoparammatch  $(ALLSRC) -dump lclint
+RELEASEDIR      = $(BASEDIR)/bin
+
+all: bin/lclint 
+lclint: bin/lclint
+
+bin/lclint: 
+	@echo 'Building lclint from source'
+ifeq ($(SHELL), /bin/csh)
+	cd src ; setenv CC '$(CC)' ; setenv CCOPT '$(CCOPT)'; \
+        setenv BISON '$(BISON)' ; setenv FLEX '$(FLEX)' ; \
+        setenv DEFAULT_CPPCMD '"$(DEFAULT_CPPCMD)"' ; \
+	setenv SYSTEM_LIBDIR '$(SYSTEM_LIBDIR)' ; \
+	setenv LINKFLAGS '$(LINKFLAGS)' ; \
+	setenv DEFAULT_LARCHPATH '".:$(LIBDIR)"' ; \
+	setenv DEFAULT_LCLIMPORTDIR '"$(IMPORTSDIR)"' ; \
+	$(MAKE) -e
+else
+	cd src ; CC='$(CC)'; export CC; CCOPT='$(CCOPT)'; \
+	BISON='$(BISON)' ; export BISON; FLEX='$(FLEX)'; export FLEX; \
+        DEFAULT_CPPCMD='$(DEFAULT_CPPCMD)' ; export DEFAULT_CPPCMD ;\
+	SYSTEM_LIBDIR='$(SYSTEM_LIBDIR)' ; export SYSTEM_LIBDIR ;\
+	DEFAULT_LARCHPATH='".:$(LIBDIR)/"' ; export DEFAULT_LARCHPATH ;\
+	LINKFLAGS='$(LINKFLAGS)'; export LINK_FLAGS; \
+	DEFAULT_LCLIMPORTDIR='"$(IMPORTSDIR)"' ; export DEFAULT_LCLIMPORTDIR ;\
+	$(MAKE) -e 
+endif
+	@echo '// '
+	@echo '//  Run: '$(MAKE)' test to check'
+	@echo '// '
+	mv src/lclint bin/lclint
+
+test:
+ifeq ($(SHELL), /bin/csh)
+	cd $(TESTDIR) ; setenv LCLINT $(RELEASEDIR)/lclint ; $(MAKE) -e
+else
+	cd $(TESTDIR) ; LCLINT=$(RELEASEDIR)/lclint ; export LCLINT ; $(MAKE) -e
+endif
+
+clean:
+	cd src; $(MAKE) clean
+	rm bin/lclint	
+
+###
+### locations of standard LCLint files
+###
+### this should NOT have to be edited if you use the standard
+###    installation package
+
+CP  = cp
+
+LCLINTBINDIR = $(BASEDIR)/bin
+LCLINTBIN  = lclint
+
+LCLINTLIB = $(BASEDIR)/lib
+LCLINTIMPORTS = $(BASEDIR)/imports
+
+###
+### uses recursive make calls directly, so installation
+### will continue even if there are errors!
+###
+
+install: 
+	@echo '// '
+	@echo '// Doing lclint installation'
+	@echo '// '
+	@echo ' '
+	-@$(MAKE) dobinaries 
+	@echo ' '
+	-@$(MAKE) dolibraries 
+	@echo ' '
+	-@$(MAKE) doimports 
+	@echo ' '
+	@echo '// Installation complete.'
+
+dobinaries:
+	@echo '//  Installing binaries in '$(INSTALLDIR)
+	cd $(LCLINTBINDIR); $(INSTALL) $(INSTALLFLAGS) lclint $(INSTALLDIR)
+	@echo '//  Installed: lclint in '$(INSTALLDIR) 
+
+dolibraries:
+	@echo '//  Installing libraries in '$(LIBDIR)
+	@echo "    (This will complain if the directory already exists, don't worry about it.)"
+	-mkdir $(LIBDIR)
+	$(CP) $(LCLINTLIB)/* $(LIBDIR)
+	@echo '//  Installed libraries.'
+
+doimports:
+	@echo '//  Installing imports in '$(IMPORTSDIR)
+	@echo "    (This will complain if the directory already exists, don't worry about it.)"
+	-mkdir $(IMPORTSDIR)
+	$(CP) $(LCLINTIMPORTS)/* $(IMPORTSDIR)
+	@echo '//  Installed imports.'
+
+
+
+
+
+
+
 
 
 
