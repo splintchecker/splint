@@ -2791,11 +2791,12 @@ NULL, NULL,
   "Memory is set past the end of an array or or after the allocated buffer,  ",
   0, 0
 },
+  
 {
   FK_NT, FK_MEMORY, modeFlag,
   "fcnpost",
   FLG_FUNCTIONPOST,
-  "Function has the post condition",
+  "Function has the post condition_Block Post condition:_This function block has the post condition ",
   "LCLint has determined that the following statement true after the function,  ",
   0, 0
 },
@@ -2803,10 +2804,20 @@ NULL, NULL,
   FK_NT, FK_MEMORY, modeFlag,
   "fcnconstraint",
   FLG_FUNCTIONCONSTRAINT,
-  "unresolved constraint",
+    "unresolved constraint:",
   "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
   0, 0
 },
+    /*drl7x added 6/18/01 */    
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "checkpost",
+  FLG_CHECKPOST,
+  "unable to verify ensures annotation",
+  "LCLint was unable to determine that the function satisfies a post condition given in an ensures annotation,  ",
+  0, 0
+},
+
 {
   FK_NT, FK_MEMORY, modeFlag,
   "constraintlocation",

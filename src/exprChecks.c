@@ -899,7 +899,7 @@ extern constraintList implicitFcnConstraints;
 
 void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 {
-  constraintList c, t;
+  constraintList c, t, post;
  constraintList c2, fix;
 
  //  return;
@@ -966,7 +966,52 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
      }
    
    constraintList_printError(body->requiresConstraints, g_currentloc);
+
+   
+   post =   uentry_getFcnPostconditions (ue);
+
+   if ( context_getFlag (FLG_CHECKPOST) )
+     {
+       if (post)
+	 {
+	   
+	   constraintList post2;
+	   
+	   DPRINTF ( (message ("The declared function postconditions are %s \n\n\n\n\n", constraintList_printDetailed (post) ) ) );
+	   
+	   post = reflectChangesFreePre (post, body->ensuresConstraints);
+	   
+	   post2  =  constraintList_copy (post);
+	   fix =  constraintList_makeFixedArrayConstraints (body->uses);
+	   post2  =  reflectChangesFreePre (post2, fix);
+	   constraintList_free(fix);
+	   if ( context_getFlag (FLG_ORCONSTRAINT) )
+	     {
+	       t = reflectChangesOr (post2, body->ensuresConstraints);
+	     }
+	   else
+	     {
+	       t = reflectChanges (post2, body->ensuresConstraints);
+	     }
+	   
+	   constraintList_free(post2);
+	   
+	   constraintList_free(post);
+	   post = t;
+	   
+	 
+
+       printf("Unresolved post conditions\n");
+       constraintList_printErrorPostConditions(post, g_currentloc);
+	 }
+     }
+   
+   if (post)
+     constraintList_free(post);
+   
+   
    constraintList_printError(body->ensuresConstraints, g_currentloc);
+   
    
    //   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
 

@@ -637,6 +637,35 @@ cstring arithType_print (arithType ar) /*@*/
   return st;
 }
 
+
+void constraint_printErrorPostCondition (constraint c, fileloc loc)
+{
+  cstring string;
+  fileloc errorLoc, temp;
+  
+  string = constraint_printDetailedPostCondition (c);
+
+  errorLoc = loc;
+
+  loc = NULL;
+
+  temp = constraint_getFileloc(c);
+
+  if (fileloc_isDefined(temp) )
+    {
+      errorLoc = temp;
+      voptgenerror (  FLG_CHECKPOST, string, errorLoc);
+      fileloc_free(temp);
+    }
+  else
+    {
+      voptgenerror (  FLG_CHECKPOST, string, errorLoc);
+    }
+}
+
+
+
+
 void constraint_printError (constraint c, fileloc loc)
 {
   cstring string;
@@ -709,6 +738,29 @@ cstring constraint_printDeep (constraint c)
 
 }
 
+cstring  constraint_printDetailedPostCondition (constraint c)
+{
+  cstring st = cstring_undefined;
+
+  st = message ("Unsatisfied ensures constraint condition:\nLCLint is unable to verify the constraint %q", constraint_printDeep (c) );
+ 
+  if (context_getFlag (FLG_CONSTRAINTLOCATION) )
+    {
+      cstring temp;
+      // llassert (c->generatingExpr);
+      temp = message ("\nOriginal Generating expression %q: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
+		      exprNode_unparse(c->generatingExpr) );
+      st = cstring_concatFree (st, temp);
+
+      if (constraint_hasMaxSet(c) )
+	{
+	  temp = message ("Has MaxSet\n");
+	  st = cstring_concatFree (st, temp);
+	}
+    }
+  return st;
+}
+
 cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
@@ -732,7 +784,7 @@ cstring  constraint_printDetailed (constraint c)
 
       if (constraint_hasMaxSet(c) )
 	{
-	  temp = message ("\nHas MaxSet\n");
+	  temp = message ("Has MaxSet\n");
 	  st = cstring_concatFree (st, temp);
 	}
     }

@@ -190,6 +190,21 @@ constraintList_print (constraintList s) /*@*/
   return st;
 }
 
+void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
+{
+
+  constraintList_elements (s, elem)
+    {
+      if (elem != NULL)
+	{
+	  constraint_printErrorPostCondition (elem, loc);
+	}
+    }
+  end_constraintList_elements;
+  return;
+}
+
+
 void constraintList_printError (constraintList s, fileloc loc)
 {
 
@@ -203,6 +218,7 @@ void constraintList_printError (constraintList s, fileloc loc)
   end_constraintList_elements;
   return;
 }
+
 
 cstring
 constraintList_printDetailed (constraintList s)
