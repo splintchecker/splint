@@ -603,6 +603,10 @@ int main (int argc, char *argv[])
   clock_t before, lcltime, libtime, pptime, cptime, rstime;
   int i = 0;
 
+# ifdef __EMX__
+  _wildcard (&argc, &argv);
+# endif
+
   g_msgstream = stdout;
 
   (void) signal (SIGINT, interrupt);
