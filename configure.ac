@@ -100,7 +100,11 @@ if test x$ac_cv_c_compiler_gnu = xyes; then
   dnl Make sure to override NLS; this assumes gcc prints only
   dnl   Reading specs from blah
   dnl   gcc version blah
-  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/'`
+
+# This breaks on gcc-3.0 on redhat fixing drl 11-15-2001
+#  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/'`
+ GCC_INCLUDE_DIR=/usr/lib/gcc-lib/i386-linux/2.7.2.1/include
+#  GCC_INCLUDE_DIR=`LANGUAGE= LANG= $CC -v 2>&1 | sed -n -e '/^gcc/ d' -e 's/.* \(.*\)specs/\1include/p'`
   AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR, "$GCC_INCLUDE_DIR",
                      [gcc's private include directory])
 fi
@@ -111,9 +115,9 @@ AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR2, "$myprefix/include",
 AC_DEFINE_UNQUOTED(SYSTEM_LIBDIR, "$myprefix/include",
                    [The system's main include directory])
 AC_DEFINE_UNQUOTED(DEFAULT_LARCHPATH,
-                   ".$PATH_SEPARATOR$myprefix/share/lclint/lib",
+                   ".$PATH_SEPARATOR$myprefix/share/lclint/lib$PATH_SEPARATOR`pwd`/lib$PATH_SEPARATOR",
                    [The directory where LCLint's library files live])
-AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, "$myprefix/share/lclint/imports",
+AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, "$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports",
                    [LCLint's imports directory])
 
 # These used to be in herald.h

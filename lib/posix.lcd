@@ -1,6 +1,6 @@
 ;;LCLint Dump: posix.lcd
 ;;LCLint 3.0.0.19 --- 5 October 2001
-;;lib:167
+;;lib:168
 ;;ctTable
 0 u-2 19 38
 0 p1|-2 20 39
@@ -2356,9 +2356,35 @@ l
 2
 Param 23 0
 r
+0
+1
+e1
 2
 2
 Param 63 1
+e2
+2
+3
+-1
+C
+0@1@1
+l
+1
+3
+2
+2
+Param 23 0
+r
+0
+1
+e1
+2
+2
+Param 63 1
+e2
+2
+3
+-1
 ;; end precondition constraints
 post:EMPTY
 read

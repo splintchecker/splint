@@ -2184,3 +2184,69 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
   DPRINTF (( message("Returning list %q ", constraintList_printDetailed(preconditions) ) ));
   return preconditions;
 }
+
+/*drl added this function 10.29.001
+  takes an exprNode of the form const + const
+  and sets the value
+*/
+/*drl
+  I'm a bit nervous about modifying the exprNode
+  but this is the easy way to do this
+  If I have time I'd like to cause the exprNode to get created correctly in the first place */
+/*@i223*/
+void exprNode_findValue( exprNode e)
+{
+  exprData data;
+
+  exprNode t1, t2;
+  lltok tok;
+
+  data = e->edata;
+  
+  if (exprNode_hasValue(e) )
+    return;
+
+  if (e->kind == XPR_OP)
+    {
+      t1 = exprData_getOpA (data);
+     t2 = exprData_getOpB (data);
+     tok = exprData_getOpTok (data);
+
+     exprNode_findValue(t1);
+     exprNode_findValue(t2);
+
+     if (!(exprNode_knownIntValue(t1) && (exprNode_knownIntValue(t2) ) ) )
+       return;
+     
+     if (lltok_isPlus_Op (tok) )
+       {
+	 long v1, v2;
+
+	 v1 = exprNode_getLongValue(t1);
+	 v2 = exprNode_getLongValue(t2);
+
+	 if (multiVal_isDefined(e->val) )
+	   multiVal_free (e->val);
+	 
+	 e->val = multiVal_makeInt (v1 + v2);
+       }
+
+     if ( lltok_isMinus_Op (tok) ) 
+       {
+	 long v1, v2;
+
+	 v1 = exprNode_getLongValue(t1);
+	 v2 = exprNode_getLongValue(t2);
+
+	 if (multiVal_isDefined(e->val) )
+	   multiVal_free (e->val);
+	 
+	 e->val = multiVal_makeInt (v1 - v2);
+       }
+
+     /*drl I should really do * and / at some point */
+     
+    }
+
+}
+

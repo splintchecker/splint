@@ -852,7 +852,10 @@ lchown (const char *path, uid_t owner, gid_t group)
 
 	extern int
 readlink (const char *path, /*@out@*/ char *buf, int size)
-     /*@modifies *buf, errno@*/ /*@ensures result <= size @*/;
+     /*@modifies *buf, errno@*/
+     /*drl 10/27/001*/
+     /*@requires maxSet(buf) >= (size - 1) @*/
+     /*@ensures result <= size @*/;
 
 	extern int
 select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, struct timeval *t)
@@ -1690,6 +1693,19 @@ int usleep (useconds_t useconds) /*@modifies systemState, errno@*/
      timer_settime() instead of this interface. 
      */
      ;
+
+
+     /* drl added 10-27-001 */
+     /*@i23*/
+     
+     /*not sure what the exact size of this is
+       also can IPv6 use this function?
+      */
+     
+     char *inet_ntoa(struct in_addr in)
+     /*@ensures maxSet(result) <= 15 /\ maxRead(result) <= 15 @*/
+     ;
+
 
      extern  double hypot(double x, double y) /*@modifies errno@*/ /*error errno only*/;
 

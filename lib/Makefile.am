@@ -17,7 +17,7 @@ EXTRA_DIST = $(lclintlib_DATA)
 
 ## Rules to make lclint & the dumps
 
-LCLINT = $(top_builddir)/bin/lclint$(EXEEXT)
+LCLINT = $(top_builddir)/src/lclint$(EXEEXT)
 
 $(LCLINT):
 	cd $(top_builddir)/src; $(MAKE)

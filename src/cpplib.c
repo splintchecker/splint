@@ -1043,6 +1043,13 @@ skip_comment (cppReader *pfile, /*@null@*/ long *linep)
   else if (cppReader_peekC (pfile) == '/' 
 	   && CPPOPTIONS (pfile)->cplusplus_comments)
     {
+      
+      (void) cppoptgenerror 
+	(FLG_SLASHSLASHCOMMENT,
+	 message ("C++ style // comment" 
+		 ),
+	 pfile);
+      
       cppReader_forward (pfile, 1);
 
       for (;;)

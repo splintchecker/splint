@@ -701,7 +701,15 @@ void constraint_printError (constraint c, fileloc loc)
 {
   cstring string;
   fileloc errorLoc, temp;
-  
+
+
+  /*drl 11/26/2001 avoid printing tautological constraints */
+  if (constraint_isAlwaysTrue(c) )
+    {
+      return;
+    }
+
+
   string = constraint_printDetailed (c);
 
   errorLoc = loc;

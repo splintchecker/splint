@@ -730,6 +730,125 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
   return FALSE;	  
 }
 
+/*checks for the case expr2 == sizeof buf1  and buf1 is a fixed array*/
+static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
+{
+  constraintTerm ct;
+  exprNode e, t;
+  sRef s1, s2;
+  /*@access constraintExpr@*/
+  
+  if ( (expr2->kind != term) && (buf1->kind != term) )
+    return FALSE;
+
+  
+  ct = constraintExprData_termGetTerm(expr2->data);
+
+  if (!constraintTerm_isExprNode(ct) )
+    return FALSE;
+
+  e = constraintTerm_getExprNode(ct);
+
+  if (e->kind != XPR_SIZEOF)
+    return FALSE;
+  
+  t = exprData_getSingle (e->edata);
+  s1 = exprNode_getSref (t);
+
+  s2 = constraintTerm_getsRef(constraintExprData_termGetTerm(buf1->data) );
+
+  /*@i223@*/ /*this may be the wronge thing to test for */
+  if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
+    {
+      if (ctype_isFixedArray (sRef_getType (s2) ) )
+	return TRUE;
+    }
+  return FALSE;
+}
+
+/* look for the special case of
+   maxSet(buf) >= sizeof(buf) - 1
+*/
+
+/*@i223@*/ /*need to add some type checking */
+static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
+{
+  constraintExpr l, r, buf1, buf2, con;
+
+  DPRINTF(( message("sizeOfMaxSet: checking %s ", constraint_print(c) )
+	    ));
+  
+  l = c->lexpr;
+  r = c->expr;
+
+  if (!( (c->ar == EQ) || (c->ar == GTE) || (c->ar == LTE) ) )
+    return FALSE;
+
+  /*check if the constraintExpr is MaxSet(buf) */
+  if (l->kind == unaryExpr)
+    {
+      if (constraintExprData_unaryExprGetOp(l->data) == MAXSET)
+	{
+	  buf1 = constraintExprData_unaryExprGetExpr(l->data);
+	}
+      else
+	return FALSE;
+    }
+  else
+    return FALSE;
+
+  
+  if (r->kind != binaryexpr)
+    return FALSE;
+  
+  buf2 = constraintExprData_binaryExprGetExpr1(r->data);
+  con = constraintExprData_binaryExprGetExpr2(r->data);
+  
+  if (constraintExprData_binaryExprGetOp(r->data) == BINARYOP_MINUS)
+    {
+      if (constraintExpr_canGetValue(con) )
+	{
+	  long i;
+	  
+	  i = constraintExpr_getValue(con);
+	  if (i != 1)
+	    {
+	      return FALSE;
+	    }
+	}
+      else
+	return FALSE;
+    }
+
+  if (constraintExprData_binaryExprGetOp(r->data) == BINARYOP_PLUS)
+    {
+      if (constraintExpr_canGetValue(con) )
+	{
+	  long i;
+	  
+	  i = constraintExpr_getValue(con);
+	  if (i != -1)
+	    {
+	      return FALSE;
+	    }
+	}
+      else
+	return FALSE;
+    }
+
+  if (sizeofBufComp(buf1, buf2))
+    {
+      return TRUE;
+    }
+  else
+    {
+     return FALSE;
+    } 
+    
+
+}
+/*@noaccess constraintExpr@*/
+
 /* We look for constraint which are tautologies */
 
 bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
@@ -742,7 +861,10 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
   r = c->expr;
 
   DPRINTF(( message("constraint_IsAlwaysTrue:examining %s", constraint_print(c) ) ));
-    
+
+  if (sizeOfMaxSet(c) )
+    return TRUE;
+  
   if (constraintExpr_canGetValue(l) && constraintExpr_canGetValue(r) )
     {
       int cmp;

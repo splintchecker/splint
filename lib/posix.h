@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.10 2001/10/16 00:24:47 evans1629 Exp $
+ * $Id: posix.h,v 1.11 2001/11/27 18:19:30 drl7x Exp $
  */
 
 /*
@@ -758,7 +758,10 @@ fpathconf (int fd, int name)
 	/*@modifies errno@*/;
 
 extern /*@null@*/ char *getcwd (/*@returned@*/ /*@out@*/ /*@notnull@*/ char *buf, size_t size)
-     /*@requires maxSet(buf) >= size@*/ /*@modifies errno, *buf@*/ ;
+     /*@requires maxSet(buf) >= (size - 1)@*/
+     /*@requires maxRead(buf) <= (size - 1)*/
+
+     /*@modifies errno, *buf@*/ ;
 
 	extern gid_t
 getegid (void)

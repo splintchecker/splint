@@ -423,7 +423,20 @@ long constraintTerm_getValue (constraintTerm term)
   BADEXIT;
 }
 
-static /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
+/*drl added this 10.30.001
+ */
+
+/*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm t)
+{
+  llassert (t != NULL);
+  
+  llassert (t->kind == EXPRNODE);
+
+  return t->value.expr;
+
+}
+
+ /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
 {
   llassert (t != NULL);
   if (t->kind == EXPRNODE)

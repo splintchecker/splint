@@ -95,7 +95,7 @@ lclintlib_DATA = \
 
 EXTRA_DIST = $(lclintlib_DATA)
 
-LCLINT = $(top_builddir)/bin/lclint$(EXEEXT)
+LCLINT = $(top_builddir)/src/lclint$(EXEEXT)
 subdir = lib
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h

@@ -930,7 +930,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
     we can skip the checking to improve performance
     
     FLG_DEBUGFUNCTIONCONSTRAINT controls wheather we perform the check anyway
-    in order to find potential problems like asserts and seg faults...
+    in order to find potential problems like assert failures and seg faults...
   */
 
   if  (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT)  )

@@ -355,6 +355,14 @@ static flaglist flags =
   },
   {
     FK_COMMENTS, FK_SYNTAX, plainFlag,
+    "slashslashcomment",
+    FLG_SLASHSLASHCOMMENT,
+    "C++ style // comment", 
+    "A C++ style // comment is used here.  This type of comment has been officially supported in C99 and was often allowed by compiler extensions prior to this.  However, some older C89 compilers are not able to handle these comments.",
+    0, 0
+  },
+  {
+    FK_COMMENTS, FK_SYNTAX, plainFlag,
     "nestcomment",
     FLG_NESTCOMMENT,
     "comment begins inside comment", 
