@@ -259,7 +259,7 @@ extern void yyerror (char *);
 
 %type <entrylist> genericParamList paramTypeList paramList idList paramIdList
 %type <exprlist> argumentExprList iterArgList
-%type <exprlist> initList namedInitializerList namedInitializerListAux
+%type <exprlist> initList namedInitializerList namedInitializerListAux namedInitializerTypeList namedInitializerTypeListAux
 %type <flist> structDeclList structDecl
 %type <srset> locModifies modList specClauseList optSpecClauseList
 %type <sr>    mExpr modListExpr specClauseListExpr
@@ -289,7 +289,7 @@ extern void yyerror (char *);
 
 %type <expr> sizeofExpr sizeofExprAux offsetofExpr
 %type <expr> openScope closeScope 
-%type <expr> instanceDecl namedInitializer optDeclarators
+%type <expr> instanceDecl namedInitializer optDeclarators namedInitializerType
 %type <expr> primaryExpr postfixExpr primaryIterExpr postfixIterExpr
 %type <expr> unaryExpr castExpr timesExpr plusExpr
 %type <expr> unaryIterExpr castIterExpr timesIterExpr plusIterExpr
@@ -1095,6 +1095,11 @@ instanceDecl
    }
 ;
 
+namedInitializerType
+ : namedInitializer { $$ = $1; } 
+ | TYPE_NAME { $$ = exprNode_fromIdentifier (usymtab_getTypeEntry (ctype_typeId ($1))); }
+;
+
 namedInitializer
  : namedDecl NotType 
    { 
@@ -1107,7 +1112,7 @@ namedInitializer
 
 typeDecl
  : CTYPEDEF completeTypeSpecifier { setProcessingTypedef ($2); } 
-   NotType namedInitializerList IsType optWarnClause TSEMI 
+   NotType namedInitializerTypeList IsType optWarnClause TSEMI 
    { clabstract_declareType ($5, $7); }
  | CTYPEDEF completeTypeSpecifier IsType TSEMI { /* in the ANSI grammar, semantics unclear */ }
  | CTYPEDEF namedInitializerList IsType TSEMI { /* in the ANSI grammar, semantics unclear */ } 
@@ -1128,6 +1133,15 @@ namedInitializerList
 namedInitializerListAux
  : namedInitializer { $$ = exprNodeList_singleton ($1); }
  | namedInitializerList TCOMMA NotType namedInitializer { $$ = exprNodeList_push ($1, $4); }
+;
+
+namedInitializerTypeList
+ :  namedInitializerTypeListAux IsType { $$ = $1; }
+;
+
+namedInitializerTypeListAux
+ : namedInitializerType { $$ = exprNodeList_singleton ($1); }
+ | namedInitializerTypeList TCOMMA NotType namedInitializerType { $$ = exprNodeList_push ($1, $4); }
 ;
 
 optDeclarators
