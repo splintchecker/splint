@@ -1580,6 +1580,55 @@ void
     {
       check (fputc ('\n', fout) == (int) '\n');
     }
+
+  lastekind = KINVALID;
+
+  fprintf(fout, ";; Library constraints\n");
+  for (i = 0; i < utab->nentries; i++)
+    {
+      uentry thisentry = utab->entries[i];
+
+      if (uentry_isFunction (thisentry) )
+	{
+	  constraintList preconditions;
+	  constraintList postconditions;
+
+	  preconditions = uentry_getFcnPreconditions (thisentry);
+	  postconditions = uentry_getFcnPostconditions (thisentry);
+
+	  if ( constraintList_isDefined(preconditions) ||
+	       constraintList_isDefined(postconditions) )
+	    {
+	      fprintf(fout,"%s\n", uentry_rawName(thisentry) );
+	      if (constraintList_isDefined(preconditions) )
+		{
+		  fprintf(fout,"pre:\n");
+		  constraintList_dump(preconditions, fout);
+		  fprintf (fout, ";; end precondition constraints\n" );
+		  constraintList_free(preconditions);
+		}
+	      else
+		{
+		  fprintf(fout,"pre:EMPTY\n");
+		}
+	      if (constraintList_isDefined(postconditions) )
+		{
+		  fprintf(fout,"post:\n");
+		  constraintList_dump(postconditions, fout);
+		  fprintf (fout, ";; end precondition constraints\n" );
+		  constraintList_free(postconditions);
+		}
+	      else
+		{
+		  fprintf(fout,"post:EMPTY\n");
+		}
+	    }
+		  
+	}
+    }
+    
+
+  
 }
 
 void usymtab_load (FILE *f)
@@ -1660,6 +1709,59 @@ void usymtab_load (FILE *f)
       s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
     }
 
+  /*DRL added 6/21/01
+    to handle reading of buffer overflow related constraints
+   */
+  while (fgets (s, MAX_DUMP_LINE_LENGTH, f) != NULL 
+	 && *s == ';')
+    {
+      ; /* ignore ;-comments */
+    }
+  
+  while (s != NULL && *s != ';')
+    {
+      constraintList preconditions;
+      constraintList postconditions;
+
+      cstring name = getWord(&s);
+      cstring temp;
+      ue = usymtab_lookup ( name );
+
+      cstring_free(name);
+      
+      preconditions = constraintList_undefined;
+      postconditions = constraintList_undefined;
+      
+      if (!uentry_isValid(ue) )
+	{
+	  llfatalbug ((message("Invalid uentry for %s library file may be corrupted", s) ));
+	}
+      s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
+
+      temp = getWord(&s);
+      
+      if (cstring_compare (temp,"pre:") == 0 )
+	{
+	  preconditions = constraintList_undump(f);
+	}
+      cstring_free(temp);
+      
+      s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
+
+      temp = getWord(&s);
+      if (cstring_compare (temp,"post:") == 0 )
+	{
+	  postconditions = constraintList_undump(f);
+	}
+
+      cstring_free(temp);
+
+      uentry_setPreconditions (ue, preconditions);
+      uentry_setPostconditions (ue, postconditions);
+      
+      s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
+    }
+    
   dbgload = FALSE;
   sfree (os);
 }

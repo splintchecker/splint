@@ -1320,7 +1320,7 @@ uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
 }
 
 void
-uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
+uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions)
 {
   if (sRef_modInFunction ())
     {
@@ -1355,7 +1355,7 @@ uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
     }
   else
     {
-      //
+      llfatalbug ( (message("uentry_setPreconditions called with invalid uentry") ));
     }
 }
 
@@ -1364,7 +1364,7 @@ uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
   added 12/28/2000
 */
 void
-uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions)
+uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions)
 {
   if (sRef_modInFunction ())
     {
@@ -1400,7 +1400,7 @@ uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions)
     }
   else
     {
-      //
+      llfatalbug ( (message("uentry_setPostconditions called with invalid uentry") ));
     }
 }
 
