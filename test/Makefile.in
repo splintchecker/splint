@@ -114,7 +114,7 @@ UNITTESTS = \
   help \
   fileio tainted mergestate metastate sizeof buffertest \
   tests2.2 tests2.4 tests2.5  \
-  simplebufferConstraintTests moreBufferTests globalbufferannotation \
+  simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
   maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder \
   args blocks break cases cast charlit clauses commentchar compdestroy \
@@ -146,7 +146,7 @@ CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "$(LCLINT)" | $(GREP) -v "^mak
 ### Bugs fixed and new features since version 2.1b
 ###
 SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses \
-   simplebufferConstraintTests moreBufferTests globalbufferannotation \
+   simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
    maxset strchr for \
 tests2.2 tests2.2a tests2.4 tests2.5 db1 db2 db3
 subdir = test

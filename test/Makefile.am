@@ -40,7 +40,7 @@ UNITTESTS = \
   help \
   fileio tainted mergestate metastate sizeof buffertest \
   tests2.2 tests2.4 tests2.5  \
-  simplebufferConstraintTests moreBufferTests globalbufferannotation \
+  simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
   maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder \
   args blocks break cases cast charlit clauses commentchar compdestroy \
@@ -158,7 +158,7 @@ fulltest:
 ### Rules for tests start here
 
 SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses \
-   simplebufferConstraintTests moreBufferTests globalbufferannotation \
+   simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
    maxset strchr for 
 
 .PHONY: abstptr

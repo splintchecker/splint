@@ -85,19 +85,21 @@
 %LCLsort __semployee0s_Struct_Arr arr _semployee0s_Struct nil
 %LCLsort __semployee0s_Struct_Tuple_Vec vec _semployee0s_Struct_Tuple __semployee0s_Struct_Arr
 %LCLsort _employee synonym _semployee0s_Struct nil
-%LCLsort eref immutable nil nil
-%LCLsort map immutable nil nil
-%LCLsort _map_Obj obj map nil
 %LCLsort empset immutable nil nil
 %LCLsort _empset_Obj mutable empset nil
 %LCLSortTableEnd
 %LCLSymbolTable
 %LCLop min :int, int -> int
 %LCLop max :int, int -> int
+%LCLop __ \select j :_semployee0s_Struct_Tuple -> _eemployee1e_Enum
+%LCLop __ \select j :_semployee0s_Struct -> __eemployee1e_Enum_Obj
 %LCLop 0 : -> int
 %LCLop 0 : -> double
 %LCLop 1 : -> int
 %LCLop 1 : -> double
+%LCLop __ \field_arrow j :__semployee0s_Struct_Ptr -> __eemployee1e_Enum_Obj
+%LCLop __ \select gen :_semployee0s_Struct_Tuple -> _eemployee0e_Enum
+%LCLop __ \select gen :_semployee0s_Struct -> __eemployee0e_Enum_Obj
 %LCLop if __ then __ else __  :bool, bool, bool -> bool
 %LCLop if __ then __ else __  :bool, int, int -> int
 %LCLop if __ then __ else __  :bool, double, double -> double
@@ -105,10 +107,20 @@
 %LCLop if __ then __ else __  :bool, char, char -> char
 %LCLop __ < __  :int, int -> bool
 %LCLop __ < __  :double, double -> bool
+%LCLop __ \field_arrow gen :__semployee0s_Struct_Ptr -> __eemployee0e_Enum_Obj
+%LCLop __ \select salary :_semployee0s_Struct_Tuple -> int
+%LCLop __ \select salary :_semployee0s_Struct -> _int_Obj
 %LCLop empty : -> _char_Vec
 %LCLop __ > __  :int, int -> bool
 %LCLop __ > __  :double, double -> bool
+%LCLop __ \select name :_semployee0s_Struct_Tuple -> _char_Vec
+%LCLop __ \select name :_semployee0s_Struct -> __char_Obj_Arr
+%LCLop __ \field_arrow salary :__semployee0s_Struct_Ptr -> _int_Obj
+%LCLop __ \select ssNum :_semployee0s_Struct_Tuple -> int
+%LCLop __ \select ssNum :_semployee0s_Struct -> _int_Obj
+%LCLop __ \field_arrow name :__semployee0s_Struct_Ptr -> __char_Obj_Arr
 %LCLop count :char, _char_Vec -> int
+%LCLop __ \field_arrow ssNum :__semployee0s_Struct_Ptr -> _int_Obj
 %LCLop head :_char_Vec -> char
 %LCLop __ \inv :double -> double
 %LCLop init :_char_Vec -> _char_Vec
@@ -156,15 +168,7 @@
 %LCLop __ \neq __  :double, double -> bool
 %LCLop __ \neq __  :_char_Vec, _char_Vec -> bool
 %LCLop __ \neq __  :char, char -> bool
-%LCLop MALE : -> _eemployee0e_Enum
 %LCLop { __ } :char -> _char_Vec
-%LCLop FEMALE : -> _eemployee0e_Enum
-%LCLop gender_ANY : -> _eemployee0e_Enum
-%LCLtag eemployee0e enum
-%LCLop MGR : -> _eemployee1e_Enum
-%LCLop NONMGR : -> _eemployee1e_Enum
-%LCLop job_ANY : -> _eemployee1e_Enum
-%LCLtag eemployee1e enum
 %LCLop [__, __] :int, int -> _sstdlib0s_Struct_Tuple
 %LCLop [__, __] :int, int -> _sstdlib1s_Struct_Tuple
 %LCLop __ [] :__char_Obj_Ptr -> __char_Obj_Arr
@@ -196,35 +200,33 @@
 %LCLop __ [__] :__semployee0s_Struct_Tuple_Vec, int -> _semployee0s_Struct_Tuple
 %LCLop __ [__] :__semployee0s_Struct_Arr, int -> _semployee0s_Struct
 %LCLop __ -| __  :char, _char_Vec -> _char_Vec
-%LCLop [__, __, __, __, __] :_eemployee1e_Enum, _eemployee0e_Enum, int, _char_Vec, int -> _semployee0s_Struct_Tuple
-%LCLop __ \select quot :_sstdlib0s_Struct_Tuple -> int
-%LCLop __ \select quot :_sstdlib0s_Struct -> _int_Obj
-%LCLop __ \select quot :_sstdlib1s_Struct_Tuple -> int
-%LCLop __ \select quot :_sstdlib1s_Struct -> _int_Obj
-%LCLtag semployee0s struct
-%LCLop __ \leq __  :int, int -> bool
-%LCLop __ \leq __  :double, double -> bool
-%LCLop __ \field_arrow quot :__sstdlib0s_Struct_Ptr -> _int_Obj
-%LCLop __ \field_arrow quot :__sstdlib1s_Struct_Ptr -> _int_Obj
 %LCLop __ \select rem :_sstdlib0s_Struct_Tuple -> int
 %LCLop __ \select rem :_sstdlib0s_Struct -> _int_Obj
 %LCLop __ \select rem :_sstdlib1s_Struct_Tuple -> int
 %LCLop __ \select rem :_sstdlib1s_Struct -> _int_Obj
-%LCLop __ \geq __  :int, int -> bool
-%LCLop __ \geq __  :double, double -> bool
+%LCLop [__, __, __, __, __] :_eemployee1e_Enum, _eemployee0e_Enum, int, _char_Vec, int -> _semployee0s_Struct_Tuple
+%LCLop __ \leq __  :int, int -> bool
+%LCLop __ \leq __  :double, double -> bool
 %LCLop __ \field_arrow rem :__sstdlib0s_Struct_Ptr -> _int_Obj
 %LCLop __ \field_arrow rem :__sstdlib1s_Struct_Ptr -> _int_Obj
+%LCLop __ \select quot :_sstdlib0s_Struct_Tuple -> int
+%LCLop __ \select quot :_sstdlib0s_Struct -> _int_Obj
+%LCLop __ \select quot :_sstdlib1s_Struct_Tuple -> int
+%LCLop __ \select quot :_sstdlib1s_Struct -> _int_Obj
+%LCLop __ \geq __  :int, int -> bool
+%LCLop __ \geq __  :double, double -> bool
+%LCLop __ \field_arrow quot :__sstdlib0s_Struct_Ptr -> _int_Obj
+%LCLop __ \field_arrow quot :__sstdlib1s_Struct_Ptr -> _int_Obj
 %LCLop null : -> char
-%LCLop __ \select ssNum :_semployee0s_Struct_Tuple -> int
-%LCLop __ \select ssNum :_semployee0s_Struct -> _int_Obj
-%LCLop __ \select name :_semployee0s_Struct_Tuple -> _char_Vec
-%LCLop __ \select name :_semployee0s_Struct -> __char_Obj_Arr
-%LCLop __ \field_arrow ssNum :__semployee0s_Struct_Ptr -> _int_Obj
-%LCLop __ \select salary :_semployee0s_Struct_Tuple -> int
-%LCLop __ \select salary :_semployee0s_Struct -> _int_Obj
-%LCLop __ \field_arrow name :__semployee0s_Struct_Ptr -> __char_Obj_Arr
-%LCLop __ \select gen :_semployee0s_Struct_Tuple -> _eemployee0e_Enum
-%LCLop __ \select gen :_semployee0s_Struct -> __eemployee0e_Enum_Obj
+%LCLtag eemployee0e enum
+%LCLop gender_ANY : -> _eemployee0e_Enum
+%LCLop FEMALE : -> _eemployee0e_Enum
+%LCLop MALE : -> _eemployee0e_Enum
+%LCLtag eemployee1e enum
+%LCLop job_ANY : -> _eemployee1e_Enum
+%LCLop NONMGR : -> _eemployee1e_Enum
+%LCLop MGR : -> _eemployee1e_Enum
+%LCLtag semployee0s struct
 %LCLop NIL : -> __char_Obj_Ptr
 %LCLop NIL : -> __sstdlib0s_Struct_Ptr
 %LCLop NIL : -> __sstdlib1s_Struct_Ptr
@@ -234,11 +236,6 @@
 %LCLop NIL : -> __FILE_Obj_Ptr
 %LCLop NIL : -> ____void_Obj_Ptr_Obj_Ptr
 %LCLop NIL : -> __semployee0s_Struct_Ptr
-%LCLop __ \field_arrow salary :__semployee0s_Struct_Ptr -> _int_Obj
-%LCLop __ \select j :_semployee0s_Struct_Tuple -> _eemployee1e_Enum
-%LCLop __ \select j :_semployee0s_Struct -> __eemployee1e_Enum_Obj
-%LCLop __ \field_arrow gen :__semployee0s_Struct_Ptr -> __eemployee0e_Enum_Obj
-%LCLop __ \field_arrow j :__semployee0s_Struct_Ptr -> __eemployee1e_Enum_Obj
 %LCLop - __  :int -> int
 %LCLop - __  :double -> double
 %LCLop __ + __  :__char_Obj_Ptr, int -> __char_Obj_Ptr
@@ -290,8 +287,6 @@
 %LCLop sizeof :FILE -> int
 %LCLop sizeof :_eemployee0e_Enum -> int
 %LCLop sizeof :_eemployee1e_Enum -> int
-%LCLop sizeof :eref -> int
-%LCLop sizeof :map -> int
 %LCLop sizeof :empset -> int
 %LCLop isSub :_char_Vec, int -> bool
 %LCLop isSub :__char_Obj_Arr, int -> bool
