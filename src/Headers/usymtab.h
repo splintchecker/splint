@@ -8,6 +8,7 @@
 
 # ifndef USYMTAB_H
 # define USYMTAB_H
+#include "environmentTable.h"
 
 /*@constant null usymtab GLOBAL_ENV; @*/ 
 # define GLOBAL_ENV usymtab_undefined
@@ -37,6 +38,7 @@ struct _usymtab
              /*@only@*/ guardSet  guards;   /* guarded references (not null) */
   aliasTable aliases;
   /*@owned@*/ usymtab env;
+  environmentTable environment;
 } ; 
 
 /*

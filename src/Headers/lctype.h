@@ -162,7 +162,7 @@ extern int ctkind_toInt (ctkind p_x);
 
 extern ctype ctype_forceRealType (ctype p_c);       
 extern bool ctype_forceMatch (ctype p_c1, ctype p_c2);
-extern bool ctype_genMatch (ctype p_c1, ctype p_c2, bool p_force, bool p_arg, bool p_def);
+extern bool ctype_genMatch (ctype p_c1, ctype p_c2, bool p_force, bool p_arg, bool p_def, bool p_deep);
 
 extern bool ctype_isSimple (ctype p_c) /*@*/ ;
 extern bool ctype_isAbstract (ctype p_c) /*@*/ ;
@@ -170,7 +170,8 @@ extern bool ctype_isArray (ctype p_c) /*@*/ ;
 extern bool ctype_isFixedArray (ctype p_c) /*@*/ ;
 extern bool ctype_isIncompleteArray (ctype p_c) /*@*/ ;
 extern bool ctype_isArrayPtr (ctype p_c) /*@*/ ;
-extern bool ctype_isBool (ctype p_c) /*@*/ ;
+extern bool ctype_isBool (ctype p_c) /*@*/ ;  /* matches type bool */
+extern bool ctype_isManifestBool (ctype p_c) /*@*/ ; /* declared as type bool */
 extern bool ctype_isChar (ctype p_c) /*@*/ ;
 extern bool ctype_isUnsignedChar (ctype p_c) /*@*/ ;
 extern bool ctype_isSignedChar (ctype p_c) /*@*/ ;
@@ -212,7 +213,6 @@ extern bool ctype_isStruct (ctype p_c) /*@*/ ;
 extern bool ctype_isStructorUnion(ctype p_c)  /*@*/ ;
 extern bool ctype_isUA (ctype p_c) /*@*/ ;
 extern bool ctype_isUnion (ctype p_c) /*@*/ ;
-extern bool ctype_isUserBool (ctype p_ct) /*@*/ ;
 extern bool ctype_isVoid (ctype p_c) /*@*/ ;
 extern bool ctype_isVoidPointer (ctype p_c) /*@*/ ;
 
@@ -350,6 +350,9 @@ extern /*@only@*/ cstring ctype_unparseTable (void);
 extern /*@unused@*/ void ctype_printTable (void);
 
 extern ctype ctype_widest (ctype, ctype) /*@*/ ;
+
+/* Should only be used in uentry.c */
+extern bool ctype_isUserBool (ctype p_ct) /*@*/ ;
 
 # else
 # error "Multiple include"

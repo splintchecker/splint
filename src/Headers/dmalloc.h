@@ -18,7 +18,7 @@
  *
  * The author may be contacted at gray.watson@letters.com
  *
- * $Id: dmalloc.h,v 1.2 2000/06/21 18:55:41 drl7x Exp $
+ * $Id: dmalloc.h,v 1.3 2000/08/02 20:20:26 drl7x Exp $
  */
 
 #ifndef __DMALLOC_H__
@@ -28,7 +28,7 @@
 /* used to handle the const operator */
 /* const is available */
 
-/* NOTE: start of $Id: dmalloc.h,v 1.2 2000/06/21 18:55:41 drl7x Exp $ */
+/* NOTE: start of $Id: dmalloc.h,v 1.3 2000/08/02 20:20:26 drl7x Exp $ */
 
 /*
  * NOTE: some archetectures have malloc, realloc, etc. using size_t or

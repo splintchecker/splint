@@ -159,6 +159,8 @@ struct _exprNode
   fileloc loc;
   /*@relnull@*/ exprData edata;
   cstring etext;
+  environmentTable environment;
+  constraintList constraints;
 } ;
 
 /*@constant null exprNode exprNode_undefined; @*/
@@ -202,6 +204,7 @@ extern bool exprNode_hasValue (/*@sef@*/ exprNode p_e) /*@*/ ;
   (exprNode_isDefined(e) && multiVal_isDefined (exprNode_getValue (e)))
 
 extern /*@exposed@*/ multiVal exprNode_getValue (exprNode p_e) /*@*/ ;
+extern long exprNode_getLongValue (exprNode p_e) /*@*/ ;
 
 extern /*@observer@*/ cstring exprNode_unparseFirst (exprNode p_e) /*@*/ ;
 extern /*@observer@*/ guardSet exprNode_getForGuards (exprNode p_pred) /*@*/ ;

@@ -10,6 +10,10 @@
 ** Win32 convention?
 */
 
+# if defined(__IBMC__) && defined(OS2)
+# define S_IFMT (unsigned short)0xFFFF
+# endif
+
 /*@constant observer char *INCLUDE_VAR@*/
 # define INCLUDE_VAR    "include"
 

@@ -105,8 +105,9 @@ extern bool cprim_isAnyReal (/*@sef@*/ cprim p_c);
 extern bool cprim_equal (cprim, cprim);
 # define cprim_equal(p1,p2) ((p1) == (p2))
 
-extern bool cprim_closeEnough(cprim, cprim);
-extern /*@only@*/ cstring cprim_unparse(cprim);
+extern bool cprim_closeEnough (cprim, cprim) /*@*/ ;
+extern bool cprim_closeEnoughDeep (cprim, cprim) /*@*/ ;
+extern /*@only@*/ cstring cprim_unparse (cprim) /*@*/ ;
 extern cprim cprim_fromInt (int p_i);
 
 extern bool cprim_isInt(cprim p_c);

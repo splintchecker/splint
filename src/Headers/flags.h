@@ -1,20 +1,7 @@
 /*
-** Copyright (c) Massachusetts Institute of Technology 1994-1998.
-**          All Rights Reserved.
-**          Unpublished rights reserved under the copyright laws of
-**          the United States.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** See ../LICENSE for license information.
 **
-** THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
-** OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
-**
-** This code is distributed freely and may be used freely under the 
-** following conditions:
-**
-**     1. This notice may not be removed or altered.
-**
-**     2. Works derived from this code are not distributed for
-**        commercial gain without explicit permission from MIT 
-**        (for permission contact lclint-request@sds.lcs.mit.edu).
 */
 # ifndef FLAGS_H
 # define FLAGS_H

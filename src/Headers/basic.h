@@ -63,7 +63,9 @@
 # include "uentry.h"
 # include "sRef.h"
 # include "guardSet.h"
+# include "constraint.h"
 # include "exprNode.h"
+# include "exprData.h"
 # include "typeIdSet.h"
 # include "idDeclList.h"
 # include "clabstract.h"
@@ -77,6 +79,7 @@
 # include "context.h"
 # include "constants.h"
 # include "local_constants.h"
+
 
 # else
 # error "Multiple include"

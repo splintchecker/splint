@@ -135,6 +135,8 @@ extern /*@only@*/ cstring context_unparse (void);
 extern void context_setFunctionDefined (fileloc p_loc);
 extern void context_setFlagTemp (flagcode p_f, bool p_b);
 
+extern /*@unused@*/ void context_showFilelocStack (void) ;
+
 extern bool context_getFlag (flagcode p_d) /*@*/ ;
 extern int context_getLineLen (void) /*@*/ ;
 # define context_getLineLen()  ((int)context_getValue(FLG_LINELEN))
@@ -291,6 +293,8 @@ extern void context_checkSuppressCounts (void) /*@modifies g_msgstream@*/ ;
 extern bool context_inFunctionDecl (void) /*@globals internalState@*/ ;
 extern void context_enterFunctionDecl (void) /*@modifies internalState@*/ ;
 extern void context_exitFunctionDecl (void) /*@modifies internalState@*/ ;
+
+extern ctype context_boolImplementationType (void) /*@*/ ;
 
 # else
 # error "Multiple include"

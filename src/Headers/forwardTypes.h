@@ -17,6 +17,9 @@ abst_typedef /*@null@*/ struct _sRefSet *sRefSet;
 abst_typedef /*@null@*/ struct _aliasTable *aliasTable;
 abst_typedef /*@null@*/ struct __fileloc *fileloc;
 
+abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
+
+
 /*@-cppnames@*/
 typedef int bool;
 /*@=cppnames@*/
