@@ -4172,7 +4172,6 @@ static bool checkDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
 					 ? "kept" : "released")),
 	   loc))
 	{
-	  	  
 	  if (sRef_isKept (el))
 	    {
 	      sRef_showAliasInfo (el);      

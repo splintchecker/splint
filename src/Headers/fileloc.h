@@ -174,6 +174,10 @@ extern bool fileloc_withinLines (fileloc p_f1, fileloc p_f2, int p_n) /*@*/ ;
 extern bool fileloc_isUser (fileloc p_f) /*@*/ ;
 extern bool fileloc_sameModule (fileloc p_f1, fileloc p_f2) /*@*/ ;
 
+extern bool fileloc_storable (/*@sef@*/ fileloc p_f) /*@*/;
+# define fileloc_storable(f) ((f) != g_currentloc || fileloc_isBuiltin (f) || fileloc_isExternal (f))
+
+
 # else
 # error "Multiple include"
 # endif

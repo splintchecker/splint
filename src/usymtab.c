@@ -150,9 +150,9 @@ static bool usymtab_mustEscape (usymtab p_s);
 
 static void recordFunctionType (uentry ue)
 {
-    llassert (uentry_isDatatype (ue) || uentry_isAnyTag (ue)
+  llassert (uentry_isDatatype (ue) || uentry_isAnyTag (ue)
 	    || uentry_isEnumConstant (ue));
-
+  DPRINTF (("Function type: %s", uentry_unparseFull (ue)));
   /*@-temptrans@*/
   functypes = uentryList_add (functypes, ue);
   /*@=temptrans@*/
@@ -942,6 +942,9 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
       
       outer = usymtab_lookupQuiet (st->env, ename);
 
+      DPRINTF (("New  : [%p] %s", e, uentry_unparseFull (e)));
+      DPRINTF (("Outer: [%p] %s", outer, uentry_unparseFull (outer)));
+
       /*
       ** no previous definition, add the new one
       */
@@ -1093,6 +1096,12 @@ static /*@exposed@*/ uentry
   uentry ret;
 
   ret = usymtab_supEntryReturnAux (globtab, e, FALSE);
+
+  /*
+  ** We need to keep track of internal function declarations, so
+  ** we can remove them from the symbol table after exiting this
+  ** function.  This is a bit bogus, of course.
+  */
 
   if (sRef_modInFunction ())
     {
@@ -2277,7 +2286,7 @@ usymtab_enterFunctionScope (uentry fcn)
     {
       if (utab->lexlevel > fileScope)
 	{
-	  llparseerror (cstring_makeLiteral ("New function scope inside function."));
+	  llparseerror (cstring_makeLiteral ("New function scope inside function"));
 	  
 	  while (utab->lexlevel > fileScope)
 	    {
@@ -3676,16 +3685,25 @@ checkGlobalReturn (uentry glob, sRef orig)
 	    }
 	  else 
 	    {
-	      if (sRef_isDead (sr))
+	      if (sRef_isDead (sr) || sRef_isKept (sr))
 		{
 		  if (optgenerror 
 		      (FLG_GLOBSTATE,
 		       message ("Function returns with global %q "
-				"referencing released storage",
-				uentry_getName (glob)),
+				"referencing %s storage",
+				uentry_getName (glob),
+				cstring_makeLiteralTemp (sRef_isDead (sr) ? "released" : "kept")),
 		       g_currentloc))
 		    {
-		      sRef_showStateInfo (sr);
+		      if (sRef_isKept (sr))
+			{
+			  sRef_showAliasInfo (sr);      
+			}
+		      else
+			{
+			  sRef_showStateInfo (sr);
+			}
+
 		      sRef_setDefState (sr, SS_UNKNOWN, fileloc_undefined);
 		    }
 		}

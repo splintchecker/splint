@@ -145,7 +145,7 @@ lcllib_isSkipHeader (cstring sname)
 	 tmp);
       
       fileloc_free (tmp);
-      sfree (xname);
+      cstring_free (xname);
       return TRUE;
     }
 
@@ -175,7 +175,6 @@ lcllib_isSkipHeader (cstring sname)
 		{
 		  posixlib = TRUE;
 		  matchname = ptr;
-		  DPRINTF (("Found match: %s", matchname));
 		  break;
 		}
 	      else
@@ -202,8 +201,7 @@ lcllib_isSkipHeader (cstring sname)
 	{
 	  if (context_getFlag (FLG_SKIPPOSIXHEADERS))
 	    {
-	      DPRINTF (("Skipping: %s", xname));
-	      sfree (xname);
+	      cstring_free (xname);
 	      return TRUE;
 	    }
 	}

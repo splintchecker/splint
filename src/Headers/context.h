@@ -308,6 +308,8 @@ extern void context_exitFunctionHeader (void) /*@modifies internalState@*/ ;
 extern bool context_inFunctionDeclaration (void) /*@globals internalState@*/ ;
 extern void context_enterFunctionDeclaration (/*@exposed@*/ uentry) /*@modifies internalState@*/ ;
 extern void context_exitFunctionDeclaration (void) /*@modifies internalState@*/ ;
+extern void context_enterOldStyleScope (void) /*@modifies internalState@*/ ;
+extern void context_completeOldStyleFunction (/*@exposed@*/ uentry p_e) /*@modifies internalState@*/ ;
 
 extern ctype context_boolImplementationType (void) /*@*/ ;
 extern /*@observer@*/ /*@null@*/ annotationInfo 

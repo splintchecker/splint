@@ -640,7 +640,7 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 extern uentry uentry_makeGlobalMarker (void) ;
 extern bool uentry_isGlobalMarker (uentry) /*@*/ ;
 
-extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fileloc p_loc);
+extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@only@*/ fileloc p_loc);
 
 # ifdef DOANNOTS
 typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,

@@ -40,7 +40,7 @@ extern void processNamedDecl (idDecl p_t);
 extern void clabstract_declareFunction (/*@only@*/ idDecl p_tid) 
    /*@globals internalState@*/ ;
 extern void doVaDcl (void);
-extern void doneParams (void);
+extern void oldStyleDoneParams (void);
 
 extern void setCurrentParams (/*@dependent@*/ uentryList p_ue);
 extern void clearCurrentParams (void);

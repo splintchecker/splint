@@ -6508,6 +6508,8 @@ uentry_setSpecDef (/*@special@*/ uentry e, /*@keep@*/ fileloc f)
       e->whereDeclared  = f;
       e->whereDefined  = fileloc_undefined;
     }
+
+  llassert (fileloc_storable (f));
 }
 
 static void
@@ -10904,13 +10906,15 @@ void uentry_checkName (uentry ue)
     }
 }
 
-/*@exposed@*/ uentry uentry_makeUnrecognized (cstring c, /*@keep@*/ fileloc loc)
+/*@exposed@*/ uentry uentry_makeUnrecognized (cstring c, /*@only@*/ fileloc loc)
 {
   uentry ue;
   fileloc tloc;
 
   /*
-  ** Can't but unrecognized ids in macros in global scope, because srefs will break! */
+  ** Can't but unrecognized ids in macros in global scope, because srefs will break! 
+  */
+
   if (!context_inMacro ())
     {
       sRef_setGlobalScopeSafe ();
