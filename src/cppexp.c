@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on splint: splint@cs.virginia.edu
-** To report a bug: splint-bug@cs.virginia.edu
+** For information on splint: info@splint.org
+** To report a bug: splint-bug@splint.org
 ** For more information: http://www.splint.org
 */
 /*
@@ -678,7 +678,7 @@ cppReader_parseEscape (cppReader *pfile, char **string_ptr)
       if (cppReader_isPedantic (pfile))
 	{
 	  cppReader_pedwarn (pfile, 
-		       message ("non-ANSI-standard escape sequence, `\\%c'", c));
+		       message ("non-standard escape sequence, `\\%c'", c));
 	}
       return (char) 033;
     case 'f':

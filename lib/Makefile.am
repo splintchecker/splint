@@ -9,7 +9,7 @@ UnixHeaders = stdio.h stdlib.h
 
 ## List of files
 splintlib_DATA = \
-  ansi.h ansi.lcd ansistrict.lcd posix.h posix.lcd posixstrict.lcd \
+  standard.h standard.lcd standardstrict.lcd posix.h posix.lcd posixstrict.lcd \
   unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
   file.mts file.xh filerw.mts filerw.xh \
   lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh \
@@ -26,26 +26,26 @@ SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 $(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
 
-ansi.lcd: ansi.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj ansi.h -dump ansi
+standard.lcd: standard.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard
 	@touch $@
 
-ansistrict.lcd: ansi.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT ansi.h -dump ansistrict
+standardstrict.lcd: standard.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h -dump standardstrict
 	@touch $@
 
-posix.lcd: ansi.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj ansi.h posix.h -dump posix
+posix.lcd: standard.h posix.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj standard.h posix.h -dump posix
 	@touch $@
 
-posixstrict.lcd: ansi.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
+posixstrict.lcd: standard.h posix.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h posix.h -dump posixstrict
 	@touch $@
 
-unix.lcd: ansi.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -nof -incondefs -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
+unix.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
+	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj standard.h posix.h unix.h stdio.h stdlib.h -dump unix
 	@touch $@
 
-unixstrict.lcd: ansi.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -nof -incondefs -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
+unixstrict.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
+	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT standard.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
 	@touch $@

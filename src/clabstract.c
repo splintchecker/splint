@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on splint: splint@cs.virginia.edu
-** To report a bug: splint-bug@cs.virginia.edu
+** For information on splint: info@splint.org
+** To report a bug: splint-bug@splint.org
 ** For more information: http://www.splint.org
 */
 /*
@@ -2073,7 +2073,7 @@ sRef checkStateClausesId (uentry ue)
 		  "are not recognized in state clauses.  If there is "
 		  "sufficient interest in support for this, it may be "
 		  "added to a future release.  Send mail to "
-		  "splint@cs.virginia.edu.)",
+		  "info@splint.org.)",
 		  s),
 	 g_currentloc);
       
@@ -2251,7 +2251,7 @@ sRef fixStateClausesId (cstring s)
 			  "are not recognized in function clauses.  If there is "
 			  "sufficient interest in support for this, it may be "
 			  "added to a future release.  Send mail to "
-			  "splint@cs.virginia.edu.)",
+			  "info@splint.org.)",
 			  s), 
 		 g_currentloc);
 	      

@@ -34,10 +34,10 @@
 # define LCLIMPORTDIR           "LCLIMPORTDIR"
 
 /*@constant observer char *LLSTDLIBS_NAME; @*/
-# define LLSTDLIBS_NAME          "ansi"
+# define LLSTDLIBS_NAME          "standard"
 
 /*@constant observer char *LLSTRICTLIBS_NAME; @*/
-# define LLSTRICTLIBS_NAME      "ansistrict"
+# define LLSTRICTLIBS_NAME      "standardstrict"
 
 /*@constant observer char *LLUNIXLIBS_NAME; @*/
 # define LLUNIXLIBS_NAME        "unix"

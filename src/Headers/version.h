@@ -10,7 +10,7 @@
 # define VERSION_H
 
 /*@constant observer char *SPLINT_MAINTAINER; @*/
-# define SPLINT_MAINTAINER "splint-bug@cs.virginia.edu"
+# define SPLINT_MAINTAINER "splint-bug@splint.org"
 
 # else
 # error "Multiple include"

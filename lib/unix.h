@@ -509,7 +509,7 @@ int getsockname (int s, /*@out@*/ struct sockaddr *address, socklen_t *address_l
 
 #else  
 int getsockname (int s, /*@out@*/ struct sockaddr *address, socklen_t  /*@alt size_t@*/ *address_len)
-     /*@i556@*/  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
+  /*@i556@*/  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
   /*@modifies *address, *address_len, errno@*/;
 
 #endif

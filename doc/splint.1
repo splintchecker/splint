@@ -1,19 +1,22 @@
- .\" $Id: lclint.1,v 1.1 2001/10/16 00:24:47 evans1629 Exp $
-.TH lclint 1 "A tool for statically checking C programs"
+ .\" $Id: splint.1,v 1.1 2002/01/09 04:13:54 evans1629 Exp $
+.TH splint 1 "A tool for statically checking C programs"
 
 .SH NAME
-lclint \- A tool for statically checking C programs
+splint \- A tool for statically checking C programs
 
 .SH SYNOPSIS
-.BR lclint
+.BR splint
 [options]
 
 .SH DESCRIPTION
-.BR LCLint
-is a tool for statically checking C programs. With minimal effort, LCLint can
-be used as a better lint(1).
-If additional effort is invested adding annotations to programs, LCLint can
-perform stronger checks than can be done by any standard lint.
+.BR Splint
+is a tool for statically checking C programs for security
+vulnerabilities and common programming mistakes. With minimal effort,
+Splint can be used as a better lint(1).If additional effort is invested
+adding annotations to programs, Splint can perform stronger checks than
+can be done by any standard lint.  For full documentation, please see
+http://www.splint.org.  This man page only covers a few of the available
+options. 
 
 .SH OPTIONS
 
@@ -24,7 +27,7 @@ Shows help
 .PP
 .B Initialization
 
-These flags control directories and files used by LCLint. They may be used from the
+These flags control directories and files used by Splint. They may be used from the
 command line or in an options file, but may not be used as control comments in the
 source code. Except where noted. they have the same meaning preceded by \- or +. 
 
@@ -43,12 +46,12 @@ Add directory to path search for .lcl specification files.
 
 .TP 6
 .BI \-f " file"
-Load options file <file>. If this flag is used from the command line, the default ~/.lclintrc file is
+Load options file <file>. If this flag is used from the command line, the default ~/.splintrc file is
 not loaded. This flag may be used in an options file to load in another options file. 
 
 .TP 6
 .B \-nof 
-Prevents the default options files (./.lclintrc and ~/.lclintrc) from being loaded. (Setting
+Prevents the default options files (./.splintrc and ~/.splintrc) from being loaded. (Setting
 -nof overrides +nof, causing the options files to be loaded normally.) 
 
 .TP 6
@@ -120,7 +123,7 @@ Use the strict version of the UNIX standard library.
 .PP
 .B Output
 
-These flags control what additional information is printed by LCLint. Setting +<flag> causes the described
+These flags control what additional information is printed by Splint. Setting +<flag> causes the described
 information to be printed; setting -<flag> prevents it. By default, all these flags are off.
 
 .TP 6
@@ -152,7 +155,7 @@ Display distribution of where checking time is spent.
 
 .TP 6
 .B \-quiet 
-Suppress herald and error count. (If quiet is not set, LCLint prints out a herald with version
+Suppress herald and error count. (If quiet is not set, Splint prints out a herald with version
 information before checking begins, and a line summarizing the total number of errors reported.) 
 
 .TP 6
@@ -167,14 +170,14 @@ message showing the number of suppressed messages is printed.
 .PP
 .B Expected Errors
 
-Normally, LCLint will expect to report no errors. The exit status will be success (0) if no errors are reported,
+Normally, Splint will expect to report no errors. The exit status will be success (0) if no errors are reported,
 and failure if any errors are reported. Flags can be used to set the expected number of reported errors.
 Because of the provided error suppression mechanisms, these options should probably not be used for final
 checking real programs but may be useful in developing programs using make.
 
 .TP 6
 .B \-expect <number> 
-Exactly <number> code errors are expected. LCLint will exit with failure exit status unless
+Exactly <number> code errors are expected. Splint will exit with failure exit status unless
 <number> code errors are detected. 
 
 .TP 6
@@ -213,7 +216,7 @@ class. Default: -
 
 .TP 6
 .BI \-linelen " number"
-Set length of maximum message line to <number> characters. LCLint will split messages longer
+Set length of maximum message line to <number> characters. Splint will split messages longer
 than <number> characters long into multiple lines. Default: 80 
 
 .PP
@@ -226,7 +229,7 @@ command line flag settings. A warning is produced if a mode flag is used after a
 set. 
 
 These are brief descriptions to give a general idea of what each mode does. To see the complete flag settings
-in each mode, use lclint -help modes. A mode flag has the same effect when used with either + or -.
+in each mode, use splint -help modes. A mode flag has the same effect when used with either + or -.
 
 .TP 6
 .B \-weak 
@@ -254,19 +257,15 @@ used in unspecified functions, strict standard library, and strict typing of C o
 reward will be presented to the first person to produce a real program that produces no errors with
 strict checking. 
 
-
-.SH TODO
-Improve this manpage :-)
-
 .SH AUTHOR
 If you need to get in contact with the authors send email to
 .UR
-mailto:lclint-bug@cs.virginia.edu
+mailto:info@splint.org
 .UR
 
 or visit 
 .UR
-http://lclint.cs.virginia.edu
+http://www.splint.org
 .UR
 
 .SH "SEE ALSO"

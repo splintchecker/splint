@@ -111,27 +111,28 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
  /*@unchecked@*/ extern int opterr;
  /*@unchecked@*/ extern int optreset;
 
- extern int getopt (int argc, char * const *argv, const char *optstring)
- 	/*@globals optarg, optind, optopt, opterr, optreset@*/
- 	/*@modifies optarg, optind, optopt@*/
-      /*@requires maxRead(argv) >= (argc - 1) @*/
+extern int getopt (int argc, char * const *argv, const char *optstring)
+     /*@globals optarg, optind, optopt, opterr, optreset@*/
+     /*@modifies optarg, optind, optopt@*/
+     /*@requires maxRead(argv) >= (argc - 1) @*/
+     ;
+
+/*@-bufferoverflowhigh@*/
+extern /*@null@*/ char *gets (/*@out@*/ char *s) 
+     /*@warn bufferoverflowhigh
+       "Use of gets leads to a buffer overflow vulnerability.  Use fgets instead"@*/
+     /*@globals stdin@*/
+     /*@modifies fileSystem, *s, *stdin, errno@*/ ;
      
-      ;
+extern int getw (FILE *stream) 
+     /*@modifies fileSystem, *stream, errno@*/ ; /*drl added 09-18-001 */ /*legacy */ 
 
- 	extern /*@null@*/ char *gets (/*@out@*/ char *s) 
-   /*@warn bufferoverflowhigh
-  "Use of gets leads to a buffer overflow vulnerability.  Use fgets instead"@*/
- /*@globals stdin@*/ /*@modifies fileSystem, *s, *stdin, errno@*/ ;
+extern int pclose (FILE *stream) /*@modifies fileSystem, *stream, errno@*/ ;
 
- extern int getw (FILE *stream) /*@modifies fileSystem, *stream, errno@*/ ; /*drl added 09-18-001 */ /*legacy */ 
-
-
- extern int pclose (FILE *stream) /*@modifies fileSystem, *stream, errno@*/ ;
-
- extern void perror (/*@null@*/ char *s) 
+extern void perror (/*@null@*/ char *s) 
    /*@globals errno, stderr@*/ /*@modifies fileSystem, *stderr@*/ ; 
 
- extern /*@dependent@*/ /*@null@*/ FILE *popen (char *command, char *ttype)
+extern /*@dependent@*/ /*@null@*/ FILE *popen (char *command, char *ttype)
     /*@modifies fileSystem, errno@*/ ;
 
  # ifdef STRICT
