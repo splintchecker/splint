@@ -1,7 +1,7 @@
 dnl Process with autoconf to create a configure script  -*- Autoconf -*-
 AC_PREREQ(2.50)
 
-AC_INIT([Splint], [3.1.0], [splint-bug@splint.org], [splint])
+AC_INIT([Splint], [3.1.1], [splint-bug@splint.org], [splint])
 
 dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])
@@ -100,6 +100,7 @@ mode_t x;
 fi
 if test $all = maybe ; then all=no ; fi
 AC_MSG_RESULT($all)
+AH_TEMPLATE([_ALL_SOURCE], [needed to expose mode_t on some machines])
 
 LCLOBJ='$(lcl_OBJECTS)'
 AC_ARG_WITH([lcl],
@@ -172,27 +173,27 @@ AC_DEFINE(UNIX, 1, [Define if you're on a Unixy system])
 #just define some Header constants for now...
 
 UNAME=`uname`
-AC_DEFINE_UNQUOTED(UNAME, "${UNAME}")
+AC_DEFINE_UNQUOTED(UNAME, "${UNAME}", uname output)
 
-AC_DEFINE_UNQUOTED(BUILD, "${build}")
-AC_DEFINE_UNQUOTED(HOST, "${host}")
-AC_DEFINE_UNQUOTED(TARGET, "${target}")
+AC_DEFINE_UNQUOTED(BUILD, "${build}", build)
+AC_DEFINE_UNQUOTED(HOST, "${host}", host)
+AC_DEFINE_UNQUOTED(TARGET, "${target}", target)
 
-AC_DEFINE_UNQUOTED(BUILD_ALIAS, "${build_alias}")
-AC_DEFINE_UNQUOTED(HOST_ALIAS, "${host_alias}")
-AC_DEFINE_UNQUOTED(TARGET_ALIAS, "${TARGET_ALIAS}")
+AC_DEFINE_UNQUOTED(BUILD_ALIAS, "${build_alias}", build_alias)
+AC_DEFINE_UNQUOTED(HOST_ALIAS, "${host_alias}", host_alias)
+AC_DEFINE_UNQUOTED(TARGET_ALIAS, "${TARGET_ALIAS}", target_alias)
 
-AC_DEFINE_UNQUOTED(BUILD_CPU, "${build_cpu}")
-AC_DEFINE_UNQUOTED(HOST_CPU, "$host_cpu")
-AC_DEFINE_UNQUOTED(TARGET_CPU, "${target_cpu}")
+AC_DEFINE_UNQUOTED(BUILD_CPU, "${build_cpu}", build_cpu)
+AC_DEFINE_UNQUOTED(HOST_CPU, "$host_cpu", host_cpu)
+AC_DEFINE_UNQUOTED(TARGET_CPU, "${target_cpu}", target_cpu)
 
-AC_DEFINE_UNQUOTED(BUILD_VENDOR, "${build_vendor}")
-AC_DEFINE_UNQUOTED(HOST_VENDOR, "${host_vendor}")
-AC_DEFINE_UNQUOTED(TARGET_VENDOR, "${target_vendor}")
+AC_DEFINE_UNQUOTED(BUILD_VENDOR, "${build_vendor}", build_vendor)
+AC_DEFINE_UNQUOTED(HOST_VENDOR, "${host_vendor}", host_vendor)
+AC_DEFINE_UNQUOTED(TARGET_VENDOR, "${target_vendor}", target_vendor)
 
-AC_DEFINE_UNQUOTED(BUILD_OS, "${build_os}")
-AC_DEFINE_UNQUOTED(HOST_OS, "${host_os}")
-AC_DEFINE_UNQUOTED(TARGET_OS,"${target_os}")
+AC_DEFINE_UNQUOTED(BUILD_OS, "${build_os}", build_os)
+AC_DEFINE_UNQUOTED(HOST_OS, "${host_os}", host_os)
+AC_DEFINE_UNQUOTED(TARGET_OS,"${target_os}", target_os)
 
 
 

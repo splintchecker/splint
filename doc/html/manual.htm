@@ -1201,10 +1201,10 @@ Splint Manual</span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
 'font-size: 18.0pt;font-family:"Book Antiqua"'>Version
-3.1.0</span></span></p>
+3.1.1</span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
-'font-size: 18.0pt;font-family:"Book Antiqua"'>12 April 2003
+'font-size: 18.0pt;font-family:"Book Antiqua"'>27 April 2003
 </span></span></p>
 <p class="MsoSubtitle"><span class=
 "MsoCommentReference"><span style=
@@ -1954,9 +1954,9 @@ Manual</span></b></p>
 <p class="MsoNormal" align="center" style='text-align:center'>
 &nbsp;</p>
 <p class="MsoNormal" align="center" style='text-align:center'>
-Version 3.1.0</p>
+Version 3.1.1</p>
 <p class="MsoNormal" align="center" style='text-align:center'>7
-12 April 2003</p>
+27 April 2003</p>
 <p class="TextFontCX">&nbsp;</p>
 <p class="TextFontCX">Splint<a href="#_ftn1" name="_ftnref1"
    title=""><span class="MsoFootnoteReference"><span class=
@@ -3760,6 +3760,15 @@ operations are provided that modify the value of an
 Semi-Abstract Types</a></h2>
 
 Sometimes it is useful to have a type that is abstract in some ways, but can be used with the standard numerical operators.  Splint supports numabstract types for this purpose.  The /*@numabstract@*/ annotation denotes a numabstract type.  Splint will report warnings when numabstract types are used inconsistently, but allow binary numeric operators to operate on two values of the same numabstract type.
+
+Several flags control the strictness of type checking for numabstract types:
+<span class="flag">numabstract, numabstractcast, numabstractlit,  numabstractindex,
+</span>
+ and
+<span class="flag"> numabstractprint
+</span>
+
+ .
 
 <h2 style='margin-left:0in;text-indent:0in'><a name=
 "_Toc534974956"></a><a name="_Toc344355422"></a><a name=
@@ -10016,10 +10025,26 @@ is spent.</p>
 'font-size:10.0pt'>quiet</span></span> is not set, Splint prints
 out a herald with version information before checking begins, and a
 line summarizing the total number of errors reported.)</p>
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>iso-lib</span></span></p>
+<p class="IndentText">Use library based on the ISO standard library specification.
+</p>
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>warn-unix-lib</span></span></p>
+<p class="IndentText">
+Warn when the unix library is used.  Unix library may not be compatible with all platforms.
+</p>
+
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>which-lib</span></span></p>
 <p class="IndentText">Print out the standard library filename and
 creation information.</p>
+
+
+
+
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>limit</span></span> <span class=
 "Flag"><span style=
@@ -10029,6 +10054,99 @@ creation information.</p>
       similar errors are reported consecutively.&nbsp; Further
       errors are suppressed, and a message showing the number of
       suppressed messages is printed.</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>message-stream</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'><i>&lt;file&gt;</i></span></span></p>
+<p class="IndentText">
+Send status messages to <i><span style='font-size:10.0pt'>&lt;file&gt;</span></i>.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>message-stream-stdout</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send status messages to standard output stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>message-stream-stderr</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send status messages to standard error stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>warning-stream</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'><i>&lt;file&gt;</i></span></span></p>
+<p class="IndentText">
+Send  warnings to <i><span style='font-size:10.0pt'>&lt;file&gt;</span></i>.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>warning-stream-stdout</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send  warnings to standard output stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>warning-stream-stderr</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send warnings to standard error stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>error-stream</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'><i>&lt;file&gt;</i></span></span></p>
+<p class="IndentText">
+Send fatal errors to <i><span style='font-size:10.0pt'>&lt;file&gt;</span></i>.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>error-stream-stdout</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send fatal errors to standard output stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>error-stream-stderr</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Send fatal errors to standard error stream.
+</p>
+
+
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>limit</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'><i>&lt;number&gt;</i></span></span></p>
+<p class="IndentText">At most <span class=
+      "Flag"><i><span style='font-size:10.0pt'>&lt;number&gt;</span></i></span>
+      similar errors are reported consecutively.&nbsp; Further
+      errors are suppressed, and a message showing the number of
+      suppressed messages is printed.</p>
+          
 <p class="MsoHeading9" style='margin-left:0in;text-indent:0in'>
 <a name="_Toc534975046">Expected Errors</a></p>
 <p class="beforelist">Normally, Splint will expect to report no
@@ -10196,6 +10314,141 @@ long into multiple lines.</p>
 <p class="IndentText">
 Set the number of spaces to indent sub-messages.
 </p>
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>3</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>locindentspaces</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'><i>&lt;number&gt;</i></span></span></p>
+<p class="IndentText">
+Set number of spaces to indent sub-messages that start with file locations.
+</p>
+
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>showdeephistory</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Show all available information about storage mentioned in warnings. 
+</p>
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>showloadloc</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Show location information for load files.
+</p>
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>csv</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Produce comma-separated values (CSV) warnings output file. 
+</p>
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>csvoverwrite</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Overwrite exisiting CVS output file Show location information for load files. 
+</p>
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>htmlfileformat</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Show file locations as links.
+</p>
+
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span class=
+"Flag"><span style=
+'font-size:10.0pt'>+</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>streamoverwrite</span></span> <span class=
+"Flag"><span style=
+'font-size:10.0pt'></span></span></p>
+<p class="IndentText">
+Warn and exit if a stream output file would overwrite an existing file.
+</p>
+
+
 <p class="MsoHeading8" style='margin-left:0in;text-indent:0in'>
 <a name="_Toc534975048">Mode Selector Flags</a></p>
 <p class="TextFontCX">Mode selects flags set the mode checking
@@ -10689,12 +10942,33 @@ A string literal is assigned to a char array too small to hold it.
       "Keyword"><span style='font-size:10.0pt'>-+++</span></span></p></td></tr></table></div>
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>
-string-literal-too-no-room
+string-literal--no-room
 </span></span></p>
 <p class="IndentText">
 A string literal is assigned to a char array that is not big enough to hold the null terminator. 
 </p>
 
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span style=
+'font-size:10.0pt'>m:</span> <span class=
+      "Keyword"><span style='font-size:10.0pt'>++++</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>
+string-literal--no-room-final-null
+</span></span></p>
+<p class="IndentText">
+A string literal is assigned to a char array that is not big enough to
+      hold the final null terminator.  This may not be a problem because a null
+      character has been explictedly included in the string literal using an
+      escape sequence. 
+</p>
 
 <div>
 <table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
@@ -11661,6 +11935,32 @@ div>
 'font-size:11.0pt; font-weight:normal'>4.3</span></span><span class="TextFontCXChar">
 <span style=
 'font-size:11.0pt; font-weight:normal'>)</span></span></p>
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span style=
+'font-size:10.0pt'>m:</span> <span class=
+      "Keyword"><span style='font-size:10.0pt'>+---</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>shortint</span></span></p>
+<p class="IndentText">
+Make short int and int types equivalent.
+</p>
+<p class="Heading10"><a name="_Toc534975052">Abstract Types</a>
+<span class="TextFontCXChar"><span style=
+'font-size:11.0pt; font-weight:normal'>(Section</span></span>
+<span class="TextFontCXChar"><span style=
+'font-size:11.0pt; font-weight:normal'>4.3</span></span><span class="TextFontCXChar">
+<span style=
+'font-size:11.0pt; font-weight:normal'>)</span></span></p>
+
+
+
 <div>
 <table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
        height="14" align="left">
@@ -16408,6 +16708,25 @@ each header file once.</p>
 'font-size:10.0pt'>never-include</span></span></p>
 <p class="IndentText">Use library information instead of including
 header files.</p>
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span style=
+'font-size:10.0pt'>global:</span> <span class=
+      "Keyword"><span style='font-size:10.0pt'>-</span></span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>case-insensitive-filenames</span></span></p>
+<p class="IndentText">
+File names are case insensitive (file.h and FILE.H are the same file). 
+</p>
+
+
+
 <p class="Heading10">Comments</p>
 <p class="beforelist">These flags control how syntactic comments
 are interpreted.</p>
@@ -16520,6 +16839,22 @@ when a traditional lint comment is used. &nbsp;&nbsp;</p>
 <p class="TextFontCX"><span class="Flag"><span style=
 'font-size:10.0pt'>unrecog-comments</span></span></p>
 <p class="IndentText">Stylized comment is unrecognized.</p>
+
+<div>
+<table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
+       height="14" align="left">
+<tr>
+<td valign="top" align="left" height="14" style=
+'padding-top:0in;padding-right: 9.35pt;padding-bottom:0in;padding-left:9.35pt'>
+<p class="TextFontCX" align="center" style=
+'text-align:center;background:#CCCCCC'><span style=
+'font-size:10.0pt'>P: +</span></p></td></tr></table></div>
+<p class="TextFontCX"><span class="Flag"><span style=
+'font-size:10.0pt'>unrecog-flag-comments</span></span></p>
+<p class="IndentText">
+Semantic comment attempts to set a flag that is not recognized.
+</p>
+
 
 <div>
 <table cellspacing="0" cellpadding="0" hspace="0" vspace="0"
