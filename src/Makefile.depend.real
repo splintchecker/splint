@@ -1,0 +1,261 @@
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+cstring.o: Headers/general.h 
+cstring.o: Headers/cstring.h 
+cstring.o: Headers/bool.h
+fileloc.o: Headers/general.h 
+fileloc.o: Headers/cstring.h 
+fileloc.o: Headers/bool.h Headers/misc.h Headers/fileloc.h Headers/message.h
+fileloc.o: Headers/globals.h Headers/context.h
+fileloc.o: Headers/flag_codes.h Headers/coderegionList.h Headers/coderegion.h
+fileloc.o: Headers/llbasic.h Headers/basic.h Headers/llerror.h
+fileloc.o: Headers/LSLSymbol_type.h Headers/token.h Headers/LSLToken_type.h
+fileloc.o: Headers/simp_message.h Headers/code.h Headers/source.h
+fileloc.o: Headers/mapping.h Headers/sort.h Headers/Sort_type.h
+fileloc.o: Headers/ctypes.h Headers/abstract.h Headers/leaf.h
+fileloc.o: Headers/leafList.h Headers/importNode.h Headers/importNodeList.h
+fileloc.o: Headers/SortList.h Headers/LSLSymbolList.h Headers/LSLSymbolSet.h
+fileloc.o: Headers/SortSet.h Headers/pairNode.h Headers/pairNodeList.h
+fileloc.o: Headers/paramNode.h Headers/paramNodeList.h
+fileloc.o: Headers/declaratorInvNode.h Headers/declaratorInvNodeList.h
+fileloc.o: Headers/typeExpr.h Headers/declaratorNode.h
+fileloc.o: Headers/declaratorNodeList.h Headers/arrayQualNode.h
+fileloc.o: Headers/varNode.h Headers/varNodeList.h Headers/quantifierNode.h
+fileloc.o: Headers/quantifierNodeList.h Headers/storeRefNode.h
+fileloc.o: Headers/storeRefNodeList.h Headers/modifyNode.h
+fileloc.o: Headers/letDeclNode.h Headers/letDeclNodeList.h
+fileloc.o: Headers/programNode.h Headers/programNodeList.h
+fileloc.o: Headers/literalNode.h Headers/lclPredicateNode.h
+fileloc.o: Headers/exposedNode.h Headers/constDeclNode.h
+fileloc.o: Headers/constDeclNodeList.h Headers/CTypesNode.h
+fileloc.o: Headers/constDeclarationNode.h Headers/initDeclNode.h
+fileloc.o: Headers/initDeclNodeList.h Headers/varDeclarationNode.h
+fileloc.o: Headers/varDeclarationNodeList.h Headers/globalList.h
+fileloc.o: Headers/claimNode.h Headers/fcnNode.h Headers/fcnNodeList.h
+fileloc.o: Headers/abstBodyNode.h Headers/abstractNode.h
+fileloc.o: Headers/structDeclNode.h Headers/structDeclNodeList.h
+fileloc.o: Headers/taggedUnionNode.h Headers/typeNode.h
+fileloc.o: Headers/structOrUnionNode.h Headers/enumSpecNode.h
+fileloc.o: Headers/lclTypeSpecNode.h Headers/typeNamePack.h
+fileloc.o: Headers/typeNameNode.h Headers/typeNameNodeList.h
+fileloc.o: Headers/opFormNode.h Headers/quantifiedTermNode.h
+fileloc.o: Headers/signatureNode.h Headers/signatureNodeSet.h
+fileloc.o: Headers/signNode.h Headers/nameNode.h Headers/LSLoperator.h
+fileloc.o: Headers/LSLoperatorSet.h Headers/replaceNode.h
+fileloc.o: Headers/replaceNodeList.h Headers/renamingNode.h
+fileloc.o: Headers/traitRefNode.h Headers/traitRefNodeList.h
+fileloc.o: Headers/exportNode.h Headers/privateNode.h Headers/interfaceNode.h
+fileloc.o: Headers/interfaceNodeList.h Headers/termNode.h
+fileloc.o: Headers/termNodeList.h Headers/stmtNode.h Headers/SortSetList.h
+fileloc.o: Headers/LSLoperatorList.h Headers/string2sym.h Headers/symtable.h
+fileloc.o: Headers/ctype.h Headers/ctbase.h Headers/cprim.h Headers/cprim.lh
+fileloc.o: Headers/enumNameList.h Headers/typeTable.h Headers/indxmap.h
+fileloc.o: Headers/typeTable.lh Headers/hashTable.h
+fileloc.o: Headers/system_constants.h Headers/fieldlist.h Headers/paramlist.h
+fileloc.o: Headers/typeId.h Headers/typeId.lh Headers/llsymtab.h
+fileloc.o: Headers/llsymuid.h Headers/llsymtab.lh Headers/llentry.h
+fileloc.o: Headers/typeUidSet.h Headers/sreflist.h Headers/sRef_type.h
+fileloc.o: Headers/sRefSet.h Headers/ekind.h Headers/ekind.lh
+fileloc.o: Headers/llsymuidSet.h Headers/paramlist.lh Headers/centry.h
+fileloc.o: Headers/ctypeList.h Headers/centryList.h Headers/csymtab.h
+fileloc.o: Headers/csymtab.lh Headers/storeRef.h Headers/clabstract.h
+fileloc.o: Headers/argNode.h Headers/argNodeList.h Headers/lltok.h
+fileloc.o: Headers/typeIdList.h Headers/udnodeList.h Headers/udnode.h
+fileloc.o: Headers/exprNode.h Headers/sRefSetStack.h Headers/aliasTable.h
+fileloc.o: Headers/aliasStack.h Headers/macrocache.h Headers/filenamemap.h
+fileloc.o: Headers/boolStack.h Headers/pcpp.h Headers/filenameList.h
+fileloc.o: Headers/version.h
+filestack.o: Headers/basic.h Headers/general.h 
+filestack.o: Headers/cstring.h Headers/bool.h
+filestack.o: Headers/llerror.h Headers/fileloc.h Headers/LSLSymbol_type.h
+filestack.o: Headers/token.h Headers/LSLToken_type.h Headers/simp_message.h
+filestack.o: Headers/filestack.h Headers/message.h
+mapping.o: Headers/basic.h Headers/general.h 
+mapping.o:  Headers/cstring.h
+mapping.o: Headers/bool.h Headers/llerror.h
+mapping.o: Headers/fileloc.h Headers/LSLSymbol_type.h Headers/token.h
+mapping.o: Headers/LSLToken_type.h Headers/simp_message.h
+mapping.o: Headers/mapping.h Headers/string2sym.h
+message.o: Headers/basic.h Headers/general.h 
+message.o:  Headers/cstring.h
+message.o: Headers/bool.h Headers/llerror.h
+message.o: Headers/fileloc.h Headers/LSLSymbol_type.h Headers/token.h
+message.o: Headers/LSLToken_type.h Headers/simp_message.h
+message.o: Headers/misc.h Headers/message.h
+message.o: Headers/ctype.h Headers/ctbase.h Headers/cprim.h Headers/cprim.lh
+message.o: Headers/enumNameList.h Headers/typeTable.h Headers/context.h
+message.o: Headers/flag_codes.h Headers/coderegionList.h Headers/coderegion.h
+message.o: Headers/llbasic.h Headers/code.h Headers/source.h
+message.o: Headers/mapping.h Headers/sort.h Headers/Sort_type.h
+message.o: Headers/ctypes.h Headers/abstract.h Headers/leaf.h
+message.o: Headers/leafList.h Headers/importNode.h Headers/importNodeList.h
+message.o: Headers/SortList.h Headers/LSLSymbolList.h Headers/LSLSymbolSet.h
+message.o: Headers/SortSet.h Headers/pairNode.h Headers/pairNodeList.h
+message.o: Headers/paramNode.h Headers/paramNodeList.h
+message.o: Headers/declaratorInvNode.h Headers/declaratorInvNodeList.h
+message.o: Headers/typeExpr.h Headers/declaratorNode.h
+message.o: Headers/declaratorNodeList.h Headers/arrayQualNode.h
+message.o: Headers/varNode.h Headers/varNodeList.h Headers/quantifierNode.h
+message.o: Headers/quantifierNodeList.h Headers/storeRefNode.h
+message.o: Headers/storeRefNodeList.h Headers/modifyNode.h
+message.o: Headers/letDeclNode.h Headers/letDeclNodeList.h
+message.o: Headers/programNode.h Headers/programNodeList.h
+message.o: Headers/literalNode.h Headers/lclPredicateNode.h
+message.o: Headers/exposedNode.h Headers/constDeclNode.h
+message.o: Headers/constDeclNodeList.h Headers/CTypesNode.h
+message.o: Headers/constDeclarationNode.h Headers/initDeclNode.h
+message.o: Headers/initDeclNodeList.h Headers/varDeclarationNode.h
+message.o: Headers/varDeclarationNodeList.h Headers/globalList.h
+message.o: Headers/claimNode.h Headers/fcnNode.h Headers/fcnNodeList.h
+message.o: Headers/abstBodyNode.h Headers/abstractNode.h
+message.o: Headers/structDeclNode.h Headers/structDeclNodeList.h
+message.o: Headers/taggedUnionNode.h Headers/typeNode.h
+message.o: Headers/structOrUnionNode.h Headers/enumSpecNode.h
+message.o: Headers/lclTypeSpecNode.h Headers/typeNamePack.h
+message.o: Headers/typeNameNode.h Headers/typeNameNodeList.h
+message.o: Headers/opFormNode.h Headers/quantifiedTermNode.h
+message.o: Headers/signatureNode.h Headers/signatureNodeSet.h
+message.o: Headers/signNode.h Headers/nameNode.h Headers/LSLoperator.h
+message.o: Headers/LSLoperatorSet.h Headers/replaceNode.h
+message.o: Headers/replaceNodeList.h Headers/renamingNode.h
+message.o: Headers/traitRefNode.h Headers/traitRefNodeList.h
+message.o: Headers/exportNode.h Headers/privateNode.h Headers/interfaceNode.h
+message.o: Headers/interfaceNodeList.h Headers/termNode.h
+message.o: Headers/termNodeList.h Headers/stmtNode.h Headers/SortSetList.h
+message.o: Headers/LSLoperatorList.h Headers/string2sym.h Headers/symtable.h
+message.o: Headers/llentry.h Headers/typeUidSet.h Headers/llsymtab.h
+message.o: Headers/system_constants.h Headers/llsymuid.h Headers/typeId.h
+message.o: Headers/typeId.lh Headers/llsymtab.lh Headers/hashTable.h
+message.o: Headers/sreflist.h Headers/sRef_type.h Headers/sRefSet.h
+message.o: Headers/ekind.h Headers/ekind.lh Headers/llsymuidSet.h
+message.o: Headers/paramlist.h Headers/indxmap.h Headers/paramlist.lh
+message.o: Headers/csymtab.h Headers/csymtab.lh Headers/centry.h
+message.o: Headers/storeRef.h Headers/clabstract.h Headers/argNode.h
+message.o: Headers/argNodeList.h Headers/ctypeList.h Headers/lltok.h
+message.o: Headers/centryList.h Headers/typeIdList.h Headers/udnodeList.h
+message.o: Headers/udnode.h Headers/exprNode.h Headers/fieldlist.h
+message.o: Headers/sRefSetStack.h Headers/aliasTable.h Headers/aliasStack.h
+message.o: Headers/macrocache.h Headers/filenamemap.h Headers/boolStack.h
+message.o: Headers/typeTable.lh
+filenamemap.o: Headers/basic.h Headers/general.h 
+filenamemap.o: Headers/cstring.h Headers/bool.h
+filenamemap.o: Headers/llerror.h Headers/fileloc.h Headers/LSLSymbol_type.h
+filenamemap.o: Headers/token.h Headers/LSLToken_type.h Headers/simp_message.h
+filenamemap.o: Headers/globals.h Headers/context.h
+filenamemap.o: Headers/flag_codes.h Headers/coderegionList.h
+filenamemap.o: Headers/coderegion.h Headers/llbasic.h Headers/code.h
+filenamemap.o: Headers/source.h Headers/mapping.h Headers/sort.h
+filenamemap.o: Headers/Sort_type.h Headers/ctypes.h Headers/abstract.h
+filenamemap.o: Headers/leaf.h Headers/leafList.h Headers/importNode.h
+filenamemap.o: Headers/importNodeList.h Headers/SortList.h
+filenamemap.o: Headers/LSLSymbolList.h Headers/LSLSymbolSet.h
+filenamemap.o: Headers/SortSet.h Headers/pairNode.h Headers/pairNodeList.h
+filenamemap.o: Headers/paramNode.h Headers/paramNodeList.h
+filenamemap.o: Headers/declaratorInvNode.h Headers/declaratorInvNodeList.h
+filenamemap.o: Headers/typeExpr.h Headers/declaratorNode.h
+filenamemap.o: Headers/declaratorNodeList.h Headers/arrayQualNode.h
+filenamemap.o: Headers/varNode.h Headers/varNodeList.h
+filenamemap.o: Headers/quantifierNode.h Headers/quantifierNodeList.h
+filenamemap.o: Headers/storeRefNode.h Headers/storeRefNodeList.h
+filenamemap.o: Headers/modifyNode.h Headers/letDeclNode.h
+filenamemap.o: Headers/letDeclNodeList.h Headers/programNode.h
+filenamemap.o: Headers/programNodeList.h Headers/literalNode.h
+filenamemap.o: Headers/lclPredicateNode.h Headers/exposedNode.h
+filenamemap.o: Headers/constDeclNode.h Headers/constDeclNodeList.h
+filenamemap.o: Headers/CTypesNode.h Headers/constDeclarationNode.h
+filenamemap.o: Headers/initDeclNode.h Headers/initDeclNodeList.h
+filenamemap.o: Headers/varDeclarationNode.h Headers/varDeclarationNodeList.h
+filenamemap.o: Headers/globalList.h Headers/claimNode.h Headers/fcnNode.h
+filenamemap.o: Headers/fcnNodeList.h Headers/abstBodyNode.h
+filenamemap.o: Headers/abstractNode.h Headers/structDeclNode.h
+filenamemap.o: Headers/structDeclNodeList.h Headers/taggedUnionNode.h
+filenamemap.o: Headers/typeNode.h Headers/structOrUnionNode.h
+filenamemap.o: Headers/enumSpecNode.h Headers/lclTypeSpecNode.h
+filenamemap.o: Headers/typeNamePack.h Headers/typeNameNode.h
+filenamemap.o: Headers/typeNameNodeList.h Headers/opFormNode.h
+filenamemap.o: Headers/quantifiedTermNode.h Headers/signatureNode.h
+filenamemap.o: Headers/signatureNodeSet.h Headers/signNode.h
+filenamemap.o: Headers/nameNode.h Headers/LSLoperator.h
+filenamemap.o: Headers/LSLoperatorSet.h Headers/replaceNode.h
+filenamemap.o: Headers/replaceNodeList.h Headers/renamingNode.h
+filenamemap.o: Headers/traitRefNode.h Headers/traitRefNodeList.h
+filenamemap.o: Headers/exportNode.h Headers/privateNode.h
+filenamemap.o: Headers/interfaceNode.h Headers/interfaceNodeList.h
+filenamemap.o: Headers/termNode.h Headers/termNodeList.h Headers/stmtNode.h
+filenamemap.o: Headers/SortSetList.h Headers/LSLoperatorList.h
+filenamemap.o: Headers/string2sym.h Headers/symtable.h Headers/ctype.h
+filenamemap.o: Headers/ctbase.h Headers/cprim.h Headers/cprim.lh
+filenamemap.o: Headers/enumNameList.h Headers/typeTable.h Headers/indxmap.h
+filenamemap.o: Headers/typeTable.lh Headers/hashTable.h
+filenamemap.o: Headers/system_constants.h Headers/fieldlist.h
+filenamemap.o: Headers/paramlist.h Headers/typeId.h Headers/typeId.lh
+filenamemap.o: Headers/llsymtab.h Headers/llsymuid.h Headers/llsymtab.lh
+filenamemap.o: Headers/llentry.h Headers/typeUidSet.h Headers/sreflist.h
+filenamemap.o: Headers/sRef_type.h Headers/sRefSet.h Headers/ekind.h
+filenamemap.o: Headers/ekind.lh Headers/llsymuidSet.h Headers/paramlist.lh
+filenamemap.o: Headers/centry.h Headers/ctypeList.h Headers/centryList.h
+filenamemap.o: Headers/csymtab.h Headers/csymtab.lh Headers/storeRef.h
+filenamemap.o: Headers/clabstract.h Headers/argNode.h Headers/argNodeList.h
+filenamemap.o: Headers/lltok.h Headers/typeIdList.h Headers/udnodeList.h
+filenamemap.o: Headers/udnode.h Headers/exprNode.h Headers/sRefSetStack.h
+filenamemap.o: Headers/aliasTable.h Headers/aliasStack.h Headers/macrocache.h
+filenamemap.o: Headers/filenamemap.h Headers/boolStack.h Headers/message.h
+hashTable.o: Headers/general.h 
+hashTable.o: Headers/cstring.h Headers/bool.h
+hashTable.o: Headers/hashTable.h Headers/message.h 
+hashTable.o: Headers/256_random_numbers.h
+llerror.o: Headers/basic.h Headers/general.h 
+llerror.o:  Headers/cstring.h
+llerror.o: Headers/bool.h Headers/llerror.h
+llerror.o: Headers/fileloc.h Headers/LSLSymbol_type.h Headers/token.h
+llerror.o: Headers/LSLToken_type.h Headers/simp_message.h
+llerror.o: Headers/code.h Headers/string2sym.h
+llerror.o: Headers/context.h Headers/flag_codes.h Headers/coderegionList.h
+llerror.o: Headers/coderegion.h Headers/llbasic.h Headers/source.h
+llerror.o: Headers/mapping.h Headers/sort.h Headers/Sort_type.h
+llerror.o: Headers/ctypes.h Headers/abstract.h Headers/leaf.h
+llerror.o: Headers/leafList.h Headers/importNode.h Headers/importNodeList.h
+llerror.o: Headers/SortList.h Headers/LSLSymbolList.h Headers/LSLSymbolSet.h
+llerror.o: Headers/SortSet.h Headers/pairNode.h Headers/pairNodeList.h
+llerror.o: Headers/paramNode.h Headers/paramNodeList.h
+llerror.o: Headers/declaratorInvNode.h Headers/declaratorInvNodeList.h
+llerror.o: Headers/typeExpr.h Headers/declaratorNode.h
+llerror.o: Headers/declaratorNodeList.h Headers/arrayQualNode.h
+llerror.o: Headers/varNode.h Headers/varNodeList.h Headers/quantifierNode.h
+llerror.o: Headers/quantifierNodeList.h Headers/storeRefNode.h
+llerror.o: Headers/storeRefNodeList.h Headers/modifyNode.h
+llerror.o: Headers/letDeclNode.h Headers/letDeclNodeList.h
+llerror.o: Headers/programNode.h Headers/programNodeList.h
+llerror.o: Headers/literalNode.h Headers/lclPredicateNode.h
+llerror.o: Headers/exposedNode.h Headers/constDeclNode.h
+llerror.o: Headers/constDeclNodeList.h Headers/CTypesNode.h
+llerror.o: Headers/constDeclarationNode.h Headers/initDeclNode.h
+llerror.o: Headers/initDeclNodeList.h Headers/varDeclarationNode.h
+llerror.o: Headers/varDeclarationNodeList.h Headers/globalList.h
+llerror.o: Headers/claimNode.h Headers/fcnNode.h Headers/fcnNodeList.h
+llerror.o: Headers/abstBodyNode.h Headers/abstractNode.h
+llerror.o: Headers/structDeclNode.h Headers/structDeclNodeList.h
+llerror.o: Headers/taggedUnionNode.h Headers/typeNode.h
+llerror.o: Headers/structOrUnionNode.h Headers/enumSpecNode.h
+llerror.o: Headers/lclTypeSpecNode.h Headers/typeNamePack.h
+llerror.o: Headers/typeNameNode.h Headers/typeNameNodeList.h
+llerror.o: Headers/opFormNode.h Headers/quantifiedTermNode.h
+llerror.o: Headers/signatureNode.h Headers/signatureNodeSet.h
+llerror.o: Headers/signNode.h Headers/nameNode.h Headers/LSLoperator.h
+llerror.o: Headers/LSLoperatorSet.h Headers/replaceNode.h
+llerror.o: Headers/replaceNodeList.h Headers/renamingNode.h
+llerror.o: Headers/traitRefNode.h Headers/traitRefNodeList.h
+llerror.o: Headers/exportNode.h Headers/privateNode.h Headers/interfaceNode.h
+llerror.o: Headers/interfaceNodeList.h Headers/termNode.h
+llerror.o: Headers/termNodeList.h Headers/stmtNode.h Headers/SortSetList.h
+llerror.o: Headers/LSLoperatorList.h Headers/symtable.h Headers/ctype.h
+llerror.o: Headers/ctbase.h Headers/cprim.h Headers/cprim.lh
+llerror.o: Headers/enumNameList.h Headers/typeTable.h Headers/indxmap.h
+llerror.o: Headers/typeTable.lh Headers/hashTable.h
+llerror.o: Headers/system_constants.h Headers/fieldlist.h Headers/paramlist.h
+llerror.o: Headers/typeId.h Headers/typeId.lh Headers/llsymtab.h
+llerror.o: Headers/llsymuid.h Headers/llsymtab.lh Headers/llentry.h
+llerror.o: Headers/typeUidSet.h Headers/sreflist.h Headers/sRef_type.h
+llerror.o: Headers/sRefSet.h Headers/ekind.h Headers/ekind.lh
+llerror.o: Headers/llsymuidSet.h Headers/paramlist.lh Headers/centry.h
+llerr

@@ -1,0 +1,187 @@
+##################################################
+###                                         
+### Makefile for OS/2 version of LCLint                     
+###                                         
+### designed for use with gmake (GNU make)
+###
+### based on David Evans' original makefile for Unix systems
+###
+### This file should not need to be edited. 
+###
+### configuration is set by top-level makefile and written to file
+###  config.inc included by this file.
+###
+### Commands:
+###
+### make all 
+###    builds a release version of lclint from scratch using optimizations
+###
+
+O=.o
+E=
+
+
+include ../config.inc
+
+.SUFFIXES:
+.SUFFIXES: $E $O .h .c .l .check
+
+###
+### object files needed for building lclint:
+###  note that there is no dependency checking done!
+###
+OBJ=abstract$O aliasChecks$O aliasTable$O cgrammar$O checking$O \
+    clabstract$O clause$O clauseStack$O context$O cprim$O cscanner$O \
+    cstring$O cstringSList$O ctype$O ctypeList$O cvar$O \
+    declaratorInvNodeList$O declaratorNodeList$O ekind$O enumNameList$O \
+    enumNameSList$O exprChecks$O exprNode$O exprNodeList$O \
+    exprNodeSList$O fcnNodeList$O fileIdList$O fileStack$O fileTable$O \
+    fileloc$O filelocList$O filelocStack$O flagMarker$O flagMarkerList$O \
+    flags$O general$O globSet$O globals$O guardSet$O hashTable$O \
+    idDecl$O idDeclList$O importNodeList$O imports$O indxMap$O \
+    initDeclNodeList$O intSet$O interfaceNodeList$O lclctypes$O lclinit$O \
+    lcllib$O lclscan$O lclscanline$O lclsyntable$O lcltokentable$O \
+    letDeclNodeList$O lh$O llerror$O llgrammar$O llmain$O lltok$O \
+    lslOpList$O lslOpSet$O lslinit$O lslparse$O lsymbol$O lsymbolList$O \
+    lsymbolSet$O ltoken$O ltokenList$O macrocache$O mapping$O message$O \
+    messageLog$O multiVal$O nameChecks$O osd$O out$O pairNodeList$O \
+    paramNodeList$O pcpp$O programNodeList$O qtype$O qual$O qualList$O \
+    quantifierNodeList$O replaceNodeList$O sRef$O sRefSet$O sRefSetList$O \
+    sRefTable$O scan$O scanline$O shift$O sigNodeSet$O signature$O \
+    sort$O sortList$O sortSet$O sortSetList$O source$O specialClauses$O \
+    stDeclNodeList$O storeRefNodeList$O structNames$O symtable$O  \
+    syntable$O termNodeList$O tokentable$O traitRefNodeList$O typeIdSet$O \
+    typeNameNodeList$O uentry$O uentryList$O usymIdSet$O usymtab$O \
+    usymtab_interface$O varDeclarationNodeList$O varKinds$O varNodeList$O \
+    ynm$O 
+
+
+###
+### main (and only) target: lclint with all optimizations.
+###
+
+all : lclint$E
+lclint$E : $(OBJ) 
+	$(CC) $(OFLAG) $(OBJ) $(LINKFLAGS)
+
+###
+### subtarget: local constants header file.
+###
+
+localconstants:
+	cmd /c if exist Headers\local_constants.last del Headers\local_constants.last
+	cmd /c if exist Headers\local_constants.h ren Headers\local_constants.h local_constants.last
+	echo /* local_constants.h - created automatically by gmake localconstants */ > Headers\local_constants.h
+	echo /*@constant observer char *DEFAULT_CPPCMD;@*/ >> Headers\local_constants.h 
+	echo # define DEFAULT_CPPCMD $(DEFAULT_CPPCMD) >> Headers\local_constants.h
+	echo /*@constant observer char *SYSTEM_LIBDIR;@*/ >> Headers\local_constants.h 
+	echo # define SYSTEM_LIBDIR $(SYSTEM_LIBDIR) >> Headers\local_constants.h 
+	echo /*@constant observer char *DEFAULT_LARCHPATH;@*/ >> Headers\local_constants.h 
+	echo # define DEFAULT_LARCHPATH $(DEFAULT_LARCHPATH) >> Headers\local_constants.h 
+	echo /*@constant observer char *DEFAULT_LCLIMPORTDIR;@*/ >> Headers\local_constants.h 
+	echo # define DEFAULT_LCLIMPORTDIR $(DEFAULT_LCLIMPORTDIR) >> Headers\local_constants.h 
+
+###
+### grammars
+###
+
+###
+### -p xx flag to bison renames yyparse ==> xxparse, xxlex ==> xxlex
+### this is probably NOT compatible with yacc.
+###
+
+signature.c : signature.c.der signature.y
+ifdef BISON
+	$(BISON) $(YFLAGS) -p lsl signature.y
+	$(CAT) bison.head signature.tab.c > signature.c
+	$(MV) Headers\signature_gen.h Headers\signature_gen.bak
+	$(CAT) bison.head signature.tab.h > Headers\signature_gen.h
+else
+	(CP) signature.c.der signature.c
+endif
+
+cgrammar.c : cgrammar.c.der cgrammar.y
+ifdef BISON
+	$(BISON) $(YFLAGS) cgrammar.y
+	$(CAT) bison.head cgrammar.tab.c > cgrammar.c
+	$(MV) Headers\cgrammar_tokens.h Headers\cgrammar_tokens.bak
+	$(CAT) bison.head cgrammar.tab.h > Headers\cgrammar_tokens.h
+else
+	$(CP) cgrammar.c.der cgrammar.c
+endif
+
+### llgrammar2.h is necessary so +singleinclude may be used
+
+llgrammar.c  : llgrammar.c.der llgrammar.y
+ifdef BISON
+	$(BISON) $(YFLAGS) -p yl llgrammar.y
+	$(CAT) bison.head llgrammar.tab.c > llgrammar.c
+	$(MV) Headers\llgrammar_gen2.h Headers\llgrammar_gen2.bak
+	$(CAT) bison.head llgrammar.tab.h > Headers\llgrammar_gen2.h
+	$(MV) Headers\llgrammar_gen.h Headers\llgrammar_gen.bak
+	$(CAT) bison.head llgrammar.tab.h > Headers\llgrammar_gen.h
+else
+	$(CP) llgrammar.c.der llgrammar.c
+endif
+
+cscanner.c : cscanner.c.der cscanner.l
+ifdef FLEX				
+	$(FLEX) $(LFLAGS) -olex.yy.c cscanner.l  
+	$(CAT) flex.head lex.yy.c > cscanner.c
+else
+	$(CP) cscanner.c.der cscanner.c
+endif
+
+###
+### header files dependant on grammars
+###
+
+Headers\signature2.h : signature.c
+Headers\cgrammar2.h : cgrammar.c
+Headers\llgrammar.h : llgrammar.c
+
+###
+### defaults
+###
+
+### Flags for checking a single file
+SINGLEFLAGS = +neverinclude -supcounts +partial -showsummary -load lclint.lcd
+
+.c$O:
+	$(CC) $(CPPFLAGS) -c $*.c 
+
+###
+### cleaning
+###
+### Standard entries to remove files from the directories
+###    up       --- remove .o files and grammar derivatives
+###    tidy     --- eliminate unwanted files
+###    clean    --- delete derived files, except for spec-derived files
+###    pristine --- delete all derived files
+###
+
+pristine: clean
+	-$(RM) -f *.lcs *.lslo
+
+clean: tidy
+	-$(RM) core lclint 
+	-$(RM) *.out *.output *.bib *.dvi *.idx *.log *$O *.toc
+	-$(RM) cgrammar.c cscanner.c
+
+tidy:
+	-$(RM) ,* .,* *.CKP *.BAK .emacs_[0-9]* core a.out *.*~
+
+up: 
+	-$(RM) cgrammar.c llgrammar.c signature.c cscanner.c 
+	-$(RM) *$O
+
+###
+### other flags are in .lclintrc file
+### 
+
+lint: 
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint
+
+
+
+

@@ -1,0 +1,92 @@
+################################################
+###
+### Generic system dependant Makefile
+### edit this file to build a new system
+###
+################################################
+
+### File Counts
+
+WC = wc
+LS = ls
+OFILES = $(LS) *.o | $(WC) -l
+SFILES = $(LS) *.c | $(WC) -l
+
+## on mamba
+#BISON     = /usr/local/bin/bison
+#FLEX      = /usr/local/bin/flex
+
+BISON = /usr/bin/bison
+FLEX = /usr/bin/flex
+
+# ${HOME}/bison-1.28/bin/bison
+
+
+###
+### Compiler and compiler flags
+###
+### NOTE: CC is set in top level Makefile
+###       
+
+CC              = /usr/local/bin/gcc -O3 -Wall
+CCOPT           = /usr/local/bin/gcc -O3
+# -O4 doesn't work with bison 1.25 
+
+###
+### CPPFLAGS also used by lclint --- it should only include -I, -D and
+### -U flags
+###
+
+CPPFLAGS     = -I$(HEADERDIR) -DUNIX -DNOSTDLIB=0 -DUGS=1
+### -DUGS=1 is needed for AIX (should be set by configure)
+
+### lex library
+
+LINKFLAGS     = -lfl
+
+
+ifeq ($(CC), gcc)
+  CFLAGS       = $(CPPFLAGS) -Wpointer-arith -Wcast-qual -Wcomment -Wswitch -Wunused -Wreturn-type -ansi -pedantic
+else
+  CFLAGS       = $(CPPFLAGS)
+endif
+
+DEBUGFLAGS = -DYYDEBUG=1 -DYYIMPURE=1 # don't change this
+
+### bison flags
+
+YFLAGS          = -v -t -d --debug
+
+###
+### controls lclint checking (uncomment this line to have
+### lclint check each source file before compiling)
+###
+### CHECK = TRUE
+###
+
+### SHELL           = /bin/csh
+
+LCLINT          = lclint
+
+HEADERDIR       = Headers
+
+### standard commands
+
+RM              = rm -f
+MV              = mv -f
+CP              = cp
+CAT             = cat
+
+MAKEDEPEND      = makedepend
+LASTBACKUP      = lastbackup
+VERSION_NUMBER  = lastversion
+
+
+###
+### Defaults (overrode by environment varialbles for local build)
+###
+
+SYSTEM_LIBDIR   = /usr/include
+DEFAULT_LARCHPATH = /usr/local/lclint-2.5m/lib
+DEFAULT_LCLIMPORTDIR = /usr/local/lclint-2.5m/imports
+
