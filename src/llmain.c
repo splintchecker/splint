@@ -641,8 +641,7 @@ int main (int argc, char *argv[])
   */
 
   {
-    cstring incval = cstring_copy 
-      (osd_getEnvironmentVariable (cstring_makeLiteralTemp (INCLUDE_VAR)));
+    cstring incval = cstring_copy (osd_getEnvironmentVariable (INCLUDEPATH_VAR));
     cstring oincval = incval;
 
     if (cstring_isDefined (incval))
@@ -657,7 +656,7 @@ int main (int argc, char *argv[])
 	while (cstring_isDefined (incval))
 	  {
 	    /*@access cstring@*/
-	    char *nextsep = strchr (incval, SEPCHAR);
+	    char *nextsep = strchr (incval, PATH_SEPARATOR);
 
 	    if (nextsep != NULL)
 	      {
@@ -678,7 +677,7 @@ int main (int argc, char *argv[])
 		    cppAddIncludeDir (dir);
 		  }
 
-		*nextsep = SEPCHAR;
+		*nextsep = PATH_SEPARATOR;
 		incval = cstring_fromChars (nextsep + 1);
 		cstring_free (dir);
 	      }
@@ -978,7 +977,7 @@ int main (int argc, char *argv[])
 			      g_localSpecPath = cstring_toCharsSafe
 				(message ("%s%h%s", 
 					  cstring_fromChars (g_localSpecPath), 
-					  SEPCHAR,
+					  PATH_SEPARATOR,
 					  dir));
 			      /*@=mustfree@*/
 			      /*@switchbreak@*/ break;
@@ -2020,13 +2019,18 @@ describeVars (void)
   llmsglit ("   --- directory containing lcl standard library files "
 	    "(import with < ... >)");;
 
-  {
-    cstring dirs = context_getString (FLG_SYSTEMDIRS);
-    llmsg (message 
-	   ("systemdirs = %s (set by -systemdirs)",
-	    dirs));
+  llmsg (message 
+	 ("include path = %q (set by environment variable %s and -I flags)",
+	  cppReader_getIncludePath (), INCLUDEPATH_VAR));
 
-  }
+  llmsglit ("   --- path used to find #include'd files");
+
+  llmsg (message 
+	 ("systemdirs = %s (set by -systemdirs or envirnoment variable %s)", /*@i413223@*/
+	  context_getString (FLG_SYSTEMDIRS),
+	  INCLUDEPATH_VAR));
+
+  llmsglit ("   --- if file is found on this path, it is treated as a system file for error reporting");
 }
 
 void

@@ -391,10 +391,10 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
       return FALSE;
     }
 
-  *dir = (**current_dir == SEPCHAR ? *current_dir + 1 : *current_dir);
+  *dir = (**current_dir == PATH_SEPARATOR ? *current_dir + 1 : *current_dir);
   
   /* Find next ':' or end of string */
-  for (tchar = *dir; *tchar != '\0' && *tchar != SEPCHAR; tchar++)
+  for (tchar = *dir; *tchar != '\0' && *tchar != PATH_SEPARATOR; tchar++)
     {
       ;
     }

@@ -14,8 +14,8 @@
 # define S_IFMT (unsigned short)0xFFFF
 # endif
 
-/*@constant observer char *INCLUDE_VAR@*/
-# define INCLUDE_VAR    "include"
+/*@constant observer cstring INCLUDEPATH_VAR@*/
+# define INCLUDEPATH_VAR    cstring_makeLiteralTemp ("CPATH")
 
 #if defined (VMS)
 /* Connection string inserted between directory and filename to make a  */
@@ -26,8 +26,8 @@
 
 
 /* Directory separator character for search list. */
-/*@constant static char SEPCHAR; @*/
-# define SEPCHAR ':'
+/*@constant static char PATH_SEPARATOR; @*/
+# define PATH_SEPARATOR ':'
 
 # elif defined(MSDOS) || defined(OS2) || defined(WIN32)
 
@@ -47,8 +47,8 @@
 
 /* Directory separator character for search list. */
 
-/*@constant char SEPCHAR; @*/
-# define SEPCHAR ';'
+/*@constant char PATH_SEPARATOR; @*/
+# define PATH_SEPARATOR ';'
 
 #else
 /* Connection string inserted between directory and filename to make a  */
@@ -61,8 +61,8 @@
 # define CONNECTCHAR	'/'
 
 /* Directory separator character for search list. */
-/*@constant char SEPCHAR; @*/
-# define SEPCHAR ':'
+/*@constant char PATH_SEPARATOR; @*/
+# define PATH_SEPARATOR ':'
 
 #endif
 

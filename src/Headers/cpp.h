@@ -41,6 +41,8 @@ enum cpp_token {
 typedef struct cppReader cppReader;
 extern cppReader g_cppState;
 
+extern /*@only@*/ cstring cppReader_getIncludePath (void) ;
+
 extern int cppProcess (/*@dependent@*/ cstring p_infile,
 		       /*@dependent@*/ cstring p_outfile);
 extern void cppAddIncludeDir (cstring);

@@ -83,7 +83,7 @@ constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr
 
 /*@only@*/ constraintExpr constraintExpr_doFixResult (/*@only@*/  constraintExpr p_expr, /*@observer@*/ exprNode p_fcnCall);
 
-bool constraintExpr_isLit (constraintExpr p_expr);
+/*@falsenull@*/ bool constraintExpr_isLit (constraintExpr p_expr) /*@*/ ;
 
 /*@only@*/ constraintExpr constraintExpr_makeAddExpr (/*@only@*/ constraintExpr p_expr, /*@only@*/ constraintExpr p_addent);
 
@@ -104,7 +104,7 @@ constraintExpr constraintExpr_propagateConstants (/*@only@*/ constraintExpr p_ex
 						/*@out@*/ bool * p_propagate,
 						  /*@out@*/ int *p_literal);
 
-bool constraintExpr_isBinaryExpr (/*@observer@*/ /*@temp@*/ constraintExpr p_c);
+/*@falsenull@*/ bool constraintExpr_isBinaryExpr (/*@observer@*/ /*@temp@*/ constraintExpr p_c) /*@*/ ;
 
 extern void  constraintExpr_dump (/*@observer@*/ /*@temp@*/ constraintExpr p_expr,  FILE *p_f);
 
