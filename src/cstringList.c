@@ -299,7 +299,7 @@ int cstringList_getIndex (cstringList s, cstring key)
       index++;
     } end_cstringList_elements ;
 
-  BADBRANCH;
+  BADBRANCHRET (0);
 }
 
 bool cstringList_contains (cstringList s, cstring key)

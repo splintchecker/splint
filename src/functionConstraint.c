@@ -191,6 +191,8 @@ extern functionConstraint functionConstraint_copy (functionConstraint node)
     {
       return functionConstraint_undefined;
     }
+
+  BADBRANCHRET (functionConstraint_undefined);
 }
 
 extern void functionConstraint_free (/*@only@*/ functionConstraint node) 

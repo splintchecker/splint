@@ -130,7 +130,7 @@ cstring flagMarker_unparse (flagMarker c)
 		       flagcode_unparse (c->code)));
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
   
 void flagMarker_free (/*@only@*/ flagMarker c)

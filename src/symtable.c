@@ -215,7 +215,7 @@ static /*@observer@*/ ltoken idTableEntry_getId (idTableEntry *x)
       return (x->info.var->id);
     }
 
-  BADBRANCH;
+  BADBRANCHRET (ltoken_undefined);
 }
 
 /*@only@*/ symtable

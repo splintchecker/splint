@@ -590,6 +590,7 @@ sRef_hasExpInfoLoc (sRef s)
 	  && (s->expinfo != NULL) && (fileloc_isDefined (s->expinfo->loc)));
 }
 
+# if 0
 static /*@observer@*/ /*@unused@*/ stateInfo sRef_getInfo (sRef s, cstring key)
 {
   stateValue sv;
@@ -607,7 +608,7 @@ static /*@observer@*/ /*@unused@*/ stateInfo sRef_getInfo (sRef s, cstring key)
   
   return stateInfo_undefined;
 }
-
+# endif
 
 static bool
 sRef_hasNullInfoLoc (sRef s)

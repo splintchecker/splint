@@ -171,7 +171,7 @@ cstring annotationInfo_dump (annotationInfo ainfo)
       return ainfo;
     }
 
-  BADBRANCH;
+  BADBRANCHRET (annotationInfo_undefined);
 }
 
 void annotationInfo_showContextRefError (annotationInfo a, sRef sr)

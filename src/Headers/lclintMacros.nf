@@ -50,8 +50,16 @@
   /*@notreached@*/ BADBRANCHCONT
 
 /*@notfunction@*/
+# define BADBRANCHNULL \
+  /*@notreached@*/ BADBRANCHCONT ; /*@notreached@*/ /*@-mustfree@*/ /*@-globstate@*/ return NULL; /*@=mustfree@*/ /*@=globstate@*/
+
+/*@notfunction@*/
 # define BADBRANCHCONT \
   do { llassertprint (FALSE, ("Bad branch taken!")); } while (FALSE) 
+
+/*@notfunction@*/
+# define BADBRANCHRET(r) \
+  /*@notreached@*/ BADBRANCHCONT ; /*@notreached@*/ /*@-mustfree@*/ /*@-globstate@*/ return (r); /*@=mustfree@*/ /*@=globstate@*/
 
 /*@notfunction@*/
 # define BADDEFAULT \

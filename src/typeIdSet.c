@@ -82,6 +82,7 @@ void typeIdSet_dumpTable (FILE *fout)
     }
 }
 
+# if 0
 static /*@unused@*/ void tistable_printOut (void)
 {
   int i;
@@ -98,6 +99,7 @@ static /*@unused@*/ void tistable_printOut (void)
       cstring_free (s);
     }
 }
+# endif
 
 void typeIdSet_loadTable (FILE *fin)
 {

@@ -43,7 +43,7 @@ static /*@observer@*/ cstring mtContextKind_unparse (mtContextKind ck)
     case MTC_NULL: return cstring_makeLiteralTemp ("null");
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
  
 static mtContextNode mtContextNode_create (mtContextKind context, ctype ct) 

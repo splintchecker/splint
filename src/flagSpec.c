@@ -194,4 +194,6 @@ flagSpec_getFirstOn (flagSpec fs, fileloc loc)
     {
       BADBRANCH;
     }
+
+  BADBRANCHRET (INVALID_FLAG); 
 }

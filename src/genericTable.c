@@ -68,7 +68,8 @@ int genericTable_size (genericTable h)
   }
 }
 
-static cstring
+# if 0
+static /*@unused@*/ cstring
 ghbucket_unparse (ghbucket h)
 {
   cstring s = cstring_undefined;
@@ -85,6 +86,7 @@ ghbucket_unparse (ghbucket h)
 
   return s;
 }
+# endif
 
 static ghbucket ghbucket_single (/*@keep@*/ ghentry e)
 {
@@ -282,6 +284,7 @@ genericTable_create (int size)
   return h;
 }
 
+# if 0
 /*@-mustfree@*/
 static /*@unused@*/ void
 genericTable_print (genericTable h)
@@ -308,6 +311,7 @@ genericTable_print (genericTable h)
   }
 }
 /*@=mustfree@*/
+# endif
 
 /*@only@*/ cstring
 genericTable_stats (genericTable h)

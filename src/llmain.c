@@ -1607,6 +1607,7 @@ int main (int argc, char *argv[])
     }
 
   llexit (expsuccess ? LLSUCCESS : LLFAILURE);
+  BADBRANCHRET (LLFAILURE);
 }
 
 # ifdef WIN32

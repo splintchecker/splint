@@ -137,7 +137,7 @@ mtDeclarationPiece mtDeclarationPiece_createLosers (mtLoseReferenceList node) /*
       return cstring_makeLiteral ("Dead Piece");
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
 
 extern bool mtDeclarationPiece_matchKind (mtDeclarationPiece p, mtPieceKind kind) /*@*/

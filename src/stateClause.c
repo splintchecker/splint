@@ -287,7 +287,7 @@ sRefMod stateClause_getEntryFunction (stateClause cl)
       return NULL;
     }
 
-  BADBRANCH;
+  BADBRANCHNULL;
 }
 
 sRefMod stateClause_getEffectFunction (stateClause cl)
@@ -337,7 +337,7 @@ sRefMod stateClause_getEffectFunction (stateClause cl)
       return NULL;
     }
 
-  BADBRANCH;
+  BADBRANCHNULL;
 }
 
 sRefMod stateClause_getReturnEffectFunction (stateClause cl)
@@ -369,7 +369,7 @@ sRefMod stateClause_getReturnEffectFunction (stateClause cl)
       return NULL;
     }
 
-  BADBRANCH;
+  BADBRANCHNULL;
 }
 
 static flagcode stateClause_qualErrorCode (stateClause cl)
@@ -392,6 +392,8 @@ static flagcode stateClause_qualErrorCode (stateClause cl)
   } else {
     BADBRANCH;
   }
+
+  BADBRANCHRET (INVALID_FLAG);
 }
 
 flagcode stateClause_preErrorCode (stateClause cl)
@@ -413,7 +415,7 @@ flagcode stateClause_preErrorCode (stateClause cl)
       return stateClause_qualErrorCode (cl);
     }
 
-  BADBRANCH;
+  BADBRANCHRET (INVALID_FLAG);
 }
 
 static /*@observer@*/ cstring stateClause_qualErrorString (stateClause cl, sRef sr)
@@ -446,7 +448,7 @@ static /*@observer@*/ cstring stateClause_qualErrorString (stateClause cl, sRef 
     BADBRANCH;
   }
   
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
 
 cstring stateClause_preErrorString (stateClause cl, sRef sr)
@@ -512,7 +514,7 @@ flagcode stateClause_postErrorCode (stateClause cl)
       return stateClause_qualErrorCode (cl);
     }
 
-  BADBRANCH;
+  BADBRANCHRET (INVALID_FLAG);
 }
 
 cstring stateClause_postErrorString (stateClause cl, sRef sr)
@@ -671,6 +673,8 @@ stateClause stateClause_createPlain (lltok tok, sRefSet s)
       sRefSet_free (s);
       BADBRANCH;
     }
+
+  BADBRANCHRET (stateClause_createUses (sRefSet_undefined));
 }
 
 stateClause stateClause_createAllocates (sRefSet s)
@@ -734,6 +738,7 @@ static sRefModVal stateClause_getStateFunction (stateClause cl)
       BADBRANCH;
     }
   /*@=enumint@*/
+  BADBRANCHRET (NULL);
 }
 
 int stateClause_getStateParameter (stateClause cl)
@@ -792,6 +797,7 @@ int stateClause_getStateParameter (stateClause cl)
 
   /*@=enumint@*/
   /*@=relaxtypes@*/
+  BADBRANCHRET (0);
 }
 
 sRefModVal stateClause_getEnsuresFunction (stateClause cl)

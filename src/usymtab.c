@@ -112,10 +112,15 @@ static bool usymtab_isDefinitelyNullAux (sRef p_s) /*@globals utab@*/ ;
 static /*@only@*/ cstring usymtab_unparseStackTab (usymtab p_t);
 static /*@exposed@*/ /*@dependent@*/ uentry 
   usymtab_getRefTab (/*@notnull@*/ usymtab p_u, int p_level, usymId p_index);
+
+# ifdef __LCLINT__
+/* These are not used anymore... */
 static /*@unused@*/ /*@only@*/ cstring 
   usymtab_unparseLocalAux (/*@notnull@*/ usymtab p_s);
 static /*@unused@*/ /*@only@*/ cstring 
   usymtab_unparseLocalList (/*@notnull@*/ usymtab p_s);
+# endif
+
 static /*@only@*/ cstring usymtab_typeName (/*@notnull@*/ usymtab p_t);
 static void usymtab_handleParams (void)
    /*@globals utab, globtab, filetab@*/ 
@@ -1574,6 +1579,7 @@ usymtab_getTypeEntryName (usymId uid)
   return (uentry_getName (ue));
 }
 
+# if 0
 /*@unused@*/ static void
 usymtab_rehash (/*@notnull@*/ usymtab s)
 {
@@ -1591,6 +1597,7 @@ usymtab_rehash (/*@notnull@*/ usymtab s)
       cstringTable_insert (s->htable, cstring_copy (uentry_rawName (s->entries[i])), i);
     }
 }
+# endif
 
 /*
 ** superficial copy of usymtab
@@ -5857,6 +5864,7 @@ usymtab_printComplete ()
   mstring_free (ind);
 }
 
+# ifdef __LCLINT__
 static /*@only@*/ cstring /*@unused@*/ 
 usymtab_unparseLocalAux (/*@notnull@*/ usymtab s)
 {
@@ -5899,6 +5907,7 @@ usymtab_unparseLocalList (/*@notnull@*/ usymtab s)
 
   return (c);
 }
+# endif
 
 void
 usymtab_printLocal (void)

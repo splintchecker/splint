@@ -157,7 +157,10 @@ static bn_mstring mode_names[] =
 static cstring describeFlagCode (flagcode p_flag) /*@*/ ;
 static cstringSList sortedFlags (void) /*@*/ ;
 static /*@observer@*/ cstring categoryName (flagkind p_kind) /*@*/ ;
+
+# if 0
 static /*@unused@*/ cstring listModes (void) /*@*/ ;
+# endif
 
 bool flagcode_isSpecialFlag (flagcode f)
 {
@@ -1072,6 +1075,7 @@ describeModes ()
   return (s);
 }
 
+# if 0
 static /*@unused@*/ cstring
 listModes (void)
 {
@@ -1093,6 +1097,7 @@ listModes (void)
 
   return s;
 }
+# endif
 
 bool
 isMode (cstring s)

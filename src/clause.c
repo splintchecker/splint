@@ -73,7 +73,7 @@ clause_nameTaken (clause cl)
     case FALSEEXITCLAUSE: return (cstring_makeLiteralTemp ("in falseexit"));
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
 
 cstring
@@ -97,7 +97,7 @@ clause_nameAlternate (clause cl)
     case FALSEEXITCLAUSE: return (cstring_makeLiteralTemp ("in falseexit"));
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
 
 cstring clause_nameFlip (clause cl, bool flip)

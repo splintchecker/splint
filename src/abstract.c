@@ -6198,6 +6198,8 @@ cstring interfaceNode_unparse (interfaceNode x)
     {
       return (cstring_makeLiteral ("<interface node undefined>"));
     }
+
+  BADBRANCHRET (cstring_undefined);
 }
 
 void interfaceNode_free (/*@null@*/ /*@only@*/ interfaceNode x)

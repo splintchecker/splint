@@ -104,7 +104,7 @@ extern functionClause functionClause_createWarn (warnClause node) /*@*/
       BADBRANCH;
     }
 
-  BADBRANCH;
+  BADBRANCHRET (cstring_undefined);
 }
 
 extern bool functionClause_matchKind (functionClause p, functionClauseKind kind) /*@*/
