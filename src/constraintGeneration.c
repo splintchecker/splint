@@ -2212,7 +2212,7 @@ we'll include it in a production release when its stable...
       rt =  ctype_realType (ct);
       
       if (ctype_isStruct (rt))
-	TPRINTF((message("Found structure %s", exprNode_unparse(expr))
+	DPRINTF((message("Found structure %s", exprNode_unparse(expr))
 		 ));
       if (hasInvariants(ct))
 	{
@@ -2221,13 +2221,13 @@ we'll include it in a production release when its stable...
 	  invars = getInvariants(ct);
 
 
-	  TPRINTF((message ("findStructs has invariants %s ", constraintList_unparse (invars))
+	  DPRINTF((message ("findStructs has invariants %s ", constraintList_unparse (invars))
 		   ));
 	  
 	  invars = constraintList_doSRefFixStructConstraint(invars, exprNode_getSref(expr), ct);
 
 	  
-	  TPRINTF((message ("findStructs finded invariants to be %s ", constraintList_unparse (invars))
+	  DPRINTF((message ("findStructs finded invariants to be %s ", constraintList_unparse (invars))
 		   ));
 	}
     }
@@ -2266,16 +2266,16 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
       uentryList_elements (arglist, el)
 	{
 	  sRef s;
-	  TPRINTF((message("setImplicitfcnConstraints doing: %s", uentry_unparse(el) ) ));
+	  DPRINTF((message("setImplicitfcnConstraints doing: %s", uentry_unparse(el) ) ));
 	  
 	  s = uentry_getSref(el);
 	  if (sRef_isReference (s) )
 	    {
-	      TPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	      DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
 	    }
 	  else
 	    {
-	      TPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	      DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
 	    }
 	  //drl 4/26/01
 	  //chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 

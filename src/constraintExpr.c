@@ -1431,9 +1431,9 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 	  BADEXIT;
 	}
 
-      /* slight Kludge to hanlde var [] = { , , };
-      ** type syntax  I don't think this is sounds but it should be good
-      ** enough.  The C stanrad is very confusing about initialization
+      /* slight Kludge to handle var [] = { , , };
+      ** type syntax  I don't think this is sound but it should be good
+      ** enough.  The C standard is very confusing about initialization
       ** -- DRL 7/25/01
       */
       
@@ -1444,10 +1444,14 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 
 	  len = constraintTerm_getInitBlockLength(cterm);
 
+	  /* -- drl 12/08/2003 : decrementing to fix off by one error */
+
+	  len--;
+
 	  temp = constraintExpr_makeIntLiteral (len );
 	  
 	  constraintExpr_free(c);
-	  DPRINTF(( message("Changed too %q", constraintExpr_print(temp)
+	  DPRINTF(( message("Changed to %q", constraintExpr_print(temp)
 			    ) ));
 	  constraintExpr_free(exp);
 	  return temp;

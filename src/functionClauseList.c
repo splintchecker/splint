@@ -203,7 +203,7 @@ functionClauseList_setImplicitConstraints (/*@returned@*/ functionClauseList s)
 		  constraintList implCons = getImplicitFcnConstraints ();
 		  
 		  DPRINTF ((message ("functionClauseList_ImplicitConstraints adding the implict constraints: %s to %s",
-		  		     constraintList_print(implCons), constraintList_print (con->constraint.buffer))));
+		  		     constraintList_unparse(implCons), constraintList_unparse (con->constraint.buffer))));
 		  
 		  functionConstraint_addBufferConstraints (con, constraintList_copy (implCons) );
 

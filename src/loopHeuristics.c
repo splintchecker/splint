@@ -200,9 +200,9 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
   ltCon =  getLessThanConstraints (test->trueEnsuresConstraints);
   incCon = getIncConstraints (inc->ensuresConstraints);
   
-  DPRINTF (( message ("getForTimes: ltCon: %s from %s", constraintList_print (ltCon), constraintList_print (test->trueEnsuresConstraints) ) ));
+  DPRINTF (( message ("getForTimes: ltCon: %s from %s", constraintList_unparse (ltCon), constraintList_unparse (test->trueEnsuresConstraints) ) ));
   
-  DPRINTF (( message ("getForTimes: incCon: %s from %s", constraintList_print (incCon), constraintList_print (inc->ensuresConstraints) ) ));
+  DPRINTF (( message ("getForTimes: incCon: %s from %s", constraintList_unparse (incCon), constraintList_unparse (inc->ensuresConstraints) ) ));
    
   constraintList_elements (ltCon, el) 
     {
