@@ -69,6 +69,7 @@ constraintList_grow (constraintList s)
 constraintList 
 constraintList_add (constraintList s, constraint el)
 {
+  el = constraint_simplify (el);
   if (resolve (el, s) )
     return s;
   
@@ -114,7 +115,11 @@ constraintList_print (constraintList s) /*@*/
 
       if (current != NULL)
 	{
-	  cstring temp1 = constraint_print(current);
+	  cstring temp1;
+	    if ( context_getFlag (FLG_ORCONSTRAINT) )
+	      temp1 = constraint_printOr(current);
+	    else
+	      temp1 = constraint_print(current);
 	  type = message ("%q %q\n", type, temp1 );
 	}
 

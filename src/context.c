@@ -161,7 +161,7 @@ static void context_exitClauseSimp (void)  /*@modifies gc@*/ ;
 static void context_exitClausePlain (void) /*@modifies gc@*/ ;
 static void context_setJustPopped (void) /*@modifies gc.justpopped@*/ ;
 static void context_setValue (flagcode p_flag, int p_val) /*@modifies gc.flags@*/ ;
-static void context_setFlag (flagcode p_f, bool p_b)
+/*drl fix static */ void context_setFlag (flagcode p_f, bool p_b)
   /*@modifies gc.flags@*/ ;
 
 static void
@@ -3366,7 +3366,7 @@ context_restoreFlag (flagcode f)
 
   }
 
-static void
+/*drl7x fix this static */ void
 context_setFlag (flagcode f, bool b)
 {
   context_setFlagAux (f, b, FALSE, FALSE);

@@ -94,6 +94,20 @@ constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconsta
   return ret;
 }
 
+constraint constraint_same (constraint c1, constraint c2)
+{
+  
+  if (c1->ar != c2->ar)
+    return FALSE;
+
+  if (!constraintExpr_similar (c1->lexpr, c2->lexpr) )
+    return FALSE;
+
+  if (!constraintExpr_similar (c1->expr, c2->expr) )
+    return FALSE;
+
+  return TRUE;
+}
 
 constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r)     
 {
@@ -119,6 +133,11 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
   ret->expr = constraintExpr_copy (r);
 
   ret->post = TRUE;
+
+  ret->orig = constraint_copy(ret);
+
+  ret = constraint_simplify (ret);
+  
   //  ret->orig = ret;
   DPRINTF(("GENERATED CONSTRAINT:"));
   DPRINTF( (message ("%s", constraint_print(ret) ) ) );
@@ -128,6 +147,9 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
 constraint constraint_copy (constraint c)
 {
   constraint ret;
+
+  llassert (c);
+  
   ret = constraint_makeNew();
   ret->lexpr = constraintExpr_copy (c->lexpr);
   ret->ar = c->ar;
@@ -140,6 +162,12 @@ constraint constraint_copy (constraint c)
     ret->orig = constraint_copy (c->orig);
   else
     ret->orig = NULL;
+
+  if (c->or != NULL)
+    ret->or = constraint_copy (c->or);
+  else
+    ret->or = NULL;
+  
   return ret;
 }
 
@@ -156,6 +184,12 @@ void constraint_overWrite (constraint c1, constraint c2)
     c1->orig = constraint_copy (c2->orig);
   else
     c1->orig = NULL;
+
+  if (c2->or != NULL)
+    c1->or = constraint_copy (c2->or);
+  else
+    c1->or = NULL;
+  
   c1->generatingExpr = exprNode_fakeCopy (c2->generatingExpr );
 }
 
@@ -175,6 +209,7 @@ bool constraint_resolve (/*@unused@*/ constraint c)
   ret->ar = LT;
   ret->post = FALSE;
   ret->orig = NULL;
+  ret->or = NULL;
   ret->generatingExpr = NULL;
   return ret;
 }
@@ -608,6 +643,29 @@ cstring  constraint_print (constraint c) /*@*/
 		constraintExpr_print(c->expr)
 		);
   return st;
+}
+
+cstring  constraint_printOr (constraint c) /*@*/
+{
+  cstring ret;
+  constraint temp;
+
+  ret = cstring_undefined;
+  temp = c;
+
+  ret = cstring_concat (ret, constraint_print(temp) );
+
+  temp = temp->or;
+  
+  while (temp)
+    {
+      ret = cstring_concat (ret, cstring_makeLiteral (" OR ") );
+      ret = cstring_concat (ret, constraint_print(temp) );
+      temp = temp->or;
+    }
+
+  return ret;
+
 }
 
 /*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,

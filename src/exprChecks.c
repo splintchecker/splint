@@ -903,7 +903,8 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
  constraintList c2, fix;
 
  //  return;
-  
+
+ //  context_setFlag(FLG_ORCONSTRAINT, TRUE);
   exprNode_generateConstraints (body);
   
   c =   uentry_getFcnPreconditions (ue);
@@ -923,8 +924,14 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
        c2  =  constraintList_copy (c);
        fix =  constraintList_makeFixedArrayConstraints (body->uses);
        c2  =  reflectChanges (c2, constraintList_copy(fix) );
-       
-       t = reflectChanges (body->requiresConstraints, constraintList_copy (c2) );
+       if ( context_getFlag (FLG_ORCONSTRAINT) )
+	 {
+	   t = reflectChangesOr (body->requiresConstraints, constraintList_copy (c2) );
+	 }
+       else
+	 {
+	   t = reflectChanges (body->requiresConstraints, constraintList_copy (c2) );
+	 }
        body->requiresConstraints = constraintList_copy (t);
        
        DPRINTF ( (message ("The body has the required constraints: %s", constraintList_printDetailed (t) ) ) );

@@ -2823,6 +2823,15 @@ NULL, NULL,
   ",  ",
   0, 0
 },
+    /*drl7x added 4/29/01 */    
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "orconstraint",
+  FLG_ORCONSTRAINT,
+  "Use limited OR expressions to resolve constraints",
+  ",  ",
+  0, 0
+},
     
 {
   FK_NT, FK_MEMORY, modeFlag,

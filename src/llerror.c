@@ -1,3 +1,4 @@
+#include <assert.h> /*drl take this out*/
 /*
 ** LCLint - annotation-assisted static program checker
 ** Copyright (C) 1994-2000 University of Virginia,
@@ -1200,6 +1201,7 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   (void) fflush (stderr);
   inbug = FALSE;
+  assert(FALSE); /*drl take this out*/
 }
 
 # ifndef NOLCL

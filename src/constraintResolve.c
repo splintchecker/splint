@@ -21,6 +21,9 @@
 
 
 
+constraintList reflectChangesOr (constraintList pre2, constraintList post1);
+
+constraint  inequalitySubstituteUnsound  (constraint c, constraintList p);
 
 constraintList reflectChanges (constraintList pre2, constraintList post1);
 constraint substitute (constraint c, constraintList p);
@@ -47,14 +50,27 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
   constraintList temp;
 
   //ret = constraintList_new();
+
+  llassert(list1);
+  llassert(list2);
+
+  DPRINTF(( message ("constraintList_mergeEnsures: list1 %s list2 %s",
+		     constraintList_print(list1), constraintList_print(list2)
+		     )));
   
-  ret = reflectChangesEnsures (list1, list2);
-  ret = constraintList_fixConflicts (ret, list2);
+  ret = constraintList_fixConflicts (list1, list2);
+  ret = reflectChangesEnsures (ret, list2);
   ret = constraintList_subsumeEnsures (ret, list2);
   list2 = constraintList_subsumeEnsures (list2, ret);
   temp = constraintList_copy(list2);
 
   temp = constraintList_addList (temp, ret);
+
+  DPRINTF(( message ("constraintList_mergeEnsures: returning %s ",
+		     constraintList_print(temp) )
+		     ));
+  
+
   return temp;
   //ret = constraintList_addList (ret, list2);
   //return ret;
@@ -82,25 +98,6 @@ constraintList constraintList_mergeRequires (constraintList list1, constraintLis
 
   return ret;
 }
-					    
-/* constraintList constraintList_resolveRequires (constraintList requires, constraintList ensures) */
-/* { */
-  
-/*   constraintList ret; */
-/*   constraintList temp; */
-/*   ret = constraintList_new(); */
-  
-/*   ret = reflectChangesEnsures (list1, list2); */
-/*   ret = constraintList_fixConflicts (ret, list2); */
-/*   ret = constraintList_subsumeEnsures (ret, list2); */
-/*   list2 = constraintList_subsumeEnsures (list2, ret); */
-/*   temp = constraintList_copy(list2); */
-
-/*   temp = constraintList_addList (temp, ret); */
-/*   return temp; */
-/*   //ret = constraintList_addList (ret, list2); */
-/*   //return ret; */
-/* } */
 
 void checkArgumentList (exprNode temp, exprNodeList arglist, fileloc sequencePoint)
 {
@@ -216,9 +213,12 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   parent->ensuresConstraints = constraintList_new();
 
   parent->requiresConstraints = constraintList_copy (child1->requiresConstraints);
-  
-  temp = reflectChanges (child2->requiresConstraints, child1->ensuresConstraints);
 
+  if ( context_getFlag (FLG_ORCONSTRAINT) )
+    temp = reflectChangesOr (child2->requiresConstraints, child1->ensuresConstraints);
+  else
+    temp = reflectChanges (child2->requiresConstraints, child1->ensuresConstraints);
+  
   parent->requiresConstraints = constraintList_mergeRequires (parent->requiresConstraints, temp);
 
   parent->ensuresConstraints = constraintList_mergeEnsures(child1->ensuresConstraints,
@@ -255,7 +255,8 @@ constraintList constraintList_subsumeEnsures (constraintList list1, constraintLi
     return ret;
 }
 
-/* tries to resolve constraints in list pr2 using post1 */
+
+/* tries to resolve constraints in list pre2 using post1 */
 constraintList reflectChanges (constraintList pre2, constraintList post1)
 {
   
@@ -277,9 +278,14 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
 	      // the inequality substitution may cause us to lose information
 	      //so we don't want to store the result but we do it anyway
 	      temp2 = constraint_copy (temp);
-	      temp2 = inequalitySubstitute (temp, post1);
-	      if (!resolve (temp2, post1) )
-		  ret = constraintList_add (ret, temp2);
+	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
+	         temp2 = inequalitySubstitute (temp, post1); 
+		      if (!resolve (temp2, post1) )
+			{
+			  temp2 = inequalitySubstituteUnsound (temp2, post1); 
+			  if (!resolve (temp2, post1) )
+			      ret = constraintList_add (ret, temp2);
+			}
 	    }
 	}
     } end_constraintList_elements;
@@ -289,6 +295,136 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
 }
 
 
+constraint constraint_addOr (constraint orig, constraint or)
+{
+  constraint c;
+  c = orig;
+
+  DPRINTF((message("constraint_addor: oring %s onto %s", constraint_printOr(or), constraint_printOr(orig) ) ));
+  
+  while (c->or != NULL)
+    {
+      c = c->or;
+    }
+  c->or = constraint_copy(or);
+
+  DPRINTF((message("constraint_addor: returning %s",constraint_printOr(orig) ) ));
+  
+  return orig;
+}
+
+
+bool resolveOr (constraint c, constraintList list)
+{
+  constraint temp;
+
+  DPRINTF(( message("resolveOr: constraint %s and list %s", constraint_printOr(c), constraintList_print(list) ) ));
+  temp = c;
+
+  do
+    {
+      if (resolve (temp, list) )
+	return TRUE;
+      temp = temp->or;
+    }
+  while (temp);
+
+  return FALSE;
+}
+
+
+constraint doResolve (constraint c, constraintList post1, bool * resolved)
+{
+  constraint temp;
+  
+ if (!resolveOr (c, post1) )
+	{
+	  temp = substitute (c, post1);
+	  if (!resolveOr (temp, post1) )
+	    {
+	      // try inequality substitution
+	      constraint temp2;
+	      
+	      // the inequality substitution may cause us to lose information
+	      //so we don't want to store the result but we do it anyway
+	      temp2 = constraint_copy (c);
+	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
+	      temp2 = inequalitySubstitute (temp2, post1); 
+		      if (!resolveOr (temp2, post1) )
+			{
+			  temp2 = inequalitySubstituteUnsound (temp2, post1); 
+			  if (!resolveOr (temp2, post1) )
+			    {
+			      if (!constraint_same (temp, temp2) )
+				temp = constraint_addOr (temp, temp2);
+			      *resolved = FALSE;
+			      return temp;
+			    }
+			}
+	    }
+	}
+
+ *resolved = TRUE;
+ return NULL;
+
+
+
+}
+
+constraint doResolveOr (constraint c, constraintList post1, bool * resolved)
+{
+  constraint ret;
+  constraint next;
+  constraint curr;
+  
+  *resolved = FALSE;
+  ret = constraint_copy(c);
+  next = ret->or;
+  ret->or = NULL;
+
+  ret = doResolve (ret, post1, resolved);
+  while (next)
+    {
+      curr = next;
+      next = curr->or;
+      curr->or = NULL;
+
+      curr = doResolve (curr, post1, resolved);
+      if (*resolved)
+	return NULL;
+            
+      ret = constraint_addOr (ret, curr);
+    }
+  
+  return ret;
+}
+
+
+
+
+
+/* tries to resolve constraints in list pr2 using post1 */
+constraintList reflectChangesOr (constraintList pre2, constraintList post1)
+{
+  bool resolved;
+  constraintList ret;
+  constraint temp;
+  ret = constraintList_new();
+  DPRINTF((message ("reflectChangesOr: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
+  
+  constraintList_elements (pre2, el)
+    {
+      temp = doResolveOr (el, post1, &resolved);
+
+      if (!resolved)
+	{
+	  ret = constraintList_add(ret, temp);
+	}
+    } end_constraintList_elements;
+
+    DPRINTF((message ("reflectChangesOr: returning %s", constraintList_print(ret) ) ) );
+    return ret;
+}
 
 constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
 {  
@@ -349,8 +485,8 @@ void constraint_fixConflict (constraint good, constraint conflicting)
 
 bool conflict (constraint c, constraintList list)
 {
-  
-   constraintList_elements (list, el)
+
+  constraintList_elements (list, el)
     {
       if ( constraint_conflict(el, c) )
 	{
@@ -360,16 +496,16 @@ bool conflict (constraint c, constraintList list)
     } end_constraintList_elements;
 
     return FALSE;
-  
 
 }
 
 //check if constraint in list1 and conflict with constraints in List2.  If so we
-//remove form list1 and (optionally) change list2.
-constraintList constraintList_fixConflicts (constraintList list1, constraintList list2)
+//remove form list1 and change list2.
+constraintList constraintList_fixConflicts (/*@returned@*/constraintList list1, constraintList list2)
 {
   constraintList ret;
   ret = constraintList_new();
+  llassert(list1);
   constraintList_elements (list1, el)
     {
       if (! conflict (el, list2) )
@@ -400,7 +536,7 @@ bool resolve (constraint c, constraintList p)
 }
 
 
-/*returns true if cosntraint post satifies cosntriant pre */
+/*returns true if constraint post satifies cosntriant pre */
 bool satifies (constraint pre, constraint post)
 {
   if (constraint_isAlwaysTrue (pre)  )
@@ -447,6 +583,8 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
   return FALSE;	  
 }
 
+/* We look for constraint which are tautologies */
+
 bool constraint_isAlwaysTrue (constraint c)
 {
   constraintExpr l, r;
@@ -455,6 +593,8 @@ bool constraint_isAlwaysTrue (constraint c)
   
   l = c->lexpr;
   r = c->expr;
+
+  DPRINTF(( message("constraint_IsAlwaysTrue:examining %s", constraint_print(c) ) ));
     
   if (constraintExpr_canGetValue(l) && constraintExpr_canGetValue(r) )
     {
@@ -497,43 +637,40 @@ bool constraint_isAlwaysTrue (constraint c)
 	}
     }
 
+  return FALSE;
   l = constraintExpr_copy (c->lexpr);
   r = constraintExpr_copy (c->expr);
 
   //  l = constraintExpr_propagateConstants (l, &lHasConstant, &lConstant);
   r = constraintExpr_propagateConstants (r, &rHasConstant, &rConstant);
 
-  if (constraintExpr_similar (l,r) )
+  if (constraintExpr_similar (l,r) && (rHasConstant ) )
     {
       DPRINTF(( message("constraint_IsAlwaysTrue: after removing constants  %s and %s are similar", constraintExpr_unparse(l), constraintExpr_unparse(r) ) ));
-      if (rHasConstant)
+      DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is  %d", rConstant ) ));
+      switch (c->ar)
 	{
-	  DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is  %d", rConstant ) ));
-	  switch (c->ar)
-	    {
-	    case EQ:
-	      return (rConstant == 0);
-	    case LT:
-	      return (rConstant > 0);
-	    case LTE:
-	      return (rConstant >= 0);
-	    case GTE:
-	      return (rConstant <= 0);
-	    case GT:
-	      return (rConstant < 0);
-	      
-	    default:
-	      BADEXIT;
-	      break;
-	    }
+	case EQ:
+	  return (rConstant == 0);
+	case LT:
+	  return (rConstant > 0);
+	case LTE:
+	  return (rConstant >= 0);
+	case GTE:
+	  return (rConstant <= 0);
+	case GT:
+	  return (rConstant < 0);
+	  
+	default:
+	  BADEXIT;
+	  break;
 	}
-      
     }  
-  else
-    {
-      DPRINTF(( message("Constraint %s is not always true", constraint_print(c) ) ));
-      return FALSE;
-    }
+      else
+      {
+	DPRINTF(( message("Constraint %s is not always true", constraint_print(c) ) ));
+	return FALSE;
+      }
   
   BADEXIT;
 }
@@ -555,6 +692,19 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
    if (!  (constraintExpr_canGetValue (expr1) &&
 	   constraintExpr_canGetValue (expr2) ) )
      {
+       constraintExpr e1, e2;
+       bool p1, p2;
+       int const1, const2;
+              
+       e1 = constraintExpr_propagateConstants (expr1, &p1, &const1);
+
+       e2 = constraintExpr_propagateConstants (expr2, &p2, &const2);
+
+       if (p1 && p2)
+	 if (const1 <= const2)
+	   if (constraintExpr_similar (e1, e2) )
+	     return TRUE;
+       
        DPRINTF( ("Can't Get value"));
        return FALSE;
      }
@@ -575,6 +725,19 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
     if (!  (constraintExpr_canGetValue (expr1) &&
 	   constraintExpr_canGetValue (expr2) ) )
      {
+      constraintExpr e1, e2;
+       bool p1, p2;
+       int const1, const2;
+       
+       e1 = constraintExpr_propagateConstants (expr1, &p1, &const1);
+
+       e2 = constraintExpr_propagateConstants (expr2, &p2, &const2);
+
+       if (p1 && p2)
+	 if (const1 >= const2)
+	   if (constraintExpr_similar (e1, e2) )
+	     return TRUE;
+       
        DPRINTF( ("Can't Get value"));
        return FALSE;
      }
@@ -644,6 +807,12 @@ constraint constraint_adjust (constraint substitute, constraint old)
   
 }
 
+/* If function preforms substitutes based on inequality
+
+   It uses the rule x >= y && b < y  ===> x >= b + 1
+
+   Warning this is sound but throws out information
+ */
 constraint  inequalitySubstitute  (constraint c, constraintList p)
 {
   if (c->ar != GTE)
@@ -655,18 +824,21 @@ constraint  inequalitySubstitute  (constraint c, constraintList p)
 	 //	 if (!constraint_conflict (c, el) )
 	   {
 	     constraint temp;
+	     constraintExpr  temp2;
+	     
 	     temp = constraint_copy(el);
 	     
 	     //	     temp = constraint_adjust(temp, c);
 
-	     if (constraintExpr_same (el->lexpr, c->expr) )
+	     if (constraintExpr_same (el->expr, c->expr) )
 	       {
-		 DPRINTF((message ("Replacing %s in %s with  %s",
+		 DPRINTF((message ("inequalitySubstitute Replacing %s in %s with  %s",
 				   constraintExpr_print (c->expr),
 				   constraint_print (c),
 				   constraintExpr_print (el->expr) )
 			  ));
-		 c->expr = constraintExpr_copy (el->expr);
+		 temp2   = constraintExpr_copy (el->lexpr);
+		 c->expr =  constraintExpr_makeIncConstraintExpr (temp2);
 	       }
 	     
 	   }
@@ -677,32 +849,80 @@ constraint  inequalitySubstitute  (constraint c, constraintList p)
   return c;
 }
 
-constraint substitute (constraint c, constraintList p)
+/* This function performs substitutions based on the rule:
+   for a constraint of the form expr1 >= expr2;   a < b =>
+   a = b -1 for all a in expr1.  This will work in most cases.
+
+   Like inequalitySubstitute we're throwing away some information
+*/
+
+constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
 {
+  DPRINTF (( message ("Doing inequalitySubstituteUnsound " ) ));
+  
+  if (c->ar != GTE)
+    return c;
+  
   constraintList_elements (p, el)
     {
-       if ( el->ar == EQ)
-	 if (!constraint_conflict (c, el) )
-
+  DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
+       if ( ( el->ar == LTE) || (el->ar == LT) )
+	 //	 if (!constraint_conflict (c, el) )
 	   {
 	     constraint temp;
+	     constraintExpr  temp2;
+	     
 	     temp = constraint_copy(el);
 	     
-	     temp = constraint_adjust(temp, c);
-
-	     DPRINTF((message ("Substituting %s in the constraint %s",
-			       constraint_print (temp), constraint_print (c)
-			       ) ) );
-			       
-	  
-	     c = constraint_searchandreplace (c, temp->lexpr, temp->expr);
-	     DPRINTF(( message ("The new constraint is %s", constraint_print (c) ) ));
+	     //	     temp = constraint_adjust(temp, c);
+	     temp2   = constraintExpr_copy (el->expr);
+	     
+	     if (el->ar == LT)
+	       temp2  =  constraintExpr_makeDecConstraintExpr (temp2);
+	     
+	     DPRINTF((message ("Replacing %s in %s with  %s",
+			       constraintExpr_print (el->lexpr),
+			       constraintExpr_print (c->lexpr),
+			       constraintExpr_print (temp2) ) ));
+	     
+	     c->lexpr = constraintExpr_searchandreplace (c->lexpr, el->lexpr, temp2);
 	   }
     }
   end_constraintList_elements;
 
   c = constraint_simplify(c);
   return c;
+}
+
+constraint substitute (constraint c, constraintList p)
+{
+  constraint ret;
+
+  ret = constraint_copy(c);
+  constraintList_elements (p, el)
+    {
+       if ( el->ar == EQ)
+	 if (!constraint_conflict (ret, el) )
+
+	   {
+	     constraint temp;
+	     temp = constraint_copy(el);
+	     
+	     temp = constraint_adjust(temp, ret);
+
+	     DPRINTF((message ("Substituting %s in the constraint %s",
+			       constraint_print (temp), constraint_print (ret)
+			       ) ) );
+			       
+	  
+	     ret = constraint_searchandreplace (ret, temp->lexpr, temp->expr);
+	     DPRINTF(( message ("The new constraint is %s", constraint_print (ret) ) ));
+	   }
+    }
+  end_constraintList_elements;
+
+  ret = constraint_simplify(ret);
+  return ret;
 }
 
 

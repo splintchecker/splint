@@ -328,11 +328,14 @@ exprNode doIf (exprNode e, exprNode test, exprNode body)
   
 #warning bad
   e->ensuresConstraints = constraintList_copy (test->ensuresConstraints);
-  /*
-  if (!exprNode_mayEscape (body) )
-    e->ensuresConstraints = constraintList_mergeEnsures (e->ensuresConstraints,
+  
+  if (exprNode_mayEscape (body) )
+    {
+      DPRINTF (( message("doIf: the if statement body %s returns or exits", exprNode_unparse(body) ) ));
+      e->ensuresConstraints = constraintList_mergeEnsures (e->ensuresConstraints,
 							test->falseEnsuresConstraints);
-  */
+    }
+  
   DPRINTF ((message ("doIf: if requiers %s ", constraintList_print(e->requiresConstraints) ) ) );
   
   return e;
@@ -493,7 +496,7 @@ exprNode doSwitch (/*@returned@*/ exprNode e)
 
   data = e->edata;
   llassert(FALSE);
-  //TPRINTF (( message ("doSwitch for: switch (%s) %s", 
+  //DPRINTF (( message ("doSwitch for: switch (%s) %s", 
   //	     exprNode_unparse (exprData_getPairA (data)),
   //		     exprNode_unparse (exprData_getPairB (data))) ));
 

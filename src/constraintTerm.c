@@ -377,7 +377,21 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
   sRef s1, s2;
   
   llassert (term1 !=NULL && term2 !=NULL);
+  
+  if ( (term1->kind == INTLITERAL) && (term2->kind == INTLITERAL) )
+    {
+      int t1, t2;
+      llassert (constraintTerm_canGetValue(term1) );
+      t1 = constraintTerm_getValue (term1);
 
+      llassert (constraintTerm_canGetValue(term2) );
+      t2 = constraintTerm_getValue (term2);
+      if (t1 == t2)
+	return TRUE;
+      
+       return FALSE;
+    }
+    
   s1 = constraintTerm_getsRef (term1);
   s2 = constraintTerm_getsRef (term2);
 

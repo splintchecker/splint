@@ -10,7 +10,7 @@ restricts access to exprData
 
 static void fakeQuite1 (int x)
 {
-void *f;
+void** f;
 
 x = 1;
 
