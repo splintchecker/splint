@@ -14,8 +14,6 @@
 # include "exprNodeSList.h"
 
 /*@i33*/
-/*@-fcnuse*/
-/*@-assignexpose*/
 
 /*@access exprNode @*/
 
@@ -161,7 +159,9 @@ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
   ret->ar = c->ar;
   ret->expr =  constraintExpr_copy (c->expr);
   ret->post = c->post;
+  /*@-assignexpose@*/
   ret->generatingExpr = c->generatingExpr;
+  /*@=assignexpose@*/
   
   /*@i33 fix this*/
   if (c->orig != NULL)
@@ -216,8 +216,10 @@ void constraint_overWrite (constraint c1, constraint c2)
     c1->or = NULL;
 
   c1->fcnPre = c2->fcnPre;
-  
+
+  /*@-assignexpose@*/
   c1->generatingExpr = c2->generatingExpr;
+  /*@=assignexpose@*/
 }
 
 

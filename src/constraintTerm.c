@@ -33,7 +33,7 @@ void constraintTerm_free (/*@only@*/ constraintTerm term)
       break;
     case SREF:
       /* sref */
-      //sRef_free (term->value.sref);
+      sRef_free (term->value.sref);
       break;
     case INTLITERAL:
       /* don't free an int */
@@ -43,6 +43,8 @@ void constraintTerm_free (/*@only@*/ constraintTerm term)
       /* type was set incorrectly */
       llcontbug (message("constraintTerm_free type was set incorrectly"));
     }
+  //  term->value.intlit = 0;
+  term->kind =  ERRORBADCONSTRAINTTERMTYPE;
   free (term);
 }
 
@@ -143,12 +145,29 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return ret;
 }
 
+
+
 constraintTerm constraintTerm_copy (constraintTerm term)
 {
   constraintTerm ret;
   ret = new_constraintTermExpr();
   ret->loc = fileloc_copy (term->loc);
-  constraintTermValue_copy (ret->value, term->value);
+  
+  switch (term->kind)
+    {
+    case EXPRNODE:
+      ret->value.expr = term->value.expr;
+      break;
+    case INTLITERAL:
+      ret->value.intlit = term->value.intlit;
+      break;
+      
+    case SREF:
+      ret->value.sref = sRef_saveCopy(term->value.sref);
+      break;
+    default:
+      BADEXIT;
+    }
   ret->kind = term->kind;
   return ret;
 }
