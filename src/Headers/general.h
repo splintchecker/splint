@@ -19,7 +19,7 @@
 # ifdef USEDMALLOC
 # define sfree(x) do { if (x != NULL) free(x); } while (FALSE)
 # else
-extern void sfree (/*@out@*/ /*@only@*/ /*@null@*/ void *p_x) /*@modifies *p_x@*/; 
+extern void sfree (/*@out@*/ /*@only@*/ /*@null@*/ void *p_x) /*@modifies p_x@*/; 
 # endif
 
 # include "misc.h"

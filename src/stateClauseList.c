@@ -305,27 +305,31 @@ void stateClauseList_checkAll (uentry ue)
 		    {
 		      if (!sRef_isStateSpecial (res))
 			{
+			  DPRINTF (("Here we are: %s", sRef_unparseFull (res)));
+
 			  if (!specialResult)
 			    {
 			      sstate pstate = sRef_getDefState (res);
 			      
 			      if (!sRef_makeStateSpecial (res))
 				{
-				  voptgenerror
-				    (FLG_INCONDEFS,
-				     message ("Function result is used in %q clause of %q "
-					      "but was previously annotated with %s: %q",
-					      stateClause_unparseKind (cl),
-					      uentry_getName (ue),
-					      sstate_unparse (pstate),
-					      sRef_unparse (el)),
-				     uentry_whereLast (ue));
-				}
-			      
-			      specialResult = TRUE;
+				  if (optgenerror
+				      (FLG_INCONDEFS,
+				       message ("Function result is used in %q clause of %q "
+						"but was previously annotated with %s: %q",
+						stateClause_unparseKind (cl),
+						uentry_getName (ue),
+						sstate_unparse (pstate),
+						sRef_unparse (el)),
+				       uentry_whereLast (ue)))
+				    {
+				      specialResult = TRUE;
+				    }
+				}			      
 			    }
 			}
 		      
+		      DPRINTF (("Fixing result type! %s", sRef_unparseFull (el)));
 		      (void) sRef_fixResultType (el, sRef_getType (res), ue);
 		    }
 		}

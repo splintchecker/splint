@@ -46,8 +46,8 @@ extern bool functionConstraint_hasMetaStateConstraint (functionConstraint) /*@*/
 extern functionConstraint
 functionConstraint_conjoin (/*@only@*/ functionConstraint, /*@only@*/ functionConstraint) ;
 
-extern /*@observer@*/ constraintList functionConstraint_getBufferConstraint (functionConstraint) /*@*/ ;
-extern /*@observer@*/ metaStateConstraint functionConstraint_getMetaStateConstraint (functionConstraint) /*@*/ ;
+extern /*@only@*/ constraintList functionConstraint_getBufferConstraints (functionConstraint) /*@*/ ;
+extern /*@only@*/ metaStateConstraintList functionConstraint_getMetaStateConstraints (functionConstraint) /*@*/ ;
 
 extern cstring functionConstraint_unparse (functionConstraint) /*@*/ ;
 extern void functionConstraint_free (/*@only@*/ functionConstraint) ;

@@ -151,7 +151,12 @@ void stateValue_show (stateValue s, metaStateInfo msinfo)
 
 int stateValue_getValue (stateValue s)
 {
-  llassert (stateValue_isDefined (s));
+  if (!stateValue_isDefined (s))
+    {
+      llassert (stateValue_isDefined (s));
+      return stateValue_error;
+    }
+
   return s->value;
 }
 

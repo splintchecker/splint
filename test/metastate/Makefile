@@ -9,7 +9,7 @@ file:
 	${LCLINT} -mts file file2.c -varuse -fcnuse -expect 2
 	${LCLINT} -mts file file3.c -varuse -fcnuse -expect 2
 	${LCLINT} -mts file file4.c -varuse -fcnuse -exportlocal -expect 1 
-	${LCLINT} -mts file file5.c -varuse -fcnuse -exportlocal -expect 5
+	${LCLINT} -mts file file5.c -varuse -fcnuse -exportlocal -expect 4
 	${LCLINT} -mts file file6.c -varuse -fcnuse -exportlocal -expect 2
 	${LCLINT} -mts file filebad.c -expect 3
 

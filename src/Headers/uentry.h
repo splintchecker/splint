@@ -546,6 +546,8 @@ extern bool uentry_hasGlobs (uentry p_ue) /*@*/ ;
 extern bool uentry_hasMods (uentry p_ue) /*@*/ ;
 
 extern bool uentry_hasStateClauseList (uentry p_ue) /*@*/ ;
+extern bool uentry_hasConditions (uentry p_ue) /*@*/ ;
+
 extern exitkind uentry_getExitCode (uentry p_ue) /*@*/ ;
 
 extern void uentry_checkYieldParam (uentry p_old, uentry p_unew);
@@ -652,7 +654,7 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 # endif /* DOANNOTS */
 
 extern bool uentry_hasMetaStateEnsures (uentry p_e) /*@*/ ;
-extern /*@observer@*/ metaStateConstraint uentry_getMetaStateEnsures (uentry p_e);
+extern /*@only@*/ metaStateConstraintList uentry_getMetaStateEnsures (uentry p_e);
 
 /* start modifications */
 //extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);

@@ -24,6 +24,7 @@
 # include "mtMergeClause.h"
 # include "mtMergeClauseList.h"
 # include "metaStateConstraint.h"
+# include "metaStateConstraintList.h"
 # include "metaStateSpecifier.h"
 # include "metaStateExpression.h"
 # include "metaStateInfo.h"

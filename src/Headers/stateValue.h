@@ -61,8 +61,8 @@ extern cstring stateValue_unparse (stateValue p_s) /*@*/ ;
 
 extern bool stateValue_sameValue (stateValue p_s1, stateValue p_s2) /*@*/ ;
 
-extern bool stateValue_isError (stateValue p_s) /*@*/ ;
-# define stateValue_isError(p_s) (stateValue_getValue (p_s) == stateValue_error)
+extern bool stateValue_isError (/*@sef@*/ stateValue p_s) /*@*/ ;
+# define stateValue_isError(p_s) (stateValue_isDefined (p_s) && (stateValue_getValue (p_s) == stateValue_error))
 
 /*@constant int stateValue_error@*/ 
 # define stateValue_error -1

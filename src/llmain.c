@@ -487,9 +487,10 @@ static void handlePassThroughFlag (char *arg)
   if (open)
     {
       showHerald ();
-      llerror (FLG_BADFLAG,
-	       message ("Unclosed quote in flag: %s",
-			cstring_fromChars (arg)));
+      voptgenerror (FLG_BADFLAG,
+		    message ("Unclosed quote in flag: %s",
+			     cstring_fromChars (arg)),
+		    g_currentloc);
     }
   else
     {
@@ -2192,10 +2193,11 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 	  else
 	    {
 	      showHerald ();
-	      llerror (FLG_SYNTAX, 
-		       message ("Bad flag syntax (+ or - expected, "
-				"+ is assumed): %s", 
-				cstring_fromChars (s)));
+	      voptgenerror (FLG_BADFLAG, 
+			    message ("Bad flag syntax (+ or - expected, "
+				     "+ is assumed): %s", 
+				     cstring_fromChars (s)),
+			    g_currentloc);
 	      s--;
 	      set = TRUE;
 	    }
@@ -2269,9 +2271,10 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 		}
 	      else
 		{
-		  llerror (FLG_BADFLAG,
-			   message ("Unrecognized option: %s", 
-				    cstring_fromChars (thisflag)));
+		  voptgenerror (FLG_BADFLAG,
+				message ("Unrecognized option: %s", 
+					 cstring_fromChars (thisflag)),
+				g_currentloc);
 		}
 	    }
 	  else
@@ -2283,8 +2286,9 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 		  if (opt == FLG_HELP)
 		    {
 		      showHerald ();
-		      llerror (FLG_BADFLAG,
-			       message ("Cannot use help in rc files"));
+		      voptgenerror (FLG_BADFLAG,
+				    message ("Cannot use help in rc files"),
+				    g_currentloc);
 		    }
 		  else if (flagcode_isPassThrough (opt)) /* -D or -U */
 		    {
@@ -2350,11 +2354,12 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 		      if (cstring_isUndefined (extra))
 			{
 			  showHerald ();
-			  llerror 
+			  voptgenerror 
 			    (FLG_BADFLAG,
 			     message
 			     ("Flag %s must be followed by an argument",
-			      flagcode_unparse (opt)));
+			      flagcode_unparse (opt)),
+			     g_currentloc);
 			}
 		      else
 			{
@@ -2384,10 +2389,11 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 			      else 
 				{
 				  showHerald ();
-				  llerror
-				    (FLG_SYNTAX, 
+				  voptgenerror
+				    (FLG_BADFLAG, 
 				     message ("Options file not found: %s", 
-					      extra));
+					      extra),
+				     g_currentloc);
 				}
 			    }
 			  else if (opt == FLG_INIT)
@@ -2418,10 +2424,11 @@ loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
 				    }
 				  else
 				    {
-				      llerror
-					(FLG_SYNTAX, 
+				      voptgenerror
+					(FLG_BADFLAG, 
 					 message ("Unmatched \" in option string: %s", 
-						  extra));
+						  extra),
+					 g_currentloc);
 				    }
 				}
 			      

@@ -838,7 +838,15 @@ xllgenformattypeerror (char *srcFile, int srcLine,
 		       ctype t1, exprNode e1, ctype t2, exprNode e2,
 		       /*@only@*/ cstring s, fileloc fl)
 {
-  return llgentypeerroraux (srcFile, srcLine, FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
+  if (!context_suppressFlagMsg (FLG_FORMATTYPE, fl))
+    {
+      return llgentypeerroraux (srcFile, srcLine, FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
+    }
+  else
+    {
+      cstring_free (s);
+      return FALSE;
+    }
 }
 
 bool
@@ -909,11 +917,7 @@ llgenerroraux (char *srcFile, int srcLine,
       cstring_free (s);
       return FALSE;
     }
-  else
-    {
-      ;
-    }
-
+  
   if (llgenerrorreal (srcFile, srcLine, s, fl, iserror, indent)) {
     return TRUE;
   } else {

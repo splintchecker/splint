@@ -59,7 +59,7 @@ extern void cstring_setChar (cstring p_s, int p_n, char p_c);
 
 # define cstring_secondChar(s) cstring_getChar (s, 2)
 
-extern /*@exposed@*/ /*@notnull@*/ char *
+extern /*@exposed@*/ /*@notnull@*/ /*@untainted@*/ char *
   cstring_toCharsSafe (/*@temp@*/ /*@exposed@*/ /*@returned@*/ cstring p_s)
      /*@*/ ;
 
@@ -99,21 +99,26 @@ extern bool cstring_lessthan (cstring p_s1, cstring p_s2) /*@*/ ;
 extern bool cstring_equalFree (/*@only@*/ cstring p_c1, /*@only@*/ cstring p_c2);
 
 /* really exposed! */
-extern cstring 
+
+/*
+** Don't allow tainted cstring's
+*/
+
+extern /*@untained@*/ cstring 
   cstring_fromChars (/*@returned@*/ /*@null@*/ 
-		     const /*@exposed@*/ /*@temp@*/ char *p_cp) /*@*/ ;
+		     const /*:untainted@*/ /*@exposed@*/ /*@temp@*/ char *p_cp) /*@*/ ;
 
 extern cstring
-  cstring_fromCharsO (/*@null@*/ /*@only@*/ char *p_cp) /*@*/ ;
+   cstring_fromCharsO (/*@null@*/ /*:untainted@*/ /*@only@*/ char *p_cp) /*@*/ ;
 /*@-mustfree@*/
 # define cstring_fromCharsO(s) cstring_fromChars(s)
 /*@=mustfree@*/
 
-extern cstring cstring_fromCharsNew (/*@null@*/ char *p_s) /*@*/ ;
+extern cstring cstring_fromCharsNew (/*:untainted@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define cstring_fromCharsNew(s) cstring_copy(cstring_fromChars(s))
 
 # ifndef NOLCL
-extern /*@exposed@*/ /*@notnull@*/ 
+extern /*@exposed@*/ /*@notnull@*/ /*@untainted@*/
   char *cstring_toCharsSafeO (/*@only@*/ /*@exposed@*/ /*@returned@*/ cstring p_s);
 /*@-mustfree@*/
 # define cstring_toCharsSafeO(s) cstring_toCharsSafe(s)

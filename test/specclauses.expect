@@ -73,7 +73,7 @@ Finished LCLint checking --- 3 code errors found, as expected
 
 specclauses5.c: (in function createrecord2)
 specclauses5.c:31:10: Null storage r->name derivable from return value: r
-   specclauses5.c:30:26: Storage r->name becomes null
+   specclauses5.c:30:14: Storage r->name becomes null
 specclauses5.c: (in function newrecord2)
 specclauses5.c:43:10: Non-observer storage r->name corresponds to storage
                          result->name listed in ensures observer clause: r

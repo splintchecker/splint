@@ -54,11 +54,11 @@ ansireserved.c:9: Name EVANS is reserved for future ANSI library extensions.
     <errno.h>. (See ANSI, Section 4.13.1)
 ansireserved.c:1:5: Name decimal_point is reserved for the standard library
 ansireserved.c:2:5: Function srand inconsistently declared as variable: int
-   load file ansi.lcd:866:1: Specification of srand:
+   load file ansi.lcd:869:1: Specification of srand:
    [function (unsigned int) returns void]
 ansireserved.c:2:5: Name srand is reserved for the standard library
 ansireserved.c:3:5: Function labs inconsistently declared as variable: int
-   load file ansi.lcd:888:1: Specification of labs:
+   load file ansi.lcd:891:1: Specification of labs:
    [function (long int) returns long int]
 ansireserved.c:3:5: Name labs is reserved for the standard library
 ansireserved.c:4:5: Name _x is in the implementation name space (any identifier

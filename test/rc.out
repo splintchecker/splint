@@ -26,6 +26,8 @@ Finished LCLint checking --- 1 code error found, as expected
 
 rc3.lclintrc:2:1: Bad flag syntax (+ or - expected, + is assumed):
                                     internalnamelen	73
+  A flag is not recognized or used in an incorrect way (-badflag will suppress
+  message)
 rc3.lclintrc:5:24: Flag dump must be followed by an argument
 rc.c: (in function f)
 rc.c:3:10: Unrecognized identifier: MYSTERY

@@ -26,16 +26,16 @@ argorder2.c:19:14: Argument 1 modifies i, used by argument 2 (order of
 Finished LCLint checking --- 5 code errors found, as expected
 
 argorder3.c: (in function f)
-argorder3.c:7:8: Expression has undefined behavior (value of left operand is
-                    modified by right operand): i = i++
+argorder3.c:7:8: Expression has undefined behavior (value of left operand i is
+                    modified by right operand i++): i = i++
 argorder3.c:8:11: Expression has undefined behavior (left operand uses i,
                      modified by right operand): a[i] = i++
 argorder3.c:9:12: Expression has undefined behavior (value of right operand
                      modified by left operand): a[i++] = i
 argorder3.c:10:13: Expression has undefined behavior (value of right operand
                       modified by left operand): i++ * i
-argorder3.c:11:12: Expression has undefined behavior (value of left operand is
-                      modified by right operand): i * i++
+argorder3.c:11:12: Expression has undefined behavior (value of left operand i
+                      is modified by right operand i++): i * i++
 argorder3.c:12:14: Expression has undefined behavior (left operand uses i,
                       modified by right operand): --i * ++i
 argorder3.c:12:14: Expression has undefined behavior (left operand modifies i,

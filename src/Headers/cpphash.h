@@ -39,7 +39,7 @@ struct s_hashNode {
    politeness, for use when speed isn't so important. */
 
 extern void cppReader_deleteMacro (/*@exposed@*/ hashNode p_hp) 
-     /*@modifies internalState, *p_hp@*/;
+     /*@modifies internalState, p_hp@*/;
 
 extern /*@exposed@*/ hashNode cppReader_install (char *, int, 
 						  enum node_type, int, 

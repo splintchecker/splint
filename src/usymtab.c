@@ -949,7 +949,9 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 	  && uentry_isValid (outer)
 	  && !(uentry_isYield (e) || uentry_isYield (outer))
 	  && fileloc_isDefined (uentry_whereLast (e))
-	  && fileloc_isDefined (uentry_whereLast (outer)))
+	  && !fileloc_isXHFile (uentry_whereLast (e))
+	  && fileloc_isDefined (uentry_whereLast (outer))
+	  && !fileloc_isXHFile (uentry_whereLast (outer)))
 	{
 	  if (!uentry_sameKind (outer, e))
 	    {
@@ -1958,7 +1960,7 @@ void usymtab_load (FILE *f)
 	}
       s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
-      temp = cstring_fromChars(reader_getWord(&s) );
+      temp = cstring_fromChars (reader_getWord(&s) );
       
       if (cstring_compareLit (temp,"pre:") == 0 )
 	{
@@ -1975,17 +1977,17 @@ void usymtab_load (FILE *f)
       s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
       temp = cstring_fromChars(reader_getWord(&s) );
-      if (cstring_compareLit (temp,"post:") == 0 )
+      if (cstring_compareLit (temp, "post:") == 0 )
 	{
 	  postconditions = constraintList_undump (f);
 	}
       else
 	{
-	  if (cstring_compareLit (temp,"post:EMPTY") != 0 )
+	  if (cstring_compareLit (temp, "post:EMPTY") != 0 )
 	    llfatalbug ((message("Error reading library file post:EMPTY expected but got %s", temp ) ));
 	}
       
-      cstring_free(temp);
+      cstring_free (temp);
 
       uentry_setPreconditions (ue, functionConstraint_createBufferConstraint (preconditions));
       uentry_setPostconditions (ue, functionConstraint_createBufferConstraint (postconditions));

@@ -7,7 +7,8 @@ observer.c:9:20: Released storage x->name reachable from parameter at return
    observer.c:9:10: Storage x->name is released
 observer.c: (in function f)
 observer.c:33:3: Suspect modification of observer s: *s = 'x'
-observer.c:34:9: Function call may modify observer *s: s
+observer.c:34:9: Function call may modify observer s: s
+   observer.c:32:7: Storage s becomes observer
 observer.c:34:9: Observer storage s passed as only param: free (s)
    observer.c:32:7: Storage s becomes observer
 observer.c:38:9: Exposed storage s passed as only param: free (s)
@@ -25,7 +26,8 @@ observer.c:9:20: Released storage x->name reachable from parameter at return
    observer.c:9:10: Storage x->name is released
 observer.c: (in function f)
 observer.c:33:3: Suspect modification of observer s: *s = 'x'
-observer.c:34:9: Function call may modify observer *s: s
+observer.c:34:9: Function call may modify observer s: s
+   observer.c:32:7: Storage s becomes observer
 observer.c:34:9: Observer storage s passed as only param: free (s)
    observer.c:32:7: Storage s becomes observer
 observer.c:38:9: Exposed storage s passed as only param: free (s)
@@ -42,7 +44,8 @@ observer.c:9:20: Released storage x->name reachable from parameter at return
    observer.c:9:10: Storage x->name is released
 observer.c: (in function f)
 observer.c:33:3: Suspect modification of observer s: *s = 'x'
-observer.c:34:9: Function call may modify observer *s: s
+observer.c:34:9: Function call may modify observer s: s
+   observer.c:32:7: Storage s becomes observer
 observer.c:34:9: Observer storage s passed as only param: free (s)
    observer.c:32:7: Storage s becomes observer
 observer.c:38:9: Exposed storage s passed as only param: free (s)

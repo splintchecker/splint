@@ -14,7 +14,7 @@
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
 .PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
-.PHONY: null observer oldstyle outglob outparam preds prefixes printflike rc 
+.PHONY: noeffect null observer oldstyle outglob outparam preds prefixes printflike rc 
 .PHONY: refcounts release repexpose returned sharing slovaknames special
 .PHONY: specclauses stack staticarray 
 .PHONY: strings structassign nullret
@@ -49,7 +49,7 @@ UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTe
    charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
    decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
    init inparam internal iter keep libs linked lintcomments list macros macrosef merge mergestate metastate modifies \
-   modtest moduncon mongoincludes mystrncat null nullret nullassign observer oldstyle \
+   modtest moduncon mongoincludes mystrncat noeffect null nullret nullassign observer oldstyle \
    outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
    staticarray strings structassign tainted typequals ud ulstypes union unreachable unused ullint void warnuse \
@@ -422,6 +422,9 @@ mongoincludes:
 
 mystrncat:
 	$(LCLINTR) mystrncat.c +fcnconstraint -expect 4 
+
+noeffect:
+	${LCLINT} noeffect.c +allmacros +checks -expect 3
 
 null: 
 	$(LCLINTR) null1.c -expect 14

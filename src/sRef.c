@@ -6459,8 +6459,10 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	  sRef_addDeriv (arr, s);
 	}
       
-      llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s);
+      if (valueTable_isUndefined (s->state))
+	{
+	  s->state = context_createValueTable (s);
+	}
 
       return (s);
     }
@@ -6710,6 +6712,8 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
   ctype rt = t->type;
   ctype st;
   
+  llassert (valueTable_isUndefined (s->state));
+
   s->kind = SK_PTR;
   s->info = (sinfo) dmalloc (sizeof (*s->info));
   s->info->ref = t; /* sRef_copy (t); */ /*@i32*/
@@ -6720,7 +6724,7 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
     }
   
   st = ctype_realType (s->type);  
-    
+
   if (t->defstate == SS_UNDEFINED)
     {
       s->defstate = SS_UNUSEABLE;
@@ -6742,15 +6746,18 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
     {
       s->aliaskind = AK_UNKNOWN;
     }
-  
+
   sRef_setExKind (s, sRef_getExKind (t), fileloc_undefined);
   sRef_setTypeState (s);
-  
+
   s->oaliaskind = s->aliaskind;
   s->oexpkind = s->expkind;
 
-  llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  if (valueTable_isUndefined (s->state))
+    {
+      s->state = context_createValueTable (s);
+    }
+
   return s;
 }
 
@@ -9744,14 +9751,14 @@ bool sRef_makeStateSpecial (sRef s)
 
   if (s->defstate == SS_UNKNOWN || s->defstate == SS_DEFINED || s->defstate == SS_SPECIAL)
     {
-      s->aliaskind = AK_IMPTEMP;
+      /* s->aliaskind = AK_IMPTEMP; */ /* evans 2001-07-23 shouldn't effect alias state */
       s->defstate = SS_SPECIAL;
       DPRINTF (("Made special: %s", sRef_unparseFull (s)));
       return TRUE;
     }
   else
     {
-      s->aliaskind = AK_IMPTEMP;
+      /* s->aliaskind = AK_IMPTEMP; */
       s->defstate = SS_SPECIAL;
       return FALSE;
     }

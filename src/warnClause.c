@@ -59,7 +59,7 @@ warnClause warnClause_copy (warnClause w)
     {
       return warnClause_createAux (fileloc_copy (w->loc),
 				   flagSpec_copy (w->flag),
-				   /*@i32@*/ w->msg); /*@i32 should exprNode_copy (w->msg)); */
+				   w->msg); /*@i32 should exprNode_copy (w->msg)); */
     }
   else
     {

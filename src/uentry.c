@@ -564,110 +564,71 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
     }
 }
 
+static constraintList uentry_getFunctionConditions (uentry ue, bool isPost)
+{
+  if (uentry_isValid (ue))
+    {
+      functionConstraint constraint;
+
+      DPRINTF( (message ("called uentry_getFcnPostconditions on  %s",
+			 uentry_unparse (ue) ) ) );
+      
+      if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	{
+	  DPRINTF( (message ("called uentry_getFunctionConditions on nonfunction %s",
+			     uentry_unparse (ue) ) ) );
+	  if (!uentry_isFunction (ue) )
+	    {
+	      DPRINTF((message ("called uentry_getFunctionConditions on nonfunction %s",
+				uentry_unparse (ue) ) ));
+	      return constraintList_undefined;
+	    }
+	  
+	  
+	  return constraintList_undefined;
+	}
+      
+      if (!uentry_isFunction(ue))
+	{
+	  
+	  DPRINTF( (message ("called uentry_getFunctionConditions on non function  %s",
+			     uentry_unparse (ue) ) ) );
+	  return constraintList_undefined;
+	  
+	}
+
+      llassert (uentry_isFunction (ue));
+
+      if (isPost)
+	{
+	  constraint = ue->info->fcn->postconditions;
+	}
+      else
+	{
+	  constraint = ue->info->fcn->preconditions;
+	}
+
+      return functionConstraint_getBufferConstraints (constraint);
+    }
+  
+  return constraintList_undefined;
+  
+}
 
 /*drl7x*/
 /*@only@*/ constraintList uentry_getFcnPreconditions (uentry ue)
 {
-  if (uentry_isValid (ue))
-    {
-      {
-	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	  {
-	    DPRINTF(( (message( "Function pointer %s not doing  uentry_getFcnPreconditions", uentry_unparse(ue) )) ));
-	    //  uentry_makeVarFunction (ue);
-	  }
-	
-	//llassert (uentry_isFunction (ue));
-	//llassert ((ue->info->fcn->preconditions));
-	//llassert ((ue->info->fcn->preconditions));
-
-	if (!uentry_isFunction (ue))
-	  {
-	    DPRINTF( (message ("called uentry_getFcnPreconditions on nonfunction %s",
-			       uentry_unparse (ue) ) ) );
-	    if (!uentry_isSpecified (ue) )
-	      {
-		DPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
-				  uentry_unparse (ue) ) ));
-		return constraintList_undefined;
-	      }
-	    
-	    
-	    return constraintList_undefined;
-	  }
-	
-	if (functionConstraint_hasBufferConstraint (ue->info->fcn->preconditions))
-	  {
-	    return constraintList_copy (functionConstraint_getBufferConstraint (ue->info->fcn->preconditions));
-	  }
-	else
-	  {
-	    return NULL;
-	  }
-      }
-    }
-  
-  return constraintList_undefined;
+  return uentry_getFunctionConditions (ue, FALSE);
 }
-
-
-
 
 /*drl
   12/28/2000
 */
+
 constraintList uentry_getFcnPostconditions (uentry ue)
 {
-  if (uentry_isValid (ue))
-    {
-      DPRINTF( (message ("called uentry_getFcnPostconditions on  %s",
-				  uentry_unparse (ue) ) ) );
-	{
-	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	    {
-	      DPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
-				  uentry_unparse (ue) ) ) );
-	      if (!uentry_isFunction (ue) )
-		{
-		  DPRINTF((message ("called uentry_getFcnPostconditions on nonfunction %s",
-					uentry_unparse (ue) ) ));
-		      return constraintList_undefined;
-		    }
-	  
-
-		  return constraintList_undefined;
-	    }
-
-	  //  llassert (uentry_isFunction (ue));
-	  if (!uentry_isFunction(ue) )
-	    {
-	      
-	      DPRINTF( (message ("called uentry_getFcnPostconditions on non function  %s",
-				  uentry_unparse (ue) ) ) );
-	        return constraintList_undefined;
-
-	    }
-
-	  if (functionConstraint_hasBufferConstraint (ue->info->fcn->postconditions))
-	    {
-	      DPRINTF((message ("called uentry_getFcnPostconditions on %s and returned %q",
-				uentry_unparse (ue),
-				constraintList_unparse (functionConstraint_getBufferConstraint (ue->info->fcn->postconditions)))));
-
-	      return constraintList_copy (functionConstraint_getBufferConstraint (ue->info->fcn->postconditions));
-	    }
-	  else
-	    {
-	      return NULL;
-	    }
-	}
-	
-    }
-  
-  return constraintList_undefined;
-  
+  return uentry_getFunctionConditions (ue, TRUE);
 }
-
 
 static /*@only@*/ fileloc setLocation (void)
 {
@@ -927,6 +888,8 @@ uentry_makeFunctionAux (cstring n, ctype t,
 
   llassert (warnClause_isUndefined (warn)); /*@i325 remove parameter! */
 
+  DPRINTF (("Make function: %s", n));
+
   if (ctype_isFunction (t))
     {
       ret = ctype_getReturnType (t);
@@ -1117,6 +1080,32 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
       else if (functionClause_isState (el))
 	{
 	  stateClause sc = functionClause_takeState (el);
+
+	  if (stateClause_isBefore (sc) && stateClause_setsMetaState (sc))
+	    {
+	      sRefSet rfs = stateClause_getRefs (sc);
+
+	      sRefSet_elements (rfs, s)
+		{
+		  if (sRef_isParam (s))
+		    {
+		      /* 
+		      ** Can't use requires on parameters
+		      */
+		      
+		      voptgenerror
+			(FLG_ANNOTATIONERROR,
+			 message ("Requires clauses for %q concerns parameters %q should be "
+				  "a parameter annotation instead: %q",
+				  uentry_unparse (ue),
+				  sRef_unparse (s),
+				  stateClause_unparse (sc)),
+			 stateClause_loc (sc));
+		    }
+		} end_sRefSet_elements ;
+	    }
+
+	  DPRINTF (("State clause: %s", stateClause_unparse (sc)));
 	  uentry_addStateClause (ue, sc);
 	}
       else if (functionClause_isWarn (el))
@@ -1130,6 +1119,7 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 	}
     } end_functionClauseList_elements ;
 
+  DPRINTF (("Checking all: %s", sRef_unparseFull (ue->sref)));
   stateClauseList_checkAll (ue);
 }
 
@@ -1141,6 +1131,8 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
 			 typeId_invalid, globSet_undefined, 
 			 sRefSet_undefined, warnClause_undefined,
 			 setLocation ());
+
+  DPRINTF (("Id function: %s", sRef_unparseFull (ue->sref)));
 
   /*
   ** This makes parameters names print out correctly.
@@ -1159,10 +1151,13 @@ static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
       leaveFunc = TRUE;
     }
 
+  DPRINTF (("Id function: %s", sRef_unparseFull (ue->sref)));
   uentry_reflectQualifiers (ue, idDecl_getQuals (id));
+  DPRINTF (("Id function: %s", sRef_unparseFull (ue->sref)));
   reflectImplicitFunctionQualifiers (ue, FALSE);
-
+  DPRINTF (("Id function: %s", sRef_unparseFull (ue->sref)));
   uentry_reflectClauses (ue, idDecl_getClauses (id));
+  DPRINTF (("Id function: %s", sRef_unparseFull (ue->sref)));
 
   if (!uentry_isStatic (ue)
       && cstring_equalLit (ue->uname, "main"))
@@ -1651,8 +1646,6 @@ uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postcondition
 	}
       else
 	{
-	  BADBRANCH; /* should conjoin */
-	  /*@notreached@*/ 
 	  ue->info->fcn->postconditions = functionConstraint_conjoin (ue->info->fcn->postconditions, postconditions);
 	}	    
     }
@@ -2466,6 +2459,9 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 {
   llassert (uentry_isValid (ue)); 
 
+  DPRINTF (("Reflect qualifiers: %s / %s",
+	    uentry_unparseFull (ue), qualList_unparse (q)));
+
   qualList_elements (q, qel)
     {
       if (qual_isStatic (qel))
@@ -2786,6 +2782,8 @@ uentry_reflectQualifiers (uentry ue, qualList q)
     } end_qualList_elements;
 
   qualList_clear (q);
+
+  DPRINTF (("Done: %s", sRef_unparseFull (ue->sref)));
 }
 	
 bool
@@ -3130,7 +3128,6 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
 
   llassert (fileloc_isUndefined (ue->whereDeclared));
   ue->whereDeclared = setLocation ();
-
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
 
   return ue;
@@ -4432,6 +4429,13 @@ bool uentry_hasGlobs (uentry ue)
 bool uentry_hasStateClauseList (uentry ue)
 {
   return (uentry_isFunction (ue) && stateClauseList_isDefined (ue->info->fcn->specclauses));
+}
+
+bool uentry_hasConditions (uentry ue)
+{
+  return (uentry_isFunction (ue) 
+	  && (functionConstraint_isDefined (ue->info->fcn->preconditions)
+	      || functionConstraint_isDefined (ue->info->fcn->postconditions)));
 }
 
 stateClauseList uentry_getStateClauseList (uentry ue)
@@ -7487,10 +7491,6 @@ void checkDefState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
       && newState != SS_UNKNOWN 
       && newState != SS_DEFINED)
     {
-      DPRINTF (("Where declared: %s / %s",
-		fileloc_unparse (uentry_whereDeclared (unew)),
-		bool_unparse (fileloc_isXHFile (uentry_whereDeclared (unew)))));
-
       if (mustConform)
 	{
 	  if (optgenerror 
@@ -7784,24 +7784,45 @@ checkMetaState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 			}
 		      else
 			{
-			  if (!stateValue_isError (newval))
+			  if (!stateValue_isError (newval) 
+			      && !stateValue_isImplicit (newval))
 			    {
-			      if (mustConform 
-				  && optgenerror 
-				  (FLG_INCONDEFS,
-				   message ("%s %q inconsistently %rdeclared %s %s, %s as %s",
-					    uentry_ekindName (unew),
-					    uentry_getName (unew),
-					    uentry_isDeclared (old),
-					    fcnErrName (unew),
-					    metaStateInfo_unparseValue (msinfo, 
-									stateValue_getValue (newval)),
-					    uentry_specOrDefName (old),
-					    metaStateInfo_unparseValue (msinfo,
-									stateValue_getValue (oldval))),
-				   uentry_whereDeclared (unew)))
+			      if (uentry_hasName (unew)
+				  || !sRef_isParam (uentry_getSref (unew)))
 				{
-				  uentry_showWhereSpecified (old);
+				  if (mustConform 
+				      && optgenerror 
+				      (FLG_INCONDEFS,
+				       message ("%s %q inconsistently %rdeclared %s %q, %s as %q",
+						uentry_ekindName (unew),
+						uentry_getName (unew),
+						uentry_isDeclared (old),
+						fcnErrName (unew),
+						stateValue_unparseValue (newval, msinfo),
+						uentry_specOrDefName (old),
+						stateValue_unparseValue (oldval, msinfo)),
+				       uentry_whereDeclared (unew)))
+				    {
+				      uentry_showWhereSpecified (old);
+				    }
+				}
+			      else
+				{
+				  if (mustConform 
+				      && optgenerror 
+				      (FLG_INCONDEFS,
+				       message ("%s %d inconsistently %rdeclared %s %q, %s as %q",
+						uentry_ekindName (unew),
+						sRef_getParam (uentry_getSref (unew)),
+						uentry_isDeclared (old),
+						fcnErrName (unew),
+						stateValue_unparseValue (newval, msinfo),
+						uentry_specOrDefName (old),
+						stateValue_unparseValue (oldval, msinfo)),
+				       uentry_whereDeclared (unew)))
+				    {
+				      uentry_showWhereSpecified (old);
+				    }
 				}
 			    }
 			}
@@ -9135,8 +9156,14 @@ static void uentry_mergeConstraints (uentry spec, uentry def)
 	      spec->info->fcn->preconditions = functionConstraint_conjoin (spec->info->fcn->preconditions,
 									   def->info->fcn->preconditions);
 	    }
+	  else if (fileloc_equal (uentry_whereLast (spec), uentry_whereLast (def)))
+	    {
+	      ;
+	    }
 	  else
 	    {
+	      /* Check if the constraints are identical */
+
 	      if (optgenerror 
 		  (FLG_INCONDEFS,
 		   message
@@ -10435,6 +10462,10 @@ bool uentry_isReturned (uentry u)
       DPRINTF (("ensures clause: %s / %s", uentry_unparse (u), 
 		stateClauseList_unparse (clauses)));
 
+      /*
+      ** This should be in exprNode_reflectEnsuresClause
+      */
+
       stateClauseList_postElements (clauses, cl)
 	{
 	  if (!stateClause_isGlobal (cl))
@@ -10461,7 +10492,7 @@ bool uentry_isReturned (uentry u)
 		} end_sRefSet_elements ;
 	    }
 	} end_stateClauseList_postElements ;
-
+	
       return res;
     }
   else
@@ -11086,8 +11117,8 @@ bool uentry_hasMetaStateEnsures (uentry e)
     }
 }
 
-metaStateConstraint uentry_getMetaStateEnsures (uentry e)
+metaStateConstraintList uentry_getMetaStateEnsures (uentry e)
 {
-  llassert (uentry_hasMetaStateEnsures (e));
-  return functionConstraint_getMetaStateConstraint (e->info->fcn->postconditions);
+  llassert (uentry_isValid (e) && uentry_isFunction (e));
+  return functionConstraint_getMetaStateConstraints (e->info->fcn->postconditions);
 }

@@ -31,6 +31,7 @@ abst_typedef /*@null@*/ struct s_metaStateInfo *metaStateInfo;
 
 abst_typedef /*@null@*/ struct s_functionConstraint *functionConstraint;
 abst_typedef struct s_metaStateConstraint *metaStateConstraint;
+abst_typedef /*@null@*/ struct s_metaStateConstraintList *metaStateConstraintList ;
 abst_typedef struct s_metaStateSpecifier *metaStateSpecifier;
 abst_typedef /*@null@*/ struct s_metaStateExpression *metaStateExpression;
 
@@ -81,7 +82,7 @@ abst_typedef /*@null@*/ struct s_constraintExpr * constraintExpr;
 typedef int bool;
 /*@=cppnames@*/
 
-abst_typedef /*@null@*/ char *cstring;
+abst_typedef /*@untainted@*/ /*@null@*/ char *cstring;
 typedef /*@only@*/ cstring o_cstring;
 
 immut_typedef int ctype;
