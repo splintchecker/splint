@@ -3357,7 +3357,6 @@ uentry uentry_makeVariableAux (cstring n, ctype t,
       sRef_setStateFromType (e->sref, rt);
     }
 
-  DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
   e->info->var->defstate = sRef_getDefState (e->sref);  
   e->info->var->nullstate = sRef_getNullState (e->sref);
 
@@ -3377,6 +3376,8 @@ uentry uentry_makeVariableAux (cstring n, ctype t,
       e->info->var->bufinfo = NULL;
     }/* end else */
   /* end modification */
+
+  DPRINTF (("New variable: %s", sRef_unparseFull (e->sref)));
 
   return (e);
 }

@@ -2103,6 +2103,15 @@ static flaglist flags =
     0, 0
   },
 
+  {
+    FK_MACROS, FK_PROTOS, plainFlag,
+    "macroconstdistance",
+    FLG_MACROCONSTDIST,
+    "macro constant name does not match nearby name",
+    "Macro constant name does matches name of a previous declaration, but they are not near each other.",
+    0, 0
+  },
+
   /* 11.2 Function-like Macros */
   
   {

@@ -1321,12 +1321,12 @@ struct stat {
 /*@constant int UF_APPEND@*/
 # endif
 
-int /*@alt _Bool@*/ S_ISBLK (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt _Bool@*/ S_ISCHR (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt _Bool@*/ S_ISDIR (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt _Bool@*/ S_ISFIFO (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt _Bool@*/ S_ISREG (/*@sef@*/ mode_t m) /*@*/;
-int /*@alt _Bool@*/ S_ISLNK (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISBLK (/*@sef@*/ __mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISCHR (/*@sef@*/ __mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISDIR (/*@sef@*/ __mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISFIFO (/*@sef@*/ __mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISREG (/*@sef@*/ __mode_t m) /*@*/;
+int /*@alt _Bool@*/ S_ISLNK (/*@sef@*/ __mode_t m) /*@*/;
 
 int /*@alt _Bool@*/ S_TYPEISMQ (/*@sef@*/ struct stat *buf) /*@*/ ;
 int /*@alt _Bool@*/ S_TYPEISSEM (/*@sef@*/ struct stat *buf) /*@*/ ;

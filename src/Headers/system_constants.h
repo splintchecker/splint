@@ -98,7 +98,7 @@
 ** Size of hash table for file names.
 */
 
-/*@constant int FTHASHSIZE; @*/
+/*@constant unsigned long FTHASHSIZE; @*/
 # define FTHASHSIZE 273
 
 /*

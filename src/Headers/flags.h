@@ -95,7 +95,7 @@ extern bool flagcode_hasArgument (flagcode p_f) /*@*/ ;
 
 extern bool flags_isModeName (cstring p_s) /*@*/ ;
 extern /*@only@*/ cstring describeModes (void) /*@modifies g_messagestream@*/ ;
-extern /*@only@*/ cstring describeMode (/*@observer@*/ cstring mode) /*@*/ ;
+extern /*@only@*/ cstring describeMode (/*@temp@*/ cstring p_mode) /*@*/ ;
 extern void summarizeErrors (void) /*@modifies g_messagestream@*/ ;
 
 extern bool flagcode_isNameChecksFlag (flagcode p_f) /*@*/ ;

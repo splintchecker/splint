@@ -2326,10 +2326,10 @@ bool cscannerHelp_processMacro (void)
 			  else if (!fileloc_withinLines (oloc, loc, 2))
 			    { /* bogus!  will give errors if there is too much whitespace */
 			      voptgenerror
-				(FLG_SYNTAX,
+				(FLG_MACROCONSTDIST,
 				 message 
-				 ("Macro constant name %s does not match name in "
-				  "previous constant declaration.  This constant "
+				 ("Macro constant name %s matches name in "
+				  "distant constant declaration.  This constant "
 				  "is declared at %q", fname, 
 				  fileloc_unparse (oloc)),
 				 loc);

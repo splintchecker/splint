@@ -17,8 +17,8 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 AM_CONFIG_HEADER([config.h:config.hin])
 
 dnl Prepare for Splint processing of config.h
-AH_TOP([/*@ -constmacros@*/])
-AH_BOTTOM([/*@ =constmacros@*/])
+AH_TOP([/*@ -macroconstdecl@*/])
+AH_BOTTOM([/*@ =macroconstdecl@*/])
 
 dnl Checks for programs.
 #drl 12-19-2001 commented out so Splint won't depend on C++

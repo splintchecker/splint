@@ -844,7 +844,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_NULLINIT] = TRUE;
 
   gc.flags[FLG_STRINGLITTOOLONG] = TRUE;
-
+  gc.flags[FLG_MACROCONSTDIST] = TRUE;
   gc.flags[FLG_LIKELYBOOL] = TRUE;
   gc.flags[FLG_ZEROPTR] = TRUE;
   gc.flags[FLG_NUMLITERAL] = TRUE;

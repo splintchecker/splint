@@ -524,9 +524,9 @@ void help_processFlags (int argc, char **argv)
 	{
 	  printMaintainer ();
 	}
-      else if (flags_isModeName (thisarg)) 
+      else if (flags_isModeName (cstring_fromChars (thisarg)))
 	{
-	  llmsg (describeMode (thisarg));
+	  llmsg (describeMode (cstring_fromChars (thisarg)));
 	}
       else if (mstring_equal (thisarg, "flags"))
 	{

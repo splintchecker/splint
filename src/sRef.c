@@ -5516,6 +5516,7 @@ void sRef_setNullStateN (sRef s, nstate n)
     {
       sRef_checkMutable (s);
       s->nullstate = n;
+      DPRINTF (("Set null state ==> %s", sRef_unparseFull (s)));
       sRef_resetAliasKind (s);
     }
 }
@@ -5878,6 +5879,8 @@ sRef sRef_copy (sRef s)
       t->info = sinfo_copy (s);
       t->defstate = s->defstate;
       t->nullstate = s->nullstate;
+      DPRINTF (("Set null state==> %s", sRef_unparseFull (t)));
+
  
       /* start modifications */
       t->bufinfo.bufstate = s->bufinfo.bufstate;
@@ -7252,6 +7255,7 @@ sRef_copyState (sRef s1, sRef s2)
       s1->expinfo = stateInfo_update (s1->expinfo, s2->expinfo);
 
       s1->nullstate = s2->nullstate;
+      DPRINTF (("Set null state==> %s", sRef_unparseFull (s1)));
       s1->nullinfo = stateInfo_update (s1->nullinfo, s2->nullinfo);
 
       valueTable_free (s1->state);  
@@ -9538,6 +9542,7 @@ static void sRef_updateNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef oth
      /*@modifies res@*/
 {
   res->nullstate = other->nullstate;
+  DPRINTF (("update null state==> %s", sRef_unparseFull (res)));
   res->nullinfo = stateInfo_update (res->nullinfo, other->nullinfo);
   sRef_resetAliasKind (res);
 }
@@ -9599,6 +9604,7 @@ void sRef_combineNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other)
     }
 
   res->nullstate = nn;
+  DPRINTF (("update null state==> %s", sRef_unparseFull (res)));
   sRef_resetAliasKind (res);
 }
 

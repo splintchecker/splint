@@ -200,7 +200,7 @@ void hbucket_free (/*@only@*/ hbucket h)
 void 
 cstringTable_free (/*@only@*/ cstringTable h)
 {
-  unsigned int i;
+  unsigned long i;
 
   llassert (cstringTable_isDefined (h)); 
 
@@ -307,11 +307,11 @@ cstring cstringTable_unparse (cstringTable h)
 	  
 	  if (hb != NULL)
 	    {
-	      res = message ("%q%ul. %q\n", res, i, hbucket_unparse (hb));
+	      res = message ("%q%wl. %q\n", res, i, hbucket_unparse (hb));
 	    }
 	}
       
-      res = message ("%qsize: %ul, collisions: %d, empty: %d", 
+      res = message ("%qsize: %wl, collisions: %d, empty: %d", 
 		     res,
 		     h->size, 
 		     cstringTable_countCollisions (h),
@@ -331,7 +331,7 @@ cstring cstringTable_unparse (cstringTable h)
 cstringTable_stats (cstringTable h)
 {
   llassert (cstringTable_isDefined (h)); 
-  return (message ("size: %ul, collisions: %d, empty: %d\n", 
+  return (message ("size: %wl, collisions: %d, empty: %d\n", 
 		   h->size, cstringTable_countCollisions (h),
 		   cstringTable_countEmpty (h)));
 }

@@ -2236,7 +2236,10 @@ transferChecks_passParam (exprNode fexp, uentry arg, bool isSpec,
 	  sRef_clearDerived (base);
 	  sRef_setDefined (base, exprNode_loc (fexp));
 	  usymtab_clearAlias (base);
-	  sRef_setNullUnknown (base, exprNode_loc (fexp));
+	  /* evans 2004-07-31: Don't change state of constants! */
+	  if (!sRef_isConst (base)) {
+	    sRef_setNullUnknown (base, exprNode_loc (fexp));
+	  }
 	}
     }
 
@@ -2504,6 +2507,8 @@ checkTransferNullAux (sRef fref, exprNode fexp, /*@unused@*/ bool ffix,
   alkind tkind = sRef_getAliasKind (tref);
   ctype ttyp = ctype_realType (sRef_getType (tref));
 
+  DPRINTF (("Null transfer: %s => %s", sRef_unparseFull (fref), sRef_unparseFull (tref)));
+
   if (ctype_isUnknown (ttyp))
     {
       ttyp = exprNode_getType (texp);
@@ -2757,6 +2762,8 @@ checkTransferAssignAux (sRef fref, exprNode fexp, /*@unused@*/ bool ffix,
 	    }
 	}
     }
+
+  DPRINTF (("Transfer ==> %s", sRef_unparseFull (tref)));
 }
 
 /*
@@ -3430,6 +3437,7 @@ checkTransferAux (exprNode fexp, /*@exposed@*/ sRef fref, bool ffix,
       setCodePoint ();
       checkTransferNullAux (fref, fexp, ffix, tref, texp, tfix, 
 			    loc, transferType);
+      DPRINTF (("Transfer ==> %s", sRef_unparseFull (fref)));
     }
 
   if (isassign)
@@ -3437,6 +3445,7 @@ checkTransferAux (exprNode fexp, /*@exposed@*/ sRef fref, bool ffix,
       setCodePoint ();
       checkTransferAssignAux (fref, fexp, ffix, tref, texp, tfix,
 			      loc, transferType);
+      DPRINTF (("Transfer ==> %s", sRef_unparseFull (fref)));
     }
 
   /*
@@ -3988,6 +3997,8 @@ checkTransferAux (exprNode fexp, /*@exposed@*/ sRef fref, bool ffix,
       ;
     }
 
+  DPRINTF (("Transfer ==> %s", sRef_unparseFull (fref)));
+  DPRINTF (("Transfer ==> %s", sRef_unparseFull (tref)));
   setCodePoint ();
 }
 

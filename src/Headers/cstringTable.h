@@ -40,7 +40,7 @@ typedef /*@only@*/ hbucket o_hbucket;
 struct s_cstringTable
 {
   unsigned long size;
-  int nentries;
+  unsigned long nentries;
   /*@only@*/ o_hbucket *buckets;
 } ;
 

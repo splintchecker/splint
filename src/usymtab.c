@@ -3818,6 +3818,10 @@ checkGlobalReturn (uentry glob, sRef orig)
 		    }
 		}
 	      
+	      DPRINTF (("Here: %s / %s",
+			uentry_unparseFull (glob),
+			sRef_unparseFull (sr)));
+
 	      if (ctype_isRealPointer (uentry_getType (glob))
 		  && sRef_possiblyNull (sr)
 		  && !uentry_possiblyNull (glob))

@@ -301,7 +301,7 @@ osd_fileExists (cstring filespec)
 {
 # ifdef UNIX
   struct stat buf;
-  return (stat (cstring_toCharsSafe (filespec), &buf) == 0);
+  /*@i3@*/ return (stat (cstring_toCharsSafe (filespec), &buf) == 0); /* spurious */
 # else
 # if defined (WIN32) || defined (OS2)
   FILE *test = fileTable_openReadFile (context_fileTable (), filespec);
@@ -344,7 +344,7 @@ osd_executableFileExists (/*@unused@*/ char *filespec)
     { 
       /* mask by file type */
       /*@-unrecog@*/ /* S_IFMT is not defined */
-      if ((buf.st_mode & S_IFMT) != S_IFDIR /*@=unrecog@*/) /* not a directory */
+      /*@i32@*/ if ((buf.st_mode & S_IFMT) != S_IFDIR /*@=unrecog@*/) /* not a directory */ /* spurious */
 	{
 	  /* as long as it is an executable file */
 # if defined(__IBMC__) && defined(OS2)
@@ -359,12 +359,12 @@ osd_executableFileExists (/*@unused@*/ char *filespec)
 		   | (buf.st_mode & S_IXGRP) |
 		   (buf.st_mode & S_IXOTH)
 # endif
-		   ) != 0);
+		   /*@i4@*/ ) != 0); /* spurious */
 # endif
 	}
     }
 # endif
-  return (FALSE);
+  /*@i4@*/ return (FALSE); /* spurious */
 
 }
 
