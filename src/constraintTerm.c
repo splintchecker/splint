@@ -493,10 +493,16 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
 
       return (t1 == t2);
     }
-  
+
+        /*drl this if statement handles the case where constraintTerm_canGetValue only returns
+	  true for term1 or term2 but no both
+	  if constraintTerm_canGetValue returned tru for both we would have returned in the previous if statement
+	  I suppose this could be done with xor but I've never used xor and don't feel like starting now
+	  besides this way is more effecient.	  
+	*/
   if (constraintTerm_canGetValue (term1) || constraintTerm_canGetValue (term2))
     {
-      /* evans 2001-07-24: is this right? */ /*@i534@*/
+
       return FALSE;
     }
 
@@ -732,7 +738,6 @@ ctype constraintTerm_getCType (constraintTerm term)
       break;
 
     case CTT_INTLITERAL:
-      /*@i888*/ /* hack */
       ct = ctype_signedintegral;
       break;
       
