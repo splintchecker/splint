@@ -1035,7 +1035,7 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 	  $(RM) signature.tab.c signature.tab.h; \
 	fi
 
-Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
+Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison.reset
 	@if test x$(BISON) = xno; then \
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \

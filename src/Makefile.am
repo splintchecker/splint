@@ -296,7 +296,7 @@ Headers/signature_gen.h signature.c: signature.c.der signature.y
 
 ## 11/29/001 drl added copy so that the file cgrammar.c.der is created
 
-Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
+Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison.reset
 	@if test x$(BISON) = xno; then \
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
