@@ -5,6 +5,48 @@
 /*@-nextlinemacros@*/
 
 /*
+** sys/types.h
+**
+** evans - 2001-08-27: from http://www.opengroup.org/onlinepubs/007908799/xsh/systypes.h.html
+*/
+
+typedef /*@integraltype@*/ blkcnt_t;
+typedef /*@integraltype@*/ blksize_t;
+typedef /*@integraltype@*/ clock_t;
+typedef /*@integraltype@*/ clockid_t;
+typedef /*@integraltype@*/ dev_t;
+typedef /*@unsignedintegraltype@*/ fsblkcnt_t;
+typedef /*@unsignedintegraltype@*/ fsfilcnt_t;
+typedef /*@integraltype@*/ gid_t;
+typedef /*@integraltype@*/ id_t;
+typedef /*@unsignedintegraltype@*/ ino_t;
+typedef /*@integraltype@*/ key_t;
+typedef /*@integraltype@*/ mode_t;
+typedef /*@integraltype@*/ nlink_t;
+typedef /*@integraltype@*/ off_t;
+typedef /*@integraltype@*/ pid_t;
+typedef /*@integraltype@*/ pthread_attr_t;
+typedef /*@integraltype@*/ pthread_cond_t;
+typedef /*@integraltype@*/ pthread_condattr_t;
+typedef /*@integraltype@*/ pthread_key_t;
+typedef /*@integraltype@*/ pthread_mutex_t;
+typedef /*@integraltype@*/ pthread_mutexattr_t;
+typedef /*@integraltype@*/ pthread_once_t;
+typedef /*@integraltype@*/ pthread_rwlock_t;
+typedef /*@integraltype@*/ pthread_rwlockattr_t;
+typedef /*@integraltype@*/ pthread_t;
+typedef /*@signedintegraltype@*/ suseconds_t;
+typedef /*@integraltype@*/ time_t;
+typedef /*@integraltype@*/ timer_t;
+typedef /*@integraltype@*/ uid_t;
+typedef /*@unsignedintegraltype@*/ useconds_t;
+
+   /*-------------------------------------------------------------
+     -------------------------------------------------------------
+   */
+
+   
+/*
 ** Extra stuff in some unixen, not in posix.
 */
 
@@ -45,9 +87,6 @@ extern size_t
   fwrite_unlocked (void *pointer, size_t size, size_t num_items, FILE *stream)
   /*@modifies *stream;@*/ ;
 
-extern void funlockfile (FILE *file) /*@modifies *file;@*/ ;
-extern void flockfile (FILE *file) /*@modifies *file@*/ ;
-
 extern void /*@alt void * @*/ 
   memccpy (/*@returned@*/ /*@out@*/ void *s1, 
 	   /*@unique@*/ void *s2, int c, size_t n) 
@@ -57,18 +96,12 @@ extern int strcasecmp (char *s1, char *s2) /*@*/ ;
 extern int strncasecmp (char *s1, char *s2, int n) /*@*/ ;
 extern /*@null@*/ /*@only@*/ char *strdup (char *s) /*@*/ ;
 
-extern /*@null@*/ char *tempnam (char *dir, /*@null@*/ char *pfx) 
-   /*@modifies internalState@*/ ;
-
 extern /*@null@*/ /*@dependent@*/ char *
   index (/*@returned@*/ char *s, char c) /*@*/ ;
 
 extern /*@null@*/ /*@dependent@*/ char *
   rindex (/*@returned@*/ char *s, char c) /*@*/ ;
 
-extern /*@dependent@*/ /*@null@*/ FILE *popen (char *command, char *ttype)
-   /*@modifies fileSystem, errno@*/ ;
-extern int pclose (FILE *stream) /*@modifies fileSystem, *stream, errno@*/ ;
 
 extern double cbrt (double x) /*@modifies errno@*/ ;
 extern double rint (double x) /*@*/ ;
@@ -451,7 +484,7 @@ int getpeername (int s, /*@out@*/ struct sockaddr *name, size_t *namelen)
 	/*@modifies *name, *namelen, errno@*/;
 
 int getsockname (int s, struct sockaddr *address, size_t *address_len)
-  /*?requires maxSet(address) > *address_len@*/ 
+  //   /*@requires maxSet(address) >= ( *address_len) @*/ 
   /*@modifies *address, *address_len, errno@*/;
 
 int getsockopt (int s, int level, int optname, /*@out@*/ void *optval, size_t *optlen)
@@ -524,24 +557,8 @@ socketpair (int d, int type, int protocol, /*@out@*/ int *sv)
 extern void psignal (int sig, const char *msg)
    /*@modifies fileSystem@*/;
 
-/*@unchecked@*/ extern char *optarg;
-/*@unchecked@*/ extern int optind;
-/*@unchecked@*/ extern int optopt;
-/*@unchecked@*/ extern int opterr;
-/*@unchecked@*/ extern int optreset;
-
-	extern int
-getopt (int argc, char * const *argv, const char *optstring)
-	/*@globals optarg, optind, optopt, opterr, optreset@*/
-	/*@modifies optarg, optind, optopt@*/;
-
 	extern int
 setenv (const char *name, const char *value, int overwrite)
-	/*@globals environ@*/
-	/*@modifies *environ, errno@*/;
-
-	extern int
-putenv (const char *string)
 	/*@globals environ@*/
 	/*@modifies *environ, errno@*/;
 
@@ -680,9 +697,9 @@ mprotect (caddr_t addr, int len, int prot)
 	/*@*/;
 
 	extern int
-munmap (caddr_t addr, size_t len)
-	/*@*/;
-
+	int munmap (/*@only@*/ caddr_t addr, size_t len)
+     /*@modifies fileSystem, *addr, errno @*/;
+    
 	extern int
 msync (caddr_t addr, int len, int flags)
 	/*@*/;
@@ -1219,7 +1236,7 @@ struct stat {
 			   this object.  In some filesystem types, this may
 			   vary from file to file */
   blkcnt_t  st_blocks; /*  number of blocks allocated for this object */
-}
+};
 
 /*@constant mode_t S_IFMT@*/
 /*@constant mode_t S_IFBLK@*/
@@ -1246,7 +1263,8 @@ struct stat {
 /*@constant mode_t S_ISVTX@*/
 
 # if 0
-These are the old definitions - they don't appear to be in the Single UNIX Specification
+/*These are the old definitions - they don't appear to be in the Single UNIX Specification */
+
 /*@constant int S_ISTXT@*/
 /*@constant int S_IREAD@*/
 /*@constant int S_IWRITE@*/
@@ -1559,3 +1577,97 @@ char /*@alt int@*/ _tolower(/*@sef@*/ int /*@alt unsigned char@*/);
 # endif
 
 /* other ctype.h functions in ansi.h */
+
+/*
+** stdlib.h
+**
+** evans 2001-08-27 - added from http://www.opengroup.org/onlinepubs/007908799/xsh/drand48.html
+*/
+
+double drand48 (void) /*@modifies internalState@*/ ; 
+double erand48 (unsigned short int xsubi[3]) /*@modifies internalState@*/ ; 
+void srand48 (long int seedval) /*@modifies internalState@*/ ; 
+
+/*
+** netinet/in.h
+**
+** evans 2001-08-27 - added from http://www.opengroup.org/onlinepubs/007908799/xns/netinetin.h.html
+*/
+
+typedef /*@unsignedintegraltype@*/ in_port_t; /* An unsigned integral type of exactly 16 bits. */
+typedef /*@unsignedintegraltype@*/ in_addr_t; /* An unsigned integral type of exactly 32 bits. */
+
+typedef /*@unsignedintegraltype@*/ sa_family_t;
+
+struct in_addr {
+  in_addr_t      s_addr;
+} ;
+
+struct sockaddr_in {
+  sa_family_t    sin_family;
+  in_port_t      sin_port;
+  struct in_addr sin_addr;
+  unsigned char  sin_zero[8];
+} ;
+
+
+/* The <netinet/in.h> header defines the following macros for use as values of the level argument of 
+   getsockopt() and setsockopt(): 
+ */
+
+/*@constant int IPPROTO_IP@*/
+/*@constant int IPPROTO_ICMP@*/
+/*@constant int IPPROTO_TCP@*/
+/*@constant int IPPROTO_UDP@*/
+
+/* The <netinet/in.h> header defines the following macros for use as destination addresses for connect(), sendmsg() and sendto(): 
+ */
+
+/*@constant in_addr_t INADDR_ANY@*/
+/*@constant in_addr_t INADDR_BROADCAST@*/
+
+/*
+** dirent.h
+**
+** evans 2001-08-27 - added from http://www.opengroup.org/onlinepubs/007908799/xsh/dirent.h.html
+*/
+
+struct dirent
+{
+  ino_t  d_ino;
+  char   d_name[];    
+};
+
+typedef /*@abstract@*/ DIR;
+
+/*@i32  need to check annotations on these */
+int closedir (DIR *) /*:errorcode -1*/ ; 
+/*@null@*/ DIR *opendir(const char *) ;
+struct dirent *readdir(DIR *);
+int readdir_r(DIR *, struct dirent *, struct dirent **);
+void rewinddir(DIR *);
+void seekdir(DIR *, long int);
+long int telldir(DIR *);
+
+/*drl added these functions
+  stpcpy and stpncpy are found on linux but
+  don't seem to be present on other unixes
+
+  thanks to Jeff Johnson for pointing out that
+  these functions were in the unix library
+*/
+
+/* this function is like strcpy but it reutrns a pointer to the null terminated character in dest instead of the beginning of dest */
+
+extern char * stpcpy(/*@out@*/ /*@returned@*/ char * dest, const char * src)
+             /*@modifies *dest @*/
+     /*@requires maxSet(dest) >= maxRead(src) @*/
+     /*@ensures MaxRead(dest) == MaxRead (src) /\ MaxRead(result) == 0 /\ MaxSet(result) == ( maxSet(dest) - MaxRead(src) ); @*/;
+
+
+extern char * stpncpy(/*@out@*/ /*@returned@*/ char * dest,
+		      const char * src, size_t n)
+           /*@modifies *dest @*/
+   /*@requires MaxSet(dest) >= ( n - 1 ); @*/ /*@ensures MaxRead (src) >= MaxRead(dest) /\ MaxRead (dest) <= n; @*/
+  ; 
+

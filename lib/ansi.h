@@ -558,7 +558,7 @@ extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@*/
 extern /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@special@*/ void *p, 
 	    size_t size) /*@releases p@*/ /*@modifies *p@*/
-     /*@ensures MaxSet(result) >= (size - 1) @*/;
+     /*@ensures MaxSet(result) == (size - 1) @*/;
 # endif
 
 /*
