@@ -872,7 +872,7 @@ void /*@alt void * @*/
      modifed  12/29/2000
   */
 
-void /*@alt char * @*/
+void /*@alt char * @*/ 
   strcpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2) 
      /*@modifies *s1@*/ 
      /*@requires maxSet(s1) >= maxRead(s2) @*/
