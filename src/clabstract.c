@@ -2018,15 +2018,15 @@ doVaDcl ()
 		}
 	      else 
 		{
-		  if (ctype_isAbstract (ct))
+		  if (ctype_isAbstract (rt))
 		    {
 		      voptgenerror 
 			(FLG_ABSTRACT,
 			 message
-			 ("Modifies clause in header file arrow accesses abstract "
+			 ("Modifies clause arrow accesses inaccessible abstract "
 			  "type %s (interface modifies clause should not depend "
 			  "on or expose type representation): %q",
-			  ctype_unparse (ct),
+			  ctype_unparse (rt),
 			  sRef_unparse (s)),
 			 g_currentloc);
 		    }

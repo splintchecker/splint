@@ -23,7 +23,7 @@
 /* Define to disable support LCL files */
 #undef NOLCL
 
-/* Splint's version number and release date */
+/* Splint's version number and configure/build date */
 #undef SPLINT_VERSION
 
 /* The system's main include directory */

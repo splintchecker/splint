@@ -4460,8 +4460,8 @@ void usymtab_exitScope (exprNode expr)
       /*@i@*/ lctab->env = utab;  
       /*@i@*/ utab = ctab;
     /*@-branchstate@*/ } /*@=branchstate@*/
-/*@-globstate@*/
-}
+  /*@-globstate@*/
+/*@i523@*/ }
 /*@=globstate@*/
 
 /*

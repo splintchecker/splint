@@ -1072,9 +1072,10 @@ cstring osd_outputPath (cstring filename)
 	      cstring_free (rel_buffer);
 	      return cstring_copy (filename);
 	    }
-        }
+        } /*@-usereleased@*/
       while ((*rel_buf_p++ = *path_p++) != '\0') ;
-      
+      /*@=usereleased@*/ /*@i523! shouldn't need these */
+
       --rel_buf_p;
       if (*(rel_buf_p-1) == '/')
         *--rel_buf_p = '\0';

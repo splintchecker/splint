@@ -2982,7 +2982,7 @@ EOF
 LCL_PARSE_VERSION="Splint 3.0.0.20"
 
 cat >>confdefs.h <<EOF
-#define SPLINT_VERSION "$LCL_PARSE_VERSION --- `cat $srcdir/src/DATE`"
+#define SPLINT_VERSION "$LCL_PARSE_VERSION --- `date +"%d %b %Y"`"
 EOF
 
 cat >>confdefs.h <<EOF

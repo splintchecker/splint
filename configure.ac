@@ -125,8 +125,8 @@ AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, ".$PATH_SEPARATOR$myprefix/share/splint
 # These used to be in herald.h
 LCL_PARSE_VERSION="AC_PACKAGE_NAME AC_PACKAGE_VERSION"
 AC_DEFINE_UNQUOTED(SPLINT_VERSION,
-                   "$LCL_PARSE_VERSION --- `cat $srcdir/src/DATE`",
-                   [Splint's version number and release date])
+                   "$LCL_PARSE_VERSION --- `date +"%d %b %Y"`",
+                   [Splint's version number and configure/build date])
 AC_DEFINE_UNQUOTED(LCL_PARSE_VERSION, "$LCL_PARSE_VERSION",
                    [Splint's version number])
 AC_DEFINE_UNQUOTED(LCL_COMPILE,

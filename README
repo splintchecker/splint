@@ -1,11 +1,18 @@
-			Splint Version 3.0.0.20
-			     Alpha Release
-			    29 December 2001
+	  Splint - annotation-assisted static program checker
+			 http://www.splint.org
 
-LCLint Documentation
+			Copyright (C) 1994-2002
+			University of Virginia,
+		 Massachusetts Institute of Technology
+		 
+			    Version 3.0.0.20
+			     Alpha Release
+			    30 December 2001
+
+Splint Documentation
 ====================
 
-For documentation on LCLint, please see http://www.splint.org
+For documentation on Splint, please see http://www.splint.org
 
 WARNING: this is an Alpha release - new features and changes are not
 reflected in the documentation.  

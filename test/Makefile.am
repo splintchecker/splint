@@ -51,7 +51,7 @@ UNITTESTS = \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing slovaknames specclauses special stack staticarray strings \
-  structassign typequals ud ulstypes union unreachable unsignedcompare \
+  structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
   unused ullint utypes void
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
@@ -689,11 +689,21 @@ ulstypes:
 	$(SPLINTR) ulstypes.c -expect 8
 	$(SPLINTR) ulstypes.c +ignorequals 
 	$(SPLINTRN) ulstypes.c +strict -exportheader -exportheadervar -expect 28
+
 # 3 more detected with version 2.5 (change in -numliteral setting)
 
 .PHONY: union
 union:
 	$(SPLINTR) +memchecks union.c -expect 8
+
+###
+### Added 2001-12-30: fixed union initializer checking in response to
+### bug report from Jim Zelenka.
+###
+
+.PHONY: unioninit
+unioninit:
+	$(SPLINTR) unioninit.c -expect 2
 
 .PHONY: unreachable
 unreachable:

@@ -7894,6 +7894,10 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
   ctype t2 = exprNode_getType (val);
   bool hasError = FALSE;
   
+  DPRINTF (("Check one init: %s / %s",
+	    exprNode_unparse (el),
+	    exprNode_unparse (val)));
+
   if (ctype_isUnknown (t1))
     {
       voptgenerror (FLG_IMPTYPE,
@@ -8052,6 +8056,50 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 		} end_exprNodeList_elements;
 	    }
 	}
+      /* evans 2001-12-30: added to fix bug reported by Jim Zelenka */
+      else if (ctype_isUnion (ctype_realType (t1)))
+	{
+	  uentryList fields = ctype_getFields (t1);
+	  int i = 0;
+
+	  /*
+	  ** Union initializers set the first member always.
+	  */
+
+	  DPRINTF (("Union initializer: %s / %s",
+		    exprNode_unparse (el), ctype_unparse (ctype_realType (t1))));
+
+	  if (exprNodeList_size (vals) != 1)
+	    {
+	      hasError = optgenerror 
+		(FLG_TYPE,
+		 message ("Initializer block for union "
+			  "%s has %d elements, union initializers should have one element: %q",
+			  exprNode_unparse (el),
+			  exprNodeList_size (vals),
+			  exprNodeList_unparse (vals)),
+		 val->loc);	  
+	    }
+	  else
+	    {
+	      exprNode oneval = exprNodeList_head (vals);
+	      uentry thisfield = uentryList_getN (fields, i);
+	      exprNode newel =
+		exprNode_fieldAccessAux (exprNode_fakeCopy (el),
+					 exprNode_loc (el),
+					 uentry_getName (thisfield));
+	      
+	      if (exprNode_isDefined (newel))
+		{
+		  if (exprNode_checkOneInit (newel, oneval))
+		    {
+		      hasError = TRUE;
+		    }
+		  
+		  exprNode_freeIniter (newel);
+		}
+	    }
+	}
       else
 	{
 	  hasError = optgenerror 
@@ -8088,6 +8136,8 @@ static exprNode
 exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
 {
   exprNode ret;
+
+  DPRINTF (("Initialization: %s", idDecl_unparse (t)));
 
   if (usymtab_exists (idDecl_observeId (t)))
     {
@@ -8134,6 +8184,7 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
       ue = uentry_makeUnrecognized (idDecl_observeId (t), fileloc_copy (g_currentloc));
       /*!! fileloc_copy (g_currentloc)); */
       /*@i32!!! should get error without this */
+
       ret = exprNode_fromIdentifierAux (ue);
 
       /*
@@ -8209,7 +8260,7 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 	    {
 	      sRef_setDefState (lhs->sref, SS_PARTIAL, fileloc_undefined);
 	    }
-
+	  
 	  (void) exprNode_checkOneInit (lhs, e);
 
 	  if (uentry_isStatic (ue))

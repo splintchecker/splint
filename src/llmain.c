@@ -97,7 +97,7 @@ static bool readOptionsFile (cstring p_fname,
    /*@modifies fileSystem, internalState, *p_passThroughArgs@*/ ;
    
 static void loadrc (FILE *p_rcfile, cstringSList *p_passThroughArgs)
-   /*@modifies *p_passThroughArgs@*/
+   /*@modifies *p_passThroughArgs, p_rcfile@*/
    /*@ensures closed p_rcfile@*/ ;
 
 static void describeVars (void);
@@ -773,7 +773,6 @@ int main (int argc, char *argv[])
   {
     cstring home = osd_getHomeDir ();
     cstring fname  = cstring_undefined;
-    FILE *rcfile;
     bool defaultf = TRUE;
     bool nof = FALSE;
 
@@ -808,7 +807,7 @@ int main (int argc, char *argv[])
 		  {
 		    defaultf = FALSE;
 		    fname = cstring_fromChars (argv[i]);
-		    readOptionsFile (fname, &passThroughArgs, TRUE);
+		    (void) readOptionsFile (fname, &passThroughArgs, TRUE);
 		  }
 		else
 		  llfatalerror
@@ -859,6 +858,9 @@ int main (int argc, char *argv[])
 				homename, altname, homename),
 		       g_currentloc);
 		  }
+
+		cstring_free (homename);
+		cstring_free (altname);
 	      }
 	  }
 	
@@ -1611,11 +1613,13 @@ int main (int argc, char *argv[])
 			} 
 		    }
 		  else
+		    {
 		      if (!isQuiet) 
 			{
 			  llmsg (message ("Finished checking --- %sno code warnings",
 					  specErrors));
 			}
+		    }
 		}
 	      else
 		{
@@ -2270,7 +2274,7 @@ bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
 
 	  if (context_getFlag (FLG_SHOWSCAN))
 	    {
-	      lldiagmsg (message ("< reading options from %s >", 
+	      lldiagmsg (message ("< reading options from %q >", 
 				  fileloc_outputFilename (g_currentloc)));
 	    }
 	  
@@ -2300,6 +2304,7 @@ bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
 
 void
 loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
+   /*@modifies rcfile@*/
    /*@ensures closed rcfile@*/
 {
   char *s = mstring_create (MAX_LINE_LENGTH);
@@ -2525,7 +2530,6 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			    {
 			      DPRINTF (("Set value flag: %s", extra));
 			      setValueFlag (opt, extra);
-			      cstring_free (extra);
 			    }
 			  else if (opt == FLG_OPTF)
 			    {
@@ -2537,25 +2541,30 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			      llassert (inputStream_isUndefined (initFile));
 			      
 			      initFile = inputStream_create 
-				(extra, 
+				(cstring_copy (extra), 
 				 cstring_makeLiteralTemp (LCLINIT_SUFFIX),
 				 FALSE);
-# else
-			      cstring_free (extra);
 # endif
 			    }
 			  else if (flagcode_hasString (opt))
 			    {
+			      DPRINTF (("Here: %s", extra));
+
+			      /*
+			      ** If it has "'s, we need to remove them.
+			      */
+
 			      if (cstring_firstChar (extra) == '\"')
 				{
 				  if (cstring_lastChar (extra) == '\"')
 				    {
-				      char *extras = cstring_toCharsSafe (extra);
-				      
-				      llassert (extras[strlen(extras) - 1] == '\"');
-				      extras[strlen(extras) - 1] = '\0';
-				      extra = cstring_fromChars (extras + 1); 
-				      DPRINTF (("Remove quotes: %s", extra));
+				      cstring unquoted = cstring_copyLength 
+					(cstring_toCharsSafe (cstring_suffix (extra, 1)),
+					 cstring_length (extra) - 2);
+
+				      DPRINTF (("string flag: %s -> %s", extra, unquoted));
+				      setStringFlag (opt, unquoted);
+				      cstring_free (extra);
 				    }
 				  else
 				    {
@@ -2564,17 +2573,24 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 					 message ("Unmatched \" in option string: %s", 
 						  extra),
 					 g_currentloc);
+				      setStringFlag (opt, extra);
 				    }
 				}
-			      
-			      setStringFlag (opt, extra);
+			      else
+				{
+				  DPRINTF (("No quotes: %s", extra));
+				  setStringFlag (opt, extra);
+				}
+
+			      extra = cstring_undefined;
 			    }
 			  else
 			    {
-			      cstring_free (extra);
 			      BADEXIT;
 			    }
 			}
+
+		      cstring_free (extra); 
 		    }
 		  else
 		    {
@@ -2617,7 +2633,7 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 
       if (!(osd_fileIsReadable (ppfname)))
 	{
-	  lldiagmsg (message ("Cannot open file: %s", osd_outputPath (ppfname)));
+	  lldiagmsg (message ("Cannot open file: %q", osd_outputPath (ppfname)));
 	  ppfname = cstring_undefined;
 	}
 

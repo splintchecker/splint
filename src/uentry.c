@@ -43,7 +43,7 @@ static bool uentry_isReallySpecified (uentry p_e) /*@*/ ;
 static void uentry_checkIterArgs (uentry p_ue);
 static cstring uentry_dumpAux (uentry p_v, bool p_isParam);
 
-static void uentry_showWhereLastKind (uentry p_spec) /*@*/ ; 
+static void uentry_showWhereLastKind (uentry p_spec) /*@modifies g_msgstream@*/ ; 
 
 static void uentry_combineModifies (uentry p_ue, /*@owned@*/ sRefSet p_sr) 
      /*@modifies p_ue@*/ ;
@@ -8576,8 +8576,8 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	  unew->info->fcn->specclauses = stateClauseList_undefined;
 	  /*@-branchstate@*/ 
 	}
-      /*@=branchstate@*/ /*@i23 shouldn't need this@*/
     }
+  /*@=branchstate@*/ /*@i23 shouldn't need this@*/
 
   if (fileloc_isUndefined (old->whereDeclared))
     {
@@ -8591,7 +8591,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
     {
       /* no change */
     }
-}
+/*@i523 @*/ }
 
 void
 uentry_mergeConstantValue (uentry ue, /*@only@*/ multiVal m)
