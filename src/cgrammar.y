@@ -679,13 +679,13 @@ fcnBody
      exprNode_checkFunctionBody ($3); $$ = $3; 
      context_exitInner ($3); 
    }
- | initializerList 
-   { doneParams (); context_enterInnerContext (); }
+ | { context_enterOldStyleScope (); } initializerList 
+   { oldStyleDoneParams (); context_enterInnerContext (); } 
    compoundStmt 
    {
-     context_exitInner ($3);
-     exprNode_checkFunctionBody ($3); 
-     $$ = $3; /* old style */ 
+     exprNode_checkFunctionBody ($4); 
+     $$ = $4; /* oldstyle */ 
+     context_exitInner ($4);
    } 
  
 fcnDef
@@ -1569,7 +1569,6 @@ compoundStmtRest
    { $$ = exprNode_notReached (exprNode_updateLocation (exprNode_concat ($1, $2), 
 							lltok_getLoc ($3))); 
    }
-
 
 compoundStmtAux
  : TLBRACE compoundStmtRest 

@@ -63,7 +63,8 @@ typedef enum {
   CX_GLOBAL, CX_INNER, 
   CX_FUNCTION, CX_FCNDECLARATION,
   CX_MACROFCN, CX_MACROCONST, CX_UNKNOWNMACRO, 
-  CX_ITERDEF, CX_ITEREND,
+  CX_ITERDEF, CX_ITEREND, 
+  CX_OLDSTYLESCOPE, /* Parsing old-style parameter declarations */
   CX_LCL, CX_LCLLIB, CX_MT
 } kcontext;
 
@@ -1759,6 +1760,61 @@ context_enterFunction (/*@exposed@*/ uentry e)
   sRef_enterFunctionScope ();
 }
 
+void
+context_enterOldStyleScope (void)
+{
+  gc.kind = CX_OLDSTYLESCOPE;
+  DPRINTF (("Enter old style scope!"));
+  usymtab_enterFunctionScope (uentry_undefined);
+}
+
+void 
+context_completeOldStyleFunction (uentry e)
+{
+  llassert (gc.kind == CX_OLDSTYLESCOPE);
+
+  gc.kind = CX_FUNCTION;
+  gc.cont.fcn = e;
+  
+  DPRINTF (("Enter function: %s", uentry_unparse (e)));
+  
+  if (uentry_hasAccessType (e))
+    {
+      gc.acct = typeIdSet_subtract (typeIdSet_union (gc.facct, uentry_accessType (e)), 
+				    gc.nacct);
+    }
+  else
+    {
+      gc.acct = gc.facct;
+    }
+  
+  DPRINTF (("Enter function: %s / %s", uentry_unparse (e), 
+	    typeIdSet_unparse (gc.acct)));
+  
+  gc.showfunction = context_getFlag (FLG_SHOWFUNC);
+  
+  if (!globSet_isEmpty (uentry_getGlobs (e))) 
+    {
+      llfatalerror (message ("%q: Old-style function declaration uses a clause (rewrite with function parameters): %q",
+			     fileloc_unparse (g_currentloc), uentry_unparse (e)));
+    }
+
+  gc.showfunction = context_getFlag (FLG_SHOWFUNC);
+  
+  gc.globs = uentry_getGlobs (e);
+  globSet_clear (gc.globs_used);
+
+  gc.mods = uentry_getMods (e);
+
+  if (!sRefSet_isEmpty (gc.mods))
+    {
+      llfatalerror (message ("%q: Old-style function declaration uses a clause (rewrite with function parameters): %q",
+			     fileloc_unparse (g_currentloc), uentry_unparse (e)));
+    }
+
+  sRef_enterFunctionScope ();
+}
+
 static bool context_checkStrictGlobals (void)
 {
   return (context_getFlag (FLG_CHECKSTRICTGLOBALS));
@@ -2987,7 +3043,6 @@ context_enterInnerContext (void)
       ;
     }
 
-  
   usymtab_enterScope ();
   pushClause (NOCLAUSE);
 }

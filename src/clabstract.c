@@ -631,6 +631,7 @@ static /*@exposed@*/ uentry clabstract_globalDeclareFunction (idDecl tid)
   ue = usymtab_supGlobalEntryReturn (ue);
   DPRINTF (("After supercede function: %s", uentry_unparseFull (ue)));
 
+  DPRINTF (("Enter function: %s", uentry_unparseFull (ue)));
   context_enterFunction (ue);
   enterFunctionParams (uentry_getParams (ue));
 
@@ -664,6 +665,9 @@ static /*@only@*/ uentry globalDeclareOldStyleFunction (idDecl tid)
   uentry_setDefined (ue, g_currentloc);
   uentry_checkParams (ue);
   resetStorageClass ();
+
+  /* context_enterOldStyleScope (); */
+
   return (ue);
 }
 
@@ -689,6 +693,28 @@ static void oldStyleDeclareFunction (/*@only@*/ uentry e)
   resetStorageClass ();
 }
 
+static void oldStyleCompleteFunction (/*@only@*/ uentry e)
+{
+  uentryList params = saveParamList;
+  ctype rt = uentry_getType (e);
+
+  llassert (ctype_isFunction (rt));
+
+  if (uentry_hasStateClauseList (e) 
+      || uentry_hasConditions (e))
+    {
+      llfatalerror (message ("%q: Old-style function declaration uses a clause (rewrite with function parameters): %q",
+			     fileloc_unparse (g_currentloc), uentry_unparse (e)));
+    }
+
+  e = usymtab_supGlobalEntryReturn (e);
+
+  context_completeOldStyleFunction (e);
+  enterFunctionParams (params);
+  saveParamList = uentryList_undefined;
+  resetStorageClass ();
+}
+
 void clabstract_declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
 {
   uentry ue;
@@ -699,6 +725,7 @@ void clabstract_declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
     {
       ue = globalDeclareOldStyleFunction (tid);
       saveFunction = ue;
+      DPRINTF (("Set save function: %s", uentry_unparseFull (ue)));
     }
   else
     {
@@ -1160,7 +1187,7 @@ unsetProcessingVars ()
 }
 
 void 
-doneParams ()
+oldStyleDoneParams ()
 {  
   if (ProcessingParams)
     {
@@ -1177,7 +1204,7 @@ doneParams ()
 	  uentry_setType (saveFunction, ct2);
 	  ProcessingParams = FALSE;
 
-	  oldStyleDeclareFunction (saveFunction);
+	  oldStyleCompleteFunction (saveFunction);
 	  saveFunction = uentry_undefined;
 	  resetGlobals ();
 	}
@@ -1204,6 +1231,8 @@ checkDoneParams ()
 
       ctype ct = ctype_getReturnType (uentry_getType (saveFunction));
       ctype ct2;
+
+      DPRINTF (("save function: %s", uentry_unparseFull (saveFunction)));
 
       uentryList_elements (saveParamList, current)
 	{
@@ -1292,7 +1321,7 @@ void processNamedDecl (idDecl t)
   t = idDecl_fixBase (t, processingType);
 
   DPRINTF (("Declare: %s", idDecl_unparse (t)));
-
+  
   if (ProcessingGlobals)
     {
       cstring id = idDecl_getName (t);
@@ -1338,9 +1367,11 @@ void processNamedDecl (idDecl t)
 	    {
 	      uentry cparam = uentryList_getN (saveParamList, paramno);
 
+	      DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
 	      uentry_setType (cparam, idDecl_getCtype (t));
 	      uentry_reflectQualifiers (cparam, idDecl_getQuals (t));
 	      uentry_setDeclaredOnly (cparam, context_getSaveLocation ());
+	      DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
 	    }
 	  else
 	    {
@@ -1727,6 +1758,8 @@ void setNewStyle ()              { flipNewStyle = TRUE; }
   voptgenerror (FLG_OLDSTYLE,
 		cstring_makeLiteral ("Old style function declaration"),
 		g_currentloc); 
+
+  DPRINTF (("Handle old style params: %s", uentryList_unparseFull (params)));
 
   uentryList_elements (params, current)
     {

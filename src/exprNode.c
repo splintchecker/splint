@@ -6103,7 +6103,7 @@ exprNode_cond (/*@keep@*/ exprNode pred, /*@keep@*/ exprNode ifclause,
 	}
       else /* all errors! */
 	{
-	  ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	  ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	}
     }
   
@@ -6590,7 +6590,7 @@ exprNode exprNode_if (/*@only@*/ exprNode pred, /*@only@*/ exprNode tclause)
     {
       if (exprNode_isError (tclause))
 	{
-	  ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	  ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	}
       else
 	{
@@ -6712,7 +6712,7 @@ exprNode exprNode_ifelse (/*@only@*/ exprNode pred,
 	{
 	  if (exprNode_isError (eclause))
 	    {
-	      ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	      ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	    }
 	  else
 	    {
@@ -7116,7 +7116,7 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
     {
       if (exprNode_isError (b))
 	{
-	  ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	  ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	}
       else
 	{
@@ -7212,7 +7212,7 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
     {
       if (exprNode_isError (b))
 	{
-	  ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	  ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	}
       else
 	{
@@ -7257,7 +7257,7 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
 
   ret->kind = XPR_DOWHILE;
   ret->edata = exprData_makePair (t, b);
-    return ret;
+  return ret;
 }
 
 exprNode exprNode_for (/*@keep@*/ exprNode inc, /*@keep@*/ exprNode body)
@@ -7692,7 +7692,7 @@ exprNode exprNode_comma (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
     {
       if (exprNode_isError (e2))
 	{
-	  ret = exprNode_createLoc (ctype_unknown, g_currentloc);
+	  ret = exprNode_createLoc (ctype_unknown, fileloc_copy (g_currentloc));
 	}
       else
 	{
@@ -7978,8 +7978,13 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
     }
   else
     {
-      uentry ue = uentry_makeUnrecognized (idDecl_observeId (t),
-					   g_currentloc);
+      uentry ue;
+
+      DPRINTF (("Unrecognized: %s", idDecl_unparse (t)));
+
+      ue = uentry_makeUnrecognized (idDecl_observeId (t), fileloc_copy (g_currentloc));
+      /*!! fileloc_copy (g_currentloc)); */
+      /*@i32!!! should get error without this */
       ret = exprNode_fromIdentifierAux (ue);
 
       /*
