@@ -88,6 +88,7 @@ Finished checking --- no code processed
    booltrue                    
    booltype                    
    bounds                      
+   boundscompacterrormessages  
    boundsread                  
    boundswrite                 
    branchstate                 

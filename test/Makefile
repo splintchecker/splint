@@ -80,7 +80,7 @@ MV = mv
 OBJEXT = o
 PACKAGE = splint
 RM = rm
-VERSION = 3.0.1.4
+VERSION = 3.0.1.5
 am__include = include
 am__quote = 
 install_sh = /net/af9/drl7x/reTmp/LCLintDev/config/install-sh
@@ -120,7 +120,7 @@ UNITTESTS = \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
   macros macrosef merge mergenull modifies modtest moduncon \
-  mongoincludes mystrncat noeffect null observer oldstyle  outglob outparam \
+  mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts slovaknames \
   specclauses \
@@ -377,7 +377,6 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./nullret.c \
               ./observer.c \
               ./oldstyle.c \
-              ./oldstyle2.c \
               ./outglob.c \
               ./outparam.c \
               ./postnotnull.c \
@@ -775,7 +774,7 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
-                  stringliteral.expect  stringliteral.c
+                  moreBufferTests2/fixedArrayType.c oldstyle2.c
 
 subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -805,7 +804,7 @@ top_distdir = ..
 distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
-	$(mkinstalldirs) $(distdir)/./conditions $(distdir)/./db1 $(distdir)/./db2 $(distdir)/./db3 $(distdir)/./fileio $(distdir)/./for $(distdir)/./globalbufferannotation $(distdir)/./manual $(distdir)/./maxset $(distdir)/./mergestate $(distdir)/./metastate $(distdir)/./moreBufferTests $(distdir)/./moreBufferTests2 $(distdir)/./nullterminatedtest $(distdir)/./simplebufferConstraintTests $(distdir)/./sizeoftest $(distdir)/./strchr $(distdir)/./suppressfile $(distdir)/./tainted $(distdir)/./tclauses $(distdir)/./temp $(distdir)/./tests2.2 $(distdir)/./tests2.2a $(distdir)/./tests2.4 $(distdir)/./tests2.4/subdir $(distdir)/./tests2.5 $(distdir)/./warnuse
+	$(mkinstalldirs) $(distdir)/./conditions $(distdir)/./db1 $(distdir)/./db2 $(distdir)/./db3 $(distdir)/./fileio $(distdir)/./for $(distdir)/./globalbufferannotation $(distdir)/./manual $(distdir)/./maxset $(distdir)/./mergestate $(distdir)/./metastate $(distdir)/./moreBufferTests $(distdir)/./moreBufferTests2 $(distdir)/./nullterminatedtest $(distdir)/./simplebufferConstraintTests $(distdir)/./sizeoftest $(distdir)/./strchr $(distdir)/./suppressfile $(distdir)/./tainted $(distdir)/./tclauses $(distdir)/./temp $(distdir)/./tests2.2 $(distdir)/./tests2.2a $(distdir)/./tests2.4 $(distdir)/./tests2.4/subdir $(distdir)/./tests2.5 $(distdir)/./warnuse $(distdir)/moreBufferTests2
 	@for file in $(DISTFILES); do \
 	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
@@ -1662,6 +1661,7 @@ buffertest:
 .PHONY: $(SUBDIRTESTS)
 $(SUBDIRTESTS):
 	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)"
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
