@@ -3249,7 +3249,7 @@ s/^[^=]*=[ 	]*$//;
 }'
 fi
 
-DEFS=-DHAVE_CONFIG_H
+DEFS=-DHAVE_CONFIG_H 
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files

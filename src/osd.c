@@ -1041,7 +1041,7 @@ cstring osd_outputPath (cstring filename)
   int unmatched_slash_count = 0;
   size_t filename_len = cstring_length (filename);
   
-  llassertretval (filename_len > 0, /*@-type@*/ filename /*@=type@*/);
+  llassertretval (filename_len > 0, filename);
 
   /*@access cstring@*/
   path_p = filename;

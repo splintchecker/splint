@@ -64,7 +64,7 @@
   s->nspace = constraintListBASESIZE;
   s->elements = (constraint *)
     dmalloc (sizeof (*s->elements) * constraintListBASESIZE);
-
+  
   return (s);
 }
 

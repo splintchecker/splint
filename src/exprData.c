@@ -295,32 +295,31 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
 
 /*@exposed@*/ exprNode exprData_getOpB (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->op->b);
 }
 
 /*@observer@*/ lltok exprData_getOpTok (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->op->op);
 }
 
 /*@exposed@*/ exprNode exprData_getPairA (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->pair->a);
 }
 
 /*@exposed@*/ exprNode exprData_getPairB (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->pair->b);
 }
 
-
 /*@exposed@*/ uentry exprData_getIterSname (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, uentry_undefined);
   return (data->iter->sname);
 }
 
@@ -332,19 +331,19 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
 
 /*@exposed@*/ exprNode exprData_getIterBody (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->iter->body);
 }
 
 /*@exposed@*/ uentry exprData_getIterEname (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, uentry_undefined);
   return (data->iter->ename);
 }
 
 /*@exposed@*/ exprNode exprData_getFcn (exprData data) /*@*/
 {
-  llassert (data != exprData_undefined);
+  llassertretval (data != exprData_undefined, exprNode_undefined);
   return (data->call->fcn);
 }
 

@@ -1815,6 +1815,10 @@ ctype_unparse (ctype c)
     {
       return cstring_makeLiteralTemp ("?");
     }
+  else if (ctype_isAnytype (c))
+    {
+      return cstring_makeLiteralTemp ("<any>");
+    }
   else
     {
       /*@-modobserver@*/
@@ -1911,6 +1915,7 @@ ctype_getBaseType (ctype c)
 
   switch (ctentry_getKind (cte))
     {
+    case CTK_ANYTYPE:
     case CTK_UNKNOWN:
     case CTK_INVALID:
     case CTK_PLAIN:
@@ -2533,8 +2538,18 @@ ctype ctype_combine (ctype dominant, ctype modifier)
   
 ctype ctype_resolve (ctype c)
 {
-  if (ctype_isUnknown (c)) return ctype_int;
-  return c;
+  if (ctype_isUnknown (c)) 
+    {
+      return ctype_int;
+    }
+  else if (c == ctype_anytype)
+    {
+      return ctype_unknown;
+    }
+  else
+    {
+      return c;
+    }
 }
 
 ctype ctype_fromQual (qual q)

@@ -5907,7 +5907,7 @@ usymtab_printComplete ()
 	  for (i = looplow; i < s->nentries; i++)
 	    {
 	      printf ("%s%3d %s\n", ind, i, 
-		      cstring_toCharsSafe (uentry_unparse (s->entries[i])));
+		      cstring_toCharsSafe (uentry_unparseFull (s->entries[i])));
 	    }
 	}
       else
@@ -5916,7 +5916,7 @@ usymtab_printComplete ()
 	  for (i = 0; i < s->nentries; i++)
 	    {
 	      printf ("%s%3d %s\n", ind, i, 
-		     cstring_toCharsSafe (uentry_unparse (s->entries[i])));
+		     cstring_toCharsSafe (uentry_unparseFull (s->entries[i])));
 	    }
 	}
       

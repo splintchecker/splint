@@ -3152,17 +3152,20 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
 
 /*@notnull@*/ uentry uentry_makeConstant (cstring n, ctype t, fileloc f)
 {
-  return (uentry_makeConstantAux (n, t, f, FALSE, FALSE, multiVal_unknown ()));
+  uentry ue = uentry_makeConstantAux (n, t, f, FALSE, FALSE, multiVal_unknown ());
+  return ue;
 }
 
 /*@notnull@*/ uentry uentry_makeConstantValue (cstring n, ctype t, fileloc f, bool priv, multiVal val)
 {
-  return (uentry_makeConstantAux (n, t, f, priv, FALSE, val));
+  uentry ue = uentry_makeConstantAux (n, t, f, priv, FALSE, val);
+  return ue;
 }
 
 /*@notnull@*/ uentry uentry_makeMacroConstant (cstring n, ctype t, fileloc f)
 {
-  return (uentry_makeConstantAux (n, t, f, FALSE, TRUE, multiVal_unknown ()));
+  uentry ue = uentry_makeConstantAux (n, t, f, FALSE, TRUE, multiVal_unknown ());
+  return ue;
 }
 
 /*@notnull@*/ uentry uentry_makeIdConstant (idDecl t)
@@ -5373,8 +5376,9 @@ uentry_unparseFull (uentry v)
 	}
       else if (uentry_isConstant (v))
 	{
-	  res = message ("%q = %q",
-			 res, multiVal_unparse (uentry_getConstantValue (v)));
+	  res = message ("%q = %q / %q",
+			 res, multiVal_unparse (uentry_getConstantValue (v)),
+			 sRef_unparseFull (v->sref));
 	}
       else
 	{
@@ -11426,7 +11430,7 @@ void uentry_checkValid (uentry ue)
 {
   if (uentry_isValid (ue))
     {
-      (void) sRef_isCompletelyReasonable (ue->sref);
+      sRef_checkCompletelyReasonable (ue->sref);
     }
 }
 

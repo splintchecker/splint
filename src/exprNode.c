@@ -82,8 +82,7 @@ static /*@observer@*/ cstring exprNode_rootVarName (exprNode p_e);
 static /*@exposed@*/ exprNode 
   exprNode_lastStatement (/*@returned@*/ exprNode p_e);
 
-static /*@null@*/ sRef defref = sRef_undefined;
-static /*@only@*/ exprNode mustExitNode = exprNode_undefined;
+static /*@only@*/ exprNode s_mustExitNode = exprNode_undefined;
 
 static int checkArgsReal (uentry p_fcn, /*@dependent@*/ exprNode p_f, 
 			  uentryList p_cl, 
@@ -138,8 +137,6 @@ void exprNode_initMod (void)
   ctypeType = ctype_unknown;
   filelocType = ctype_unknown;
 
-  defref = sRef_undefined;
-  
   if (usymtab_existsType (cstring_makeLiteralTemp ("cstring")))
     {
       cstringType = usymtab_lookupAbstractType (cstring_makeLiteralTemp ("cstring"));
@@ -217,7 +214,7 @@ void exprNode_initMod (void)
 void
 exprNode_destroyMod (void) 
    /*@globals killed regArg, killed outArg, killed outStringArg,
-	      killed mustExitNode, initMod @*/
+	      killed s_mustExitNode, initMod @*/
 {
   if (initMod)
     {
@@ -225,7 +222,7 @@ exprNode_destroyMod (void)
       uentry_free (outArg);
       uentry_free (outStringArg);
       
-      exprNode_free (mustExitNode);
+      exprNode_free (s_mustExitNode);
       initMod = FALSE;
     /*@-branchstate@*/ 
     } 
@@ -234,7 +231,7 @@ exprNode_destroyMod (void)
 
 static void exprNode_resetSref (/*@notnull@*/ exprNode e)
 {
-  e->sref = defref;
+  e->sref = sRef_undefined;
 }
 
 exprNode exprNode_fakeCopy (exprNode e)
@@ -439,7 +436,7 @@ static /*@notnull@*/ /*@special@*/ exprNode
   e->typ = c;
   e->kind = XPR_EMPTY;
   e->val = multiVal_undefined;
-  e->sref = defref;
+  e->sref = sRef_undefined;
   e->etext = cstring_undefined;
   e->loc = fileloc_undefined;
   e->guards = guardSet_undefined;
@@ -459,13 +456,13 @@ static /*@notnull@*/ /*@special@*/ exprNode
 
 /*@observer@*/ exprNode exprNode_makeMustExit (void)
 {
-  if (exprNode_isUndefined (mustExitNode))
+  if (exprNode_isUndefined (s_mustExitNode))
     {
-      mustExitNode = exprNode_createPlain (ctype_unknown);
-      mustExitNode->exitCode = XK_MUSTEXIT;
+      s_mustExitNode = exprNode_createPlain (ctype_unknown);
+      s_mustExitNode->exitCode = XK_MUSTEXIT;
     }
 
-  return mustExitNode;
+  return s_mustExitNode;
 }
 
 
@@ -551,7 +548,7 @@ static /*@notnull@*/ /*@special@*/ exprNode
     }
 
   ret->kind = XPR_EMPTY;
-  ret->sref = defref;
+  ret->sref = sRef_undefined;
   ret->etext = cstring_undefined;
   ret->exitCode = XK_NEVERESCAPE;
   ret->canBreak = FALSE;
@@ -603,7 +600,7 @@ static /*@notnull@*/ /*@special@*/ exprNode
   
   ret->val = multiVal_undefined;
   ret->kind = XPR_EMPTY;
-  ret->sref = defref;
+  ret->sref = sRef_undefined;
   ret->etext = cstring_undefined;
   ret->exitCode = XK_NEVERESCAPE;
   ret->canBreak = FALSE;
@@ -640,7 +637,7 @@ static /*@notnull@*/ /*@special@*/ exprNode
       ret->msets = sRefSet_undefined;
 
       ret->kind = XPR_EMPTY;
-      ret->sref = defref;
+      ret->sref = sRef_undefined;
       ret->etext = cstring_undefined;
       ret->exitCode = XK_NEVERESCAPE;
       ret->canBreak = FALSE;
@@ -885,7 +882,7 @@ exprNode exprNode_fromUIO (cstring c)
     }
 
   e->loc = loc; /* save loc was mangled */
-  e->sref = defref;
+  e->sref = sRef_undefined;
 
   if (usymtab_exists (c))
     {
@@ -1020,8 +1017,7 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
       e->canBreak = FALSE;
       e->mustBreak = FALSE;
       
-      exprNode_defineConstraints(e);
-
+      exprNode_defineConstraints (e);
       return e;
     }
   else
@@ -2049,7 +2045,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			}
 		      else
 			{
-			  			  /* a->sref = defref; */
+			  			  /* a->sref = sRef_undefined; */
 			}
 		    }
 		}
@@ -3891,7 +3887,7 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
     }
   else
     {
-      ret->sref = defref;
+      ret->sref = sRef_undefined;
       exprNode_checkSetAny (ret, uentry_rawName (le));
     }
 
@@ -4992,28 +4988,15 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
   ret->kind = XPR_CAST;
   ret->edata = exprData_makeCast (tok, e, q);
 
-  if (ctype_isRealSU (ctype_getBaseType (sRef_getType (e->sref))))
+  ret->sref = sRef_copy (e->sref);
+  
+  if (!sRef_isConst (e->sref))
     {
-      /* 
-      ** This is a bit of a hack to avoid a problem
-      ** when the code does,
-      **          (some other struct) x
-      **          ...
-      **          x->field
-      */
-
-      ret->sref = sRef_copy (e->sref);
       usymtab_addForceMustAlias (ret->sref, e->sref);
-      sRef_setTypeFull (ret->sref, c);
-      DPRINTF (("Cast: %s -> %s", sRef_unparseFull (e->sref),
-		sRef_unparseFull (ret->sref)));
     }
-  else
-    {
-      ret->sref = e->sref;
-      sRef_setTypeFull (ret->sref, c);
-      DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
-    }
+  
+  sRef_setTypeFull (ret->sref, c);
+  DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
 
   /*
   ** we allow
@@ -8505,7 +8488,6 @@ exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
 
   exprData_free (ret->edata, ret->kind); 
   ret->edata = exprData_undefined;
-
   ret->exitCode = XK_NEVERESCAPE;
   ret->mustBreak = FALSE;
   ret->kind = XPR_INIT;
@@ -8526,14 +8508,15 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
   uentry ue = usymtab_lookup (idDecl_observeId (t));
   exprNode ret = exprNode_makeInitializationAux (t);
   fileloc loc = exprNode_loc (e);
-  
+
+  DPRINTF (("initialization: %s = %s", idDecl_unparse (t), exprNode_unparse (e)));
+
   if (exprNode_isError (e)) 
     {
       e = exprNode_createUnknown ();
-      idDecl_free (t);
-
       /* error: assume initializer is defined */
       sRef_setDefined (ret->sref, g_currentloc); 
+      ret->edata = exprData_makeInit (t, e);
     }
   else
     {
@@ -8549,6 +8532,7 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 
       exprData_free (ret->edata, ret->kind);
       ret->edata = exprData_makeInit (t, e);
+      DPRINTF (("ret: %s", exprNode_unparse (ret)));
 
       exprNode_checkUse (ret, e->sref, e->loc);
       
@@ -8600,15 +8584,80 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 	{
 	  sRef_setDefState (ret->sref, SS_PARTIAL, fileloc_undefined);
 	}
+# if 0
+      if (exprNode_isStringLiteral (e)
+	  && (ctype_isArray (ct))
+	  && (ctype_isChar (ctype_realType (ctype_baseArrayPtr (ct)))))
+	{
+	  /*
+	  ** If t is a char [], the literal is copied.
+	  */
 
-      doAssign (ret, e, TRUE);
+	  cstring slit;
+
+	  if (multiVal_isDefined (e->val))
+	    {
+	      slit = multiVal_forceString (e->val);
+	    }
+	  else
+	    {
+	      slit = cstring_undefined;
+	    }
+
+	  sRef_setDefState (ret->sref, SS_DEFINED, e->loc);
+	  ret->val = multiVal_copy (e->val);
+
+	  if (cstring_isDefined (slit))
+	    {
+	      if (ctype_isFixedArray (ct))
+		{
+		  long int alength = ctype_getArraySize (ct);
+		  
+		  if (alength < cstring_length (slit) + 1)
+		    {
+		      voptgenerror
+			(FLG_LITERALOVERSIZE,
+			 ("Array initialized to string literal bigger than allocated size (literal is %d chars long (plus one for nul terminator), array size is %d): %s", 
+			  cstring_length (slit),
+			  alength,
+			  exprNode_unparse (e)),
+			 e->loc);
+		    }
+		  else if (alength > cstring_length (slit))
+		    {
+		      voptgenerror
+			(FLG_LITERALUNDERSIZE,
+			 ("Array initialized to string literal smaller than allocated size (literal is %d chars long (plus one for nul terminator), array size is %d), could waste storage: %s", 
+			  cstring_length (slit),
+			  alength,
+			  exprNode_unparse (e)),
+			 e->loc);
+		    }
+		  else
+		    {
+		      ;
+		    }
+		}
+	      else
+		{		  
+		  sRef_setNullTerminatedState (ret->sref);
+		  sRef_setSize (ret->sref, cstring_length (slit) + 1);
+		  sRef_setLen (ret->sref, cstring_length (slit) + 1);
+		}
+	    }
+	}
+      else
+# endif
+	{
+	  doAssign (ret, e, TRUE);
+	}
 
       if (uentry_isStatic (ue))
 	{
 	  sRef_setDefState (ret->sref, SS_DEFINED, fileloc_undefined);
 	}
     }
-
+  
   if (context_inIterDef ())
     {
       /* should check if it is yield */
@@ -8620,6 +8669,15 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
     }
 
   exprNode_mergeUSs (ret, e);
+  DPRINTF (("Ret: %s %p %p",
+	    exprNode_unparse (ret),
+	    ret->requiresConstraints,
+	    ret->ensuresConstraints));
+
+  DPRINTF (("Ret: %s %s %s",
+	    exprNode_unparse (ret),
+	    constraintList_unparse (ret->requiresConstraints),
+	    constraintList_unparse (ret->ensuresConstraints)));
   return ret;
 }
   
@@ -8703,7 +8761,7 @@ exprNode_iterNewId (/*@only@*/ cstring s)
   e->kind = XPR_VAR;
   e->val = multiVal_unknown ();
   e->guards = guardSet_new ();
-  e->sref = defref;
+  e->sref = sRef_undefined;
   e->isJumpPoint = FALSE;
   e->exitCode = XK_NEVERESCAPE;
 
@@ -8894,8 +8952,7 @@ exprNode exprNode_iterStart (/*@observer@*/ uentry name, /*@only@*/ exprNodeList
 {
   if (exprNode_isDefined (e))
     {
-      /*@access sRef@*/
-      if (e->sref == defref) /*@noaccess sRef@*/
+      if (sRef_isInvalid (e->sref))
 	{
 	  /*@-mods@*/
 	  e->sref = sRef_makeUnknown (); 

@@ -32,7 +32,10 @@ extern /*@noreturnwhenfalse@*/ void llassertretnull (/*@sef@*/ bool p_test);
 	   llbuglit ("llassert failed: " #tst); \
        }} while (FALSE)
 
-extern /*@noreturnwhenfalse@*/ void llassertretval (/*@sef@*/ bool p_test, /*@sef@*/ void *p_val);
+typedef void *tx_voidptr;
+
+extern /*@noreturnwhenfalse@*/ void 
+llassertretval (/*@sef@*/ bool p_test, /*@sef@*/ /*@null@*/ tx_voidptr /*@alt anytype@*/ p_val); 
 # define llassertretval(tst,val) \
     do { if (!(tst)) { \
            if (context_getFlag (FLG_TRYTORECOVER)) checkParseError (); \

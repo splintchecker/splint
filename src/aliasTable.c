@@ -834,11 +834,11 @@ void aliasTable_checkValid (aliasTable t)
 {
   aliasTable_elements (t, key, value)
     {
-      (void) sRef_isCompletelyReasonable (key);
+      sRef_checkCompletelyReasonable (key);
 
       sRefSet_elements (value, sr) 
 	{
-	  (void) sRef_isCompletelyReasonable (sr);
+	  sRef_checkCompletelyReasonable (sr);
 	} end_sRefSet_elements ;
     } end_aliasTable_elements ;
 }

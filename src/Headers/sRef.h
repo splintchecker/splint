@@ -702,7 +702,7 @@ sRef_aliasSetCompleteAlkParam (void (p_predf) (sRef, alkind, fileloc), sRef p_s,
      /*@modifies p_s@*/ ;
 
 # ifdef DEBUGSPLINT
-extern void sRef_checkCompletelyReasonable (sRef p_s) /*@*/ ;
+extern void sRef_checkCompletelyReasonable (sRef p_s) /*@modifies g_errorstream@*/ ;
 # endif
 
 # else

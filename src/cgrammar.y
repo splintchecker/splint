@@ -1231,14 +1231,14 @@ typeSpecifier
  | CGFLOAT NotType
  | CDOUBLE NotType
  | CVOID NotType 
- | QANYTYPE NotType              { $$ = ctype_unknown; }
+ | QANYTYPE NotType              { $$ = ctype_anytype; }
  | QINTEGRALTYPE NotType         { $$ = ctype_anyintegral; }
  | QUNSIGNEDINTEGRALTYPE NotType { $$ = ctype_unsignedintegral; }
  | QSIGNEDINTEGRALTYPE NotType   { $$ = ctype_signedintegral; }
  | typeName NotType     
  | suSpc NotType 
  | enumSpc NotType
- | typeModifier NotType { $$ = ctype_fromQual ($1); }
+ | typeModifier NotType           { $$ = ctype_fromQual ($1); }
 
 completeType
  : IsType completeTypeSpecifier IsType

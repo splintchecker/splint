@@ -122,6 +122,8 @@ qtype qtype_mergeImplicitAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 
 qtype qtype_mergeAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 {
+  DPRINTF (("Merge alt: %s + %s", qtype_unparse (q1), qtype_unparse (q2)));
+
   if (qtype_isDefined (q1) && qtype_isDefined (q2))
     {
       if (context_getFlag (FLG_IMPCONJ))
@@ -132,7 +134,6 @@ qtype qtype_mergeAlt (/*@returned@*/ qtype q1, /*@only@*/ qtype q2)
 	{
 	  q1->type = ctype_makeExplicitConj (q1->type, q2->type);
 	}
-
       
       if (!qualList_isEmpty (q2->quals))
 	{

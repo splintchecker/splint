@@ -163,7 +163,6 @@ static /*@nullwhentrue@*/ bool sRef_isUnreasonable (sRef s) /*@*/
 
 static void sRef_checkMutable (/*@unused@*/ sRef s)
 {
-  /*@i235@*/
   if (sRef_isReasonable (s) && s->immut)
     {
       llcontbug (message ("Modification to sRef marked immutable: %q", 
@@ -5602,34 +5601,35 @@ void sRef_setNullUnknown (sRef s, fileloc loc)
 
 void sRef_setNullError (sRef s)
 {
-  if (sRef_isReasonable (s))
+  if (sRef_isReasonable (s) && !sRef_isConst (s))
     {
       sRef_setNullStateAux (s, NS_UNKNOWN, fileloc_undefined);
     }
 }
 
-void sRef_setNullErrorLoc (sRef s, /*@unused@*/ fileloc loc)
+void sRef_setNullErrorLoc (sRef s, fileloc loc)
 {
-  sRef_setNullError (s);
+  if (sRef_isReasonable (s) && !sRef_isConst (s))
+    {
+      sRef_setNullStateAux (s, NS_UNKNOWN, loc);
+    }
 }
 
 void sRef_setOnly (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s) && s->aliaskind != AK_ONLY)
     {
+      sRef_checkMutable (s);
       s->aliaskind = AK_ONLY;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
-          }
+    }
 }
 
 void sRef_setDependent (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_DEPENDENT))
     {
+      sRef_checkMutable (s);
       DPRINTF (("Setting dependent: %s", sRef_unparseFull (s)));
       s->aliaskind = AK_DEPENDENT;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
@@ -5638,10 +5638,9 @@ void sRef_setDependent (sRef s, fileloc loc)
 
 void sRef_setOwned (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_OWNED))
     {
+      sRef_checkMutable (s);
       s->aliaskind = AK_OWNED;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
     }
@@ -5649,16 +5648,15 @@ void sRef_setOwned (sRef s, fileloc loc)
 
 void sRef_setKept (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s) && !sRef_isConst (s) && (s->aliaskind != AK_KEPT))
     {
       sRef base = sRef_getBaseSafe (s);  
-      
+ 
       while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED) 
 	    {
+	      sRef_checkMutable (base);
 	      base->defstate = SS_PDEFINED; 
 	      base = sRef_getBaseSafe (base); 
 	    }
@@ -5668,6 +5666,7 @@ void sRef_setKept (sRef s, fileloc loc)
 	    }
 	}
 
+      sRef_checkMutable (s);
       s->aliaskind = AK_KEPT;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
     }
@@ -5701,10 +5700,9 @@ void sRef_setDependentComplete (sRef s, fileloc loc)
 
 void sRef_setFresh (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
-  if (sRef_isReasonable (s))
+  if (sRef_isReasonable (s) && !sRef_isConst (s))
     {
+      sRef_checkMutable (s);
       s->aliaskind = AK_FRESH;
       s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
     }
@@ -5713,16 +5711,17 @@ void sRef_setFresh (sRef s, fileloc loc)
 void sRef_kill (sRef s, fileloc loc)
 {
   DPRINTF (("Kill: %s", sRef_unparseFull (s)));
-  sRef_checkMutable (s);
 
   if (sRef_isReasonable (s) && !sRef_isShared (s) && !sRef_isConst (s))
     {
       sRef base = sRef_getBaseSafe (s);  
-      
+      sRef_checkMutable (s);
+	
       while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED) 
 	    {
+	      sRef_checkMutable (base);
 	      base->defstate = SS_PDEFINED; 
 	      base = sRef_getBaseSafe (base); 
 	    }
@@ -5742,17 +5741,16 @@ void sRef_kill (sRef s, fileloc loc)
 
 void sRef_maybeKill (sRef s, fileloc loc)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s))
     {
       sRef base = sRef_getBaseSafe (s);  
-
+      sRef_checkMutable (s);
             
       while (sRef_isReasonable (base) && sRef_isKnown (base))
 	{
 	  if (base->defstate == SS_DEFINED || base->defstate == SS_RELDEF)
 	    {
+	      sRef_checkMutable (base);
 	      base->defstate = SS_PDEFINED; 
 	      base = sRef_getBaseSafe (base); 
 	    }
@@ -6104,20 +6102,18 @@ void sRef_free (/*@only@*/ sRef s)
 
 void sRef_setType (sRef s, ctype t)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s))
     {
+      sRef_checkMutable (s); 
       s->type = t;
     }
 }
 
 void sRef_setTypeFull (sRef s, ctype t)
 {
-  sRef_checkMutable (s);
-
   if (sRef_isReasonable (s))
     {
+      sRef_checkMutable (s);
       s->type = t;
 
       sRefSet_allElements (s->deriv, current)
@@ -10063,28 +10059,37 @@ void sRef_setNotNullTerminatedState(sRef p_s) {
 }
 
 void sRef_setLen(sRef p_s, int len) {
-   if( sRef_isReasonable (p_s) && sRef_isNullTerminated(p_s)) {
-      p_s->bufinfo.len = len;
-   } else {
-      llfatalbug( message("sRef_setLen passed a invalid sRef\n"));
-   }
+   if (sRef_isReasonable (p_s) && sRef_isNullTerminated(p_s)) 
+     {
+       p_s->bufinfo.len = len;
+     } 
+   else 
+     {
+       llfatalbug( message("sRef_setLen passed an invalid sRef\n"));
+     }
 }
     
 
 void sRef_setSize(sRef p_s, int size) {
-   if( sRef_isValid(p_s)) {
+   if( sRef_isValid(p_s)) 
+     {
        p_s->bufinfo.size = size;
-   } else {
-      llfatalbug( message("sRef_setSize passed a invalid sRef\n"));
-   }
+     } 
+   else
+     {
+       llfatalbug( message("sRef_setSize passed a invalid sRef\n"));
+     }
 }
 
 void sRef_resetLen(sRef p_s) {
-	if (sRef_isReasonable (p_s)) {
-		p_s->bufinfo.len = 0;
-	} else {
-		llfatalbug (message ("sRef_setLen passed an invalid sRef\n"));
-	}
+  if (sRef_isReasonable (p_s)) 
+    {
+      p_s->bufinfo.len = 0;
+    }
+  else
+    {
+      llfatalbug (message ("sRef_setLen passed an invalid sRef\n"));
+    }
 }
 
 /*drl7x 11/28/2000 */

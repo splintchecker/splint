@@ -73,6 +73,7 @@ typedef enum
        
 typedef enum 
 { 
+  CTK_ANYTYPE = -4,
   CTK_UNKNOWN = -3,
   CTK_INVALID = -2, 
   CTK_DNE = -1,
@@ -96,6 +97,9 @@ extern int ctkind_toInt (ctkind p_x);
 
 /*@constant ctype ctype_dne; @*/
 # define ctype_dne        ((ctype) CTK_DNE)
+
+/*@constant ctype ctype_anytype; @*/
+# define ctype_anytype    ((ctype) CTK_ANYTYPE)
 
 /*@constant ctype ctype_unknown; @*/
 # define ctype_unknown    CTX_UNKNOWN
@@ -342,6 +346,9 @@ extern bool ctype_isUndefined (ctype p_c) /*@*/ ;
 
 extern bool ctype_isUnknown (ctype p_c) /*@*/;
 # define ctype_isUnknown(c)       ((c) == CTX_UNKNOWN)
+
+extern bool ctype_isAnytype (ctype p_c) /*@*/;
+# define ctype_isAnytype(c)       ((c) == ctype_anytype)
 
 extern bool ctype_isBogus (/*@sef@*/ ctype p_c) /*@*/ ;
 # define ctype_isBogus(c)         (ctype_isUndefined(c) || ctype_isUnknown(c))
