@@ -10,18 +10,13 @@ lintcomments.c:11:13: Fall through case (no preceeding break)
 lintcomments.c:23:21: Traditional lint comment /*NOTREACHED*/ used.  This is
     interpreted by LCLint in the same way as most Unix lints, but it is
     preferable to replace it with the /*@notreached@*/ stylized comment.
-
-Finished LCLint checking --- 4 code errors found, as expected
-
-lintcomments.c: (in function f)
-lintcomments.c:11:13: Fall through case (no preceeding break)
-
-Finished LCLint checking --- 1 code error found, as expected
-
-lintcomments.c: (in function f)
-lintcomments.c:9:10: Fall through case (no preceeding break)
-lintcomments.c:10:10: Fall through case (no preceeding break)
-lintcomments.c:11:13: Fall through case (no preceeding break)
-lintcomments.c:24:8: Unreachable code: i++
-
-Finished LCLint checking --- 4 code errors found, as expected
+constraintExpr.c:307: at source point
+lintcomments.c:28:2: *** Internal Bug at constraintExpr.c:307: llassert failed:
+                         constraintExprData_isDefined(data) [errno: 25]
+*** Last code point: aliasChecks.c:3664
+*** Previous code point: aliasChecks.c:3565
+Possible system error diagnostic: : Inappropriate ioctl for device
+     *** Please report bug to lclint-bug@cs.virginia.edu ***
+       (attempting to continue, results may be incorrect)
+lclint: llerror.c:1204: llbugaux: Assertion `0' failed.
+Abort (core dumped)

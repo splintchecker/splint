@@ -1,4 +1,6 @@
 
+constraintResolve.c:695 [sizeof.c:9:2]: >> Doing Range CHECK ( 2 )  and ( 2 ) 
+constraintResolve.c:695 [sizeof.c:9:2]: >> Doing Range CHECK ( 3 )  and ( 2 ) 
 sizeof.c: (in function main)
 sizeof.c:6:2: Unresolved constraint:
     Lclint is unable to resolve Requires: :
