@@ -1487,7 +1487,7 @@ checkAnsiName (uentry ue)
 	     message
 	     ("Name %s is reserved for future library extensions.  "
 	      "Functions that begin with \"mem\" or \"wcs\" and a "
-	      "lowercase letter letter may be added to <string.h>. (ISO:7.26.11)",
+	      "lowercase letter may be added to <string.h>. (ISO:7.26.11)",
 	      name),
 	     uentry_whereLast (ue));
 	}

@@ -524,6 +524,10 @@ void help_processFlags (int argc, char **argv)
 	{
 	  printMaintainer ();
 	}
+      else if (flags_isModeName (thisarg)) 
+	{
+	  llmsg (describeMode (thisarg));
+	}
       else if (mstring_equal (thisarg, "flags"))
 	{
 	  if (i + 1 < argc)

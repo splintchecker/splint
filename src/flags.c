@@ -705,6 +705,40 @@ printFlagManual (bool html)
   } end_allFlags ;
 }
 
+cstring 
+describeMode (cstring mode)
+{
+  cstringSList sflags = sortedFlags ();
+  cstring res = message ("Predefined mode %s sets: ", mode);
+
+  llassert (flags_isModeName (mode));
+
+  context_setMode (mode);
+
+  cstringSList_elements (sflags, flagname)
+    {
+      flagcode code = flags_identifyFlag (flagname);
+      fflag currentflag = flags[code];
+      
+      if (mstring_isDefined (currentflag.desc) && flagcode_isModeFlag (code))
+	{
+	  if (context_getFlag (code))
+	    {
+	      res = message ("%q\n   +%s", res, cstring_fromChars (currentflag.flag));
+	    }
+	  else
+	    {
+	      res = message ("%q\n   -%s", res, cstring_fromChars (currentflag.flag)); 
+	    }
+	}
+    } end_cstringSList_elements;
+  
+  cstringSList_free (sflags);
+
+  res = cstring_appendChar (res, '\n');
+  return (res);
+}
+
 cstring
 describeFlagCode (flagcode flag)
 {
@@ -714,6 +748,11 @@ describeFlagCode (flagcode flag)
   if (flagcode_isInvalid (flag))
     {
       return (cstring_makeLiteral ("<invalid>"));
+    }
+
+  if (flagcode_isModeName (flag)) 
+    {
+      return (cstring_makeLiteral ("<mode flag>"));
     }
 
   context_resetAllFlags ();
@@ -850,10 +889,7 @@ describeFlag (cstring flagname)
       if (flags_isModeName (flagname))
 	{
 	  cstring_free (oflagname);
-
-	  return
-	    (message ("%s: predefined mode (see Manual for information)",
-		      flagname));
+	  return describeMode (flagname);
 	}
       else
 	{
