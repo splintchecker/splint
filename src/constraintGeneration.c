@@ -1300,8 +1300,13 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       
       break;
       
-    case XPR_SIZEOF: 
-      exprNode_exprTraverse (exprData_getSingle (data), definatelv, definaterv, sequencePoint );
+    case XPR_SIZEOF:
+      /* drl  7-16-01
+	 C standard says operand to sizeof isn't evaluated unless
+	 its a variable length array.  So we don't generate constraints.
+      */
+	 
+      //      exprNode_exprTraverse (exprData_getSingle (data), definatelv, definaterv, sequencePoint );
       //      e->constraints = constraintList_exprNodemerge (exprData_getSingle (e->edata), exprNode_undefined);
       break;
       
