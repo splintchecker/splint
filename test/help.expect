@@ -452,6 +452,7 @@ Finished checking --- no code processed
    strictusereleased           
    stringliterallen            
    stringliteralnoroom         
+   stringliteralnoroomfinalnull
    stringliteralsmaller        
    stringliteraltoolong        
    structimponly               
