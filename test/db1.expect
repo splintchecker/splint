@@ -1,5 +1,3 @@
-make -e clean
-make -e check
 
 employee.c: (in function employee_equal)
 employee.c:25: Function strncmp expects arg 3 to be size_t gets int:

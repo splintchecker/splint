@@ -2653,9 +2653,8 @@ larchpath
    Categories: directories, files
    Default Setting: -
    Set globally only
-*** Note: possible difference in the test result because of the default path here:
-   Path argument.  Default: .:/usr/local/share/splint/lib:/af10/evans/LCLintDev/
-   lib:
+   Path argument.  Default: .:/usr/local/share/splint/lib:/af9/drl7x/reTmp/LCLin
+   tDev/lib:
    
 lclexpect
    expect <int> spec errors
@@ -2669,9 +2668,8 @@ lclimportdir
    Categories: directories, files
    Default Setting: -
    Set globally only
-*** Note: possible difference in the test result because of the default path here:
-   Directory argument.  Default: .:/usr/local/share/splint/imports:/af10/evans/L
-   CLintDev/imports
+   Directory argument.  Default: .:/usr/local/share/splint/imports:/af9/drl7x/re
+   Tmp/LCLintDev/imports
    
 lcs
    generate .lcs files
@@ -5644,14 +5642,12 @@ directories
 ===================================
 tmpdir <directory> [/tmp/]: <G><P:->
    Set directory for writing temp files.
-*** Note: possible difference in the test result because of the default path here:
-larchpath <path> [.:/usr/local/share/splint/lib:/af10/evans/LCLintDev/lib:]:
-<G><P:->
+larchpath <path> [.:/usr/local/share/splint/lib:/af9/drl7x/reTmp/LCLintDev/lib:]
+: <G><P:->
    Set path for searching for library files (overrides LARCH_PATH environment
    variable).
-*** Note: possible difference in the test result because of the default path here:
-lclimportdir <directory> [.:/usr/local/share/splint/imports:/af10/evans/LCLintDe
-v/imports]: <G><P:->
+lclimportdir <directory> [.:/usr/local/share/splint/imports:/af9/drl7x/reTmp/LCL
+intDev/imports]: <G><P:->
    Set directory to search for LCL import files (overrides LCLIMPORTDIR).
 sysdirs <path> [/usr/]: <G><P:->
    Set directories for system files (default /usr/include). Separate

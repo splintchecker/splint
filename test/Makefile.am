@@ -74,6 +74,7 @@ version:
 	-$(SPLINTP) -help version
 
 .PHONY: help
+
 help:
 	-@$(SPLINT)
 	-@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
@@ -82,8 +83,11 @@ help:
 	-@$(SPLINTP) +boolint +boolint 
 	-@$(SPLINTP) -help flags alpha
 	-@$(SPLINTP) -help flags all
-	-@$(SPLINTP) -help flags full
-	-@$(SPLINTP) -help flags manual
+	-@$(SPLINTP) -help flags full   | $(GREP) -v "    Path argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+	-@$(SPLINTP) -help flags manual  | $(GREP) -v "    Path argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+
+#larch and lclimportdir have different hardcoded default paths so don't include the path in the output..
+
 
 .PHONY: clean-local
 clean-local:
@@ -107,7 +111,7 @@ $(SPLINT):
 ## The tests should really be re-done as shell-scripts or something... maybe
 ##  autotest could be used once it's finished.
 
-CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:" | $(GREP) -v "config.status: creating test/Makefile" | $(GREP) -v "cd .. && " | $(GREP) -v "CONFIG_HEADERS=" | $(GREP) -v "CONFIG_FILES="
+CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:" | $(GREP) -v "^gmake.*\[[1-9]*\]:" |   $(GREP) -v "^gmake -e" |  $(GREP) -v "^make -e" |$(GREP) -v "config.status: creating test/Makefile" | $(GREP) -v "cd .. && " | $(GREP) -v "CONFIG_HEADERS=" | $(GREP) -v "CONFIG_FILES="
 
 ## Not real C code
 
