@@ -6356,6 +6356,7 @@ exprNode_mustBreak (exprNode e)
     {
       return e->mustBreak;
     }
+
   return FALSE;
 }
 
@@ -7254,7 +7255,10 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
 exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
 {
   exprNode ret;
-  
+
+  DPRINTF (("Do while: %s / %s",
+	    exprNode_unparse (b), exprNode_unparse (t)));
+
   if (exprNode_isError (t))
     {
       if (exprNode_isError (b))
@@ -7269,11 +7273,15 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
 	  exprNode_checkUse (ret, b->sref, b->loc);
 	  ret->exitCode = b->exitCode;
 	  ret->canBreak = b->canBreak;
-	  ret->mustBreak = b->mustBreak;
+	  ret->mustBreak = FALSE;
 	}
     }
   else
     {
+      DPRINTF (("Do while: %s / %s",
+		exitkind_unparse (t->exitCode),
+		exitkind_unparse (b->exitCode)));
+
       ret = exprNode_createPartialCopy (t);
       exprNode_checkPred (cstring_makeLiteralTemp ("while"), t);
       
@@ -7294,9 +7302,16 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
 	  exprNode_mergeUSs (ret, t);
 	  exprNode_checkUse (ret, t->sref, t->loc);
 
-	  ret->exitCode = b->exitCode;
+	  /* evans 2001-10-05: while loop can break */
+	  ret->exitCode = exitkind_makeConditional (b->exitCode);
+
+	  DPRINTF (("Do while: %s",
+		    exitkind_unparse (ret->exitCode)));
+
 	  ret->canBreak = b->canBreak;
-	  ret->mustBreak = b->mustBreak;
+
+	  /* Always FALSE for doWhile loops - break's when test is false */
+	  ret->mustBreak = FALSE; /* b->mustBreak; */
 	}
     }
   
