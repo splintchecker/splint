@@ -7,23 +7,26 @@ SETSRC = globSet.c intSet.c typeIdSet.c guardSet.c usymIdSet.c sRefSet.c
 LISTSRC = clauseStack.c filelocStack.c \
    cstringList.c cstringSList.c sRefSetList.c ctypeList.c \
    enumNameList.c enumNameSList.c exprNodeList.c exprNodeSList.c \
-   uentryList.c fileIdList.c filelocList.c qualList.c \
-   flagMarkerList.c idDeclList.c
+   uentryList.c fileIdList.c filelocList.c qualList.c sRefList.c \
+   flagMarkerList.c idDeclList.c flagSpec.c
 
 CPPSRC = cppmain.c cpplib.c cppexp.c cpphash.c cpperror.c
 
-CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c specialClauses.c \
-   ctype.c cvar.c clabstract.c idDecl.c clause.c
+CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
+   stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
+   globalsClause.c modifiesClause.c warnClause.c functionClause.c \
+   functionClauseList.c
 
 LCLINTSRC = exprNode.c exprChecks.c llmain.c
- CHECKSRC   = structNames.c aliasChecks.c varKinds.c nameChecks.c
+ CHECKSRC   = structNames.c transferChecks.c varKinds.c nameChecks.c
 
- GLOBSRC    = context.c globals.c flags.c general.c osd.c
+GLOBSRC    = context.c globals.c flags.c general.c osd.c reader.c
 
-GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y
-GRAMSRC    = cgrammar.c cscanner.c 
+GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y mtgrammar.y
+GRAMSRC    = cgrammar.c cscanner.c mtscanner.c mtreader.c mtgrammar.c
 
-GENERALSRC =    constraintTerm.c \
+OVERFLOWCHSRC = \
+    constraintTerm.c \
     constraintExprData.c \
     constraintExpr.c \
     constraint.c \
@@ -31,12 +34,26 @@ GENERALSRC =    constraintTerm.c \
     constraintResolve.c \
     constraintGeneration.c \
     constraintOutput.c \
-    forjunk.c \
+    forjunk.c 
+    
+GENERALSRC =  \
     exprData.c \
-    cstring.c fileloc.c message.c source.c \
-    fileTable.c hashTable.c llerror.c messageLog.c \
-    flagMarker.c aliasTable.c ynm.c sRefTable.c \
-    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c 
+    cstring.c fileloc.c message.c  inputStream.c \
+    fileTable.c cstringTable.c valueTable.c stateValue.c llerror.c messageLog.c \
+    flagMarker.c aliasTable.c ynm.c sRefTable.c genericTable.c \
+    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c randomNumbers.c \
+    fileLib.c
+
+METASTATESRC = \
+    stateInfo.c stateCombinationTable.c metaStateTable.c \
+    metaStateInfo.c annotationTable.c annotationInfo.c mttok.c \
+    mtDeclarationNode.c mtDeclarationPieces.c mtDeclarationPiece.c mtContextNode.c \
+    mtValuesNode.c mtDefaultsNode.c mtAnnotationsNode.c mtMergeNode.c \
+    mtAnnotationList.c mtAnnotationDecl.c \
+    mtTransferClauseList.c mtTransferClause.c mtTransferAction.c \
+    mtLoseReferenceList.c mtLoseReference.c \
+    mtDefaultsDeclList.c mtDefaultsDecl.c \
+    mtMergeItem.c mtMergeClause.c mtMergeClauseList.c
 
 ###
 ### These source files are relevant for LCL only.
@@ -69,11 +86,12 @@ else
 LCLSRC     = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) $(LCLGRAMSSRC)
 endif
 
-COMMONSRC = $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) $(GLOBSRC) \
-             $(IFACESRC) $(LISTSRC) $(SETSRC) $(LCLSRC) $(LCLGRAMSRC)
+COMMONSRC =  $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) $(GLOBSRC) \
+             $(IFACESRC) $(LISTSRC) $(SETSRC) $(LCLSRC) $(LCLGRAMSRC) \
+	     $(METASTATESRC)
 
 SRC        = $(COMMONSRC) $(LCLINTSRC)
-ALLSRC     = $(SRC) $(GRAMSRC) 
+ALLSRC     =  $(GRAMSRC) $(SRC)
 
 ## all except cscanner.c
 ALMOSTALLSRC = llgrammar.c cgrammar.c signature.c $(SRC)  

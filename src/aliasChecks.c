@@ -2034,7 +2034,7 @@ checkAssignTransfer (exprNode lhs, exprNode rhs)
   sRef srhs = exprNode_getSref (rhs);
   sRef base = sRef_getBaseSafe (slhs);
   nstate ns;
-  struct _bbufinfo bs;
+  struct s_bbufinfo bs;
 
   DPRINTF (("Check assign: %s = %s", exprNode_unparse (lhs),
 	    exprNode_unparse (rhs)));

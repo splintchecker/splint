@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -102,7 +102,7 @@ resetImports (cstring current)
 
   g_currentImports = lsymbolSet_new ();	/* equal_symbol; */
   (void) lsymbolSet_insert (g_currentImports, 
-			      lsymbol_fromChars (cstring_toCharsSafe (current)));
+			      lsymbol_fromString (current));
 }
 
 void
@@ -935,7 +935,7 @@ sort_member_modulo_cstring (sort s, /*@null@*/ termNode t)
 
 	  sn = sort_lookup (s);
 
-	  if (sn.kind == SRT_PTR)
+	  if (sn->kind == SRT_PTR)
 	    {
 	      char *lit = lsymbol_toChars (ltoken_getText (t->literal));
 	      
@@ -980,7 +980,7 @@ sort_member_modulo_cstring (sort s, /*@null@*/ termNode t)
 	{
 	  errtok = termNode_errorToken (term);
 	  
-	  /*      errorShowPoint (tsource_thisLine (lclsource), ltoken_getCol (errtok)); */
+	  /*      errorShowPoint (inputStream_thisLine (lclsource), ltoken_getCol (errtok)); */
 	  /*      sprintf (ERRMSG, "expect `%s' type but given term has `%s' type",
 		  sort_unparse (s), sort_unparse (termsort)); */
 	  
@@ -1097,7 +1097,7 @@ importNode_makeQuoted (/*@only@*/ ltoken t)
 
   imp->kind = IMPQUOTE;
 
-  ltoken_setRawText (t, lsymbol_fromChars (cstring_toCharsSafe (q)));
+  ltoken_setRawText (t, lsymbol_fromString (q));
 
   imp->val = t;  
 
@@ -1250,7 +1250,7 @@ makeReplaceNameNode (ltoken t, typeNameNode tn, nameNode nn)
   r->isCType = FALSE;
   r->typename = tn;
   r->content.renamesortname.name = nn;
-  r->content.renamesortname.signature = (sigNode)NULL;
+  r->content.renamesortname.signature = (sigNode) NULL;
   
   return (r);
 }
@@ -2895,7 +2895,7 @@ static /*@observer@*/ paramNodeList
   fcnNode_fromDeclarator (/*@only@*/ /*@null@*/ lclTypeSpecNode t, 
 			  /*@only@*/ declaratorNode d)
 {
-  return (makeFcnNode (QU_UNKNOWN, t, d,
+  return (makeFcnNode (qual_createUnknown (), t, d,
 		       varDeclarationNodeList_new (),
 		       varDeclarationNodeList_new (),
 		       letDeclNodeList_new (),
@@ -2949,15 +2949,14 @@ makeFcnNode (qual specQual,
 	     /*@null@*/ lclPredicateNode claims)
 {
   fcnNode x = (fcnNode) dmalloc (sizeof (*x));
-  
+
   if (d->type != (typeExpr)0 && (d->type)->kind != TEXPR_FCN)
     {
       lclerror (d->id, cstring_makeLiteral 
 		("Attempt to specify function without parameter list"));
       d->type = makeFunctionNode (d->type, paramNodeList_new ());
     }
-  
-  
+    
   x->special = specQual;
   x->typespec = t;
   x->declarator = d;
@@ -3247,8 +3246,8 @@ paramNode_checkQualifiers (lclTypeSpecNode t, typeExpr d)
 
 	  sn = sort_quietLookup (sort_getUnderlying ((t->content.type)->sort));
 
-	  if (sn.kind == SRT_PTR || sn.kind == SRT_ARRAY 
-	      || sn.kind == SRT_HOF || sn.kind == SRT_NONE)
+	  if (sn->kind == SRT_PTR || sn->kind == SRT_ARRAY 
+	      || sn->kind == SRT_HOF || sn->kind == SRT_NONE)
 	    {
 	      isPointer = TRUE;
 	    }
@@ -3268,8 +3267,8 @@ paramNode_checkQualifiers (lclTypeSpecNode t, typeExpr d)
 	  llassert (t->content.type != NULL);
 	  sn = sort_quietLookup (sort_getUnderlying ((t->content.type)->sort));
 
-	  if (sn.kind == SRT_PTR || sn.kind == SRT_ARRAY
-	      || sn.kind == SRT_HOF || sn.kind == SRT_NONE)
+	  if (sn->kind == SRT_PTR || sn->kind == SRT_ARRAY
+	      || sn->kind == SRT_HOF || sn->kind == SRT_NONE)
 	    {
 	      isUser = TRUE;
 	    }
@@ -3665,7 +3664,7 @@ makeInfixTermNode (termNode x, ltoken op, termNode y)
   t->kind = TRM_APPLICATION;
   t->sort = sort_makeNoSort ();
   t->given = t->sort;
-  t->possibleSorts = sortSet_new ();	/* sort_equal */
+  t->possibleSorts = sortSet_new (); /* sort_equal */
   t->possibleOps = lslOpSet_new ();
   return (t);
 }
@@ -5094,10 +5093,10 @@ makeTypeSpecifier (ltoken typedefname)
   
   if (typeInfo_exists (ti))
     {
-     /* must we be concern about whether this type is exported by module?
-        No.  Because all typedef's are exported.  No hiding supported. */
-     /* Later, may want to keep types around too */
-     /* 3/2/93, use underlying sort */
+      /* must we be concern about whether this type is exported by module?
+	 No.  Because all typedef's are exported.  No hiding supported. */
+      /* Later, may want to keep types around too */
+      /* 3/2/93, use underlying sort */
       newnode->sort = sort_getUnderlying (ti->basedOn);
     }
   else
@@ -5105,7 +5104,7 @@ makeTypeSpecifier (ltoken typedefname)
       lclerror (typedefname, message ("Unrecognized type: %s", 
 				      ltoken_getRawString (typedefname)));
       /* evs --- Don't know how to get this message */
-
+      
       newnode->sort = sort_makeNoSort ();
     }
   
@@ -5682,7 +5681,12 @@ static /*@null@*/ opFormNode opFormNode_copy (/*@null@*/ opFormNode op)
 
 void opFormNode_free (/*@null@*/ opFormNode op)
 {
-  sfree (op);
+  if (op != NULL)
+    {
+      ltoken_free (op->tok);
+      ltoken_free (op->close);
+      sfree (op);
+    }
 }
 
 void nameNode_free (nameNode n)
@@ -5814,7 +5818,14 @@ bool initDeclNode_isRedeclaration (initDeclNode d)
 
 void termNode_free (/*@only@*/ /*@null@*/ termNode t)
 {
-  sfree (t);
+  if (t != NULL) 
+    {
+      sortSet_free (t->possibleSorts);
+      lslOpSet_free (t->possibleOps);
+      nameNode_free (t->name);
+      termNodeList_free (t->args);
+      sfree (t);
+    }
 }
 
 /*@only@*/ termNode termNode_copySafe (termNode t)
@@ -5876,7 +5887,11 @@ void termNode_free (/*@only@*/ /*@null@*/ termNode t)
 
 void importNode_free (/*@only@*/ /*@null@*/ importNode x)
 {
-  sfree (x);
+  if (x != NULL) 
+    {
+      ltoken_free (x->val);
+      sfree (x);
+    }
 }
 
 void initDeclNode_free (/*@only@*/ /*@null@*/ initDeclNode x)
@@ -5902,7 +5917,11 @@ void letDeclNode_free (/*@only@*/ /*@null@*/ letDeclNode x)
 
 void pairNode_free (/*@only@*/ /*@null@*/ pairNode x)
 {
-  sfree (x);
+  if (x != NULL) 
+    {
+      ltoken_free (x->tok);
+      sfree (x);
+    }
 }
 
 /*@null@*/ paramNode paramNode_copy (/*@null@*/ paramNode p)

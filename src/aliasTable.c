@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -108,12 +108,15 @@ static int aliasTable_lookupRefs (/*@notnull@*/ aliasTable s, sRef sr)
 aliasTable
 aliasTable_addMustAlias (/*@returned@*/ aliasTable s,
 			 /*@exposed@*/ sRef sr,
-			 sRef al)
+			 /*@exposed@*/ sRef al)
 {
   int ind;
   sRefSet ss;
   
   llassert (NOALIAS (sr, al));
+  
+  DPRINTF (("Adding alias: %s / %s", sRef_unparseFull (sr),
+	    sRef_unparseFull (al)));
 
   if (aliasTable_isUndefined (s))
     {
@@ -126,7 +129,7 @@ aliasTable_addMustAlias (/*@returned@*/ aliasTable s,
     }
   
   ss = aliasTable_canAlias (s, al); 
-  
+  DPRINTF (("Previous aliases: %s", sRefSet_unparse (ss)));
   
   if (ind == ATINVALID)
     {
@@ -146,6 +149,7 @@ aliasTable_addMustAlias (/*@returned@*/ aliasTable s,
     }
   
   s->values[ind] = sRefSet_unionExcept (s->values[ind], ss, s->keys[ind]); 
+  DPRINTF (("New aliases: %s", sRefSet_unparse (s->values[ind])));
 
   sRefSet_free (ss);
   return s;
@@ -483,9 +487,9 @@ static /*@only@*/ sRefSet
 	    {
 	      ret = sRefSet_union (ret, s->values[ind]);
 	    }
-
+	  
 	  sRefSet_free (tmp);
-	  	  return ret;
+	  return ret;
 	}
       
       if (ind == ATINVALID) return sRefSet_undefined;      
@@ -703,8 +707,8 @@ aliasTable_unparse (aliasTable s)
 
    aliasTable_elements (s, key, value)
      {
-       st = message ("%q\t%q -> %q\n", st, sRef_unparse (key), 
-		     sRefSet_unparse (value));
+       st = message ("%q\t%q -> %q\n", st, sRef_unparseFull (key), 
+		     sRefSet_unparseFull (value));
      } end_aliasTable_elements;
 
    return st;
