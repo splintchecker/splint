@@ -76,6 +76,10 @@ int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm 
 
 bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/;
 
+/*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm t);
+
+/*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t);
+
 /*@=namechecks@*/
 
 #else

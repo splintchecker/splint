@@ -143,6 +143,7 @@ bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint p_c);
 
+void exprNode_findValue( exprNode p_e);
 
 /*@=czechfcns*/
 /* drl possible problem : warning take this out */
