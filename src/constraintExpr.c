@@ -24,6 +24,8 @@
 
 /*@access exprNode @*/
 
+static /*@only@*/ constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/constraintExpr expr, int literal);
+
 /*@only@*/ static constraintExpr 
 doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, exprNodeList arglist) /*@modifies e@*/;
 
@@ -53,6 +55,8 @@ void constraintExpr_free (/*@only@*/ constraintExpr expr)
 	default:
 	  BADEXIT;
 	}
+
+      expr->data = NULL;
       free (expr);
     }
   else
@@ -268,7 +272,7 @@ bool constraintExpr_isLit (constraintExpr expr)
 //    /*@=compdef@*/
 //  }
 
-static constraintExpr constraintExpr_combineConstants (/*@only@*/ constraintExpr expr ) /*@modifies@*/
+/*@only@*/ static constraintExpr constraintExpr_combineConstants (/*@only@*/ constraintExpr expr ) /*@modifies expr@*/
 {
   bool propagate;
   int literal;
@@ -301,7 +305,7 @@ static constraintExpr constraintExpr_alloc (void) /*@post:isnull result->data@*/
   return ret;
 }
 
-static constraintExprData copyExprData (constraintExprData data, constraintExprKind kind)
+/*@only@*/ static constraintExprData copyExprData (constraintExprData data, constraintExprKind kind)
 {
   constraintExprData ret;
   llassert(constraintExprData_isDefined(data));
@@ -334,7 +338,7 @@ constraintExpr constraintExpr_copy (constraintExpr expr)
 }
 
 
-constraintExpr oldconstraintExpr_makeTermExprNode (exprNode e)
+/*@only@*/ static constraintExpr oldconstraintExpr_makeTermExprNode (exprNode e)
 {
   constraintExpr ret;
   constraintTerm t;
@@ -440,7 +444,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 }
 
 
-constraintExpr constraintExpr_makeTermExprNode (exprNode e)
+/*@only@*/ static constraintExpr constraintExpr_makeTermExprNode (exprNode e)
 {
   return  oldconstraintExpr_makeTermExprNode(e); //constraintExpr_makeExprNode (e);
 }
@@ -467,7 +471,7 @@ constraintExpr constraintExpr_makeTermsRef (/*@only@*/ sRef s)
   return ret;
 }
 
-static constraintExpr constraintExpr_makeUnaryOpConstraintExpr (/*@only@*/ constraintExpr cexpr)
+/*@only@*/ static constraintExpr constraintExpr_makeUnaryOpConstraintExpr (/*@only@*/ constraintExpr cexpr)
 {
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOp();
@@ -483,7 +487,8 @@ static constraintExpr constraintExpr_makeUnaryOpConstraintExpr (/*@only@*/ const
   /*@=uniondef@*/
 }
 
-constraintExpr constraintExpr_makeMaxSetConstraintExpr (/*@only@*/ constraintExpr c)
+/*@only@*/
+static constraintExpr constraintExpr_makeMaxSetConstraintExpr (/*@only@*/ constraintExpr c)
 {
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOpConstraintExpr (c);
@@ -491,7 +496,8 @@ constraintExpr constraintExpr_makeMaxSetConstraintExpr (/*@only@*/ constraintExp
   return ret;
 }
 
-constraintExpr constraintExpr_makeUnaryOpExprNode (exprNode expr)
+/*@only@*/
+static constraintExpr constraintExpr_makeUnaryOpExprNode (exprNode expr)
 {
   constraintExpr ret;
   constraintExpr sub;
@@ -503,7 +509,8 @@ constraintExpr constraintExpr_makeUnaryOpExprNode (exprNode expr)
 
 
 
-constraintExpr constraintExpr_makeSRefUnaryOp (/*@only@*/ sRef s,  constraintExprUnaryOpKind op)
+/*@only@*/
+static constraintExpr constraintExpr_makeSRefUnaryOp (/*@only@*/ sRef s,  constraintExprUnaryOpKind op)
 {
   constraintExpr ret;
   constraintExpr t;
@@ -515,16 +522,19 @@ constraintExpr constraintExpr_makeSRefUnaryOp (/*@only@*/ sRef s,  constraintExp
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeSRefMaxRead(/*@only@*/ sRef s)
 {
   return (constraintExpr_makeSRefUnaryOp (s, MAXREAD) );
 }     
 
+/*@only@*/
 constraintExpr constraintExpr_makeSRefMaxset (/*@only@*/ sRef s)
 {
   return (constraintExpr_makeSRefUnaryOp (s, MAXSET) );
 }
 
+/*@only@*/
 constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr)
 {
   constraintExpr ret;
@@ -544,6 +554,7 @@ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr)
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr)
 {
   constraintExpr ret;
@@ -555,6 +566,7 @@ constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr)
   return ret;
 }
 
+/*@only@*/
 constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr)
 {
   constraintExpr ret;
@@ -563,7 +575,8 @@ constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr)
   return ret; 
 }
 
-constraintExpr  constraintExpr_makeMinSetExpr (exprNode expr)
+/*@only@*/
+/*@unused@*/ constraintExpr  constraintExpr_makeMinSetExpr (exprNode expr)
 {
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOpExprNode(expr);
@@ -571,7 +584,8 @@ constraintExpr  constraintExpr_makeMinSetExpr (exprNode expr)
   return ret;
 }
 
-constraintExpr  constraintExpr_makeMinReadExpr (exprNode expr)
+/*@only@*/
+/*@unused@*/ constraintExpr constraintExpr_makeMinReadExpr (exprNode expr)
 {
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOpExprNode(expr);
@@ -580,6 +594,7 @@ constraintExpr  constraintExpr_makeMinReadExpr (exprNode expr)
 }
 
 
+/*@only@*/
 constraintExpr constraintExpr_makeValueExpr (exprNode expr)
 {
   constraintExpr ret;
@@ -587,6 +602,7 @@ constraintExpr constraintExpr_makeValueExpr (exprNode expr)
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeIntLiteral (int i)
 {
   constraintExpr ret;
@@ -606,6 +622,7 @@ constraintExpr constraintExpr_makeValueInt (int i)
 }
 */
 
+/*@only@*/
  /*@special@*/ static constraintExpr constraintExpr_makeBinaryOp (void) /*@allocates result->data @*/ /*@sets result->kind @*/
 {
   constraintExpr ret;
@@ -617,7 +634,7 @@ constraintExpr constraintExpr_makeValueInt (int i)
 }
 
 
-/*@only@*/ constraintExpr constraintExpr_makeBinaryOpConstraintExpr (/*@only@*/constraintExpr expr1, /*@only@*/ constraintExpr expr2)
+static /*@only@*/ constraintExpr constraintExpr_makeBinaryOpConstraintExpr (/*@only@*/constraintExpr expr1, /*@only@*/ constraintExpr expr2)
      
 {
   constraintExpr ret;
@@ -629,6 +646,7 @@ constraintExpr constraintExpr_makeValueInt (int i)
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1, lltok op,/*@only@*/ constraintExpr expr2)
 {
   constraintExpr ret;
@@ -644,7 +662,8 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   return ret;
 }
 
-constraintExpr constraintExpr_makeBinaryOpExprNode (exprNode expr1, exprNode expr2)
+/*@only@*/
+/*@unused@*/ constraintExpr constraintExpr_makeBinaryOpExprNode (exprNode expr1, exprNode expr2)
 {
   constraintExpr ret;
   constraintExpr sub1, sub2;
@@ -654,6 +673,7 @@ constraintExpr constraintExpr_makeBinaryOpExprNode (exprNode expr1, exprNode exp
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/ constraintExpr expr, int literal)
 {
   constraintExpr ret;
@@ -665,6 +685,7 @@ constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/ c
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr expr)
 {
   constraintExpr ret;
@@ -676,7 +697,10 @@ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr ex
   return ret;
 }
 
-constraintExpr constraintExpr_makeAddConstraintExpr (constraintExpr expr, constraintExpr add)
+/*@only@*/
+constraintExpr constraintExpr_makeAddConstraintExpr (/*@only@*/
+constraintExpr expr, /*@only@*/
+constraintExpr add)
 {
   constraintExpr ret;
 
@@ -687,6 +711,7 @@ constraintExpr constraintExpr_makeAddConstraintExpr (constraintExpr expr, constr
   return ret;
 }
 
+/*@only@*/
 constraintExpr constraintExpr_makeIncConstraintExpr (/*@only@*/ constraintExpr expr)
 {
   constraintExpr ret;
@@ -698,7 +723,8 @@ constraintExpr constraintExpr_makeIncConstraintExpr (/*@only@*/ constraintExpr e
   return ret;
 }
 
-cstring constraintExprUnaryOpKind_print (constraintExprUnaryOpKind op)
+/*@only@*/
+static cstring constraintExprUnaryOpKind_print (constraintExprUnaryOpKind op)
 {
   switch (op)
     {
@@ -717,7 +743,8 @@ cstring constraintExprUnaryOpKind_print (constraintExprUnaryOpKind op)
 }
 
 
-cstring constraintExprBinaryOpKind_print (constraintExprBinaryOpKind op)
+/*@only@*/
+static cstring constraintExprBinaryOpKind_print (constraintExprBinaryOpKind op)
 {
   
   switch (op)
@@ -836,7 +863,7 @@ bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2)
   BADEXIT;
 }
 
-bool constraintExpr_search (constraintExpr c, constraintExpr old)
+bool constraintExpr_search (/*@observer@*/ constraintExpr c, /*@observer@*/ constraintExpr old)
 {
   bool ret = FALSE;
   constraintExprKind kind;
@@ -844,8 +871,7 @@ bool constraintExpr_search (constraintExpr c, constraintExpr old)
   
   if ( constraintExpr_similar (c, old) )
     {
-      #warning mem leak
-      DPRINTF((message ("Found  %s",
+      DPRINTF((message ("Found  %q",
 			constraintExpr_unparse(old)
 			)));
       return TRUE;
@@ -877,17 +903,18 @@ bool constraintExpr_search (constraintExpr c, constraintExpr old)
 }
 
 
- constraintExpr constraintExpr_searchandreplace (/*@returned@*/ constraintExpr c, constraintExpr old, constraintExpr new )
+/*@only@*/ constraintExpr constraintExpr_searchandreplace (/*@only@*/ /*@unique@*/ constraintExpr c, constraintExpr old, constraintExpr new )
 {
   constraintExprKind kind;
   constraintExpr temp;
   
   if ( constraintExpr_similar (c, old) )
     {
-      #warning mem leak
+
       DPRINTF((message ("Replacing %s with %s",
 			constraintExpr_unparse(old), constraintExpr_unparse(new)
 			)));
+      constraintExpr_free(c);
       return constraintExpr_copy (new);
     }
 
@@ -922,7 +949,7 @@ bool constraintExpr_search (constraintExpr c, constraintExpr old)
   
 }
 
-constraintExpr constraintExpr_simplifyChildren (/*@returned@*/ constraintExpr c)
+static constraintExpr constraintExpr_simplifyChildren (/*@returned@*/ constraintExpr c)
 {
   constraintExprKind kind;
   constraintExpr temp;
@@ -998,7 +1025,7 @@ constraintExpr constraintExpr_setFileloc (/*@returned@*/ constraintExpr c, filel
   return c;
 }
 
-/*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/constraintExpr c)
+static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/constraintExpr c)
 {
   constraintExpr e1, e2;
 
@@ -1018,7 +1045,7 @@ constraintExpr constraintExpr_setFileloc (/*@returned@*/ constraintExpr c, filel
 }
 
 
-constraintExpr constraintExpr_subtractExpr (constraintExpr expr, constraintExpr addent)
+/*@only@*/ static constraintExpr constraintExpr_subtractExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent)
 {
   constraintExpr  new;
   
@@ -1029,7 +1056,10 @@ constraintExpr constraintExpr_subtractExpr (constraintExpr expr, constraintExpr 
   return new;
 }
 
-constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr addent)
+/*@only@*/
+static constraintExpr constraintExpr_addExpr (/*@only@*/
+constraintExpr expr, /*@only@*/
+constraintExpr addent)
 {
   constraintExpr  new;
   
@@ -1040,7 +1070,16 @@ constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr adden
   return new;
 }
 
-/*@only@*/ constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, constraintExpr expr)
+/*
+  this thing takes the lexpr and expr of a constraint and modifies lexpr
+  and returns a (possiblly new) value for expr
+*/
+/* if lexpr is a binary express say x + y, we set lexpr to x and return a value for expr such as expr_old - y */
+
+/* the approach is a little Kludgy but seems to work.  I should probably use something cleaner at some point ... */
+
+
+/*@only@*/ constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, /*@only@*/ constraintExpr expr)
 {
   constraintExpr expr1, expr2;
   constraintExprBinaryOpKind op;
@@ -1050,25 +1089,30 @@ constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr adden
 
   expr2 = constraintExprData_binaryExprGetExpr2 (lexpr->data);
   expr1 = constraintExprData_binaryExprGetExpr1 (lexpr->data);
+
   op    = constraintExprData_binaryExprGetOp (lexpr->data);
 
-      
-  {
+  expr1 = constraintExpr_copy(expr1);
+  expr2 = constraintExpr_copy(expr2);
+
 #warning make sure this works
     
     lexpr->kind = expr1->kind;
     free (lexpr->data);
 
     lexpr->data = copyExprData (expr1->data, expr1->kind);
-    
+    free(expr1);
     
     if (op == PLUS)
       expr = constraintExpr_subtractExpr (expr, expr2);
-    else
+    else if (op == MINUS)
       expr = constraintExpr_addExpr (expr, expr2);
+    else
+      BADEXIT;
+
     
     return expr;
-  }  
+
   /*
     #warning this needs to be checked
     expr = constraintExpr_solveBinaryExpr (expr1, expr);
@@ -1078,7 +1122,7 @@ constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr adden
   */
 }
 
-/*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ constraintExpr c)
+static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ constraintExpr c)
 {
   constraintExpr exp;
   
@@ -1149,11 +1193,11 @@ constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr adden
 	  c->data = constraintExprData_unaryExprSetExpr (c->data, temp2);
 	  
 	  
-	  
+	  temp = constraintExpr_copy (temp);
+
 	  new = constraintExpr_subtractExpr (c, temp);
 
 	  DPRINTF ( (message ("Done fancy simplification:%s", constraintExpr_unparse (new) ) ) );
-	  constraintExpr_free(c);
 	  c = new;
 	}
     }
@@ -1163,42 +1207,57 @@ constraintExpr constraintExpr_addExpr (constraintExpr expr, constraintExpr adden
 }
 
 
-/*@only@*/ constraintExpr constraintExpr_simplify ( constraintExpr c)
+/*@only@*/ constraintExpr constraintExpr_simplify (/*@only@*/ constraintExpr c)
 {
   constraintExprKind kind;
+  constraintExpr ret;
   constraintTerm t;
-
   
   DPRINTF ( (message ("Doing constraintExpr_simplify:%s", constraintExpr_unparse (c) ) ) );  
-
-  c = constraintExpr_simplifyChildren (c);
-  c = constraintExpr_combineConstants (c);
-  c = constraintExpr_simplifyChildren (c);
   
-  kind = c->kind;
+
+  /*@i22*/
+  
+  /*I think this is an LCLint bug */
+
+  ret =  constraintExpr_copy(c);
+
+  constraintExpr_free(c);
+
+  ret = constraintExpr_simplifyChildren (ret);
+
+  ret = constraintExpr_combineConstants (ret);
+  
+  ret = constraintExpr_simplifyChildren (ret);
+  
+
+  kind = ret->kind;
   
   switch (kind)
     {
     case term:
-      t = constraintExprData_termGetTerm (c->data);
+      t = constraintExprData_termGetTerm (ret->data);
       t = constraintTerm_copy(t);
       t = constraintTerm_simplify (t);
-      c->data = constraintExprData_termSetTerm (c->data, t);
+      ret->data = constraintExprData_termSetTerm (ret->data, t);
       break;      
     case unaryExpr:
-      c = constraintExpr_simplifyunaryExpr (c);
+      ret = constraintExpr_simplifyunaryExpr (ret);
       break;           
     case binaryexpr:
-      c = constraintExpr_simplifybinaryExpr (c);      
+      ret = constraintExpr_simplifybinaryExpr (ret);      
       break;
     default:
       llassert(FALSE);
-    }
-  return c;
+    }    
+  
+  DPRINTF ( (message ("constraintExpr_simplify returning :%s", constraintExpr_unparse (ret) ) ) );  
+  return ret;
   
 }
 
-cstring constraintExpr_unparse (constraintExpr ex)
+/*@only@*/
+cstring constraintExpr_unparse (/*@observer@*/ constraintExpr ex) /*@*/
 {
   cstring st;
   constraintExprKind kind;
@@ -1441,16 +1500,6 @@ bool constraintExpr_canGetValue (constraintExpr expr)
   BADEXIT;
 }
 
-bool constraintExpr_canCompare (constraintExpr expr1, constraintExpr expr2)
-{
-  
-  llassert(expr1 && expr2);
-  return (  constraintExpr_canGetValue(expr1) &&
-	    constraintExpr_canGetValue(expr2)
-	    );
-}
-
-
 fileloc constraintExpr_getFileloc (constraintExpr expr)
 {
   constraintExpr e;
@@ -1543,20 +1592,22 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, exprNodeList arglist)
   /*@i1*/ switch (t->kind)
     {
     case EXPRNODE:
-      DPRINTF((message ("%s @ %q ", exprNode_unparse (term->value.expr),
-			fileloc_unparse (term->loc) ) ));
+      DPRINTF((message ("%q @ %q ", constraintTerm_print(t),
+			fileloc_unparse (constraintTerm_getFileloc(t) ) ) ));
       break;
     case INTLITERAL:
-      DPRINTF((message (" %d ", term->value.intlit)));
+      DPRINTF((message (" %q ", constraintTerm_print (t)) ));
       break;
       
     case SREF:
+      DPRINTF (( message("Doing sRef_fixConstraintParam for %q ", 
+			 constraintTerm_print (t) ) ));
       ret = sRef_fixConstraintParam (t->value.sref, arglist);
       
       constraintExpr_free(e);
 
-      DPRINTF((message ("%s ", sRef_unparse (term->value.sref) ) ));
-
+      DPRINTF (( message("After Doing sRef_fixConstraintParam constraintExpr is %q ", 
+			 constraintExpr_print (ret) ) ));
       break;
     default:
       BADEXIT;
@@ -1579,6 +1630,14 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, exprNodeList arglist)
 
 /* } */
 
+/*drl added 6/11/01 */
+bool constraintExpr_isBinaryExpr (/*@observer@*/ constraintExpr c)
+{
+  if (c->kind == binaryexpr)
+    return TRUE;
 
+  else
+    return FALSE;
+}
 
 

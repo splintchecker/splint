@@ -21,7 +21,7 @@
 
 /*@access constraintExpr @*/
 
-static bool isInc (constraintExpr c) /*@*/
+static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
 {
   
   llassert(constraintExpr_isDefined(c) );
@@ -68,8 +68,8 @@ static bool incVar (/*@notnull@*/ constraint c) /*@*/
 /*@noaccess constraintExpr @*/
 
 
-static bool increments (constraint c,
-			constraintExpr var)
+static bool increments (/*@observer@*/ constraint c,
+			/*@observer@*/ constraintExpr var)
 {
   llassert(constraint_isDefined(c) );
 
@@ -147,7 +147,7 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
   return FALSE;
 }
 
-static constraintList getLessThanConstraints (constraintList c)
+static /*@only@*/ constraintList getLessThanConstraints (/*@observer@*/ constraintList c)
 {
   constraintList ret;
 
@@ -171,7 +171,7 @@ static constraintList getLessThanConstraints (constraintList c)
   return ret;
 }
 
-static constraintList getIncConstraints (constraintList c)
+static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintList c)
 {
   constraintList ret;
 
@@ -190,12 +190,13 @@ static constraintList getIncConstraints (constraintList c)
   return ret;
 }
 
-constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
+static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
 {
   
   exprNode init, test, inc, t1, t2;
   constraintList ltCon;
   constraintList incCon;
+  constraintExpr ret;
   
   lltok tok;
   
@@ -220,7 +221,10 @@ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
 	if ( increments(el2, el->lexpr) )
 	  {
 	    DPRINTF(( message ("getForTimes: %s increments %s", constraint_print(el2), constraint_print(el) ) ));
-	    return constraintExpr_copy (el->expr);
+	    ret =  constraintExpr_copy (el->expr);
+	    constraintList_free(ltCon);
+	    constraintList_free(incCon);
+	    return ret;
 
 	  }
 	else
@@ -230,6 +234,9 @@ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
     }
 
   end_constraintList_elements;
+
+  constraintList_free(ltCon);
+  constraintList_free(incCon);
   
   DPRINTF (( message ("getForTimes: %s  %s resorting to ugly hack", exprNode_unparse(forPred), exprNode_unparse(forBody) ) ));
   if (! canGetForTimes (forPred, forBody) )
@@ -269,7 +276,7 @@ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
 
 /*@access constraintExpr @*/
 
-constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr find, constraintExpr add)
+static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constraintExpr c, /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
   constraintExprKind kind;
   constraintExpr temp;
@@ -282,11 +289,16 @@ constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr fin
       #warning mem leak
 
       constraintExpr new;
+      
+      cstring cPrint;
+      
+      cPrint = constraintExpr_unparse(c);
+      
+      
+      new = constraintExpr_makeAddConstraintExpr (c, constraintExpr_copy(add) );
 
-      new = constraintExpr_makeAddConstraintExpr (c, add);
-
-      DPRINTF((message ("Replacing %s with %s",
-			constraintExpr_unparse(c), constraintExpr_unparse(new)
+      DPRINTF((message ("Replacing %q with %q",
+			cPrint, constraintExpr_unparse(new)
 			)));
       return new;
     }
@@ -299,17 +311,17 @@ constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr fin
       break;      
     case unaryExpr:
       temp = constraintExprData_unaryExprGetExpr (c->data);
-      temp = constraintExpr_searchAndAdd (temp, find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
       c->data = constraintExprData_unaryExprSetExpr (c->data, temp);
       break;           
     case binaryexpr:
       
       temp = constraintExprData_binaryExprGetExpr1 (c->data);
-      temp = constraintExpr_searchAndAdd (temp, find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
       c->data = constraintExprData_binaryExprSetExpr1 (c->data, temp);
        
       temp = constraintExprData_binaryExprGetExpr2 (c->data);
-      temp = constraintExpr_searchAndAdd (temp, find, add);
+      temp = constraintExpr_searchAndAdd (constraintExpr_copy(temp), find, add);
       c->data = constraintExprData_binaryExprSetExpr2 (c->data, temp);
       break;
     default:
@@ -321,7 +333,7 @@ constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr fin
 
 /*@noaccess constraintExpr @*/
 
-constraint  constraint_searchAndAdd (constraint c, constraintExpr find, constraintExpr add)
+static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
   
   llassert (constraint_search (c, find)  );
@@ -338,8 +350,8 @@ constraint  constraint_searchAndAdd (constraint c, constraintExpr find, constrai
   
 }
 
-constraintList constraintList_searchAndAdd (constraintList list,
-					    constraintExpr find, constraintExpr add)
+static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList list,
+						   /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
   constraintList newConstraints;
   constraintList ret;
@@ -365,7 +377,7 @@ constraintList constraintList_searchAndAdd (constraintList list,
   return ret;
 }
 
-static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, exprNode forBody, constraintExpr iterations)
+static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@observer@*/ exprNode forBody, /*@observer@*/ constraintExpr iterations)
 {
   
   constraintList_elements (forBody->ensuresConstraints, el)
@@ -398,8 +410,8 @@ void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
   if (iterations)
     {
       doAdjust ( e, forPred, forBody, iterations);
+      constraintExpr_free(iterations);
     }
-  
 }
 
 

@@ -19,25 +19,33 @@
 
 /*@access constraint, exprNode @*/
 
+static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType ar2, /*@observer@*/ constraintExpr expr2);
 
-constraint  inequalitySubstituteUnsound  (constraint c, constraintList p);
+static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, constraintList p);
 
-static constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new);
-//bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2);
-//bool satifies (constraint pre, constraint post);
-//bool resolve (constraint c, constraintList p);
-//constraintList reflectChangesEnsures (constraintList pre2, constraintList post1);
-//constraint constraint_simplify (constraint c);
+static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr new);
 
-//constraintList constraintList_fixConflicts (constraintList list1, constraintList list2);
 
-//constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2);
+static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@*/ constraint or);
 
-//constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
-constraint  inequalitySubstitute  (constraint c, constraintList p);
+static bool resolveOr (/*@observer@*/ constraint c, /*@observer@*/ constraintList list);
+
+static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constraintList pre2, constraintList post1);
 
 /*********************************************/
 
+
+
+
+/*@only@*/ constraintList constraintList_mergeEnsuresFreeFirst (constraintList list1, constraintList list2)
+{
+  constraintList ret;
+
+  ret = constraintList_mergeEnsures (list1, list2);
+
+  constraintList_free(list1);
+  return ret;
+}
 					    
 /*@only@*/ constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2)
 {
@@ -54,7 +62,7 @@ constraint  inequalitySubstitute  (constraint c, constraintList p);
 		     )));
   
   ret = constraintList_fixConflicts (list1, list2);
-  ret = reflectChangesEnsures (ret, list2);
+  ret = reflectChangesEnsuresFree1 (ret, list2);
   temp = constraintList_subsumeEnsures (ret, list2);
   constraintList_free(ret);
   ret = temp;
@@ -71,6 +79,18 @@ constraint  inequalitySubstitute  (constraint c, constraintList p);
   return temp;
   //ret = constraintList_addList (ret, list2);
   //return ret;
+}
+
+
+/*@only@*/ constraintList constraintList_mergeRequiresFreeFirst (/*@only@*/ constraintList list1, constraintList list2)
+{
+  constraintList ret;
+
+  ret = constraintList_mergeRequires(list1, list2);
+
+  constraintList_free(list1);
+
+  return ret;
 }
 
 /*@only@*/ constraintList constraintList_mergeRequires (constraintList list1, constraintList list2)
@@ -105,9 +125,15 @@ void checkArgumentList (/*@out@*/ exprNode temp, exprNodeList arglist, fileloc s
   
   exprNodeList_elements (arglist, el)
     {
+      constraintList temp2;
       exprNode_exprTraverse (el, FALSE, FALSE, sequencePoint);
+      temp2 = el->requiresConstraints;
       el->requiresConstraints = exprNode_traversRequiresConstraints(el);
+      constraintList_free(temp2);
+
+      temp2 = el->ensuresConstraints;
       el->ensuresConstraints  = exprNode_traversEnsuresConstraints(el);
+      constraintList_free(temp2);
 
       temp->requiresConstraints = constraintList_addList(temp->requiresConstraints,
 							    el->requiresConstraints);
@@ -269,12 +295,28 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 }
 
 
+
 /* tries to resolve constraints in list pre2 using post1 */
-/*@only@*/ constraintList reflectChanges (constraintList pre2, constraintList post1)
+/*@only@*/ constraintList reflectChangesFreePre (/*@only@*/ constraintList pre2, /*@observer@*/ constraintList post1)
+{
+  constraintList ret;
+  
+  ret = reflectChanges (pre2, post1);
+
+  constraintList_free (pre2);
+  
+  return ret;
+}
+
+
+/* tries to resolve constraints in list pre2 using post1 */
+/*@only@*/ constraintList reflectChanges (/*@observer@*/ constraintList pre2, /*@observer@*/ constraintList post1)
 {
   
   constraintList ret;
   constraint temp;
+  constraint temp2;
+
   ret = constraintList_makeNew();
   DPRINTF((message ("reflectChanges: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
   
@@ -286,13 +328,13 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 	  if (!resolve (temp, post1) )
 	    {
 	      // try inequality substitution
-	      constraint temp2;
+	      //constraint temp2;
 	      
 	      // the inequality substitution may cause us to lose information
 	      //so we don't want to store the result but we do it anyway
 	      temp2 = constraint_copy (temp);
 	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
-	         temp2 = inequalitySubstitute (temp, post1); 
+	         temp2 = inequalitySubstitute (temp2, post1); 
 		      if (!resolve (temp2, post1) )
 			{
 			  temp2 = inequalitySubstituteUnsound (temp2, post1); 
@@ -300,6 +342,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 			      ret = constraintList_add (ret, temp2);
 			}
 	    }
+	  constraint_free(temp);
 	}
     } end_constraintList_elements;
 
@@ -308,7 +351,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 }
 
 
-constraint constraint_addOr (constraint orig, constraint or)
+static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@*/ constraint or)
 {
   constraint c;
   c = orig;
@@ -327,7 +370,7 @@ constraint constraint_addOr (constraint orig, constraint or)
 }
 
 
-bool resolveOr (constraint c, constraintList list)
+static bool resolveOr (/*@observer@*/ constraint c, /*@observer@*/ constraintList list)
 {
   constraint temp;
 
@@ -345,14 +388,17 @@ bool resolveOr (constraint c, constraintList list)
   return FALSE;
 }
 
+/*This is a "helper" function for doResolveOr */
 
-constraint doResolve (constraint c, constraintList post1, bool * resolved)
+static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList post1, bool * resolved)
 {
   constraint temp;
   
  if (!resolveOr (c, post1) )
 	{
+
 	  temp = substitute (c, post1);
+	  
 	  if (!resolveOr (temp, post1) )
 	    {
 	      // try inequality substitution
@@ -363,20 +409,29 @@ constraint doResolve (constraint c, constraintList post1, bool * resolved)
 	      temp2 = constraint_copy (c);
 	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
 	      temp2 = inequalitySubstitute (temp2, post1); 
-		      if (!resolveOr (temp2, post1) )
-			{
-			  temp2 = inequalitySubstituteUnsound (temp2, post1); 
-			  if (!resolveOr (temp2, post1) )
-			    {
-			      if (!constraint_same (temp, temp2) )
-				temp = constraint_addOr (temp, temp2);
-			      *resolved = FALSE;
-			      return temp;
-			    }
-			}
-	    }
-	}
+	      if (!resolveOr (temp2, post1) )
+		{
+		  temp2 = inequalitySubstituteUnsound (temp2, post1); 
+		  if (!resolveOr (temp2, post1) )
+		    {
+		      if (!constraint_same (temp, temp2) )
+			temp = constraint_addOr (temp, temp2);
+		      *resolved = FALSE;
 
+		      constraint_free(temp2);
+		      constraint_free(c);
+	  
+		      return temp;
+		    }
+		}
+	      
+	      constraint_free(temp2);
+	    }
+	  constraint_free(temp);
+	}
+ 
+ constraint_free(c);
+ 
  *resolved = TRUE;
  return NULL;
 
@@ -384,7 +439,7 @@ constraint doResolve (constraint c, constraintList post1, bool * resolved)
 
 }
 
-constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * resolved)
+static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * resolved)
 {
   constraint ret;
   constraint next;
@@ -396,6 +451,14 @@ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * reso
   ret->or = NULL;
 
   ret = doResolve (ret, post1, resolved);
+
+  if (*resolved)
+    {
+      constraint_free(next);
+      constraint_free(ret);
+      return NULL;
+    }
+
   while (next != NULL)
     {
       curr = next;
@@ -404,11 +467,15 @@ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * reso
 
       curr = doResolve (curr, post1, resolved);
       if (*resolved)
-	return NULL;
-            
+	{
+	  constraint_free(curr);
+	  constraint_free(next);
+	  constraint_free(ret);
+	  return NULL;
+	}
       ret = constraint_addOr (ret, curr);
     }
-  
+  constraint_free(curr);
   return ret;
 }
 
@@ -438,8 +505,7 @@ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * reso
     DPRINTF((message ("reflectChangesOr: returning %s", constraintList_print(ret) ) ) );
     return ret;
 }
-
-/*@only@*/ constraintList reflectChangesEnsures (/*@only@*/ constraintList pre2, constraintList post1)
+static /*@only@*/ constraintList reflectChangesEnsures (/*@observer@*/ constraintList pre2, constraintList post1)
 {  
   constraintList ret;
   constraint temp;
@@ -464,7 +530,19 @@ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * reso
 }
 
 
-bool constraint_conflict (constraint c1, constraint c2)
+static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constraintList pre2, constraintList post1)
+{
+  constraintList ret;
+
+  ret = reflectChangesEnsures (pre2, post1);
+  
+  constraintList_free(pre2);
+
+  return ret;
+}
+
+
+static bool constraint_conflict (constraint c1, constraint c2)
 {
   
   if (constraintExpr_similar(c1->lexpr, c2->lexpr) )
@@ -483,7 +561,7 @@ bool constraint_conflict (constraint c1, constraint c2)
 
 }
 
-void constraint_fixConflict ( constraint good, /*@observer@*/ constraint conflicting) /*@modifies good@*/
+static void constraint_fixConflict ( constraint good, /*@observer@*/ constraint conflicting) /*@modifies good@*/
 {
   if (conflicting->ar ==EQ )
     {
@@ -494,7 +572,7 @@ void constraint_fixConflict ( constraint good, /*@observer@*/ constraint conflic
 
 }
 
-bool conflict (constraint c, constraintList list)
+static bool conflict (constraint c, constraintList list)
 {
 
   constraintList_elements (list, el)
@@ -530,25 +608,8 @@ constraintList constraintList_fixConflicts (constraintList list1, constraintList
     return ret;
 }
 
-bool resolve (/*@observer@*/ constraint c, /*@observer@*/ constraintList p)
-{
-  constraintList_elements (p, el)
-    {
-      if ( satifies (c, el) )
-	{
-	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
-	  return TRUE;
-	}
-        DPRINTF ( (message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
-    }
-  end_constraintList_elements;
-  DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
-  return FALSE;
-}
-
-
 /*returns true if constraint post satifies cosntriant pre */
-bool satifies (constraint pre, constraint post)
+static bool satifies (constraint pre, constraint post)
 {
   if (constraint_isAlwaysTrue (pre)  )
     return TRUE;
@@ -566,7 +627,24 @@ bool satifies (constraint pre, constraint post)
   return rangeCheck (pre->ar, pre->expr, post->ar, post->expr);
 }
 
-bool arithType_canResolve (arithType ar1, arithType ar2)
+
+bool resolve (/*@observer@*/ constraint c, /*@observer@*/ constraintList p)
+{
+  constraintList_elements (p, el)
+    {
+      if ( satifies (c, el) )
+	{
+	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
+	  return TRUE;
+	}
+        DPRINTF ( (message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
+    }
+  end_constraintList_elements;
+  DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
+  return FALSE;
+}
+
+static bool arithType_canResolve (arithType ar1, arithType ar2)
 {
   switch (ar1)
     {
@@ -597,7 +675,7 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
 
 /* We look for constraint which are tautologies */
 
-bool constraint_isAlwaysTrue (constraint c)
+bool constraint_isAlwaysTrue (/*@observer@*/ constraint c)
 {
   constraintExpr l, r;
   bool /*@unused@*/ lHasConstant, rHasConstant;
@@ -661,6 +739,10 @@ bool constraint_isAlwaysTrue (constraint c)
     {
       DPRINTF(( message("constraint_IsAlwaysTrue: after removing constants  %s and %s are similar", constraintExpr_unparse(l), constraintExpr_unparse(r) ) ));
       DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is  %d", rConstant ) ));
+      
+      constraintExpr_free(l);
+      constraintExpr_free(r);
+      
       switch (c->ar)
 	{
 	case EQ:
@@ -682,6 +764,8 @@ bool constraint_isAlwaysTrue (constraint c)
     }  
       else
       {
+	constraintExpr_free(l);
+	constraintExpr_free(r);
 	DPRINTF(( message("Constraint %s is not always true", constraint_print(c) ) ));
 	return FALSE;
       }
@@ -689,10 +773,10 @@ bool constraint_isAlwaysTrue (constraint c)
   BADEXIT;
 }
 
-bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType ar2, /*@observer@*/ constraintExpr expr2)
+static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType ar2, /*@observer@*/ constraintExpr expr2)
 
 {
-  TPRINTF ((message ("Doing Range CHECK %s and %s", constraintExpr_unparse(expr1), constraintExpr_unparse(expr2) ) ));
+  DPRINTF ((message ("Doing Range CHECK %s and %s", constraintExpr_unparse(expr1), constraintExpr_unparse(expr2) ) ));
 
   if (! arithType_canResolve (ar1, ar2) )
     return FALSE;
@@ -711,12 +795,12 @@ bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType a
        bool p1, p2;
        int const1, const2;
        
-       e1 = constraintExpr_copy(e1);
-       e2 = constraintExpr_copy(e2);
+       e1 = constraintExpr_copy(expr1);
+       e2 = constraintExpr_copy(expr2);
 
-       e1 = constraintExpr_propagateConstants (expr1, &p1, &const1);
+       e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
 
-       e2 = constraintExpr_propagateConstants (expr2, &p2, &const2);
+       e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
 
        if (p1 && p2)
 	 if (const1 <= const2)
@@ -755,14 +839,23 @@ bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType a
        bool p1, p2;
        int const1, const2;
        
-       e1 = constraintExpr_propagateConstants (expr1, &p1, &const1);
+       e1 = constraintExpr_copy(expr1);
+       e2 = constraintExpr_copy(expr2);
 
-       e2 = constraintExpr_propagateConstants (expr2, &p2, &const2);
+       e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
+
+       e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
 
        if (p1 && p2)
 	 if (const1 >= const2)
 	   if (constraintExpr_similar (e1, e2) )
-	     return TRUE;
+	     {
+	       constraintExpr_free(e1);
+	       constraintExpr_free(e2);
+	       return TRUE;
+	     }
+       constraintExpr_free(e1);
+       constraintExpr_free(e2);
        
        DPRINTF( ("Can't Get value"));
        return FALSE;
@@ -774,13 +867,13 @@ bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType a
    return FALSE;
    
  default:
-     llcontbug((message("Unhandled case in switch: %s", arithType_print(ar1) ) ) );
+     llcontbug((message("Unhandled case in switch: %q", arithType_print(ar1) ) ) );
  }
   BADEXIT;
 }
 
 
-constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new)
+static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr new)
 {
   DPRINTF (("Doing replace for lexpr") );
   c->lexpr = constraintExpr_searchandreplace (c->lexpr, old, new);
@@ -800,7 +893,7 @@ bool constraint_search (constraint c, constraintExpr old) /*@*/
 }
 
 //adjust file locs and stuff
-constraint constraint_adjust (constraint substitute, constraint old)
+static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@observer@*/ constraint old)
 {
   fileloc loc1, loc2, loc3;
 
@@ -828,6 +921,10 @@ constraint constraint_adjust (constraint substitute, constraint old)
 	substitute = constraint_simplify(substitute);
       }
 
+  fileloc_free (loc1);
+  fileloc_free (loc2);
+  fileloc_free (loc3);
+
   return substitute;
   
 }
@@ -838,7 +935,7 @@ constraint constraint_adjust (constraint substitute, constraint old)
 
    Warning this is sound but throws out information
  */
-constraint  inequalitySubstitute  (constraint c, constraintList p)
+constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p)
 {
   if (c->ar != GTE)
     return c;
@@ -848,10 +945,12 @@ constraint  inequalitySubstitute  (constraint c, constraintList p)
        if ( el->ar == LT)
 	 //	 if (!constraint_conflict (c, el) )
 	   {
-	     constraint temp;
+	     //constraint temp;
 	     constraintExpr  temp2;
 	     
-	     temp = constraint_copy(el);
+	     /*@i22*/
+
+	     //temp = constraint_copy(el);
 	     
 	     //	     temp = constraint_adjust(temp, c);
 
@@ -863,6 +962,7 @@ constraint  inequalitySubstitute  (constraint c, constraintList p)
 				   constraintExpr_print (el->expr) )
 			  ));
 		 temp2   = constraintExpr_copy (el->lexpr);
+		 constraintExpr_free(c->expr);
 		 c->expr =  constraintExpr_makeIncConstraintExpr (temp2);
 	       }
 	     
@@ -881,7 +981,7 @@ constraint  inequalitySubstitute  (constraint c, constraintList p)
    Like inequalitySubstitute we're throwing away some information
 */
 
-constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
+static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, constraintList p)
 {
   DPRINTF (( message ("Doing inequalitySubstituteUnsound " ) ));
   
@@ -894,10 +994,10 @@ constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
        if ( ( el->ar == LTE) || (el->ar == LT) )
 	 //	 if (!constraint_conflict (c, el) )
 	   {
-	     constraint temp;
+	     // constraint temp;
 	     constraintExpr  temp2;
 	     
-	     temp = constraint_copy(el);
+	     //temp = constraint_copy(el);
 	     
 	     //	     temp = constraint_adjust(temp, c);
 	     temp2   = constraintExpr_copy (el->expr);
@@ -911,6 +1011,7 @@ constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
 			       constraintExpr_print (temp2) ) ));
 	     
 	     c->lexpr = constraintExpr_searchandreplace (c->lexpr, el->lexpr, temp2);
+	     constraintExpr_free(temp2);
 	   }
     }
   end_constraintList_elements;
@@ -919,7 +1020,7 @@ constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
   return c;
 }
 
-/*@only@*/ constraint substitute (constraint c, constraintList p)
+/*@only@*/ constraint substitute (/*@observer@*/ constraint c, constraintList p)
 {
   constraint ret;
 
@@ -931,6 +1032,7 @@ constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
 
 	   {
 	     constraint temp;
+	     
 	     temp = constraint_copy(el);
 	     
 	     temp = constraint_adjust(temp, ret);
@@ -942,17 +1044,31 @@ constraint  inequalitySubstituteUnsound  (constraint c, constraintList p)
 	  
 	     ret = constraint_searchandreplace (ret, temp->lexpr, temp->expr);
 	     DPRINTF(( message ("The new constraint is %s", constraint_print (ret) ) ));
+	     constraint_free(temp);
 	   }
     }
   end_constraintList_elements;
+  DPRINTF(( message ("The finial new constraint is %s", constraint_print (ret) ) ));
 
   ret = constraint_simplify(ret);
   return ret;
 }
 
+
+/*@only@*/ constraintList constraintList_substituteFreeTarget (/*@only@*/ constraintList target, /*@observer@*/ constraintList subList)
+{
+constraintList ret;
+
+ret = constraintList_substitute (target, subList);
+
+constraintList_free(target);
+
+return ret;
+}
+
 /* we try to do substitutions on each constraint in target using the constraint in sublist*/
 
-constraintList constraintList_substitute (constraintList target, constraintList subList)
+/*@only@*/ constraintList constraintList_substitute (constraintList target,/*2observer@*/  constraintList subList)
 {
 
   constraintList ret;
@@ -963,27 +1079,14 @@ constraintList constraintList_substitute (constraintList target, constraintList 
   { 
     constraint temp;
     #warning make sure this side effect is the right things
-    el = substitute(el, subList);
-    temp = constraint_copy (el);
+    #warning make sure that a side effect is not expected
+
+    temp = substitute(el, subList);
     ret = constraintList_add (ret, temp);
   }
   end_constraintList_elements;
-#warning mem leak
+
   return ret;
-}
-
-constraint constraint_solveWithFlag (constraint c, bool *b)
-{
-
-  *b = FALSE;
-  if (c->lexpr->kind == binaryexpr)
-    {
-      *b = TRUE;
-      DPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
-      c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);
-      DPRINTF( (message ("Solved and got %s\n", constraint_print(c) ) ) );
-    }
-  return c;
 }
 
 constraint constraint_solve (constraint c)
@@ -1033,7 +1136,7 @@ constraint constraint_simplify ( /*@returned@*/ constraint c)
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
 
-  if (c->lexpr->kind == binaryexpr)
+  if (constraintExpr_isBinaryExpr (c->lexpr) )
     {
       c = constraint_solve (c);
       

@@ -288,6 +288,17 @@ exprNode_freeIniter (/*@only@*/ exprNode e)
       sRefSet_free (e->sets);
       sRefSet_free (e->msets);
       guardSet_free (e->guards);
+
+      constraintList_free(e->requiresConstraints);
+      constraintList_free(e->ensuresConstraints);
+      constraintList_free(e->trueEnsuresConstraints);
+      constraintList_free(e->falseEnsuresConstraints);
+      
+      e->requiresConstraints = NULL;
+      e->ensuresConstraints = NULL;
+      e->trueEnsuresConstraints = NULL;
+      e->falseEnsuresConstraints = NULL;
+	
       sfree (e);
     }
 }
@@ -352,6 +363,16 @@ exprNode_free (exprNode e)
 	  guardSet_free (e->guards);
 	  exprData_free (e->edata, e->kind);
 	  
+	  constraintList_free(e->requiresConstraints);
+	  constraintList_free(e->ensuresConstraints);
+	  constraintList_free(e->trueEnsuresConstraints);
+	  constraintList_free(e->falseEnsuresConstraints);
+      
+	  e->requiresConstraints = NULL;
+	  e->ensuresConstraints = NULL;
+	  e->trueEnsuresConstraints = NULL;
+	  e->falseEnsuresConstraints = NULL;
+	
 	  nowalloc--;
 	  sfree (e);
 	  /*@-branchstate@*/ 
@@ -514,6 +535,8 @@ static /*@notnull@*/ /*@special@*/ exprNode
   ret->isJumpPoint = FALSE;
   ret->edata = exprData_undefined;
 
+  exprNode_defineConstraints(ret);
+
   return (ret);
 }
 
@@ -564,6 +587,8 @@ static /*@notnull@*/ /*@special@*/ exprNode
   ret->isJumpPoint = FALSE;
   ret->edata = exprData_undefined;
 
+  exprNode_defineConstraints(ret);
+
   return (ret);
 }
 
@@ -599,8 +624,11 @@ static /*@notnull@*/ /*@special@*/ exprNode
       ret->isJumpPoint = FALSE;
       ret->edata = exprData_undefined;
       
+      exprNode_defineConstraints(ret);
+      
       return (ret);
     }
+
 }
 
 bool
@@ -9976,7 +10004,7 @@ long exprNode_getLongValue (exprNode e) {
     return fileloc_undefined;
 }
 
-fileloc exprNode_getNextSequencePoint (exprNode e)
+/*@only@*/ fileloc exprNode_getNextSequencePoint (exprNode e)
 {
   /*
   ** Returns the location of the sequence point following e.
@@ -9986,7 +10014,7 @@ fileloc exprNode_getNextSequencePoint (exprNode e)
 
   if (exprNode_isDefined (e) && e->kind == XPR_STMT) {
     lltok t = exprData_getUopTok (e->edata);
-    return lltok_getLoc (t);
+    return fileloc_copy(lltok_getLoc (t));
   } else {
     #warning fix
     //    llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));

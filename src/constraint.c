@@ -535,8 +535,15 @@ void constraint_free (/*@only@*/ /*@notnull@*/ constraint c)
   if ( constraint_isDefined(c->or) )
     constraint_free (c->or);
 
+  
   constraintExpr_free(c->lexpr);
   constraintExpr_free(c->expr);
+
+  c->orig = NULL;
+  c->or = NULL;
+  c->lexpr = NULL;
+  c->expr  = NULL;
+
   free (c);
   
 }

@@ -30,7 +30,7 @@ constraintExprData constraintExprData_copyBinaryExpr(constraintExprData data)
   return ret;
 }
 
-void constraintExprData_freeUnaryExpr (/*@only@*/constraintExprData data)
+ void constraintExprData_freeUnaryExpr (/*@only@*/constraintExprData data)
 {
   constraintExpr_free (data->unaryOp.expr);
   free(data);  

@@ -313,7 +313,7 @@ $(CHECKS): lclint.lcd
 ### 
 
 lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -exportLocal -nestcomments -uniondef -abstract -namechecks -protoparammatch -boolops $(ALLSRC) -dump lclint
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -uniondef -exportlocal -exportheader -abstract -namechecks -protoparammatch -boolops $(ALLSRC) -dump  lclint
 
 
 

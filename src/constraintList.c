@@ -75,7 +75,7 @@ constraintList_grow (constraintList s)
 
 
 constraintList 
-constraintList_add (constraintList s, constraint el)
+constraintList_add (/*@returned@*/ constraintList s, /*@only@*/ constraint el)
 {
   /*drl7x */
   //   el = constraint_simplify (el);
@@ -101,12 +101,36 @@ constraintList_add (constraintList s, constraint el)
 static void constraintList_freeShallow (/*@only@*/ constraintList c)
 {
   if (constraintList_isDefined(c) )
-    free (c->elements);
-  
+    {
+      free (c->elements);
+      c->elements = NULL;
+      c->nelements = -1;
+      c->nspace = -1;
+    }
   free (c);
+  c = NULL;
 }
 
-constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@only@*/ constraintList new)
+/*@only@*/ constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@observer@*/ constraintList new)
+{
+  llassert(constraintList_isDefined(s) );
+  llassert(constraintList_isDefined(new) );
+
+  if (new == constraintList_undefined)
+    return s;
+  
+  constraintList_elements (new, elem)
+    {
+    s = constraintList_add (s, constraint_copy(elem) );
+    }
+  end_constraintList_elements;
+
+  return s;
+}
+
+
+
+/*@only@*/ constraintList constraintList_addListFree (/*@only@*/ constraintList s, /*@only@*/ constraintList new)
 {
   llassert(constraintList_isDefined(s) );
   llassert(constraintList_isDefined(new) );
@@ -169,14 +193,14 @@ constraintList_print (constraintList s) /*@*/
 void constraintList_printError (constraintList s, fileloc loc)
 {
 
-  constraintList_elements_private (s, elem)
+  constraintList_elements (s, elem)
     {
       if (elem != NULL)
 	{
 	  constraint_printError (elem, loc);
 	}
     }
-  end_constraintList_elements_private;
+  end_constraintList_elements;
   return;
 }
 
@@ -222,29 +246,33 @@ constraintList_printDetailed (constraintList s)
 } */
 
 constraintList
-constraintList_logicalOr (constraintList l1, constraintList l2)
+constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ constraintList l2)
 {
   constraint temp;
   constraintList ret;
-  DPRINTF ( (message ("Logical of on %s and %s",
+  DPRINTF ( (message ("Logical or on %s and %s",
 		      constraintList_print(l1), 
 		      constraintList_print(l2)) ) );
   
   ret = constraintList_makeNew();
-  constraintList_elements_private (l1, el)
+  constraintList_elements (l1, el)
     {
       temp = substitute (el, l2);
       
       if (resolve (el, l2) || resolve(temp,l2) )
 	{   /*avoid redundant constraints*/
 	  if (!resolve (el, ret) )
-	    ret = constraintList_add (ret, el);
+	    {
+	      constraint temp2;
+	      temp2 = constraint_copy(el);
+	      ret = constraintList_add (ret, temp2);
+	    }
 	}
       constraint_free(temp);
     }
-  end_constraintList_elements_private;
+  end_constraintList_elements;
 
-   constraintList_elements_private (l2, el)
+   constraintList_elements (l2, el)
     {
       temp = substitute (el, l1);
       
@@ -252,27 +280,39 @@ constraintList_logicalOr (constraintList l1, constraintList l2)
 	{
 	  /*avoid redundant constraints*/
 	  if (!resolve (el, ret) )
-	    ret = constraintList_add (ret, el);
+	    {
+	      constraint temp2;
+	      temp2 = constraint_copy(el);
+	      ret = constraintList_add (ret, temp2);
+	    }
 	}
       constraint_free(temp);
     }
-  end_constraintList_elements_private;
+  end_constraintList_elements;
 
   
   return ret;
 }
 
 void
-constraintList_free (constraintList s)
+constraintList_free (/*@only@*/ constraintList s)
 {
   int i;
+
+  llassert(constraintList_isDefined(s) );
+
+  
   for (i = 0; i < s->nelements; i++)
     {
-      //      constraint_free (s->elements[i]); 
+      constraint_free (s->elements[i]); 
     }
 
   sfree (s->elements);
+  s->elements = NULL;
+  s->nelements = -1;
+  s->nspace = -1;
   sfree (s);
+  s = NULL;
 }
 
 constraintList
@@ -280,10 +320,10 @@ constraintList_copy (constraintList s)
 {
   constraintList ret = constraintList_makeNew ();
 
-  constraintList_elements_private (s, el)
+  constraintList_elements (s, el)
     {
       ret = constraintList_add (ret, constraint_copy (el));
-    } end_constraintList_elements_private;
+    } end_constraintList_elements;
 
   return ret;
 }
@@ -332,27 +372,29 @@ constraintList constraintList_doSRefFixConstraintParam (constraintList precondit
   constraintList ret;
   ret = constraintList_makeNew();
 
-  constraintList_elements_private (preconditions, el)
+  constraintList_elements (preconditions, el)
     {
       ret = constraintList_add(ret, constraint_doSRefFixConstraintParam (el, arglist) );
     }
-  end_constraintList_elements_private;
+  end_constraintList_elements;
 
   constraintList_free (preconditions);
 
   return ret;
 }
-constraintList constraintList_doSRefFixBaseParam (constraintList preconditions,
+constraintList constraintList_doSRefFixBaseParam (/*@observer@*/ constraintList preconditions, /*@observer@*/
 						   exprNodeList arglist)
 {
   constraintList ret;
+  constraint temp;
   ret = constraintList_makeNew();
 
-  constraintList_elements_private (preconditions, el)
+  constraintList_elements (preconditions, el)
     {
-      ret = constraintList_add(ret, constraint_doSRefFixBaseParam (el, arglist) );
+      temp = constraint_copy(el);
+      ret = constraintList_add(ret, constraint_doSRefFixBaseParam (temp, arglist) );
     }
-  end_constraintList_elements_private;
+  end_constraintList_elements;
 
   return ret;
 }

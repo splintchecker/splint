@@ -51,6 +51,7 @@ static/*@out@*/ constraintTerm new_constraintTermExpr (void)
 {
   constraintTerm ret;
   ret = dmalloc (sizeof (* ret ) );
+  ret->value.intlit = 0;
   return ret;
 }
 
@@ -122,7 +123,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return (t->value.sref);
 }
 
-constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e)
+constraintTerm constraintTerm_makeExprNode ( exprNode e)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_copy(exprNode_getfileloc(e));
@@ -279,7 +280,7 @@ int constraintTerm_getValue (constraintTerm term)
 
 /* same and similar are similar but not the same*/
 
-bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
+static bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
 {
   llassert (term1 !=NULL && term2 !=NULL);
 
@@ -307,7 +308,7 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
     
 }
 
-/*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
+static /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
 {
   llassert (t != NULL);
   if (t->kind == EXPRNODE)

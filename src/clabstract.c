@@ -309,13 +309,15 @@ constraintList getEnsuresConstraints (void)
 
 void setEnsuresConstraints (constraintList c)
 {
-  #warning m leak
+  if (fcnEnsuresConstraints != NULL)
+    constraintList_free(fcnEnsuresConstraints);
   fcnEnsuresConstraints = constraintList_copy (c);
 }
 
 void setFunctionConstraints (constraintList c)
 {
-  #warning m leak
+  if (fcnConstraints != NULL)
+    constraintList_free(fcnConstraints);
   fcnConstraints = constraintList_copy (c);
 }
 /* end drl*/
@@ -638,6 +640,9 @@ void  setImplictfcnConstraints (void)
   constraint c;
   params = currentParamList;
 
+  if (implicitFcnConstraints != NULL)
+    constraintList_free(implicitFcnConstraints);
+   
   implicitFcnConstraints  = constraintList_makeNew();
   
   uentryList_elements (params, el)

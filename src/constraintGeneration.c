@@ -31,10 +31,10 @@ static void  exprNode_multiStatement (exprNode p_e);
 
 //static void exprNode_constraintPropagateUp (exprNode p_e);
 
-constraintList exprNode_traversTrueEnsuresConstraints (exprNode e);
-constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
+static constraintList exprNode_traversTrueEnsuresConstraints (exprNode e);
+static constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
 
-exprNode makeDataTypeConstraints (exprNode e);
+/*@unused@*/ exprNode makeDataTypeConstraints (exprNode e);
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
 
 
@@ -49,7 +49,7 @@ constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
   */
 //}
 
-bool exprNode_isUnhandled (exprNode e)
+static bool exprNode_isUnhandled (exprNode e)
 {
   llassert( exprNode_isDefined(e) );
   switch (e->kind)
@@ -112,11 +112,12 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
 {
   if (exprNode_isError (e) )
     return FALSE;
-  
+  /*
   e->requiresConstraints = constraintList_makeNew();
   e->ensuresConstraints = constraintList_makeNew();
   e->trueEnsuresConstraints = constraintList_makeNew();
   e->falseEnsuresConstraints = constraintList_makeNew();
+  */
 
   if (exprNode_isUnhandled (e) )
     {
@@ -141,7 +142,7 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
       loc = exprNode_getNextSequencePoint(e); 
       exprNode_exprTraverse(e, FALSE, FALSE, loc);
       
-      //    llassert(FALSE);
+      fileloc_free(loc);
       return FALSE;
     }
   
@@ -149,14 +150,14 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
     constraintList c;
 
     c = constraintList_makeFixedArrayConstraints (e->uses);
-  e->requiresConstraints = reflectChanges (e->requiresConstraints, c);
+    e->requiresConstraints = reflectChangesFreePre (e->requiresConstraints, c);
   
   //  e->ensuresConstraints = constraintList_mergeEnsures(c, e->ensuresConstraints);
   
+    constraintList_free(c);
   }    
 
-  /*  printf ("%s", (message ("%s", constraintList_printDetailed (e->requiresConstraints) ) ) );
-      printf ("%s", (message ("%s", constraintList_printDetailed (e->ensuresConstraints) ) ) ); */
+  DPRINTF ( (message ("e->requiresConstraints %s", constraintList_printDetailed (e->requiresConstraints) ) ) );
   return FALSE;
 }
 
@@ -187,7 +188,7 @@ if (exprNode_handleError (e) != NULL)
 
 }
 
-void exprNode_stmt (exprNode e)
+static void exprNode_stmt (exprNode e)
 {
   exprNode snode;
   fileloc loc;
@@ -197,8 +198,8 @@ void exprNode_stmt (exprNode e)
     {
       return; // FALSE;
     }
-  e->requiresConstraints = constraintList_makeNew();
-  e->ensuresConstraints  = constraintList_makeNew();
+  /*e->requiresConstraints = constraintList_makeNew();
+    e->ensuresConstraints  = constraintList_makeNew(); */
   //  e = makeDataTypeConstraints(e);
   
  
@@ -208,12 +209,20 @@ void exprNode_stmt (exprNode e)
   
   if (e->kind == XPR_INIT)
     {
+      constraintList tempList;
       DPRINTF (("Init") );
       DPRINTF ( (message ("%s ", exprNode_unparse (e)) ) );
       loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
       exprNode_exprTraverse (e, FALSE, FALSE, loc);
+      fileloc_free(loc);
+
+      tempList = e->requiresConstraints;
       e->requiresConstraints = exprNode_traversRequiresConstraints(e);
+      constraintList_free(tempList);
+
+      tempList = e->ensuresConstraints;
       e->ensuresConstraints  = exprNode_traversEnsuresConstraints(e);
+      constraintList_free(tempList);
       return; // notError;
     }
   
@@ -250,18 +259,29 @@ void exprNode_stmt (exprNode e)
   loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
   //notError = 
   exprNode_exprTraverse (snode, FALSE, FALSE, loc);
+
+  fileloc_free(loc);
+
+  constraintList_free (e->requiresConstraints);
   e->requiresConstraints = exprNode_traversRequiresConstraints(snode);
   //  printf ("For: %s \n", exprNode_unparse (e) );
   // printf ("%s\n", constraintList_print(e->requiresConstraints) );
+
+  constraintList_free (e->ensuresConstraints);
   e->ensuresConstraints  = exprNode_traversEnsuresConstraints(snode);
   // printf ("Ensures that:\n %s\n", constraintList_print(e->ensuresConstraints) );
   //  llassert(notError);
+
+  DPRINTF ( (message ("smtlist constraints are: pre: %s \n and \t post %s\n",
+		      constraintList_print(e->requiresConstraints),
+		      constraintList_print(e->ensuresConstraints) ) ) );
+
   return; // notError;
   
 }
 
 
-void exprNode_stmtList  (exprNode e)
+static void exprNode_stmtList  (exprNode e)
 {
   exprNode stmt1, stmt2;
   if (exprNode_isError (e) )
@@ -269,8 +289,10 @@ void exprNode_stmtList  (exprNode e)
       return; // FALSE;
     }
 
-  e->requiresConstraints = constraintList_makeNew();
-  e->ensuresConstraints  = constraintList_makeNew();
+  /*
+    e->requiresConstraints = constraintList_makeNew();
+    e->ensuresConstraints  = constraintList_makeNew();
+  */
   //  e = makeDataTypeConstraints(e);
   
   /*Handle case of stmtList with only one statement:
@@ -302,37 +324,74 @@ void exprNode_stmtList  (exprNode e)
   return; // TRUE;
 }
 
-exprNode doIf (exprNode e, exprNode test, exprNode body)
+static exprNode doIf (exprNode e, exprNode test, exprNode body)
 {
+  constraintList temp;
+
   DPRINTF ((message ("doIf: %s ", exprNode_unparse(e) ) ) );
 
   llassert(exprNode_isDefined(test) );
   llassert (exprNode_isDefined (e) );
   llassert (exprNode_isDefined (body) );
-  
-  test->ensuresConstraints = exprNode_traversEnsuresConstraints (test);
-  test->requiresConstraints = exprNode_traversRequiresConstraints (test);
-  
-  test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
 
-  test->trueEnsuresConstraints = constraintList_substitute(test->trueEnsuresConstraints, test->ensuresConstraints);
+  
+      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
+
+      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
+      
+      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->trueEnsuresConstraints) ) ));
+
+      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->falseEnsuresConstraints) ) ));
+
+
+
+      DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->ensuresConstraints) ) ));
+
+      DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->ensuresConstraints) ) ));
+      
+      DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->trueEnsuresConstraints) ) ));
+
+      DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(test), constraintList_printDetailed(test->falseEnsuresConstraints) ) ));
+
+
+
+      temp = test->trueEnsuresConstraints;
+      test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
+      constraintList_free(temp);
+
+  temp = test->ensuresConstraints;
+  test->ensuresConstraints = exprNode_traversEnsuresConstraints (test);
+  constraintList_free(temp);
+
+  temp = test->requiresConstraints;
+  test->requiresConstraints = exprNode_traversRequiresConstraints (test);
+  constraintList_free(temp);
+
+
+  test->trueEnsuresConstraints = constraintList_substituteFreeTarget(test->trueEnsuresConstraints, test->ensuresConstraints);
   
   DPRINTF ((message ("doIf: test ensures %s ", constraintList_print(test->ensuresConstraints) ) ) );
     
   DPRINTF ((message ("doIf: test true ensures %s ", constraintList_print(test->trueEnsuresConstraints) ) ) );
-    
-  e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
-  e->requiresConstraints = reflectChanges (e->requiresConstraints,
-					   test->ensuresConstraints);
-  e->requiresConstraints = constraintList_mergeRequires (e->requiresConstraints, test->requiresConstraints);
   
+  constraintList_free(e->requiresConstraints);
+  e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
+
+  e->requiresConstraints = reflectChangesFreePre (e->requiresConstraints,
+					   test->ensuresConstraints);
+  temp = e->requiresConstraints;
+  e->requiresConstraints = constraintList_mergeRequires (e->requiresConstraints, test->requiresConstraints);
+  constraintList_free(temp);
+
+
 #warning bad
+  constraintList_free(e->ensuresConstraints);
   e->ensuresConstraints = constraintList_copy (test->ensuresConstraints);
   
   if (exprNode_mayEscape (body) )
     {
       DPRINTF (( message("doIf: the if statement body %s returns or exits", exprNode_unparse(body) ) ));
-      e->ensuresConstraints = constraintList_mergeEnsures (e->ensuresConstraints,
+      e->ensuresConstraints = constraintList_mergeEnsuresFreeFirst (e->ensuresConstraints,
 							test->falseEnsuresConstraints);
     }
   
@@ -352,41 +411,56 @@ exprNode doIf (exprNode e, exprNode test, exprNode body)
 */
 
 
-exprNode doIfElse (/*@returned@*/ exprNode e, exprNode p, exprNode trueBranch, exprNode falseBranch)
+static exprNode doIfElse (/*@returned@*/ exprNode e, exprNode p, exprNode trueBranch, exprNode falseBranch)
 {
   
-    constraintList c1, cons, t, f;
+    constraintList c1, cons, t, t2, f, f2;
+
+  DPRINTF ((message ("doIfElse: %s ", exprNode_unparse(e) ) ) );
     
     // do requires clauses
     c1 = constraintList_copy (p->ensuresConstraints);
     
     t = reflectChanges (trueBranch->requiresConstraints, p->trueEnsuresConstraints);
-    t = reflectChanges (t, p->ensuresConstraints);
+    t = reflectChangesFreePre (t, p->ensuresConstraints);
 
-    //    e->requiresConstraints = constraintList_copy (cons);
-    
     cons = reflectChanges (falseBranch->requiresConstraints, p->falseEnsuresConstraints);
-    cons  = reflectChanges (cons, c1);
+    cons  = reflectChangesFreePre (cons, c1);
 
-    e->requiresConstraints = constraintList_mergeRequires (t, cons);
-    e->requiresConstraints = constraintList_mergeRequires (e->requiresConstraints, p->requiresConstraints);
+    constraintList_free(e->requiresConstraints);
+    e->requiresConstraints = constraintList_mergeRequiresFreeFirst (t, cons);
+    e->requiresConstraints = constraintList_mergeRequiresFreeFirst (e->requiresConstraints, p->requiresConstraints);
     
     // do ensures clauses
     // find the  the ensures lists for each subbranch
     t = constraintList_mergeEnsures (p->trueEnsuresConstraints, trueBranch->ensuresConstraints);
+    t2 = t;
     t = constraintList_mergeEnsures (p->ensuresConstraints, t);
-    
+    constraintList_free(t2);
+
     f = constraintList_mergeEnsures (p->falseEnsuresConstraints, falseBranch->ensuresConstraints);
+    f2 = f;
     f = constraintList_mergeEnsures (p->ensuresConstraints, f);
+    constraintList_free(f2);
     
     // find ensures for whole if/else statement
     
+    constraintList_free(e->ensuresConstraints);
+
     e->ensuresConstraints = constraintList_logicalOr (t, f);
+    
+    constraintList_free(t);
+    constraintList_free(f);
+    constraintList_free(cons);
+    constraintList_free(c1);
+
+    DPRINTF ((message ("doIfElse: if requires %q ", constraintList_print(e->requiresConstraints) ) ) );
+    DPRINTF ((message ("doIfElse: if ensures %q ", constraintList_print(e->ensuresConstraints) ) ) );
     
     return e;
 }
 
-exprNode doWhile (exprNode e, exprNode test, exprNode body)
+static exprNode doWhile (exprNode e, exprNode test, exprNode body)
 {
   DPRINTF ((message ("doWhile: %s ", exprNode_unparse(e) ) ) );
   return doIf (e, test, body);
@@ -453,7 +527,7 @@ exprNode makeDataTypeConstraints (exprNode e)
  return e;
 }
 
-void doFor (exprNode e, exprNode forPred, exprNode forBody)
+static void doFor (exprNode e, exprNode forPred, exprNode forBody)
 {
   exprNode init, test, inc;
   //merge the constraints: modle as if statement
@@ -473,16 +547,17 @@ void doFor (exprNode e, exprNode forPred, exprNode forBody)
 
       forLoopHeuristics(e, forPred, forBody);
       
+      constraintList_free(e->requiresConstraints);
       e->requiresConstraints = reflectChanges (forBody->requiresConstraints, test->ensuresConstraints);
-      e->requiresConstraints = reflectChanges (e->requiresConstraints, test->trueEnsuresConstraints);
-      e->requiresConstraints = reflectChanges (e->requiresConstraints, forPred->ensuresConstraints);
+      e->requiresConstraints = reflectChangesFreePre (e->requiresConstraints, test->trueEnsuresConstraints);
+      e->requiresConstraints = reflectChangesFreePre (e->requiresConstraints, forPred->ensuresConstraints);
 
       if (!forBody->canBreak)
 	{
-	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, forPred->ensuresConstraints);
-	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, test->falseEnsuresConstraints);
-	  forPred->ensuresConstraints = constraintList_undefined;
-	  test->falseEnsuresConstraints = constraintList_undefined;
+	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, constraintList_copy(forPred->ensuresConstraints) );
+	  e->ensuresConstraints = constraintList_addList(e->ensuresConstraints,constraintList_copy( test->falseEnsuresConstraints));
+	  //	  forPred->ensuresConstraints = constraintList_undefined;
+	  //	  test->falseEnsuresConstraints = constraintList_undefined;
 	}
       else
 	{
@@ -491,7 +566,7 @@ void doFor (exprNode e, exprNode forPred, exprNode forBody)
       
 }
 
-exprNode doSwitch (/*@returned@*/ exprNode e)
+static exprNode doSwitch (/*@returned@*/ exprNode e)
 {
   exprNode body;
   exprData data;
@@ -522,12 +597,15 @@ void exprNode_multiStatement (exprNode e)
   exprNode p, trueBranch, falseBranch;
   exprNode forPred, forBody;
   exprNode test;
+
+  constraintList temp;
+
   //  constraintList t, f;
-  e->requiresConstraints = constraintList_makeNew();
+  /*e->requiresConstraints = constraintList_makeNew();
   e->ensuresConstraints = constraintList_makeNew();
   e->trueEnsuresConstraints = constraintList_makeNew();
   e->falseEnsuresConstraints = constraintList_makeNew();
-
+  */
   //  e = makeDataTypeConstraints(e);
 
   DPRINTF((message ("exprNode_multistatement Analysising %s %s at", exprNode_unparse( e),
@@ -567,8 +645,13 @@ void exprNode_multiStatement (exprNode e)
       exprNode_generateConstraints (exprData_getTripleInc (data) );
     
       if (!exprNode_isError(test) )
-	test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
-
+	{
+	  constraintList temp2;
+	  temp2 = test->trueEnsuresConstraints;
+	  test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
+	  constraintList_free(temp2);
+	}
+      
       exprNode_generateConstraints (exprData_getTripleInc (data));
       break;
 
@@ -596,7 +679,6 @@ void exprNode_multiStatement (exprNode e)
 			     FALSE, FALSE, exprNode_loc(e1));
 
       exprNode_generateConstraints (e2);
-
       e = doIf (e, e1, e2);
   
       
@@ -616,11 +698,21 @@ void exprNode_multiStatement (exprNode e)
       exprNode_generateConstraints (trueBranch);
       exprNode_generateConstraints (falseBranch);
 
+      temp = p->ensuresConstraints;
       p->ensuresConstraints = exprNode_traversEnsuresConstraints (p);
+      constraintList_free(temp);
+
+      temp = p->requiresConstraints;
       p->requiresConstraints = exprNode_traversRequiresConstraints (p);
-      
+      constraintList_free(temp);
+
+      temp = p->trueEnsuresConstraints;
       p->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(p);
+      constraintList_free(temp);
+
+      temp = p->falseEnsuresConstraints;
       p->falseEnsuresConstraints =  exprNode_traversFalseEnsuresConstraints(p);
+      constraintList_free(temp);
 
           e = doIfElse (e, p, trueBranch, falseBranch);
       DPRINTF( ("Done IFELSE") );
@@ -642,7 +734,11 @@ void exprNode_multiStatement (exprNode e)
     case XPR_BLOCK:
       //      ret = message ("{ %s }",
 		     exprNode_generateConstraints (exprData_getSingle (data));
+
+		     constraintList_free(e->requiresConstraints);
 		     e->requiresConstraints = constraintList_copy ( (exprData_getSingle (data))->requiresConstraints );
+
+		     constraintList_free(e->ensuresConstraints);
 		     e->ensuresConstraints = constraintList_copy ( (exprData_getSingle (data))->ensuresConstraints );
 		     //      e->constraints = (exprData_getSingle (data))->constraints;
       break;
@@ -662,7 +758,7 @@ void exprNode_multiStatement (exprNode e)
   return; // ret;
 }
 
-bool lltok_isBoolean_Op (lltok tok)
+static bool lltok_isBoolean_Op (lltok tok)
 {
   /*this should really be a switch statement but
     I don't want to violate the abstraction
@@ -707,13 +803,13 @@ bool lltok_isBoolean_Op (lltok tok)
 }
 
 
-void exprNode_booleanTraverse (exprNode e, /*@unused@*/ bool definatelv, /*@unused@*/ bool definaterv,  fileloc sequencePoint)
+static void exprNode_booleanTraverse (exprNode e, /*@unused@*/ bool definatelv, /*@unused@*/ bool definaterv,  fileloc sequencePoint)
 {
  constraint cons;
 exprNode t1, t2;
 exprData data;
 lltok tok;
-constraintList tempList;
+constraintList tempList, temp;
 data = e->edata;
 
 tok = exprData_getOpTok (data);
@@ -785,7 +881,10 @@ if (lltok_isLe_Op (tok) )
       //false ensures: fens t1 or tens t1 and fens t2
      tempList = constraintList_copy (t1->trueEnsuresConstraints);
      tempList = constraintList_addList (tempList, t2->falseEnsuresConstraints);
+     temp = tempList;
      tempList = constraintList_logicalOr (tempList, t1->falseEnsuresConstraints);
+     constraintList_free(temp);
+
       e->falseEnsuresConstraints =constraintList_addList(e->falseEnsuresConstraints, tempList);
       
    }
@@ -799,7 +898,12 @@ if (lltok_isLe_Op (tok) )
       //true ensures: tens t1 or fens t1 and tens t2
       tempList = constraintList_copy (t1->falseEnsuresConstraints);
       tempList = constraintList_addList (tempList, t2->trueEnsuresConstraints);
+      
+      temp = tempList;
       tempList = constraintList_logicalOr (tempList, t1->trueEnsuresConstraints);
+      constraintList_free(temp);
+
+
       e->trueEnsuresConstraints =constraintList_addList(e->trueEnsuresConstraints, tempList);
       
     }
@@ -810,13 +914,15 @@ if (lltok_isLe_Op (tok) )
   
 }
 
-void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint)
+void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@observer@*/ fileloc sequencePoint)
 {
   exprNode t1, t2, fcn;
   lltok tok;
   bool handledExprNode;
   exprData data;
   constraint cons;
+
+  constraintList temp;
 
   if (exprNode_isError(e) )
     {
@@ -826,11 +932,11 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
   DPRINTF((message ("exprNode_exprTraverset Analysising %s %s at", exprNode_unparse( e),
 		    fileloc_unparse(exprNode_getfileloc(e) ) ) ) );
   
-  e->requiresConstraints = constraintList_makeNew();
+  /*e->requiresConstraints = constraintList_makeNew();
   e->ensuresConstraints = constraintList_makeNew();
   e->trueEnsuresConstraints = constraintList_makeNew();;
   e->falseEnsuresConstraints = constraintList_makeNew();;
-  
+  */
   if (exprNode_isUnhandled (e) )
      {
        return; // FALSE;
@@ -1021,10 +1127,18 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       else if (lltok_isNot_Op (tok) )
 	/* ! expr */
 	{
+	  constraintList_free(e->trueEnsuresConstraints);
+
 	  e->trueEnsuresConstraints  = constraintList_copy (t1->falseEnsuresConstraints);
+	  constraintList_free(e->falseEnsuresConstraints);
 	  e->falseEnsuresConstraints = constraintList_copy (t1->trueEnsuresConstraints);
 	}
+      
       else if (lltok_isAmpersand_Op (tok) )
+	{
+	  break;
+	}
+      else if (lltok_isMinus_Op (tok) )
 	{
 	  break;
 	}
@@ -1067,26 +1181,64 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       false = exprData_getTripleFalse (data);
 
       exprNode_exprTraverse (pred, FALSE, TRUE, sequencePoint );
-      pred->ensuresConstraints = exprNode_traversEnsuresConstraints(pred);
-      pred->requiresConstraints = exprNode_traversRequiresConstraints(pred);
       
+      temp =       pred->ensuresConstraints;
+      pred->ensuresConstraints = exprNode_traversEnsuresConstraints(pred);
+      constraintList_free(temp);
+
+      temp =       pred->requiresConstraints;
+      pred->requiresConstraints = exprNode_traversRequiresConstraints(pred);
+      constraintList_free(temp);
+      
+      temp =       pred->trueEnsuresConstraints;
       pred->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(pred);
+      constraintList_free(temp);
+
+      temp =       pred->falseEnsuresConstraints;
       pred->falseEnsuresConstraints = exprNode_traversFalseEnsuresConstraints(pred);
+      constraintList_free(temp);
+
             
       exprNode_exprTraverse (true, FALSE, TRUE, sequencePoint );
+      
+      temp =       true->ensuresConstraints;
       true->ensuresConstraints = exprNode_traversEnsuresConstraints(true);
+      constraintList_free(temp);
+
+
+      temp =       true->requiresConstraints;
       true->requiresConstraints = exprNode_traversRequiresConstraints(true);
+      constraintList_free(temp);
+
       
+      temp =       true->trueEnsuresConstraints;
       true->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(true);
+      constraintList_free(temp);
+
+      temp =       true->falseEnsuresConstraints;
       true->falseEnsuresConstraints = exprNode_traversFalseEnsuresConstraints(true);
+      constraintList_free(temp);
 
+      //dfdf
       exprNode_exprTraverse (false, FALSE, TRUE, sequencePoint );
-      false->ensuresConstraints = exprNode_traversEnsuresConstraints(false);
-      false->requiresConstraints = exprNode_traversRequiresConstraints(false);
       
-      false->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(false);
-      false->falseEnsuresConstraints = exprNode_traversFalseEnsuresConstraints(false);
+      temp =       false->ensuresConstraints;
+      false->ensuresConstraints = exprNode_traversEnsuresConstraints(false);
+      constraintList_free(temp);
 
+
+      temp =       false->requiresConstraints;
+      false->requiresConstraints = exprNode_traversRequiresConstraints(false);
+      constraintList_free(temp);
+
+      
+      temp =       false->trueEnsuresConstraints;
+      false->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(false);
+      constraintList_free(temp);
+
+      temp =       false->falseEnsuresConstraints;
+      false->falseEnsuresConstraints = exprNode_traversFalseEnsuresConstraints(false);
+      constraintList_free(temp);
 
       /* if pred is true e equals true otherwise pred equals false */
       
@@ -1126,6 +1278,10 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
   DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
   
+  DPRINTF((message ("trueEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->trueEnsuresConstraints) ) ));
+
+  DPRINTF((message ("falseEnsures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->falseEnsuresConstraints) ) ));
+
   return; // handledExprNode; 
 }
 

@@ -32,11 +32,11 @@ GENERALSRC =    constraintTerm.c \
     constraintGeneration.c \
     constraintOutput.c \
     forjunk.c \
+    exprData.c \
     cstring.c fileloc.c message.c source.c \
     fileTable.c hashTable.c llerror.c messageLog.c \
     flagMarker.c aliasTable.c ynm.c sRefTable.c \
-    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c \
-    exprData.c
+    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c 
 
 ###
 ### These source files are relevant for LCL only.
