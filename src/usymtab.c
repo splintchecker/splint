@@ -1801,6 +1801,17 @@ void usymtab_dump (FILE *fout)
   lastekind = KINVALID;
 
   fprintf(fout, ";; Library constraints\n");
+
+ /*drl July 27 added this so that libraries without
+    buffer constraints would be handled correctly.
+    I'm trying to do this without breaking older libraries.
+
+    Splint should still be able to handle libraries without this message.
+ */
+
+  
+  fprintf(fout, "start_Buffer_Constraints\n");
+
   for (i = 0; i < utab->nentries; i++)
     {
       uentry thisentry = utab->entries[i];
@@ -1991,6 +2002,16 @@ void usymtab_load (FILE *f)
 	 && *s == ';')
     {
       ; /* ignore ;-comments */
+    }
+
+  /*drl July 27 added this so that libraries without
+    buffer constraints would be handled correctly.
+    I'm trying to do this without breaking older libraries*/
+  
+  /*check for "optional" start buffer constraints message*/
+  if (cstring_compareLit(s, "start_Buffer_Constraints") )
+    {
+      fgets (s, MAX_DUMP_LINE_LENGTH, f);
     }
   
   while (s != NULL && *s != ';')
