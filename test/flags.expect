@@ -4,10 +4,9 @@ flags.c:5:9: Variable y
     initialized to type
     char, expects int:
     'c'
-flags.c:7:18: Warning:
-    Value for linelen
-    must be at least 20
-    (given 13)
+flags.c:7:18: Value for
+    linelen must be at
+    least 20 (given 13)
 flags.c:11:5:
     Internal identifier
     xx2 is not

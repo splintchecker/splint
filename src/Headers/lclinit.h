@@ -10,9 +10,8 @@
 
 typedef LSLInitRuleCode LCLInitRuleCode;
 
-extern void LCLProcessInitFile(void);
-
-extern void LCLProcessInitFileInit(void);
-extern void LCLProcessInitFileReset(void);
-extern void LCLProcessInitFileCleanup(void);
+extern void lclinit_process (void);
+extern void lclinit_initMod (void);
+extern void lclinit_reset (void);
+extern void lclinit_cleanup (void);
 

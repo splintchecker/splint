@@ -42,7 +42,7 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c
 
-SPLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
@@ -152,7 +152,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/exprNode.h               Headers/quantifierNode.h \
           Headers/exprNodeList.h           Headers/quantifierNodeList.h \
           Headers/exprNodeSList.h          Headers/randomNumbers.h \
-          Headers/fcnNode.h                \
+          Headers/fcnNode.h                Headers/rcfiles.h \
           Headers/fcnNodeList.h            Headers/reader.h \
           Headers/fileId.h                 Headers/refTable-branch.h \
           Headers/fileIdList.h             Headers/renamingNode.h \
@@ -374,7 +374,7 @@ etags:
 lintnew: splintme
 
 splintme: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
 
 splintsome: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude lcllib.c  -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +partial

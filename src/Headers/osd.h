@@ -53,7 +53,8 @@
 typedef enum {
   OSD_FILEFOUND,
   OSD_FILENOTFOUND,
-  OSD_PATHTOOLONG } filestatus;
+  OSD_PATHTOOLONG 
+} filestatus;
 
 extern /*@only@*/ cstring LSLRootName (cstring p_filespec) /*@*/ ;
 

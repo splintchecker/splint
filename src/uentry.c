@@ -7311,9 +7311,10 @@ checkEnumConformance (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew)
       if (optgenerror 
 	  (FLG_MATCHFIELDS,
 	   message ("Enum %q declared with members { %q } but "
-		    "specified with members { %q }",
+		    "%s with members { %q }",
 		    uentry_getName (old), 
 		    enumNameList_unparse (enew),
+		    uentry_specOrDefName (old),
 		    enumNameList_unparse (eold)),
 	   uentry_whereDeclared (unew)))
 	{

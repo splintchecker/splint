@@ -42,7 +42,7 @@ UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims arrayinit arraylit blocks break cases cast charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-  decl divzero enum exports external fields flags forbody format freearray \
+  decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec looptesteffect \
   macros macrosef merge mergenull modifies modtest moduncon \
@@ -76,25 +76,25 @@ all check: fulltest
 
 .PHONY: version
 version:
-	-$(SPLINTP) -help version
+	-$(SPLINT) -help version
 
 .PHONY: help
 
 help:
 	-@$(SPLINT)
 	-@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
-	-@$(SPLINTP) -help
+	-@$(SPLINT) -help
 	-@$(SPLINTP) -asdf
 	-@$(SPLINTP) +boolint +boolint 
-	-@$(SPLINTP) -help flags alpha
+	-@$(SPLINT) -help flags alpha
 
 
 #commenting these out for the release because they will almost always fail
 #since the default will only fit one system
 #Don't want to panic the user... 
-#	-@$(SPLINTP) -help flags all     | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
-#	-@$(SPLINTP) -help flags full    | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
-#	-@$(SPLINTP) -help flags manual     | $(GREP) -v "^larchpath <path> "   | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+#	-@$(SPLINT) -help flags all     | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+#	-@$(SPLINT) -help flags full    | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+#	-@$(SPLINT) -help flags manual     | $(GREP) -v "^larchpath <path> "   | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
 
 #larch and lclimportdir have different hardcoded default paths so don't include the path in the output..
 
@@ -159,8 +159,8 @@ fulltest:
 	@echo "Testing $(PACKAGE) $(VERSION)..."
 	@echo
 	@echo "Version Info:"
-	@$(SPLINTP) -help version
-	@$(SPLINTP) -help vars
+	@$(SPLINT) -help version
+	@$(SPLINT) -help vars
 	@echo ""
 	@echo "Tests:"
 	@echo ""
@@ -369,6 +369,10 @@ divzero:
 enum:
 	-$(SPLINTR) enum -expect 16
 	-$(SPLINTR) enum -misscase -expect 14
+
+.PHONY: enumtag
+enumtag:
+	-$(SPLINTR) enumtag.c -expect 2
 
 .PHONY: exports
 exports:
@@ -1084,6 +1088,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./dkf5kSprintf.c \
               ./ensures.c \
               ./enum.c \
+              ./enumtag.c \
               ./exports.c \
               ./external.c \
               ./fields.c \
@@ -1379,6 +1384,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               deadparam.expect \
               decl.expect \
               enum.expect \
+              enumtag.expect \
               exports.expect \
               external.expect \
               fields.expect \

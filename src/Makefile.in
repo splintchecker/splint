@@ -124,7 +124,7 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c
 
 
-SPLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
@@ -238,7 +238,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/exprNode.h               Headers/quantifierNode.h \
           Headers/exprNodeList.h           Headers/quantifierNodeList.h \
           Headers/exprNodeSList.h          Headers/randomNumbers.h \
-          Headers/fcnNode.h                \
+          Headers/fcnNode.h                Headers/rcfiles.h \
           Headers/fcnNodeList.h            Headers/reader.h \
           Headers/fileId.h                 Headers/refTable-branch.h \
           Headers/fileIdList.h             Headers/renamingNode.h \
@@ -444,11 +444,11 @@ am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	mtDefaultsDecl.$(OBJEXT) mtMergeItem.$(OBJEXT) \
 	mtMergeClause.$(OBJEXT) mtMergeClauseList.$(OBJEXT) \
 	exprNode.$(OBJEXT) exprChecks.$(OBJEXT) llmain.$(OBJEXT) \
-	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
-	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
-	constraint.$(OBJEXT) constraintList.$(OBJEXT) \
-	constraintResolve.$(OBJEXT) constraintOutput.$(OBJEXT) \
-	loopHeuristics.$(OBJEXT)
+	help.$(OBJEXT) rcfiles.$(OBJEXT) constraintGeneration.$(OBJEXT) \
+	constraintTerm.$(OBJEXT) constraintExprData.$(OBJEXT) \
+	constraintExpr.$(OBJEXT) constraint.$(OBJEXT) \
+	constraintList.$(OBJEXT) constraintResolve.$(OBJEXT) \
+	constraintOutput.$(OBJEXT) loopHeuristics.$(OBJEXT)
 splint_OBJECTS = $(am_splint_OBJECTS)
 splint_LDFLAGS =
 
@@ -495,9 +495,9 @@ depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 @AMDEP_TRUE@	$(DEPDIR)/general.Po $(DEPDIR)/genericTable.Po \
 @AMDEP_TRUE@	$(DEPDIR)/globSet.Po $(DEPDIR)/globals.Po \
 @AMDEP_TRUE@	$(DEPDIR)/globalsClause.Po $(DEPDIR)/guardSet.Po \
-@AMDEP_TRUE@	$(DEPDIR)/idDecl.Po $(DEPDIR)/idDeclList.Po \
-@AMDEP_TRUE@	$(DEPDIR)/importNodeList.Po $(DEPDIR)/imports.Po \
-@AMDEP_TRUE@	$(DEPDIR)/initDeclNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/help.Po $(DEPDIR)/idDecl.Po \
+@AMDEP_TRUE@	$(DEPDIR)/idDeclList.Po $(DEPDIR)/importNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/imports.Po $(DEPDIR)/initDeclNodeList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/inputStream.Po $(DEPDIR)/intSet.Po \
 @AMDEP_TRUE@	$(DEPDIR)/interfaceNodeList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/lclctypes.Po $(DEPDIR)/lclinit.Po \
@@ -548,15 +548,15 @@ depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 @AMDEP_TRUE@	$(DEPDIR)/programNodeList.Po $(DEPDIR)/qtype.Po \
 @AMDEP_TRUE@	$(DEPDIR)/qual.Po $(DEPDIR)/qualList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/quantifierNodeList.Po \
-@AMDEP_TRUE@	$(DEPDIR)/randomNumbers.Po $(DEPDIR)/reader.Po \
-@AMDEP_TRUE@	$(DEPDIR)/replaceNodeList.Po $(DEPDIR)/sRef.Po \
-@AMDEP_TRUE@	$(DEPDIR)/sRefList.Po $(DEPDIR)/sRefSet.Po \
-@AMDEP_TRUE@	$(DEPDIR)/sRefSetList.Po $(DEPDIR)/sRefTable.Po \
-@AMDEP_TRUE@	$(DEPDIR)/scan.Po $(DEPDIR)/scanline.Po \
-@AMDEP_TRUE@	$(DEPDIR)/shift.Po $(DEPDIR)/sigNodeSet.Po \
-@AMDEP_TRUE@	$(DEPDIR)/signature.Po $(DEPDIR)/sort.Po \
-@AMDEP_TRUE@	$(DEPDIR)/sortList.Po $(DEPDIR)/sortSet.Po \
-@AMDEP_TRUE@	$(DEPDIR)/sortSetList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/randomNumbers.Po $(DEPDIR)/rcfiles.Po \
+@AMDEP_TRUE@	$(DEPDIR)/reader.Po $(DEPDIR)/replaceNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sRef.Po $(DEPDIR)/sRefList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sRefSet.Po $(DEPDIR)/sRefSetList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sRefTable.Po $(DEPDIR)/scan.Po \
+@AMDEP_TRUE@	$(DEPDIR)/scanline.Po $(DEPDIR)/shift.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sigNodeSet.Po $(DEPDIR)/signature.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sort.Po $(DEPDIR)/sortList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sortSet.Po $(DEPDIR)/sortSetList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/stDeclNodeList.Po \
 @AMDEP_TRUE@	$(DEPDIR)/stateClause.Po \
 @AMDEP_TRUE@	$(DEPDIR)/stateClauseList.Po \
@@ -691,6 +691,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/globalsClause.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/guardSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/help.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/idDecl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/idDeclList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/importNodeList.Po@am__quote@
@@ -768,6 +769,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qualList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/quantifierNodeList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/randomNumbers.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/rcfiles.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/reader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/replaceNodeList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRef.Po@am__quote@
@@ -1051,7 +1053,7 @@ etags:
 lintnew: splintme
 
 splintme: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
 
 splintsome: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude lcllib.c  -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +partial

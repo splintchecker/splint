@@ -51,6 +51,7 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
+# include "help.h"
 
 # ifndef NOLCL
 # include "gram.h"
@@ -70,7 +71,6 @@
 # endif
 
 # include "Headers/version.h" /* Visual C++ finds the wrong version.h */
-# include "fileIdList.h"
 # include "lcllib.h"
 # include "cgrammar.h"
 # include "llmain.h"
@@ -78,27 +78,8 @@
 
 
 extern /*@external@*/ int yydebug;
-
-static void printMail (void);
-static void printMaintainer (void);
-static void printReferences (void);
-static void printFlags (void);
-static void printAnnotations (void);
-static void printParseErrors (void);
-static void printComments (void);
-static void describePrefixCodes (void);
 static void cleanupFiles (void);
-static void showHelp (void);
 static void interrupt (int p_i);
-
-static bool readOptionsFile (cstring p_fname,
-			     cstringSList *p_passThroughArgs,
-			     bool p_report) 
-   /*@modifies fileSystem, internalState, *p_passThroughArgs@*/ ;
-   
-static void loadrc (FILE *p_rcfile, cstringSList *p_passThroughArgs)
-   /*@modifies *p_passThroughArgs, p_rcfile@*/
-   /*@ensures closed p_rcfile@*/ ;
 
 static void describeVars (void);
 static bool specialFlagsHelp (char *p_next);
@@ -108,8 +89,6 @@ static char *specFullName (char *p_specfile, /*@out@*/ char **p_inpath)
 
 static bool anylcl = FALSE;
 static clock_t inittime;
-
-static /*@only@*/ /*@null@*/ inputStream initFile = inputStream_undefined;
 
 static fileIdList preprocessFiles (fileIdList, bool)
   /*@modifies fileSystem@*/ ;
@@ -151,163 +130,6 @@ void lslCleanup (void)
   sort_destroyMod (); 
 }
 
-static
-  void lslInit (void)
-  /*@globals undef g_symtab; @*/
-  /*@modifies g_symtab, internalState, fileSystem; @*/
-{
-  /*
-  ** Open init file provided by user, or use the default LCL init file 
-  */
-  
-  cstring larchpath = context_getLarchPath ();
-  inputStream LSLinitFile = inputStream_undefined;
-
-  setCodePoint ();
-
-  if (inputStream_isUndefined (initFile))
-    {
-      initFile = inputStream_create (cstring_makeLiteral (INITFILENAME), 
-				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
-				     FALSE);
-      
-      if (!inputStream_getPath (larchpath, initFile))
-	{
-	  lldiagmsg (message ("Continuing without LCL init file: %s",
-			      inputStream_fileName (initFile)));
-	}
-      else 
-	{
-	  if (!inputStream_open (initFile))
-	    {
-	      lldiagmsg (message ("Continuing without LCL init file: %s",
-				  inputStream_fileName (initFile)));
-	    }
-	}
-    }
-  else 
-    {
-      if (!inputStream_open (initFile))
-	{
-	  lldiagmsg (message ("Continuing without LCL init file: %s",
-			      inputStream_fileName (initFile)));
-	}
-    }
-
-  /* Initialize checker */
-
-  lsymbol_initMod ();
-  LCLSynTableInit ();
-
-  setCodePoint ();
-
-  LCLSynTableReset ();
-  LCLTokenTableInit ();
-
-  setCodePoint ();
-
-  LCLScanLineInit ();
-  setCodePoint ();
-  LCLScanLineReset ();
-  setCodePoint ();
-  LCLScanInit ();
-
-  setCodePoint ();
-
-  /* need this to initialize LCL checker */
-
-  llassert (inputStream_isDefined (initFile));      
-  if (inputStream_isOpen (initFile))
-    {
-      setCodePoint ();
-
-      LCLScanReset (initFile);
-      LCLProcessInitFileInit ();
-      LCLProcessInitFileReset ();
-
-      setCodePoint ();
-      LCLProcessInitFile ();
-      LCLProcessInitFileCleanup ();
-
-      setCodePoint ();
-      check (inputStream_close (initFile));
-    }
-  
-  /* Initialize LSL init files, for parsing LSL signatures from LSL */
-  
-  LSLinitFile = inputStream_create (cstring_makeLiteral ("lslinit.lsi"), 
-				    cstring_makeLiteralTemp (".lsi"),
-				    FALSE);
-  
-  if (!inputStream_getPath (larchpath, LSLinitFile))
-    {
-      lldiagmsg (message ("Continuing without LSL init file: %s",
-			  inputStream_fileName (LSLinitFile)));
-    }
-  else 
-    {
-      if (!inputStream_open (LSLinitFile))
-	{
-	  lldiagmsg (message ("Continuing without LSL init file: %s",
-			      inputStream_fileName (LSLinitFile)));
-	}
-    }
-      
-  setCodePoint ();
-  lsynTableInit ();
-  lsynTableReset ();
-
-  setCodePoint ();
-  ltokenTableInit ();
-
-  setCodePoint ();
-  lscanLineInit ();
-  lscanLineReset ();
-  LSLScanInit ();
-
-  if (inputStream_isOpen (LSLinitFile))
-    {
-      setCodePoint ();
-      LSLScanReset (LSLinitFile);
-      LSLProcessInitFileInit ();
-      setCodePoint ();
-      LSLProcessInitFile ();
-      setCodePoint ();
-      check (inputStream_close (LSLinitFile));
-    }
-      
-  inputStream_free (LSLinitFile);
-  
-  if (lclHadError ())
-    {
-      lclplainerror 
-	(cstring_makeLiteral ("LSL init file error.  Attempting to continue."));
-    }
-  
-  setCodePoint ();
-  g_symtab = symtable_new ();
-  
-  /* 
-  ** sort_init must come after symtab has been initialized 
-  */
-  sort_init ();
-  abstract_init ();
-  setCodePoint ();
-  
-  inittime = clock ();
-  
-  /* 
-  ** Equivalent to importing old spec_csupport.lcl
-  ** define immutable LCL type "bool" and bool constants TRUE and FALSE
-  ** and initialized them to be equal to LSL's "true" and "false".
-  **
-  ** Reads in CTrait.syms (derived from CTrait.lsl) on LARCH_PATH.
-  */
-      
-  LCLBuiltins (); 
-  LCLReportEolTokens (FALSE);
-}
-
 static void
 lslProcess (fileIdList lclfiles)
    /*@globals undef g_currentSpec, undef g_currentSpecName, g_currentloc,
@@ -318,8 +140,9 @@ lslProcess (fileIdList lclfiles)
   bool parser_status = FALSE;
   bool overallStatus = FALSE;
   
-  lslInit ();
-  
+  lslinit_process ();
+  inittime = clock ();
+    
   context_resetSpecLines ();
 
   fileIdList_elements (lclfiles, fid)
@@ -534,88 +357,6 @@ void showHerald (void)
     }
 }
 
-static cstring findLarchPathFile (/*@temp@*/ cstring s)
-{
-  cstring pathName;
-  filestatus status;
-  
-  status = osd_getPath (context_getLarchPath (), s, &pathName);
-  
-  if (status == OSD_FILEFOUND)
-    {
-      return pathName;
-    }
-  else if (status == OSD_FILENOTFOUND)
-    {
-      showHerald ();
-      lldiagmsg	(message ("Cannot find file on LARCH_PATH: %s", s));
-    }
-  else if (status == OSD_PATHTOOLONG)
-    {
-      /* Directory and filename are too long.  Report error. */
-      llbuglit ("soure_getPath: Filename plus directory from search path too long");
-    }
-  else
-    {
-      BADBRANCH;
-    }
-
-  return cstring_undefined;
-}
-
-static void addLarchPathFile (fileIdList files, /*@temp@*/ cstring s)
-{
-  cstring pathName = findLarchPathFile (s);
-
-  if (cstring_isDefined (pathName))
-    {
-      if (fileTable_exists (context_fileTable (), pathName))
-	{
-	  showHerald ();
-	  lldiagmsg (message ("File listed multiple times: %s", pathName));
-	  cstring_free (pathName);
-	}
-      else
-	{
-	  fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), pathName));
-	}
-    }
-}
-
-static void addFile (fileIdList files, /*@only@*/ cstring s)
-{
-  if (fileTable_exists (context_fileTable (), s))
-    {
-      showHerald ();
-      lldiagmsg (message ("File listed multiple times: %s", s));
-      cstring_free (s);
-    }
-  else
-    {
-      fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), s));
-    }
-}
-
-static void addXHFile (fileIdList files, /*@temp@*/ cstring s)
-{
-  cstring pathName = findLarchPathFile (s);
-
-  if (cstring_isDefined (pathName))
-    {
-      if (fileTable_exists (context_fileTable (), pathName))
-	{
-	  showHerald ();
-	  lldiagmsg (message ("File listed multiple times: %s", s));
-	}
-      else
-	{
-	  fileIdList_add (files, fileTable_addXHFile (context_fileTable (), pathName));
-	}
-    }
-
-  cstring_free (pathName);
-}
-
 /*
 ** Disable MSVC++ warning about return value.  Methinks humbly splint control
 ** comments are a mite more legible.
@@ -636,16 +377,14 @@ int main (int argc, char *argv[])
   @*/
 # else
   /*@globals killed undef g_currentloc,
-	     killed undef initFile,
 	     killed       g_localSpecPath,  
 	     killed undef g_currentSpec,
 	     killed undef g_currentSpecName,
 	     killed undef yyin,
                     undef g_warningstream, g_messagestream, g_errorstream;
    @*/
-  /*@modifies g_currentloc, initFile, 
-              g_localSpecPath, g_currentSpec, g_currentSpecName, fileSystem,
-	      yyin; 
+  /*@modifies g_currentloc, g_localSpecPath, g_currentSpec, g_currentSpecName, 
+              fileSystem, yyin; 
   @*/
 # endif
 {
@@ -654,7 +393,6 @@ int main (int argc, char *argv[])
   inputStream sourceFile = inputStream_undefined;
  
   fileIdList dercfiles;
-  cstringSList fl = cstringSList_undefined;
   cstringSList passThroughArgs = cstringSList_undefined;
   fileIdList cfiles, xfiles, lclfiles, mtfiles;
   clock_t before, lcltime, libtime, pptime, cptime, rstime;
@@ -670,11 +408,6 @@ int main (int argc, char *argv[])
 
   (void) signal (SIGINT, interrupt);
   (void) signal (SIGSEGV, interrupt); 
-
-  cfiles = fileIdList_create ();
-  xfiles = fileIdList_create ();
-  lclfiles = fileIdList_create ();
-  mtfiles = fileIdList_create ();
 
   flags_initMod ();
   clabstract_initMod ();
@@ -693,14 +426,18 @@ int main (int argc, char *argv[])
 
   if (argc <= 1)
     {
-      showHelp ();
+      help_showAvailableHelp ();
       llexit (LLSUCCESS);
     }
   
   /* -help must be the first flag to get help */
-  if (flagcode_isHelpFlag (flags_identifyFlag (argv[1])))
+  if (flagcode_isHelpFlag (flags_identifyFlag (cstring_fromChars (argv[1]))))
     {
-      flags_processHelp (argc - 1, argv + 1);
+      /*
+      ** Skip first flag and help flag
+      */
+
+      help_processFlags (argc - 2, argv + 2);
       llexit (LLSUCCESS);
     }
 
@@ -779,6 +516,10 @@ int main (int argc, char *argv[])
   ** check RCFILE for default flags
   */
 
+  /*
+  ** Process command line message formatting flags before reading rc file
+  */
+
   {
     cstring home = osd_getHomeDir ();
     cstring fname  = cstring_undefined;
@@ -826,10 +567,12 @@ int main (int argc, char *argv[])
 		      }
 		    else
 		      {
-			llfatalerror 
-			  (message
+			voptgenerror
+			  (FLG_BADFLAG,
+			   message
 			   ("Flag %s must be followed by a string",
-			    flagcode_unparse (opt)));
+			    flagcode_unparse (opt)),
+			   g_currentloc);
 		      }
 		  }
 	      }
@@ -839,7 +582,7 @@ int main (int argc, char *argv[])
 		  {
 		    defaultf = FALSE;
 		    fname = cstring_fromChars (argv[i]);
-		    (void) readOptionsFile (fname, &passThroughArgs, TRUE);
+		    (void) rcfiles_read (fname, &passThroughArgs, TRUE);
 		  }
 		else
 		  llfatalerror
@@ -870,7 +613,7 @@ int main (int argc, char *argv[])
 
 		homename = message ("%s%h%s", home, CONNECTCHAR,
 				 cstring_fromChars (RCFILE));
-		readhomerc = readOptionsFile (homename, &passThroughArgs, FALSE);
+		readhomerc = rcfiles_read (homename, &passThroughArgs, FALSE);
 		
 		/*
 		** Try ~/.splintrc also for historical accuracy
@@ -878,7 +621,7 @@ int main (int argc, char *argv[])
 		
 		altname = message ("%s%h%s", home, CONNECTCHAR,
 				 cstring_fromChars (ALTRCFILE));
-		readaltrc = readOptionsFile (altname, &passThroughArgs, FALSE);
+		readaltrc = rcfiles_read (altname, &passThroughArgs, FALSE);
 
 		if (readhomerc && readaltrc)
 		  {
@@ -905,8 +648,8 @@ int main (int argc, char *argv[])
 	  cstring altname = message ("%s%s",osd_getCurrentDirectory (), cstring_fromChars (ALTRCFILE));
 	  bool readrc, readaltrc;
 	  
-	  readrc = readOptionsFile (rcname, &passThroughArgs, FALSE);
-	  readaltrc = readOptionsFile (altname, &passThroughArgs, FALSE);
+	  readrc = rcfiles_read (rcname, &passThroughArgs, FALSE);
+	  readaltrc = rcfiles_read (altname, &passThroughArgs, FALSE);
 	  
 	  if (readrc && readaltrc)
 	    {
@@ -925,83 +668,21 @@ int main (int argc, char *argv[])
   }
   
   setCodePoint ();
+  llassert (fileloc_isBuiltin (g_currentloc));
+
+  cfiles = fileIdList_create ();
+  xfiles = fileIdList_create ();
+  lclfiles = fileIdList_create ();
+  mtfiles = fileIdList_create ();
 
   /* argv[0] is the program name, don't pass it to flags_processFlags */
-  flags_processFlags (argc - 1, argv + 1);
+  flags_processFlags (TRUE, xfiles, cfiles,
+		      lclfiles, mtfiles, 
+		      &passThroughArgs,
+		      argc - 1, argv + 1);
 
   showHerald (); 
   
-  /*
-  ** create lists of C and LCL files
-  */
-
-  cstringSList_elements (fl, current)
-    {
-      cstring ext = fileLib_getExtension (current);
-      
-      if (cstring_isUndefined (ext))
-	{
-	  /* no extension --- both C and LCL with default extensions */
-	  
-	  addFile (cfiles, message ("%s%s", current, C_EXTENSION));
-	  addFile (lclfiles, message ("%s%s", current, LCL_EXTENSION));
-	}
-      else if (cstring_equal (ext, XH_EXTENSION))
-	{
-	  addXHFile (xfiles, current);
-	}
-      else if (cstring_equal (ext, PP_EXTENSION))
-	{
-	  if (!context_getFlag (FLG_NOPP))
-	    {
-	      voptgenerror 
-		(FLG_FILEEXTENSIONS,
-		 message ("File extension %s used without +nopp flag (will be processed as C source code): %s", 
-			  ext, current),
-		 g_currentloc);
-	    }
-	  
-	  addFile (cfiles, cstring_copy (current));
-	}
-      else if (cstring_equal (ext, LCL_EXTENSION)) 
-	{
-	  addFile (lclfiles, cstring_copy (current));
-	}
-      else if (fileLib_isCExtension (ext))
-	{
-	  addFile (cfiles, cstring_copy (current));
-	}
-      else if (cstring_equal (ext, MTS_EXTENSION))
-	{
-	  addLarchPathFile (mtfiles, current);
-	}
-      else 
-	{
-	  voptgenerror 
-	    (FLG_FILEEXTENSIONS,
-	     message ("Unrecognized file extension: %s (assuming %s is C source code)", 
-		      current, ext),
-	     g_currentloc);
-	  
-	  addFile (cfiles, cstring_copy (current));
-	}
-    } end_cstringSList_elements;
-  
-  if (showhelp)
-    {
-      if (allhelp)
-	{
-	  showHelp ();
-	}
-      fprintf (g_warningstream, "\n");
-
-      fileIdList_free (cfiles);
-      fileIdList_free (xfiles);
-      fileIdList_free (lclfiles);
-      
-      llexit (LLSUCCESS);
-    }
-
 # ifdef DOANNOTS
   initAnnots ();
 # endif
@@ -1077,12 +758,14 @@ int main (int argc, char *argv[])
   */
 
   context_setInCommandLine ();
-
+  
   DPRINTF (("Pass through: %s", cstringSList_unparse (passThroughArgs)));
   
-  cstringSList_elements (passThroughArgs, thisarg) {
-    handlePassThroughFlag (cstring_toCharsSafe (thisarg));
-  } end_cstringSList_elements;
+  cstringSList_elements (passThroughArgs, thisarg)
+    {
+      handlePassThroughFlag (cstring_toCharsSafe (thisarg));
+    } 
+  end_cstringSList_elements;
 
   cstringSList_free (passThroughArgs);
 
@@ -1400,22 +1083,25 @@ int main (int argc, char *argv[])
     {
       clock_t ttime = clock () - before;
       int specLines = context_getSpecLinesProcessed ();
-      
+      cstring specmsg = cstring_undefined;
+
       rstime = clock ();
       
       if (specLines > 0)
 	{
-	  fprintf (g_warningstream, "%d spec, ", specLines);
+	  specmsg = message ("%d spec, ", specLines);
 	}
       
 # ifndef CLOCKS_PER_SEC
-      fprintf (g_warningstream, "%d source lines in %ld time steps (steps/sec unknown)\n", 
-	       context_getLinesProcessed (), 
-	       (long) ttime);
+      lldiagmsg (message ("%s%d source lines in %d time steps (steps/sec unknown)\n", 
+			  specmsg,
+			  context_getLinesProcessed (), 
+			  (int) ttime));
 # else
-      fprintf (g_warningstream, "%d source lines in %.2f s.\n", 
-	       context_getLinesProcessed (), 
-	       (double) ttime / CLOCKS_PER_SEC);
+      lldiagmsg (message ("%s%d source lines in %f s.\n", 
+			  specmsg,
+			  context_getLinesProcessed (), 
+			  (double) ttime / CLOCKS_PER_SEC));
 # endif
     }
   else
@@ -1467,444 +1153,6 @@ int main (int argc, char *argv[])
 */
 # pragma warning (default:4035)
 # endif 
-
-void
-showHelp (void)
-{
-  showHerald ();
-  
-  llmsg (message ("Source files are .c, .h and %s files.  If there is no suffix,",
-		  LCL_EXTENSION));
-  llmsg (message ("   Splint will look for <file>.c and <file>%s.", LCL_EXTENSION));
-  llmsglit ("");
-  llmsglit ("Use splint -help <topic or flag name> for more information");
-  llmsglit ("");
-  llmsglit ("Topics:");
-  llmsglit ("");
-  llmsglit ("   annotations (describes source-code annotations)");
-  llmsglit ("   comments (describes control comments)");
-  llmsglit ("   flags (describes flag categories)");
-  llmsglit ("   flags <category> (describes flags in category)");
-  llmsglit ("   flags all (short description of all flags)");
-  llmsglit ("   flags alpha (list all flags alphabetically)");
-  llmsglit ("   flags full (full description of all flags)");
-  llmsglit ("   mail (information on mailing lists)");
-  llmsglit ("   modes (show mode settings)");
-  llmsglit ("   parseerrors (help on handling parser errors)");
-  llmsglit ("   prefixcodes (character codes in namespace prefixes)");
-  llmsglit ("   references (sources for more information)");
-  llmsglit ("   vars (environment variables)"); 
-  llmsglit ("   version (information on compilation, maintainer)");
-  llmsglit ("");
-}
-
-static bool
-specialFlagsHelp (char *next)
-{
-  if ((next != NULL) && (*next != '-') && (*next != '+'))
-    {
-      if (mstring_equal (next, "alpha"))
-	{
-	  printAlphaFlags ();
-	  return TRUE;
-	}
-      else if (mstring_equal (next, "all"))
-	{
-	  printAllFlags (TRUE, FALSE);
-	  return TRUE;
-	}
-      else if (mstring_equal (next, "categories")
-	       || mstring_equal (next, "cats"))
-	{
-	  listAllCategories ();
-	  return TRUE;
-	}
-      else if (mstring_equal (next, "full"))
-	{
-	  printAllFlags (FALSE, TRUE);
-	  return TRUE;
-	}
-      else if (mstring_equal (next, "manual"))
-	{
-	  printFlagManual (FALSE);
-	  return TRUE;
-	}
-      else if (mstring_equal (next, "webmanual"))
-	{
-	  printFlagManual (TRUE);
-	  return TRUE;
-	}
-      else
-	{
-	  return FALSE;
-	}
-    }
-  else
-    {
-      return FALSE;
-    }
-}
-
-void
-printParseErrors (void)
-{
-  llmsglit ("Parse Errors");
-  llmsglit ("------------");
-  llmsglit ("");
-  llmsglit ("Splint will sometimes encounter a parse error for code that "
-	    "can be parsed with a local compiler. There are a few likely "
-	    "causes for this and a number of techniques that can be used "
-	    "to work around the problem.");
-  llmsglit ("");
-  llmsglit ("Compiler extensions --- compilers sometimes extend the C "
-	    "language with compiler-specific keywords and syntax. While "
-	    "it is not advisible to use these, oftentimes one has no choice "
-	    "when the system header files use compiler extensions. ");
-  llmsglit ("");
-  llmsglit ("Splint supports some of the GNU (gcc) compiler extensions, "
-	    "if the +gnuextensions flag is set. You may be able to workaround "
-	    "other compiler extensions by using a pre-processor define. "
-	    "Alternately, you can surround the unparseable code with");
-  llmsglit ("");
-  llmsglit ("   # ifndef S_SPLINT_S");
-  llmsglit ("   ...");
-  llmsglit ("   # endif");
-  llmsglit ("");
-  /* evans 2000-12-21 fixed typo reported by Jeroen Ruigrok/Asmodai */
-  llmsglit ("Missing type definitions --- an undefined type name will usually "
-	    "lead to a parse error. This often occurs when a standard header "
-	    "file defines some type that is not part of the standard library. ");
-  llmsglit ("By default, Splint does not process the local files corresponding "
-	    "to standard library headers, but uses a library specification "
-	    "instead so dependencies on local system headers can be detected. "
-	    "If another system header file that does not correspond to a "
-	    "standard library header uses one of these superfluous types, "
-	    "a parse error will result.");
-  llmsglit ("");
-  llmsglit ("If the parse error is inside a posix standard header file, the "
-	    "first thing to try is +posixlib. This makes Splint use "
-	    "the posix library specification instead of reading the posix "
-	    "header files.");
-  llmsglit ("");
-  llmsglit ("Otherwise, you may need to either manually define the problematic "
-	    "type (e.g., add -Dmlink_t=int to your .splintrc file) or force "
-	    "splint to process the header file that defines it. This is done "
-	    "by setting -skipisoheaders or -skipposixheaders before "
-	    "the file that defines the type is #include'd.");
-  llmsglit ("(See splint -help "
-	    "skipisoheaders and splint -help skipposixheaders for a list of "
-	    "standard headers.)  For example, if <sys/local.h> uses a type "
-	    "defined by posix header <sys/types.h> but not defined by the "
-	    "posix library, we might do: ");
-  llmsglit ("");
-  llmsglit ("   /*@-skipposixheaders@*/");
-  llmsglit ("   # include <sys/types.h>");
-  llmsglit ("   /*@=skipposixheaders@*/");
-  llmsglit ("   # include <sys/local.h>");
-  llmsglit ("");
-  llmsglit ("to force Splint to process <sys/types.h>.");
-  llmsglit ("");
-  llmsglit ("At last resort, +trytorecover can be used to make Splint attempt "
-	    "to continue after a parse error.  This is usually not successful "
-	    "and the author does not consider assertion failures when +trytorecover "
-	    "is used to be bugs.");
-}
-
-void
-printAnnotations (void)
-{
-  llmsglit ("Annotations");
-  llmsglit ("-----------");
-  llmsglit ("");
-  llmsglit ("Annotations are semantic comments that document certain "
-	    "assumptions about functions, variables, parameters, and types. ");
-  llmsglit ("");
-  llmsglit ("They may be used to indicate where the representation of a "
-	    "user-defined type is hidden, to limit where a global variable may "
-	    "be used or modified, to constrain what a function implementation "
-            "may do to its parameters, and to express checked assumptions about "
-	    "variables, types, structure fields, function parameters, and "
-	    "function results.");
-  llmsglit ("");
-  llmsglit ("Annotations are introduced by \"/*@\". The role of the @ may be "
-	    "played by any printable character, selected using -commentchar <char>.");
-  llmsglit ("");
-  llmsglit ("Consult the User's Guide for descriptions of checking associated with each annotation.");
-  llmsglit ("");
-  llmsglit ("Globals: (in function declarations)");
-  llmsglit ("   /*@globals <globitem>,+ @*/");
-  llmsglit ("      globitem is an identifier, internalState or fileSystem");
-  llmsglit ("");
-  llmsglit ("Modifies: (in function declarations)");
-  llmsglit ("   /*@modifies <moditem>,+ @*/");
-  llmsglit ("      moditem is an lvalue");
-  llmsglit ("   /*@modifies nothing @*/");
-  llmsglit ("   /*@*/   (Abbreviation for no globals and modifies nothing.)");
-  llmsglit ("");
-  llmsglit ("Iterators:");
-  llmsglit ("   /*@iter <identifier> (<parameter-type-list>) @*/ - declare an iterator");
-  llmsglit ("");
-  llmsglit ("Constants:");
-  llmsglit ("   /*@constant <declaration> @*/ - declares a constant");
-  llmsglit ("");
-  llmsglit ("Alternate Types:");
-  llmsglit ("   /*@alt <basic-type>,+ @*/");
-  llmsglit ("   (e.g., int /*@alt char@*/ is a type matching either int or char)");
-  llmsglit ("");
-  llmsglit ("Declarator Annotations");
-  llmsglit ("");
-  llmsglit ("Type Definitions:");
-  llmsglit ("   /*@abstract@*/ - representation is hidden from clients");
-  llmsglit ("   /*@concrete@*/ - representation is visible to clients");
-  llmsglit ("   /*@immutable@*/ - instances of the type cannot change value");
-  llmsglit ("   /*@mutable@*/ - instances of the type can change value");
-  llmsglit ("   /*@refcounted@*/ - reference counted type");
-  llmsglit ("");
-  llmsglit ("Global Variables:");
-  llmsglit ("   /*@unchecked@*/ - weakest checking for global use");
-  llmsglit ("   /*@checkmod@*/ - check modification by not use of global");
-  llmsglit ("   /*@checked@*/ - check use and modification of global");
-  llmsglit ("   /*@checkedstrict@*/ - check use of global strictly");
-  llmsglit ("");
-  llmsglit ("Memory Management:");
-  llmsglit ("   /*@dependent@*/ - a reference to externally-owned storage");
-  llmsglit ("   /*@keep@*/ - a parameter that is kept by the called function");
-  llmsglit ("   /*@killref@*/ - a refcounted parameter, killed by the call");
-  llmsglit ("   /*@only@*/ - an unshared reference");
-  llmsglit ("   /*@owned@*/ - owner of storage that may be shared by /*@dependent@*/ references");
-  llmsglit ("   /*@shared@*/ - shared reference that is never deallocated");
-  llmsglit ("   /*@temp@*/ - temporary parameter");
-  llmsglit ("");
-  llmsglit ("Aliasing:");
-  llmsglit ("   /*@unique@*/ - may not be aliased by any other visible reference");
-  llmsglit ("   /*@returned@*/ - may be aliased by the return value");
-  llmsglit ("");
-  llmsglit ("Exposure:");
-  llmsglit ("   /*@observer@*/ - reference that cannot be modified");
-  llmsglit ("   /*@exposed@*/ - exposed reference to storage in another object");
-  llmsglit ("");
-  llmsglit ("Definition State:");
-  llmsglit ("   /*@out@*/ - storage reachable from reference need not be defined");
-  llmsglit ("   /*@in@*/ - all storage reachable from reference must be defined");
-  llmsglit ("   /*@partial@*/ - partially defined, may have undefined fields");
-  llmsglit ("   /*@reldef@*/ - relax definition checking");
-  llmsglit ("");
-  llmsglit ("Global State: (for globals lists, no /*@, since list is already in /*@\'s)");
-  llmsglit ("   undef - variable is undefined before the call");
-  llmsglit ("   killed - variable is undefined after the call");
-  llmsglit ("");
-  llmsglit ("Null State:");
-  llmsglit ("   /*@null@*/ - possibly null pointer");
-  llmsglit ("   /*@notnull@*/ - definitely non-null pointer");
-  llmsglit ("   /*@relnull@*/ - relax null checking");
-  llmsglit ("");
-  llmsglit ("Null Predicates:");
-  llmsglit ("   /*@nullwhentrue@*/ - if result is TRUE, first parameter is NULL");
-  llmsglit ("   /*@falsewhennull@*/ - if result is TRUE, first parameter is not NULL");
-  llmsglit ("");
-  llmsglit ("Execution:");
-  llmsglit ("   /*@noreturn@*/ - function never returns");
-  llmsglit ("   /*@maynotreturn@*/ - function may or may not return");
-  llmsglit ("   /*@noreturnwhentrue@*/ - function does not return if first parameter is TRUE");
-  llmsglit ("   /*@noreturnwhenfalse@*/ - function does not return if first parameter if FALSE");
-  llmsglit ("   /*@alwaysreturns@*/ - function always returns");
-  llmsglit ("");
-  llmsglit ("Side-Effects:");
-  llmsglit ("   /*@sef@*/ - corresponding actual parameter has no side effects");
-  llmsglit ("");
-  llmsglit ("Declaration:");
-  llmsglit ("   /*@unused@*/ - need not be used (no unused errors reported)");
-  llmsglit ("   /*@external@*/ - defined externally (no undefined error reported)");
-  llmsglit ("");
-  llmsglit ("Case:");
-  llmsglit ("   /*@fallthrough@*/ - fall-through case");
-  llmsglit ("");
-  llmsglit ("Break:");
-  llmsglit ("   /*@innerbreak@*/ - break is breaking an inner loop or switch");
-  llmsglit ("   /*@loopbreak@*/ - break is breaking a loop");
-  llmsglit ("   /*@switchbreak@*/ - break is breaking a switch");
-  llmsglit ("   /*@innercontinue@*/ - continue is continuing an inner loop");
-  llmsglit ("");
-  llmsglit ("Unreachable Code:");
-  llmsglit ("   /*@notreached@*/ - statement may be unreachable.");
-  llmsglit ("");
-  llmsglit ("Special Functions:");
-  llmsglit ("   /*@printflike@*/ - check variable arguments like printf");
-  llmsglit ("   /*@scanflike@*/ - check variable arguments like scanf");
-}
-
-void
-printComments (void)
-{
-  llmsglit ("Control Comments");
-  llmsglit ("----------------");
-  llmsglit ("");
-  llmsglit ("Setting Flags");
-  llmsglit ("");
-  llmsglit ("Most flags (all except those characterized as \"globally-settable only\") can be set locally using control comments. A control comment can set flags locally to override the command line settings. The original flag settings are restored before processing the next file.");
-  llmsglit ("");
-  llmsglit ("The syntax for setting flags in control comments is the same as that of the command line, except that flags may also be preceded by = to restore their setting to the original command-line value. For instance,");
-  llmsglit ("   /*@+boolint -modifies =showfunc@*/");
-  llmsglit ("sets boolint on (this makes bool and int indistinguishable types), sets modifies off (this prevents reporting of modification errors), and sets showfunc to its original setting (this controls  whether or not the name of a function is displayed before a message).");
-  llmsglit ("");
-  llmsglit ("Error Suppression");
-  llmsglit ("");
-  llmsglit ("Several comments are provided for suppressing messages. In general, it is usually better to use specific flags to suppress a particular error permanently, but the general error suppression flags may be more convenient for quickly suppressing messages for code that will be corrected or documented later.");
-  llmsglit ("");
-  llmsglit ("/*@ignore@*/ ... /*@end@*/");
-  llgenindentmsgnoloc
-    (cstring_makeLiteral 
-     ("No errors will be reported in code regions between /*@ignore@*/ and /*@end@*/. These comments can be used to easily suppress an unlimited number of messages."));
-  llmsglit ("/*@i@*/");
-    llgenindentmsgnoloc
-    (cstring_makeLiteral 
-     ("No errors will be reported from an /*@i@*/ comment to the end of the line."));
-  llmsglit ("/*@i<n>@*/");
-  llgenindentmsgnoloc
-    (cstring_makeLiteral 
-     ("No errors will be reported from an /*@i<n>@*/ (e.g., /*@i3@*/) comment to the end of the line. If there are not exactly n errors suppressed from the comment point to the end of the line, Splint will report an error."));
-  llmsglit ("/*@t@*/, /*@t<n>@*/");
-  llgenindentmsgnoloc
-    (cstring_makeLiteral 
-     ("Like i and i<n>, except controlled by +tmpcomments flag. These can be used to temporarily suppress certain errors. Then, -tmpcomments can be set to find them again."));
-  llmsglit ("");
-  llmsglit ("Type Access");
-  llmsglit ("");
-  llmsglit ("/*@access <type>@*/"); 
-  llmsglit ("   Allows the following code to access the representation of <type>");
-  llmsglit ("/*@noaccess <type>@*/");
-  llmsglit ("   Hides the representation of <type>");
-  llmsglit ("");
-  llmsglit ("Macro Expansion");
-  llmsglit ("");
-  llmsglit ("/*@notfunction@*/");
-  llgenindentmsgnoloc 
-    (cstring_makeLiteral
-     ("Indicates that the next macro definition is not intended to be a "
-      "function, and should be expanded in line instead of checked as a "
-      "macro function definition."));
-}
-
-  
-void
-printFlags (void)
-{
-  llmsglit ("Flag Categories");
-  llmsglit ("---------------");
-  listAllCategories ();
-  llmsglit ("\nTo see the flags in a flag category, do\n   splint -help flags <category>");
-  llmsglit ("To see a list of all flags in alphabetical order, do\n   splint -help flags alpha");
-  llmsglit ("To see a full description of all flags, do\n   splint -help flags full");
-}
-
-void
-printMaintainer (void)
-{
-  llmsg (message ("Maintainer: %s", cstring_makeLiteralTemp (SPLINT_MAINTAINER)));
-  llmsglit (LCL_COMPILE);
-}
-
-void
-printMail (void)
-{
-  llmsglit ("Mailing Lists");
-  llmsglit ("-------------");
-  llmsglit ("");
-  llmsglit ("There are two mailing lists associated with Splint: ");
-  llmsglit ("");
-  llmsglit ("   lclint-announce@virginia.edu");
-  llmsglit ("");
-  llmsglit ("      Reserved for announcements of new releases and bug fixes.");
-  llmsglit ("      To subscribe, send a message to majordomo@virginia.edu with body: ");
-  llmsglit ("           subscribe lclint-announce");
-  llmsglit ("");
-  llmsglit ("   lclint-interest@virginia.edu");
-  llmsglit ("");
-  llmsglit ("      Informal discussions on the use and development of Splint.");
-  llmsglit ("      To subscribe, send a message to majordomo@virginia.edu with body: ");
-  llmsglit ("           subscribe lclint-interest");
-}
-
-void
-printReferences (void)
-{
-  llmsglit ("References");
-  llmsglit ("----------");
-  llmsglit ("");
-  llmsglit ("For more information, see the Splint web site: http://www.splint.org");
-}
-
-void
-describePrefixCodes (void)
-{
-  llmsglit ("Prefix Codes");
-  llmsglit ("------------");
-  llmsglit ("");
-  llmsglit ("These characters have special meaning in name prefixes:");
-  llmsglit ("");
-  llmsg (message ("   %h  Any uppercase letter [A-Z]", PFX_UPPERCASE));
-  llmsg (message ("   %h  Any lowercase letter [a-z]", PFX_LOWERCASE));
-  llmsg (message ("   %h  Any character (valid in a C identifier)", PFX_ANY));
-  llmsg (message ("   %h  Any digit [0-9]", PFX_DIGIT));
-  llmsg (message ("   %h  Any non-uppercase letter [a-z0-9_]", PFX_NOTUPPER));
-  llmsg (message ("   %h  Any non-lowercase letter [A-Z0-9_]", PFX_NOTLOWER));
-  llmsg (message ("   %h  Any letter [A-Za-z]", PFX_ANYLETTER));
-  llmsg (message ("   %h  Any letter or digit [A-Za-z0-9]", PFX_ANYLETTERDIGIT));
-  llmsglit ("   *  Zero or more repetitions of the previous character class until the end of the name");
-}
-
-void
-describeVars (void)
-{
-  cstring eval;
-  cstring def;
-
-  eval = context_getLarchPath ();
-  def = osd_getEnvironmentVariable (LARCH_PATH);
-
-  if (cstring_isDefined (def) || 
-      !cstring_equal (eval, cstring_fromChars (DEFAULT_LARCHPATH)))
-    {
-      llmsg (message ("LARCH_PATH = %s", eval));
-    }
-  else
-    {
-      llmsg (message ("LARCH_PATH = <not set> (default = %s)",
-		      cstring_fromChars (DEFAULT_LARCHPATH)));
-    }
-  
-  llmsglit ("   --- path used to find larch initialization files and LSL traits");
-
-  eval = context_getLCLImportDir ();
-  def = osd_getEnvironmentVariable (cstring_makeLiteralTemp (LCLIMPORTDIR));
-
-  if (cstring_isDefined (def) ||
-      !cstring_equal (eval, cstring_fromChars (DEFAULT_LCLIMPORTDIR)))
-    {
-      llmsg (message ("%q = %s", cstring_makeLiteral (LCLIMPORTDIR), eval));
-    }
-  else
-    {
-      llmsg (message ("%s = <not set, default: %s>", cstring_makeLiteralTemp (LCLIMPORTDIR), 
-		      cstring_makeLiteralTemp (DEFAULT_LCLIMPORTDIR))); 
-    }
-  
-  llmsglit ("   --- directory containing lcl standard library files "
-	    "(import with < ... >)");;
-
-  llmsg (message 
-	 ("include path = %q (set by environment variable %s and -I flags)",
-	  cppReader_getIncludePath (), INCLUDEPATH_VAR));
-
-  llmsglit ("   --- path used to find #include'd files");
-
-  llmsg (message 
-	 ("systemdirs = %s (set by -systemdirs or environment variable %s)", /*@i413223@*/
-	  context_getString (FLG_SYSTEMDIRS),
-	  INCLUDEPATH_VAR));
-
-  llmsglit ("   --- if file is found on this path, it is treated as a system file for error reporting");
-}
 
 void
 interrupt (int i)
@@ -2021,384 +1269,6 @@ llexit (int status)
   exit ((status == LLSUCCESS) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
-{
-  bool res = FALSE;
-
-  if (fileTable_exists (context_fileTable (), fname))
-    {
-      if (report)
-	{
-	  voptgenerror
-	    (FLG_WARNRC, 
-	     message ("Multiple attempts to read options file: %s", fname),
-	     g_currentloc);
-	}
-    }
-  else
-    {
-      FILE *innerf = fileTable_openReadFile (context_fileTable (), fname);
-      
-      if (innerf != NULL)
-	{
-	  fileloc fc = g_currentloc;
-	  g_currentloc = fileloc_createRc (fname);
-
-	  displayScan (message ("< reading options from %q >", 
-				fileloc_outputFilename (g_currentloc)));
-	  
-	  loadrc (innerf, passThroughArgs);
-	  fileloc_reallyFree (g_currentloc);
-	  g_currentloc = fc;
-	  res = TRUE;
-	}
-      else 
-	{
-	  if (report)
-	    {
-	      voptgenerror
-		(FLG_WARNRC, 
-		 message ("Cannot open options file: %s", fname),
-		 g_currentloc);
-	    }
-	}
-    }
-
-  return res;
-}
-
-/*
-** This shouldn't be necessary, but Apple Darwin can't handle '"''s.
-*/
-
-void
-loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
-   /*@modifies rcfile@*/
-   /*@ensures closed rcfile@*/
-{
-  char *s = mstring_create (MAX_LINE_LENGTH);
-  char *os = s;
-  
-  DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-
-  s = os;
-
-  while (reader_readLine (rcfile, s, MAX_LINE_LENGTH) != NULL)
-    {
-      char c;
-      bool set = FALSE;	    
-      char *thisflag;
-      flagcode opt;
-
-      DPRINTF (("Line: %s", s));
-      DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-            
-      while (*s == ' ' || *s == '\t')
-	{
-	  s++;
-	  incColumn ();
-	}
-      
-      while (*s != '\0')
-	{
-	  bool escaped = FALSE;
-	  bool quoted = FALSE;
-	  c = *s;
-
-	  DPRINTF (("Process: %s", s));
-	  DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-	  /* comment characters */
-	  if (c == '#' || c == ';' || c == '\n') 
-	    {
-	      /*@innerbreak@*/
-	      break;
-	    }
-	  
-	  if (c == '-' || c == '+')
-	    {
-	      set = (c == '+');
-	    }
-	  else
-	    {
-	      showHerald ();
-	      voptgenerror (FLG_BADFLAG, 
-			    message ("Bad flag syntax (+ or - expected, "
-				     "+ is assumed): %s", 
-				     cstring_fromChars (s)),
-			    g_currentloc);
-	      s--;
-	      set = TRUE;
-	    }
-	  
-	  s++;
-	  incColumn ();
-	  
-	  thisflag = s;
-	  
-	  while ((c = *s) != '\0')
-	    { /* remember to handle spaces and quotes in -D and -U ... */
-	      if (escaped)
-		{
-		  escaped = FALSE;
-		}
-	      else if (quoted)
-		{
-		  if (c == '\\')
-		    {
-		      escaped = TRUE;
-		    }
-		  else if (c == '\"')
-		    {
-		      quoted = FALSE;
-		    }
-		  else
-		    {
-		      ;
-		    }
-		}
-	      else if (c == '\"')
-		{
-		  quoted = TRUE;
-		}
-	      else
-		{
-		 if (c == ' ' || c == '\t' || c == '\n')
-		   {
-		     /*@innerbreak@*/ break;
-		   }
-	       }
-		  
-	      s++; 
-	      incColumn ();
-	    }
-
-	  DPRINTF (("Nulling: %c", *s));
-	  *s = '\0';
-
-	  if (mstring_isEmpty (thisflag))
-	    {
-	      llfatalerror (message ("Missing flag: %s",
-				     cstring_fromChars (os)));
-	    }
-
-	  DPRINTF (("Flag: %s", thisflag));
-
-	  opt = flags_identifyFlag (cstring_fromChars (thisflag));
-	  
-	  if (flagcode_isSkip (opt))
-	    {
-	      ;
-	    }
-	  else if (flagcode_isInvalid (opt))
-	    {
-	      DPRINTF (("Invalid: %s", thisflag));
-
-	      if (flags_isModeName (cstring_fromChars (thisflag)))
-		{
-		  context_setMode (cstring_fromChars (thisflag));
-		}
-	      else
-		{
-		  voptgenerror (FLG_BADFLAG,
-				message ("Unrecognized option: %s", 
-					 cstring_fromChars (thisflag)),
-				g_currentloc);
-		}
-	    }
-	  else
-	    {
-	      context_userSetFlag (opt, set);
-
-	      if (flagcode_hasArgument (opt))
-		{
-		  if (opt == FLG_HELP)
-		    {
-		      showHerald ();
-		      voptgenerror (FLG_BADFLAG,
-				    message ("Cannot use help in rc files"),
-				    g_currentloc);
-		    }
-		  else if (flagcode_isPassThrough (opt)) /* -D or -U */
-		    {
-		      cstring arg = cstring_fromCharsNew (thisflag);
-		      cstring_markOwned (arg);
-		      *passThroughArgs = cstringSList_add (*passThroughArgs, arg);
-		      DPRINTF (("Pass through: %s",
-				cstringSList_unparse (*passThroughArgs)));
-		    }
-		  else if (opt == FLG_INCLUDEPATH 
-			   || opt == FLG_SPECPATH)
-		    {
-		      cstring dir;
-
-		      /*
-		      ** Either -I<dir> or -I <dir>
-		      */
-
-		      if (cstring_length (thisflag) > 1)
-			{
-			  dir = cstring_suffix (cstring_fromChars (thisflag), 1); /* skip over I/S */
-			}
-		      else
-			{
-			  BADBRANCH; /*@!!!!@*/
-			}
-		      		      
-		      switch (opt)
-			{
-			case FLG_INCLUDEPATH:
-			  cppAddIncludeDir (dir);
-			  /*@switchbreak@*/ break;
-			case FLG_SPECPATH:
-			  /*@-mustfree@*/
-			  g_localSpecPath = cstring_toCharsSafe
-			    (message ("%s:%s", cstring_fromChars (g_localSpecPath), dir));
-			  /*@=mustfree@*/
-			  /*@switchbreak@*/ break;
-			  BADDEFAULT;
-			}
-		    }
-		  else if (flagcode_hasString (opt)
-			   || flagcode_hasNumber (opt)
-			   || flagcode_hasChar (opt)
-			   || opt == FLG_INIT || opt == FLG_OPTF)
-		    {
-		      cstring extra = cstring_undefined;
-		      char *rest, *orest;
-		      char rchar;
-		      
-		      *s = c;
-		      rest = mstring_copy (s);
-		      DPRINTF (("Here: rest = %s", rest));
-		      orest = rest;
-		      *s = '\0';
-		      
-		      while ((rchar = *rest) != '\0'
-			     && (isspace ((int) rchar)))
-			{
-			  rest++;
-			  s++;
-			}
-		      
-		      DPRINTF (("Yo: %s", rest));
-
-		      while ((rchar = *rest) != '\0' 
-			     && !isspace ((int) rchar))
-			{
-			  extra = cstring_appendChar (extra, rchar);
-			  rest++; 
-			  s++;
-			}
-		      
-		      DPRINTF (("Yo: %s", extra));
-		      sfree (orest);
-
-		      if (cstring_isUndefined (extra))
-			{
-			  showHerald ();
-			  voptgenerror 
-			    (FLG_BADFLAG,
-			     message
-			     ("Flag %s must be followed by an argument",
-			      flagcode_unparse (opt)),
-			     g_currentloc);
-			}
-		      else
-			{
-			  s--;
-			  
-			  DPRINTF (("Here we are: %s", extra));
-
-			  if (flagcode_hasNumber (opt) || flagcode_hasChar (opt))
-			    {
-			      DPRINTF (("Set value flag: %s", extra));
-			      setValueFlag (opt, extra);
-			    }
-			  else if (opt == FLG_OPTF)
-			    {
-			      (void) readOptionsFile (extra, passThroughArgs, TRUE);
-			    }
-			  else if (opt == FLG_INIT)
-			    {
-# ifndef NOLCL
-			      llassert (inputStream_isUndefined (initFile));
-			      
-			      initFile = inputStream_create 
-				(cstring_copy (extra), 
-				 cstring_makeLiteralTemp (LCLINIT_SUFFIX),
-				 FALSE);
-# endif
-			    }
-			  else if (flagcode_hasString (opt))
-			    {
-			      DPRINTF (("Here: %s", extra));
-
-			      /*
-			      ** If it has "'s, we need to remove them.
-			      */
-
-			      if (cstring_firstChar (extra) == '\"')
-				{
-				  if (cstring_lastChar (extra) == '\"')
-				    {
-				      cstring unquoted = cstring_copyLength 
-					(cstring_toCharsSafe (cstring_suffix (extra, 1)),
-					 cstring_length (extra) - 2);
-
-				      DPRINTF (("string flag: %s -> %s", extra, unquoted));
-				      setStringFlag (opt, unquoted);
-				      cstring_free (extra);
-				    }
-				  else
-				    {
-				      voptgenerror
-					(FLG_BADFLAG, 
-					 message ("Unmatched \" in option string: %s", 
-						  extra),
-					 g_currentloc);
-				      setStringFlag (opt, extra);
-				    }
-				}
-			      else
-				{
-				  DPRINTF (("No quotes: %s", extra));
-				  setStringFlag (opt, extra);
-				}
-
-			      extra = cstring_undefined;
-			    }
-			  else
-			    {
-			      BADEXIT;
-			    }
-			}
-
-		      cstring_free (extra); 
-		    }
-		  else
-		    {
-		      BADEXIT;
-		    }
-		}
-	    }
-	  
-	  *s = c;
-	  DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-	  while ((c == ' ') || (c == '\t'))
-	    {
-	      c = *(++s);
-	      incColumn ();
-	    } 
-	}
-      DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-      s = os;
-    }
-
-  DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-  sfree (os); 
-  check (fileTable_closeFile (context_fileTable (), rcfile));
-}
-
 static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
   /*@modifies fileSystem@*/
 {
@@ -2436,13 +1306,11 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 	      if ((filesprocessed % skip) == 0) 
 		{
 		  if (filesprocessed == 0) {
-		    fprintf (g_messagestream, " ");
+		    displayScan (cstring_makeLiteral (" "));
 		  }
 		  else {
-		    fprintf (g_messagestream, ".");
+		    displayScan (cstring_makeLiteral ("."));
 		  }
-		  
-		  (void) fflush (g_messagestream);
 		}
 	      filesprocessed++;
 	    }

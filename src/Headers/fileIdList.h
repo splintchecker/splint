@@ -13,7 +13,9 @@
 /*@access ctype fileId ctypeList@*/
 /*@+allmacros@*/
 
-abst_typedef /*@null@*/ ctypeList fileIdList;
+/* in forwardTypes:
+   abst_typedef null ctypeList fileIdList;
+*/
 
 extern /*@falsewhennull@*/ bool fileIdList_isDefined (fileIdList p_f);
 # define fileIdList_isDefined(f)  (ctypeList_isDefined (f))
@@ -26,6 +28,9 @@ extern /*@falsewhennull@*/ bool fileIdList_isDefined (fileIdList p_f);
         { fileId m_el = *(m_elements++); 
 
 # define end_fileIdList_elements }}
+
+/*@constant null fileIdList fileIdList_undefined; @*/
+# define fileIdList_undefined      ctypeList_undefined
 
 extern fileIdList fileIdList_create (void);
 # define fileIdList_create()       ctypeList_new()

@@ -105,8 +105,15 @@ extern bool flagcode_isHelpFlag (flagcode p_f) /*@*/ ;
 
 extern void flags_initMod (void) /*@modifies internalState@*/ ;
 
-extern bool flags_processFlags (int p_argc, char **p_argv)
-     /*@requires maxRead(p_argv) >= p_argc - 1@*/
+extern void
+flags_processFlags (bool p_inCommandLine, 
+		    fileIdList p_xfiles,
+		    fileIdList p_cfiles,
+		    fileIdList p_lclfiles,
+		    fileIdList p_mtfiles,
+		    cstringSList *p_passThroughArgs,
+		    int p_argc, /*@null@*/ char **p_argv)
+     /*@requires maxRead(p_argv) >= (p_argc - 1) @*/
      /* returns true if normal, false if execution should exit */ ;
 
 # else

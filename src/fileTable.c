@@ -324,7 +324,7 @@ fileTable_addFilePrim (fileTable ft, /*@temp@*/ cstring name,
   cstring absname = osd_absolutePath (NULL, name);
   int tindex = fileTable_getIndex (ft, absname);
   
-  DPRINTF (("Got abs path: %s", absname));
+  /*@i534 fprintf (stderr, "Got abs path: %s", absname); */
   llassert (ft != fileTable_undefined);
 
   if (tindex != NOT_FOUND)
@@ -809,7 +809,7 @@ fileTable_cleanup (fileTable ft)
   if (msg)
     {
       (void) fflush (g_warningstream);
-      fprintf (stderr, "< cleaning");
+      displayScanOpen (cstring_makeLiteral ("< cleaning"));
     }
 
   for (i = 0; i < ft->nentries; i++)
@@ -851,21 +851,13 @@ fileTable_cleanup (fileTable ft)
 
       if (msg && ((i % skip) == 0))
 	{
-	  (void) fflush (g_warningstream);
-
-	  if (i == 0) {
-	    fprintf (stderr, " ");
-	  } else {
-	    fprintf (stderr, ".");
-	  }
-
-	  (void) fflush (stderr);
+	  displayScan (cstring_makeLiteral (i == 0 ? " " : "."));
 	}
     }
-  
+
   if (msg)
     {
-      fprintf (stderr, " >\n");
+      displayScanClose ();
     }
 }
 

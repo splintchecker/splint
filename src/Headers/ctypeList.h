@@ -13,12 +13,12 @@
 ** (that is, not void, so any number of arguments is okay.)
 */
 
-abst_typedef /*@null@*/ struct
+struct s_ctypeList
 {
   int nelements;
   int nspace;
   /*@reldef@*/ /*@relnull@*/ ctype  *elements;
-} *ctypeList ;
+} ;
 
 extern int ctypeList_size (/*@sef@*/ ctypeList p_s) /*@*/ ;
 # define ctypeList_size(s)  (ctypeList_isDefined(s) ? (s)->nelements : 0)   

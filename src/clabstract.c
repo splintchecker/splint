@@ -1810,7 +1810,7 @@ handleEnum (cstring id)
     }
   else
     {
-      return (declareEnum (id, enumNameList_new ()));
+      return (ctype_createForwardEnum (id));
     }
 }
 

@@ -27,6 +27,8 @@ extern /*@unused@*/ /*@falsewhennull@*/ bool cstringList_empty (/*@sef@*/ cstrin
 
 extern cstring cstringList_unparseSep (cstringList p_s, cstring p_sep) /*@*/ ;
 
+extern /*@exposed@*/ /*@null@*/ bn_mstring *cstringList_getElements (cstringList) /*@*/ ;
+
 extern /*@unused@*/ /*@only@*/ cstringList cstringList_new (void) /*@*/ ;
 
 extern /*@only@*/ cstringList cstringList_single (/*@keep@*/ cstring p_el) /*@*/ ;

@@ -110,6 +110,7 @@
 # include "stateCombinationTable.h"
 # include "mtincludes.h"
 # include "functionConstraint.h"
+# include "fileIdList.h"
 
 # include "context.h"
 # include "constants.h"

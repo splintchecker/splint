@@ -2213,6 +2213,16 @@ ctype_createForwardUnion (cstring n)
 }
 
 ctype
+ctype_createForwardEnum (cstring n)
+{
+  uentry ue  = uentry_makeEnumTag (n, ctype_unknown, fileloc_undefined);
+  ctype ct = usymtab_supForwardTypeEntry (ue);
+
+  cstring_free (n);
+  return (ct);
+}
+
+ctype
 ctype_removePointers (ctype c)
 {
   ctype oldc;

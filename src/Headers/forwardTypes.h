@@ -71,12 +71,12 @@ abst_typedef sRefSet globSet;
 abst_typedef /*@null@*/ struct s_constraint *constraint;
 abst_typedef /*@null@*/ struct s_constraintList *constraintList;
 
+abst_typedef /*@null@*/ struct s_ctypeList *ctypeList;
+abst_typedef /*@null@*/ ctypeList fileIdList;
 
 /* DRL modified 9 26 00 */
 
-abst_typedef /*@null@*/ struct s_constraintExpr * constraintExpr;
-
-
+abst_typedef /*@null@*/ struct s_constraintExpr *constraintExpr;
 
 /*@-cppnames@*/
 typedef int bool;
@@ -84,6 +84,10 @@ typedef int bool;
 
 abst_typedef /*@untainted@*/ /*@null@*/ char *cstring;
 typedef /*@only@*/ cstring o_cstring;
+
+abst_typedef /*@null@*/ struct s_cstringSList *cstringSList;
+
+typedef enum e_LSLInitRuleCode LSLInitRuleCode;
 
 immut_typedef int ctype;
 

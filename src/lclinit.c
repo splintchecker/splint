@@ -153,7 +153,7 @@ hasFirstChar (ltoken tok) /*@*/
 }
 
 void
-LCLProcessInitFile (void)
+lclinit_process (void)
 {
   InitLines ();
 
@@ -171,8 +171,6 @@ InitLines (void)
   setCodePoint ();
   InitReduce (INITLINES1);
 
-  
-
   if (ltoken_getCode (nextToken) != LEOFTOKEN)
     {
       InitLine ();
@@ -189,15 +187,14 @@ InitLines (void)
 static void
 InitLine (void)
 {
-  
   if (ltoken_getCode (nextToken) == LLT_EOL)
     {
       /* Nothing on line. */
-            InitReduce (INITLINE1);
+      InitReduce (INITLINE1);
     }
   else
     {
-            Classification ();
+      Classification ();
       InitReduce (INITLINE2);
     }
 
@@ -205,15 +202,14 @@ InitLine (void)
     {
       LocalUserError (nextToken, "Unexpected tokens on line");
     }
-
+  
   nextToken = LCLScanNextToken (); /* Discard EOL	*/
-  }
+}
 
 static void
 Classification (void)
 {
   lsymbol ntext = ltoken_getRawText (nextToken);  
-
     
   if (ntext == ltoken_getText (endCommentCharToken)
       || ntext == ltoken_getText (idCharToken)
@@ -251,7 +247,7 @@ Classification (void)
     {
       llbug (message ("Expected character, token, or synonym classification: %s",
 		      ltoken_getRawString (nextToken)));
-     /* pop off all tokens on this line */
+      /* pop off all tokens on this line */
     }
 }
 
@@ -259,9 +255,7 @@ static void
 CharClass (void)
 {
   ltoken charClassToken;
-
   charClassToken = nextToken;
-
   nextToken = LCLScanNextToken ();		/* Discard char class keyword. */
 
   if (ltoken_getRawText (charClassToken) == ltoken_getText (endCommentCharToken))
@@ -451,7 +445,7 @@ static void WhiteChar (void) /*@modifies nextToken@*/
 }
 
 static void
-  TokenClass (void) /*@modifies nextToken@*/
+TokenClass (void) /*@modifies nextToken@*/
 {
   ltoken tokenClassToken;
   lsymbol ttext = ltoken_getRawText (nextToken);
@@ -1471,7 +1465,7 @@ static void
  */
 
 void
-LCLProcessInitFileInit (void)
+lclinit_initMod (void)
 {
   int i;
 
@@ -1536,14 +1530,15 @@ LCLProcessInitFileInit (void)
 }
 
 void
-LCLProcessInitFileReset (void)
+lclinit_reset (void)
 {
   nextToken = LCLScanNextToken ();	  
 }
 
 void
-LCLProcessInitFileCleanup (void)
+lclinit_cleanup (void)
 {
+  ;
 }
 
 

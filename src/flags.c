@@ -27,7 +27,10 @@
 
 # include "splintMacros.nf"
 # include "basic.h"
+# include "osd.h"
 # include "portab.h"
+# include "rcfiles.h"
+# include "lslinit.h"
 
 /*
 ** from the CC man page:
@@ -1241,6 +1244,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
       else if (flags_isModeName (cflag))
 	{
 	  res = MODENAME_FLAG;
+	}
       else
 	{
 	  res = INVALID_FLAG;
@@ -1548,15 +1552,111 @@ bool flagcode_isNamePrefixFlag (flagcode f)
       return FALSE;
     }
 }
-	
-bool flags_processFlags (bool inCommandLine, int argc, char **argv)
+
+static cstring findLarchPathFile (/*@temp@*/ cstring s)
+{
+  cstring pathName;
+  filestatus status;
+  
+  status = osd_getPath (context_getLarchPath (), s, &pathName);
+  
+  if (status == OSD_FILEFOUND)
+    {
+      return pathName;
+    }
+  else if (status == OSD_FILENOTFOUND)
+    {
+      showHerald ();
+      lldiagmsg	(message ("Cannot find file on LARCH_PATH: %s", s));
+    }
+  else if (status == OSD_PATHTOOLONG)
+    {
+      /* Directory and filename are too long.  Report error. */
+      llbuglit ("soure_getPath: Filename plus directory from search path too long");
+    }
+  else
+    {
+      BADBRANCH;
+    }
+
+  return cstring_undefined;
+}
+
+static void addLarchPathFile (fileIdList files, /*@temp@*/ cstring s)
+{
+  cstring pathName = findLarchPathFile (s);
+
+  if (cstring_isDefined (pathName))
+    {
+      if (fileTable_exists (context_fileTable (), pathName))
+	{
+	  showHerald ();
+	  lldiagmsg (message ("File listed multiple times: %s", pathName));
+	  cstring_free (pathName);
+	}
+      else
+	{
+	  fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), pathName));
+	}
+    }
+}
+
+
+static void addFile (fileIdList files, /*@only@*/ cstring s)
+{
+  if (fileTable_exists (context_fileTable (), s))
+    {
+      showHerald ();
+      lldiagmsg (message ("File listed multiple times: %s", s));
+      cstring_free (s);
+    }
+  else
+    {
+      fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), s));
+    }
+}
+
+static void addXHFile (fileIdList files, /*@temp@*/ cstring s)
+{
+  cstring pathName = findLarchPathFile (s);
+
+  if (cstring_isDefined (pathName))
+    {
+      if (fileTable_exists (context_fileTable (), pathName))
+	{
+	  showHerald ();
+	  lldiagmsg (message ("File listed multiple times: %s", s));
+	}
+      else
+	{
+	  fileIdList_add (files, fileTable_addXHFile (context_fileTable (), pathName));
+	}
+    }
+
+  cstring_free (pathName);
+}
+
+void
+flags_processFlags (bool inCommandLine, 
+		    fileIdList xfiles,
+		    fileIdList cfiles,
+		    fileIdList lclfiles,
+		    fileIdList mtfiles,
+		    cstringSList *passThroughArgs,
+		    int argc, char **argv)
 {
   int i;
-
+  cstringSList fl = cstringSList_undefined;
+    
   for (i = 0; i < argc; i++)
     {
-      char *thisarg = argv[i];
-      
+      char *thisarg;
+
+      llassert (argv != NULL);
+      thisarg = argv[i];
+
+      DPRINTF (("thisarg: %s", thisarg));
+
       if (*thisarg == '-' || *thisarg == '+')
 	{
 	  bool set = (*thisarg == '+');
@@ -1590,7 +1690,39 @@ bool flags_processFlags (bool inCommandLine, int argc, char **argv)
 				g_currentloc);
 		}
 	    }
-	  else if (flagcode_isModeNameFlag (opt))
+	  else if (flagcode_isPassThrough (opt)) /* preprocessor flag: -D or -U */
+	    { 
+	      /*
+	      ** Following space is optional, don't include the -
+	      */
+	      
+	      *passThroughArgs = cstringSList_add (*passThroughArgs, 
+						   cstring_fromChars (thisarg + 1));
+	    }
+	  else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
+	    {
+	      cstring dir = cstring_suffix (cstring_fromChars (thisarg), 1); /* skip over I */
+	      
+	      DPRINTF (("Directory: %s", dir));
+	      
+	      switch (opt)
+		{
+		case FLG_INCLUDEPATH:
+		  cppAddIncludeDir (dir);
+		  /*@switchbreak@*/ break;
+		case FLG_SPECPATH:
+		  /*@-mustfree@*/
+		  g_localSpecPath = cstring_toCharsSafe
+		    (message ("%s%h%s", 
+			      cstring_fromChars (g_localSpecPath), 
+			      PATH_SEPARATOR,
+			      dir));
+		  /*@=mustfree@*/
+		  /*@switchbreak@*/ break;
+		  BADDEFAULT;
+		}
+	    }
+	  else if (flagcode_isModeName (opt))
 	    {
 	      context_setMode (flagname);
 	    }
@@ -1615,223 +1747,179 @@ bool flags_processFlags (bool inCommandLine, int argc, char **argv)
 	      
 	      if (flagcode_hasArgument (opt))
 		{
-		  if (flagcode_isPassThrough (opt)) /* -D or -U */
-		    { 
-		      /*
-		      ** Following space is optional
-		      */
-
-		      flags_recordPassThroughArg (flagname);
-
-		      passThroughArgs = cstringSList_add 
-			(passThroughArgs, cstring_fromChars (thisarg));
-		    }
-		  else if (flagcode_hasNumber (opt))
+		  if (flagcode_hasNumber (opt))
+		    {
+		      if (++i < argc)
 			{
-			  if (++i < argc)
-			    {
-			      setValueFlag (opt, cstring_fromChars (argv[i]));
-			    }
-			  else
-			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a number",
-				  flagcode_unparse (opt)));
-			    }
-			} 
-		      else if (flagcode_hasChar (opt))
-			{
-			  if (++i < argc)
-			    {
-			      setValueFlag (opt, cstring_fromChars (argv[i]));
-			    }
-			  else
-			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a character",
-				  flagcode_unparse (opt)));
-			    }
-			} 
-		      else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
-			{
-			  cstring dir = cstring_suffix (cstring_fromChars (thisarg), 1); /* skip over I */
-			  
-			  switch (opt)
-			    {
-			    case FLG_INCLUDEPATH:
-			      cppAddIncludeDir (dir);
-			      /*@switchbreak@*/ break;
-			    case FLG_SPECPATH:
-			      /*@-mustfree@*/
-			      g_localSpecPath = cstring_toCharsSafe
-				(message ("%s%h%s", 
-					  cstring_fromChars (g_localSpecPath), 
-					  PATH_SEPARATOR,
-					  dir));
-			      /*@=mustfree@*/
-			      /*@switchbreak@*/ break;
-			      BADDEFAULT;
-			    }
+			  setValueFlag (opt, cstring_fromChars (argv[i]));
 			}
-		      else if (flagcode_hasString (opt)
-			       || opt == FLG_INIT || opt == FLG_OPTF)
+		      else
 			{
-			  if (++i < argc)
+			  voptgenerror
+			    (FLG_BADFLAG,
+			     message
+			     ("Flag %s must be followed by a number",
+			      flagcode_unparse (opt)),
+			     g_currentloc);
+			}
+		    } 
+		  else if (flagcode_hasChar (opt))
+		    {
+		      if (++i < argc)
+			{
+			  setValueFlag (opt, cstring_fromChars (argv[i]));
+			}
+		      else
+			{
+			  voptgenerror
+			    (FLG_BADFLAG,
+			     message
+			     ("Flag %s must be followed by a character",
+			      flagcode_unparse (opt)),
+			     g_currentloc);
+			}
+		    } 
+		  else if (flagcode_hasString (opt)
+			   || opt == FLG_INIT || opt == FLG_OPTF)
+		    {
+		      if (++i < argc)
+			{
+			  cstring arg = cstring_fromChars (argv[i]);
+			  
+			  if (opt == FLG_OPTF)
 			    {
-			      cstring arg = cstring_fromChars (argv[i]);
-			      
-			      if (opt == FLG_OPTF)
+			      if (inCommandLine)
 				{
 				  ; /* -f already processed */
 				}
-			      else if (opt == FLG_INIT)
-				{
-# ifndef NOLCL
-				  initFile = inputStream_create 
-				    (arg, 
-				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
-				     FALSE);
-# endif
-				  break;
-				}
 			      else
 				{
-				  DPRINTF (("String flag: %s / %s",
-					    flagcode_unparse (opt), arg));
-				  if (opt == FLG_MTSFILE)
-				    {
-				      /*
-				      ** arg identifies mts files
-				      */
-				      cstring tmp =  message ("%s%s", arg, MTS_EXTENSION);
-				      addLarchPathFile (mtfiles, tmp);
-				      cstring_free (tmp);
-				      tmp = message ("%s%s", arg, XH_EXTENSION);
-				      addXHFile (xfiles, tmp);
-				      cstring_free (tmp);
-				    }
-				  else
-				    {
-				      setStringFlag (opt, cstring_copy (arg));
-				    }
+				  (void) rcfiles_read (arg, passThroughArgs, TRUE);
 				}
+			    }
+			  else if (opt == FLG_INIT)
+			    {
+# ifndef NOLCL
+			      lslinit_setInitFile (inputStream_create 
+						   (arg, 
+						    cstring_makeLiteralTemp (LCLINIT_SUFFIX),
+						    FALSE));
+# endif
+			      break;
 			    }
 			  else
 			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a string",
-				  flagcode_unparse (opt)));
+			      DPRINTF (("String flag: %s / %s",
+					flagcode_unparse (opt), arg));
+			      if (opt == FLG_MTSFILE)
+				{
+				  /*
+				  ** arg identifies mts files
+				  */
+				  cstring tmp =  message ("%s%s", arg, MTS_EXTENSION);
+				  addLarchPathFile (mtfiles, tmp);
+				  cstring_free (tmp);
+				  tmp = message ("%s%s", arg, XH_EXTENSION);
+				  addXHFile (xfiles, tmp);
+				  cstring_free (tmp);
+				}
+			      else
+				{
+				  setStringFlag (opt, cstring_copy (arg));
+				}
 			    }
 			}
 		      else
 			{
-			  /* no argument */
+			  voptgenerror
+			    (FLG_BADFLAG,
+			     message
+			     ("Flag %s must be followed by a string",
+			      flagcode_unparse (opt)),
+			     g_currentloc);
 			}
-		    }
-		}
-	    }
-	  else /* its a filename */
-	    {
-	      DPRINTF (("Adding filename: %s", thisarg));
-	      fl = cstringSList_add (fl, cstring_fromChars (thisarg));
-	    }
-	}
-    }
-}
-
-void flags_processHelp (int argc, char **argv)
-{
-  
-
-      if (showhelp)
-	{
-	  if (allhelp)
-	    {
-	      showHerald ();
-	    }
-	  
-	  allhelp = FALSE;
-	  
-	  if (*thisarg == '-' || *thisarg == '+')
-	    {
-	      thisarg++;	/* skip '-' */
-	    }
-	  if (mstring_equal (thisarg, "modes"))
-	    {
-	      llmsg (describeModes ());
-	    }
-	  else if (mstring_equal (thisarg, "vars")  || mstring_equal (thisarg, "env"))
-	    {
-	      describeVars ();
-	    }
-	  else if (mstring_equal (thisarg, "annotations"))
-	    {
-	      printAnnotations ();
-	    }
-	  else if (mstring_equal (thisarg, "parseerrors"))
-	    {
-	      printParseErrors ();
-	    }
-	  else if (mstring_equal (thisarg, "comments"))
-	    {
-	      printComments ();
-	    }
-	  else if (mstring_equal (thisarg, "prefixcodes"))
-	    {
-	      describePrefixCodes ();
-	    }
-	  else if (mstring_equal (thisarg, "references") 
-		   || mstring_equal (thisarg, "refs"))
-	    {
-	      printReferences ();
-	    }
-	  else if (mstring_equal (thisarg, "mail"))
-	    {
-	      printMail ();
-	    }
-	  else if (mstring_equal (thisarg, "maintainer")
-		   || mstring_equal (thisarg, "version"))
-	    {
-	      printMaintainer ();
-	    }
-	  else if (mstring_equal (thisarg, "flags"))
-	    {
-	      if (i + 1 < argc)
-		{
-		  char *next = argv[i + 1];
-		  
-		  if (specialFlagsHelp (next))
-		    {
-		      i++;
 		    }
 		  else
 		    {
-		      flagkind k = identifyCategory (cstring_fromChars (next));
-		      
-		      if (k != FK_NONE)
-			{
-			  printCategory (k);
-			  i++;
-			}
+		      /* no argument */
 		    }
-		}
-	      else
-		{
-		  printFlags ();
-		}
-	    }
-	  else
-	    {
-	      cstring s = describeFlag (cstring_fromChars (thisarg));
-	      
-	      if (cstring_isDefined (s))
-		{
-		  llmsg (s);
 		}
 	    }
 	}
-      else
+      else /* its a filename */
 	{
+	  DPRINTF (("Adding filename: %s", thisarg));
+	  fl = cstringSList_add (fl, cstring_fromChars (thisarg));
+	}
+    }
+  
+  /*
+  ** create lists of C and LCL files
+  */
+  
+  if (inCommandLine)
+    {
+      cstringSList_elements (fl, current)
+	{
+	  cstring ext = fileLib_getExtension (current);
+	  
+	  if (cstring_isUndefined (ext))
+	    {
+	      /* no extension --- both C and LCL with default extensions */
+	      
+	      addFile (cfiles, message ("%s%s", current, C_EXTENSION));
+	      addFile (lclfiles, message ("%s%s", current, LCL_EXTENSION));
+	    }
+	  else if (cstring_equal (ext, XH_EXTENSION))
+	    {
+	      addXHFile (xfiles, current);
+	    }
+	  else if (cstring_equal (ext, PP_EXTENSION))
+	    {
+	      if (!context_getFlag (FLG_NOPP))
+		{
+		  voptgenerror 
+		    (FLG_FILEEXTENSIONS,
+		     message ("File extension %s used without +nopp flag (will be processed as C source code): %s", 
+			      ext, current),
+		     g_currentloc);
+		}
+	      
+	      addFile (cfiles, cstring_copy (current));
+	    }
+	  else if (cstring_equal (ext, LCL_EXTENSION)) 
+	    {
+	      addFile (lclfiles, cstring_copy (current));
+	    }
+	  else if (fileLib_isCExtension (ext))
+	    {
+	      addFile (cfiles, cstring_copy (current));
+	    }
+	  else if (cstring_equal (ext, MTS_EXTENSION))
+	    {
+	      addLarchPathFile (mtfiles, current);
+	    }
+	  else 
+	    {
+	      voptgenerror 
+		(FLG_FILEEXTENSIONS,
+		 message ("Unrecognized file extension: %s (assuming %s is C source code)", 
+			  current, ext),
+		 g_currentloc);
+	      
+	      addFile (cfiles, cstring_copy (current));
+	    }
+	} end_cstringSList_elements;
+    }
+  else
+    {
+      if (cstringSList_size (fl) != 0)
+	{
+	  /* Cannot list files in .splintrc files */
+	  voptgenerror (FLG_BADFLAG, 
+			message ("Cannot list files in .splintrc files: %s (probable missing + or -)",
+				 cstringSList_unparse (fl)),
+			g_currentloc);
+	}
+    }
+}

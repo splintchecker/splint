@@ -290,22 +290,24 @@ int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg)
 
 pid_t vfork (void) /*@modifies fileSystem@*/ ;
 
+/*
+** sys/uio.h
+*/
 
 struct iovec {
-  void    *iov_base;
-  size_t   iov_len;
+  void *iov_base;
+  size_t iov_len; /*: maxSet(iov_base) = iov_len */
 };
 
+/* from limits.h */
 /*@constant int UIO_MAXIOV@*/   /* BSD */
 /*@constant int IOV_MAX@*/      /* supposedly SVR4 */
 
-	extern ssize_t
-readv (int fd, const struct iovec iov[], int iovcnt)
-	/*@modifies iov[].iov_base, fileSystem, errno@*/;
+ssize_t readv (int fd, const struct iovec *iov, int iovcnt)
+     /*@modifies iov->iov_base, fileSystem, errno@*/;
 
-	extern ssize_t
-writev (int fd, const struct iovec iov[], int iovcnt)
-	/*@modifies errno@*/;
+ssize_t writev (int fd, const struct iovec *iov, int iovcnt)
+     /*@modifies errno@*/;
 
 /*________________________________________________________________________
  * poll.h
@@ -343,34 +345,34 @@ extern void free (/*@notnull@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ 
  * sys/socket.h
  */
 
-/*@constant int SOCK_STREAM@*/
-/*@constant int SOCK_DGRAM@*/
-/*@constant int SOCK_RAW@*/
+
+
+
 /*@constant int SOCK_RDM@*/
-/*@constant int SOCK_SEQPACKET@*/
-/*@constant int SO_DEBUG@*/
-/*@constant int SO_ACCEPTCONN@*/
-/*@constant int SO_REUSEADDR@*/
-/*@constant int SO_KEEPALIVE@*/
-/*@constant int SO_DONTROUTE@*/
-/*@constant int SO_BROADCAST@*/
+
+
+
+
+
+
+
 /*@constant int SO_USELOOPBACK@*/
-/*@constant int SO_LINGER@*/
-/*@constant int SO_OOBINLINE@*/
+
+
 /*@constant int SO_REUSEPORT@*/
-/*@constant int SO_SNDBUF@*/
-/*@constant int SO_RCVBUF@*/
-/*@constant int SO_SNDLOWAT@*/
-/*@constant int SO_RCVLOWAT@*/
-/*@constant int SO_SNDTIMEO@*/
-/*@constant int SO_RCVTIMEO@*/
-/*@constant int SO_ERROR@*/
-/*@constant int SO_TYPE@*/
-/*@constant int SOL_SOCKET@*/
-/*@constant int AF_UNSPEC@*/
+
+
+
+
+
+
+
+
+
+
 /*@constant int AF_LOCAL@*/
-/*@constant int AF_UNIX@*/
-/*@constant int AF_INET@*/
+
+
 /*@constant int AF_IMPLINK@*/
 /*@constant int AF_PUP@*/
 /*@constant int AF_CHAOS@*/
@@ -398,13 +400,12 @@ extern void free (/*@notnull@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ 
 /*@constant int AF_ISDN@*/
 /*@constant int AF_E164@*/
 /*@constant int AF_MAX@*/
-/*@constant int MSG_OOB@*/
-/*@constant int MSG_PEEK@*/
-/*@constant int MSG_DONTROUTE@*/
-/*@constant int MSG_EOR@*/
-/*@constant int MSG_TRUNC@*/
-/*@constant int MSG_CTRUNC@*/
-/*@constant int MSG_WAITALL@*/
+
+
+
+
+
+
 /*@constant int MSG_DONTWAIT@*/
 /*@constant int MSG_EOF@*/
 /*@constant int MSG_COMPAT@*/
@@ -443,58 +444,119 @@ extern void free (/*@notnull@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ 
 /*@constant int NET_RT_FLAGS@*/
 /*@constant int NET_RT_IFLIST@*/
 /*@constant int NET_RT_MAXID@*/
-/*@constant int SOMAXCONN@*/
+
+
+
+/*
+** sys/socket.h
+** (updated 26 May 2002)
+*/
+
+typedef /*@unsignedintegraltype@*/ socklen_t;
+
+struct sockaddr {
+  sa_family_t	sa_family;		/* address family */
+  char          sa_data[];		/* variable length */
+};
+
+struct sockaddr_storage {
+  sa_family_t ss_family;
+} ;
+
+struct msghdr {
+  void *msg_name;		
+  socklen_t msg_namelen;	/*: maxSet (msg_name) >= msg_namelen */
+  struct iovec *msg_iov;	/* scatter/gather array */
+  int msg_iovlen;		/* # elements in msg_iov */ /*: maxSet (msg_iov) >= msg_iovlen */
+  void *msg_control;		/* ancillary data, see below */
+  socklen_t msg_controllen;     /*: maxSet (msg_control) >= msg_controllen */
+  int msg_flags;		/* flags on received message */
+} ;
+
+struct cmsghdr {
+  socklen_t cmsg_len;		/* data byte count, including hdr */
+  int cmsg_level;		/* originating protocol */
+  int cmsg_type;		/* protocol-specific type */
+} ;
+
 /*@constant int SCM_RIGHTS@*/
 
- struct sockaddr {
-	u_char	sa_len;			/* total length */
-	u_char	sa_family;		/* address family */
-	char	sa_data[14];		/* actually longer; address value */
+/*@exposed@*/ unsigned char *CMSG_DATA (/*@sef@*/ struct cmsghdr *) /*@*/ ;
+/*@null@*/ /*@exposed@*/ struct cmsghdr *CMSG_NXTHDR (struct msghdr *, struct cmsghdr *) /*@*/ ;
+/*@null@*/ /*@exposed@*/ struct cmsghdr *CMSG_FIRSTHDR (struct msghdr *) /*@*/ ;
+
+struct linger {
+  int l_onoff;	
+  int l_linger;	
 };
 
- struct linger {
-	int	l_onoff;		/* option on/off */
-	int	l_linger;		/* linger time */
+/*@constant int SOCK_DGRAM@*/
+/*@constant int SOCK_RAW@*/
+/*@constant int SOCK_SEQPACKET@*/
+/*@constant int SOCK_STREAM@*/
+
+/*@constant int SOL_SOCKET@*/
+
+/*@constant int SO_ACCEPTCONN@*/
+/*@constant int SO_BROADCAST@*/
+/*@constant int SO_DEBUG@*/
+/*@constant int SO_DONTROUTE@*/
+/*@constant int SO_ERROR@*/
+/*@constant int SO_KEEPALIVE@*/
+/*@constant int SO_LINGER@*/
+/*@constant int SO_OOBINLINE@*/
+/*@constant int SO_RCVBUF@*/
+/*@constant int SO_RCVLOWAT@*/
+/*@constant int SO_RCVTIMEO@*/
+/*@constant int SO_REUSEADDR@*/
+/*@constant int SO_SNDBUF@*/
+/*@constant int SO_SNDLOWAT@*/
+/*@constant int SO_SNDTIMEO@*/
+/*@constant int SO_TYPE@*/
+
+/*@constant int SOMAXCONN@*/
+
+/*@constant int MSG_CTRUNC@*/
+/*@constant int MSG_DONTROUTE@*/
+/*@constant int MSG_EOR@*/
+/*@constant int MSG_OOB@*/
+/*@constant int MSG_PEEK@*/
+/*@constant int MSG_TRUNC@*/
+/*@constant int MSG_WAITALL@*/
+
+/*@constant int AF_INET@*/
+/*@constant int AF_INET6@*/
+/*@constant int AF_UNIX@*/
+/*@constant int AF_UNSPEC@*/
+
+/*@constant int SHUT_RD@*/
+/*@constant int SHUT_RDWR@*/
+/*@constant int SHUT_WR@*/
+
+# if 0
+/*
+** These were in the old unix.h spec, but are not in SUS6
+*/
+
+struct sockproto {
+  u_short	sp_family;		/* address family */
+  u_short	sp_protocol;		/* protocol */
 };
 
- struct sockproto {
-	u_short	sp_family;		/* address family */
-	u_short	sp_protocol;		/* protocol */
-};
- struct msghdr {
-	caddr_t	msg_name;		/* optional address */
-	u_int	msg_namelen;		/* size of address */
-	struct	iovec *msg_iov;		/* scatter/gather array */
-	u_int	msg_iovlen;		/* # elements in msg_iov */
-	caddr_t	msg_control;		/* ancillary data, see below */
-	u_int	msg_controllen;		/* ancillary data buffer len */
-	int	msg_flags;		/* flags on received message */
-};
+# endif
 
- struct cmsghdr {
-	u_int	cmsg_len;		/* data byte count, including hdr */
-	int	cmsg_level;		/* originating protocol */
-	int	cmsg_type;		/* protocol-specific type */
-/* followed by	u_char  cmsg_data[]; */
-};
+int accept (int s, struct sockaddr *addr, int *addrlen)
+  /*@modifies *addrlen, errno@*/;
 
-	extern int
-accept (int s, struct sockaddr *addr, int *addrlen)
-	/*@modifies *addrlen, errno@*/;
+int bind (int s, const struct sockaddr *name, int namelen)
+  /*@modifies errno, fileSystem@*/;
 
-	extern int
-bind (int s, struct sockaddr *name, int namelen)
-	/*@modifies errno, fileSystem@*/;
+int connect (int s, const struct sockaddr *name, int namelen)
+  /*@modifies errno, internalState@*/;
 
-	extern int
-connect (int s, struct sockaddr *name, int namelen)
-	/*@modifies errno, internalState@*/;
-
-int getpeername (int s, /*@out@*/ struct sockaddr *name, size_t *namelen)
-	/*@modifies *name, *namelen, errno@*/;
+int getpeername (int s, /*@out@*/ struct sockaddr *restrict name, socklen_t *restrict namelen)
+   /*@modifies *name, *namelen, errno@*/;
 	
-	typedef /*@unsignedintegraltype@*/ socklen_t;
-
 #ifdef STRICT
 
 int getsockname (int s, /*@out@*/ struct sockaddr *address, socklen_t *address_len)
@@ -856,46 +918,37 @@ int gethostname (/*@out@*/ char *address, size_t address_len)
 int initgroups (const char *name, int basegid)
    /*@modifies internalState@*/;
 
-	extern int
-lchown (const char *path, uid_t owner, gid_t group)
-	/*@modifies errno, fileSystem@*/;
+int lchown (const char *path, uid_t owner, gid_t group)
+     /*@modifies errno, fileSystem@*/;
+     
+int select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, /*@null@*/ struct timeval *t)
+     /*@modifies *r, *w, *e, *t, errno@*/;
+     /* evans - 2002-05-26: added null for t, bug reported by Enrico Scholz */
 
-	extern int
-select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, struct timeval *t)
-	/*@modifies *r, *w, *e, *t, errno@*/;
+int setegid (gid_t egid)
+     /*@modifies errno, internalState@*/;
 
-	extern int
-setegid (gid_t egid)
-	/*@modifies errno, internalState@*/;
-
-	extern int
-seteuid (uid_t euid)
-	/*@modifies errno, internalState@*/;
-
-	extern int
-setgroups (int ngroups, const gid_t *gidset)
-	/*@modifies errno, internalState@*/;
-
-	extern int
-setregid (gid_t rgid, gid_t egid)
-	/*@modifies errno, internalState@*/;
-
-	extern int
-setreuid (gid_t ruid, gid_t euid)
-	/*@modifies errno, internalState@*/;
-
-	extern void
-sync (void)
-	/*@modifies fileSystem@*/;
-
-	extern int
-symlink (const char *path, const char *path2)
-	/*@modifies fileSystem@*/;
-
-	extern int
-truncate (const char *name, off_t length)
-	/*@modifies errno, fileSystem@*/;
-
+int seteuid (uid_t euid)
+     /*@modifies errno, internalState@*/;
+     
+int setgroups (int ngroups, const gid_t *gidset)
+     /*@modifies errno, internalState@*/;
+     
+int setregid (gid_t rgid, gid_t egid)
+     /*@modifies errno, internalState@*/;
+     
+int setreuid (gid_t ruid, gid_t euid)
+     /*@modifies errno, internalState@*/;
+     
+void sync (void)
+     /*@modifies fileSystem@*/;
+     
+int symlink (const char *path, const char *path2)
+     /*@modifies fileSystem@*/;
+     
+int truncate (const char *name, off_t length)
+     /*@modifies errno, fileSystem@*/;
+     
 /*@constant int EBADRPC@*/
 /*@constant int ERPCMISMATCH@*/
 /*@constant int EPROGUNAVAIL@*/

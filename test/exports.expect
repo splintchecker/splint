@@ -1,5 +1,5 @@
 
-Warning: setting +typeuse redundant with current value
+Command Line: Setting +typeuse redundant with current value
 exports.h:1:13: Type exported, but not specified: myint
 exports.h:3:12: Variable exported, but not specified: glob
 exports.h:5:12: Function exported, but not specified: f

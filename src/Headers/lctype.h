@@ -237,12 +237,14 @@ extern ctype ctype_baseArrayPtr (ctype p_c) /*@*/ ;
 extern ctype ctype_combine (ctype p_dominant, ctype p_modifier) ;
 
 extern ctype ctype_createAbstract (typeId p_u)  /*@*/ ;
-extern ctype 
-  ctype_createEnum (/*@keep@*/ cstring p_tag, /*@keep@*/ enumNameList p_el);
+
 extern ctype ctype_createForwardStruct (/*@only@*/ cstring p_n)  /*@*/ ;
 extern ctype ctype_createForwardUnion (/*@only@*/ cstring p_n)  /*@*/ ;
+extern ctype ctype_createForwardEnum (/*@only@*/ cstring p_n) /*@*/ ;
+
 extern ctype ctype_createStruct (/*@only@*/ cstring p_n, /*@only@*/ uentryList p_f);
 extern ctype ctype_createUnion (/*@only@*/ cstring p_n, /*@only@*/ uentryList p_f);
+extern ctype ctype_createEnum (/*@keep@*/ cstring p_tag, /*@keep@*/ enumNameList p_el);
 
 extern ctype ctype_createUnnamedStruct (/*@only@*/ uentryList p_f) ;
 extern ctype ctype_createUnnamedUnion (/*@only@*/ uentryList p_f) ;

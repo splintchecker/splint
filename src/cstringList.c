@@ -339,3 +339,16 @@ cstringList_get (cstringList s, int index)
   llassertretnull (index < s->nelements);
   return s->elements[index];
 }
+
+ob_mstring *
+cstringList_getElements (cstringList s)
+{
+  if (cstringList_isDefined (s))
+    {
+      /*@i423@*/ return s->elements;
+    }
+  else
+    {
+      return NULL;
+    }
+}

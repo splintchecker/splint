@@ -35,7 +35,6 @@
 
 # include "splintMacros.nf"
 # include "llbasic.h"
-# include "fileIdList.h"
 # include "osd.h"
 # include "portab.h"
 
@@ -600,7 +599,14 @@ fileloc_filename (fileloc f)
 {
   if (fileloc_isDefined (f))
     {
-      return osd_outputPath (fileTable_rootFileName (f->fid));
+      if (fileId_isValid (f->fid))
+	{
+	  return osd_outputPath (fileTable_rootFileName (f->fid));
+	}
+      else
+	{
+	  return cstring_makeLiteral ("<invalid>");
+	}
     }
   else
     {
@@ -645,16 +651,24 @@ fileloc_column (fileloc f)
 /*@only@*/ cstring
 fileloc_unparse (fileloc f)
 {
+  static in_funparse = FALSE;
   bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
   bool htmlFormat = context_getFlag (FLG_HTMLFILEFORMAT);
   cstring res = cstring_undefined;
+
+  /* watch out for recursive calls when debugging... */
+  llassert (!in_funparse);
+  in_funparse = TRUE;
 
   if (fileloc_isDefined (f))
     {
        switch (f->kind)
 	{
 	case FL_BUILTIN:
-	  return (cstring_makeLiteral ("Command Line"));
+	  {
+	    res = cstring_makeLiteral ("Command Line");
+	    break;
+	  }
 	case FL_IMPORT:
 	  if (parenFormat)
 	    {
@@ -753,7 +767,8 @@ fileloc_unparse (fileloc f)
     {
       res = cstring_makeLiteral ("< Location unknown >");
     }
-  
+
+  in_funparse = FALSE;
   return res;
 }
 

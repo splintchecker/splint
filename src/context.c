@@ -42,7 +42,6 @@
 
 # include "exprChecks.h"
 # include "filelocStack.h"
-# include "fileIdList.h"
 # include "llmain.h"
 # include "intSet.h"
 # include "osd.h"
@@ -3024,13 +3023,13 @@ context_setString (flagcode flag, cstring val)
       {
 	; /* Okay not handle everything in this switch */
       }
-    } /* evans 2002-03-24: splintme reports a spurious (I think) warning here...need to look into it */
+  /*@i523@*/ } /* evans 2002-03-24: splintme reports a spurious (I think) warning here...need to look into it */
   
   if (cstring_length (val) >= 1
       && cstring_firstChar (val) == '\"')
     {
       llerror_flagWarning (message
-			   ("setting %s to string beginning with \".  You probably "
+			   ("Setting %s to string beginning with \".  You probably "
 			    "don't meant to have the \"'s.",
 			    flagcode_unparse (flag)));
     }
@@ -3705,7 +3704,9 @@ context_inFunctionName (void)
 void
 context_userSetFlag (flagcode f, bool b)
 {
-  DPRINTF (("set flag: %s", flagcode_unparse (f)));
+  DPRINTF (("set flag: %s / %s", 
+	    flagcode_unparse (f),
+	    bool_unparse (context_getFlag (f))));
 
   if (f == FLG_NEVERINCLUDE && b)
     {
@@ -3713,7 +3714,7 @@ context_userSetFlag (flagcode f, bool b)
 	{
 	  llerror_flagWarning 
 	    (cstring_makeLiteral
-	     ("setting +neverinclude after +exportheader.  "
+	     ("Setting +neverinclude after +exportheader.  "
 	      "Turning off exportheader, since headers are not checked "
 	      "when +neverinclude is used."));
 
@@ -3728,7 +3729,7 @@ context_userSetFlag (flagcode f, bool b)
 	    {
 	      llerror_flagWarning
 		(cstring_makeLiteral
-		 ("setting +exportheader after +neverinclude.  "
+		 ("Setting +exportheader after +neverinclude.  "
 		  "Not setting exportheader, since headers are not checked "
 		  "when +neverinclude is used."));
 	      gc.flags[FLG_EXPORTHEADER] = FALSE;
@@ -3747,7 +3748,7 @@ context_userSetFlag (flagcode f, bool b)
 	  && !flagcode_hasArgument (f))
 	{
 	  llerror_flagWarning 
-	    (message ("setting %s%s redundant with current value", 
+	    (message ("Setting %s%s redundant with current value", 
 		      cstring_makeLiteralTemp (b ? "+" : "-"),
 		      flagcode_unparse (f)));
 	}
@@ -3758,7 +3759,7 @@ context_userSetFlag (flagcode f, bool b)
       if (!context_getFlag (FLG_WARNUSE))
 	{
 	  llerror_flagWarning
-	    (message ("flag +%s is canceled by -warnuse",
+	    (message ("Flag +%s is canceled by -warnuse",
 		      flagcode_unparse (f)));
 	}
     }
@@ -3770,7 +3771,7 @@ context_userSetFlag (flagcode f, bool b)
 	  && gc.library != f)
 	{
 	  llerror_flagWarning 
-	    (message ("selecting library %s after library %s was "
+	    (message ("Selecting library %s after library %s was "
 		      "selected (only one library may be used)",
 		      flagcode_unparse (f),
 		      flagcode_unparse (gc.library)));
@@ -3782,7 +3783,7 @@ context_userSetFlag (flagcode f, bool b)
 	    {
 	      llerror_flagWarning
 		(cstring_makeLiteral
-		 ("selecting unix library.  Unix library is "
+		 ("Selecting unix library.  Unix library is "
 		  "ad hoc addition to POSIX library.  Recommend "
 		  "use +posixlib to select POSIX library instead. "
 		  "Use -warnunixlib to suppress this message."));
@@ -3796,7 +3797,7 @@ context_userSetFlag (flagcode f, bool b)
     {
       llerror_flagWarning
 	(message
-	 ("setting +%s will not produce warnings with -namechecks. "
+	 ("Setting +%s will not produce warnings with -namechecks. "
 	  "Must set +namechecks also.",
 	  flagcode_unparse (f)));
     }

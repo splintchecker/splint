@@ -1169,8 +1169,18 @@ copy_rest_of_line (cppReader *pfile)
 	case EOF:
 	  goto end_directive;
 	case '\\':
-	  if (cppReader_peekC (pfile) == '\n')
+	  /*
+	  ** Patch from Brian St. Pierre for handling MS-DOS files.
+	  */
+
+	  if (cppReader_peekC (pfile) == '\n'
+	      || cppReader_peekC (pfile) == '\r')
 	    {
+	      if (cppReader_peekC (pfile) == '\r')
+		{
+		  cppReader_forward (pfile, 1);
+		}
+             
 	      cppReader_forward (pfile, 1);
 	      continue;
 	    }

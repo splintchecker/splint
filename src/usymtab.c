@@ -891,7 +891,8 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 	  if (!(st->lexlevel > fileScope || !sRef_modInFunction ()))
 	    {
 	      if (uentry_isDatatype (e) || uentry_isAnyTag (e)
-		  || uentry_isEnumConstant (e))
+		  || uentry_isEnumConstant (e)
+		  || uentry_isStatic (e)) /* bug fix from Brian St. Pierre */
 		{
 		  ; /* 
 		     ** Not a bug.  Code like,

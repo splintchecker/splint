@@ -84,8 +84,6 @@ ULSuffix                ({U}{L}|{L}{U})
 
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-
-# include "fileIdList.h"
 # include "portab.h"
 
 static bool lastWasString = FALSE;
@@ -2049,32 +2047,29 @@ static int handleLlSpecial ()
 		{
 		  ;
 		}
-	      else if (flagcode_isInvalid (fflag))
+	      else if (flagcode_isModeName (fflag))
 		{
-		  if (isMode (flagname))
+		  if (ynm_isMaybe (set))
 		    {
-		      if (ynm_isMaybe (set))
-			{
-			  llerror
-			    (FLG_BADFLAG, 
-			     message 
-			     ("Semantic comment attempts to restore flag %s.  "
-			      "A mode flag cannot be restored.",
-			      flagname));
-			}
-		      else
-			{
-			  context_setMode (flagname);
-			}
+		      llerror
+			(FLG_BADFLAG, 
+			 message 
+			 ("Semantic comment attempts to restore flag %s.  "
+			  "A mode flag cannot be restored.",
+			  flagname));
 		    }
 		  else
 		    {
-		      voptgenerror
-			(FLG_UNRECOGFLAGCOMMENTS,
-			 message ("Unrecognized option in semantic comment: %s", 
-				  flagname),
-			 loc);
+		      context_setMode (flagname);
 		    }
+		}
+	      else if (flagcode_isInvalid (fflag))
+		{
+		  voptgenerror
+		    (FLG_UNRECOGFLAGCOMMENTS,
+		     message ("Unrecognized option in semantic comment: %s", 
+			      flagname),
+		     loc);
 		}
 	      else if (flagcode_isGlobalFlag (fflag))
 		{

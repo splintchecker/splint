@@ -174,6 +174,8 @@ void cppAddIncludeDir (cstring dir)
   ** Add the -I- code.  This code provided by Robin Watts <Robin.Watts@wss.co.uk>
   */
 
+  DPRINTF (("Adding include: %s", dir));
+
   if (cstring_equalLit (dir, "-I-"))
     {
       struct cppOptions *opts = CPPOPTIONS (&g_cppState);    
@@ -184,8 +186,11 @@ void cppAddIncludeDir (cstring dir)
       /* -I option (Add directory to include path) */
       struct file_name_list *dirtmp = (struct file_name_list *) dmalloc (sizeof (*dirtmp));
       
+      llassert (cstring_firstChar (dir) == 'I');
+      dir = cstring_suffix (dir, 1);
+
       DPRINTF (("Add include: %s", dir));
-      
+
       dirtmp->next = 0;		/* New one goes on the end */
       dirtmp->control_macro = 0;
       dirtmp->c_system_include_path = FALSE;

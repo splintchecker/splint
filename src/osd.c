@@ -1033,6 +1033,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 
 cstring osd_outputPath (cstring filename)
 {
+  /*@i2534 fix this junky code once and for all! */
 # if defined (UNIX) || defined (OS2)
   char *rel_buffer;
   char *rel_buf_p;
@@ -1064,7 +1065,7 @@ cstring osd_outputPath (cstring filename)
       else
 	{
 	  /*@i324 ! splint didn't report an errors for: return ++path_p; */
-	  return cstring_fromCharsNew (++path_p);
+	  return cstring_fromCharsNew (path_p + 1);
 	}
     }
   else
@@ -1090,7 +1091,7 @@ cstring osd_outputPath (cstring filename)
 
       /* Find out how many directory levels in cwd were *not* matched.  */
       while (*cwd_p != '\0')
-	{
+	{s
 	  if (osd_isConnectChar (*cwd_p++))
 	    unmatched_slash_count++;
 	}
@@ -1130,6 +1131,7 @@ cstring osd_outputPath (cstring filename)
         } /*@-usereleased@*/
       while ((*rel_buf_p++ = *path_p++) != '\0') ;
 
+      
       /*@=usereleased@*/ /*@i523! shouldn't need these */
       --rel_buf_p;
 

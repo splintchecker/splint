@@ -173,16 +173,7 @@ void llerror_flagWarning (cstring s)
 {
   if (context_getFlag (FLG_WARNFLAGS))
     {
-      showHerald ();
-
-      if (fileloc_isBuiltin (g_currentloc))
-	{
-	  llmsg (message ("Warning: %q", s));
-	}
-      else
-	{
-	  llgenmsg (message ("Warning: %q", s), g_currentloc);
-	}
+      llgenmsg (s, g_currentloc);
     }
   else
     {
