@@ -58,7 +58,7 @@
 /*end drl*/
 
 /*drl */
-/*@only@*/   constraintList implicitFcnConstraints = NULL;
+static /*@only@*/   constraintList implicitFcnConstraints = NULL;
 
 
 //static  constraintList fcnPreConditions = NULL;
@@ -190,13 +190,13 @@ static void reflectModGlobs (uentry ue)
       fcnModifies = sRefSet_undefined;
     }
   /*drl added*/
-  if (fcnConstraints)
+  if (fcnConstraints != constraintList_undefined)
     {
       uentry_setPreconditions (ue, fcnConstraints);
       fcnConstraints = constraintList_undefined;
     }
   
- if (fcnEnsuresConstraints)
+ if (fcnEnsuresConstraints != constraintList_undefined)
     {
       uentry_setPostconditions (ue, fcnEnsuresConstraints);
       fcnEnsuresConstraints = constraintList_undefined;
@@ -633,6 +633,7 @@ static /*@dependent@*/ uentryList currentParamList;
    of constraints.
    Currently the only constraints gnerated are MaxSet(p) >= 0 for all pointers
 */
+
 void  setImplictfcnConstraints (void)
 {
   uentryList params;
@@ -666,6 +667,12 @@ void  setImplictfcnConstraints (void)
       implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
     }
   end_uentryList_elements;
+}
+
+
+/*@observer@*/ constraintList  getImplicitFcnConstraints (void)
+{
+  return implicitFcnConstraints;
 }
 
 void setCurrentParams (/*@dependent@*/ uentryList ue)

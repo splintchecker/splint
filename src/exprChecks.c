@@ -895,12 +895,12 @@ void exprNode_checkFunctionBody (exprNode body)
 }
 /*drl modified */
 
-extern constraintList implicitFcnConstraints;
 
 void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 {
   constraintList c, t, post;
- constraintList c2, fix;
+  constraintList c2, fix;
+  constraintList implicitFcnConstraints;
 
  //  return;
 
@@ -914,7 +914,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
   DPRINTF (("\n\n\n\n\n\n\n"));
 
   
-   if (c)
+   if (c != NULL)
      {
 
        DPRINTF ( (message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
@@ -948,7 +948,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
        constraintList_free(c2);
      }
    
-   if (c)
+   if (c != NULL)
      {
        DPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
      }
@@ -957,7 +957,9 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
        DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
      }
 
-   if ( implicitFcnConstraints)
+   implicitFcnConstraints = getImplicitFcnConstraints();
+   
+   if ( implicitFcnConstraints != NULL)
      {
           if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
 	      {
@@ -966,13 +968,12 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
      }
    
    constraintList_printError(body->requiresConstraints, g_currentloc);
-
    
    post =   uentry_getFcnPostconditions (ue);
 
    if ( context_getFlag (FLG_CHECKPOST) )
      {
-       if (post)
+       if (post != NULL)
 	 {
 	   
 	   constraintList post2;
@@ -1006,7 +1007,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 	 }
      }
    
-   if (post)
+   if (post != NULL)
      constraintList_free(post);
    
    
@@ -1020,7 +1021,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
      //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
      //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
    
-   if (c)
+   if (c != NULL)
      constraintList_free(c);
 
    context_exitInnerPlain();

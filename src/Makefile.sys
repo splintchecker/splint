@@ -28,8 +28,8 @@ FLEX = /usr/bin/flex
 ### NOTE: CC is set in top level Makefile
 ###       
 
-CC              = /usr/local/bin/gcc  -Wall -g
-CCOPT           = /usr/local/bin/gcc -Wall -g
+CC              = gcc  -Wall -g
+CCOPT           = gcc -Wall -g
 # -O4 doesn't work with bison 1.25 
 
 ###
@@ -86,7 +86,7 @@ VERSION_NUMBER  = lastversion
 ### Defaults (overrode by environment varialbles for local build)
 ###
 
-SYSTEM_LIBDIR   = /usr/include
-DEFAULT_LARCHPATH = /usr/local/lclint-2.5m/lib
-DEFAULT_LCLIMPORTDIR = /usr/local/lclint-2.5m/imports
+SYSTEM_LIBDIR   = "/usr/include"
+DEFAULT_LARCHPATH = "/usr/local/lclint-2.5m/lib"
+DEFAULT_LCLIMPORTDIR = "/usr/local/lclint-2.5m/imports"
 

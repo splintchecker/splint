@@ -34,7 +34,6 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-# include "exprData.i"
 
 static bool exprNode_isEmptyStatement (exprNode p_e);
 static /*@exposed@*/ exprNode exprNode_firstStatement (/*@returned@*/ exprNode p_e);

@@ -2796,15 +2796,15 @@ NULL, NULL,
   FK_NT, FK_MEMORY, modeFlag,
   "fcnpost",
   FLG_FUNCTIONPOST,
-  "Function has the post condition_Block Post condition:_This function block has the post condition ",
-  "LCLint has determined that the following statement true after the function,  ",
+  "Function has the post condition",
+  "LCLint has determined that the following statement is true after the function,  ",
   0, 0
 },
 {
   FK_NT, FK_MEMORY, modeFlag,
   "fcnconstraint",
   FLG_FUNCTIONCONSTRAINT,
-    "unresolved constraint:",
+  "unresolved constraint",
   "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
   0, 0
 },

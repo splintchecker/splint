@@ -15,7 +15,6 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-# include "exprData.i"
 # include "exprDataQuite.i"
 
 /*@access exprNode @*/
@@ -37,7 +36,6 @@ static constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
 exprNode makeDataTypeConstraints (/*@returned@*/ exprNode e);
 
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
-
 
 //bool exprNode_testd()
 //{
@@ -1031,6 +1029,22 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       tok = exprData_getOpTok (data);
       exprNode_exprTraverse (t2, definatelv, definaterv, sequencePoint );
 
+      #warning fix definatelv and definaterv
+      
+      if (tok.tok == ADD_ASSIGN)
+	{
+	  cons = constraint_makeAddAssign (t1, t2,  sequencePoint );
+	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+	}
+
+      if (tok.tok == SUB_ASSIGN)
+	{
+	  cons = constraint_makeSubtractAssign (t1, t2,  sequencePoint );
+	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+	}
+
+      
+      
       if (lltok_isBoolean_Op (tok) )
 	exprNode_booleanTraverse (e, definatelv, definaterv, sequencePoint);
 

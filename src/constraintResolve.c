@@ -14,7 +14,6 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-//# include "exprData.i"
 
 
 /*@access constraint, exprNode @*/
@@ -457,12 +456,12 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
 
   if (*resolved)
     {
-      if (next)
+      if (next != NULL)
 	constraint_free(next);
 
-      /*we don't need to free ret is resolved is false*/
+      /*we don't need to free ret when resolved is false*/
       //      constraint_free(ret);
-      return NULL;
+      /*@i1*/ return NULL;
     }
 
   while (next != NULL)
@@ -477,10 +476,10 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
 	  /* curr is null so we don't try to free it*/
 	  //constraint_free(curr);
 	  
-	  if (next)
+	  if (next != NULL)
 	    constraint_free(next);
 	  constraint_free(ret);
-	  return NULL;
+	  /*@i1*/ return NULL;
 	}
       ret = constraint_addOr (ret, curr);
       constraint_free(curr);
@@ -1088,7 +1087,6 @@ return ret;
   constraintList_elements(target, el)
   { 
     constraint temp;
-    #warning make sure this side effect is the right things
     #warning make sure that a side effect is not expected
 
     temp = substitute(el, subList);

@@ -1,6 +1,41 @@
 /*
+See
+http://src.openresources.com/debian/src/devel/HTML/S/altgcc_2.7.2.2.orig%20altgcc-2.7.2.2.orig%20protoize.c.html
+static char *
+abspath (cwd, rel_filename)
+
+*/
+
+/*!!!!
+*** cpplib.c.old Tue Nov 28 2000 09:04:09 AM
+--- cpplib.c Tue Nov 28 2000 08:55:18 AM
+***************
+*** 5715,5722 ****
+     c2 = cppReader_peekC (pfile)
+     if (c2 != '\n'
+       goto randomchar
+!    token = CPP_HSPACE
+!    goto op2any
+--- 5714,5723 ----
+          case '\\'
+     c2 = cppReader_peekC (pfile)
+     if (c2 != '\n'
+       goto randomchar
+!    cppReader_forward (pfile, 1)
+!    pfile->lineno++
+!    return CPP_HSPACE
+  
+ 
+   case '\n'
+     cppReader_putChar (pfile, c)
+
+
+Carl J. Appellof ( mailto:cappello@legato.com <mailto:cappello@legato.com> )
+*/ /*@i8@*/
+
+/*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -78,6 +113,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # else
 # ifndef VMS
 # ifndef USG
+# include <time.h> /* Reported by Paul Smith */
 # include <sys/time.h>
 # include <sys/resource.h>
 # else
@@ -398,7 +434,7 @@ static bool is_system_include (cppReader *p_pfile, cstring p_filename);
 static /*@observer@*/ /*@null@*/ struct file_name_map *
 read_name_map (cppReader *p_pfile, cstring p_dirname);
 
-static cstring read_filename_string (int p_ch, FILE *p_f);
+static cstring read_filename_string (int p_ch, /*@open@*/ FILE *p_f);
 
 static int open_include_file (cppReader *p_pfile,
 			      /*@owned@*/ cstring p_fname,
@@ -499,10 +535,28 @@ static struct directive directive_table[] = {
   /* {  8, do_unassert, "unassert", T_UNASSERT, TRUE, FALSE, FALSE }, */
   {  -1, 0, "", T_UNUSED, FALSE, FALSE, FALSE },
 };
-
 /*@noaccess cstring@*/
-/*@+charint@*/
 
+static cstring searchPath_unparse (struct file_name_list *search_start) 
+{
+  cstring res = cstring_newEmpty ();
+  struct file_name_list *searchptr = NULL;
+
+  for (searchptr = search_start; searchptr != NULL;
+       searchptr = searchptr->next)
+    {
+      if (!cstring_isEmpty (searchptr->fname)) {
+	res = cstring_concatFree1 (res, searchptr->fname);
+	if (searchptr->next != NULL) {
+	  res = cstring_appendChar (res, ';');
+	}
+      }
+    }
+
+  return res;
+}
+
+/*@+charint@*/
 static void
 initialize_char_syntax (struct cppOptions *opts)
 {
@@ -703,7 +757,7 @@ cppReader_define (cppReader *pfile, char *str)
 
 /* Append a chain of `struct file_name_list's
    to the end of the main include chain.
-   FIRST is the beginning of the chain to append, and LAST is the end.  */
+   FIRST is gthe beginning of the chain to append, and LAST is the end.  */
 
 void
 cppReader_appendIncludeChain (cppReader *pfile,
@@ -2937,11 +2991,11 @@ cppReader_installBuiltin (/*@observer@*/ char *name, ctype ctyp,
       if (ctype_equal (ctyp, ctype_string))
 	{
 	  qualList ql = qualList_new ();
-	  ql = qualList_add (ql, QU_OBSERVER);
+	  ql = qualList_add (ql, qual_createObserver ());
 	  uentry_reflectQualifiers (ue, ql);
 	  qualList_free (ql);
 	}
-
+      
       usymtab_addGlobalEntry (ue);
     }
   else
@@ -2964,11 +3018,12 @@ cppReader_installBuiltinType (/*@observer@*/ char *name, ctype ctyp,
 
   llassert (usymtab_inGlobalScope ());
 
-  if (!usymtab_exists (sname))
+  if (!usymtab_existsTypeEither (sname))
     {
       uentry ue = uentry_makeDatatype (sname, ctyp,
 				       NO, NO,
 				       fileloc_createBuiltin ());
+      llassert (!usymtab_existsEither (sname));
       usymtab_addGlobalEntry (ue);
     }
 
@@ -2988,7 +3043,7 @@ initialize_builtins (cppReader *pfile)
   cppReader_installBuiltinType ("__SIZE_TYPE__", ctype_anyintegral, -1, T_SIZE_TYPE, 0, NULL, -1);
 #endif
 #ifndef NO_BUILTIN_PTRDIFF_TYPE
-  cppReader_installBuiltinType ("__PTRDIFF_TYPE__ ", ctype_anyintegral, -1, T_PTRDIFF_TYPE, 0, NULL, -1);
+  cppReader_installBuiltinType ("__PTRDIFF_TYPE__", ctype_anyintegral, -1, T_PTRDIFF_TYPE, 0, NULL, -1);
 #endif
   cppReader_installBuiltinType ("__WCHAR_TYPE__", ctype_anyintegral, -1, T_WCHAR_TYPE, 0, NULL, -1);
   cppReader_installBuiltin ("__USER_LABEL_PREFIX__", ctype_string, -1, T_USER_LABEL_PREFIX_TYPE, 0, NULL, -1);
@@ -3686,6 +3741,20 @@ get_directive_token (cppReader *pfile)
    I.e. in input file specification has been popped by cppReader_handleDirective.
    This is safe.  */
 
+# ifdef WIN32
+static void replace_unixdir_with_windir(char *filename)
+{
+  int i=0;
+  
+  while(filename[i] != '\0')
+    {
+      if(filename[i] == '/')
+	filename[i] = '\\';
+      i++;
+    }
+}
+# endif
+
 static int
 do_include (cppReader *pfile, struct directive *keyword,
 	    /*@unused@*/ char *unused1, /*@unused@*/ char *unused2)
@@ -3940,6 +4009,15 @@ do_include (cppReader *pfile, struct directive *keyword,
 
 	  DPRINTF (("fname: %s", fname));
 	  
+	  /* Win32 directory fix from Kay Buschner. */
+#ifdef WIN32
+	  /* Fix all unixdir slashes to win dir slashes */
+	  if (searchptr->fname && (searchptr->fname[0] != 0)) 
+	    {
+	      replace_unixdir_with_windir(fname);
+	    }
+#endif /* WIN32 */
+
 #ifdef VMS
 	  /* Change this 1/2 Unix 1/2 VMS file specification into a
 	     full VMS file specification */
@@ -3997,7 +4075,9 @@ do_include (cppReader *pfile, struct directive *keyword,
       if (search_start != NULL)
 	{
 	  cppReader_error (pfile,
-			   message ("Cannot find include file %s", fname));
+			   message ("Cannot find include file %s on search path: %x", 
+				    fname,
+				    searchPath_unparse (search_start)));
 	}
       else
 	{
@@ -4034,6 +4114,7 @@ do_include (cppReader *pfile, struct directive *keyword,
 	ptr->fname = fname;
 	ptr->got_name_map = NULL;
 
+	DPRINTF (("Including file: %s", fname));
 	pfile->all_include_files = ptr;
 	assertSet (pfile->all_include_files);
       }
@@ -4849,9 +4930,10 @@ beg_of_line:
     }
   /* We're in the middle of a line.  Skip the rest of it.  */
   for (;;) {
+    size_t old;
+
     switch (c)
       {
-	size_t old;
       case EOF:
 	goto done;
       case '/':			/* possible comment */
@@ -5665,6 +5747,7 @@ get_next:
 	  }
 	  goto get_next;
 
+
 	case ' ':  case '\t':  case '\v':  case '\r':
 	  for (;;)
 	    {
@@ -5769,7 +5852,7 @@ struct file_name_map
 /* Read a space delimited string of unlimited length from a stdio
    file.  */
 
-static cstring read_filename_string (int ch, FILE *f)
+static cstring read_filename_string (int ch, /*@open@*/ FILE *f)
 {
   char *alloc, *set;
   size_t len;
@@ -6114,7 +6197,7 @@ finclude (cppReader *pfile, int f,
   else if (S_ISDIR (st_mode))
     {
       cppReader_error (pfile,
-		       message ("directory `%s' specified in #include", fname));
+		       message ("Directory specified in #include: %s", fname));
       check (close (f) == 0);
       return 0;
     }
@@ -6161,7 +6244,6 @@ finclude (cppReader *pfile, int f,
 
   fp->buf[length] = '\0';
   fp->rlimit = fp->buf + length;
-
 
   /* Close descriptor now, so nesting does not use lots of descriptors.  */
   check (close (f) == 0);
@@ -6376,7 +6458,7 @@ parseMoveMark (struct parse_marker *pmark, cppReader *pfile)
   pmark->position = pbuf->cur - pbuf->buf;
 }
 
-void cppReader_initializeReader (cppReader *pfile)
+void cppReader_initializeReader (cppReader *pfile) /* Must be done after library is loaded. */
 {
   struct cppOptions *opts = CPPOPTIONS (pfile);
   char *xp;
@@ -6691,7 +6773,11 @@ int cppReader_startProcess (cppReader *pfile, cstring fname)
     }
   else if ((f = open (cstring_toCharsSafe (fname), O_RDONLY, 0666)) < 0)
     {
-      cppReader_pfatalWithName (pfile, fname);
+      cppReader_error (pfile,
+		       message ("Error opening %s for reading: %s",
+				fname, lldecodeerror (errno)));
+
+      return 0;
     }
   else
     {
@@ -6765,31 +6851,35 @@ static void cpp_setLocation (cppReader *pfile)
   int line;
 
   if (pfile->buffer != NULL)
-  {
-  if (cstring_isDefined (cppReader_getBuffer (pfile)->nominal_fname))
     {
-      cstring fname = cppReader_getBuffer (pfile)->nominal_fname;
+      if (cstring_isDefined (cppReader_getBuffer (pfile)->nominal_fname))
+	{
+	  cstring fname = cppReader_getBuffer (pfile)->nominal_fname;
+	  
+	  DPRINTF (("Looking up: %s", fname));
+	  
+	  if (fileTable_exists (context_fileTable (), fname))
+	    {
+	      fid = fileTable_lookup (context_fileTable (), fname);
+	    }
+	  else
+	    {
+	      DPRINTF (("Trying %s", cppReader_getBuffer (pfile)->fname));
 
-      if (fileTable_exists (context_fileTable (), fname))
-	  {
-	    fid = fileTable_lookup (context_fileTable (), fname);
-	  }
+	      fid = fileTable_lookup (context_fileTable (),
+				      cppReader_getBuffer (pfile)->fname);
+	    }
+	}
       else
 	{
 	  fid = fileTable_lookup (context_fileTable (),
 				  cppReader_getBuffer (pfile)->fname);
 	}
+      
+      line = cppReader_getBuffer (pfile)->lineno;
+      fileloc_free (g_currentloc);
+      g_currentloc = fileloc_create (fid, line, 1);
     }
-  else
-    {
-      fid = fileTable_lookup (context_fileTable (),
-			      cppReader_getBuffer (pfile)->fname);
-    }
-
-  line = cppReader_getBuffer (pfile)->lineno;
-  fileloc_free (g_currentloc);
-  g_currentloc = fileloc_create (fid, line, 1);
-  }
   else
     {
       fileloc_free (g_currentloc);
@@ -7198,6 +7288,12 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 			}
 		    }
 		}
+	      else if (mstring_equalPrefix (scomment, "nestcomment"))
+		{
+		  /* fix from Mike Miller <MikeM@xata.com> */
+		  context_fileSetFlag (FLG_NESTCOMMENT,
+				       ynm_fromCodeChar (sChar));
+		}
 	      else if (mstring_equalPrefix (rest, "namechecks"))
 		{
 		  context_fileSetFlag (FLG_NAMECHECKS,
@@ -7343,9 +7439,13 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 		if (start[i] == '/'
 		    && i < len - 1
 		    && start[i + 1] == '*') {
-		  cppReader_warning 
-		    (pfile,
-		     message ("Start comment inside comment"));
+		  /*@i32 make vgenopterror work in cpp... @*/
+		  if (context_getFlag (FLG_NESTCOMMENT)) 
+		    {
+		      cppReader_warning 
+			(pfile,
+			 message ("Comment starts inside comment"));
+		    }
 		}
 		
 		if (start[i] != '\n')
@@ -7368,14 +7468,20 @@ static int cpp_openIncludeFile (char *filename)
 {
   int res = open (filename, O_RDONLY, 0666);
 
-  if (res 
-      && !fileTable_exists (context_fileTable (),
-			    cstring_fromChars (filename)))
+  if (res) 
     {
-      DPRINTF (("Add header: %s", filename));
-      (void) fileTable_addHeaderFile (context_fileTable (),
-				      cstring_fromChars (filename));
+      if (!fileTable_exists (context_fileTable (),
+			     cstring_fromChars (filename)))
+	{
+	  (void) fileTable_addHeaderFile (context_fileTable (),
+					  cstring_fromChars (filename));
+	}
+      else
+	{
+	  DPRINTF (("File already exists: %s", filename));
+	}
     }
+		
 
   return res;
 }
@@ -7401,7 +7507,7 @@ static bool cpp_skipIncludeFile (cstring fname)
 
   if (context_getFlag (FLG_SINGLEINCLUDE))
     {
-      fname = cstring_fromChars (removePreDirs (cstring_toCharsSafe (fname)));
+      fname = removePreDirs (fname);
 
 # if defined (WIN32) || defined (OS2)
       cstring_replaceAll (fname, '\\', '/');

@@ -14,7 +14,6 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-# include "exprData.i"
 # include "exprDataQuite.i"
 
 /*@access constraint, exprNode @*/
@@ -295,7 +294,7 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
       cPrint = constraintExpr_unparse(c);
       
       
-      new = constraintExpr_makeAddConstraintExpr (c, constraintExpr_copy(add) );
+      new = constraintExpr_makeAddExpr (c, constraintExpr_copy(add) );
 
       DPRINTF((message ("Replacing %q with %q",
 			cPrint, constraintExpr_unparse(new)
@@ -407,7 +406,7 @@ void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
   
   iterations = getForTimes (forPred, forBody );
 
-  if (iterations)
+  if (iterations != NULL)
     {
       doAdjust ( e, forPred, forBody, iterations);
       constraintExpr_free(iterations);

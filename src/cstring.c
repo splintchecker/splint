@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -36,7 +36,7 @@
 # include "osd.h"
 # include "portab.h"
 
-static /*@only@*/ /*@notnull@*/ 
+/*@only@*/ /*@notnull@*/ 
 cstring cstring_newEmpty (void)
 {
   return (cstring_create (0));
@@ -872,10 +872,22 @@ cstring_create (int n)
   return s;
 }
 
+/*@only@*/ /*@notnull@*/ cstring
+cstring_copySegment (cstring s, int findex, int tindex)
+{
+  cstring res = cstring_create (tindex - findex + 1);
+
+  llassert (cstring_isDefined (s));
+  llassert (cstring_length (s) > tindex);
+
+  strncpy (res, (s + findex), size_fromInt ((tindex - findex + 1)));
+  return res;
+}
+
 # ifndef NOLCL
 lsymbol cstring_toSymbol (cstring s)
 {
-  lsymbol res = lsymbol_fromChars (cstring_toCharsSafe (s));
+  lsymbol res = lsymbol_fromString (s);
 
   cstring_free (s);
   return res;

@@ -128,8 +128,6 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
   return s;
 }
 
-
-
 /*@only@*/ constraintList constraintList_addListFree (/*@only@*/ constraintList s, /*@only@*/ constraintList new)
 {
   llassert(constraintList_isDefined(s) );
@@ -203,7 +201,6 @@ void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
   end_constraintList_elements;
   return;
 }
-
 
 void constraintList_printError (constraintList s, fileloc loc)
 {
@@ -436,9 +433,9 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
   constraintList_elements_private (c, el)
     {
       el = constraint_togglePost(el);
-      if (el->orig)
+      if (constraint_hasOrig(el) )
 	{
-	  el->orig = constraint_togglePost(el->orig);
+	  el = constraint_togglePostOrig (el);
 	}
     }
   end_constraintList_elements_private;

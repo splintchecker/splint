@@ -14,13 +14,13 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-//# include "exprData.i"
-
 /*@-czechfcns@*/
 
 //#include "constraintExpr.h"
 
 /*@access exprNode, constraintTermValue @*/
+
+static bool constraintTerm_same (constraintTerm term1, constraintTerm term2) ;
 
 void constraintTerm_free (/*@only@*/ constraintTerm term)
 {
@@ -277,10 +277,7 @@ int constraintTerm_getValue (constraintTerm term)
   return term->value.intlit;
 }
 
-
-
 /* same and similar are similar but not the same*/
-
 static bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
 {
   llassert (term1 !=NULL && term2 !=NULL);

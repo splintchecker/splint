@@ -13,8 +13,6 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-
-# include "exprData.i"
 # include "exprDataQuite.i"
 
 
@@ -698,19 +696,32 @@ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/constraintExpr ex
   return ret;
 }
 
-/*@only@*/
-constraintExpr constraintExpr_makeAddConstraintExpr (/*@only@*/
-constraintExpr expr, /*@only@*/
-constraintExpr add)
+
+/*@only@*/  constraintExpr constraintExpr_makeSubtractExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent)
 {
-  constraintExpr ret;
-
-  ret = constraintExpr_makeBinaryOpConstraintExpr (expr, add);
+  constraintExpr  new;
   
-  ret->data = constraintExprData_binaryExprSetOp(ret->data, PLUS);
+  DPRINTF ( (message ("Making  subtract expression") ) );
 
-  return ret;
+  new = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
+  new->data = constraintExprData_binaryExprSetOp (new->data, MINUS);
+  return new;
 }
+
+/*@only@*/
+constraintExpr constraintExpr_makeAddExpr (/*@only@*/
+constraintExpr expr, /*@only@*/
+constraintExpr addent)
+{
+  constraintExpr  new;
+  
+  DPRINTF ( (message ("Doing addTerm simplification") ) );
+
+  new = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
+  new->data = constraintExprData_binaryExprSetOp (new->data, PLUS);
+  return new;
+}
+
 
 /*@only@*/
 constraintExpr constraintExpr_makeIncConstraintExpr (/*@only@*/ constraintExpr expr)
@@ -1045,32 +1056,6 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
   return c;
 }
 
-
-static /*@only@*/  constraintExpr constraintExpr_subtractExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent)
-{
-  constraintExpr  new;
-  
-  DPRINTF ( (message ("Doing subtraceTerm simplification") ) );
-
-  new = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
-  new->data = constraintExprData_binaryExprSetOp (new->data, MINUS);
-  return new;
-}
-
-/*@only@*/
-static constraintExpr constraintExpr_addExpr (/*@only@*/
-constraintExpr expr, /*@only@*/
-constraintExpr addent)
-{
-  constraintExpr  new;
-  
-  DPRINTF ( (message ("Doing addTerm simplification") ) );
-
-  new = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
-  new->data = constraintExprData_binaryExprSetOp (new->data, PLUS);
-  return new;
-}
-
 /*
   this thing takes the lexpr and expr of a constraint and modifies lexpr
   and returns a (possiblly new) value for expr
@@ -1105,9 +1090,9 @@ constraintExpr addent)
     free(expr1);
     
     if (op == PLUS)
-      expr = constraintExpr_subtractExpr (expr, expr2);
+      expr = constraintExpr_makeSubtractExpr (expr, expr2);
     else if (op == MINUS)
-      expr = constraintExpr_addExpr (expr, expr2);
+      expr = constraintExpr_makeAddExpr (expr, expr2);
     else
       BADEXIT;
 
@@ -1196,7 +1181,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 	  
 	  temp = constraintExpr_copy (temp);
 
-	  c = constraintExpr_subtractExpr (c, temp);
+	  c = constraintExpr_makeSubtractExpr (c, temp);
 
 	  DPRINTF ( (message ("Done fancy simplification:%s", constraintExpr_unparse (c) ) ) );
 	}

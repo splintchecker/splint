@@ -11,7 +11,6 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-
 void constraintExprData_freeBinaryExpr (/*@only@*/constraintExprData data)
 {
   constraintExpr_free (data->binaryOp.expr1);
@@ -30,7 +29,7 @@ constraintExprData constraintExprData_copyBinaryExpr(/*@observer@*/ constraintEx
   return ret;
 }
 
- void constraintExprData_freeUnaryExpr (/*@only@*/constraintExprData data)
+void constraintExprData_freeUnaryExpr (/*@only@*/constraintExprData data)
 {
   constraintExpr_free (data->unaryOp.expr);
   free(data);  

@@ -13,13 +13,15 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-//# include "exprData.i"
 
 /*@i33*/
 /*@-fcnuse*/
 /*@-assignexpose*/
 
 /*@access exprNode @*/
+
+
+static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint c);
 
 
 static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
@@ -70,7 +72,7 @@ constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconsta
   llassert (l!=NULL);
       
   ret->lexpr = constraintExpr_copy (l);
-  #warning fix abstraction
+
 
   if (relOp.tok == GE_OP)
       ret->ar = GTE;
@@ -115,7 +117,6 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
   llassert (l !=NULL);
     
   ret->lexpr = constraintExpr_copy (l);
-  #warning fix abstraction
 
   if (relOp.tok == GE_OP)
       ret->ar = GTE;
@@ -257,8 +258,6 @@ constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint c, exprNo
     }
   return c;
 }
-
-
 
 constraint constraint_setFcnPre (/*@returned@*/ constraint c )
 {
@@ -529,6 +528,51 @@ exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src)
   return dst;
 }
 
+/* Makes the constraint e = e + f */
+constraint constraint_makeAddAssign (exprNode e, exprNode f, fileloc sequencePoint)
+{
+  constraintExpr x1, x2, y;
+  constraint ret;
+
+  ret = constraint_makeNew();
+
+  x1 =  constraintExpr_makeValueExpr (e);
+  x2 =  constraintExpr_copy(x1);
+  y  =  constraintExpr_makeValueExpr (f);
+
+  ret->lexpr = x1;
+  ret->ar = EQ;
+  ret->post = TRUE;
+  ret->expr = constraintExpr_makeAddExpr (x2, y);
+  
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
+
+  return ret;
+}
+
+
+/* Makes the constraint e = e - f */
+constraint constraint_makeSubtractAssign (exprNode e, exprNode f, fileloc sequencePoint)
+{
+  constraintExpr x1, x2, y;
+  constraint ret;
+
+  ret = constraint_makeNew();
+
+  x1 =  constraintExpr_makeValueExpr (e);
+  x2 =  constraintExpr_copy(x1);
+  y  =  constraintExpr_makeValueExpr (f);
+
+  ret->lexpr = x1;
+  ret->ar = EQ;
+  ret->post = TRUE;
+  ret->expr = constraintExpr_makeSubtractExpr (x2, y);
+  
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
+
+  return ret;
+}
+
 constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
@@ -637,7 +681,6 @@ cstring arithType_print (arithType ar) /*@*/
   return st;
 }
 
-
 void constraint_printErrorPostCondition (constraint c, fileloc loc)
 {
   cstring string;
@@ -738,7 +781,8 @@ cstring constraint_printDeep (constraint c)
 
 }
 
-cstring  constraint_printDetailedPostCondition (constraint c)
+
+static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint c)
 {
   cstring st = cstring_undefined;
 
@@ -917,8 +961,24 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
 /*@=assignexpose*/
 /*@=czechfcns@*/
 
+
 constraint constraint_togglePost (/*@returned@*/ constraint c)
 {
   c->post = !c->post;
   return c;
+}
+
+constraint constraint_togglePostOrig (/*@returned@*/ constraint c)
+{
+  if (c->orig != NULL)
+    c->orig = constraint_togglePost(c->orig);
+  return c;
+}
+
+bool constraint_hasOrig( /*@observer@*/ /*@temp@*/ constraint c)
+{
+  if (c->orig == NULL)
+    return FALSE;
+  else
+    return TRUE;
 }
