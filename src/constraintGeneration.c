@@ -103,12 +103,12 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
   if (exprNode_isUnhandled (e) )
     {
       DPRINTF( (message("Warning ignoring %s", exprNode_unparse (e) ) ) );
-        e->requiresConstraints = constraintList_new();
-	e->ensuresConstraints = constraintList_new();
-	e->trueEnsuresConstraints = constraintList_new();
-	e->falseEnsuresConstraints = constraintList_new();
-  	llassert(FALSE);
-	return FALSE;
+      e->requiresConstraints = constraintList_new();
+      e->ensuresConstraints = constraintList_new();
+      e->trueEnsuresConstraints = constraintList_new();
+      e->falseEnsuresConstraints = constraintList_new();
+      //  llassert(FALSE);
+      return FALSE;
     }
 
   
@@ -196,7 +196,9 @@ bool exprNode_stmt (exprNode e)
 	{
 	  return exprNode_multiStatement (e );
 	}
-      //  llassert(FALSE);
+      BPRINTF( (message ("Ignoring non-statement %s", exprNode_unparse(e) ) ) );
+      return TRUE;
+      //      llassert(FALSE);
     }
  
   DPRINTF (("Stmt") );
@@ -286,7 +288,7 @@ constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
  
   sRefSet_elements (s, el)
     {
-    llassert (el);
+      //    llassert (el);
     if (sRef_isFixedArray(el) )
       {
 	int s;
@@ -393,6 +395,12 @@ bool exprNode_multiStatement (exprNode e)
       test =   exprData_getTripleTest (forPred->edata);
       inc  =   exprData_getTripleInc (forPred->edata);
 
+      if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) || (exprNode_isError) ) ) )
+	{
+	  BPRINTF (("strange for statement:%s, ignoring it", exprNode_unparse(e) ) );
+	  return ret;
+	}
+      
       test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
       //      e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
       e->requiresConstraints = reflectChanges (e->requiresConstraints, test->ensuresConstraints);
@@ -664,7 +672,7 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
   exprData data;
   constraint cons;
 
-     if (exprNode_handleError (e))
+     if (exprNode_isError(e) )
      {
        return FALSE;
      }
@@ -677,6 +685,10 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
    e->trueEnsuresConstraints = constraintList_new();;
    e->falseEnsuresConstraints = constraintList_new();;
 
+   if (exprNode_isUnhandled (e) )
+     {
+       return FALSE;
+     }
    //   e = makeDataTypeConstraints (e);
  
    handledExprNode = TRUE;
@@ -758,11 +770,13 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       lltok_unparse (exprData_getOpTok (data));
       exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
 
-      //      DPRINTF ( ("Doing ASSign"));
-      cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
+      /* this test is nessecary because some expressions generate a null expression node.  function pointer do that -- drl */
+      if ( (!exprNode_isError (t1))  &&  (!exprNode_isError(t2)) )
+	{
+	  cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
+	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+	}
       
-      e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
-
       break;
     case XPR_OP:
       t1 = exprData_getOpA (data);

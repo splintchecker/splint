@@ -6409,9 +6409,9 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
   exprNode ret;
   bool emptyErr = FALSE;
   char *s;
-  s = exprNode_generateConstraints (t);
+  //  s = exprNode_generateConstraints (t);
   // printf("pred: %s\n", s);
-  s = exprNode_generateConstraints (b);
+  // s = exprNode_generateConstraints (b);
   //printf ("body: %s\n", s);
   //constraintList_print(b->constraints);
   

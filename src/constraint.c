@@ -267,6 +267,13 @@ static constraint constraint_makeEnsuresOp (exprNode e1, exprNode e2, fileloc se
   exprNode e;
   
   e = exprNode_fakeCopy(e1);
+  if (! (e1 && e2) )
+    {
+      TPRINTF((message("Warning null exprNode, Exprnodes are %s and %s",
+		       exprNode_unparse(e1), exprNode_unparse(e2) )
+	       ));
+    }
+		       
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = ar;
   ret->post = TRUE;
