@@ -469,6 +469,8 @@ typedef /*@abstract@*/ /*@mutable@*/ void *va_list;
 void va_start (/*@out@*/ va_list ap, ...) /*@modifies ap;@*/ ;
 void va_end (va_list va) /*@modifies va;@*/ ;
 
+void va_copy (/*@out@*/ va_list dest, va_list src) /*modifies dest;@*/ ;
+
 /*
 ** va_arg is builtin
 */

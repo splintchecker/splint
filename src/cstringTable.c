@@ -217,7 +217,7 @@ static int
 cstringTable_countCollisions (cstringTable h)
 {
   int nc = 0;
-  unsigned int i;
+  unsigned long i;
 
   llassert (cstringTable_isDefined (h)); 
 
@@ -234,7 +234,7 @@ static int
 cstringTable_countEmpty (cstringTable h)
 {
   int nc = 0;
-  unsigned int i;
+  unsigned long i;
 
   llassert (cstringTable_isDefined (h)); 
 
@@ -276,9 +276,9 @@ cstringTable_hash (/*@notnull@*/ cstringTable h, cstring key)
 
 
 /*@only@*/ cstringTable
-cstringTable_create (unsigned int size)
+cstringTable_create (unsigned long size)
 {
-  int i;
+  unsigned long i;
   cstringTable h = (cstringTable) dmalloc (sizeof (*h));
   
   h->size = size;
@@ -297,7 +297,7 @@ cstringTable_create (unsigned int size)
 cstring cstringTable_unparse (cstringTable h)
 {
   cstring res = cstring_newEmpty ();
-  unsigned int i;
+  unsigned long i;
 
   if (cstringTable_isDefined (h)) 
     {
@@ -307,11 +307,11 @@ cstring cstringTable_unparse (cstringTable h)
 	  
 	  if (hb != NULL)
 	    {
-	      res = message ("%q%d. %q\n", res, i, hbucket_unparse (hb));
+	      res = message ("%q%ul. %q\n", res, i, hbucket_unparse (hb));
 	    }
 	}
       
-      res = message ("%qsize: %u, collisions: %d, empty: %d", 
+      res = message ("%qsize: %ul, collisions: %d, empty: %d", 
 		     res,
 		     h->size, 
 		     cstringTable_countCollisions (h),
@@ -331,7 +331,7 @@ cstring cstringTable_unparse (cstringTable h)
 cstringTable_stats (cstringTable h)
 {
   llassert (cstringTable_isDefined (h)); 
-  return (message ("size: %u, collisions: %d, empty: %d\n", 
+  return (message ("size: %ul, collisions: %d, empty: %d\n", 
 		   h->size, cstringTable_countCollisions (h),
 		   cstringTable_countEmpty (h)));
 }
@@ -343,7 +343,7 @@ cstringTable_rehash (/*@notnull@*/ cstringTable h)
   ** rehashing based (loosely) on code by Steve Harrison
   */
 
-  unsigned int i;
+  unsigned long i;
   /* Fix provided by Thomas Mertz (int -> unsigned long), 21 Apr 2004 */
   unsigned long oldsize = h->size;
   unsigned long newsize = 1 + ((oldsize * 26244) / 10000); /* 26244 = 162^2 */
@@ -424,7 +424,7 @@ cstringTable_addEntry (/*@notnull@*/ cstringTable h, /*@only@*/ hentry e)
 void
 cstringTable_insert (cstringTable h, cstring key, int value)
 {
-  unsigned int hindex;
+  unsigned long hindex;
   hbucket hb;
   hentry e;  
 

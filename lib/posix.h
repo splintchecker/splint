@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.18 2003/06/13 21:40:56 evans1629 Exp $
+ * $Id: posix.h,v 1.19 2004/05/21 12:57:21 evans1629 Exp $
  */
 
 /*
@@ -467,6 +467,10 @@ struct stat {
   time_t st_mtime; /* evans 2001-08-23 - these were previously st_st_mtime - POSIX spec says st_mtime */
   time_t st_ctime; /* evans 2001-08-23 - these were previously st_st_ctime - POSIX spec says st_ctime */
 } ;
+/*
+** evans 2004-05-19: dependent annotations atted for time_t fields.  Could not find
+** any clear documetation on this, but it seems to be correct. 
+*/
 
 /*
 ** POSIX does not require that the S_I* be functions. They're

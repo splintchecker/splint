@@ -116,7 +116,7 @@
 /*@constant int CGLOBBASESIZE; @*/
 # define CGLOBBASESIZE 1024
 
-/*@constant int CGLOBHASHSIZE; @*/
+/*@constant unsigned long CGLOBHASHSIZE; @*/
 # define CGLOBHASHSIZE 1795
 
 /*@constant int LLHASHSIZE; @*/
