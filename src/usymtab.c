@@ -148,7 +148,7 @@ static /*@exposed@*/ /*@dependent@*/ uentry
 static /*@exposed@*/ /*@dependent@*/ uentry 
   usymtab_lookupQuietNoAlt (usymtab p_s, cstring p_k);
 
-static void usymtab_printAllAux (usymtab p_s) /*@modifies g_msgstream@*/ ;
+static void usymtab_printAllAux (usymtab p_s) /*@modifies g_warningstream@*/ ;
 static int usymtab_getIndex (/*@notnull@*/ usymtab p_s, cstring p_k);
 static /*@exposed@*/ uentry usymtab_fetchIndex (/*@notnull@*/ usymtab p_s, int p_i);
 static /*@exposed@*/ uentry 
@@ -2068,8 +2068,8 @@ usymtab_enterFile ()
     {
       if (sRef_hasDerived (uentry_getSref (ue)))
 	{
-	  fprintf (g_msgstream, "Derived Global: %s\n", uentry_unparse (ue));
-	  fprintf (g_msgstream, "sRef: %s\n", sRef_unparseFull (ue->sref));
+	  fprintf (g_warningstream, "Derived Global: %s\n", uentry_unparse (ue));
+	  fprintf (g_warningstream, "sRef: %s\n", sRef_unparseFull (ue->sref));
 	}
     } end_usymtab_entries ;
 
@@ -5748,7 +5748,7 @@ usymtab_printOut (void)
   int depth = 0;
   char *ind = mstring_copy ("               ");
 
-  fprintf (g_msgstream, "<<< [symbol table] >>>\n");
+  fprintf (g_warningstream, "<<< [symbol table] >>>\n");
   
   while (s != GLOBAL_ENV && s->env != GLOBAL_ENV)
     {
@@ -5759,7 +5759,7 @@ usymtab_printOut (void)
 	  ind[depth * 3 + 1] = '\0';
 	}
      
-      fprintf (g_msgstream, "level: %d (%s)\n", s->lexlevel,
+      fprintf (g_warningstream, "level: %d (%s)\n", s->lexlevel,
 	       cstring_toCharsSafe (tname));
 
       cstring_free (tname);
@@ -5767,17 +5767,17 @@ usymtab_printOut (void)
       for (i = 0; i < s->nentries; i++)
 	{
 	  cstring us = uentry_unparseFull (s->entries[i]);
-	  fprintf (g_msgstream, "%s\n", cstring_toCharsSafe (us));
+	  fprintf (g_warningstream, "%s\n", cstring_toCharsSafe (us));
 	  cstring_free (us);
 	}
       
       if (s->reftable != NULL && s->nentries > 0)
 	{
-	  fprintf (g_msgstream, "\t<< Ref table >>\n");
+	  fprintf (g_warningstream, "\t<< Ref table >>\n");
 
 	  for (i = 0; i < s->nentries; i++)
 	    {
-	      fprintf (g_msgstream, "\t%s %3d: %d, %d\n", ind, i, 
+	      fprintf (g_warningstream, "\t%s %3d: %d, %d\n", ind, i, 
 		       s->reftable[i]->level,
 		       s->reftable[i]->index);
 	    }
@@ -5787,7 +5787,7 @@ usymtab_printOut (void)
       depth++;
       s = s->env;
     }
-  fprintf (g_msgstream, "<<< end usymtab >>>\n");
+  fprintf (g_warningstream, "<<< end usymtab >>>\n");
   mstring_free (ind);
   return;
 }
@@ -5808,7 +5808,7 @@ usymtab_printAll (void)
 
 static void
 usymtab_printAllAux (usymtab s)
-   /*@modifies g_msgstream@*/
+   /*@modifies g_warningstream@*/
 {
   int i;
   int depth = 0;
@@ -5984,7 +5984,7 @@ usymtab_printLocal (void)
 
 static bool checkDistinctExternalName (uentry e)
   /*@globals globtab@*/
-  /*@modifies *g_msgstream@*/
+  /*@modifies *g_warningstream@*/
 {
   size_t checklen = size_fromInt (context_getValue (FLG_EXTERNALNAMELEN));
   bool ignorecase = context_getFlag (FLG_EXTERNALNAMECASEINSENSITIVE);
@@ -6145,7 +6145,7 @@ static bool checkDistinctExternalName (uentry e)
 
 static bool checkDistinctInternalName (uentry e)
   /*@globals utab@*/
-  /*@modifies *g_msgstream@*/
+  /*@modifies *g_warningstream@*/
 {
   usymtab ttab = utab;
   cstring name = uentry_rawName (e);

@@ -40,7 +40,14 @@ int g_codeLine = 0;
 
 cstring g_prevCodeFile = cstring_undefined;
 int g_prevCodeLine = 0;
-/*:open:*/ FILE *g_msgstream;
+
+/*
+** These are initialized in llmain.c.
+*/
+
+FILE *g_warningstream = NULL;
+FILE *g_messagestream = NULL;
+FILE *g_errorstream = NULL;
 
 /*
 ** These were in llmain.c.  Most should not be globals...

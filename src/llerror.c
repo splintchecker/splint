@@ -54,10 +54,10 @@ static /*@only@*/ fileloc lastparseerror = fileloc_undefined;
 static /*@only@*/ fileloc lastbug = fileloc_undefined;
 static bool llgenerrorreal (char *p_srcFile, int p_srcLine, 
 			    /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
-                 /*@modifies g_msgstream@*/ ;
+                 /*@modifies g_warningstream@*/ ;
 static bool llgenerroraux (char *p_srcFile, int p_srcLine, 
 			   /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
-                 /*@modifies g_msgstream@*/ ;
+                 /*@modifies g_warningstream@*/ ;
 
 static void printError (FILE *p_stream, /*@only@*/ cstring p_sc)
    /*@globals lastfileloclen @*/
@@ -65,10 +65,10 @@ static void printError (FILE *p_stream, /*@only@*/ cstring p_sc)
 static void printMessage (FILE *p_stream, /*@only@*/ cstring p_s)
    /*@modifies *p_stream@*/ ;
 
-static void llgenhint (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+static void llgenhint (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 
 static void showSourceLoc (char *srcFile, int srcLine)
-     /*@modifies g_msgstream@*/
+     /*@modifies g_warningstream@*/
 {
   if (context_getFlag (FLG_SHOWSOURCELOC)) {
     llgenhint (message ("%s:%d: Source code error generation point.",
@@ -87,7 +87,7 @@ maxcp (/*@null@*/ /*@returned@*/ char *a, /*@null@*/ /*@returned@*/ char *b)
 static void
 printBugReport (void)
 {
-  fprintf (stderr, "     *** Please report bug to %s ***\n",
+  fprintf (g_errorstream, "     *** Please report bug to %s ***\n",
 	   SPLINT_MAINTAINER);
   llflush ();
   /* don't exit (EXIT_FAILURE); */
@@ -95,17 +95,17 @@ printBugReport (void)
 
 static bool s_needsPrepare = TRUE;
 
-void prepareMessage (void)
+void prepareMessage ()
 {
   DPRINTF (("Prepare message: %s", bool_unparse (context_loadingLibrary ())));
   showHerald ();
 
   if ((context_isPreprocessing () || context_loadingLibrary ())
       && s_needsPrepare
-      && context_getDebug (FLG_SHOWSCAN))
+      && context_getFlag (FLG_SHOWSCAN))
     {
       llflush ();
-      fprintf (stderr, " >\n");
+      displayScanClose ();
       s_needsPrepare = FALSE;
     }
 
@@ -115,11 +115,10 @@ void prepareMessage (void)
 void closeMessage (void)
 {
   if (context_isPreprocessing ()
-      && context_getDebug (FLG_SHOWSCAN))
+      && context_getFlag (FLG_SHOWSCAN))
     {
       llflush ();
-      fprintf (stderr, "< more preprocessing .");
-
+      displayScanOpen (cstring_makeLiteral ("< more preprocessing ."));
       llassertprotect (!s_needsPrepare);
       s_needsPrepare = TRUE;
     }
@@ -134,7 +133,7 @@ llmsg (/*@only@*/ cstring s)
 {
   context_setNeednl ();
   prepareMessage ();
-  printMessage (g_msgstream, s);
+  printMessage (g_messagestream, s);
   closeMessage ();
 }
 
@@ -145,7 +144,9 @@ lldiagmsg (/*@only@*/ cstring s)
 
   if (inmsg)
     {
-      fprintf (stderr, "Recursive message call detected: %s\n", cstring_toCharsSafe (s));
+      fprintf (g_errorstream,
+	       "Recursive message call detected: %s\n", 
+	       cstring_toCharsSafe (s));
       llexit (LLFAILURE);
     }
 
@@ -153,7 +154,7 @@ lldiagmsg (/*@only@*/ cstring s)
 
   context_setNeednl ();
   prepareMessage ();
-  printMessage (stderr, s);
+  printMessage (g_messagestream, s);
   closeMessage ();
 
   inmsg = FALSE;
@@ -164,7 +165,7 @@ llmsgplain (/*@only@*/ cstring s)
 {
   context_setNeednl ();
   prepareMessage ();
-  printMessage (g_msgstream, s);
+  printMessage (g_messagestream, s);
   closeMessage ();
 }
 
@@ -190,14 +191,14 @@ void llerror_flagWarning (cstring s)
 }
 
 static void
-llgenhint (/*@only@*/ cstring s) /*@modifies g_msgstream@*/
+llgenhint (/*@only@*/ cstring s) /*@modifies g_warningstream@*/
 {
   int indent = context_getIndentSpaces () - 1;
 
   if (indent < 0) indent = 0;
 
   context_setNeednl ();
-  printIndentMessage (g_msgstream, s, indent);
+  printIndentMessage (g_warningstream, s, indent);
 }
 
 void
@@ -336,7 +337,7 @@ llnosuppresshint (flagcode f)
 
       if (cstring_isDefined (desc))
 	{
-	  printError (g_msgstream, message ("    %s", desc));
+	  printError (g_warningstream, message ("    %s", desc));
 	}
     }
 }
@@ -561,7 +562,7 @@ void cleanupMessages ()
 	  if (unprinted == 1 && cstring_isDefined (saveOneMessage))
 	    {
 	      prepareMessage ();
-	      printError (g_msgstream, saveOneMessage);
+	      printError (g_warningstream, saveOneMessage);
 	      closeMessage ();
 	      saveOneMessage = cstring_undefined;
 	    }
@@ -573,7 +574,7 @@ void cleanupMessages ()
 		  saveOneMessage = cstring_undefined;
 		}
 
-	      fprintf (g_msgstream, "%s: (%d more similar errors unprinted)\n",
+	      fprintf (g_warningstream, "%s: (%d more similar errors unprinted)\n",
 		       cstring_toCharsSafe (fileloc_filename (g_currentloc)),
 		       mcount - context_getLimit ());
 	    }
@@ -590,7 +591,7 @@ llgenmsg (/*@only@*/ cstring s, fileloc fl)
   lastfileloclen = cstring_length (flstring);
 
   prepareMessage ();
-  (void) printError (g_msgstream, message ("%q: %q", flstring, s));
+  (void) printError (g_warningstream, message ("%q: %q", flstring, s));
   closeMessage ();
 }
 
@@ -600,7 +601,7 @@ llgenindentmsg (/*@only@*/ cstring s, fileloc fl)
   cstring flstring = fileloc_unparse (fl);
 
   prepareMessage ();
-  (void) printIndentMessage (g_msgstream, message ("%q: %q", flstring, s), context_getIndentSpaces ());
+  (void) printIndentMessage (g_warningstream, message ("%q: %q", flstring, s), context_getIndentSpaces ());
   closeMessage ();
 }
 
@@ -608,7 +609,7 @@ void
 llgenindentmsgnoloc (/*@only@*/ cstring s)
 {
   prepareMessage ();
-  (void) printIndentMessage (g_msgstream, s, context_getIndentSpaces ());
+  (void) printIndentMessage (g_warningstream, s, context_getIndentSpaces ());
   closeMessage ();
 }
 
@@ -1108,24 +1109,24 @@ llgenerrorreal (char *srcFile, int srcLine,
 
       if (context_inIterDef ())
 	{
-	  fprintf (g_msgstream, "%s: (in iter %s)\n",
+	  fprintf (g_warningstream, "%s: (in iter %s)\n",
 		   cstring_toCharsSafe (fname),
 		   cstring_toCharsSafe (context_inFunctionName ()));
 	}
       else if (context_inIterEnd ())
 	{
-	  fprintf (g_msgstream, "%s: (in iter finalizer %s)\n",
+	  fprintf (g_warningstream, "%s: (in iter finalizer %s)\n",
 		   cstring_toCharsSafe (fname),
 		   cstring_toCharsSafe (context_inFunctionName ()));
 	}
       else if (context_inMacro ())
 	{
-	  fprintf (g_msgstream, "%s: (in macro %s)\n", cstring_toCharsSafe (fname),
+	  fprintf (g_warningstream, "%s: (in macro %s)\n", cstring_toCharsSafe (fname),
 		   cstring_toCharsSafe (context_inFunctionName ()));
 	}
       else
 	{
-	  fprintf (g_msgstream, "%s: (in function %s)\n",
+	  fprintf (g_warningstream, "%s: (in function %s)\n",
 		   cstring_toCharsSafe (fname),
 		   cstring_toCharsSafe (context_inFunctionName ()));
 	}
@@ -1139,11 +1140,11 @@ llgenerrorreal (char *srcFile, int srcLine,
 
   if (indent)
     {
-      printError (g_msgstream, message ("   %q: %q", flstring, s));
+      printError (g_warningstream, message ("   %q: %q", flstring, s));
     }
   else
     {
-      printError (g_msgstream, message ("%q: %q", flstring, s));
+      printError (g_warningstream, message ("%q: %q", flstring, s));
     }
 
   showSourceLoc (srcFile, srcLine);
@@ -1331,8 +1332,8 @@ void
 xllfatalbug (char *srcFile, int srcLine, /*@only@*/ cstring s)
 {
   prepareMessage ();
-  printError (stderr, message ("%q: *** Fatal bug: %q",
-			       fileloc_unparse (g_currentloc), s));
+  printError (g_errorstream, message ("%q: *** Fatal bug: %q",
+				      fileloc_unparse (g_currentloc), s));
   showSourceLoc (srcFile, srcLine);
   printCodePoint ();
   printBugReport ();
@@ -1344,7 +1345,7 @@ void
 lclfatalbug (char *msg)
 {
   prepareMessage ();
-  printError (stderr,
+  printError (g_errorstream,
 	      message ("*** Fatal Bug: %s", cstring_fromChars (msg)));
   printCodePoint ();
   printBugReport ();
@@ -1372,7 +1373,8 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
     {
       cstring temps = fileloc_unparseRaw (file, line);
 
-      fprintf (stderr, "%s: Recursive bug detected: %s\n",
+      fprintf (g_errorstream,
+	       "%s: Recursive bug detected: %s\n",
 	       cstring_toCharsSafe (temps),
 	       cstring_toCharsSafe (s));
       cstring_free (temps);
@@ -1384,58 +1386,46 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   prepareMessage ();
 
-  /*@i3232@*/
-  /*
-  if (fileloc_isRealLib (g_currentloc))
-    {
-      DPRINTF (("Here we are!"));
-      llfatalerror (message ("%q: Library file appears to be corrupted.  Error: %q: %s",
-			fileloc_unparse (g_currentloc), 
-			fileloc_unparseRaw (file, line), 
-			s));
-    }
-  */
-
   if (fileloc_withinLines (lastparseerror, g_currentloc, 7))
     {
       llfatalerror (message ("%q: Cannot recover from parse error.",
 			     fileloc_unparse (g_currentloc)));
     }
 
-  (void) fflush (g_msgstream);
+  (void) fflush (g_warningstream);
 
-  printError (stderr, message ("%q: *** Internal Bug at %q: %q [errno: %d]",
-			       fileloc_unparse (g_currentloc),
-			       fileloc_unparseRaw (file, line),
-			       s, errno));
-
+  printError (g_errorstream,
+	      message ("%q: *** Internal Bug at %q: %q [errno: %d]",
+		       fileloc_unparse (g_currentloc),
+		       fileloc_unparseRaw (file, line),
+		       s, errno));
+  
   /* printCodePoint (); no longer useful */
 
-  (void) fflush (stderr);
-
+  llflush ();
+  
   if (errno != 0)
     {
       perror ("Possible system error diagnostic: ");
     }
 
-  (void) fflush (stderr);
-
   printBugReport ();
+  llflush ();
 
   numbugs++;
 
   if (numbugs > context_getBugsLimit () && fileloc_withinLines (lastbug, g_currentloc, 2))
     {
-      llfatalerror (message ("%q: Cannot recover from last bug. (If you really want Splint to try to continue, use -bugslimit <n>.)",
-			     fileloc_unparse (g_currentloc)));
+      llfatalerror
+	(message ("%q: Cannot recover from last bug. "
+		  "(If you really want Splint to try to continue, use -bugslimit <n>.)",
+		  fileloc_unparse (g_currentloc)));
     }
   
-  fprintf (stderr, "       (attempting to continue, results may be incorrect)\n");
+  fprintf (g_errorstream, "       (attempting to continue, results may be incorrect)\n");
   fileloc_free (lastbug);
   lastbug = fileloc_copy (g_currentloc);
   closeMessage ();
-
-  (void) fflush (stderr);
   inbug = FALSE;
 }
 
@@ -1444,10 +1434,10 @@ void
 lclbug (/*@only@*/ cstring s)
 {
   prepareMessage ();
-  printError (stderr, message ("*** Internal Bug: %q", s));
+  printError (g_errorstream, message ("*** Internal Bug: %q", s));
   printCodePoint ();
   printBugReport ();
-  fprintf (stderr, "       (attempting to continue, results may be incorrect)\n");
+  fprintf (g_errorstream, "       (attempting to continue, results may be incorrect)\n");
   closeMessage ();
 }
 # endif
@@ -1456,8 +1446,8 @@ void
 llfatalerror (cstring s)
 {
   prepareMessage ();
-  printError (stderr, s);
-  printError (stderr, cstring_makeLiteral ("*** Cannot continue."));
+  printError (g_errorstream, s);
+  printError (g_errorstream, cstring_makeLiteral ("*** Cannot continue."));
   llexit (LLFAILURE);
 }
 
@@ -1465,10 +1455,10 @@ void
 llfatalerrorLoc (/*@only@*/ cstring s)
 {
   prepareMessage ();
-  (void) fflush (g_msgstream);
-  printError (stderr, message ("%q: %q", fileloc_unparse (g_currentloc), s));
-  printError (stderr, cstring_makeLiteral ("*** Cannot continue."));
-  (void) fflush (g_msgstream);
+  (void) fflush (g_warningstream);
+  printError (g_errorstream, message ("%q: %q", fileloc_unparse (g_currentloc), s));
+  printError (g_errorstream, cstring_makeLiteral ("*** Cannot continue."));
+  (void) fflush (g_warningstream);
   llexit (LLFAILURE);
 }
 
@@ -1509,15 +1499,14 @@ xlclerror (char *srcFile, int srcLine, ltoken t, /*@only@*/ cstring msg)
   if (ltoken_getCode (t) != NOTTOKEN)
     {
       cstring loc = ltoken_unparseLoc (t);
-
       lastfileloclen = cstring_length (loc);
 
-      printError (g_msgstream, message ("%q: %q", loc, msg));
+      printError (g_warningstream, message ("%q: %q", loc, msg));
       showSourceLoc (srcFile, srcLine);
     }
   else
     {
-      printError (g_msgstream, msg);
+      printError (g_warningstream, msg);
       showSourceLoc (srcFile, srcLine);
     }
 }
@@ -1526,24 +1515,32 @@ void
 lclplainerror (/*@only@*/ cstring msg)
 {
   lclerrors++;
-
-  printError (g_msgstream, msg);
+  printError (g_warningstream, msg);
 }
 
 void
 lclfatalerror (ltoken t, /*@only@*/ cstring msg)
 {
-  lclerror (t, msg);
-  (void) fflush (g_msgstream);
-  printError (stderr, cstring_makeLiteral ("*** Cannot continue"));
+  if (ltoken_getCode (t) != NOTTOKEN)
+    {
+      cstring loc = ltoken_unparseLoc (t);
+      lastfileloclen = cstring_length (loc);
+      printError (g_errorstream, message ("%q: %q", loc, msg));
+    }
+  else
+    {
+      printError (g_errorstream, msg);
+    }
+
+  printError (g_errorstream, cstring_makeLiteral ("*** Cannot continue"));
   llexit (LLFAILURE);
 }
 
 void
 lclplainfatalerror (/*@only@*/ cstring msg)
 {
-  (void) fflush (g_msgstream);
-  printError (stderr, message ("*** Cannot continue: %q", msg));
+  (void) fflush (g_warningstream);
+  printError (g_errorstream, message ("*** Cannot continue: %q", msg));
   llexit (LLFAILURE);
 }
 
@@ -1579,9 +1576,9 @@ void genppllerror (flagcode code, /*@only@*/ cstring s)
     {
       if (context_getFlag (code))
 	{
-	  if (context_getFlag (FLG_SHOWSCAN) && !context_isInCommandLine ())
+	  if (!context_isInCommandLine ())
 	    {
-	      fprintf (g_msgstream, " >\n");
+	      displayScanClose ();
 	    }
 
 	  llerror (code, s);
@@ -1591,9 +1588,9 @@ void genppllerror (flagcode code, /*@only@*/ cstring s)
 	      llsuppresshint ('-', code);
 	    }
 
-	  if (context_getFlag (FLG_SHOWSCAN) && !context_isInCommandLine ())
+	  if (!context_isInCommandLine ())
 	    {
-	      fprintf (stderr, "< more preprocessing .");
+	      displayScanOpen (cstring_makeLiteral ("< more preprocessing ."));
 	    }
 	}
       else
@@ -1637,11 +1634,11 @@ void ppllerror (/*@only@*/ cstring s)
 
 void pplldiagmsg (cstring s)
 {
-  if (context_getDebug (FLG_SHOWSCAN) && !context_isInCommandLine ())
+  if (!context_isInCommandLine ())
     {
-      fprintf (stderr, " >\n");
+      displayScanClose ();
       lldiagmsg (s);
-      fprintf (stderr, "< more preprocessing .");
+      displayScanOpen (cstring_makeLiteral ("< more preprocessing ."));
     }
   else
     {
@@ -1651,16 +1648,9 @@ void pplldiagmsg (cstring s)
 
 void loadllmsg (cstring s)
 {
-  if (context_getDebug (FLG_SHOWSCAN))
-    {
-      fprintf (stderr, " >\n");
-      lldiagmsg (s);
-      fprintf (stderr, "< .");
-    }
-  else
-    {
-      lldiagmsg (s);
-    }
+  displayScanClose ();
+  lldiagmsg (s);
+  displayScanOpen (cstring_makeLiteral ("< ."));
 }
 
 static void llreportparseerror (/*@only@*/ cstring s)
@@ -1929,10 +1919,10 @@ void llquietbugaux (cstring s, /*@unused@*/ cstring file, /*@unused@*/ int line)
 # if 0
 # ifdef HOMEVERSION
   llflush ();
-  printError (stderr, message ("%q: *** Internal Bug at %q: %q [errno: %d]",
-			       fileloc_unparse (g_currentloc),
-			       fileloc_unparseRaw (file, line),
-			       s, errno));
+  printError (g_errorstream, message ("%q: *** Internal Bug at %q: %q [errno: %d]",
+				      fileloc_unparse (g_currentloc),
+				      fileloc_unparseRaw (file, line),
+				      s, errno));
   printCodePoint ();
   llflush ();
 # endif
@@ -1943,6 +1933,60 @@ void llquietbugaux (cstring s, /*@unused@*/ cstring file, /*@unused@*/ int line)
 
 void llflush (void)
 {
-  (void) fflush (g_msgstream);
-  (void) fflush (stderr);
+  (void) fflush (g_warningstream);
+  (void) fflush (g_messagestream);
 }
+
+static bool s_scanOpen = FALSE;
+
+void displayScan (cstring msg)
+{
+  llassert (!s_scanOpen);
+
+  if (context_getFlag (FLG_SHOWSCAN))
+    {
+      fprintf (g_messagestream, "< %s >\n", cstring_toCharsSafe (msg));
+      (void) fflush (g_messagestream);
+    }
+
+  cstring_free (msg);
+}
+
+void displayScanOpen (cstring msg)
+{
+  llassert (!s_scanOpen);
+  s_scanOpen = TRUE;
+
+  if (context_getFlag (FLG_SHOWSCAN))
+    {
+      fprintf (g_messagestream, "< %s", cstring_toCharsSafe (msg));
+      (void) fflush (g_messagestream);
+    }
+
+  cstring_free (msg);
+}
+
+void displayScanContinue (/*@temp@*/ cstring msg)
+{
+  if (context_getFlag (FLG_SHOWSCAN))
+    {
+      llassert (s_scanOpen);
+      fprintf (g_messagestream, "%s", cstring_toCharsSafe (msg));
+      (void) fflush (g_messagestream);
+    }
+}
+
+void displayScanClose (void)
+{
+  llassert (s_scanOpen);
+
+  if (context_getFlag (FLG_SHOWSCAN))
+    {
+      fprintf (g_messagestream, " >\n");
+      (void) fflush (g_messagestream);
+    }
+
+  s_scanOpen = FALSE;
+}
+
+

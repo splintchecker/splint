@@ -37,7 +37,7 @@ modifiesClause_createNoMods (lltok tok)
   res->srs = sRefSet_undefined;
 
   res->loc = fileloc_copy (lltok_getLoc (tok));
-  lltok_release (tok);
+  lltok_free (tok);
 
   return res;
 }
@@ -51,7 +51,7 @@ modifiesClause_create (lltok tok, sRefSet rfs)
   res->srs = rfs;
 
   res->loc = fileloc_copy (lltok_getLoc (tok));
-  lltok_release (tok);
+  lltok_free (tok);
 
   return res;
 }

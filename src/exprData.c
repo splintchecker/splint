@@ -460,7 +460,7 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
 /*@observer@*/ lltok exprData_getTok (exprData data) /*@*/
 {
   llassert (data != exprData_undefined);
-  return (*data->tok);
+  return data->tok;
 }
 
 /*@exposed@*/ qtype exprData_getType (exprData data) /*@*/ 
@@ -526,9 +526,8 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
 /*@only@*/ exprData exprData_makeTok (/*@only@*/ lltok op)
 {
   exprData ed = (exprData) dmalloc (sizeof (*ed));
-  
-  ed->tok = (lltok *) dmalloc (sizeof (*(ed->tok)));
-  *(ed->tok) = op;  
+  ed->tok = op;  
+
   return ed;
 }
 

@@ -145,7 +145,7 @@ static void cpp_setLocation (cppReader *p_pfile)
 
 static enum cpp_token cpp_handleComment (cppReader *p_pfile,
 					 struct parse_marker *p_smark)
-     /*@modifies p_pfile, p_smark@*/;
+   /*@modifies p_pfile, p_smark@*/;
   
 static bool cpp_shouldCheckMacro (cppReader *p_pfile, char *p_p) /*@modifies p_p@*/ ;
 
@@ -2173,7 +2173,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
   DPRINTF (("Create definition: %s", buf));
   *limit = save;
 
-  cppBuffer_lineAndColumn (CPPBUFFER (pfile), &line, &col);
+  cppBuffer_getLineAndColumn (CPPBUFFER (pfile), &line, &col);
 
   bp = buf;
 
@@ -3080,7 +3080,7 @@ update_position (cppBuffer *pbuf)
 }
 
 void
-cppBuffer_lineAndColumn (/*@null@*/ cppBuffer *pbuf, /*@out@*/ int *linep,
+cppBuffer_getLineAndColumn (/*@null@*/ cppBuffer *pbuf, /*@out@*/ int *linep,
 			 /*@null@*/ /*@out@*/ int *colp)
 {
   int dummy;
@@ -3899,7 +3899,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   struct argdata *args = NULL;
 
   pfile->output_escapes++;
-  cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile), &start_line, &start_column);
+  cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile), &start_line, &start_column);
   DPRINTF (("Expand macro: %d:%d", start_line, start_column));
 
   nargs = defn->nargs;
@@ -4039,7 +4039,7 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   ** numbers accurate.
   */
 
-  cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile), &end_line, &end_column);
+  cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile), &end_line, &end_column);
   DPRINTF (("Expand macro: %d:%d", end_line, end_column));
 
   /* If macro wants zero args, we parsed the arglist for checking only.
@@ -5994,7 +5994,7 @@ get_next:
 	    }
 
 	  newlines = 0;
-	  cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile),
+	  cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile),
 				   &start_line, &start_column);
 	  c = skip_comment (pfile, &newlines);
 
@@ -6055,8 +6055,8 @@ get_next:
 	case '\'':
 	  /* A single quoted string is treated like a double -- some
 	     programs (e.g., troff) are perverse this way */
-	  cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile),
-				   &start_line, &start_column);
+	  cppBuffer_getLineAndColumn (cppReader_fileBuffer (pfile),
+				      &start_line, &start_column);
 	  old_written = cpplib_getWritten (pfile);
 	string:
 	  cppReader_putChar (pfile, c);

@@ -1255,8 +1255,13 @@ void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClaus
 {
   llassert (ProcessingTypedef);
 
+  DPRINTF (("Declare type: %s", exprNodeList_unparse (decls)));
+
   if (warnClause_isDefined (warn))
     {
+      DPRINTF (("Has a warn clause!"));
+      DPRINTF (("Warn: %s", warnClause_unparse (warn)));
+
       exprNodeList_elements (decls, el)
 	{
 	  uentry ue = exprNode_getUentry (el);
@@ -1277,6 +1282,7 @@ void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClaus
 		    uentry_unparse (ue), warnClause_unparse (warn)));
 
 	  uentry_addWarning (ue, warnClause_copy (warn));
+	  DPRINTF (("After add warning: %s", uentry_unparseFull (ue)));
 	  cstring_free (uname);
 	} end_exprNodeList_elements;
     }

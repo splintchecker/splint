@@ -286,19 +286,19 @@ cttable_print (void)
 	{
 	  if (ctbase_isUA (cte->ctbase))
 	    {
-	      fprintf (g_msgstream, "%3d: %s [%d]\n", i, 
+	      fprintf (g_warningstream, "%3d: %s [%d]\n", i, 
 		       cstring_toCharsSafe (ctentry_doUnparse (cttab.entries[i])),
 		       cte->ctbase->contents.tid);
 	    }
 	  else
 	    {
-	      fprintf (g_msgstream, "%3d: %s\n", i, 
+	      fprintf (g_warningstream, "%3d: %s\n", i, 
 		       cstring_toCharsSafe (ctentry_doUnparse (cttab.entries[i])));
 	    }
 	}
       else
 	{
-	  /* fprintf (g_msgstream, "%3d: <no name>\n", i); */
+	  /* fprintf (g_warningstream, "%3d: <no name>\n", i); */
 	}
     }
   /*@noaccess ctbase@*/
@@ -319,16 +319,11 @@ cttable_dump (FILE *fout)
   
   if (context_getFlag (FLG_SHOWSCAN) && cttab.size > 5000)
     {
-      fprintf (g_msgstream, " >\n"); /* end dumping to */
-      fprintf (g_msgstream, "< Dumping type table (%d types) ", cttab.size);
+      displayScanClose ();
+      displayScanOpen (message ("< Dumping type table (%d types) ", cttab.size));
       showdotstride = cttab.size / 5;
       showdots = TRUE;
     }
-
-  /*
-  DPRINTF (("Dumping cttable: "));
-  cttable_print ();
-  */
 
   for (i = 0; i < cttab.size; i++)
     {
@@ -342,7 +337,7 @@ cttable_dump (FILE *fout)
 
       if (showdots && (i != 0 && ((i - 1) % showdotstride == 0)))
 	{
-	  (void) fflush (g_msgstream);
+	  (void) fflush (g_warningstream);
 	  fprintf (stderr, ".");
 	  (void) fflush (stderr);
 	}

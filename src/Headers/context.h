@@ -172,9 +172,6 @@ extern /*@observer@*/ cstring context_getString (flagcode p_flag) /*@*/ ;
 extern void context_setString (flagcode p_flag, /*@only@*/ cstring p_val)
    /*@modifies internalState@*/ ;
 
-extern bool context_getDebug (flagcode p_d);
-# define context_getDebug(p_d) context_getFlag(p_d)
-
 extern void context_userSetFlag (flagcode p_f, bool p_b);
 
 extern int context_getExpect (void) /*@*/ ;
@@ -303,7 +300,7 @@ extern bool context_inMacroFunction (void) /*@globals internalState@*/ ;
 
 extern /*@observer@*/ cstring context_moduleName (void) /*@*/ ;
 extern void context_recordFileGlobals (/*@dependent@*/ globSet p_mods);
-extern void context_checkSuppressCounts (void) /*@modifies g_msgstream@*/ ;
+extern void context_checkSuppressCounts (void) /*@modifies g_warningstream@*/ ;
 
 extern bool context_inFunctionHeader (void) /*@globals internalState@*/ ;
 extern void context_enterFunctionHeader (void) /*@modifies internalState@*/ ;

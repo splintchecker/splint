@@ -63,7 +63,7 @@ struct _usymtab
 
 extern void usymtab_printTypes (void) 
   /*@globals internalState@*/
-  /*@modifies g_msgstream@*/ ;
+  /*@modifies g_warningstream@*/ ;
 
 extern void usymtab_setMustBreak (void) /*@modifies internalState@*/ ;
 
@@ -72,15 +72,15 @@ extern bool usymtab_inFunctionScope (void) /*@globals internalState@*/ ;
 extern bool usymtab_inFileScope (void) /*@globals internalState@*/ ;
 extern void usymtab_checkFinalScope (bool p_isReturn) 
   /*@globals internalState@*/ 
-  /*@modifies *g_msgstream@*/ ;
+  /*@modifies *g_warningstream@*/ ;
 
 extern void usymtab_allUsed (void)
    /*@globals internalState@*/ 
-   /*@modifies *g_msgstream@*/ ;
+   /*@modifies *g_warningstream@*/ ;
 
 extern void usymtab_allDefined (void)
    /*@globals internalState@*/
-   /*@modifies *g_msgstream@*/ ;
+   /*@modifies *g_warningstream@*/ ;
 
 extern void usymtab_prepareDump (void)
    /*@modifies internalState@*/ ;
@@ -245,15 +245,15 @@ extern typeId typeId_fromInt (int p_i);
 
 extern /*@unused@*/ void usymtab_displayAllUses (void)
    /*@globals internalState@*/ 
-   /*@modifies *g_msgstream@*/ ;
+   /*@modifies *g_warningstream@*/ ;
 
 extern /*@unused@*/ void usymtab_printOut (void)
    /*@globals internalState@*/ 
-   /*@modifies *g_msgstream@*/ ;
+   /*@modifies *g_warningstream@*/ ;
 
 extern /*@unused@*/ void usymtab_printAll (void)
    /*@globals internalState@*/ 
-   /*@modifies *g_msgstream@*/ ;
+   /*@modifies *g_warningstream@*/ ;
 
 extern void usymtab_enterScope (void) 
   /*@modifies internalState;@*/ ;
@@ -314,7 +314,7 @@ extern void
 
 extern void usymtab_unguard (sRef p_s) /*@modifies internalState@*/ ;
 extern bool usymtab_isGuarded (sRef p_s) /*@globals internalState@*/ ;
-extern void usymtab_printGuards (void) /*@globals internalState@*/ /*@modifies *g_msgstream@*/ ;
+extern void usymtab_printGuards (void) /*@globals internalState@*/ /*@modifies *g_warningstream@*/ ;
 extern void usymtab_quietPlainExitScope (void) /*@modifies internalState@*/ ;
 extern void usymtab_printComplete (void) /*@globals internalState@*/ /*@modifies *stdout@*/ ;
 
@@ -422,7 +422,7 @@ extern /*@falsewhennull@*/ bool usymtab_isDefined (usymtab p_u) /*@*/ ;
 
 extern void usymtab_checkDistinctName (uentry p_e, int p_scope)
   /*@globals internalState@*/
-  /*@modifies *g_msgstream, p_e@*/ ;
+  /*@modifies *g_warningstream, p_e@*/ ;
 
 extern /*@exposed@*/ sRef usymtab_lookupGlobalMarker (void) /*@globals internalState@*/ ;
 

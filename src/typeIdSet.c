@@ -95,7 +95,7 @@ static /*@unused@*/ void tistable_printOut (void)
     {
       cstring s = usymIdSet_unparse (tistable[i]);
 
-      fprintf (g_msgstream, "%d: %s\n", i, cstring_toCharsSafe (s));
+      fprintf (g_warningstream, "%d: %s\n", i, cstring_toCharsSafe (s));
       cstring_free (s);
     }
 }

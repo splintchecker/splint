@@ -48,7 +48,7 @@
 #endif
 
 static void LocalUserError (ltoken p_t, /*@temp@*/ char *p_msg)
-  /*@modifies *g_msgstream@*/;
+  /*@modifies *g_warningstream@*/;
 
 static /*@only@*/ ltoken nextToken;
 

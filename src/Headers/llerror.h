@@ -67,31 +67,32 @@ extern /*@noreturnwhenfalse@*/ void llassertfatal (/*@sef@*/ bool p_test);
 ** llassertprint and llassertprintret are in splintMacros.nf
 */
 
-extern void llmsg (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern void llmsg (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 
 extern void lldiagmsg (/*@only@*/ cstring p_s) /*@modifies stderr@*/ ;
-extern void llmsgplain (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern void llmsgplain (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 extern void llhint (/*@only@*/ cstring p_s) 
-   /*@globals g_currentloc, g_msgstream;@*/ 
-   /*@modifies g_msgstream@*/ ;
+   /*@globals g_currentloc, g_warningstream;@*/ 
+   /*@modifies g_warningstream@*/ ;
 
-extern /*@private@*/ /*@noreturn@*/ void xllfatalbug (char *p_srcFile, int p_srcLine,
-						  /*@only@*/ cstring p_s) 
+extern /*@private@*/ /*@noreturn@*/ void 
+xllfatalbug (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/
-   /*@modifies stderr@*/ ;
+   /*@modifies g_errorstream@*/ ;
 
 extern /*@noreturn@*/ void llfatalbug (/*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/
-   /*@modifies stderr@*/ ;
+   /*@modifies g_errorstream@*/ ;
+
 # define llfatalbug(p_s) \
      xllfatalbug (__FILE__, __LINE__, p_s)
 
 extern /*@private@*/ bool xllgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
 				       /*@only@*/ cstring p_s, fileloc p_fl)
-     /*@modifies g_msgstream@*/ ;
+     /*@modifies g_warningstream@*/ ;
 
 extern bool llgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_fl) 
-     /*@modifies g_msgstream@*/ ;
+     /*@modifies g_warningstream@*/ ;
 # define llgenerror(p_o, p_s, p_fl) \
      xllgenerror (__FILE__, __LINE__, p_o, p_s, p_fl)
 
@@ -99,33 +100,38 @@ extern /*@private@*/ bool
    xllgenhinterror (char *p_srcFile, int p_srcLine,
 		    flagcode p_o, /*@only@*/ cstring p_s, /*@only@*/ cstring p_hint, 
 		    fileloc p_fl) 
-     /*@modifies g_msgstream@*/ ;
+     /*@modifies g_warningstream@*/ ;
 
 extern bool llgenhinterror (flagcode p_o, /*@only@*/ cstring p_s, /*@only@*/ cstring p_hint, 
-			    fileloc p_fl) /*@modifies g_msgstream@*/ ;
+			    fileloc p_fl) /*@modifies g_warningstream@*/ ;
 
 # define llgenhinterror(p_o, p_s, p_hint, p_fl) \
      xllgenhinterror (__FILE__, __LINE__, p_o, p_s, p_hint, p_fl)
 
 
 extern void llerror (flagcode p_o, /*@only@*/ cstring p_s) 
-   /*@globals g_msgstream, g_currentloc@*/ 
-   /*@modifies g_msgstream@*/ ;
+   /*@globals g_warningstream, g_currentloc@*/ 
+   /*@modifies g_warningstream@*/ ;
 # define llerror(p_o, p_s) \
    ((void) llgenerror (p_o, p_s, g_currentloc))
 
-extern void llgenmsg (/*@only@*/ cstring p_s, fileloc p_fl) /*@modifies g_msgstream@*/ ;
-extern /*@noreturn@*/ void llfatalerror (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern void llgenmsg (/*@only@*/ cstring p_s, fileloc p_fl)
+   /*@modifies g_warningstream@*/ ;
+
+extern /*@noreturn@*/ void llfatalerror (/*@only@*/ cstring p_s) 
+   /*@modifies g_errorstream@*/ ;
+
 extern /*@noreturn@*/ void llfatalerrorLoc (/*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/ 
-   /*@modifies stderr@*/ ;
+   /*@modifies g_errorstream@*/ ;
+
 extern void llparseerror (/*@only@*/ cstring p_s) 
-   /*@globals g_msgstream, g_currentloc@*/ 
-   /*@modifies g_msgstream@*/ ;
+   /*@globals g_errorstream, g_currentloc@*/ 
+   /*@modifies g_errorstream@*/ ;
 
 # ifndef NOLCL
-extern /*@noreturn@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_msgstream@*/ ;
-extern /*@noreturn@*/ void lclfatalbug (/*@temp@*/ char *p_msg) /*@modifies g_msgstream@*/ ;
+extern /*@noreturn@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_warningstream@*/ ;
+extern /*@noreturn@*/ void lclfatalbug (/*@temp@*/ char *p_msg) /*@modifies g_warningstream@*/ ;
 extern int lclNumberErrors (void) /*@*/ ;
 extern bool lclHadNewError (void) /*@modifies internalState@*/ ;
 extern /*@noreturn@*/ void lclfatalerror (ltoken p_t, /*@only@*/ cstring p_msg);
@@ -142,30 +148,42 @@ extern bool lclHadError (void);
 extern void lclRedeclarationError (ltoken p_id);
 # endif
 
-extern void llerror_flagWarning (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern void llerror_flagWarning (/*@only@*/ cstring p_s) /*@modifies g_warningstream@*/ ;
 
 extern /*@noreturn@*/ void llbugaux (cstring p_file, int p_line, /*@only@*/ cstring p_s) 
-   /*@globals g_msgstream, g_currentloc@*/
-   /*@modifies *g_msgstream@*/ ; 
+   /*@globals g_warningstream, g_currentloc@*/
+   /*@modifies *g_warningstream@*/ ; 
 
 extern /*@noreturn@*/ void llbug (/*@only@*/ cstring p_s) 
-   /*@globals g_msgstream, g_currentloc@*/
-   /*@modifies *g_msgstream@*/ ; 
+   /*@globals g_warningstream, g_currentloc@*/
+   /*@modifies *g_warningstream@*/ ; 
 
    /* doesn't really exit, but don't mind errors if it doesn't */
 # define llbug(s) llbugaux (cstring_makeLiteralTemp (__FILE__), __LINE__, s)
 
-extern void llquietbugaux (/*@only@*/ cstring p_s, cstring, int) /*@modifies *g_msgstream@*/ ; 
-extern void llquietbug (/*@only@*/ cstring) /*@modifies *g_msgstream@*/ ; 
+extern void llquietbugaux (/*@only@*/ cstring p_s, cstring, int) /*@modifies *g_warningstream@*/ ; 
+extern void llquietbug (/*@only@*/ cstring) /*@modifies *g_warningstream@*/ ; 
 # define llquietbug(s) llquietbugaux (s, cstring_makeLiteralTemp (__FILE__), __LINE__)
 
-extern void llcontbug (/*@only@*/ cstring p_s) /*@modifies *g_msgstream@*/ ; 
+extern void llcontbug (/*@only@*/ cstring p_s) /*@modifies *g_warningstream@*/ ; 
        /* doesn't really exit, but don't mind errors if it doesn't */
 # define llcontbug(s)  (llbug (s))
 
 extern void cleanupMessages (void) 
-   /*@globals g_msgstream, g_currentloc;@*/
-   /*@modifies g_msgstream, internalState@*/ ;
+   /*@globals g_warningstream, g_currentloc;@*/
+   /*@modifies g_warningstream, internalState@*/ ;
+
+extern void displayScan (/*@only@*/ cstring p_msg)
+  /*@modifies g_messagestream@*/ ;
+
+extern void displayScanOpen (/*@only@*/ cstring p_msg)
+  /*@modifies g_messagestream@*/ ;
+
+extern void displayScanContinue (/*@temp@*/ cstring p_msg)
+  /*@modifies g_messagestream@*/ ;
+
+extern void displayScanClose (void)
+  /*@modifies g_messagestream@*/ ;
 
 /*
 ** Report error iff f1 and f2 are set.
@@ -174,11 +192,11 @@ extern void cleanupMessages (void)
 extern bool 
 xoptgenerror2 (char *p_srcFile, int p_srcLine,
 	       flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool 
 optgenerror2 (flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define optgenerror2(p_f1, p_f2, p_s, p_loc) \
   (xoptgenerror2 (__FILE__, __LINE__, p_f1, p_f2, p_s, p_loc))
 
@@ -189,28 +207,28 @@ optgenerror2 (flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_lo
 extern bool 
 xoptgenerror2n (char *p_srcFile, int p_srcLine,
 		flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool 
 optgenerror2n (flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define optgenerror2n(p_f1, p_f2, p_s, p_loc) \
   (xoptgenerror2n (__FILE__, __LINE__, p_f1, p_f2, p_s, p_loc))
 
 extern /*@private@*/ bool xlloptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool lloptgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define lloptgenerror(p_o, p_s, p_loc) \
    (xlloptgenerror (__FILE__, __LINE__, p_o, p_s, p_loc))
 
 extern bool xllnoptgenerror (char *p_srcFile, int p_srcLine,
 			     flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool llnoptgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define llnoptgenerror(p_o, p_s, p_loc) \
    (xllnoptgenerror (__FILE__, __LINE__, p_o, p_s, p_loc))
 
@@ -219,12 +237,12 @@ extern /*@private@*/ bool
 			  ctype p_t1, exprNode p_e1, 
 			  ctype p_t2, exprNode p_e2,
 			  /*@only@*/ cstring p_s, fileloc p_fl)
-     /*@modifies *g_msgstream, internalState@*/ ;
+     /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool llgenformattypeerror (ctype p_t1, exprNode p_e1, 
 				  ctype p_t2, exprNode p_e2,
 				  /*@only@*/ cstring p_s, fileloc p_fl)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define llgenformattypeerror(p_t1, p_e1, p_t2, p_e2, p_s, p_fl) \
   xllgenformattypeerror (__FILE__, __LINE__, p_t1, p_e1, p_t2, p_e2, p_s, p_fl)
 
@@ -233,13 +251,13 @@ extern bool xllgentypeerror (char *p_srcFile, int p_srcLine,
 			     ctype p_t2, exprNode p_e2,
 			     /*@only@*/ cstring p_s,
 			     fileloc p_fl)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool llgentypeerror (ctype p_t1, exprNode p_e1,
 			    ctype p_t2, exprNode p_e2,
 			    /*@only@*/ cstring p_s,
 			    fileloc p_fl)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 # define llgentypeerror(p_t1, p_e1, p_t2, p_e2, p_s, p_fl) \
   xllgentypeerror (__FILE__, __LINE__, p_t1, p_e1, p_t2, p_e2, p_s, p_fl)
 
@@ -249,7 +267,7 @@ extern bool gentypeerror (/*@sef@*/ ctype p_t1,
 			  /*@sef@*/ exprNode p_e2,
 			  /*@sef@*/ /*@only@*/ cstring p_s,
 			  /*@sef@*/ fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 /*@-branchstate@*/ /* sef only s is freed on one branch */
 #define gentypeerror(t1, e1, t2, e2, s, loc)      \
@@ -266,7 +284,7 @@ extern bool gentypeerror (/*@sef@*/ ctype p_t1,
 extern bool 
   optgenerror (/*@sef@*/ flagcode p_o, /*@sef@*/ /*@only@*/ cstring p_s,
 	       /*@sef@*/ fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 
 /*@-branchstate@*/ /* sef only s is freed on one branch */
 #define optgenerror(o,s,loc)      \
@@ -277,23 +295,23 @@ extern bool
 extern void 
   voptgenerror (/*@sef@*/ flagcode p_o, /*@sef@*/ /*@only@*/ cstring p_s, 
 		/*@sef@*/ fileloc p_loc)
-  /*@modifies *g_msgstream, internalState@*/ ;
+  /*@modifies *g_warningstream, internalState@*/ ;
 #define voptgenerror(o, s, loc)   ((void) optgenerror(o,s,loc))
 
 extern /*@private@*/ bool 
   xfsgenerror (char *p_srcFile, int p_srcLine,
 		flagSpec p_fs, /*@only@*/ cstring p_s, fileloc p_fl) 
-     /*@modifies g_msgstream, internalState@*/ ;
+     /*@modifies g_warningstream, internalState@*/ ;
 
 extern bool fsgenerror (flagSpec p_fs, /*@only@*/ cstring p_s, fileloc p_fl) 
-     /*@modifies g_msgstream, internalState@*/ ;
+     /*@modifies g_warningstream, internalState@*/ ;
 # define fsgenerror(p_fs, p_s, p_fl) \
      xfsgenerror (__FILE__, __LINE__, p_fs, p_s, p_fl)
 
 extern void 
 vfsgenerror (/*@sef@*/ flagSpec p_fs, /*@sef@*/ /*@only@*/ cstring p_s, 
 	     /*@sef@*/ fileloc p_loc)
-     /*@modifies *g_msgstream, internalState@*/ ;
+     /*@modifies *g_warningstream, internalState@*/ ;
 #define vfsgenerror(fs, s, loc)   ((void) fsgenerror(fs,s,loc))
 
 /*
@@ -337,26 +355,27 @@ extern void
 
 
 extern /*@private@*/ bool /*@alt void@*/ xllforceerror (char *p_srcFile, int p_srcLine, flagcode p_code, /*@only@*/ cstring p_s, fileloc p_fl) 
-     /*@modifies g_msgstream@*/ ; 
+     /*@modifies g_warningstream@*/ ; 
 
 extern bool /*@alt void@*/ llforceerror (flagcode p_code, /*@only@*/ cstring p_s, fileloc p_fl) 
-     /*@modifies g_msgstream@*/ ; 
+     /*@modifies g_warningstream@*/ ; 
 # define llforceerror(p_code, p_s, p_fl) \
      (xllforceerror (__FILE__, __LINE__, p_code, p_s, p_fl))
 
 extern /*@private@*/ bool xcppoptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
 			     /*@only@*/ cstring p_s, cppReader *p_pfile)
-     /*@modifies g_msgstream, p_pfile@*/ ;
+     /*@modifies g_warningstream, p_pfile@*/ ;
 
-extern bool cppoptgenerror (flagcode p_code, /*@only@*/ cstring p_s, cppReader *p_pfile)
-     /*@modifies g_msgstream, p_pfile@*/ ;
+extern bool /*@alt void@*/
+cppoptgenerror (flagcode p_code, /*@only@*/ cstring p_s, cppReader *p_pfile)
+     /*@modifies g_warningstream, p_pfile@*/ ;
 # define cppoptgenerror(p_code, p_s, p_pfile) \
     (xcppoptgenerror (__FILE__, __LINE__, p_code, p_s, p_pfile))
 
 extern void llerrorlit (flagcode p_o, char *p_s);
 # define llerrorlit(o, s)   ((void) llerror (o, cstring_makeLiteral (s)))
 
-extern void llgenindentmsg (/*@only@*/ cstring p_s, fileloc p_fl) /*@modifies g_msgstream@*/ ;
+extern void llgenindentmsg (/*@only@*/ cstring p_s, fileloc p_fl) /*@modifies g_warningstream@*/ ;
 
 extern /*@noreturn@*/ void llbugexitlit (char *p_s);
 # define llbugexitlit(s)    (llbug (cstring_makeLiteral (s)))
@@ -373,6 +392,7 @@ extern void llmsglit (char *p_s);
 # define llmsglit(s)        (llmsg (cstring_makeLiteral (s)))
 
 extern void ppllerror (/*@only@*/ cstring p_s);
+
 extern void genppllerrorhint (flagcode p_code, /*@only@*/ cstring p_s, 
 			      /*@only@*/ cstring p_hint);
 extern void genppllerror (flagcode p_code, /*@only@*/ cstring p_s);
@@ -383,8 +403,16 @@ extern void llgenindentmsgnoloc (/*@only@*/ cstring p_s);
 
 extern /*@observer@*/ cstring lldecodeerror (int) /*@*/ ;
 
-extern void prepareMessage (void) /*@modifies internalState, g_msgstream@*/ ;
-extern void closeMessage (void) /*@modifies internalState, g_msgstream@*/ ;
+/*@i523@*/
+/*
+** should be static, but used in cpperror (which shouldn't exist)
+*/
+
+extern void prepareMessage (void)
+  /*@modifies internalState, g_messagestream@*/ ;
+
+extern void closeMessage (void)
+  /*@modifies internalState, g_messagestream@*/ ;
 
 extern void llflush (void) /*@modifies systemState@*/ ;
 

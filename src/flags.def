@@ -3532,7 +3532,8 @@ static flaglist flags =
     FK_SYNTAX, FK_PREPROC, plainFlag,
     "preproc",
     FLG_PREPROC,
-    "preprocessing error", NULL,
+    "preprocessing error",
+    "Preprocessing error.",
     0, 0
   },
 
@@ -4082,13 +4083,86 @@ static flaglist flags =
     "suppress herald and error count",
     NULL, 0, 0
   },
+
+  /*
+  ** Default is to send messages, warnings and errors to stderr
+  */
+
   {
-    FK_DISPLAY, FK_ERRORS, plainFlag,
-    "usestderr",
-    FLG_USESTDERR,
-    "send error messages to standard error (instead of standard out)",
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "messagestreamstdout",
+    FLG_MESSAGESTREAMSTDOUT,
+    "send status messages to standard output stream",
     NULL, 0, 0
   },
+  {
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "messagestreamstderr",
+    FLG_MESSAGESTREAMSTDERR,
+    "send status messages to standard error stream",
+    NULL, 0, 0
+  },
+  {
+    FK_DISPLAY, FK_ERRORS, globalStringFlag, ARG_FILE,
+    "messagestream",
+    FLG_MESSAGESTREAM,
+    "send status messages to <file>",
+    NULL, 0, 0
+  },
+
+  {
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "warningstreamstdout",
+    FLG_WARNINGSTREAMSTDOUT,
+    "send warnings to standard output stream",
+    NULL, 0, 0
+  },
+  {
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "warningstreamstderr",
+    FLG_WARNINGSTREAMSTDERR,
+    "send warnings to standard error stream",
+    NULL, 0, 0
+  },
+  {
+    FK_DISPLAY, FK_ERRORS, globalStringFlag, ARG_FILE,
+    "warningstream",
+    FLG_WARNINGSTREAM,
+    "send warnings to <file>",
+    NULL, 0, 0
+  },
+
+  {
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "errorstreamstdout",
+    FLG_ERRORSTREAMSTDOUT,
+    "send fatal errors to standard output stream",
+    NULL, 0, 0
+  },
+  {
+    FK_DISPLAY, FK_ERRORS, idemGlobalFlag,
+    "errorstreamstderr",
+    FLG_ERRORSTREAMSTDERR,
+    "send fatal errors to standard error stream",
+    NULL, 0, 0
+  },
+  {
+    FK_DISPLAY, FK_ERRORS, globalStringFlag, ARG_FILE,
+    "errorstream",
+    FLG_ERRORSTREAM,
+    "send fatal errors to <file>",
+    NULL, 0, 0
+  },
+  
+  {
+    FK_DISPLAY, FK_ERRORS, globalFlag,
+    "streamoverwrite",
+    FLG_STREAMOVERWRITE,
+    "warn and exit if a stream output file would overwrite an existing file",
+    NULL, 0, 0
+  },
+
+
   {
     FK_DISPLAY, FK_ERRORS, plainFlag,
     "showsummary",

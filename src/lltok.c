@@ -34,67 +34,67 @@
 bool
 lltok_isSemi (lltok tok)
 {
-  return (tok.tok == TSEMI);
+  return (tok->tok == TSEMI);
 }
 
 bool
 lltok_isMult (lltok tok)
 {
-  return (tok.tok == TMULT);
+  return (tok->tok == TMULT);
 }
 
 bool lltok_isInc_Op (lltok tok)
 {
-  return (tok.tok == INC_OP);
+  return (tok->tok == INC_OP);
 }
 
 bool lltok_isDec_Op  (lltok tok)
 {
-  return (tok.tok == DEC_OP);
+  return (tok->tok == DEC_OP);
 }
 
 
 /* DRL added this function 10/23/2000 for boolean stuff */
 bool lltok_isEq_Op (lltok tok)
 {
-  return (tok.tok == EQ_OP);
+  return (tok->tok == EQ_OP);
 }
 
 /* DRL added this function 10/25/2000 for boolean stuff */
 bool lltok_isAnd_Op (lltok tok)
 {
-  return (tok.tok == AND_OP);
+  return (tok->tok == AND_OP);
 }
 
 bool lltok_isOr_Op (lltok tok)
 {
-  return (tok.tok == OR_OP);
+  return (tok->tok == OR_OP);
 }
 
 bool lltok_isNot_Op (lltok tok)
 {
-  return (tok.tok ==  TEXCL);
+  return (tok->tok ==  TEXCL);
 }
 /*drl7x added this function 11/20/00 */
 
 bool lltok_isLt_Op (lltok tok)
 {
-  return (tok.tok ==  TLT);
+  return (tok->tok ==  TLT);
 }
 
 bool lltok_isGt_Op (lltok tok)
 {
-  return (tok.tok ==  TGT);
+  return (tok->tok ==  TGT);
 }
   
 bool lltok_isGe_Op (lltok tok)
 {
-  return (tok.tok ==  GE_OP);
+  return (tok->tok ==  GE_OP);
 }
 
 bool lltok_isLe_Op (lltok tok)
 {
-  return (tok.tok ==  LE_OP);
+  return (tok->tok ==  LE_OP);
 }
 
 /* end drl7x added */
@@ -103,12 +103,12 @@ bool lltok_isLe_Op (lltok tok)
 /*drl7x added 11 30 2000*/
 bool  lltok_isPlus_Op (lltok tok)
 {
-  return (tok.tok ==  TPLUS);
+  return (tok->tok ==  TPLUS);
 }
 
 bool  lltok_isMinus_Op (lltok tok)
 {
-  return (tok.tok ==  TMINUS);
+  return (tok->tok ==  TMINUS);
 }
 
 /*drl7x added 6 6 2001 */
@@ -116,7 +116,7 @@ bool  lltok_isMinus_Op (lltok tok)
 
 bool  lltok_isAmpersand_Op (lltok tok)
 {
-  return (tok.tok == TAMPERSAND);
+  return (tok->tok == TAMPERSAND);
 }
 
 /*end drl added */
@@ -125,24 +125,24 @@ bool  lltok_isAmpersand_Op (lltok tok)
 
 bool  lltok_isExcl_Op (lltok tok)
 {
-  return (tok.tok == TEXCL);
+  return (tok->tok == TEXCL);
 }
 
 bool  lltok_isTilde_Op (lltok tok)
 {
-  return (tok.tok == TTILDE);
+  return (tok->tok == TTILDE);
 }
 /*end drl added */
 
 
 bool lltok_isEnsures (lltok tok)
 {
-  return (tok.tok == QPOSTCLAUSE);
+  return (tok->tok == QPOSTCLAUSE);
 }
 
 bool lltok_isRequires (lltok tok)
 {
-  return (tok.tok == QPRECLAUSE);
+  return (tok->tok == QPRECLAUSE);
 }
 
 cstring
@@ -150,7 +150,7 @@ lltok_unparse (lltok tok)
 {
   char *lit;
 
-  switch (tok.tok)
+  switch (tok->tok)
     {
     case BREAK:      lit = "break"; break;
     case CASE:       lit = "case"; break;
@@ -204,7 +204,7 @@ lltok_unparse (lltok tok)
     case TRPAREN:    lit = ")"; break;
     case TLSQBR:     lit = "["; break;
     case TRSQBR:     lit = "]"; break;
-    case TDOT:       lit = "."; break;
+    case TDOT:       lit = "->"; break;
     case TAMPERSAND: lit = "&"; break;
     case TEXCL:      lit = "!"; break;
     case TTILDE:     lit = "~"; break;
@@ -257,22 +257,17 @@ lltok_unparse (lltok tok)
 lltok
 lltok_create (int tok, fileloc loc)
 {
-  lltok l;
+  lltok l = (lltok) dmalloc (sizeof (*l));
 
-  l.tok = tok;
-  l.loc = loc;
-
+  l->tok = tok;
+  l->loc = loc;
+  DPRINTF (("Create: %s [%p]", lltok_unparse (l), loc));
   return (l);
 }
 
-void lltok_release (lltok t) 
+void lltok_free (lltok t) 
 {
-  fileloc_free (t.loc);
+  fileloc_free (t->loc);
+  sfree (t);
 }
 
-fileloc lltok_stealLoc (lltok t)
-{
-  fileloc res = t.loc;
-  t.loc = fileloc_undefined;
-  return res;
-}

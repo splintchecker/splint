@@ -427,7 +427,6 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
  exprNode t, t1, t2;
  lltok tok;
  
- 
  llassert (e != NULL);
  
  data = e->edata;
@@ -674,7 +673,7 @@ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr)
   constraintExpr ret;
   ret = constraintExpr_makeUnaryOpConstraintExpr ( cexpr);
 
-  switch (op.tok)
+  switch (lltok_getTok (op))
     {
     case QMAXSET:
       ret->data = constraintExprData_unaryExprSetOp (ret->data, MAXSET);
@@ -798,14 +797,20 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
 {
   constraintExpr ret;
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr1, expr2);
-  if (op.tok == TPLUS)
-    ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
-  else if (op.tok == TMINUS)
-    ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_MINUS);
-    else
-      {
-	llassert(FALSE);
-      }
+
+  if (lltok_getTok (op) == TPLUS)
+    {
+      ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
+    }
+  else if (lltok_getTok (op) == TMINUS)
+    {
+      ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_MINUS);
+    }
+  else
+    {
+      llassert (FALSE);
+    }
+
   return ret;
 }
 

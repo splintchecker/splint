@@ -265,12 +265,7 @@ lcllib_isSkipHeader (cstring sname)
 
 static void printDot (void)
 {
-  if (context_getFlag (FLG_SHOWSCAN)) 
-    {
-      (void) fflush (g_msgstream);
-      fprintf (stderr, "."); 
-      (void) fflush (stderr);
-    }
+  displayScanContinue (cstring_makeLiteralTemp ("."));
 }
 
 void
@@ -281,10 +276,7 @@ dumpState (cstring cfname)
   
   f = fileTable_openFile (context_fileTable (), fname, "w");
 
-  if (context_getFlag (FLG_SHOWSCAN))
-    {
-      fprintf (stderr, "< Dumping to %s ", cstring_toCharsSafe (fname)); 
-    }
+  displayScanOpen (message ("Dumping to %s ", fname)); 
   
   if (f == NULL)
     {
@@ -338,11 +330,7 @@ dumpState (cstring cfname)
       check (fileTable_closeFile (context_fileTable (), f));
     }
 
-  if (context_getFlag (FLG_SHOWSCAN))
-    {
-      fprintf (g_msgstream, " >\n");
-    }
-
+  displayScanClose ();
   cstring_free (fname);
 }
 
@@ -427,17 +415,9 @@ loadStandardState ()
 
 	  DPRINTF (("Loading: %s", fpath));
 
-	  if (context_getDebug (FLG_SHOWSCAN))
-	    {
-	      fprintf (g_msgstream, "< loading standard library %s ", 
-		       cstring_toCharsSafe (fpath));
-	      result = loadLCDFile (stdlib, fpath);
-	      fprintf (g_msgstream, " >\n");
-	    }
-	  else
-	    {
-	      result = loadLCDFile (stdlib, fpath);
-	    }
+	  displayScanOpen (message ("loading standard library %s ", fpath));
+	  result = loadLCDFile (stdlib, fpath);
+	  displayScanClose ();
 
 	  check (fileTable_closeFile (context_fileTable (), stdlib));
 	}
@@ -593,9 +573,7 @@ loadState (cstring cfname)
 
   if (f == NULL)
     {
-      if (context_getDebug (FLG_SHOWSCAN))
-	fprintf (g_msgstream, " >\n");
-
+      displayScanClose ();
       llfatalerror (message ("Cannot open dump file for loading: %s", 
 			     fname));
     }

@@ -43,7 +43,7 @@ static bool uentry_isReallySpecified (uentry p_e) /*@*/ ;
 static void uentry_checkIterArgs (uentry p_ue);
 static cstring uentry_dumpAux (uentry p_v, bool p_isParam);
 
-static void uentry_showWhereLastKind (uentry p_spec) /*@modifies g_msgstream@*/ ; 
+static void uentry_showWhereLastKind (uentry p_spec) /*@modifies g_warningstream@*/ ; 
 
 static void uentry_combineModifies (uentry p_ue, /*@owned@*/ sRefSet p_sr) 
      /*@modifies p_ue@*/ ;
@@ -86,7 +86,7 @@ static void
   paramTypeError (/*@notnull@*/ uentry p_old, /*@notnull@*/ uentry p_oldCurrent,
 		  ctype p_oldType, /*@notnull@*/ uentry p_unew,
 		  /*@notnull@*/ uentry p_newCurrent, 
-		  ctype p_newType, int p_paramno) /*@modifies g_msgstream@*/ ;
+		  ctype p_newType, int p_paramno) /*@modifies g_warningstream@*/ ;
 
 static /*@only@*/ /*@notnull@*/ uentry 
   uentry_makeVariableAux (cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f,

@@ -68,7 +68,7 @@ extern aliasTable
   aliasTable_levelUnionNew (aliasTable p_t1, aliasTable p_t2, int p_level) 
   /*@modifies nothing*/ ;
 
-extern void aliasTable_checkGlobs (aliasTable p_t) /*@modifies g_msgstream@*/ ;
+extern void aliasTable_checkGlobs (aliasTable p_t) /*@modifies g_warningstream@*/ ;
 extern /*@only@*/ sRefSet aliasTable_aliasedBy (aliasTable p_s, sRef p_sr) /*@*/ ;
 extern void aliasTable_fixSrefs (aliasTable p_s);
 extern aliasTable aliasTable_levelUnionSeq (/*@returned@*/ aliasTable p_t1, 

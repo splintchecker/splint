@@ -33,7 +33,7 @@ globalsClause_create (lltok tok, globSet gl)
 {
   globalsClause res = (globalsClause) dmalloc (sizeof (*res));
   res->globs = gl;
-  res->loc = lltok_stealLoc (tok);
+  res->loc = fileloc_copy (lltok_getLoc (tok));
   /*@i423@*/ return res; /* releases doesn't seem to work right here... */
 }
 

@@ -121,14 +121,20 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
     
   ret->lexpr = constraintExpr_copy (l);
 
-  if (relOp.tok == GE_OP)
+  if (lltok_getTok (relOp) == GE_OP)
+    {
       ret->ar = GTE;
-  else if (relOp.tok == LE_OP)
-    ret->ar = LTE;
-  else if (relOp.tok == EQ_OP)
-    ret->ar = EQ;
+    }
+  else if (lltok_getTok (relOp) == LE_OP)
+    {
+      ret->ar = LTE;
+    }
+  else if (lltok_getTok (relOp) == EQ_OP)
+    {
+      ret->ar = EQ;
+    }
   else
-  llfatalbug ( message ("Unsupported relational operator"));
+    llfatalbug ( message ("Unsupported relational operator"));
 
   ret->expr = constraintExpr_copy (r);
 

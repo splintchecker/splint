@@ -56,6 +56,10 @@
 
 /*@access fileId*/
 
+static void 
+fileTable_addOpen (fileTable p_ft, /*@observer@*/ FILE *p_f, /*@only@*/ cstring p_fname) 
+  /*@modifies p_ft@*/ ;
+
 static bool fileTable_inRange (fileTable ft, fileId fid) /*@*/ 
 {
   return (fileTable_isDefined (ft) && (fid >= 0) && (fid < ft->nentries));
@@ -370,6 +374,12 @@ fileTable_addHeaderFile (fileTable ft, cstring name)
   res = fileTable_addFilePrim (ft, name, FALSE, FILE_HEADER, fileId_invalid);
   return res;
 
+}
+
+void
+fileTable_addStreamFile (fileTable ft, FILE *fstream, cstring name)
+{
+  fileTable_addOpen (ft, fstream, cstring_copy (name));
 }
 
 bool
@@ -751,7 +761,7 @@ fileTable_cleanup (fileTable ft)
 
   if (msg)
     {
-      (void) fflush (g_msgstream);
+      (void) fflush (g_warningstream);
       fprintf (stderr, "< cleaning");
     }
 
@@ -794,7 +804,7 @@ fileTable_cleanup (fileTable ft)
 
       if (msg && ((i % skip) == 0))
 	{
-	  (void) fflush (g_msgstream);
+	  (void) fflush (g_warningstream);
 
 	  if (i == 0) {
 	    fprintf (stderr, " ");

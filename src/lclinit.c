@@ -107,7 +107,7 @@ static void ProcessSynonym (void) /*@modifies nextToken@*/ ;
 
 static void
   LocalUserError (/*@unused@*/ ltoken p_t, /*@temp@*/ char *p_msg)
-  /*@modifies *g_msgstream@*/ ;
+  /*@modifies *g_warningstream@*/ ;
 
 /* If TRUE character has been redefined as a singleChar. */
 static bool defineSingleChar[LASTCHAR + 1];

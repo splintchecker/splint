@@ -190,7 +190,7 @@ static cstring describeFlagCode (flagcode p_flag) /*@*/ ;
 static cstringSList sortedFlags (void) /*@*/ ;
 static /*@observer@*/ cstring categoryName (flagkind p_kind) /*@*/ ;
 
-static flagcode flags_identifyFlagAux (cstring p_s, bool p_quiet) /*@modifies g_msgstream@*/ ;
+static flagcode flags_identifyFlagAux (cstring p_s, bool p_quiet) /*@modifies g_warningstream@*/ ;
 
 # if 0
 static /*@unused@*/ cstring listModes (void) /*@*/ ;
@@ -219,6 +219,28 @@ bool flagcode_isModeFlag (flagcode f)
 bool flagcode_isNameChecksFlag (flagcode f)
 {
   return (flags[f].main == FK_NAMES);
+}
+
+bool flagcode_isMessageControlFlag (flagcode f)
+{
+  /*
+  ** True if opt controls the display of messages.
+  ** These flags must be processed first.
+  */
+
+  return (f == FLG_SHOWSCAN 
+	  || f == FLG_WARNRC 
+	  || f == FLG_PARENFILEFORMAT
+	  || f == FLG_MESSAGESTREAMSTDERR
+	  || f == FLG_MESSAGESTREAMSTDOUT
+	  || f == FLG_WARNINGSTREAMSTDERR
+	  || f == FLG_WARNINGSTREAMSTDOUT
+	  || f == FLG_ERRORSTREAMSTDERR
+	  || f == FLG_ERRORSTREAMSTDOUT
+	  || f == FLG_MESSAGESTREAM
+	  || f == FLG_WARNINGSTREAM
+	  || f == FLG_ERRORSTREAM
+	  || f == FLG_STREAMOVERWRITE);
 }
 
 /*
@@ -1180,6 +1202,23 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	  
 	  res = SKIP_FLAG;
 	}
+      else if (cstring_equalLit (cflag, "usestderr"))
+	{
+	  if (!quiet)
+	    {
+	      llerror_flagWarning 
+		(cstring_makeLiteral
+		 ("usestderr flag is obsolete. This has been replaced "
+		  "by more precise flags for controlling the warning, "
+		  "status message and fatal error streams independently: message-stream-stdout, "
+		  "message-stream-stderr, message-stream <file>, "
+		  "warning-stream-stdout, warning-stream-stderr, warning-stream <file>, "
+		  "error-stream-stdout, error-stream-stderr, error-stream <file>."));
+	    }
+	  
+	  res = SKIP_FLAG;
+	}
+
       else if (cstring_equalLit (cflag, "stdio"))
 	{
 	  if (!quiet) 

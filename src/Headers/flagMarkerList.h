@@ -32,7 +32,7 @@ extern ynm
   flagMarkerList_suppressError (flagMarkerList p_s, flagcode p_code, fileloc p_loc) /*@*/ ;
 
 extern void flagMarkerList_checkSuppressCounts (flagMarkerList p_s) 
-   /*@modifies g_msgstream@*/ ;
+   /*@modifies g_warningstream@*/ ;
 
 extern bool
   flagMarkerList_inIgnore (flagMarkerList p_s, fileloc p_loc) /*@*/ ;

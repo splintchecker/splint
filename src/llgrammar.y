@@ -39,7 +39,7 @@ static /*@unused@*/ void yyprint ();
 /*@=noparams@*/
 
 /*@-redecl@*/
-void ylerror (char *) /*@modifies *g_msgstream@*/ ;
+void ylerror (char *) /*@modifies *g_warningstream@*/ ;
 /*@=redecl@*/
 
 bool g_inTypeDef = FALSE;

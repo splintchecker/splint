@@ -537,8 +537,8 @@ struct if_stack {
 };
 typedef struct if_stack cppIfStackFrame;
 
-extern void cppBuffer_lineAndColumn (/*@null@*/ cppBuffer *, /*@out@*/ int *,
-				     /*@out@*/ /*@null@*/ int *);
+extern void cppBuffer_getLineAndColumn (/*@null@*/ cppBuffer *, /*@out@*/ int *,
+					/*@out@*/ /*@null@*/ int *);
 extern /*@exposed@*/ /*@null@*/ cppBuffer *cppReader_fileBuffer (cppReader *);
 
 extern void cppReader_growBuffer (cppReader *, size_t);

@@ -353,13 +353,10 @@ extern void macrocache_processUndefinedElements (macrocache m)
 		}
 	      else
 		{
-		  if (context_getFlag (FLG_SHOWSCAN))
+		  if (!fileloc_isLib (fl))
 		    {
-		      if (!fileloc_isLib (fl))
-			{
-			  lldiagmsg (message ("< checking macros %q >",
-					      fileloc_outputFilename (fl)));
-			}
+		      displayScan (message ("checking macros %q",
+					    fileloc_outputFilename (fl)));
 		    }
 		  
 		  lastfl = fl;

@@ -8,8 +8,18 @@
 
 extern /*@owned@*/ fileloc g_currentloc;
 
+/*
+** All the streams are unchecked for now. 
+*/
+
+/* stream for warning messages */
+/*@unchecked@*/ extern /*@relnull@*/ /*@dependent@*/ /*:open:*/ FILE *g_warningstream; 
+
+/* stream for status messages */
+/*@unchecked@*/ extern /*@relnull@*/ /*@dependent@*/ /*:open:*/ FILE *g_messagestream; 
+
 /* stream for error messages */
-extern /*:open:*/ FILE *g_msgstream; 
+/*@unchecked@*/ extern /*@relnull@*/ /*@dependent@*/ /*:open:*/ FILE *g_errorstream; 
 
 /*@-ansireserved@*/
 /* This macro is defined by flex. */

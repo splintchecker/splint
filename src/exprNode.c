@@ -4131,7 +4131,7 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ lltok dot,
 		      /*@only@*/ cstring f)
 {
   exprNode res = exprNode_fieldAccessAux (s, lltok_getLoc (dot), f);
-  lltok_release (dot);
+  lltok_free (dot);
   return res;
 }
 
@@ -4335,7 +4335,7 @@ exprNode_arrowAccess (/*@only@*/ exprNode s,
 		      /*@only@*/ cstring f)
 {
   exprNode res = exprNode_arrowAccessAux (s, lltok_getLoc (arrow), f);
-  lltok_release (arrow);
+  lltok_free (arrow);
   return res;
 }
 
@@ -4974,7 +4974,7 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
   if (exprNode_isError (e))
     {
       qtype_free (q);
-      lltok_release (tok);
+      lltok_free (tok);
       return exprNode_undefined;
     }
 

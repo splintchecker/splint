@@ -824,7 +824,7 @@ context_resetAllFlags (void)
 	    default:
 	      break;
 	    } /*@=loopswitchbreak@*/
-	  
+
 	  context_setString (code, val);
 	}
       else
@@ -839,6 +839,8 @@ context_resetAllFlags (void)
 
   /*@i34 move this into flags.def */
     
+  gc.flags[FLG_STREAMOVERWRITE] = TRUE;
+
   gc.flags[FLG_OBVIOUSLOOPEXEC] = TRUE;
   gc.flags[FLG_MODIFIES] = TRUE;
   gc.flags[FLG_NESTCOMMENT] = TRUE;
@@ -2888,76 +2890,133 @@ context_setString (flagcode flag, cstring val)
 
   llassert (index >= 0 && index <= NUMSTRINGFLAGS);
 
-  if (flag == FLG_SYSTEMDIRS)
-    {
-      llassert (cstring_isDefined (val));
+  DPRINTF (("set string: %s", flagcode_unparse (flag)));
 
-      if (cstring_firstChar (val) == '\"')
-	{
-	  cstring oval = val;
-	  cstring tval = cstring_copy (cstring_suffix (val, 1));
+  switch (flag)
+    {
+    case FLG_MESSAGESTREAM:
+    case FLG_WARNINGSTREAM:
+    case FLG_ERRORSTREAM:
+      {
+	if (cstring_isDefined (val))
+	  {
+	    FILE *fstream;
+
+	    if (osd_fileExists (val))
+	      {
+		if (context_getFlag (FLG_STREAMOVERWRITE))
+		  {
+		    llfatalerror (message 
+				  ("Output stream file %s would overwrite existing file. "
+				   "Use -streamoverwrite if you want to allow this.", 
+				   val));
+		  }
+	      }
+	    
+	    fstream = fopen (cstring_toCharsSafe (val), "w");
+
+	    if (fstream == NULL)
+	      {
+		llfatalerror (message ("Unable to open output stream file %s for writing", 
+				       val));
+	      }
+
+	    /*
+	    ** This ensures fstream will be closed on exit.
+	    */
+
+	    fileTable_addStreamFile (gc.ftab, fstream, cstring_copy (val));
+	    
+	    switch (flag)
+	      {
+	      case FLG_MESSAGESTREAM:
+		g_messagestream = fstream; 
+		/*@innerbreak@*/ break;
+	      case FLG_WARNINGSTREAM:
+		g_warningstream = fstream;
+		/*@innerbreak@*/ break;
+	      case FLG_ERRORSTREAM:
+		g_errorstream = fstream; 
+		/*@innerbreak@*/ break;
+		BADDEFAULT;
+	      }
+	    /*@-statetransfer@*/
+	  } /*@=statetransfer@*/ /* fstream not closed, but will be on exit */
+	break;
+      }
+    case FLG_SYSTEMDIRS:
+      {
+	llassert (cstring_isDefined (val));
 	
-	  if (cstring_lastChar (tval) != '\"')
-	    {
-	      int n = cstring_length (tval) - 1;
-
-	      while (isspace ((int) cstring_getChar (tval, size_fromInt (n))))
-		{
-		  n--;
-		}
-
-	      if (cstring_getChar (tval, size_fromInt (n)) != '\"')
-		{
-		  llerror_flagWarning (message ("Setting -systemdirs to string with unmatching quotes: %s", val));
-		}
-	      else
-		{
-		  cstring otval = tval;
-		  tval = cstring_prefix (tval, size_fromInt (n));
-		  cstring_free (otval);
-		}
-	    }
-	  
-	  val = cstring_copy (cstring_clip (tval, cstring_length (tval) - 1));
-	  DPRINTF (("val = %s", val));
-	  cstring_free (tval);
-	  cstring_free (oval);
-	}
+	if (cstring_firstChar (val) == '\"')
+	  {
+	    cstring oval = val;
+	    cstring tval = cstring_copy (cstring_suffix (val, 1));
+	    
+	    if (cstring_lastChar (tval) != '\"')
+	      {
+		int n = cstring_length (tval) - 1;
+		
+		while (isspace ((int) cstring_getChar (tval, size_fromInt (n))))
+		  {
+		    n--;
+		  }
+		
+		if (cstring_getChar (tval, size_fromInt (n)) != '\"')
+		  {
+		    llerror_flagWarning 
+		      (message ("Setting -systemdirs to string with unmatching quotes: %s", val));
+		  }
+		else
+		  {
+		    cstring otval = tval;
+		    tval = cstring_prefix (tval, size_fromInt (n));
+		    cstring_free (otval);
+		  }
+	      }
+	    
+	    val = cstring_copy (cstring_clip (tval, cstring_length (tval) - 1));
+	    DPRINTF (("val = %s", val));
+	    cstring_free (tval);
+	    cstring_free (oval);
+	  }
+	
+	break;
+      }
+    case FLG_TMPDIR:
+      {
+	llassert (cstring_isDefined (val));
+	
+	if (cstring_length (val) == 0)
+	  {
+	    cstring_free (val);
+	    val = message (".%s", cstring_makeLiteralTemp (CONNECTSTR));
+	  }
+	else if (cstring_lastChar (val) != CONNECTCHAR)
+	  {
+	    val = cstring_appendChar (val, CONNECTCHAR);
+	  }
+	else
+	  {
+	    ;
+	  }
+	break;
+      }
+    default:
+      {
+	; /* Okay not handle everything in this switch */
+      }
     }
-
-  if (flag == FLG_TMPDIR)
-    {
-      llassert (cstring_isDefined (val));
-      
-      if (cstring_length (val) == 0)
-	{
-	  cstring_free (val);
-	  val = message (".%s", cstring_makeLiteralTemp (CONNECTSTR));
-	}
-      else if (cstring_lastChar (val) != CONNECTCHAR)
-	{
-	  val = cstring_appendChar (val, CONNECTCHAR);
-	}
-      else
-	{
-	  ;
-	}
-    }
-
+  
   if (cstring_length (val) >= 1
       && cstring_firstChar (val) == '\"')
     {
       llerror_flagWarning (message
-		       ("setting %s to string beginning with \".  You probably "
-			"don't meant to have the \"'s.",
-			flagcode_unparse (flag)));
+			   ("setting %s to string beginning with \".  You probably "
+			    "don't meant to have the \"'s.",
+			    flagcode_unparse (flag)));
     }
-
-  if (flag == FLG_BOOLTYPE)
-    {
-
-    }
-
+  
   gc.strings[index] = val;
 }
 
@@ -3798,15 +3857,6 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
 {
   DPRINTF (("Set flag: %s / %s", flagcode_unparse (f), bool_unparse (b)));
 
-  if (f == FLG_USESTDERR) 
-    {
-      if (b) {
-	g_msgstream = stderr;
-      } else {
-	g_msgstream = stdout;
-      }
-    }
-
   /*
   ** Removed test for special flags.
   */
@@ -3868,6 +3918,24 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
   
   switch (f)
     {     
+    case FLG_MESSAGESTREAMSTDOUT:
+      g_messagestream = stdout;
+      break;
+    case FLG_MESSAGESTREAMSTDERR:
+      g_messagestream = stderr;
+      break;
+    case FLG_WARNINGSTREAMSTDOUT:
+      g_warningstream = stdout;
+      break;
+    case FLG_WARNINGSTREAMSTDERR:
+      g_warningstream = stderr;
+      break;
+    case FLG_ERRORSTREAMSTDOUT:
+      g_errorstream = stdout;
+      break;
+    case FLG_ERRORSTREAMSTDERR:
+      g_errorstream = stderr;
+      break;
     case FLG_ALLEMPTY:
       DOSET (FLG_ALLEMPTY, b);
       DOSET (FLG_IFEMPTY, b);
@@ -4785,7 +4853,6 @@ valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
 }
 
 
-
 /*drl 12/30/01 these are some ugly functions that were added to facilitate struct annotations */
 
 
@@ -4877,74 +4944,3 @@ bool hasInvariants (ctype ct) /*@*/
     return FALSE;
   
 }
-
-/*drl 1/6/2001: I didn't think these functions were solid enough to include in the
-  stable  release of splint.  I coomented them out so that they won't break anything
-  but didn't delete them because they will be fixed and included later
-*/
-
-/*
-constraintList getInvariants (ctype ct)
-{
-  
-  llassert(hasInvariants(ct) );
-
-  return  globalStructInfo.inv;
-}
-*/
-
-/*
-static int getSref (ctype ct, sRef s)
-{
-  int i;
-
-  i = 0;
-
-  / *
-    DEBUGGIN INFO
-    
-    fprintf(stderr, "getSref: ct = %s (%x)\n",  ctype_unparse(ct), ct );
-    
-    fprintf(stderr,"getSref: s =  (%s) %X \n", sRef_unparse(s),  s);
-  * /
-  
-  while (i < globalStructInfo.ngetUe)
-    {
-      DPRINTF(( message(" getSref:: comparing ue=%s and sRef=%s",
-			uentry_unparse(globalStructInfo.t[i].ue),
-			sRef_unparse(globalStructInfo.t[i].s)
-			)
-		));
-
-      / *
-      fprintf (stderr, " globalStructInfo.t[i].s = %x\n ",
-	       globalStructInfo.t[i].s );
-      * /
-      
-      if (sRef_same(globalStructInfo.t[i].s,s) )
-	return i;
-      
-      i++;
-    }
-  return -1;  
-}
-
-  
-sRef fixSref (ctype ct, sRef base, sRef fix)
-{
-  int index;
-  uentry ue;
-  cstring name;
-  index = getSref(ct, fix);
-
-  if (index < 0) 
-    return fix;
-
-  ue =  globalStructInfo.t[index].ue;
-  name = uentry_getName(ue);
-  fix = sRef_buildField(base, name );
-  cstring_free(name);
-  return fix;
-}
-
-*/

@@ -68,6 +68,11 @@ extern /*@observer@*/ cstring fileTable_getName (fileTable p_ft, fileId p_fid) /
 extern /*@observer@*/ cstring fileTable_getNameBase (fileTable p_ft, fileId p_fid) ; 
 extern fileId fileTable_addFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
+
+extern void fileTable_addStreamFile (fileTable p_ft, /*@dependent@*/ FILE *p_fstream,
+				     cstring p_name)
+   /*@modifies p_ft@*/ ;
+
 extern fileId fileTable_addHeaderFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
 extern fileId fileTable_addXHFile (fileTable p_ft, cstring p_name)
@@ -112,7 +117,7 @@ extern bool fileId_isHeader (fileId p_f) /*@*/ ;
 extern bool fileTable_sameBase (fileTable p_ft, fileId p_f1, fileId p_f2);
 extern void fileTable_cleanup (fileTable p_ft) /*@modifies fileSystem@*/;
 extern fileId fileTable_lookupBase (fileTable p_ft, cstring p_base) /*@modifies p_ft@*/ ;
-extern void fileTable_printTemps (fileTable p_ft) /*@modifies g_msgstream@*/ ;
+extern void fileTable_printTemps (fileTable p_ft) /*@modifies g_warningstream@*/ ;
 extern /*@unused@*/ /*@only@*/ cstring fileTable_unparse (fileTable p_ft) /*@*/ ;
 extern bool fileTable_exists (fileTable p_ft, cstring p_s) /*@*/ ;
 extern void fileTable_free (/*@only@*/ fileTable p_f);

@@ -476,7 +476,7 @@ L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext));
 		     if (context_inMacro ())
 		       {
 			 /* Don't use RETURN_TOK */
-			 yylval.tok = lltok_create (TENDMACRO, g_currentloc);
+			 yylval.tok = lltok_create (TENDMACRO, fileloc_copy (g_currentloc)); /* !!! evans 2002-03-13 */
 			 lastWasString = FALSE;
 			 return (TENDMACRO);
 		       }  

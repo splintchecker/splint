@@ -30,10 +30,10 @@
 # include "nameChecks.h"
 
 static bool checkCzechName (uentry p_ue, flagcode p_czechflag, bool p_report)
-  /*@modifies p_ue, g_msgstream@*/ ;
+  /*@modifies p_ue, g_warningstream@*/ ;
 
 static bool checkSlovakName (uentry p_ue, flagcode p_slovakflag, bool p_report)
-  /*@modifies p_ue, g_msgstream@*/ ;
+  /*@modifies p_ue, g_warningstream@*/ ;
 
 static cstring czechPrefix (cstring name)
 {

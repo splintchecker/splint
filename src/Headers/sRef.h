@@ -305,7 +305,7 @@ extern /*@exposed@*/ sRef
   sRef_fixBase (/*@returned@*/ sRef p_s, /*@returned@*/ sRef p_base) 
   /*@modifies p_s, p_base@*/ ;
 
-extern void sRef_showNotReallyDefined (sRef p_s) /*@modifies g_msgstream@*/ ;
+extern void sRef_showNotReallyDefined (sRef p_s) /*@modifies g_warningstream@*/ ;
 
 extern void sRef_enterFunctionScope (void) /*@modifies internalState@*/ ;
 extern void sRef_setGlobalScope (void) /*@modifies internalState@*/ ;
@@ -411,7 +411,7 @@ extern ynm sRef_isWriteable (sRef p_s) /*@*/ ;
 extern ynm sRef_isValidLvalue (sRef p_s) /*@*/ ;
 extern bool sRef_isStrictReadable (sRef p_s) /*@*/ ;
 extern bool sRef_hasNoStorage (sRef p_s) /*@*/ ;
-extern void sRef_showExpInfo (sRef p_s) /*@modifies g_msgstream*/ ;
+extern void sRef_showExpInfo (sRef p_s) /*@modifies g_warningstream*/ ;
 extern void sRef_setDefined (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setUndefined (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setOnly (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
@@ -421,10 +421,10 @@ extern void sRef_setKept (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setKeptComplete (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setFresh (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setShared (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
-extern void sRef_showAliasInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
-extern void sRef_showMetaStateInfo (sRef p_s, cstring p_key) /*@modifies g_msgstream@*/ ; 
-extern void sRef_showNullInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
-extern void sRef_showStateInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
+extern void sRef_showAliasInfo (sRef p_s) /*@modifies g_warningstream@*/ ;
+extern void sRef_showMetaStateInfo (sRef p_s, cstring p_key) /*@modifies g_warningstream@*/ ; 
+extern void sRef_showNullInfo (sRef p_s) /*@modifies g_warningstream@*/ ;
+extern void sRef_showStateInfo (sRef p_s) /*@modifies g_warningstream@*/ ;
 extern void sRef_setStateFromType (sRef p_s, ctype p_ct) /*@modifies p_s@*/ ;
 extern void sRef_kill (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setAllocated (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;

@@ -152,7 +152,7 @@ extern bool sort_setExporting (bool p_flag) /*@modifies internalState@*/ ;
 # define sort_isNoSort(s)       ((s) == 0)
 /* assume NOSORTHANDLE is #define to 0 in sort.c */
 
-extern /*@unused@*/ void sort_printStats(void) /*@modifies g_msgstream@*/ ;
+extern /*@unused@*/ void sort_printStats(void) /*@modifies g_warningstream@*/ ;
 
 extern bool sort_equal (sort p_s1, sort p_s2) /*@*/ ;  
 extern sort sort_fromLsymbol (lsymbol p_sortid) /*@modifies internalState@*/ ;

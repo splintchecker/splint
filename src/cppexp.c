@@ -551,20 +551,20 @@ struct operation cppexp_lex (cppReader *pfile)
 
 	if (c != '\'')
 	  cppReader_errorLit (pfile,
-			cstring_makeLiteralTemp ("malformatted character constant"));
+			      cstring_makeLiteralTemp ("malformatted character constant"));
 	else if (num_chars == 0)
 	  cppReader_errorLit (pfile, 
-			cstring_makeLiteralTemp ("empty character constant"));
+			      cstring_makeLiteralTemp ("empty character constant"));
 	else if (num_chars > max_chars)
 	  {
 	    num_chars = max_chars;
 	    cppReader_errorLit (pfile, 
-			  cstring_makeLiteralTemp ("character constant too long"));
+				cstring_makeLiteralTemp ("character constant too long"));
 	  }
 	else if (num_chars != 1 && ! cppReader_isTraditional (pfile))
 	  {
 	    cppReader_warningLit (pfile, 
-			    cstring_makeLiteralTemp ("multi-character character constant"));
+				  cstring_makeLiteralTemp ("multi-character character constant"));
 	  }
 	else
 	  {
@@ -638,7 +638,9 @@ struct operation cppexp_lex (cppReader *pfile)
 
 	  if (toktab->token == CPPREADER_ERRORTOK)
 	    {
-	      cppReader_error (pfile, message ("`%s' not allowed in operand of `#if'", cstring_fromChars (tok_start)));
+	      cppReader_error (pfile, 
+			       message ("`%s' not allowed in operand of `#if'",
+					cstring_fromChars (tok_start)));
 	    }
 
 	  op.op = toktab->token; 
@@ -997,7 +999,7 @@ cppReader_parseExpression (cppReader *pfile)
       if ((top->flags & HAVE_VALUE) != 0)
 	{
 	  cppReader_errorLit (pfile, 
-			cstring_makeLiteralTemp ("syntax error in #if"));
+			      cstring_makeLiteralTemp ("syntax error in #if"));
 	  goto syntax_error;
 	}
       top->flags |= HAVE_VALUE;
@@ -1018,14 +1020,14 @@ cppReader_parseExpression (cppReader *pfile)
 	      && ((top[0].flags & HAVE_VALUE) == 0))
 	    {
 	      cppReader_errorLit (pfile, 
-			    cstring_makeLiteralTemp ("syntax error - missing left operand"));
+				  cstring_makeLiteralTemp ("syntax error - missing left operand"));
 	      goto syntax_error;
 	    }
 	  if (((top[1].flags & RIGHT_OPERAND_REQUIRED) != 0)
 	      && ((top[1].flags & HAVE_VALUE) == 0))
 	    {
 	      cppReader_errorLit (pfile, 
-			    cstring_makeLiteralTemp ("syntax error - missing right operand"));
+				  cstring_makeLiteralTemp ("syntax error - missing right operand"));
 	      goto syntax_error;
 	    }
 	  /* top[0].value = (top[1].op)(v1, v2);*/
@@ -1097,7 +1099,7 @@ cppReader_parseExpression (cppReader *pfile)
 	      if (v2 == 0)
 		{
 		  cppReader_errorLit (pfile, 
-				cstring_makeLiteralTemp ("Division by zero in #if"));
+				      cstring_makeLiteralTemp ("Division by zero in #if"));
 		  v2 = 1;
 		}
 	      top->unsignedp = unsigned1 || unsigned2;
@@ -1116,7 +1118,7 @@ cppReader_parseExpression (cppReader *pfile)
 	      if (v2 == 0)
 		{
 		  cppReader_errorLit (pfile, 
-				cstring_makeLiteralTemp ("Division by zero in #if"));
+				      cstring_makeLiteralTemp ("Division by zero in #if"));
 		  v2 = 1;
 		}
 	      top->unsignedp = unsigned1 || unsigned2;
@@ -1141,7 +1143,7 @@ cppReader_parseExpression (cppReader *pfile)
 	      if ((top->flags & HAVE_VALUE) != 0)
 		{
 		  cppReader_errorLit (pfile, 
-				cstring_makeLiteralTemp ("syntax error"));
+				      cstring_makeLiteralTemp ("syntax error"));
 		  goto syntax_error;
 		}
 	      top->value = ~ v2;
@@ -1218,13 +1220,13 @@ cppReader_parseExpression (cppReader *pfile)
 	      /*@switchbreak@*/ break;
 	    case '(':  case '?':
 	      cppReader_errorLit (pfile, 
-			    cstring_makeLiteralTemp ("syntax error in #if"));
+				  cstring_makeLiteralTemp ("syntax error in #if"));
 	      goto syntax_error;
 	    case ':':
 	      if (top[0].op != '?')
 		{
 		  cppReader_errorLit (pfile,
-				cstring_makeLiteralTemp ("syntax error ':' without preceding '?'"));
+				      cstring_makeLiteralTemp ("syntax error ':' without preceding '?'"));
 		  goto syntax_error;
 		}
 	      else if (((top[1].flags & HAVE_VALUE) == 0)
@@ -1232,7 +1234,7 @@ cppReader_parseExpression (cppReader *pfile)
 		       || ((top[0].flags & HAVE_VALUE) == 0))
 		{
 		  cppReader_errorLit (pfile, 
-				cstring_makeLiteralTemp ("bad syntax for ?: operator"));
+				      cstring_makeLiteralTemp ("bad syntax for ?: operator"));
 		  goto syntax_error;
 		}
 	      else
@@ -1254,7 +1256,7 @@ cppReader_parseExpression (cppReader *pfile)
 		  || ((top[-1].flags & HAVE_VALUE) != 0))
 		{
 		  cppReader_errorLit (pfile, 
-				cstring_makeLiteralTemp ("mismatched parentheses in #if"));
+				      cstring_makeLiteralTemp ("mismatched parentheses in #if"));
 		  goto syntax_error;
 		}
 	      else
@@ -1282,7 +1284,7 @@ cppReader_parseExpression (cppReader *pfile)
 	  if (top != stack)
 	    {
 	      cppReader_errorLit (pfile, 
-			    cstring_makeLiteralTemp ("internal error in #if expression"));
+				  cstring_makeLiteralTemp ("internal error in #if expression"));
 	    }
 
 	  val = top->value;

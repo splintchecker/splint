@@ -22,7 +22,7 @@ extern int filelocStack_size (/*@sef@*/ filelocStack p_s) /*@*/ ;
 # define filelocStack_size(s)    (filelocStack_isDefined (s) ? (s)->nelements : 0)
 
 extern int filelocStack_includeDepth (filelocStack p_s);
-extern void filelocStack_printIncludes (filelocStack p_s) /*@modifies g_msgstream@*/ ;
+extern void filelocStack_printIncludes (filelocStack p_s) /*@modifies g_warningstream@*/ ;
 
 extern void filelocStack_clear (filelocStack p_s) /*@modifies p_s@*/ ;
 

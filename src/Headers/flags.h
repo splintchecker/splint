@@ -39,7 +39,7 @@ extern bool flagcode_isNamePrefixFlag (flagcode p_f);
 
 extern /*@only@*/ cstring  describeFlag (cstring p_flagname);
 
-extern flagcode flags_identifyFlag (cstring p_s) /*@modifies g_msgstream@*/ ;
+extern flagcode flags_identifyFlag (cstring p_s) /*@modifies g_warningstream@*/ ;
 extern flagcode flags_identifyFlagQuiet (cstring p_s) /*@modifies nothing@*/ ;
 
 extern void setValueFlag (flagcode p_opt, cstring p_arg);
@@ -55,7 +55,7 @@ extern bool flagcode_equal (flagcode p_code1, flagcode p_code2) /*@*/ ;
 extern /*@observer@*/ cstring flagcodeHint (flagcode p_f);
 
 extern flagkind identifyCategory (cstring p_s) /*@*/ ;
-extern void printCategory (flagkind p_kind) /*@modifies g_msgstream@*/ ;
+extern void printCategory (flagkind p_kind) /*@modifies g_warningstream@*/ ;
 
 extern bool flagcode_isInvalid (flagcode p_f) /*@*/ ;
 # define flagcode_isInvalid(f) ((f) == INVALID_FLAG)
@@ -80,26 +80,27 @@ extern bool flagcode_isWarnUseFlag (/*@sef@*/ flagcode p_f);
 # define flagcode_isWarnUseFlag(f) \
    ((f) == FLG_BUFFEROVERFLOW || (f) == FLG_BUFFEROVERFLOWHIGH)
 
-extern bool flagcode_hasNumber (flagcode p_f);
-extern bool flagcode_hasChar (flagcode p_f);
-extern bool flagcode_hasString (flagcode p_f);
-extern bool flagcode_hasArgument (flagcode p_f);
+extern bool flagcode_hasNumber (flagcode p_f) /*@*/ ;
+extern bool flagcode_hasChar (flagcode p_f) /*@*/ ;
+extern bool flagcode_hasString (flagcode p_f) /*@*/ ;
+extern bool flagcode_hasArgument (flagcode p_f) /*@*/ ;
 
 /*@constant observer cstring DEFAULT_MODE;@*/
 # define DEFAULT_MODE (cstring_makeLiteralTemp ("standard"))
 
-extern void flags_initMod (void);
+extern void flags_initMod (void) /*@modifies internalState@*/ ;
 
-extern bool isMode (cstring p_s);
-extern /*@only@*/ cstring describeModes (void);
-extern void summarizeErrors (void);
+extern bool isMode (cstring p_s) /*@*/ ;
+extern /*@only@*/ cstring describeModes (void) /*@modifies g_messagestream@*/ ;
+extern void summarizeErrors (void) /*@modifies g_messagestream@*/ ;
 
-extern bool flagcode_isNameChecksFlag (flagcode p_f);
-extern bool flagcode_isIdemFlag (flagcode p_f);
-extern bool flagcode_isModeFlag (flagcode p_f);
-extern bool flagcode_isSpecialFlag (flagcode p_f);
-extern bool flagcode_isGlobalFlag (flagcode p_f);
-
+extern bool flagcode_isNameChecksFlag (flagcode p_f) /*@*/ ;
+extern bool flagcode_isIdemFlag (flagcode p_f) /*@*/ ;
+extern bool flagcode_isModeFlag (flagcode p_f) /*@*/ ;
+extern bool flagcode_isSpecialFlag (flagcode p_f) /*@*/ ;
+extern bool flagcode_isGlobalFlag (flagcode p_f) /*@*/ ;
+extern bool flagcode_isMessageControlFlag (flagcode p_f) /*@*/ ;
+ 
 # else
 # error "Multiple include"
 # endif

@@ -31,6 +31,9 @@
 static /*@only@*/ flagSpecItem flagSpecItem_create (/*@only@*/ cstring fname)
 {
   flagSpecItem res = (flagSpecItem) dmalloc (sizeof (*res));
+  DPRINTF (("Creating item: [%p]", fname));
+  DPRINTF (("The name is: %s", fname));
+
   res->name = fname;
   res->code = flags_identifyFlag (fname);
   /* Invalid flag okay for now... */
@@ -49,13 +52,15 @@ static /*@only@*/ flagSpec flagSpec_create (/*@only@*/ flagSpecItem fitem,
   flagSpec res = (flagSpec) dmalloc (sizeof (*res));
   res->tspec = fitem;
   res->trest = frest;
+  DPRINTF (("New flag spec: %s", flagSpec_unparse (res)));
   return res;
 }
 
 flagSpec flagSpec_createPlain (cstring fname)
 {
   flagSpecItem fitem = flagSpecItem_create (fname);
-  flagSpec res = flagSpec_create (fitem, flagSpec_undefined);
+    flagSpec res = flagSpec_create (fitem, flagSpec_undefined);
+	DPRINTF (("New flag spec: %s", flagSpec_unparse (res)));
   return res;
 }
 

@@ -7,13 +7,13 @@
 # ifndef NAMECHECKS_H
 # define NAMECHECKS_H
 
-extern void checkCppName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkExternalName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkLocalName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkFileScopeName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkPrefix (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkAnsiName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
-extern void checkParamNames (uentry p_ue) /*@modifies g_msgstream@*/;
+extern void checkCppName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkExternalName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkLocalName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkFileScopeName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkPrefix (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkAnsiName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
+extern void checkParamNames (uentry p_ue) /*@modifies g_warningstream@*/;
 /*@i32! should get error without modifies p_ue@*/ 
 
 # else

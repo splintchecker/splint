@@ -76,7 +76,7 @@ alignof:
 	$(SPLINT) alignof.c -expect 2
 
 source:
-	$(SPLINT) -D DBL_MANT_DIG=25 source.c
+	$(SPLINT) -D DBL_MANT_DIG=25 source.c -expect 1
 
 
 

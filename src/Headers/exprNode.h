@@ -119,7 +119,7 @@ typedef /*@null@*/ union
 {
   cstring literal;
   cstring id;
-  lltok *tok;
+  lltok tok;
   qtype qt;    /* sizeof(type) */
   /* use for any 2-operator (comma, arrayFetch, case, stmt) */
   exprPair pair; 
@@ -307,7 +307,7 @@ extern exprNode exprNode_statement (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_
 extern exprNode exprNode_makeBlock (/*@only@*/ exprNode p_e);
 extern exprNode exprNode_compoundStatementExpression (/*@only@*/ lltok p_tlparen, /*@only@*/ exprNode p_e) ;
 
-extern void exprNode_checkIfPred (exprNode p_pred) /*@modifies g_msgstream@*/ ;
+extern void exprNode_checkIfPred (exprNode p_pred) /*@modifies g_warningstream@*/ ;
 
 extern exprNode exprNode_if (/*@only@*/ exprNode p_pred, /*@only@*/ exprNode p_tclause);
 extern exprNode 

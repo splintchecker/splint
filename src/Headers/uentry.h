@@ -254,7 +254,7 @@ extern void uentry_setMessageLike (uentry p_ue) /*@modifies p_ue@*/ ;
 extern void uentry_setScanfLike (uentry p_ue) /*@modifies p_ue@*/ ;
 extern void uentry_setPrintfLike (uentry p_ue) /*@modifies p_ue@*/ ;
 
-extern void uentry_checkName (uentry p_ue) /*@modifies g_msgstream, p_ue@*/ ;
+extern void uentry_checkName (uentry p_ue) /*@modifies g_warningstream, p_ue@*/ ;
 
 extern bool uentry_sameObject (uentry p_e1, uentry p_e2);
 # define uentry_sameObject(e1,e2) ((e1) == (e2))
@@ -262,7 +262,7 @@ extern bool uentry_sameObject (uentry p_e1, uentry p_e2);
 extern void uentry_addAccessType (uentry p_ue, typeId p_tid) /*@modifies p_ue@*/ ;
 
 extern void uentry_showWhereAny (uentry p_spec)
-     /*@modifies g_msgstream@*/ ;
+     /*@modifies g_warningstream@*/ ;
 
 extern void uentry_checkParams (uentry p_ue);
 extern void uentry_mergeUses (uentry p_res, uentry p_other);
@@ -358,12 +358,12 @@ extern /*@notnull@*/ uentry uentry_makeExpandedMacro (cstring p_s,
 						      /*@temp@*/ fileloc p_f)
   /*@*/ ;
 
-extern void uentry_checkMatchParam (uentry p_u1, uentry p_u2, int p_paramno, exprNode p_e) /*@modifies g_msgstream@*/ ;
+extern void uentry_checkMatchParam (uentry p_u1, uentry p_u2, int p_paramno, exprNode p_e) /*@modifies g_warningstream@*/ ;
 
 extern /*@observer@*/ stateClauseList uentry_getStateClauseList (uentry p_ue) /*@*/ ;
 
 extern void uentry_showWhereLastExtra (uentry p_spec, /*@only@*/ cstring p_extra) 
-   /*@modifies g_msgstream@*/ ;
+   /*@modifies g_warningstream@*/ ;
 
 # ifndef NOLCL
 extern void uentry_setRefCounted (uentry p_e);
@@ -517,15 +517,15 @@ extern void uentry_setStateClauseList (uentry p_ue, /*@only@*/ stateClauseList p
 extern void uentry_setType (uentry p_e, ctype p_t);
 
 extern /*@unused@*/ /*@observer@*/ cstring uentry_checkedName (uentry p_ue);
-extern void uentry_showWhereLastPlain (uentry p_spec) /*@modifies g_msgstream@*/ ;
+extern void uentry_showWhereLastPlain (uentry p_spec) /*@modifies g_warningstream@*/ ;
 
 extern void 
   uentry_showWhereSpecifiedExtra (uentry p_spec, /*@only@*/ cstring p_s)
-  /*@modifies g_msgstream@*/ ;
+  /*@modifies g_warningstream@*/ ;
 
-extern void uentry_showWhereSpecified (uentry p_spec) /*@modifies g_msgstream@*/ ; 
-extern void uentry_showWhereLast (uentry p_spec) /*@modifies g_msgstream@*/ ;
-extern void uentry_showWhereDeclared (uentry p_spec) /*@modifies g_msgstream@*/ ;
+extern void uentry_showWhereSpecified (uentry p_spec) /*@modifies g_warningstream@*/ ; 
+extern void uentry_showWhereLast (uentry p_spec) /*@modifies g_warningstream@*/ ;
+extern void uentry_showWhereDeclared (uentry p_spec) /*@modifies g_warningstream@*/ ;
 
 extern /*@notnull@*/ /*@only@*/ uentry uentry_makeIdVariable (idDecl p_t) /*@*/ ;
 extern uentry uentry_copy (uentry p_e) /*@*/ ;

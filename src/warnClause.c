@@ -38,14 +38,24 @@ static warnClause warnClause_createAux (/*@only@*/ fileloc loc,
   res->flag = flag;
   res->msg = msg;
   
+  DPRINTF (("Creating warn clause with flag spec: [%p] %s", flag,
+	    flagSpec_unparse (flag)));
   return res;
 }
 
 extern warnClause warnClause_create (lltok tok, flagSpec flag, cstring msg) 
 {
   warnClause res;
-  res = warnClause_createAux (lltok_stealLoc (tok), flag, msg);
-  lltok_release (tok);
+  /*
+  ** evans 2002-03-11
+  ** was
+  **   res = warnClause_createAux (lltok_stealLoc (tok), flag, msg);
+  ** but this leads to unexplained (yet) crashes.
+  ** Reported by Walter Briscoe
+  */
+
+  res = warnClause_createAux (fileloc_copy (lltok_getLoc (tok)), flag, msg);
+  lltok_free (tok);
   return res;
 }
 

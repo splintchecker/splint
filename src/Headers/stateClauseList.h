@@ -17,7 +17,7 @@ struct s_stateClauseList
 } ;
 
 extern void stateClauseList_checkAll (uentry p_ue) 
-   /*@modifies p_ue, g_msgstream@*/ ;
+   /*@modifies p_ue, g_warningstream@*/ ;
 
 /*@constant null stateClauseList stateClauseList_undefined@*/
 # define stateClauseList_undefined ((stateClauseList) 0)
@@ -53,7 +53,7 @@ extern int stateClauseList_compare (stateClauseList p_s1, stateClauseList p_s2) 
 # define stateClauseListBASESIZE MIDBASESIZE
 
 extern void stateClauseList_checkEqual (uentry p_old, uentry p_unew) 
-  /*@modifies g_msgstream@*/ ;
+  /*@modifies g_warningstream@*/ ;
 
 /*@iter stateClauseList_elements (sef stateClauseList x, yield exposed stateClause el); @*/
 # define stateClauseList_elements(x, m_el) \

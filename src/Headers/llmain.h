@@ -10,7 +10,7 @@ extern int main (int p_argc, char *p_argv[])
 # ifdef NOLCL
   /*@globals killed undef g_currentloc,
 	     killed undef yyin,
-                    undef g_msgstream,
+                    undef g_warningstream,
    @*/
   /*@modifies g_currentloc, fileSystem, internalState, yyin; 
   @*/
@@ -21,7 +21,7 @@ extern int main (int p_argc, char *p_argv[])
 	     killed undef g_currentSpecName,
 	     killed undef g_currentloc,
 	     killed undef yyin,
-                    undef g_msgstream;
+                    undef g_warningstream;
    @*/
   /*@modifies g_currentloc,
               g_localSpecPath, g_currentSpec, g_currentSpecName,

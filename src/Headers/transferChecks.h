@@ -3,11 +3,11 @@
 */
 
 extern bool transferChecks_globalDestroyed (sRef p_fref, fileloc p_loc) 
-   /*@modifies g_msgstream@*/ ;
+   /*@modifies g_warningstream@*/ ;
 extern void transferChecks_localDestroyed (sRef p_fref, fileloc p_loc) 
-   /*@modifies g_msgstream@*/ ;
+   /*@modifies g_warningstream@*/ ;
 extern void transferChecks_structDestroyed (sRef p_fref, fileloc p_loc)
-   /*@modifies g_msgstream@*/ ;
+   /*@modifies g_warningstream@*/ ;
 
 extern void transferChecks_assign (exprNode p_lhs, exprNode p_rhs);
 extern void transferChecks_initialization (exprNode p_lhs, exprNode p_rhs);

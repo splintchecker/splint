@@ -366,10 +366,7 @@ lslProcess (fileIdList lclfiles)
 
 	  setSpecFileId (fid);
 	  	  
-	  if (context_getFlag (FLG_SHOWSCAN))
-	    {
-	      lldiagmsg (message ("< reading spec %s >", g_currentSpec));
-	    }
+	  displayScan (message ("reading spec %s", g_currentSpec));
 	  
 	  /* Open the source file */
 	  
@@ -525,11 +522,13 @@ static void handlePassThroughFlag (char *arg)
 
 void showHerald (void)
 {
-  if (hasShownHerald || context_getFlag (FLG_QUIET)) return;
-
+  if (hasShownHerald || context_getFlag (FLG_QUIET)) 
+    {
+      return;
+    }
   else
     {
-      fprintf (g_msgstream, "%s\n\n", SPLINT_VERSION);
+      fprintf (g_messagestream, "%s\n\n", SPLINT_VERSION);
       hasShownHerald = TRUE;
       llflush ();
     }
@@ -630,7 +629,7 @@ int main (int argc, char *argv[])
 # ifdef NOLCL
   /*@globals killed undef g_currentloc,
 	     killed undef yyin,
-                    undef g_msgstream;
+                    undef g_warningstream, g_messagestream, g_errorstream;
    @*/
   /*@modifies g_currentloc, fileSystem,
 	      yyin; 
@@ -642,7 +641,7 @@ int main (int argc, char *argv[])
 	     killed undef g_currentSpec,
 	     killed undef g_currentSpecName,
 	     killed undef yyin,
-                    undef g_msgstream;
+                    undef g_warningstream, g_messagestream, g_errorstream;
    @*/
   /*@modifies g_currentloc, initFile, 
               g_localSpecPath, g_currentSpec, g_currentSpecName, fileSystem,
@@ -667,7 +666,9 @@ int main (int argc, char *argv[])
   _wildcard (&argc, &argv);
 # endif
 
-  g_msgstream = stdout;
+  g_warningstream = stdout;
+  g_messagestream = stderr;
+  g_errorstream = stderr;
 
   (void) signal (SIGINT, interrupt);
   (void) signal (SIGSEGV, interrupt); 
@@ -686,7 +687,7 @@ int main (int argc, char *argv[])
   setCodePoint ();
   
   g_currentloc = fileloc_createBuiltin ();
-  
+    
   before = clock ();
   context_initMod ();
 
@@ -800,13 +801,31 @@ int main (int argc, char *argv[])
 	      {
 		nof = TRUE;
 	      }
-	    else if (opt == FLG_SHOWSCAN || opt == FLG_WARNRC || opt == FLG_PARENFILEFORMAT)
+	    else if (flagcode_isMessageControlFlag (opt))
 	      {
 		/*
 		** Need to set it immediately, so rc file scan is displayed
 		*/
 
 		context_userSetFlag (opt, set);
+
+		if (flagcode_hasArgument (opt))
+		  {
+		    llassert (flagcode_hasString (opt));
+		    
+		    if (++i < argc)
+		      {
+			fname = cstring_fromChars (argv[i]);
+			setStringFlag (opt, fname);
+		      }
+		    else
+		      {
+			llfatalerror 
+			  (message
+			   ("Flag %s must be followed by a string",
+			    flagcode_unparse (opt)));
+		      }
+		  }
 	      }
 	    else if (opt == FLG_OPTF)
 	      {
@@ -1010,10 +1029,16 @@ int main (int argc, char *argv[])
 	      opt = flags_identifyFlag (flagname);
 	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
 
-	      if (flagcode_isSkip (opt) || opt == FLG_SHOWSCAN || opt == FLG_WARNRC || opt == FLG_PARENFILEFORMAT)
+	      if (flagcode_isMessageControlFlag (opt))
 		{
-		  /* showscan already processed */
-		  DPRINTF (("Skipping!"));
+		  /*
+		  ** Processed on first pass
+		  */
+
+		  if (flagcode_hasArgument (opt))
+		    {
+		      ++i;
+		    }
 		}
 	      else if (flagcode_isInvalid (opt))
 		{
@@ -1227,7 +1252,7 @@ int main (int argc, char *argv[])
 	{
 	  showHelp ();
 	}
-      fprintf (g_msgstream, "\n");
+      fprintf (g_warningstream, "\n");
 
       fileIdList_free (cfiles);
       fileIdList_free (xfiles);
@@ -1251,17 +1276,9 @@ int main (int argc, char *argv[])
     {
       cstring m = context_getMerge ();
 
-      if (context_getFlag (FLG_SHOWSCAN))
-	{
-	  fprintf (g_msgstream, "< loading %s ", cstring_toCharsSafe (m));
-	}
-
+      displayScanOpen (message ("< loading %s ", m));
       loadState (m);
-
-      if (context_getFlag (FLG_SHOWSCAN))
-	{
-	  fprintf (g_msgstream, " >\n");
-	}
+      displayScanClose ();
 
       if (!usymtab_existsType (context_getBoolName ()))
 	{
@@ -1293,12 +1310,7 @@ int main (int argc, char *argv[])
   fileIdList_elements (mtfiles, mtfile)
     {
       context_setFileId (mtfile);
-
-      if (context_getFlag (FLG_SHOWSCAN))
-	{
-	  lldiagmsg (message ("< processing %s >", fileTable_rootFileName (mtfile)));
-	}
-      
+      displayScan (message ("processing %s", fileTable_rootFileName (mtfile)));
       mtreader_readFile (cstring_copy (fileTable_fileName (mtfile)));
     } end_fileIdList_elements;
 
@@ -1347,10 +1359,7 @@ int main (int argc, char *argv[])
 
       llflush ();
 
-      if (context_getFlag (FLG_SHOWSCAN))
-	{
-	  fprintf (stderr, "< preprocessing"); 
-	}
+      displayScanOpen (cstring_makeLiteral ("preprocessing"));
       
       lcltime = clock ();
 
@@ -1365,11 +1374,7 @@ int main (int argc, char *argv[])
 
       fileIdList_free (cfiles);
 
-      if (context_getFlag (FLG_SHOWSCAN))
-	{
-	  fprintf (stderr, " >\n");
-	}
-      
+      displayScanClose ();
       pptime = clock ();
     }
   else
@@ -1421,10 +1426,7 @@ int main (int argc, char *argv[])
 	
 	  llassert (yyin != NULL);
 
-	  if (context_getFlag (FLG_SHOWSCAN))
-	    {
-	      lldiagmsg (message ("< checking %q >", osd_outputPath (fileTable_rootFileName (fid))));
-	    }
+	  displayScan (message ("checking %q", osd_outputPath (fileTable_rootFileName (fid))));
 	  
 	  /*
 	  ** Every time, except the first time, through the loop,
@@ -1461,10 +1463,7 @@ int main (int argc, char *argv[])
   **   is this correct behaviour?
   */
   
-  if (context_getFlag (FLG_SHOWSCAN))
-    {
-      lldiagmsg (cstring_makeLiteral ("< global checks >"));
-    }
+  displayScan (cstring_makeLiteral ("global checks"));
 
   cleanupMessages ();
   
@@ -1532,7 +1531,7 @@ int main (int argc, char *argv[])
     expsuccess = TRUE;
 
     if (context_neednl ())
-      fprintf (g_msgstream, "\n");
+      fprintf (g_warningstream, "\n");
     
 # ifndef NOLCL
     if (nspecErrors > 0)
@@ -1665,15 +1664,15 @@ int main (int argc, char *argv[])
       
       if (specLines > 0)
 	{
-	  fprintf (g_msgstream, "%d spec, ", specLines);
+	  fprintf (g_warningstream, "%d spec, ", specLines);
 	}
       
 # ifndef CLOCKS_PER_SEC
-      fprintf (g_msgstream, "%d source lines in %ld time steps (steps/sec unknown)\n", 
+      fprintf (g_warningstream, "%d source lines in %ld time steps (steps/sec unknown)\n", 
 	       context_getLinesProcessed (), 
 	       (long) ttime);
 # else
-      fprintf (g_msgstream, "%d source lines in %.2f s.\n", 
+      fprintf (g_warningstream, "%d source lines in %.2f s.\n", 
 	       context_getLinesProcessed (), 
 	       (double) ttime / CLOCKS_PER_SEC);
 # endif
@@ -2172,7 +2171,7 @@ interrupt (int i)
   switch (i)
     {
     case SIGINT:
-      fprintf (stderr, "*** Interrupt\n");
+      fprintf (g_errorstream, "*** Interrupt\n");
       llexit (LLINTERRUPT);
     case SIGSEGV:
       {
@@ -2181,28 +2180,28 @@ interrupt (int i)
 	/* Cheat when there are parse errors */
 	checkParseError (); 
 	
-	fprintf (stderr, "*** Segmentation Violation\n");
+	fprintf (g_errorstream, "*** Segmentation Violation\n");
 	
 	/* Don't catch it if fileloc_unparse causes a signal */
 	(void) signal (SIGSEGV, NULL);
 
 	loc = fileloc_unparse (g_currentloc);
 	
-	fprintf (stderr, "*** Location (not trusted): %s\n", 
+	fprintf (g_errorstream, "*** Location (not trusted): %s\n", 
 		 cstring_toCharsSafe (loc));
 	cstring_free (loc);
 	printCodePoint ();
-	fprintf (stderr, "*** Please report bug to %s\n", SPLINT_MAINTAINER);
+	fprintf (g_errorstream, "*** Please report bug to %s\n", SPLINT_MAINTAINER);
 	exit (LLGIVEUP);
       }
     default:
-      fprintf (stderr, "*** Signal: %d\n", i);
+      fprintf (g_errorstream, "*** Signal: %d\n", i);
       /*@-mustfree@*/
-      fprintf (stderr, "*** Location (not trusted): %s\n", 
+      fprintf (g_errorstream, "*** Location (not trusted): %s\n", 
 	       cstring_toCharsSafe (fileloc_unparse (g_currentloc)));
       /*@=mustfree@*/
       printCodePoint ();
-      fprintf (stderr, "*** Please report bug to %s ***\n", SPLINT_MAINTAINER);
+      fprintf (g_errorstream, "*** Please report bug to %s ***\n", SPLINT_MAINTAINER);
       exit (LLGIVEUP);
     }
 }
@@ -2227,7 +2226,7 @@ cleanupFiles (void)
 
   if (context_getFlag (FLG_KEEP))
     {
-      check (fputs ("Temporary files kept:\n", stderr) != EOF);
+      check (fputs ("Temporary files kept:\n", g_messagestream) != EOF);
       fileTable_printTemps (context_fileTable ());
     }
   else
@@ -2304,11 +2303,8 @@ bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
 	  fileloc fc = g_currentloc;
 	  g_currentloc = fileloc_createRc (fname);
 
-	  if (context_getFlag (FLG_SHOWSCAN))
-	    {
-	      lldiagmsg (message ("< reading options from %q >", 
-				  fileloc_outputFilename (g_currentloc)));
-	    }
+	  displayScan (message ("< reading options from %q >", 
+				fileloc_outputFilename (g_currentloc)));
 	  
 	  loadrc (innerf, passThroughArgs);
 	  fileloc_reallyFree (g_currentloc);
@@ -2686,13 +2682,13 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 	      if ((filesprocessed % skip) == 0) 
 		{
 		  if (filesprocessed == 0) {
-		    fprintf (stderr, " ");
+		    fprintf (g_messagestream, " ");
 		  }
 		  else {
-		    fprintf (stderr, ".");
+		    fprintf (g_messagestream, ".");
 		  }
 		  
-		  (void) fflush (stderr);
+		  (void) fflush (g_messagestream);
 		}
 	      filesprocessed++;
 	    }

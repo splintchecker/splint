@@ -1265,7 +1265,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       t2 = exprData_getOpB (data);
       tok = exprData_getOpTok (data);      
 
-      if (tok.tok == ADD_ASSIGN)
+      if (lltok_getTok (tok) == ADD_ASSIGN)
 	{
 	  exprNode_exprTraverse (t1, TRUE, definaterv, sequencePoint);
 	  exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint);
@@ -1273,7 +1273,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
 	  cons = constraint_makeAddAssign (t1, t2,  sequencePoint);
 	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
 	}
-      else if (tok.tok == SUB_ASSIGN)
+      else if (lltok_getTok (tok) == SUB_ASSIGN)
 	{
 	  exprNode_exprTraverse (t1, TRUE, definaterv, sequencePoint);
 	  exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint);

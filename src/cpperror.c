@@ -88,7 +88,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "cpplib.h"
 # include "cpperror.h"
 
-static void cppReader_printFileAndLine (cppReader *p_pfile);
+static cstring cppReader_unparseLoc (cppReader *p_pfile);
+
 static void cppReader_warningWithLine (cppReader *p_pfile, 
 				       int p_line, int p_column, 
 				       /*@only@*/ cstring p_msg);
@@ -128,19 +129,19 @@ void cppReader_printContainingFiles (cppReader *pfile)
       int line, col;
       cstring temps; 
       
-      cppBuffer_lineAndColumn (ip, &line, &col);
+      cppBuffer_getLineAndColumn (ip, &line, &col);
       if (ip->fname != NULL)
 	{
 	  if (first)
 	    {
 	      first = 0;
-	      fprintf (g_msgstream, "   In file included");
+	      fprintf (g_warningstream, "   In file included");
 	    }
 	  else
-	    fprintf (g_msgstream, ",\n                ");
+	    fprintf (g_warningstream, ",\n                ");
 	}
 
-      fprintf (g_msgstream, " from %s", 
+      fprintf (g_warningstream, " from %s", 
 	       cstring_toCharsSafe (temps = fileloc_unparseRaw (ip->nominal_fname, line)));
       
       cstring_free (temps);
@@ -148,53 +149,19 @@ void cppReader_printContainingFiles (cppReader *pfile)
   
   if (!first)
     {
-      fprintf (g_msgstream, "\n");
+      fprintf (g_warningstream, "\n");
     }
 
   /* Record we have printed the status as of this time.  */
   pfile->input_stack_listing_current = 1;
 }
 
-static void
-cppReader_fileLineForMessage (cstring filename, long line, long column)
+static /*@only@*/ cstring
+cppReader_unparseLoc (cppReader *pfile)
 {
-  if (column > 0)
-    {
-      cstring temps;
-
-      if (filename != NULL)
-	{
-	  fprintf (stderr, "%s: ",
-		   cstring_toCharsSafe (temps = fileloc_unparseRawCol (filename, (int) line, (int) column)));
-	}
-      else 
-	{
-	  fprintf (stderr, "%s: ",
-		   cstring_toCharsSafe (temps = fileloc_unparseRawCol (cstring_makeLiteralTemp ("<no file>"),
-								       (int) line, (int) column)));
-	}
-
-      cstring_free (temps);
-    }
-  else
-    {
-      cstring temps;
-
-      if (filename != NULL) 
-	{
-	  fprintf (stderr, "%s: ", 
-		   cstring_toCharsSafe (temps = fileloc_unparseRaw (filename, (int) line)));
-	  
-	}
-      else
-	{
-	  fprintf (stderr, "%s: ",
-		   cstring_toCharsSafe (temps = fileloc_unparseRaw (cstring_makeLiteralTemp ("<no file>"),
-								    (int) line)));
-	}
-
-      cstring_free (temps);
-    }
+  DPRINTF (("unparse loc: %s",
+	    fileloc_unparse (cppReader_getLoc (pfile))));
+  return (fileloc_unparse (cppReader_getLoc (pfile)));
 }
 
 /* IS_ERROR is 2 for "fatal" error, 1 for error, 0 for warning */
@@ -263,32 +230,12 @@ cppReader_getLoc (cppReader *pfile)
 	  fid = fileTable_addFile (context_fileTable (), fname);
 	}
 
-      cppBuffer_lineAndColumn (ip, &line, &col);
-      
+      cppBuffer_getLineAndColumn (ip, &line, &col);      
       return fileloc_create (fid, line, col);
     }
   else
     {
       return fileloc_createBuiltin ();
-    }
-}
-
-void
-cppReader_printFileAndLine (cppReader *pfile)
-{
-  cppBuffer *ip = cppReader_fileBuffer (pfile);
-
-  if (ip != NULL)
-    {
-      int line, col;
-
-      cppBuffer_lineAndColumn (ip, &line, &col);
-      cppReader_fileLineForMessage (ip->nominal_fname,
-				    line, pfile->show_column ? col : -1);
-    }
-  else
-    {
-      fprintf (stderr, "Command Line: ");
     }
 }
 
@@ -301,11 +248,10 @@ cppReader_errorLit (cppReader *pfile, /*@observer@*/ cstring msg)
 void
 cppReader_error (cppReader *pfile, /*@only@*/ cstring msg)
 {
-  prepareMessage ();
-  cppReader_printContainingFiles (pfile);
-  cppReader_printFileAndLine (pfile);
-  cppReader_message (pfile, 1, msg);
-  closeMessage ();
+  if (cppoptgenerror (FLG_PREPROC, msg, pfile))
+    {
+      pfile->errors++;
+    }
 }
 
 /* Print error message but don't count it.  */
@@ -321,12 +267,8 @@ cppReader_warning (cppReader *pfile, /*@only@*/ cstring msg)
 {
   if (CPPOPTIONS (pfile)->warnings_are_errors)
     pfile->errors++;
-  
-  prepareMessage ();
-  cppReader_printContainingFiles (pfile);
-  cppReader_printFileAndLine (pfile);
-  cppReader_message (pfile, 0, msg);
-  closeMessage ();
+
+  cppoptgenerror (FLG_PREPROC, msg, pfile);
 }
 
 /* Print an error message and maybe count it.  */
@@ -351,44 +293,28 @@ cppReader_pedwarn (cppReader *pfile, /*@only@*/ cstring msg)
 }
 
 void
-cppReader_errorWithLine (cppReader *pfile, long line, long column, 
-		     /*@only@*/ cstring msg)
+cppReader_errorWithLine (cppReader *pfile, int line, int column, 
+			 /*@only@*/ cstring msg)
 {
-  cppBuffer *ip = cppReader_fileBuffer (pfile);
+  fileloc loc = cppReader_getLoc (pfile);
+  fileloc_setLineno (loc, line);
+  fileloc_setColumn (loc, column);
 
-  prepareMessage ();
-  cppReader_printContainingFiles (pfile);
-
-  if (ip != NULL)
-    cppReader_fileLineForMessage (ip->nominal_fname, line, column);
-
-  cppReader_message (pfile, 1, msg);
-  closeMessage ();
+  cppoptgenerror (FLG_PREPROC, message ("%s: %s",
+					fileloc_unparse (loc),
+					msg),
+		  pfile);
 }
 
 void
 cppReader_warningWithLine (cppReader *pfile, 
-		       int line, int column, 
-		       /*@only@*/ cstring msg)
+			   int line, int column, 
+			   /*@only@*/ cstring msg)
 {
-  cppBuffer *ip;
-
   if (CPPOPTIONS (pfile)->warnings_are_errors)
     pfile->errors++;
 
-  prepareMessage ();
-
-  cppReader_printContainingFiles (pfile);
-
-  ip = cppReader_fileBuffer (pfile);
-
-  if (ip != NULL)
-    {
-      cppReader_fileLineForMessage (ip->nominal_fname, line, column);
-    }
-
-  cppReader_message (pfile, 0, msg);
-  closeMessage ();
+  cppReader_errorWithLine (pfile, line, column, msg);
 }
 
 void
@@ -407,9 +333,10 @@ cppReader_pedwarnWithLine (cppReader *pfile, int line, int column,
 
 void cppReader_perrorWithName (cppReader *pfile, cstring name)
 {
-  cppReader_message (pfile, 1, 
-		     message ("Preprocessing error for %s: %s",
-			      name, lldecodeerror (errno)));
+  cppoptgenerror (FLG_PREPROC, 
+		  message ("%s: Preprocessing error: %s",
+			   name, lldecodeerror (errno)),
+		  pfile);
 }
 
 

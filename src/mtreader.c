@@ -71,11 +71,7 @@ void mtreader_readFile (cstring infile)
     }
 
   context_setFileId (fid);
-
-  if (context_getFlag (FLG_SHOWSCAN))
-    {
-      lldiagmsg (message ("< reading metastate %s >", fname));
-    }
+  displayScan (message ("reading metastate %s", fname));
   
   mtscanner_reset (sourceFile);
   context_enterMTfile ();
