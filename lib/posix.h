@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.1 2000/06/13 02:39:10 drl7x Exp $
+ * $Id: posix.h,v 1.2 2000/06/21 18:54:59 drl7x Exp $
  */
 
 /*
