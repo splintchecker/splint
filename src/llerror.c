@@ -1540,6 +1540,7 @@ bool llnoptgenerror (flagcode o, /*@only@*/ cstring s, fileloc loc)
   return FALSE;
 }
 
+
 void llparseerror (cstring s)
 {
   if (context_getFlag (FLG_TRYTORECOVER))

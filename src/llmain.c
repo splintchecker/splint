@@ -78,6 +78,7 @@
 # include "portab.h"
 # include "cpp.h"
 # include <time.h>
+#include <assert.h>
 
 extern /*@external@*/ int yydebug;
 
@@ -575,6 +576,15 @@ int main (int argc, char *argv[])
   (void) signal (SIGINT, interrupt);
   (void) signal (SIGSEGV, interrupt); 
 
+   printf("Recompile worked!!\n");
+	  #ifndef YYDEBUG
+	  #define YYDEBUG 1
+	  #endif
+	  
+	#if YYDEBUG
+             yydebug = 1;
+         #endif
+	     
   cfiles = fileIdList_create ();
   lclfiles = fileIdList_create ();
 
@@ -1981,6 +1991,9 @@ cleanupFiles (void)
 /*@exits@*/ void
 llexit (int status)
 {
+  /*take this out*/
+  printf("Tempory debuging deliberltly Dumbing core\n");
+  assert(0);
 # ifdef WIN32
   if (status == LLFAILURE) 
     {

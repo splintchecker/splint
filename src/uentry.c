@@ -9462,7 +9462,39 @@ void uentry_checkName (uentry ue)
   return ue;
 }
 
+/* new start modifications */
 
+void uentry_setStringLength (uentry p_e, uentry cconstant)  {
+if( uentry_isValid(p_e) ) {
+  if( p_e->info != NULL) {
+    if( p_e->info->var != NULL) {
+      int length = atoi(exprNode_unparse(cconstant) ); 
+      p_e->info->var->bufinfo->len = length; 
+      p_e->sref->bufinfo.len = length;
+      printf("Set string length of buff to %d \n",  p_e->sref->bufinfo.size);
+    }//end if
+  }//endif
+}//end if
+}
+
+
+void uentry_setBufferSize (uentry p_e, exprNode cconstant) {
+if( uentry_isValid(p_e) ) {
+  if( p_e->info != NULL) {
+    if( p_e->info->var != NULL) {
+      int size = atoi(exprNode_unparse(cconstant) ); 
+      p_e->info->var->bufinfo->size = size; 
+      p_e->sref->bufinfo.size = size;
+      printf("Set buffer size to %d \n",  p_e->sref->bufinfo.size);
+      //  fprintf(stderr, "For %s and %s\n", uentry_unparse(p_e) );
+      // fprintf(stderr, "and %d\n", size );
+      
+    }//end if
+  }//endif
+}//end if
+}
+
+  
 /* start modifications */
 /*
 requires: p_e is defined, is a ptr/array variable 

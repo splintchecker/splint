@@ -163,6 +163,10 @@ void checkandsetBufState(idDecl id, exprNode is);
 %token <tok> QANYTYPE QINTEGRALTYPE QUNSIGNEDINTEGRALTYPE QSIGNEDINTEGRALTYPE
 %token <tok> QNULLTERMINATED
 
+%token <tok> QSETBUFFERSIZE
+%token <tok> QSETSTRINGLENGTH
+
+
 /* identifiers, literals */
 %token <entry> IDENTIFIER
 %token <cname> NEW_IDENTIFIER TYPE_NAME_OR_ID 
@@ -220,11 +224,13 @@ void checkandsetBufState(idDecl id, exprNode is);
 %type <expr> expressionStmt selectionStmt iterationStmt jumpStmt iterDefIterationStmt 
 %type <expr> stmtErr stmtListErr compoundStmtErr expressionStmtErr 
 %type <expr> iterationStmtErr initializerList initializer ifPred whilePred forPred iterWhilePred
+%type <expr> tst1
 
 %type <typequal> storageSpecifier typeQualifier typeModifier globQual
 %type <tquallist> optGlobQuals
 %type <qtyp> completeType completeTypeSpecifier optCompleteType
 %type <qtyp> completeTypeSpecifierAux altType typeExpression 
+%type <expr> lclintassertion
 
 %start file
 
@@ -909,6 +915,9 @@ typeQualifier
  | QTEMPREF IsType     { $$ = qual_createTempRef (); }
  | QNULLTERMINATED IsType { $$ = qual_createNullTerminated (); }
 
+/* | QSETBUFFERSIZE IsType { $$ = qual_createSetBufferSize (); } */
+
+
 typeModifier
  : QSHORT            { $$ = qual_createShort (); }
  | QLONG             { $$ = qual_createLong (); }
@@ -1161,6 +1170,23 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
+/*  | tst1 */
+ | lclintassertion {$$ = $1; printf ("Doing stmt lclintassertion\n"); }
+
+
+lclintassertion
+ : QSETBUFFERSIZE id CCONSTANT QENDMACRO { printf(" QSETBUFFERSIZE id CCONSTANT HEllo World\n");  uentry_setBufferSize($2, $3); $$ = exprNode_createTok ($4);
+  }
+ | QSETSTRINGLENGTH id CCONSTANT QENDMACRO { printf(" QSETSTRINGLENGTH id CCONSTANT HEllo World\n");  uentry_setStringLength($2, $3); $$ = exprNode_createTok ($4);
+  }
+
+
+/* | QSETBUFFERSIZE id id  {$$ = $2; printf(" QSETBUFFERSIZE id id HEllo World\n");} */
+
+tst1
+: TCOLON newId { $$ = exprNode_labelMarker ($2); }
+
+
 
 iterBody
  : iterDefStmtList { $$ = $1; }
@@ -1242,8 +1268,8 @@ stmtErr
  | error { $$ = exprNode_makeError (); }
 
 labeledStmt
- : newId TCOLON      { $$ = exprNode_labelMarker ($1); }
- | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); }
+ : newId TCOLON      { $$ = exprNode_labelMarker ($1); printf("labeldStmt: newid TCOLON");}
+ | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); printf("labeldStmt: QNOTREACHED stmt");}
 
 /* Note that we can semantically check that the object to the case is
  indeed constant. In this case, we may not want to go through this effort */
@@ -1323,8 +1349,8 @@ initializerList
  | initializerList initializer { $$ = exprNode_concat ($1, $2); }
 
 stmtList
- : stmt { $$ = $1; }
- | stmtList stmt { $$ = exprNode_concat ($1, $2); }
+ : stmt { $$ = $1; printf("stmt\n"); }
+ | stmtList stmt { $$ = exprNode_concat ($1, $2); printf("StmTList stmt\n"); }
  
 expressionStmt 
  : TSEMI { $$ = exprNode_createTok ($1); }
@@ -1609,3 +1635,24 @@ void printState (idDecl t) {
  
  printf("State = %d\n", s->bufinfo.bufstate);
 }
+
+
+/*take this out soon */
+/* void testassert1 (cstring id, icstring cons ) { */
+ /*   uentry ue =usymtab_lookupSafe (id); */
+/*   sRef s = uentry_getSref (ue); */
+/*   printf ("Doing testassert1 with setbuffersize\n"); */
+/*   printf("State = %d\n", s->bufinfo.bufstate); */
+/* } */
+/* void testassert2 (cstring id) { */
+/*    uentry ue =usymtab_lookupSafe (id); */
+/*   sRef s = uentry_getSref (ue); */
+/*   printf ("Doing testassert2 with setbuffersize\n"); */
+/*   printf("State = %d\n", s->bufinfo.bufstate); */
+/* } */
+  
+
+
+
+
+
