@@ -708,7 +708,7 @@ context_resetAllFlags (void)
     {
       gc.flags[code] = FALSE;
 
-      if (flagcode_hasValue (code))
+      if (flagcode_hasNumber (code))
 	{
 	  int val = 0;
 	  
@@ -748,6 +748,12 @@ context_resetAllFlags (void)
 	  /*@=loopswitchbreak@*/	  
 
 	  context_setValue (code, val);
+	}
+      else if (flagcode_hasChar (code))
+	{
+	  llassert (code == FLG_COMMENTCHAR);
+	  context_setCommentMarkerChar (DEFAULT_COMMENTCHAR);
+	  break;
 	}
       else if (flagcode_hasString (code))
 	{

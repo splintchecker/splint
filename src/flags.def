@@ -19,15 +19,19 @@
 /*@notfunction@*/
 # define idemSpecialFlag 	TRUE,  TRUE,  FALSE, FALSE, ARG_NONE
 /*@notfunction@*/
-# define valueFlag     		FALSE, FALSE, FALSE, FALSE, ARG_VALUE
+# define valueFlag     		FALSE, FALSE, FALSE, FALSE, ARG_NUMBER
+
 /*@notfunction@*/
-# define modeValueFlag     	FALSE, FALSE, FALSE, TRUE,  ARG_VALUE
+# define charFlag     		FALSE, FALSE, FALSE, FALSE, ARG_CHAR
+
 /*@notfunction@*/
-# define specialValueFlag       TRUE,  FALSE, FALSE, FALSE, ARG_VALUE
+# define modeValueFlag     	FALSE, FALSE, FALSE, TRUE,  ARG_NUMBER
+/*@notfunction@*/
+# define specialValueFlag       TRUE,  FALSE, FALSE, FALSE, ARG_NUMBER
 /*@notfunction@*/
 # define debugFlag              FALSE, TRUE,  FALSE, FALSE, ARG_NONE
 /*@notfunction@*/
-# define debugValueFlag         FALSE, TRUE,  FALSE, FALSE, ARG_VALUE
+# define debugValueFlag         FALSE, TRUE,  FALSE, FALSE, ARG_NUMBER
 /*@notfunction@*/
 # define specialDebugFlag       TRUE,  TRUE,  FALSE, FALSE, ARG_NONE
 /*@notfunction@*/
@@ -35,17 +39,22 @@
 /*@notfunction@*/
 # define idemGlobalFlag         FALSE, TRUE,  TRUE,  FALSE, ARG_NONE
 /*@notfunction@*/
-# define globalValueFlag        FALSE, FALSE, TRUE,  FALSE, ARG_VALUE
+# define globalValueFlag        FALSE, FALSE, TRUE,  FALSE, ARG_NUMBER
+
+/* Note: type argument missing */ 
 /*@notfunction@*/
-# define regStringFlag          FALSE, FALSE, FALSE, FALSE, ARG_STRING
+# define regStringFlag          FALSE, FALSE, FALSE, FALSE
 /*@notfunction@*/
-# define idemStringFlag         FALSE, TRUE,  FALSE, FALSE, ARG_STRING
+# define idemStringFlag         FALSE, TRUE,  FALSE, FALSE
 /*@notfunction@*/
-# define globalStringFlag       FALSE, FALSE, TRUE,  FALSE, ARG_STRING
+# define globalStringFlag       FALSE, FALSE, TRUE,  FALSE
+
 /*@notfunction@*/
 # define extraArgFlag           FALSE, FALSE, FALSE, FALSE, ARG_SPECIAL
 /*@notfunction@*/
 # define globalExtraArgFlag     FALSE, FALSE, TRUE,  FALSE, ARG_SPECIAL
+/*@notfunction@*/
+# define globalFileFlag         FALSE, FALSE, TRUE,  FALSE, ARG_FILE
 /*@=namechecks@*/
 
 /*
@@ -292,21 +301,21 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_BOOL, FK_NONE, regStringFlag,
+    FK_BOOL, FK_NONE, regStringFlag, ARG_STRING,
     "boolfalse",
     FLG_BOOLFALSE,
     "set name of boolean false (default FALSE)",
     NULL, 0, 0
   },
   {
-    FK_BOOL, FK_NONE, regStringFlag,
+    FK_BOOL, FK_NONE, regStringFlag, ARG_STRING,
     "booltype",
     FLG_BOOLTYPE,
     "set name of boolean type (default bool)",
     NULL, 0, 0
   },
   {
-    FK_BOOL, FK_NONE, regStringFlag,
+    FK_BOOL, FK_NONE, regStringFlag, ARG_STRING,
     "booltrue",
     FLG_BOOLTRUE, 
     "set name of boolean true (default TRUE)",
@@ -777,28 +786,28 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
-    FK_DIRECT, FK_FILES, globalStringFlag,
+    FK_DIRECT, FK_FILES, globalStringFlag, ARG_DIRECTORY,
     "tmpdir",
     FLG_TMPDIR,
     "set directory for writing temp files",
     NULL, 0, 0
   },
   {
-    FK_DIRECT, FK_FILES, globalStringFlag,
+    FK_DIRECT, FK_FILES, globalStringFlag, ARG_PATH,
     "larchpath",
     FLG_LARCHPATH,
     "set path for searching for library files (overrides LARCH_PATH environment variable)",
     NULL, 0, 0
   },
   {
-    FK_DIRECT, FK_FILES, globalStringFlag,
+    FK_DIRECT, FK_FILES, globalStringFlag, ARG_DIRECTORY,
     "lclimportdir",
     FLG_LCLIMPORTDIR,
     "set directory to search for LCL import files (overrides LCLIMPORTDIR)",
     NULL, 0, 0
   },
   {
-    FK_DIRECT, FK_FILES, globalStringFlag,
+    FK_DIRECT, FK_FILES, globalStringFlag, ARG_PATH,
     "sysdirs",
     FLG_SYSTEMDIRS,
     "set directories for system files (default /usr/include). Separate "
@@ -1436,7 +1445,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_INIT, FK_FILES, globalExtraArgFlag,
+    FK_INIT, FK_FILES, globalFileFlag,
     "f",
     FLG_OPTF,
     "read an options file (default ~/.splintrc not loaded)",
@@ -1444,7 +1453,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_INIT, FK_FILES, globalExtraArgFlag,
+    FK_INIT, FK_FILES, globalFileFlag,
     "i",
     FLG_INIT,
     "set LCL initilization file",
@@ -1501,14 +1510,14 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_FILES, globalStringFlag,
+    FK_LIBS, FK_FILES, globalStringFlag, ARG_FILE,
     "dump",
     FLG_DUMP,
     "save state for merging (default suffix .lcd)",
     NULL, 0, 0
   },
   {
-    FK_LIBS, FK_FILES, globalStringFlag,
+    FK_LIBS, FK_FILES, globalStringFlag, ARG_FILE,
     "load",
     FLG_MERGE,
     "load state from dump file (default suffix .lcd)",
@@ -1578,14 +1587,14 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
-    FK_LIBS, FK_FILES, globalStringFlag,
+    FK_LIBS, FK_FILES, globalStringFlag, ARG_FILE,
     "mts",
     FLG_MTSFILE,
     "load meta state declaration and corresponding xh file", 
     NULL, 0, 0
   },
   {
-    FK_INIT, FK_COMMENTS, valueFlag,
+    FK_INIT, FK_COMMENTS, charFlag,
     "commentchar",
     FLG_COMMENTCHAR,
     "set marker character for syntactic comments (default is '@')",
@@ -2556,7 +2565,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "macrovarprefix",
     FLG_MACROVARPREFIX,
     "set namespace prefix for variables declared in a macro body",
@@ -2572,7 +2581,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "tagprefix",
     FLG_TAGPREFIX,
     "set namespace prefix for struct, union and enum tags",
@@ -2588,7 +2597,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "enumprefix",
     FLG_ENUMPREFIX,
     "set namespace prefix for enum members",
@@ -2604,7 +2613,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "filestaticprefix",
     FLG_FILESTATICPREFIX,
     "set namespace prefix for file static declarations",
@@ -2620,7 +2629,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "globalprefix",
     FLG_GLOBPREFIX,
     "set namespace prefix for global variables",
@@ -2636,7 +2645,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "typeprefix",
     FLG_TYPEPREFIX,
     "set namespace prefix for user-defined types",
@@ -2652,7 +2661,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "externalprefix",
     FLG_EXTERNALPREFIX,
     "set namespace prefix for external identifiers",
@@ -2668,7 +2677,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "localprefix",
     FLG_LOCALPREFIX,
     "set namespace prefix for local variables",
@@ -2684,7 +2693,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "uncheckedmacroprefix",
     FLG_UNCHECKEDMACROPREFIX,
     "set namespace prefix for unchecked macros",
@@ -2702,7 +2711,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "constprefix",
     FLG_CONSTPREFIX,
     "set namespace prefix for constants",
@@ -2718,7 +2727,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "iterprefix",
     FLG_ITERPREFIX,
     "set namespace prefix for iterators",
@@ -2734,7 +2743,7 @@ static flaglist flags =
     0, 0	
   } ,	
   {
-    FK_NAMES, FK_PREFIX, idemStringFlag,
+    FK_NAMES, FK_PREFIX, idemStringFlag, ARG_STRING,
     "protoparamprefix",
     FLG_DECLPARAMPREFIX,
     "set namespace prefix for parameters in function prototype declarations",

@@ -110,10 +110,31 @@ static flagcatinfo categories[] =
 
 typedef enum {
   ARG_NONE,
-  ARG_VALUE,
-  ARG_STRING,
-  ARG_SPECIAL
+  ARG_NUMBER,    /* number */
+  ARG_CHAR,      /* char */
+  ARG_STRING,    /* string */
+  ARG_FILE,      /* filename (also a string) */
+  ARG_DIRECTORY, /* directory (also a string) */
+  ARG_PATH,      /* path */
+  ARG_SPECIAL   /* ? */
 } argcode;
+
+static /*@observer@*/ cstring argcode_unparse (argcode arg)
+{
+  switch (arg) 
+    {
+    case ARG_STRING: return cstring_makeLiteralTemp ("string"); 
+    case ARG_FILE: return cstring_makeLiteralTemp ("filename"); 
+    case ARG_DIRECTORY: return cstring_makeLiteralTemp ("directory");
+    case ARG_PATH: return cstring_makeLiteralTemp ("path"); 
+    case ARG_NUMBER: return cstring_makeLiteralTemp ("number");
+    case ARG_CHAR: return cstring_makeLiteralTemp ("character");
+    case ARG_NONE: 
+      BADBRANCH;
+    case ARG_SPECIAL:
+      BADBRANCH;
+    }
+}      
 
 typedef struct { 
   flagkind main;
@@ -154,6 +175,7 @@ static bn_mstring mode_names[] =
 
 /*@+enumint@*/
 
+static cstring getFlagModeSettings (flagcode p_flag) /*@modifies internalState@*/ ;
 static cstring describeFlagCode (flagcode p_flag) /*@*/ ;
 static cstringSList sortedFlags (void) /*@*/ ;
 static /*@observer@*/ cstring categoryName (flagkind p_kind) /*@*/ ;
@@ -452,12 +474,91 @@ printAllFlags (bool desc, bool full)
     }
 }
 
+void
+printFlagManual (void)
+{
+  /*
+  ** Prints all flags by category, in order they appear in flags.def
+  */
+
+  flagkind lastCategory = FK_NONE;
+
+  allFlags (f) {
+    cstring flagname;
+    cstring flagtype = cstring_undefined;
+
+    if (f.main != lastCategory)
+      {
+	llmsg (message ("\n%s\n%s\n",
+			categoryName (f.main),
+			cstring_makeLiteralTemp ("===================================")));
+
+	lastCategory = f.main;
+      }
+
+    if (f.argtype == ARG_NONE || f.argtype == ARG_SPECIAL)
+      {
+	flagname = cstring_fromCharsNew (f.flag);
+      }
+    else
+      {
+	if (flagcode_hasString (f.code)) 
+	  {
+	    flagname = message ("%s <%s [%s]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				context_getString (f.code));
+	  }
+	else if (f.argtype == ARG_CHAR)
+	  {
+	    flagname = message ("%s <%s [%c]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				(char) context_getValue (f.code));
+	  }
+	else 
+	  {
+	    llassert (f.argtype == ARG_NUMBER);
+	    flagname = message ("%s <%s [%d]>", cstring_fromChars (f.flag), argcode_unparse (f.argtype),
+				context_getValue (f.code));
+	  }
+      }
+
+    if (f.isIdem)
+      {
+	flagtype = message("%q<->", flagtype);
+      }
+    else
+      {
+	flagtype = message("%q<+->", flagtype);
+      }
+    
+    if (f.isGlobal)
+      {
+	flagtype = message ("%q<G>", flagtype);
+      }
+
+    if (f.isSpecial)
+      {
+	flagtype = message("%q<S>", flagtype);
+      }
+    
+    if (f.isModeFlag)
+      {
+	flagtype = message ("%q<M:%q>", flagtype, getFlagModeSettings (f.code));
+      }
+    else /* its a plain flag */
+      {
+	flagtype = message ("%q<P:%s>", flagtype,
+			    cstring_makeLiteralTemp (context_getFlag (f.code) ? "+" : "-"));
+      }
+
+    llmsg (message ("%s: %s", flagname, flagtype));
+  } end_allFlags ;
+}
+
 cstring
 describeFlagCode (flagcode flag)
 {
   cstring ret = cstring_undefined;
   fflag f;
-
+  
   if (flagcode_isInvalid (flag))
     {
       return (cstring_makeLiteral ("<invalid>"));
@@ -467,7 +568,7 @@ describeFlagCode (flagcode flag)
   
   f = flags[flag];
   ret = cstring_copy (cstring_fromChars (f.desc));
-
+  
   
   if (f.sub != FK_NONE)
     {
@@ -489,40 +590,19 @@ describeFlagCode (flagcode flag)
 	    }
 	}
     }
-
+  
   if (f.isModeFlag)
     {
-      bool first = TRUE;
-
-      allModes (mname)
-	{
-	  context_setMode (cstring_fromChars (mname));
-
-	  if (first)
-	    {
-	      ret = message ("%q\nMode Settings: %s %s",
-			     ret, cstring_fromChars (mname), 
-			     cstring_makeLiteralTemp 
-			     (context_getFlag (flag) ? "+" : "-"));
-	      first = FALSE;
-	    }
-	  else
-	    {
-	      ret = message ("%q, %s %s",
-			     ret, cstring_fromChars (mname),
-			     cstring_makeLiteralTemp 
-			     (context_getFlag (flag) ? "+" : "-"));
-	    }
-	} end_allModes;
+      ret = message ("%q\nMode Settings: %q",
+		     ret, getFlagModeSettings (flag));
     }
   else
     {
       ret = message ("%q\nDefault Setting: %s",
 		     ret, 
-		     cstring_makeLiteralTemp 
-		     (context_getFlag (flag) ? "+" : "-"));
+		     cstring_makeLiteralTemp (context_getFlag (flag) ? "+" : "-"));
     }
-
+  
   if (f.isGlobal)
     {
       ret = message("%q\nSet globally only", ret);
@@ -531,45 +611,63 @@ describeFlagCode (flagcode flag)
     {
       ret = message("%q\nSet locally", ret);
     }
-
+  
   switch (f.argtype)
     {
     case ARG_NONE:
     case ARG_SPECIAL:
       break;
-    case ARG_VALUE:
-      if (flag == FLG_COMMENTCHAR)
-	{
-	  ret = message("%q\nCharacter Argument.  Default: %h",
-			ret, (char) context_getValue (flag));
-	}
-      else
-	{
-	  ret = message("%q\nNumeric Argument.  Default: %d",
-			ret,
-			context_getValue (flag));
-	}
+    case ARG_NUMBER:
+      ret = message("%q\nNumeric Argument.  Default: %d",
+		    ret,
+		    context_getValue (flag));
+      break;
+    case ARG_CHAR:
+      ret = message("%q\nCharacter Argument.  Default: %h",
+		    ret, (char) context_getValue (flag));
       break;
     case ARG_STRING:
+    case ARG_FILE:
+    case ARG_PATH:
+    case ARG_DIRECTORY:
+      {
       if (cstring_isDefined (context_getString (flag)))
 	{
-	  ret = message("%q\nString Argument.  Default: %s",
+	  ret = message("%q\n%q argument.  Default: %s",
 			ret,
+			cstring_capitalize (argcode_unparse (f.argtype)),
 			context_getString (flag));
 	}
       else
 	{
-	  ret = message("%q\nString Argument.  No default.", ret);
+	  ret = message("%q\n%s argument.  No default.", 
+			ret,
+			cstring_capitalize (argcode_unparse (f.argtype)));
 	}
       break;
+      }
     }
-
+  
   if (mstring_isDefined (f.hint))
     {
       ret = message("%q\n\3%s", ret, cstring_fromChars (f.hint));
     }
-
+  
   return ret;
+}
+  
+static cstring getFlagModeSettings (flagcode flag)
+{
+  cstring res = cstring_undefined;
+  
+  allModes (mname)
+    {
+      context_setMode (cstring_fromChars (mname));
+      
+      res = message ("%q%s", res, cstring_makeLiteralTemp (context_getFlag (flag) ? "+" : "-"));
+    } end_allModes;
+
+  return res;
 }
 
 cstring
@@ -603,7 +701,7 @@ describeFlag (cstring flagname)
 	  cstring_free (oflagname);
 
 	  return
-	    (message ("%s: predefined mode (see User's Guide for information)",
+	    (message ("%s: predefined mode (see Manual for information)",
 		      flagname));
 	}
       else
@@ -1158,14 +1256,22 @@ extern bool flagcode_hasArgument (flagcode f)
   return (flags[f].argtype != ARG_NONE);
 }
 
-extern bool flagcode_hasValue (flagcode f)
+extern bool flagcode_hasNumber (flagcode f)
 {
-  return (flags[f].argtype == ARG_VALUE);
+  return (flags[f].argtype == ARG_NUMBER);
+}
+
+extern bool flagcode_hasChar (flagcode f)
+{
+  return (flags[f].argtype == ARG_CHAR);
 }
 
 extern bool flagcode_hasString (flagcode f)
 {
-  return (flags[f].argtype == ARG_STRING);
+  return (flags[f].argtype == ARG_STRING
+	  || flags[f].argtype == ARG_FILE
+	  || flags[f].argtype == ARG_DIRECTORY
+	  || flags[f].argtype == ARG_PATH);
 }
 
 extern int flagcode_valueIndex (flagcode f)
@@ -1180,7 +1286,7 @@ extern int flagcode_valueIndex (flagcode f)
 
       allFlagCodes (code)
 	{
-	  if (flagcode_hasValue (code))
+	  if (flagcode_hasNumber (code) || flagcode_hasChar (code))
 	    {
 	      llassert (nv < NUMVALUEFLAGS);
 	      DPRINTF (("Value flag: %s [%d]", flagcode_unparse (code), (int) code));

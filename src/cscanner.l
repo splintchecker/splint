@@ -2136,7 +2136,11 @@ static int handleLlSpecial ()
 			    {
 			      s--;
 			      
-			      if (flagcode_hasValue (fflag))
+			      if (flagcode_hasNumber (fflag))
+				{
+				  setValueFlag (fflag, extra);
+				}
+			      else if (flagcode_hasChar (fflag))
 				{
 				  setValueFlag (fflag, extra);
 				}
