@@ -52,7 +52,7 @@ UNITTESTS = \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing slovaknames specclauses special stack staticarray strings \
   structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
-  unused ullint utypes void
+  unused ullint utypes void widestrings
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 INTEGTESTS = db1 db2 db3
@@ -760,6 +760,14 @@ utypes:
 .PHONY: void
 void:
 	${SPLINTRN} void.c -expect 2
+
+###
+### 2001-12-30: Problems with wide character strings reported by Nelson Beebe
+###
+
+.PHONY: widestrings
+widestrings:
+	${SPLINTRN} widestrings.c -expect 2
 
 ###
 ### New since 2.5q:

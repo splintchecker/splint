@@ -381,6 +381,56 @@ ctype_baseArrayPtr (ctype c)
     }
 }
 
+/*
+** wchar_t *
+*/
+
+ctype 
+ctype_makeWideString ()
+{
+  static ctype res = ctype_unknown;
+
+  if (ctype_isUnknown (res))
+    {
+      ctype wchart;
+
+      if (usymtab_existsType (cstring_makeLiteralTemp ("wchar_t")))
+	{
+	  wchart = uentry_getAbstractType (usymtab_lookup (cstring_makeLiteralTemp ("wchar_t")));
+	}
+      else
+	{
+	  wchart = ctype_char;
+	}
+      
+      res = ctype_makePointer (wchart);
+    }
+  
+  return res;
+}
+
+bool
+ctype_isWideString (ctype c)
+{
+  if (ctype_isPointer (c))
+    {
+      ctype ct = ctype_baseArrayPtr (c);
+      
+      if (usymtab_existsType (cstring_makeLiteralTemp ("wchar_t")))
+	{
+	  return (ct == uentry_getAbstractType (usymtab_lookup (cstring_makeLiteralTemp ("wchar_t"))));
+	}
+      else
+	{
+	  return FALSE;
+	}
+    }
+  else
+    {
+      return FALSE;
+    }
+}
+
 ctype
 ctype_getReturnType (ctype c)
 {

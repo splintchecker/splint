@@ -844,6 +844,15 @@ exprNode_rawStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 }
 
 /*@only@*/ exprNode
+exprNode_wideStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
+{
+  exprNode res = exprNode_stringLiteral (t, loc);
+  res->typ = ctype_makeWideString ();
+
+  return res;
+}
+
+/*@only@*/ exprNode
 exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
   int len = cstring_length (t) - 2;
@@ -4702,7 +4711,7 @@ ctype sizeof_resultType (void)
 	}
       else
 	{
-	  	  sizet = ctype_ulint;
+	  sizet = ctype_ulint;
 	}
     }
   return sizet;
@@ -9316,7 +9325,14 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
       break;
 
     case XPR_STRINGLITERAL:
-      ret = message ("\"%s\"", exprData_getLiteral (data));
+      if (ctype_isWideString (e->typ))
+	{
+	  ret = message ("L\"%s\"", exprData_getLiteral (data));
+	}
+      else
+	{
+	  ret = message ("\"%s\"", exprData_getLiteral (data));
+	}
       break;
 
     case XPR_NUMLIT:

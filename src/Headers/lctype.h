@@ -264,6 +264,8 @@ extern ctype ctype_makeFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ 
 extern ctype ctype_makeNFParamsFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
 extern ctype ctype_makePointer (ctype p_c);
 extern ctype ctype_makeRawFunction (ctype p_base, /*@only@*/ uentryList p_p);
+extern ctype ctype_makeWideString (void) /*@modifies internalState@*/ ;
+extern bool ctype_isWideString (ctype p_c) /*@*/ ;
 
 extern ctype ctype_newBase (ctype p_c, ctype p_p) /*@*/ ;
 extern ctype ctype_realType (ctype p_c) /*@*/ ;

@@ -278,6 +278,9 @@ extern exprNode
 extern exprNode 
   exprNode_stringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
 
+extern /*@only@*/ exprNode
+  exprNode_wideStringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
+
 /*
 ** No surrounding quotes.
 */

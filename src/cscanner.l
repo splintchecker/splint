@@ -95,7 +95,8 @@ static bool continueLine = FALSE;
 static int ninput (void);
 static char processChar (void);
 static double processFloat (void);
-static /*@only@*/ exprNode processString (void);
+static /*@only@*/ exprNode processString (void) ;
+static /*@only@*/ exprNode processWideString (void) ;
 static long processDec (void);
 static long processHex (void);
 static long processOctal (void);
@@ -272,7 +273,7 @@ static void setTokLengthT (size_t len)
 "static"	{ setTokLength (6); RETURN_TOK (QSTATIC); }
 
 \"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ()); }
-L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ()); }
+L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processWideString ()); }
 "out"                   { return (processSpec (QOUT)); }
 "in"                    { return (processSpec (QIN)); }
 "partial"               { return (processSpec (QPARTIAL)); }
@@ -2891,6 +2892,46 @@ static /*@only@*/ exprNode processString ()
 
     
   res = exprNode_stringLiteral (ns, loc);
+  return (res);
+}
+
+/*
+** process a wide character string L"...."
+*/
+
+static /*@only@*/ exprNode processWideString ()
+{
+  exprNode res;
+  fileloc loc;
+  char *nl = strchr (yytext, '\n');
+  cstring ns;
+
+  llassert (*yytext == 'L');
+  yytext++;
+
+  ns = cstring_fromCharsNew (yytext);
+  
+  if (nl == NULL)
+    {
+      loc = fileloc_copy (g_currentloc);
+      addColumn (cstring_length (ns));
+    }
+  else
+    {
+      char *lastnl = nl;
+
+      loc = fileloc_copy (g_currentloc);
+
+      context_incLineno ();
+      
+      while ((nl = strchr ((nl + 1), '\n')) != NULL)
+	{
+	  context_incLineno ();
+	  lastnl = nl;
+	}
+    }
+
+  res = exprNode_wideStringLiteral (ns, loc);
   return (res);
 }
 
