@@ -357,14 +357,6 @@ extern qual qual_createMessageLike (void) /*@*/ ;
 
 
 # define qual_createNullTerminated() qual_createPlain (QU_NULLTERMINATED)
-//# define qual_createSetBufferSize()  qual_createPlain (QU_SETBUFFERSIZE)
-
-
-
-/* start modifications */
-//extern bool qual_isNullTerminated (qual p_q) ;
-//extern bool qual_isBufQualifier (qual p_q)  ;
-/* end modifications */
 
 /* start modifications */
 /* This is used to check if we the qualifier matches any of the

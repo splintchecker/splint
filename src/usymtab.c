@@ -3625,7 +3625,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 {
   sRef sr = uentry_getSref (glob);
   
-  DPRINTF (("Check global return: %s // orig: %s // sr: %s",
+  DPRINTF (("Check global return: %s / orig: %s / sr: %s",
 	    uentry_unparseFull (glob),
 	    sRef_unparseFull (orig),
 	    sRef_unparseFull (sr)));

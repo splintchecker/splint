@@ -37,7 +37,8 @@
 SHELL = /bin/csh -f
 
 # Command to run lclint
-LCLINT  = ${HOME}/LCLintDev/src/lclint
+# ${HOME}/LCLintDev/src/lclint
+LCLINT  = lclint
 LCLINTP = $(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
@@ -77,7 +78,12 @@ test: fulltest
 
 GREP = grep
 DIFF = diff
-CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e" | $(GREP) -v $(LCLINT) | $(GREP) -v $(HOME)
+
+###
+### This is a kludgey way of processing the output to make it match exactly
+###
+
+CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e" | $(GREP) -v $(HOME)
 
 ### not real .c
 
@@ -435,7 +441,7 @@ mystrncat:
 	$(LCLINTR) mystrncat.c +arraybounds  +arrayboundsread -expect 4 
 
 noeffect:
-	${LCLINT} noeffect.c +allmacros +checks -expect 3
+	${LCLINT} -nof noeffect.c +allmacros +checks -expect 3
 
 null: 
 	$(LCLINTR) null1.c -expect 14

@@ -48,7 +48,7 @@ long constraintExpr_getValue (constraintExpr p_expr) /*@*/;
 
 int constraintExpr_compare (constraintExpr p_expr1, constraintExpr p_expr2) /*@*/;
 
-//constraintExpr constraintExpr_makeValueInt (int i);
+/* constraintExpr constraintExpr_makeValueInt (int i); */
 
 /*@only@*/ constraintExpr constraintExpr_makeIntLiteral (long p_i);
 

@@ -33,7 +33,7 @@ extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*
 
 extern void constraint_free (/*@only@*/  constraint p_c);
 
-//constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
+/* constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant); */
 
 /*@i22*/
 /*@-czechfcns*/
@@ -145,7 +145,7 @@ bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 
 /*@=czechfcns*/
-////drl possible problem : warning take this out
+/* drl possible problem : warning take this out */
 
 #include "constraintResolve.h"
 #include "constraintOutput.h"

@@ -28,6 +28,15 @@
 # include "lclintMacros.nf"
 # include "llbasic.h"
 
+# ifndef __LCLINT__
+extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
+# endif
+
+  /*@i523 can't include these here
+    # include "mtgrammar.h"
+    # include "mtscanner.h"
+  */
+
 static /*@exits@*/ void mterror (char *);
 
 /*@-noparams@*/ /* Can't list params since YYSTYPE isn't defined yet. */

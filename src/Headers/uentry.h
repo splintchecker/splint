@@ -603,15 +603,11 @@ extern bool uentry_hasAccessType (uentry p_e);
 /*@constant cstring GLOBAL_MARKER_NAME@*/
 # define GLOBAL_MARKER_NAME cstring_makeLiteralTemp ("#GM#")
 
-/* start modifications */
-//extern void uentry_setBufferSize (uentry p_e, exprNode cconstant);
-
 /* functions for making modification to null-term info */
-  void uentry_setNullTerminatedState (uentry p_e);
- void uentry_setPossiblyNullTerminatedState (uentry p_e);
-//extern void uentry_setNotNullTerminated (uentry p_e);
-void uentry_setSize(uentry p_e, int p_size);
- void uentry_setLen(uentry p_e, int p_len);
+extern void uentry_setNullTerminatedState (uentry p_e);
+extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
+extern void uentry_setSize(uentry p_e, int p_size);
+extern void uentry_setLen(uentry p_e, int p_len);
 
 /*@i66*/
 /*@-nullderef@*/
@@ -656,7 +652,7 @@ extern bool uentry_hasMetaStateEnsures (uentry p_e) /*@*/ ;
 extern /*@only@*/ metaStateConstraintList uentry_getMetaStateEnsures (uentry p_e);
 
 /* start modifications */
-//extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
+
 /*drl7x*/
 extern constraintList uentry_getFcnPreconditions (uentry p_ue);
 extern constraintList uentry_getFcnPostconditions (uentry p_ue);
@@ -664,8 +660,7 @@ extern constraintList uentry_getFcnPostconditions (uentry p_ue);
 extern void uentry_setPostconditions (uentry p_ue, /*@only@*/ functionConstraint p_postconditions);
 
 extern void uentry_setPreconditions (uentry p_ue, /*@only@*/ functionConstraint p_preconditions);
-
-     /*end mods*/
+/*end mods*/
 
 # else
 # error "Multiple include"

@@ -2168,7 +2168,7 @@ sRef_closeEnough (sRef s1, sRef s2)
     {
     case SK_RESULT:
       {
-	//	s = sRef_saveCopy(s);
+	/* s = sRef_saveCopy(s); */ /*@i523@*/
 	ce = constraintExpr_makeTermsRef (s);
 	return ce;
       }
@@ -2185,7 +2185,7 @@ sRef_closeEnough (sRef s1, sRef s2)
       {
 	sRef temp;
 	temp = (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
-	//temp = sRef_saveCopy(temp);
+	/* temp = sRef_saveCopy(temp); */ /*@i523@*/
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }

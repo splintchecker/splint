@@ -7,7 +7,7 @@ extern /*@only@*/ constraintList constraintList_reflectChanges(/*@observer@*/ /*
 
 extern /*@only@*/ constraint constraint_substitute (/*@temp@*/ /*@observer@*/ constraint p_c, /*@temp@*/ /*@observer@*/ constraintList p_p);
 
-//extern constraint constraint_searchandreplace (constraint p_c, constraintExpr old, constraintExpr new);
+/* extern constraint constraint_searchandreplace (constraint p_c, constraintExpr old, constraintExpr new); */
 
 extern bool constraintList_resolve (/*@temp@*/ /*@observer@*/ constraint p_c,  /*@temp@*/ /*@observer@*/ constraintList p_p);
 
@@ -37,6 +37,4 @@ constraintList constraintList_reflectChangesOr (constraintList p_pre2, constrain
 /*@only@*/ constraintList constraintList_substituteFreeTarget (/*@only@*/ constraintList p_target, /*@observer@*/ /*@temp@*/ constraintList p_subList);
 
 extern void exprNode_mergeResolve (exprNode p_parent, exprNode p_child1, exprNode p_child2);
-
-//extern constraintList checkCall (exprNode p_fcn, exprNodeList p_arglist);
 

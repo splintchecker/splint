@@ -10973,64 +10973,8 @@ bool uentry_isGlobalMarker (uentry ue)
 	  && (cstring_equal (uentry_rawName (ue), GLOBAL_MARKER_NAME)));
 }
 
-
-//
 /* new start modifications */
 
-/*@ignore@*/
-
-
-# if 0
-  
-static  void uentry_testInRange (uentry p_e, uentry cconstant)  {
-  if (uentry_isValid(p_e)) {
-    if (sRef_isValid (p_e->sref)) {
-      /* char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
-      int index = atoi( t );
-      free (t);
-      */
-      long index = multiVal_forceInt (uentry_getConstantValue (cconstant));
-      //      usymtab_testInRange (p_e->sref, index);
-    }//end if
-  }//endif
-}
-
-
-/*  void uentry_setStringLength (uentry p_e, uentry cconstant)  { */
-/*  if( uentry_isValid(p_e) ) { */
-/*    if( p_e->info != NULL) { */
-/*      if( p_e->info->var != NULL) { */
-/*        char *t =  cstring_toCharsSafe (uentry_unparse(cconstant)); */
-/*        int length = atoi( t ); */
-/*        free (t); */
-/*        p_e->info->var->bufinfo->len = length;  */
-/*        p_e->sref->bufinfo.len = length; */
-/*        printf("Set string length of buff to %d \n",  p_e->sref->bufinfo.size); */
-/*      }//end if */
-/*    }//endif */
-/*  }//end if */
-/*  } */
-
-
-static void uentry_setBufferSize (uentry p_e, exprNode cconstant) {
-if( uentry_isValid(p_e) ) {
-  if( p_e->info != NULL) {
-    if( p_e->info->var != NULL) {
-      int size = atoi(cstring_toCharsSafe(exprNode_unparse(cconstant) ) ); 
-      p_e->info->var->bufinfo->size = size; 
-      p_e->sref->bufinfo.size = size;
-      printf("Set buffer size to %d \n",  p_e->sref->bufinfo.size);
-      //  fprintf(stderr, "For %s and %s\n", uentry_unparse(p_e) );
-      // fprintf(stderr, "and %d\n", size );
-      
-    }//end if
-  }//endif
-}//end if
-}
-
-# endif
-
-  
 /* start modifications */
 /*
 requires: p_e is defined, is a ptr/array variable 
@@ -11040,15 +10984,17 @@ effects: sets the state of the variable
 
 
 void uentry_setPossiblyNullTerminatedState (uentry p_e)  {
+  /*@access sRef@*/ /*i523 shouldn't do this! */
   if( uentry_isValid(p_e) ) {
     if( p_e->info != NULL) {
       if( p_e->info->var != NULL) {
          p_e->info->var->bufinfo->bufstate = BB_POSSIBLYNULLTERMINATED;
          p_e->sref->bufinfo.bufstate = BB_POSSIBLYNULLTERMINATED;
          return;
-      }/* End if */
-    }/* End if */
-  }/* End if */
+      }
+    }
+  }
+  /*@noaccess sRef@*/
 
   fprintf(stderr, "uentry:Error in setPossiblyNullTerminatedState\n");
 }
@@ -11064,36 +11010,16 @@ void uentry_setNullTerminatedState (uentry p_e)  {
     if( p_e->info != NULL) {
       if( p_e->info->var != NULL) {
         p_e->info->var->bufinfo->bufstate = BB_NULLTERMINATED;
+	/*@access sRef@*/ /*@i523 bad!*/
         p_e->sref->bufinfo.bufstate = BB_NULLTERMINATED;
+	/*@noaccess sRef@*/ 
         return;
-      }//End if
-    }//End if
-  }//End if
+      }
+    }
+  }
 
   fprintf(stderr, "uentry:Error in setNullTerminatedState\n");
 }
-
-
-/*
-requires: p_e is defined, is a ptr/array variable 
-modifies: p_e
-effects: sets the state of the variable
-*/
-
-/*  void uentry_setNotNullTerminatedState (uentry p_e)  { */
-/*    if( uentry_isValid(p_e) ) { */
-/*      if( p_e->info != NULL) { */
-/*        if( p_e->info->var != NULL) { */
-/*          p_e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED; */
-/*          p_e->sref->bufinfo.bufstate = BB_NOTNULLTERMINATED; */
-/*          return; */
-/*        }//End if */
-/*      }//End if */
-/*    }//End if */
-
-/*    fprintf(stderr, "uentry:Error in setNotNullTerminatedState\n"); */
-/*  } */
-
 
 /*
 requires: p_e is defined, is a ptr/array variable 
@@ -11106,11 +11032,13 @@ void uentry_setSize (uentry p_e, int size)  {
     if( p_e->info != NULL) {
       if( p_e->info->var != NULL) {
         p_e->info->var->bufinfo->size = size;
+	/*@access sRef@*/ /*@i523 bad!*/
         p_e->sref->bufinfo.size = size;
+	/*@noaccess sRef@*/
         return;
-      }//End if
-    }//End if
-  }//End if
+      }
+    }
+  }
 
   fprintf(stderr, "uentry:Error in setSize\n");
 }
@@ -11122,20 +11050,22 @@ modifies: p_e
 effects: sets the length of the buffer
 */
 
- void uentry_setLen (uentry p_e, int len)  {
+void uentry_setLen (uentry p_e, int len)  {
   if( uentry_isValid(p_e) ) {
     if( p_e->info != NULL) {
       if( p_e->info->var != NULL) {
         p_e->info->var->bufinfo->len = len;
+	/*@access sRef@*/ /*@i523 bad!*/
         p_e->sref->bufinfo.len = len;
+	/*@noaccess sRef@*/
         return;
-      }//End if
-    }//End if
-  }//End if
-
+      }
+    }
+  }
+  
   fprintf(stderr, "uentry:Error in setLen\n");
 }
-/*@end@*/
+
 /*@=type*/
 
 bool uentry_hasMetaStateEnsures (uentry e)

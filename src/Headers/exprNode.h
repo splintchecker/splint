@@ -161,8 +161,12 @@ struct s_exprNode
   cstring etext;
   /*@notnull@*/   constraintList requiresConstraints;
   /*@notnull@*/ constraintList ensuresConstraints;
-  //these two are used only for boolean expressions
-  //they store the ensures constraints for the true and false cases
+  
+  /*
+  ** These two are used only for boolean expressions, 
+  ** they store the ensures constraints for the true and false cases
+  */
+
   /*@notnull@*/ constraintList trueEnsuresConstraints;
   /*@notnull@*/ constraintList falseEnsuresConstraints;
 } ;
@@ -373,16 +377,10 @@ extern /*@only@*/ exprNode exprNode_combineLiterals (/*@only@*/ exprNode p_e, /*
 
 extern /*@only@*/ fileloc exprNode_getNextSequencePoint (exprNode p_e) ;
 
-/*drl 09-08-2000 */
-// Commenting out because this seems to conflict with Dave Evans version
-//exprNode exprNode_fakeCopy (@returned@ exprNode p_e);
-
 /*drl 01-20-2001*/
 exprNode exprNode_createNew(ctype p_c);
 
-
 /* drl 07-25-01 */
-
 bool exprNode_isInitBlock (exprNode p_e);
 
 # else

@@ -58,7 +58,7 @@ int f()
     if (/*strcpy ("kl", "hjklhjklhjkljhjklhjkhjkhjklhjkl") && */mapping_chdir (chroot_pw->pw_dir)/* >= 0 */)
 		      {
 			char f[1];
-			///	mapping_chdir (chroot_pw->pw_dir);
+			/* mapping_chdir (chroot_pw->pw_dir); */
 			strcpy (f, "hjklhjklhjkljhjklhjkhjkhjklhjkl");
 			home = sgetsave (chroot_pw->pw_dir);
 			

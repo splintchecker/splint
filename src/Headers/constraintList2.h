@@ -51,10 +51,12 @@ extern void constraintList_advance (constraintList p_s)
 
 extern /*@exposed@*/ constraint constraintList_getN (constraintList p_s, int p_n) /*@*/ ;
 
-//extern /*@only@*/ cstring constraintList_unparse (constraintList p_s) ;
-//extern /*@only@*/ cstring constraintList_unparseTail (constraintList p_s);
-//extern /*@only@*/ cstring constraintList_unparseToCurrent (constraintList p_s);
-//extern /*@only@*/ cstring constraintList_unparseSecondToCurrent (constraintList p_s);
+# if 0
+extern /*@only@*/ cstring constraintList_unparse (constraintList p_s) ;
+extern /*@only@*/ cstring constraintList_unparseTail (constraintList p_s);
+extern /*@only@*/ cstring constraintList_unparseToCurrent (constraintList p_s);
+extern /*@only@*/ cstring constraintList_unparseSecondToCurrent (constraintList p_s);
+# endif
 
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
