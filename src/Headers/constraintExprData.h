@@ -14,9 +14,7 @@ constraintExprBinaryOpKind;
 typedef enum
 {
   UNARYOP_UNDEFINED,
- VALUE, 
- MAXSET, MINSET, MAXREAD, MINREAD,
- NULLTERMINATED
+ MAXSET, MINSET, MAXREAD, MINREAD
  }
 constraintExprUnaryOpKind;
 
@@ -54,7 +52,6 @@ extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (constraintExp
 # define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
 # define constraintExprData_isError(e)        ((e) == constraintExprData_undefined)
 
-void constraintExprData_free (/*@only@*/ constraintExprData data);
 
 /*@reldef@*/ constraintExprData constraintExprData_termSetTerm (/*@reldef@*/ /*@returned@*/ constraintExprData data, /*@only@*/ constraintTerm term);
 

@@ -159,12 +159,12 @@ struct _exprNode
   fileloc loc;
   /*@relnull@*/ exprData edata;
   cstring etext;
-  constraintList requiresConstraints;
-  constraintList ensuresConstraints;
+  /*@notnull@*/   constraintList requiresConstraints;
+  /*@notnull@*/ constraintList ensuresConstraints;
   //these two are used only for boolean expressions
   //they store the ensures constraints for the true and false cases
-  constraintList trueEnsuresConstraints;
-  constraintList falseEnsuresConstraints;
+  /*@notnull@*/ constraintList trueEnsuresConstraints;
+  /*@notnull@*/ constraintList falseEnsuresConstraints;
 } ;
 
 /*@constant null exprNode exprNode_undefined; @*/

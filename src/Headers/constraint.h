@@ -32,7 +32,7 @@ extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*
 
 void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
 
-constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
+//constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
 
 /*@i22*/
 /*@-czechfcns*/
@@ -115,7 +115,7 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
 bool constraint_hasMaxSet(constraint c);
 
 /*from constraintGenreation.c*/
-void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint);
+void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv, /*@observer@*/  fileloc sequencePoint);
 
 /*@only@*/ constraintList exprNode_traversRequiresConstraints (exprNode e);
 /*@only@*/ constraintList exprNode_traversEnsuresConstraints (exprNode e);

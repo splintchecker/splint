@@ -66,15 +66,15 @@ extern constraintList constraintList_preserveOrig (/*@returned@*/ constraintList
 # define constraintListBASESIZE SMALLBASESIZE
 
 
-/*@unused@*/ extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
+extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam ( /*@observer@*/ constraintList preconditions, /*@observer@*/ exprNodeList arglist) /*@modifies preconditions@*/;
 
 extern constraintList constraintList_togglePost (/*@returned@*/ constraintList c) /*@modifies c@*/;
 
-extern  /*@only@*/ constraintList constraintList_doSRefFixConstraintParam ( /*@only@*/ constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
+extern  /*@only@*/ constraintList constraintList_doSRefFixConstraintParam ( /*@only@*/ constraintList preconditions, /*@observer@*/ exprNodeList arglist) /*@modifies preconditions@*/;
 
 extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall) /*@*/;
 
-/*@only@*/ constraintList constraintList_doFixResult ( /*@only@*/ constraintList postconditions, exprNode fcnCall) /*@modifies postconditions@*/;
+/*@only@*/ constraintList constraintList_doFixResult ( /*@only@*/ constraintList postconditions, /*@observer@*/ exprNode fcnCall) /*@modifies postconditions@*/;
 
 constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
 

@@ -590,11 +590,11 @@ extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fil
 //extern void uentry_setBufferSize (uentry p_e, exprNode cconstant);
 
 /* functions for making modification to null-term info */
-extern void uentry_setNullTerminatedState (uentry p_e);
-extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
+  void uentry_setNullTerminatedState (uentry p_e);
+ void uentry_setPossiblyNullTerminatedState (uentry p_e);
 //extern void uentry_setNotNullTerminated (uentry p_e);
-extern void uentry_setSize(uentry p_e, int p_size);
-extern void uentry_setLen(uentry p_e, int p_len);
+void uentry_setSize(uentry p_e, int p_size);
+ void uentry_setLen(uentry p_e, int p_len);
 
 /*@i66*/
 /*@-nullderef@*/
@@ -620,6 +620,11 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 
 /* end modifications */
 
+/* drl added defination 6/11/01 */
+void
+uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions);
+
+
 # ifdef DOANNOTS
 typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,
 		 AN_CONST, AN_LAST
@@ -631,10 +636,13 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 # endif /* DOANNOTS */
 
 /* start modifications */
-extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
+//extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
 /*drl7x*/
 extern constraintList uentry_getFcnPreconditions (uentry ue);
 extern constraintList uentry_getFcnPostconditions (uentry ue);
+extern void
+uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions);
+
      /*end mods*/
 
 # else

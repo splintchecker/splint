@@ -4,7 +4,7 @@
 
 typedef union
 {
-  exprNode expr;
+  /*@dependent@*/ exprNode expr;
   /*@only@*/  sRef     sref;
   int      intlit;
 } constraintTermValue;
@@ -59,7 +59,7 @@ constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
 
 //constraintTerm exprNode_makeConstraintTerm ( exprNode e) /*@*/;
 
-bool constraintTerm_same (constraintTerm term1, constraintTerm term2) /*@*/;
+//bool constraintTerm_same (constraintTerm term1, constraintTerm term2) /*@*/;
 
 bool constraintTerm_similar (constraintTerm term1, constraintTerm term2) /*@*/;
 
@@ -88,7 +88,7 @@ cstring constraintTerm_print (constraintTerm term) /*@*/;
 
 constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s) /*@*/;
 
-bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
+/*@unused@*/ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
 
 constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fileloc loc) /*@modifies term@*/;
 
@@ -98,8 +98,7 @@ bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/;
 cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;
 
 
-constraintTerm 
-constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
+constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
 
 #else
 

@@ -15,14 +15,8 @@
 typedef enum 
 { 
   FL_NORMAL, FL_SPEC, FL_LIB, FL_STDLIB, FL_STDHDR, FL_IMPORT, FL_BUILTIN,
-  FL_PREPROC, FL_RC, FL_EXTERNAL,
-  FL_POST, FL_SIDE
+  FL_PREPROC, FL_RC, FL_EXTERNAL
 } flkind;
-
-/*added fl_post and fl_side for use with constraint generation
-  DRL 8/22/2000
-*/
-
 
 struct __fileloc
 {

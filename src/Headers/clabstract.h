@@ -113,7 +113,11 @@ void setEnsuresConstraints (constraintList c);
 
 void setFunctionConstraints (constraintList c);
 sRef checkbufferConstraintClausesId (uentry ue);
+void  setImplictfcnConstraints (void);
+
 /* end drl*/
+
+
 # else
 # error "Multiple include"
 # endif
