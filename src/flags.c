@@ -1164,7 +1164,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	    {
 	      llerror_flagWarning
 		(cstring_makeLiteral ("shiftsigned flag is obsolete.  You probably "
-				      "want bitwisesigned, shiftnegative or shiftsize."));
+				      "want bitwisesigned, shiftnegative or shiftimplementation."));
 	    }
 	  
 	  res = SKIP_FLAG;
