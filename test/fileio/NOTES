@@ -1,0 +1,28 @@
+Metastate annotations:
+
+- return matches, "errors" reference
+- NULL ==> not in a meta state
+
+
+
+Things to do:
+
+- check all files are closed
+
+- fopen returns an open file
+- fclose must be passed an open file
+- fgetc, fputc must be passed an open file
+- EOF return from fgetc; read error when EOF set
+- fputc error return EOF
+- ftell error -1L
+- fseek error nonzero
+- ferror - nonzero iff error indicator is set
+- feof - nonzery iff eof is set
+
+
+- + mode:
+  input and output
+
+  must call fseek between input and output, unless EOF!
+
+
