@@ -31,7 +31,7 @@ extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*
 # define constraint_isUndefined(e)      ((e) == constraint_undefined)
 # define constraint_isError(e)          ((e) == constraint_undefined)
 
-extern void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
+extern void constraint_free (/*@only@*/  constraint c);
 
 //constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
 
@@ -43,8 +43,6 @@ extern void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
 //     /*@post:notnull result->t1@*/
 //     /*@defines result->expr, result->t1, result->c1@, result->op*/;
      
-//constraintExpr makeConstraintExprIntlit (int p_i);
-
 extern /*@relnull@*/ constraint constraint_makeReadSafeExprNode ( exprNode p_po, exprNode p_ind);
 
 extern /*@only@*/ constraint constraint_makeWriteSafeExprNode (exprNode p_po, exprNode p_ind);
@@ -127,7 +125,13 @@ constraint constraint_togglePostOrig (/*@returned@*/ constraint c);
 
 bool constraint_hasOrig( /*@observer@*/ /*@temp@*/ constraint c);
 
-/*@only@*/ cstring  constraint_printOr (constraint c) /*@*/;
+constraint constraint_makeAddAssign (exprNode e, exprNode f, fileloc sequencePoint);
+
+constraint constraint_makeSubtractAssign (exprNode e, exprNode f, fileloc sequencePoint);
+
+/*@only@*/ constraint constraint_undump (FILE *f);
+
+void constraint_dump (/*@observer@*/ constraint c,  FILE *f);
 
 /*@=czechfcns*/
 //#warning take this out

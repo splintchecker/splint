@@ -45,17 +45,16 @@ extern /*@only@*/ constraintList constraintList_addList (/*@returned@*/ constrai
 
 extern constraintList constraintList_copy ( /*@observer@*/ constraintList p_s) /*@*/ ;
 
-//extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList p_s) ;
+
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
 
+extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList p_s) /*@*/;
 
-
-extern cstring constraintList_print ( /*@observer@*/ constraintList s) /*@*/;
+/*@only@*/ extern cstring constraintList_print ( /*@observer@*/ constraintList s) /*@*/;
 
 extern cstring
 constraintList_printDetailed ( /*@observer@*/ constraintList s) /*@*/;
-
 
 extern /*@only@*/ constraintList
 constraintList_logicalOr ( /*@observer@*/ constraintList l1, /*@observer@*/  constraintList l2);
@@ -65,7 +64,6 @@ extern constraintList constraintList_preserveOrig (/*@returned@*/ constraintList
 /*@constant int constraintListBASESIZE;@*/
 
 # define constraintListBASESIZE SMALLBASESIZE
-
 
 extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam ( /*@observer@*/ constraintList preconditions, /*@observer@*/ exprNodeList arglist) /*@modifies preconditions@*/;
 
@@ -78,9 +76,14 @@ extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exp
 /*@only@*/ constraintList constraintList_doFixResult ( /*@only@*/ constraintList postconditions, /*@observer@*/ exprNode fcnCall) /*@modifies postconditions@*/;
 
 extern constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
-extern constraintList constraintList_makeFixedArrayConstraints (sRefSet p_s) ;
+extern /*@only@*/ constraintList constraintList_makeFixedArrayConstraints ( /*@observer@*/ sRefSet p_s) ;
 extern void constraintList_printErrorPostConditions (constraintList p_s, fileloc p_loc) ;
 extern void constraintList_printError (constraintList p_s, fileloc p_loc) ;
+
+void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f);
+
+/*@only@*/ constraintList constraintList_undump (FILE *f);
+
 
 # else
 # error "Multiple include"

@@ -26,7 +26,7 @@ typedef enum
 
 struct _constraintTerm {
   /*@only@*/ fileloc loc;
-   constraintTermValue value;
+  constraintTermValue value;
   constraintTermType kind;
 };
 
@@ -58,9 +58,8 @@ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@m
 
 constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
 
-//constraintTerm exprNode_makeConstraintTerm ( exprNode e) /*@*/;
 
-//bool constraintTerm_same (constraintTerm term1, constraintTerm term2) /*@*/;
+/*@i1*/ //bool constraintTerm_same (constraintTerm term1, constraintTerm term2) /*@*/;
 
 bool constraintTerm_similar (constraintTerm term1, constraintTerm term2) /*@*/;
 
@@ -69,19 +68,6 @@ int constraintTerm_getValue (constraintTerm term) /*@*/;
 
 fileloc constraintTerm_getFileloc (constraintTerm t) /*@*/;
 
-//constraintTerm constraintTerm_makeMaxSetexpr (exprNode e) /*@*/;
-
-//constraintTerm constraintTerm_makeMinSetexpr (exprNode e) /*@*/;
-
-//constraintTerm constraintTerm_makeMaxReadexpr (exprNode e) /*@*/;
-
-//constraintTerm constraintTerm_makeMinReadexpr (exprNode e) /*@*/;
-
-//constraintTerm constraintTerm_makeValueexpr (exprNode e) /*@*/;
-
-//constraintTerm intLit_makeConstraintTerm (int i) /*@*/;
-
-//constraintTerm constraintTerm_makeIntLitValue (int i) /*@*/;
 
 bool constraintTerm_isIntLiteral (constraintTerm term) /*@*/;
 
@@ -100,6 +86,10 @@ cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;
 
 
 constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
+
+void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
+
+/*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
 
 #else
 

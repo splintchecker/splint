@@ -83,7 +83,7 @@ constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr
 
 bool constraintExpr_isLit (constraintExpr expr);
 
-/*@only@*/ constraintExpr constrainExpr_makeAddExpr (/*@only@*/constraintExpr expr, /*@only@*/ constraintExpr add);
+/*@only@*/ constraintExpr constraintExpr_makeAddExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent);
 
 /*@only@*/  constraintExpr constraintExpr_makeSubtractExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent);
 
@@ -104,7 +104,13 @@ constraintExpr constraintExpr_propagateConstants (/*@only@*/ constraintExpr expr
 						  /*@out@*/ int *literal);
 
 bool constraintExpr_isBinaryExpr (/*@observer@*/ constraintExpr c);
+
+extern void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f);
+
+extern /*@only@*/ constraintExpr  constraintExpr_undump (FILE *f);
+
 #else
+
 
 # error "Multiple include"
 

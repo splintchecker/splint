@@ -620,11 +620,6 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 
 /* end modifications */
 
-/* drl added defination 6/11/01 */
-void
-uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions);
-
-
 # ifdef DOANNOTS
 typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,
 		 AN_CONST, AN_LAST
@@ -641,7 +636,10 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 extern constraintList uentry_getFcnPreconditions (uentry ue);
 extern constraintList uentry_getFcnPostconditions (uentry ue);
 extern void
-uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions);
+uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions);
+
+extern void
+uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions);
 
      /*end mods*/
 
