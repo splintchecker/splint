@@ -670,9 +670,8 @@ moreBufferTests:
 
 maxset:
 	@cd maxset; \
-	$(LCLINTR) -f .lclintrc -booltype "lltX_bool" maxsetannotations.c; \
-	echo $(LCLINTR); \
-	$(LCLINTR) -f .lclintrc -booltype "lltX_bool"  maxsetnoannotations.c
+	$(LCLINTR) +arraybounds maxsetannotations.c; \
+	$(LCLINTR) +arraybounds maxsetnoannotations.c -expect 1
 
 globalbufferannotation:
 	@cd globalbufferannotation; \

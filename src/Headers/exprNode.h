@@ -214,7 +214,7 @@ extern /*@observer@*/ cstring exprNode_unparseFirst (exprNode p_e) /*@*/ ;
 extern /*@observer@*/ guardSet exprNode_getForGuards (exprNode p_pred) /*@*/ ;
 extern bool exprNode_isNullValue (exprNode p_e) /*@*/ ;
 extern /*@exposed@*/ sRef exprNode_getSref (exprNode p_e) /*@*/ ;
-extern /*@observer@*/ uentry exprNode_getUentry (exprNode p_e) 
+extern /*@exposed@*/ uentry exprNode_getUentry (exprNode p_e) 
    /*@globals internalState@*/ ;
 extern void exprNode_produceGuards (exprNode p_pred) /*@modifies p_pred@*/ ;
 

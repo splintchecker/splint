@@ -37,6 +37,10 @@ extern uentryList fixUnnamedDecl (qtype p_q) /*@*/ ;
 extern /*@exposed@*/ uentry getCurrentIter(void);
 
 extern void processNamedDecl (idDecl p_t);
+
+extern void clabstract_declareType (/*@only@*/ exprNodeList, /*@only@*/ warnClause)
+   /*@modifies internalState@*/ ;
+ 
 extern void clabstract_declareFunction (/*@only@*/ idDecl p_tid) 
    /*@globals internalState@*/ ;
 extern void doVaDcl (void);
