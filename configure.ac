@@ -174,7 +174,7 @@ dnl                  test/tests2.2/Makefile
 dnl                  test/db1/Makefile])
 
 AC_CONFIG_FILES([Makefile imports/Makefile lib/Makefile src/Makefile
-                 test/Makefile])
+                 test/Makefile doc/Makefile])
 AC_OUTPUT
 
 

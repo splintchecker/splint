@@ -1,5 +1,5 @@
 ;;; Splint Library  null6.lcd
-;;Splint 3.0.1.1 --- 07 Jan 2002
+;;Splint 3.0.1.1 --- 09 Jan 2002
 ;;lib:298
 ;;ctTable
 0 u-2 19 38
@@ -1843,6 +1843,6 @@ r
 ;; Modules access
 lltX_bool#1@
 types#1@
-ansi#9@
+standard#9@
 null6#11@
 ;;End
