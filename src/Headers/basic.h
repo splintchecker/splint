@@ -9,9 +9,13 @@
 
 # ifdef HAVE_CONFIG_H
 # ifdef WIN32
-
+/* BCC32 Contributed by Scott Frazer */
+# ifdef BCC32
+# include "../../bcc32/bcc32_config.h"
+# else
 /* Win32 uses its own hand-generated config file */
 # include "../../winconfig.h"
+# endif 
 # else 
 # include "../../config.h"
 # endif
