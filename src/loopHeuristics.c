@@ -41,58 +41,15 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@access constraint, exprNode @*/  /* !!! NO! */
+/* this file was created to split the loop heuristics functionality out of constraintGeneration.c and constraint.c*/
+/*We need to access the internal representation of constraint
+  see above for an explanation.
+*/
 
-/*@access constraintExpr @*/ /* !!! NO! */
+/*@access  constraint @*/  
 
-/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
-/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
-
-static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
-{
-  
-  llassert (constraintExpr_isDefined (c) );
- if (c->kind == binaryexpr )
-    {
-      constraintExprBinaryOpKind binOP;
-      constraintExpr t1, t2;
-      t1 = constraintExprData_binaryExprGetExpr1 (c->data);
-      t2 = constraintExprData_binaryExprGetExpr2 (c->data);
-
-      binOP = constraintExprData_binaryExprGetOp (c->data);
-      if (binOP == BINARYOP_PLUS)
-	if (constraintExpr_isLit (t2) && constraintExpr_getValue (t2) == 1 )
-	  {
-	    return TRUE;
-	  }
-    }
-
- return FALSE;
-}
-
-/* look for constraints like cexrp = cexrp + 1 */
-static bool incVar (/*@notnull@*/ constraint c) /*@*/
-{
-  constraintExpr t1;
-  if (c->ar != EQ)
-    {
-      return FALSE;
-    }
-  if (! isInc (c->expr ) )
-    return FALSE;
-
-  llassert (constraintExpr_isDefined (c->expr) );
-  llassert (c->expr->kind == binaryexpr);
-
-  t1 = constraintExprData_binaryExprGetExpr1 (c->expr->data);
-  if (constraintExpr_similar (c->lexpr, t1) )
-    return TRUE;
-
-  return FALSE;
-}
-/*@noaccess constraintExpr @*/
+static bool isInc (/*@observer@*/ constraintExpr p_c) /*@*/;
+static bool incVar (/*@notnull@*/ constraint p_c) /*@*/;
 
 
 static bool increments (/*@observer@*/ constraint c,
@@ -112,6 +69,52 @@ static bool increments (/*@observer@*/ constraint c,
     return FALSE;
 }
 
+static /*@only@*/ constraintList getLessThanConstraints (/*@observer@*/ constraintList c)
+{
+  constraintList ret;
+
+  ret = constraintList_makeNew ();
+  constraintList_elements (c, el)
+    {
+      llassert (constraint_isDefined (el));
+      if ( constraint_isUndefined (el)  )
+      	continue;
+      
+      if (el->ar == LT || el->ar == LTE)
+	{
+	  constraint temp;
+	  temp = constraint_copy (el);
+
+	  ret = constraintList_add (ret, temp);
+	}
+    }
+  end_constraintList_elements;
+
+  return ret;
+}
+
+static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintList c)
+{
+  constraintList ret;
+
+  ret = constraintList_makeNew ();
+  constraintList_elements (c, el)
+    {
+      llassert (constraint_isDefined (el));
+
+      if (incVar (el) )
+	{
+	  constraint temp;
+	  temp = constraint_copy (el);
+	  ret = constraintList_add (ret, temp);
+	}
+    }
+  end_constraintList_elements;
+  
+  return ret;
+}
+
+/*@access exprNode@*/
 static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
 {
   
@@ -173,52 +176,10 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
       }
   return FALSE;
 }
+/*@noaccess exprNode@*/
 
-static /*@only@*/ constraintList getLessThanConstraints (/*@observer@*/ constraintList c)
-{
-  constraintList ret;
 
-  ret = constraintList_makeNew ();
-  constraintList_elements (c, el)
-    {
-      llassert (constraint_isDefined (el));
-      if ( constraint_isUndefined (el)  )
-      	continue;
-      
-      if (el->ar == LT || el->ar == LTE)
-	{
-	  constraint temp;
-	  temp = constraint_copy (el);
-
-	  ret = constraintList_add (ret, temp);
-	}
-    }
-  end_constraintList_elements;
-
-  return ret;
-}
-
-static /*@only@*/ constraintList getIncConstraints (/*@observer@*/ constraintList c)
-{
-  constraintList ret;
-
-  ret = constraintList_makeNew ();
-  constraintList_elements (c, el)
-    {
-      llassert (constraint_isDefined (el));
-
-      if (incVar (el) )
-	{
-	  constraint temp;
-	  temp = constraint_copy (el);
-	  ret = constraintList_add (ret, temp);
-	}
-    }
-  end_constraintList_elements;
-  
-  return ret;
-}
-
+/*@access exprNode@*/
 static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
 {
   
@@ -247,7 +208,9 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
     {
       constraintList_elements (incCon, el2)
       {
-	if ( increments (el2, el->lexpr) )
+	llassert(constraint_isDefined (el ) );
+	
+	if ( (constraint_isDefined (el ) ) && ( increments (el2, el->lexpr) ) )
 	  {
 	    DPRINTF (( message ("getForTimes: %s increments %s", constraint_print (el2), constraint_print (el) ) ));
 	    ret =  constraintExpr_copy (el->expr);
@@ -297,6 +260,8 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
       {
 	t1 = exprData_getUopNode (test->edata);
 	t2 = exprData_getUopNode (inc->edata);
+	
+	llassert(exprNode_isDefined(t1)  && exprNode_isDefined(t2)  );
 	if (sRef_sameName (t1->sref, t2->sref) )
 	  {
 	    return (constraintExpr_makeMaxSetExpr (t1) );
@@ -305,6 +270,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
   llassert ( FALSE);
   BADEXIT;
 }
+/*@noaccess exprNode@*/
 
 /*@access constraintExpr @*/
 
@@ -313,6 +279,9 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
   constraintExprKind kind;
   constraintExpr temp;
 
+    
+  llassert (constraintExpr_isDefined (c) );
+ 
   DPRINTF (( message ("Doing constraintExpr_searchAndAdd  %s %s %s ",
 		     constraintExpr_unparse (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
   
@@ -366,7 +335,10 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
 
 static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
-  
+
+      
+  llassert (constraint_isDefined (c) );
+ 
   llassert (constraint_search (c, find)  );
   DPRINTF (( message ("Doing constraint_searchAndAdd  %s %s %s ",
 		     constraint_print (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
@@ -408,13 +380,16 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
   return ret;
 }
 
+/*@access exprNode@*/
 static void doAdjust (/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@observer@*/ exprNode forBody, /*@observer@*/ constraintExpr iterations)
 {
-  
+      
+  llassert (exprNode_isDefined (forBody) );
+ 
   constraintList_elements (forBody->ensuresConstraints, el)
     {
       /* look for var = var + 1 */
-      if (incVar (el) )
+      if (constraint_isDefined (el) && incVar (el) )
 	{
 	  DPRINTF ((message ("Found inc variable constraint : %s", constraint_print (el) )  ));
 	  forBody->requiresConstraints = constraintList_searchAndAdd (forBody->requiresConstraints, el->lexpr, iterations);
@@ -423,12 +398,19 @@ static void doAdjust (/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*
   end_constraintList_elements;
 }
 
-void exprNode_forLoopHeuristics ( exprNode e, exprNode forPred, exprNode forBody)
+
+/*@access exprNode@*/
+
+
+static void forLoopHeuristicsImpl ( exprNode e, exprNode forPred, /*@observer@*/ exprNode forBody)
 {
   exprNode init, test, inc;
 
   constraintExpr iterations;
-  
+
+  llassert (exprNode_isDefined(forPred) );
+  llassert (exprNode_isDefined(forBody) );
+    
   init  =  exprData_getTripleInit (forPred->edata);
   test =   exprData_getTripleTest (forPred->edata);
   inc  =   exprData_getTripleInc (forPred->edata);
@@ -444,6 +426,62 @@ void exprNode_forLoopHeuristics ( exprNode e, exprNode forPred, exprNode forBody
       constraintExpr_free (iterations);
     }
 }
+/*@noaccess exprNode@*/
+
+void exprNode_forLoopHeuristics ( exprNode e, exprNode forPred, exprNode forBody)
+{
+  forLoopHeuristicsImpl (e, forPred,  forBody);
+}
+
+ /*@access constraintExpr @*/
+
+static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
+{
+  
+  llassert (constraintExpr_isDefined (c) );
+ if (c->kind == binaryexpr )
+    {
+      constraintExprBinaryOpKind binOP;
+      constraintExpr t1, t2;
+      t1 = constraintExprData_binaryExprGetExpr1 (c->data);
+      t2 = constraintExprData_binaryExprGetExpr2 (c->data);
+
+      binOP = constraintExprData_binaryExprGetOp (c->data);
+      if (binOP == BINARYOP_PLUS)
+	if (constraintExpr_isLit (t2) && constraintExpr_getValue (t2) == 1 )
+	  {
+	    return TRUE;
+	  }
+    }
+
+ return FALSE;
+}
+ /*@noaccess constraintExpr @*/
+
+ /*@access constraintExpr @*/
+/* look for constraints like cexrp = cexrp + 1 */
+static bool incVar (/*@notnull@*/ constraint c) /*@*/
+{
+  constraintExpr t1;
+  if (c->ar != EQ)
+    {
+      return FALSE;
+    }
+  if (! isInc (c->expr ) )
+    return FALSE;
+
+  llassert (constraintExpr_isDefined (c->expr) );
+  llassert (c->expr->kind == binaryexpr);
+
+  t1 = constraintExprData_binaryExprGetExpr1 (c->expr->data);
+  if (constraintExpr_similar (c->lexpr, t1) )
+    return TRUE;
+
+  return FALSE;
+}
+/*@noaccess constraintExpr @*/
+
+
 
 
 /*    else */

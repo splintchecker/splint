@@ -33,11 +33,6 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 
-/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
-/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
-
 /*@iter constraintList_elements_private_only (sef constraintList x, yield only constraint el); @*/
 # define constraintList_elements_private_only(x, m_el) \
    { if (constraintList_isDefined (x)) { int m_ind; constraint *m_elements = &((x)->elements[0]); \
@@ -617,6 +612,12 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
 
       c =  reader_getWord(&s);
       
+      if (! mstring_isDefined(c) )
+	{
+	  llfatalbug(message("Library file is corrupted") );
+	}
+  
+
       if (strcmp (c, "C") != 0)
 	{
 	  llfatalbug(message("Error reading library.  File may be corrupted"));
@@ -646,6 +647,11 @@ void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
 
 constraintList constraintList_sort (/*@returned@*/ constraintList ret)
 {
+  if (constraintList_isUndefined(ret) )
+    {
+      llassert(FALSE);
+      return ret;
+    }
   qsort (ret->elements, (size_t) ret->nelements,
 	 (sizeof (*ret->elements)), 
 	 (int (*)(const void *, const void *)) constraint_compare);
