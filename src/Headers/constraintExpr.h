@@ -112,6 +112,15 @@ extern /*@only@*/ constraintExpr  constraintExpr_undump (FILE *p_f);
 
 extern /*@only@*/ constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode p_e) ;
 
+/* drl added 8/8/001*/
+bool constraintExpr_isTerm (/*@observer@*/ /*@temp@*/ constraintExpr p_c);
+
+/* drl added 8/8/001*/
+/*@observer@*/ /*@temp@*/ constraintTerm constraintExpr_getTerm ( /*@temp@*/ /*@observer@*/ constraintExpr p_c);
+
+/* drl added 8/8/001*/
+int constraintExpr_getDepth (/*@observer@*/ /*@temp@*/ constraintExpr p_ex);
+
 
 #else
 # error "Multiple include"

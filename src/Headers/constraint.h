@@ -138,6 +138,9 @@ int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * p_c1, /*@observer
 
 bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint p_c);
 
+bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint p_c);
+
+
 /*@=czechfcns*/
 ////drl possible problem : warning take this out
 

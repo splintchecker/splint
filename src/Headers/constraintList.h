@@ -26,6 +26,10 @@ extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p
 # define constraintList_isUndefined(e)  ((e) == constraintList_undefined)
 # define constraintList_isError(e)      ((e) == constraintList_undefined)
 
+extern bool constraintList_isEmpty (/*@sef@*/ constraintList p_e) /*@*/;
+
+# define constraintList_isEmpty(e)      ( (constraintList_isUndefined((e)) ) ||( ( (e)->nelements == 0) ) )
+
 extern constraintList constraintList_single (/*@only@*/ constraint) ;
 
 extern constraintList constraintList_addListFree (/*@returned@*/ constraintList, /*@only@*/ constraintList) ;
