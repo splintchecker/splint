@@ -205,7 +205,7 @@ static cstring constraintTerm_getName (constraintTerm term)
       s = message ("%s", exprNode_unparse (term->value.expr) );
       break;
     case INTLITERAL:
-      s = message (" %d ", term->value.intlit);
+      s = message (" %ld ", term->value.intlit);
       break;
       
     case SREF:
@@ -264,7 +264,7 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
 		   fileloc_unparse (term->loc) );
       break;
     case INTLITERAL:
-      s = message (" %d ", term->value.intlit);
+      s = message (" %ld ", term->value.intlit);
       break;
       
     case SREF:
@@ -279,7 +279,7 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
 }
 
 
-constraintTerm constraintTerm_makeIntLiteral (int i)
+constraintTerm constraintTerm_makeIntLiteral (long i)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->value.intlit = i;
@@ -291,15 +291,63 @@ constraintTerm constraintTerm_makeIntLiteral (int i)
 bool constraintTerm_canGetValue (constraintTerm term)
 {
   if (term->kind == INTLITERAL)
-    return TRUE;
+    {
+      return TRUE;
+    }
+  else if (term->kind == SREF)
+    {
+      if (sRef_hasValue (term->value.sref))
+	{
+	  multiVal mval = sRef_getValue (term->value.sref);
+
+	  return multiVal_isInt (mval); /* for now, only try to deal with int values */
+	}
+      else
+	{
+	  return FALSE;
+	}
+    }
+  else if (term->kind == EXPRNODE)
+    {
+      return FALSE;
+    }
   else
-    return FALSE;
+    {
+      return FALSE;
+    }
 }
 
-int constraintTerm_getValue (constraintTerm term) 
+long constraintTerm_getValue (constraintTerm term) 
 {
-  llassert (term->kind == INTLITERAL);
-  return term->value.intlit;
+  llassert (constraintTerm_canGetValue (term));
+
+  if (term->kind == INTLITERAL)
+    {
+      return term->value.intlit; 
+    }
+  else if (term->kind == SREF)
+    {
+      if (sRef_hasValue (term->value.sref))
+	{
+	  multiVal mval = sRef_getValue (term->value.sref);
+
+	  return multiVal_forceInt (mval); /* for now, only try to deal with int values */
+	}
+      else
+	{
+	  BADBRANCH;
+	}
+    }
+  else if (term->kind == EXPRNODE)
+    {
+      BADBRANCH;
+    }
+  else
+    {
+      BADBRANCH;
+    }
+
+  BADBRANCH;
 }
 
 /* same and similar are similar but not the same*/
@@ -380,45 +428,47 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
   
   llassert (term1 !=NULL && term2 !=NULL);
   
-  if ( (term1->kind == INTLITERAL) && (term2->kind == INTLITERAL) )
+  if (constraintTerm_canGetValue (term1) && constraintTerm_canGetValue (term2))
+    /* evans 2001-07-24: was (term1->kind == INTLITERAL) && (term2->kind == INTLITERAL) ) */
     {
-      int t1, t2;
-      llassert (constraintTerm_canGetValue(term1) );
-      t1 = constraintTerm_getValue (term1);
+      long t1, t2;
 
-      llassert (constraintTerm_canGetValue(term2) );
+      t1 = constraintTerm_getValue (term1);
       t2 = constraintTerm_getValue (term2);
-      if (t1 == t2)
-	return TRUE;
-      
-       return FALSE;
+
+      return (t1 == t2);
     }
-    
+  
+  if (constraintTerm_canGetValue (term1) || constraintTerm_canGetValue (term2))
+    {
+      /* evans 2001-07-24: is this right? */ /*@i534@*/
+      return FALSE;
+    }
+
   s1 = constraintTerm_getsRef (term1);
   s2 = constraintTerm_getsRef (term2);
 
-  if ( ! (sRef_isValid(s1) && sRef_isValid(s2) ) )
+  if (!(sRef_isValid(s1) && sRef_isValid(s2)))
     {
       return FALSE;
     }
   
- DPRINTF( (message
+  DPRINTF( (message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
 	   );
- 
- if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
-   {
-     DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
-     return TRUE;
-   }
- else
-   {
-     DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
-     return FALSE;
-   }     
-    
+  
+  if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
+    {
+      DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+      return TRUE;
+    }
+  else
+    {
+      DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+      return FALSE;
+    }       
 }
 
 void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
@@ -480,7 +530,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       break;
       
     case INTLITERAL:
-      fprintf (f, "%d\n", t->value.intlit);
+      fprintf (f, "%ld\n", t->value.intlit);
       break;
       
     default:

@@ -487,16 +487,8 @@ BufConstraintExpr
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
 
 BufConstraintTerm
- : BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef($1);} 
- | CCONSTANT 
-   {  
-     /* char *t; int c;
-	t =  cstring_toCharsSafe (exprNode_unparse($1));
-	c = atoi( t );
-     */
-     
-     $$ = constraintExpr_makeIntLiteral (exprNode_getLongValue ($1));
-   }
+ : BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef ($1);} 
+ | CCONSTANT { $$ = constraintExpr_makeIntLiteral (exprNode_getLongValue ($1)); }
 
 BufConstraintSrefExpr
 : id            

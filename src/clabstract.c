@@ -1269,9 +1269,14 @@ void checkValueConstant (qtype t, idDecl id, exprNode e)
 	    {
 	      uentry_mergeConstantValue (ue, multiVal_copy (exprNode_getValue (e)));
 	    }
+	  else
+	    {
+	      DPRINTF (("No value: %s", exprNode_unparse (e)));
+	    }
 	}
     }
 
+  DPRINTF (("Constant value: %s", uentry_unparseFull (ue)));
   usymtab_supGlobalEntry (ue);
 }
 
@@ -2054,6 +2059,7 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
+  DPRINTF (("constrant id: %s", uentry_unparseFull (ue)));
   return sRef_saveCopy (uentry_getSref (ue)); /*@i523 why the saveCopy? */
 }
 

@@ -219,7 +219,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
     
   if ( constraintExpr_isLit (expr1) && constraintExpr_isLit (expr2) )
     {
-      int t1, t2;
+      long t1, t2;
       t1 = constraintExpr_getValue (expr1);
       t2 = constraintExpr_getValue (expr2);
       llassert(*propagate == FALSE);
@@ -649,7 +649,7 @@ constraintExpr constraintExpr_makeValueExpr (/*@exposed@*/ exprNode expr)
 }
 
 /*@only@*/
-constraintExpr constraintExpr_makeIntLiteral (int i)
+constraintExpr constraintExpr_makeIntLiteral (long i)
 {
   constraintExpr ret;
   constraintTerm t;
@@ -1095,7 +1095,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
 
   if (constraintExpr_canGetValue (e1) && constraintExpr_canGetValue(e2) )
     {
-      int i;
+      long i;
 
       i = constraintExpr_getValue(e1) + constraintExpr_getValue (e2);
       constraintExpr_free(c);
@@ -1313,7 +1313,7 @@ cstring constraintExpr_unparse (/*@temp@*/ /*@observer@*/ constraintExpr ex) /*@
   switch (kind)
     {
     case term:
-      st = message ("(%q) ", constraintTerm_print (constraintExprData_termGetTerm(ex->data) ) );
+      st = message ("(%q) ", constraintTerm_print (constraintExprData_termGetTerm (ex->data)));
       break;
     case unaryExpr:
       st = message ("%q (%q)",
@@ -1475,7 +1475,7 @@ constraintExpr constraintExpr_doSRefFixBaseParam (/*@returned@*/  constraintExpr
 
 cstring constraintExpr_print (constraintExpr expr) /*@*/
 {
-  return constraintExpr_unparse(expr);
+  return constraintExpr_unparse (expr);
 }
 
 bool constraintExpr_hasMaxSet (constraintExpr expr) /*@*/
@@ -1503,14 +1503,16 @@ bool constraintExpr_hasMaxSet (constraintExpr expr) /*@*/
 	0 => expr1 == expr2
 	-1 => expr1 < expr2
        */
+
 int constraintExpr_compare (constraintExpr expr1, constraintExpr expr2)
 {
-  int value1, value2;
+  long value1, value2;
 
   if (constraintExpr_similar (expr1, expr2) )
     {
       return 0;
     }
+  
   value1 = constraintExpr_getValue(expr1);
   value2 = constraintExpr_getValue(expr2);
 
@@ -1524,10 +1526,10 @@ int constraintExpr_compare (constraintExpr expr1, constraintExpr expr2)
     return -1;
 }
 
-int constraintExpr_getValue (constraintExpr expr)
+long constraintExpr_getValue (constraintExpr expr)
 {
   llassert (expr->kind == term);
-  return (constraintTerm_getValue (constraintExprData_termGetTerm (expr->data) ) );
+  return (constraintTerm_getValue (constraintExprData_termGetTerm (expr->data)));
 }
 
 bool constraintExpr_canGetValue (constraintExpr expr)
@@ -1639,7 +1641,10 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, /*@observer@*/ /*@tem
   llassert (constraintTerm_isDefined(t) );
 
   ret = e;
-  /*@i1*/ switch (t->kind)
+
+  DPRINTF (("Fixing: %s", constraintExpr_print (e)));
+
+  switch (constraintTerm_getKind(t))
     {
     case EXPRNODE:
       DPRINTF((message ("%q @ %q ", constraintTerm_print(t),
@@ -1650,18 +1655,25 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, /*@observer@*/ /*@tem
       break;
       
     case SREF:
-      DPRINTF (( message("Doing sRef_fixConstraintParam for %q ", 
-			 constraintTerm_print (t) ) ));
-      ret = sRef_fixConstraintParam (constraintTerm_getSRef(t), arglist);
-      
-      constraintExpr_free(e);
+      /* evans 2001-07-24: constants should use the original term */
+      if (!constraintTerm_canGetValue (t))
+	{
+	  DPRINTF ((message("Doing sRef_fixConstraintParam for %q ", 
+			     constraintTerm_print (t) ) ));
+	  ret = sRef_fixConstraintParam (constraintTerm_getSRef(t), arglist);
+	  
+	  constraintExpr_free (e);
+	  
+	  DPRINTF (( message("After Doing sRef_fixConstraintParam constraintExpr is %q ", 
+			     constraintExpr_print (ret) ) ));
+	  /*@-branchstate@*/
+	} /*@=branchstate@*/
 
-      DPRINTF (( message("After Doing sRef_fixConstraintParam constraintExpr is %q ", 
-			 constraintExpr_print (ret) ) ));
       break;
     default:
       BADEXIT;
     }
+
   return ret;
   
 }
@@ -1857,7 +1869,3 @@ void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f)
   return ret;
 
 }
-
-
-
-

@@ -2821,7 +2821,7 @@ static flaglist flags =
   
   {
     FK_NT, FK_MEMORY, modeFlag,
-    "arrayBounds",
+    "arraybounds",
     FLG_ARRAYBOUNDS,
     "Possible out-of-bounds store.  Unable to resolve constraint:",
     "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
@@ -2829,7 +2829,7 @@ static flaglist flags =
   },
   {
     FK_NT, FK_MEMORY, modeFlag,
-    "arrayBoundsRead",
+    "arrayboundsread",
     FLG_ARRAYBOUNDSREAD,
     "Possible out-of-bounds read.  Unable to resolve constraint:",
     "LCLint was unable to resolve a constraint at the top of the function.  If code is correct consider using explict annotation assertions,  ",
