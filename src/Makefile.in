@@ -64,7 +64,6 @@ CAT = @CAT@
 CC = @CC@
 CP = @CP@
 CPP = @CPP@
-CXX = @CXX@
 DEPDIR = @DEPDIR@
 DIFF = @DIFF@
 EXEEXT = @EXEEXT@

@@ -20,7 +20,8 @@ AH_TOP([/*@-constmacros@*/])
 AH_BOTTOM([/*@=constmacros@*/])
 
 dnl Checks for programs.
-AC_PROG_CXX
+#drl 12-19-2001 commented out so LCLint won't depend on C++
+#AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AM_PROG_LEX

@@ -4,10 +4,10 @@
 /*@-constmacros@*/
 
 /* The directory where LCLint's library files live */
-#define DEFAULT_LARCHPATH ".:/usr/local/share/lclint/lib:/af9/drl7x/reQuickFix/LCLintDev/lib:"
+#define DEFAULT_LARCHPATH ".:/usr/local/share/lclint/lib:/tmp/LCLintDev/lib:"
 
 /* LCLint's imports directory */
-#define DEFAULT_LCLIMPORTDIR ".:/usr/local/share/lclint/imports:/af9/drl7x/reQuickFix/LCLintDev/imports"
+#define DEFAULT_LCLIMPORTDIR ".:/usr/local/share/lclint/imports:/tmp/LCLintDev/imports"
 
 /* gcc's private include directory */
 #define GCC_INCLUDE_DIR "/usr/lib/gcc-lib/i386-linux/2.7.2.1/include"
