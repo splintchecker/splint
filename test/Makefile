@@ -43,7 +43,7 @@ LCLINTP = $(LCLINT)
 # Make sure .lclintrc files are not used so test results do not
 # depend on local settings.
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
-LCLINTR = $(LCLINTRN) -exportlocal
+LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
 
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
    charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \

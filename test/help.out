@@ -136,6 +136,7 @@ Finished LCLint checking --- no code processed
    czechoslovakvars            
    czechtypes                  
    czechvars                   
+   debugfcnconstraint          
    declundef                   
    deepbreak                   
    deparrays                   
@@ -923,6 +924,7 @@ nullterminated --- misuse of nullterminated allocation
 arrayread --- possible out of bounds read
 arraywrite --- possible buffer overflow from an out of bounds write
 fcnpost --- Function has the post condition
+debugfcnconstraint --- debuging constraint flas
 fcnconstraint --- unresolved constraint
 checkpost --- unable to verify ensures annotation
 constraintlocation --- display full c expression for every constraint generated
