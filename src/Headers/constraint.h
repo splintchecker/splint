@@ -63,12 +63,12 @@ extern /*@only@*/ cstring arithType_print (arithType p_ar) /*@*/;
 
 extern /*@only@*/ fileloc constraint_getFileloc (constraint p_c);
 
-extern /*@only@*/ cstring constraint_unparse (/*@temp@*/ /*@observer@*/ constraint p_c) /*@*/;
-# define constraint_unparse constraint_print
+extern /*@only@*/ cstring constraint_unparse (/*@temp@*/ constraint p_c) /*@*/;
+extern /*@only@*/ cstring constraint_unparseOr (/*@temp@*/ constraint p_c) /*@*/ ;
+extern /*@only@*/ cstring constraint_unparseDetailed (constraint p_c) /*@*/ ;
 
-extern /*@only@*/ cstring constraint_print (/*@temp@*/ /*@observer@*/ constraint p_c) /*@*/;
-
-extern /*@only@*/ constraint constraint_makeWriteSafeInt (/*@dependent@*/ /*@observer@*/ exprNode p_po, int p_ind);
+extern /*@only@*/ constraint 
+constraint_makeWriteSafeInt (/*@dependent@*/ /*@observer@*/ exprNode p_po, int p_ind);
 
 extern exprNode exprNode_copyConstraints (/*@returned@*/ exprNode p_dst, exprNode p_src) /*@modifies p_dst @*/;
 
@@ -79,8 +79,6 @@ extern /*@only@*/ constraint constraint_makeMaxSetSideEffectPostIncrement (/*@de
 extern constraint constraint_preserveOrig (/*@returned@*/ constraint p_c) /*@modifies p_c @*/;
 extern /*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint p_precondition,
 							    exprNodeList p_arglist);
-extern /*@only@*/ cstring  constraint_printDetailed (constraint p_c);
-
 extern /*@only@*/ constraint constraint_makeEnsureLessThan (/*@dependent@*/ /*@observer@*/ exprNode p_e1, /*@dependent@*/ /*@observer@*/ exprNode p_e2, fileloc p_sequencePoint);
 extern /*@only@*/ constraint constraint_makeEnsureLessThanEqual (/*@dependent@*/ /*@observer@*/ exprNode p_e1, /*@dependent@*/ /*@observer@*/ exprNode p_e2, fileloc p_sequencePoint);
 
@@ -123,8 +121,6 @@ exprNode_traversEnsuresConstraints (exprNode p_e);
 
 extern constraint constraint_togglePost (/*@returned@*/ constraint p_c);
 extern bool constraint_same (constraint p_c1, constraint p_c2) ;
-
-/*@only@*/ cstring  constraint_printOr (constraint p_c) /*@*/;
 extern void constraint_printErrorPostCondition (constraint p_c, fileloc p_loc) ;
 
 extern cstring constraint_printLocation (/*@observer@*/ /*@temp@*/ constraint p_c) /*@*/; /*drl add 8-11-001*/

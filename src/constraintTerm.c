@@ -50,23 +50,23 @@ void constraintTerm_free (/*@only@*/ constraintTerm term)
   
   switch (term->kind) 
     {
-    case EXPRNODE:
+    case CTT_EXPR:
       /* we don't free an exprNode*/
       break;
-    case SREF:
+    case CTT_SREF:
       /* sref */
       sRef_free (term->value.sref);
       break;
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       /* don't free an int */
       break;
-    case  ERRORBADCONSTRAINTTERMTYPE:
+    case CTT_ERRORBADCONSTRAINTTERMTYPE:
     default:
       /* type was set incorrectly */
       llcontbug (message("constraintTerm_free type was set incorrectly"));
     }
 
-  term->kind =  ERRORBADCONSTRAINTTERMTYPE;
+  term->kind = CTT_ERRORBADCONSTRAINTTERMTYPE;
   free (term);
 }
 
@@ -83,7 +83,7 @@ bool constraintTerm_isIntLiteral (constraintTerm term)
 {
   llassert(term != NULL);
   
-  if (term->kind == INTLITERAL)
+  if (term->kind == CTT_INTLITERAL)
     return TRUE;
 
   return FALSE;
@@ -93,10 +93,10 @@ bool constraintTerm_isIntLiteral (constraintTerm term)
 bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
 {
   llassert (c != NULL);
-  if (c->kind == EXPRNODE)
+
+  if (c->kind == CTT_EXPR)
     {
-      
-      if (exprNode_isInitBlock(c->value.expr) )
+      if (exprNode_isInitBlock (c->value.expr))
 	{
 	  return TRUE;
 	}
@@ -108,7 +108,8 @@ bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@
 bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
 {
   llassert (c != NULL);
-  if (c->kind == EXPRNODE)
+
+  if (c->kind == CTT_EXPR)
     {
       return TRUE;
     }
@@ -118,12 +119,11 @@ bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*
 /*@access exprNode@*/
 int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
 {
-
-  exprNodeList  list;
+  exprNodeList list;
   int ret;
   llassert (c != NULL);
   llassert (constraintTerm_isInitBlock (c) );
-  llassert (c->kind == EXPRNODE);
+  llassert (c->kind == CTT_EXPR);
 
   llassert(exprNode_isDefined(c->value.expr) );
 
@@ -148,7 +148,7 @@ int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm 
 bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/
 {
   llassert (c != NULL);
-  if (c->kind == EXPRNODE)
+  if (c->kind == CTT_EXPR)
     {
       if (exprNode_knownStringValue(c->value.expr) )
 	{
@@ -164,14 +164,14 @@ cstring constraintTerm_getStringLiteral (constraintTerm c)
 {
   llassert (c != NULL);
   llassert (constraintTerm_isStringLiteral (c) );
-  llassert (c->kind == EXPRNODE);
+  llassert (c->kind == CTT_EXPR);
   
   return (cstring_copy ( multiVal_forceString (exprNode_getValue (c->value.expr) ) ) );
 }
 
 constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/
 {
-  if (term->kind == EXPRNODE)
+  if (term->kind == CTT_EXPR)
     {
       if ( exprNode_knownIntValue (term->value.expr ) )
 	{
@@ -179,7 +179,7 @@ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@m
 
 	  temp  = exprNode_getLongValue (term->value.expr);
 	  term->value.intlit = (int)temp;
-	  term->kind = INTLITERAL;
+	  term->kind = CTT_INTLITERAL;
 	}
     }
   return term;
@@ -201,7 +201,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
 /*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm t)
 {
   llassert (constraintTerm_isDefined(t) );
-  llassert (t->kind == SREF);
+  llassert (t->kind == CTT_SREF);
 
   return (t->value.sref);
 }
@@ -211,7 +211,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_copy(exprNode_getfileloc(e));
   ret->value.expr = e;
-  ret->kind = EXPRNODE;
+  ret->kind = CTT_EXPR;
   ret = constraintTerm_simplify(ret);
   return ret;
 }
@@ -221,7 +221,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_undefined;
   ret->value.sref = sRef_saveCopy(s);
-  ret->kind = SREF;
+  ret->kind = CTT_SREF;
   ret = constraintTerm_simplify(ret);
   return ret;
 }
@@ -236,14 +236,14 @@ constraintTerm constraintTerm_copy (constraintTerm term)
   
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
       ret->value.expr = term->value.expr;
       break;
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       ret->value.intlit = term->value.intlit;
       break;
       
-    case SREF:
+    case CTT_SREF:
       ret->value.sref = sRef_saveCopy(term->value.sref);
       break;
     default:
@@ -274,15 +274,15 @@ static cstring constraintTerm_getName (constraintTerm term)
 
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
 
       s = message ("%s", exprNode_unparse (term->value.expr) );
       break;
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       s = message (" %d ", (int) term->value.intlit);
       break;
       
-    case SREF:
+    case CTT_SREF:
       s = message ("%q", sRef_unparse (term->value.sref) );
 
       break;
@@ -302,13 +302,13 @@ constraintTerm_doSRefFixBaseParam (/*@returned@*/constraintTerm term, exprNodeLi
   
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
 
       break;
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       break;
       
-    case SREF:
+    case CTT_SREF:
       term->value.sref = sRef_fixBaseParam (term->value.sref, arglist);
       break;
     default:
@@ -318,7 +318,7 @@ constraintTerm_doSRefFixBaseParam (/*@returned@*/constraintTerm term, exprNodeLi
   
 }
 
-cstring constraintTerm_print (constraintTerm term)  /*@*/
+cstring constraintTerm_unparse (constraintTerm term)  /*@*/
 {
   cstring s;
   s = cstring_undefined;
@@ -327,16 +327,16 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
 
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
 
       s = message ("%s @ %q", exprNode_unparse (term->value.expr),
 		   fileloc_unparse (term->loc) );
       break;
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       s = message ("%d", (int)term->value.intlit);
       break;
       
-    case SREF:
+    case CTT_SREF:
       s = message ("%q", sRef_unparseDebug (term->value.sref) );
 
       break;
@@ -352,18 +352,18 @@ constraintTerm constraintTerm_makeIntLiteral (long i)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->value.intlit = i;
-  ret->kind = INTLITERAL;
+  ret->kind = CTT_INTLITERAL;
   ret->loc =  fileloc_undefined;
   return ret;
 }
 
 bool constraintTerm_canGetValue (constraintTerm term)
 {
-  if (term->kind == INTLITERAL)
+  if (term->kind == CTT_INTLITERAL)
     {
       return TRUE;
     }
-  else if (term->kind == SREF)
+  else if (term->kind == CTT_SREF)
     {
       if (sRef_hasValue (term->value.sref))
 	{
@@ -376,7 +376,7 @@ bool constraintTerm_canGetValue (constraintTerm term)
 	  return FALSE;
 	}
     }
-  else if (term->kind == EXPRNODE)
+  else if (term->kind == CTT_EXPR)
     {
       return FALSE;
     }
@@ -390,11 +390,11 @@ long constraintTerm_getValue (constraintTerm term)
 {
   llassert (constraintTerm_canGetValue (term));
 
-  if (term->kind == INTLITERAL)
+  if (term->kind == CTT_INTLITERAL)
     {
       return term->value.intlit; 
     }
-  else if (term->kind == SREF)
+  else if (term->kind == CTT_SREF)
     {
       if (sRef_hasValue (term->value.sref))
 	{
@@ -407,7 +407,7 @@ long constraintTerm_getValue (constraintTerm term)
 	  BADBRANCH;
 	}
     }
-  else if (term->kind == EXPRNODE)
+  else if (term->kind == CTT_EXPR)
     {
       BADBRANCH;
     }
@@ -426,7 +426,7 @@ long constraintTerm_getValue (constraintTerm term)
 {
   llassert (t != NULL);
   
-  llassert (t->kind == EXPRNODE);
+  llassert (t->kind == CTT_EXPR);
 
   return t->value.expr;
 
@@ -435,12 +435,12 @@ long constraintTerm_getValue (constraintTerm term)
  /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
 {
   llassert (t != NULL);
-  if (t->kind == EXPRNODE)
+  if (t->kind == CTT_EXPR)
     {
       return exprNode_getSref(t->value.expr);
     }
 
-  if (t->kind == SREF)
+  if (t->kind == CTT_SREF)
     {
       return t->value.sref;
     }
@@ -482,7 +482,9 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
   llassert (term1 !=NULL && term2 !=NULL);
   
   if (constraintTerm_canGetValue (term1) && constraintTerm_canGetValue (term2))
-    /* evans 2001-07-24: was (term1->kind == INTLITERAL) && (term2->kind == INTLITERAL) ) */
+
+    /*3/30/2003 comment updated to reflect name change form INTLITERAL to CTT_INTLITERAL*/
+    /* evans 2001-07-24: was (term1->kind == CTT_INTLITERAL) && (term2->kind == CTT_INTLITERAL) ) */
     {
       long t1, t2;
 
@@ -542,12 +544,12 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
   switch (kind)
     {
       
-    case EXPRNODE:
+    case CTT_EXPR:
       u = exprNode_getUentry(t->value.expr);
       fprintf (f, "%s\n", cstring_toCharsSafe (uentry_rawName (u)));
       break;
       
-    case SREF:
+    case CTT_SREF:
       {
 	sRef s;
 
@@ -585,7 +587,7 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
       }
       break;
       
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       fprintf (f, "%ld\n", t->value.intlit);
       break;
       
@@ -620,7 +622,7 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
   switch (kind)
     {
       
-    case SREF:
+    case CTT_SREF:
       {
 	sRef s;
 	char * term;
@@ -674,7 +676,7 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
       }
       break;
 
-    case EXPRNODE:
+    case CTT_EXPR:
       {
 	sRef s;
 	char * term;
@@ -699,7 +701,7 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
       break;
       
       
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       {
 	int i;
 
@@ -725,16 +727,16 @@ ctype constraintTerm_getCType (constraintTerm term)
   
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
       ct = exprNode_getType (term->value.expr);
       break;
 
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       /*@i888*/ /* hack */
       ct = ctype_signedintegral;
       break;
       
-    case SREF:
+    case CTT_SREF:
       ct = sRef_getType (term->value.sref) ;
       break;
     default:
@@ -747,7 +749,7 @@ bool constraintTerm_isConstantOnly (constraintTerm term)
 {  
   switch (term->kind)
     {
-    case EXPRNODE:
+    case CTT_EXPR:
       if (exprNode_isNumLiteral (term->value.expr) ||
 	  exprNode_isStringLiteral (term->value.expr) ||
 	  exprNode_isCharLiteral  (term->value.expr) )
@@ -759,10 +761,10 @@ bool constraintTerm_isConstantOnly (constraintTerm term)
 	  return FALSE;
 	}
 
-    case INTLITERAL:
+    case CTT_INTLITERAL:
       return TRUE;
             
-    case SREF:
+    case CTT_SREF:
       if ( sRef_isConst (term->value.sref) )
 	{
 	  return TRUE;

@@ -3441,16 +3441,16 @@ case 392:
 { yyval.term = makeSizeofTermNode (yyvsp[-3].ltok, yyvsp[-1].lcltypespec); ;
     break;}
 case 393:
-{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, sort_int); ;
+{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, g_sortInt); ;
     break;}
 case 394:
-{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, sort_cstring); ;
+{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, g_sortCstring); ;
     break;}
 case 395:
-{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, sort_char); ;
+{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, g_sortChar); ;
     break;}
 case 396:
-{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, sort_double); ;
+{ yyval.term = makeLiteralTermNode (yyvsp[0].ltok, g_sortDouble); ;
     break;}
 case 397:
 { yyval.quantifiers = quantifierNodeList_add (quantifierNodeList_new (),  yyvsp[0].quantifier); ;

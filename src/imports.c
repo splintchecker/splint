@@ -124,7 +124,7 @@ importCTrait (void)
 	  callLSL (cstring_makeLiteralTemp (CTRAITSPECNAME),
 		   message ("includes %s (%s for String)",
 			    cstring_fromChars (CTRAITFILENAMEN), 
-			    cstring_fromChars (sort_getName (sort_cstring))));
+			    cstring_fromChars (sort_getName (g_sortCstring))));
 	  cstring_free (infile);
 	  break;
 	}

@@ -28,17 +28,15 @@
 
 /* #define DEBUGPRINT 1 */
 
-# include <ctype.h> /* for isdigit */
 # include "splintMacros.nf"
 # include "basic.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-
-static /*@only@*/ cstring constraint_unparseDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
+static /*@only@*/ cstring 
+constraint_unparseDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 static /*@notnull@*/ /*@special@*/ constraint constraint_makeNew (void)
      /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/
@@ -49,39 +47,6 @@ advanceField (char **s)
 {
   reader_checkChar (s, '@');
 }
-
-# if 0
-static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)    
-{
-  char *t;
-  int c;
-  constraint ret;
-  ret = constraint_makeNew ();
-  llassert (constraintExpr_isDefined (l));
-      
-  ret->lexpr = constraintExpr_copy (l);
-
-
-  if (relOp.tok == GE_OP)
-      ret->ar = GTE;
-  else if (relOp.tok == LE_OP)
-    ret->ar = LTE;
-  else if (relOp.tok == EQ_OP)
-    ret->ar = EQ;
-  else
-  llfatalbug (message ("Unsupported relational operator"));
-
-
-  t =  cstring_toCharsSafe (exprNode_unparse (cconstant));
-  c = atoi ( t);
-  ret->expr = constraintExpr_makeIntLiteral (c);
-
-  ret->post = TRUE;
-  DPRINTF (("GENERATED CONSTRAINT:"));
-  DPRINTF ((message ("%s", constraint_unparse (ret))));
-  return ret;
-}
-# endif
 
 bool constraint_same (constraint c1, constraint c2)
 {
@@ -348,7 +313,6 @@ constraint constraint_makeReadSafeExprNode (exprNode po, exprNode ind)
 constraint constraint_makeWriteSafeInt (   exprNode po, int ind)
 {
   constraint ret = constraint_makeNew ();
-
  
   ret->lexpr =constraintExpr_makeMaxSetExpr (po);
   ret->ar = GTE;

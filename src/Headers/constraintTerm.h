@@ -9,13 +9,12 @@ typedef union
   long intlit;
 } constraintTermValue;
 
-/*@-namechecks@*/
-
 typedef enum
 {
-  ERRORBADCONSTRAINTTERMTYPE,
- EXPRNODE, SREF,
- INTLITERAL
+  CTT_ERRORBADCONSTRAINTTERMTYPE,
+  CTT_EXPR, 
+  CTT_SREF,
+  CTT_INTLITERAL
 } constraintTermType;
 
 struct _constraintTerm {
@@ -50,8 +49,6 @@ fileloc constraintTerm_getFileloc (constraintTerm t) /*@*/;
 
 bool constraintTerm_isIntLiteral (constraintTerm term) /*@*/;
 
-cstring constraintTerm_print (constraintTerm term) /*@*/;
-
 constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef s) /*@*/;
 
 /*@unused@*/ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
@@ -66,31 +63,21 @@ cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;
 
 constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
 
-void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
+extern cstring constraintTerm_unparse (constraintTerm)  /*@*/ ;
 
-/*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
-
-bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
-
-int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
-
-bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/;
-
-
+extern void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
+extern /*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
+extern bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
+extern int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
+extern bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/;
 extern ctype constraintTerm_getCType (constraintTerm term);
 
-/*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm t);
-
-/*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t);
-
-
-/*@=namechecks@*/
+extern /*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm t);
+extern /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t);
 
 /*drl added 12/19/2002*/
-bool  constraintTerm_isConstantOnly ( constraintTerm p_term );
+extern bool constraintTerm_isConstantOnly (constraintTerm p_term);
      
 #else
-
-#error Multiple Include
-
+#error "Multiple Include!"
 #endif

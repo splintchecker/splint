@@ -37,7 +37,7 @@
 ** set in LCLScanLineInit of lclscanline.c or in scanline.c 
 */
 
-/*@-namechecks@*/
+/*@-namechecks@*/ /* These should all start with g_ */
 ltoken ltoken_forall;
 ltoken ltoken_exists;
 ltoken ltoken_true;

@@ -55,12 +55,9 @@ extern constraintList constraintList_copy ( /*@observer@*/ /*@temp@*/ constraint
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
 
-extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList p_s) /*@*/;
+extern /*@only@*/ cstring constraintList_unparse (/*@observer@*/ constraintList p_s) /*@*/;
 
-/*@only@*/ extern cstring constraintList_print ( /*@observer@*/ /*@temp@*/ constraintList p_s) /*@*/;
-
-extern cstring
-constraintList_printDetailed ( /*@observer@*/ constraintList p_s) /*@*/;
+extern cstring constraintList_unparseDetailed (/*@observer@*/ constraintList p_s) /*@*/;
 
 extern /*@only@*/ constraintList
 constraintList_logicalOr ( /*@observer@*/ constraintList p_l1, /*@observer@*/  constraintList p_l2);

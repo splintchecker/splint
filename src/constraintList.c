@@ -278,7 +278,7 @@ constraintList_unparse (/*@temp@*/ constraintList s) /*@*/
 
 	  if (context_getFlag (FLG_ORCONSTRAINT))
 	    {
-	      temp1 = constraint_unparseOr(current);
+	      temp1 = constraint_unparseOr (current);
 	    }
 	  else
 	    {
@@ -301,7 +301,7 @@ constraintList_unparse (/*@temp@*/ constraintList s) /*@*/
   return st;
 }
 
-void constraintList_unparseErrorPostConditions (constraintList s, fileloc loc)
+void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
 {
 
   constraintList_elements (s, elem)
@@ -315,7 +315,7 @@ void constraintList_unparseErrorPostConditions (constraintList s, fileloc loc)
   return;
 }
 
-void constraintList_unparseError (constraintList s, fileloc loc)
+void constraintList_printError (constraintList s, fileloc loc)
 {
 
   constraintList_elements (s, elem)

@@ -1888,25 +1888,23 @@ doFixResultTerm (/*@only@*/ constraintExpr e, /*@exposed@*/ exprNode fcnCall)
 {
   constraintTerm t;
   sRef s;
-
-  
   constraintExprData data;
   constraintExprKind kind;
-  
   constraintExpr ret;
-
-  llassert(constraintExpr_isDefined (e) );
+  
+  llassert (constraintExpr_isDefined (e) );
   
   data = e->data;
   kind = e->kind;
-
-  llassert(kind == term);
-
+  
+  llassert (kind == term);
+  
   t = constraintExprData_termGetTerm (data);
-  llassert (constraintTerm_isDefined(t) );
-
+  llassert (constraintTerm_isDefined (t));
+  
   ret = e;
-  switch (constraintTerm_getKind(t) )
+
+  switch (constraintTerm_getKind (t))
     {
     case CTT_EXPR:
     case CTT_INTLITERAL:
@@ -1932,7 +1930,11 @@ doFixResultTerm (/*@only@*/ constraintExpr e, /*@exposed@*/ exprNode fcnCall)
   return ret;
   
 }
-/*
+
+#if 0
+
+/*to be used for structure checking */
+
 / *@only@* / static constraintExpr
 doSRefFixInvarConstraintTerm (/ *@only@* / constraintExpr e,
  sRef s, ctype ct)
@@ -1991,7 +1993,7 @@ doSRefFixInvarConstraintTerm (/ *@only@* / constraintExpr e,
   return ret;
   
 }
-*/
+#endif
  
 /*drl moved from constriantTerm.c 5/20/001*/
 /*@only@*/ static constraintExpr 

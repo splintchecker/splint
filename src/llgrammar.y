@@ -1361,10 +1361,10 @@ lclPrimary
 */
 
 cLiteral   
- : LLT_CINTEGER  { $$ = makeLiteralTermNode ($1, sort_int); }
- | LLT_LCSTRING  { $$ = makeLiteralTermNode ($1, sort_cstring); }
- | LLT_CCHAR     { $$ = makeLiteralTermNode ($1, sort_char); }
- | LLT_CFLOAT    { $$ = makeLiteralTermNode ($1, sort_double); }
+ : LLT_CINTEGER  { $$ = makeLiteralTermNode ($1, g_sortInt); }
+ | LLT_LCSTRING  { $$ = makeLiteralTermNode ($1, g_sortCstring); }
+ | LLT_CCHAR     { $$ = makeLiteralTermNode ($1, g_sortChar); }
+ | LLT_CFLOAT    { $$ = makeLiteralTermNode ($1, g_sortDouble); }
 ;
 
 quantifiers   

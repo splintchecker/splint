@@ -110,15 +110,13 @@ static /*@only@*/ nameNode makeArrowFieldOp (lsymbol p_field);
 static lsymbol sp (lsymbol p_s1, lsymbol p_s2);
 static void sortError (ltoken p_t, sort p_oldsort, sortNode p_newnode);
 
-/*@-namechecks@*/
-sort sort_bool;
-sort sort_capBool;
-sort sort_int;
-sort sort_char;
-sort sort_float;
-sort sort_double;
-sort sort_cstring;
-/*@=namechecks@*/
+sort g_sortBool;
+sort g_sortCapBool;
+sort g_sortInt;
+sort g_sortChar;
+sort g_sortFloat;
+sort g_sortDouble;
+sort g_sortCstring;
 
 static sort sort_void;
 static sort char_obj_ptrSort;
@@ -1909,31 +1907,31 @@ sort_init (void)
   
   /* Other builtin sorts */
   
-  sort_bool = sort_makeImmutable (ltoken_undefined, lsymbol_fromChars ("bool"));
-  sort_capBool = sort_makeSortNoOps (ltoken_undefined, lsymbol_fromChars ("Bool"));
+  g_sortBool = sort_makeImmutable (ltoken_undefined, lsymbol_fromChars ("bool"));
+  g_sortCapBool = sort_makeSortNoOps (ltoken_undefined, lsymbol_fromChars ("Bool"));
   
   llassert (sortTable != NULL);
 
-  /* make sort_Bool a synonym for sort_bool */
-  sortTable[sort_capBool]->kind = SRT_SYN;
-  sortTable[sort_capBool]->baseSort = sort_bool;
-  sortTable[sort_capBool]->mutable = FALSE;
-  sortTable[sort_capBool]->abstract = TRUE;
+  /* make g_sortBool a synonym for g_sortBool */
+  sortTable[g_sortCapBool]->kind = SRT_SYN;
+  sortTable[g_sortCapBool]->baseSort = g_sortBool;
+  sortTable[g_sortCapBool]->mutable = FALSE;
+  sortTable[g_sortCapBool]->abstract = TRUE;
   
-  sort_int = sort_makeLiteralSort (ltoken_undefined, 
+  g_sortInt = sort_makeLiteralSort (ltoken_undefined, 
 				   lsymbol_fromChars ("int"));
-  sort_char = sort_makeLiteralSort (ltoken_undefined,
+  g_sortChar = sort_makeLiteralSort (ltoken_undefined,
 				    lsymbol_fromChars ("char"));
   sort_void = sort_makeLiteralSort (ltoken_undefined,
 				    lsymbol_fromChars ("void"));
   
-  /* sort_cstring is char__Vec, for C strings eg: "xyz" */
-  char_obj_ptrSort = sort_makePtr (ltoken_undefined, sort_char);
-  char_obj_ArrSort = sort_makeArr (ltoken_undefined, sort_char);
+  /* g_sortCstring is char__Vec, for C strings eg: "xyz" */
+  char_obj_ptrSort = sort_makePtr (ltoken_undefined, g_sortChar);
+  char_obj_ArrSort = sort_makeArr (ltoken_undefined, g_sortChar);
   
-  sort_cstring = sort_makeVal (char_obj_ArrSort);
-  sort_float = sort_makeLiteralSort (ltoken_undefined, lsymbol_fromChars ("float"));
-  sort_double = sort_makeLiteralSort (ltoken_undefined, lsymbol_fromChars ("double"));
+  g_sortCstring = sort_makeVal (char_obj_ArrSort);
+  g_sortFloat = sort_makeLiteralSort (ltoken_undefined, lsymbol_fromChars ("float"));
+  g_sortDouble = sort_makeLiteralSort (ltoken_undefined, lsymbol_fromChars ("double"));
 }
 
 sort
@@ -3082,7 +3080,7 @@ sort_compatible_modulo_cstring (sort s1, sort s2)
     return TRUE;
   syn1 = sort_getUnderlying (s1);
   syn2 = sort_getUnderlying (s2);
-  if (sort_cstring == syn2 &&
+  if (g_sortCstring == syn2 &&
       (syn1 == char_obj_ptrSort || syn1 == char_obj_ArrSort))
     return TRUE;
   return FALSE;

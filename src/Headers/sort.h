@@ -160,15 +160,13 @@ extern sort sort_fromLsymbol (lsymbol p_sortid) /*@modifies internalState@*/ ;
 extern void sort_import (inputStream p_imported, ltoken p_tok, mapping p_map)
    /*@modifies p_imported, internalState@*/ ;
 
-/*@-namechecks@*/
-extern sort sort_bool;
-extern sort sort_capBool;
-extern sort sort_int;
-extern sort sort_char;
-extern sort sort_cstring;
-extern sort sort_float;
-extern sort sort_double;
-/*@=namechecks@*/
+extern sort g_sortBool;
+extern sort g_sortCapBool;
+extern sort g_sortInt;
+extern sort g_sortChar;
+extern sort g_sortCstring;
+extern sort g_sortFloat;
+extern sort g_sortDouble;
 
 # else
 # error "Multiple include"

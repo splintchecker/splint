@@ -107,7 +107,7 @@ extern bool ltoken_wasSyn (/*@sef@*/ ltoken p_tok);
 # define ltoken_wasSyn(tok) \
   (ltoken_isValid (tok) ? lsymbol_isDefined ((tok)->rawText) : FALSE)
 
-/*@-namechecks@*/
+/*@-namechecks@*/ /* all of these should start with g_ */
 extern /*@dependent@*/ ltoken ltoken_forall;
 extern /*@dependent@*/ ltoken ltoken_exists;
 extern /*@dependent@*/ ltoken ltoken_true;

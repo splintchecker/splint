@@ -186,7 +186,7 @@ abstract_init ()
   ti->modifiable = FALSE;
   ti->abstract = FALSE;
   ti->export = FALSE;		/* this is implicit, not exported */
-  ti->basedOn = sort_float;
+  ti->basedOn = g_sortFloat;
   symtable_enterType (g_symtab, ti);
 }
 
@@ -236,7 +236,7 @@ void LCLBuiltins (void)
 
   ti->modifiable = FALSE;
   ti->abstract = TRUE;
-  ti->basedOn = sort_bool;
+  ti->basedOn = g_sortBool;
   ti->export = FALSE; /* this wasn't set (detected by Splint) */
   symtable_enterType (g_symtab, ti);
   
@@ -244,7 +244,7 @@ void LCLBuiltins (void)
   vi->id = ltoken_createType (simpleId, SID_VAR, lsymbol_fromChars ("FALSE"));
 
   vi->kind = VRK_CONST;
-  vi->sort = sort_bool;
+  vi->sort = g_sortBool;
   vi->export = TRUE;
 
   (void) symtable_enterVar (g_symtab, vi);
@@ -3701,7 +3701,7 @@ makeQuantifiedTermNode (quantifierNodeList qn, ltoken open,
   termNodeList_free (t->args);
   t->args = termNodeList_new ();
 
-  sort = sort_bool;
+  sort = g_sortBool;
   n->sort = sort;
   (void) sortSet_insert (n->possibleSorts, sort);
 
@@ -4223,7 +4223,7 @@ makeLiteralTermNode (ltoken tok, sort s)
      needed anyway.  */
   /*  symtable_enterOp (g_symtab, nn, sign); */
 
-  if (s == sort_int)
+  if (s == g_sortInt)
     {
       sigNode osign;
       lslOp opn = (lslOp) dmalloc (sizeof (*opn));
@@ -4231,7 +4231,7 @@ makeLiteralTermNode (ltoken tok, sort s)
       /* if it is a C int, we should overload it as double too because
 	 C allows you to say "x > 2". */
       
-      (void) sortSet_insert (n->possibleSorts, sort_double);
+      (void) sortSet_insert (n->possibleSorts, g_sortDouble);
       
       ltoken_setText (range, lsymbol_fromChars ("double"));
       osign = makesigNode (ltoken_undefined, ltokenList_new (), range);
@@ -4261,7 +4261,7 @@ makeUnchangedTermNode1 (ltoken op, /*@unused@*/ ltoken all)
   t->error_reported = FALSE;
   t->wrapped = 0;
   t->kind = TRM_UNCHANGEDALL;
-  t->sort = sort_bool;
+  t->sort = g_sortBool;
   t->literal = op;
   t->given = sort_makeNoSort ();
   t->name = NULL; /*< missing this >*/
@@ -4286,7 +4286,7 @@ makeUnchangedTermNode2 (ltoken op, storeRefNodeList x)
   t->error_reported = FALSE;
   t->wrapped = 0;
   t->kind = TRM_UNCHANGEDOTHERS;
-  t->sort = sort_bool;
+  t->sort = g_sortBool;
   t->literal = op;
   t->unchanged = x;
   t->given = sort_makeNoSort ();
@@ -4338,7 +4338,7 @@ makeUnchangedTermNode2 (ltoken op, storeRefNodeList x)
   t->error_reported = FALSE;
   t->wrapped = 0;
   t->kind = TRM_SIZEOF;
-  t->sort = sort_int;
+  t->sort = g_sortInt;
   t->literal = op;
   t->sizeofField = type;
   t->given = sort_makeNoSort ();

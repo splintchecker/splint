@@ -398,7 +398,7 @@ checkLclPredicate (ltoken t, lclPredicateNode n)
     {
      /* check that the sort of n is boolean */
       theSort = n->predicate->sort;
-      if (!sort_compatible (theSort, sort_capBool))
+      if (!sort_compatible (theSort, g_sortCapBool))
 	{
 	  if (sort_isNoSort (theSort))
 	    {
@@ -582,14 +582,14 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 		      {
 			if (sn->kind == SRT_OBJ ||
 			    sn->kind == SRT_ARRAY)
-			(void) sortSet_insert (ret, sort_bool);	  
+			(void) sortSet_insert (ret, g_sortBool);	  
 		      }
 		    
 		    if (cstring_equalLit (text, "maxIndex") || 
 			cstring_equalLit (text, "minIndex"))
 		      {
 			if (sn->kind == SRT_ARRAY || sn->kind == SRT_PTR)
-			  (void) sortSet_insert (ret, sort_int);	  
+			  (void) sortSet_insert (ret, g_sortInt);	  
 			
 			/*		  if (lsymbol_fromChars ("maxIndex") */
 		      }
@@ -601,14 +601,14 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 		  if (sn->kind == SRT_OBJ ||
 		      sn->kind == SRT_ARRAY)
 		    {
-		      (void) sortSet_insert (ret, sort_bool);	  
+		      (void) sortSet_insert (ret, g_sortBool);	  
 		    }
 		  break;
 		case LLT_SIZEOF:
 		  if (sn->kind == SRT_OBJ ||
 		      sn->kind == SRT_ARRAY ||
 		      sn->kind == SRT_VECTOR)
-		  (void) sortSet_insert (ret, sort_int);
+		  (void) sortSet_insert (ret, g_sortInt);
 		  break;
 		default:
 		  break;
@@ -634,7 +634,7 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 	    {
 	      argSet = sortSetList_head (argSorts);
 	      
-	      if (sortSet_member (argSet, sort_bool))
+	      if (sortSet_member (argSet, g_sortBool))
 		{
 		  sortSetList_reset (argSorts);
 		  sortSetList_advance (argSorts);
@@ -778,7 +778,7 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 			      {
 				if (sort_equal (cl, cl2))
 				  {
-				    (void) sortSet_insert (ret, sort_bool);
+				    (void) sortSet_insert (ret, g_sortBool);
 				  }
 			      } end_sortSet_elements;
 			  } end_sortSet_elements; 
