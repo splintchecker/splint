@@ -246,7 +246,7 @@ void yyerror (char *s);
 # undef realloc
 # endif
 
-void checkandsetBufState(idDecl id, exprNode is);
+
 
 #line 75 "cgrammar.y"
 typedef union

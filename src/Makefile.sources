@@ -27,10 +27,10 @@ GENERALSRC =     constraint.c \
     constraintTerm.c \
     constraintExprData.c \
     constraintExpr.c \
-    constraintResolve.c \
-    constraintOutput.c \
     constraintList.c \
     constraintGeneration.c \
+    constraintResolve.c \
+    constraintOutput.c \
     forjunk.c \
     cstring.c fileloc.c message.c source.c \
     fileTable.c hashTable.c llerror.c messageLog.c \
