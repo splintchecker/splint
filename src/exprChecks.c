@@ -884,8 +884,8 @@ void exprNode_checkFunctionBody (exprNode body)
 	    }
 	}
 
-      /* drl added call*/
-      exprNode_checkFunction (context_getHeader (), body);
+      /*@i44*/ /* drl added call*/
+      //      exprNode_checkFunction (context_getHeader (), body);
       
       if (!checkret)
 	{
@@ -975,13 +975,13 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
      //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
      //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
    
-   context_exitInnerPlain();
    if (c)
      constraintList_free(c);
-   
-   /*@i88*/
+
+   context_exitInnerPlain();
+
    /*is it okay not to free this?*/
-//   exprNode_free (body);
+   exprNode_free (body);
 }
 
 void exprChecks_checkEmptyMacroBody (void)

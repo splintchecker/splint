@@ -350,7 +350,7 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
   
 }
 
-static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList list,
+/*@only@*/ static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList list,
 						   /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
   constraintList newConstraints;
@@ -373,7 +373,7 @@ static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList
     }
   end_constraintList_elements;
   
-  ret =  constraintList_addList (list, newConstraints);
+  ret =  constraintList_addListFree (list, newConstraints);
   return ret;
 }
 

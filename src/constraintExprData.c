@@ -19,9 +19,9 @@ void constraintExprData_freeBinaryExpr (/*@only@*/constraintExprData data)
   free(data);  
 }
 
-constraintExprData constraintExprData_copyBinaryExpr(constraintExprData data)
+constraintExprData constraintExprData_copyBinaryExpr(/*@observer@*/ constraintExprData data)
 {
- constraintExprData ret;
+  constraintExprData ret;
   llassert(constraintExprData_isDefined(data));
   ret = dmalloc (sizeof (*ret) );
   ret->binaryOp.binaryOp = data->binaryOp.binaryOp;
@@ -36,7 +36,7 @@ constraintExprData constraintExprData_copyBinaryExpr(constraintExprData data)
   free(data);  
 }
 
-constraintExprData constraintExprData_copyUnaryExpr(constraintExprData data)
+constraintExprData constraintExprData_copyUnaryExpr(/*@observer@*/ constraintExprData data)
 {
  constraintExprData ret;
   llassert(constraintExprData_isDefined(data));
@@ -55,7 +55,7 @@ void constraintExprData_freeTerm (/*@only@*/constraintExprData data)
 }
 
 
-constraintExprData constraintExprData_copyTerm (constraintExprData data)
+constraintExprData constraintExprData_copyTerm (/*@observer@*/ constraintExprData data)
 {
  constraintExprData ret;
   llassert(constraintExprData_isDefined(data));
@@ -105,14 +105,14 @@ constraintExprData constraintExprData_copyTerm (constraintExprData data)
 }
 
 
-constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (constraintExprData data)
+constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*/ constraintExprData data)
 {
   llassert (constraintExprData_isDefined(data));
   return (data->unaryOp.unaryOp);
 }
 
 
-constraintExpr  constraintExprData_unaryExprGetExpr (constraintExprData data)
+constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ constraintExprData data)
 {
   llassert (constraintExprData_isDefined(data));
   /*@i232*/ return (data->unaryOp.expr);

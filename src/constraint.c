@@ -1,5 +1,5 @@
 /*
-** constraintList.c
+** constraint.c
 */
 
 //#define DEBUGPRINT 1
@@ -21,9 +21,10 @@
 
 /*@access exprNode @*/
 
-static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->or, result->orig,  result->generatingExpr @*/ /*@defines result->or, result->generatingExpr, result->orig @*/;
 
+static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
+     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/ /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/;
+     
 /*  constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant) */
      
 /*  { */
@@ -163,6 +164,8 @@ constraint constraint_copy (constraint c)
     ret->or = constraint_copy (c->or);
   else
     ret->or = NULL;
+
+  ret->fcnPre = c->fcnPre;
   
   return ret;
 }
@@ -202,14 +205,16 @@ void constraint_overWrite (constraint c1, constraint c2)
     c1->or = constraint_copy (c2->or);
   else
     c1->or = NULL;
+
+  c1->fcnPre = c2->fcnPre;
   
-  c1->generatingExpr = exprNode_fakeCopy (c2->generatingExpr );
+  c1->generatingExpr = c2->generatingExpr;
 }
 
 
 
 static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->or, result->orig,  result->generatingExpr @*/ /*@defines result->or, result->generatingExpr, result->orig @*/
+     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/ /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/
 {
   constraint ret;
   ret = dmalloc(sizeof (*ret) );
@@ -220,6 +225,7 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
   ret->orig = NULL;
   ret->or = NULL;
   ret->generatingExpr = NULL;
+  ret->fcnPre = NULL;
   return ret;
 }
 
@@ -237,6 +243,40 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
     }
   return c;
 }
+
+constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint c, exprNode e)
+{
+
+  if (c->orig != constraint_undefined)
+    {
+      c->orig = constraint_addGeneratingExpr(c->orig, e);
+    }
+  else
+    {
+      DPRINTF ((message ("constraint_origAddGeneratingExpr: Not setting generatingExpr for %s to %s", constraint_print(c), exprNode_unparse(e) )  ));
+    }
+  return c;
+}
+
+
+
+constraint constraint_setFcnPre (/*@returned@*/ constraint c )
+{
+
+  if (c->orig != constraint_undefined)
+    {
+      c->orig->fcnPre = TRUE;
+    }
+  else
+    {
+      c->fcnPre = TRUE;
+      TPRINTF(( message("Warning Setting fcnPre directly") ));
+    }
+  return c;
+}
+
+
+
 
 fileloc constraint_getFileloc (constraint c)
 {
@@ -294,7 +334,7 @@ constraint constraint_makeWriteSafeInt (exprNode po, int ind)
 constraint constraint_makeSRefSetBufferSize (sRef s, long int size)
 {
  constraint ret = constraint_makeNew();
- ret->lexpr = constraintExpr_makeSRefMaxset (sRef_saveCopy(s) );
+ ret->lexpr = constraintExpr_makeSRefMaxset (s);
  ret->ar = EQ;
  ret->expr =  constraintExpr_makeIntLiteral ((int)size);
  ret->post = TRUE;
@@ -306,7 +346,7 @@ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
   constraint ret = constraint_makeNew();
 
  
-  ret->lexpr = constraintExpr_makeSRefMaxset ( sRef_saveCopy(s) );
+  ret->lexpr = constraintExpr_makeSRefMaxset ( s );
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
@@ -358,7 +398,7 @@ constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
   constraint ret = constraint_makeNew();
 
  
-  ret->lexpr = constraintExpr_makeSRefMaxRead (sRef_saveCopy(s) );
+  ret->lexpr = constraintExpr_makeSRefMaxRead (s );
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
@@ -600,45 +640,86 @@ cstring arithType_print (arithType ar) /*@*/
 void constraint_printError (constraint c, fileloc loc)
 {
   cstring string;
-  fileloc errorLoc;
+  fileloc errorLoc, temp;
   
   string = constraint_printDetailed (c);
 
   errorLoc = loc;
 
-  if (constraint_getFileloc(c) )
-      errorLoc = constraint_getFileloc(c);
-  
-  if (c->post)
+  loc = NULL;
+
+  temp = constraint_getFileloc(c);
+
+  if (fileloc_isDefined(temp) )
     {
-       voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
+      errorLoc = temp;
+      
+      if (c->post)
+	{
+	  voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
+	}
+      else
+	{
+	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
+	}
+      fileloc_free(temp);
     }
   else
     {
-      voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
+      if (c->post)
+	{
+	  voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
+	}
+      else
+	{
+	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
+	}
     }
-      
+}
+
+
+cstring constraint_printDeep (constraint c)
+{
+  cstring st = cstring_undefined;
+
+  st = constraint_print(c);
+
+  if (c->orig != constraint_undefined)
+    {
+      if (!c->post)
+	{
+	  if (c->orig->fcnPre)
+	    st = cstring_concatFree(st, (message(" derived from %s precondition: %q", exprNode_unparse(c->orig->generatingExpr), constraint_printDeep(c->orig) )
+					 ) );
+	  else
+	    st = cstring_concatFree(st,(message(" needed to satisfy %q",
+						constraint_printDeep(c->orig) )
+					) );
+	  
+	}
+      else
+	{
+	  st = cstring_concatFree(st,(message("derived from: %q",
+					      constraint_printDeep(c->orig) )
+				      ) );
+	}
+    }
+
+  return st;  
+
 }
 
 cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
 
-
   if (!c->post)
     {
-    if (c->orig != NULL)  
-      st = message ("Unresolved constraint:\nLclint is unable to resolve %q needed to satisfy %q", constraint_print (c), constraint_print(c->orig) );
-    else
-      st = message ("Unresolved constraint:\nLclint is unable to resolve %q", constraint_print (c));
-      
+      st = message ("Unresolved constraint:\nLclint is unable to resolve %q", constraint_printDeep (c) );
     }
   else
     {
-      if (c->orig != NULL)
-	st = message ("Block Post condition:\nThis function block has the post condition %q\n based on %q", constraint_print (c), constraint_print(c->orig) );
-      else
-	st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_print (c));	
+      st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_printDeep (c) );
     }
 
   if (context_getFlag (FLG_CONSTRAINTLOCATION) )
@@ -732,6 +813,7 @@ constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall)
   precondition->lexpr = constraintExpr_doSRefFixConstraintParam (precondition->lexpr, arglist);
   precondition->expr = constraintExpr_doSRefFixConstraintParam (precondition->expr, arglist);
 
+  precondition->fcnPre = FALSE;
   return precondition;
 }
 
@@ -750,9 +832,33 @@ constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall)
 
 constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/
 {
+
+  DPRINTF( (message("Doing constraint_preserverOrig for %q ", constraint_printDetailed(c) ) ));
+  
   if (c->orig == constraint_undefined)
     c->orig = constraint_copy (c);
+
+  else if (c->orig->fcnPre)
+    {
+      constraint temp;
+      
+      temp = c->orig;
+      
+      /* avoid infinite loop */
+      c->orig = NULL;
+      c->orig = constraint_copy (c);
+      if (c->orig->orig == NULL)
+	c->orig->orig = temp;
+      else
+	llcontbug((message("Expected c->orig->orig to be null" ) ));
+    }
+  else
+    {
+      DPRINTF( (message("Not changing constraint") ));
+    }
   
+  DPRINTF( (message("After Doing constraint_preserverOrig for %q ", constraint_printDetailed(c) ) ));
+
   return c;
 }
 /*@=fcnuse*/

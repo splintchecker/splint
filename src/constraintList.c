@@ -340,6 +340,22 @@ constraintList constraintList_preserveOrig (constraintList c)
   return c;
 }
 
+constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c, exprNode fcn)
+{
+  DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_print (c) ) ));
+
+  constraintList_elements_private (c, el)
+  {
+    //  el = constraint_preserveOrig (el);
+    el = constraint_setFcnPre(el);
+    el = constraint_origAddGeneratingExpr (el, fcn);
+  }
+  end_constraintList_elements_private;
+  return c;
+}
+
+
+
 constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
 {
   DPRINTF ((message ("entering constraintList_addGeneratingExpr for %s ", exprNode_unparse(e) ) ));
@@ -367,7 +383,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
   return ret;
 }
 
-constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist)
+/*@only@*/ constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist)
 {
   constraintList ret;
   ret = constraintList_makeNew();
@@ -404,6 +420,10 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
   constraintList_elements_private (c, el)
     {
       el = constraint_togglePost(el);
+      if (el->orig)
+	{
+	  el->orig = constraint_togglePost(el->orig);
+	}
     }
   end_constraintList_elements_private;
   return c;

@@ -70,7 +70,8 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
   temp = constraintList_subsumeEnsures (list2, ret);
 
   temp = constraintList_addList (temp, ret);
-
+  constraintList_free(ret);
+  
   DPRINTF(( message ("constraintList_mergeEnsures: returning %s ",
 		     constraintList_print(temp) )
 		     ));
@@ -109,7 +110,7 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
  
   DPRINTF((message ("constraintList_mergeRequires: ret =  %s", constraintList_print(ret) ) ) );
   
-  ret = constraintList_addList (ret, temp);
+  ret = constraintList_addListFree (ret, temp);
   
   DPRINTF((message ("constraintList_mergeRequires: returning  %s", constraintList_print(ret) ) ) );
 
@@ -157,7 +158,8 @@ constraintList checkCall (exprNode fcn, exprNodeList arglist)
 
   if (preconditions != constraintList_undefined)
     {
-      preconditions= constraintList_togglePost (preconditions);   
+      preconditions = constraintList_togglePost (preconditions);
+      preconditions = constraintList_preserveCallInfo(preconditions, fcn);
       preconditions = constraintList_doSRefFixConstraintParam (preconditions, arglist);
     }
   else
@@ -165,7 +167,8 @@ constraintList checkCall (exprNode fcn, exprNodeList arglist)
       if (preconditions == NULL)
 	preconditions = constraintList_makeNew();
     }
-  
+  DPRINTF (( message("Done checkCall\n") ));
+  DPRINTF (( message("Returning list %q ", constraintList_printDetailed(preconditions) ) ));
   return preconditions;
 }
 
@@ -454,8 +457,11 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
 
   if (*resolved)
     {
-      constraint_free(next);
-      constraint_free(ret);
+      if (next)
+	constraint_free(next);
+
+      /*we don't need to free ret is resolved is false*/
+      //      constraint_free(ret);
       return NULL;
     }
 
@@ -468,14 +474,18 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
       curr = doResolve (curr, post1, resolved);
       if (*resolved)
 	{
-	  constraint_free(curr);
-	  constraint_free(next);
+	  /* curr is null so we don't try to free it*/
+	  //constraint_free(curr);
+	  
+	  if (next)
+	    constraint_free(next);
 	  constraint_free(ret);
 	  return NULL;
 	}
       ret = constraint_addOr (ret, curr);
+      constraint_free(curr);
     }
-  constraint_free(curr);
+
   return ret;
 }
 
@@ -1089,7 +1099,7 @@ return ret;
   return ret;
 }
 
-constraint constraint_solve (constraint c)
+constraint constraint_solve (/*@returned@*/ constraint c)
 {
   DPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
   c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);

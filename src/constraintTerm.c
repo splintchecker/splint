@@ -47,7 +47,7 @@ void constraintTerm_free (/*@only@*/ constraintTerm term)
   free (term);
 }
 
-static/*@out@*/ constraintTerm new_constraintTermExpr (void)
+/*@only@*/ static/*@out@*/ constraintTerm new_constraintTermExpr (void)
 {
   constraintTerm ret;
   ret = dmalloc (sizeof (* ret ) );
@@ -88,13 +88,14 @@ cstring constraintTerm_getStringLiteral (constraintTerm c)
   return (cstring_copy ( multiVal_forceString (exprNode_getValue (c->value.expr) ) ) );
 }
 
-/*@only@*/ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/
+constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/
 {
   if (term->kind == EXPRNODE)
     {
       if ( exprNode_knownIntValue (term->value.expr ) )
 	{
 	  long int temp;
+	  #warning is this a leak?
 	  temp  = exprNode_getLongValue (term->value.expr);
 	  term->value.intlit = (int)temp;
 	  term->kind = INTLITERAL;
@@ -123,7 +124,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return (t->value.sref);
 }
 
-constraintTerm constraintTerm_makeExprNode ( exprNode e)
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/ exprNode e)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_copy(exprNode_getfileloc(e));
@@ -133,11 +134,11 @@ constraintTerm constraintTerm_makeExprNode ( exprNode e)
   return ret;
 }
 
-/*@only@*/ constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s)
+/*@only@*/ constraintTerm constraintTerm_makesRef  (/*@exposed@*/ sRef s)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_undefined;
-  ret->value.sref = s;
+  ret->value.sref = sRef_saveCopy(s);
   ret->kind = SREF;
   ret = constraintTerm_simplify(ret);
   return ret;

@@ -69,7 +69,6 @@ void yyerror (char *s);
 # undef realloc
 # endif
 
-
 %}
 
 %union
@@ -330,16 +329,13 @@ namedDeclBase
      context_popLoc (); 
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
-   { setCurrentParams ($4);
-    
+   { setCurrentParams ($4); 
         } 
  optGlobMods  optGlobBufConstraints
    { setImplictfcnConstraints ();
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
-     context_popLoc ();
-
-     //     printf("Done nameDeclBase\n");
+     context_popLoc (); 
    }
 
 plainNamedDeclBase
@@ -713,7 +709,7 @@ fcnDef
  : fcnDefHdr fcnBody 
    { 
      context_setFunctionDefined (exprNode_loc ($2)); 
-     /* exprNode_checkFunction (context_getHeader (), $2); */
+     exprNode_checkFunction (context_getHeader (), $2); 
      /* DRL 8 8 2000 */
      
      context_exitFunction ();
