@@ -54,11 +54,7 @@ Finished LCLint checking --- 5 code errors found, as expected
 
 Finished LCLint checking --- no code errors found
 
-duff.c: (in function copy)
-duff.c:15:12: Statement after switch is not a case: do { { case 0: } } while
-                 (--n > 0)
-
-Finished LCLint checking --- 1 code error found, as expected
+Finished LCLint checking --- no code errors found
 
 obviousloop.c: (in function f)
 obviousloop.c:14:3: Unreachable code: x = 12

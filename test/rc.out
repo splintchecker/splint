@@ -16,7 +16,7 @@ rc.c: (in function f)
 rc.c:3:10: Observer storage returned without qualification: "a silly\"flag\"\\"
    rc.c:3:10: Storage becomes observer
 
-Finished LCLint checking --- 1 code error found
+Finished LCLint checking --- 1 code error found, as expected
 
 rc2.lclintrc:1:18: Warning: setting +boolint redundant with current value
 rc.c: (in function f)

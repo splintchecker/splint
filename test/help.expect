@@ -85,7 +85,6 @@ Finished LCLint checking --- no code processed
    assignexpose                
    badflag                     
    bitwisesigned               
-   bool                        
    boolcompare                 
    boolfalse                   
    boolint                     
@@ -313,6 +312,8 @@ Finished LCLint checking --- no code processed
    nullptrarith                
    nullret                     
    nullstate                   
+   nullterminated              
+   nullterminated              
    numenummembers              
    numliteral                  
    numstructfields             
@@ -447,9 +448,9 @@ Finished LCLint checking --- no code processed
    whichlib                    
    whileblock                  
    whileempty                  
+   zerobool                    
 
 
-bool --- boolean type is abstract
 likelybool --- type name is probably a boolean type but does not match default
 boolean type name, "bool", and alternate name is not set
 impabstract --- assume user type definitions are abstract (unless
@@ -663,7 +664,7 @@ hints --- provide hints on using lclint (hint only reported for first related
 error)
 retval --- return value ignored (sets retvalint, retvalbool and retvalother)
 retvalother --- return value of type other than bool or int ignored
-retvalbool --- return value of type bool ignored
+retvalbool --- return value of manifest type bool ignored
 retvalint --- return value of type int ignored
 f --- load options file (default ~/.lclintrc not loaded)
 i --- set LCL initilization file
@@ -886,6 +887,8 @@ includenest --- set maximum number of nested #include files
 ansilimits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers)
 null --- misuses of null pointer
+nullterminated --- misuse of nullterminated allocation
+nullterminated --- misuse of nullterminated allocation
 nullderef --- possible dereferencce of null pointer
 fcnderef --- dereferencce of a function type
 nullpass --- possibly null pointer passed as formal with no null annotation
@@ -964,6 +967,7 @@ unsigned integral type (e.g., size_t)
 longsignedintegral --- allow long type to match an arbitrary signed integral
 type (e.g., ssize_t)
 zeroptr --- 0 is treated as a pointer
+zerobool --- 0 is treated as a boolean
 repeatunrecog --- do not suppress repeated unrecognized identifier messages
 (instead of only reporting the first error)
 sysunrecog --- report unrecognized identifiers with system (__) prefix

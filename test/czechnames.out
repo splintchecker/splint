@@ -19,18 +19,6 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
 
 Finished LCLint checking --- 1 code error found, as expected
 
-bool.h:22: Function bool_initMod name violates Czech naming convention. Type
-              bool is not accessible.
-  Use +accessczech to allow access to type <t> in functions named <t>_<name>.
-bool.h:25: Function bool_unparse name violates Czech naming convention. Type
-              bool is not accessible.
-  Use +accessczech to allow access to type <t> in functions named <t>_<name>.
-bool.h:28: Function bool_not name violates Czech naming convention. Type bool
-              is not accessible.
-  Use +accessczech to allow access to type <t> in functions named <t>_<name>.
-bool.h:31: Function bool_equal name violates Czech naming convention. Type bool
-              is not accessible.
-  Use +accessczech to allow access to type <t> in functions named <t>_<name>.
 czechnames.c:4:5: Variable pivo_pyet name violates Czech naming convention.
     Czech prefix pivo names an abstract type that is not accessible.
   Use +accessczech to allow access to type <t> in functions named <t>_<name>.
@@ -50,4 +38,4 @@ czechnames.c:15:11: Left operand of == is abstract type (pivo): p == 1
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
 
-Finished LCLint checking --- 10 code errors found, expected 6
+Finished LCLint checking --- 6 code errors found, as expected

@@ -19,7 +19,7 @@
 .PHONY: specclauses stack staticarray
 .PHONY: strings structassign
 .PHONY: typequals ud ulstypes union unreachable unused 
-.PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4
+.PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
 .PHONY: nullterminatedtest
 
@@ -28,7 +28,7 @@
 SHELL = /bin/csh -f
 
 # Command to run lclint
-LCLINT  = lclint
+LCLINT  = ${HOME}/lclint-dev/src/lclint
 LCLINTP = $(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
@@ -36,7 +36,7 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal
 
-UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 nullterminatedtest
+UNITTESTS = help abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames decl enum exports external fields flags funcpointer glob globals impabstract init inparam internal iter keep libs lintcomments list macros macrosef merge modifies modtest moduncon mongoincludes null nullterminatedtest observer oldstyle outglob outparam preds prefixes printflike rc refcounts release repexpose sharing slovaknames specclauses special stack staticarray strings structassign typequals ud ulstypes union unreachable unused tests2.2 tests2.2a tests2.4 tests2.5
 
 UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
 
@@ -176,9 +176,11 @@ cast:
 	$(LCLINTR) cast -accessmodule -expect 20
 	$(LCLINTRN) cast2.c +checks -exportlocal -exportheader -expect 3
 
+### Two addition errors detected with 2.5 with -numliteral.
+
 charlit:
 	$(LCLINTR) +hints charlit.c -expect 4
-	$(LCLINTR) +hints -numliteral charlit.c -expect 5
+	$(LCLINTR) +hints -numliteral charlit.c -expect 6
 	$(LCLINTR) +hints charlit.c +charintliteral +ignoresigns
 
 clauses: 
@@ -202,9 +204,9 @@ compdestroy:
 	$(LCLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
 
 csyntax:
-	$(LCLINTR) +quiet -incondefs csyntax.c 
-	$(LCLINTR) +quiet csyntax2.c
-	$(LCLINTR) +quiet csyntax3.c
+	$(LCLINTR) +quiet -incondefs csyntax.c -expect 1 
+	$(LCLINTR) +quiet csyntax2.c -expect 2
+	$(LCLINTR) +quiet csyntax3.c -expect 1
 	$(LCLINTR) +quiet -incondefs csyntax4.c
 	$(LCLINTR) +quiet csyntax5.c
 	$(LCLINTR) +quiet csyntax6.c
@@ -214,11 +216,11 @@ csyntax:
 	$(LCLINTR) +quiet csyntax10.c
 	$(LCLINTR) +quiet csyntax11.c
 	$(LCLINTR) +quiet csyntax12.c
-	$(LCLINTR) +quiet csyntax13.c
+	$(LCLINTR) +quiet csyntax13.c -expect 1
 	$(LCLINTR) +quiet csyntax14.c
 	$(LCLINTR) +quiet csyntax15.c
-	$(LCLINTR) +quiet csyntax16.c
-	$(LCLINTR) +quiet csyntax17.c
+	$(LCLINTR) +quiet csyntax16.c -expect 2
+	$(LCLINTR) +quiet csyntax17.c -expect 3
 
 czechnames:
 	$(LCLINTR) czechnames.c
@@ -421,11 +423,11 @@ printflike:
 	$(LCLINTR) printflike.c -warnlintcomments -expect 5
 
 rc:
-	-$(LCLINTR) -DMYSTERY='"a flag\"wicked cool"' rc.c -expect 1
-	-$(LCLINTR) -DMYSTERY=12 rc.c -expect 1
-	-$(LCLINTR) -f rc1.lclintrc rc.c
-	-$(LCLINTR) -UMYSTERY -f rc1.lclintrc rc.c -expect 1
-	-$(LCLINTR) -f rc3.lclintrc rc.c -expect 1
+	$(LCLINTR) -DMYSTERY='"a flag\"wicked cool"' rc.c -expect 1
+	$(LCLINTR) -DMYSTERY=12 rc.c -expect 1
+	$(LCLINTR) -f rc1.lclintrc rc.c -expect 1
+	$(LCLINTR) -UMYSTERY -f rc1.lclintrc rc.c -expect 1
+	$(LCLINTR) -f rc3.lclintrc rc.c -expect 1
 
 refcounts:
 	$(LCLINTR) refcounts.c -expect 7 
@@ -490,6 +492,7 @@ ulstypes:
 	$(LCLINTR) ulstypes.c -expect 8
 	$(LCLINTR) ulstypes.c +ignorequals 
 	$(LCLINTRN) ulstypes.c +strict -exportheader -exportheadervar -expect 28
+# 3 more detected with version 2.5 (change in -numliteral setting)
 
 union:
 	$(LCLINTR) +memchecks union.c -expect 8
@@ -537,7 +540,7 @@ tests2.2a:
 	$(LCLINTR) sizeof.c ; \
 	$(LCLINTR) arrayparam.c -expect 5 ; \
 	$(LCLINTR) notreached.c ; \
-	$(LCLINTR) duff.c -casebreak -expect 1 ; \
+	$(LCLINTR) duff.c -casebreak -firstcase ; \
 	$(LCLINTR) obviousloop.c -expect 4 ; \
 	$(LCLINTR) bitops.c +bitwisesigned -expect 11 ; \
 	$(LCLINTR) bitops.c -expect 5 ; \
@@ -581,6 +584,9 @@ nullterminatedtest:
 	$(LCLINTR) test1.c; \
 	$(LCLINTR) test2.c
 
+tests2.5:
+	setenv LCLINT '$(LCLINTRN)'; cd tests2.5 ; $(MAKE) -e
+
 ###
 ### Integration Tests
 ###
@@ -594,16 +600,12 @@ db2:
 db3:
 	setenv LCLINT '$(LCLINTRN)'; cd db3; $(MAKE) -e test
 
-###
-### More integration tests are used locally.  If you are developing 
-### LCLint send mail to evs@larch.lcs.mit.edu to obtain extra 
-### integration test cases.
-
 clean:
 	-rm -f *~ #*# *.o *.lcs a.out 
 	-cd db1 ; $(MAKE) clean
 	-cd db2 ; $(MAKE) clean
 	-cd db3 ; $(MAKE) clean
+
 
 
 

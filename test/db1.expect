@@ -219,7 +219,7 @@ empset.c: (in function _empset_get)
 empset.c:11: Undocumented modification of s possible from call to
                 erc_iterStart: erc_iterStart(s)
 empset.c:15: Body of if statement is not a block:
-                do { { erc_iterFinal(it) } } while (0)
+                do { { erc_iterFinal(it) } } while (FALSE)
 empset.c: (in function empset_insert)
 empset.c:30: Undetected modification possible from call to unconstrained
                 function _empset_get: _empset_get
@@ -257,9 +257,10 @@ empset.c: (in function empset_subset)
 empset.c:139: Undocumented modification of s1 possible from call to
                  erc_iterStart: erc_iterStart(s1)
 empset.c:141: Body of if statement is not a block:
-                 do { { erc_iterFinal(it) } } while (0)
+                 do { { erc_iterFinal(it) } } while (FALSE)
 empset.c:140: Body of for statement is not a block:
-    if (!empset_member(eref_get(er), s2)) do { { erc_iterFinal(it) } } while (0)
+                 if (!empset_member(eref_get(er), s2)) do { { erc_iterFinal(it)
+                 } } while (FALSE)
 empset.c:135: Variable e declared but not used
 empset.c: (in function empset_initMod)
 empset.c:148: Undocumented use of file static initDone

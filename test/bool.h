@@ -3,7 +3,7 @@
 
 /*@-cppnames@*/
 /*@-exporttype@*/
-typedef int bool;
+typedef /*@abstract@*/ int bool;
 /*@=exporttype@*/
 /*@=cppnames@*/
 
