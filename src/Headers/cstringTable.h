@@ -20,13 +20,13 @@
    abst_typedef null struct _cstringTable *cstringTable;
 */
 
-/*@private@*/ typedef struct 
+/*:private:*/ typedef struct 
 {
   /*@only@*/ cstring key;
   int val;
 } *hentry;
 
-/*@private@*/ typedef /*@only@*/ hentry o_hentry;
+/*:private:*/ typedef /*@only@*/ hentry o_hentry;
 
 typedef /*@null@*/ struct
 {

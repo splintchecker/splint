@@ -7,7 +7,7 @@
 # ifndef MTMERGECLAUSELIST_H
 # define MTMERGECLAUSELIST_H
 
-/*@private@*/ typedef /*@only@*/ mtMergeClause o_mtMergeClause;
+/*:private:*/ typedef /*@only@*/ mtMergeClause o_mtMergeClause;
 
 struct s_mtMergeClauseList
 {

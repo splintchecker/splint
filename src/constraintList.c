@@ -143,32 +143,30 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
 
 constraintList constraintList_addListFree (/*@returned@*/ constraintList s, /*@only@*/ constraintList newList)
 {
-  llassert(constraintList_isDefined(s) );
-  llassert(constraintList_isDefined(newList) );
-
-  if (constraintList_isUndefined(newList) )
+  if (constraintList_isUndefined (newList))
     return s;
+
+  llassert (constraintList_isDefined (s));
+  llassert (constraintList_isDefined (newList));
   
   constraintList_elements_private_only(newList, elem)
     {
-    s = constraintList_add (s, elem);
-    }
-  end_constraintList_elements_private_only
-
-    constraintList_freeShallow(newList);
-    return s;
+      s = constraintList_add (s, elem);
+    } end_constraintList_elements_private_only;
+  
+  constraintList_freeShallow (newList);
+  return s;
 }
-
 
 constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
 {
   constraintList ret;
   fileloc loc;
-  llassert(constraintList_isDefined(s) );
 
+  llassert (constraintList_isDefined (s));
   ret = constraintList_makeNew();
   
-  constraintList_elements_private_only(s, elem)
+  constraintList_elements_private_only (s, elem)
     {
       loc = constraint_getFileloc(elem);
 
@@ -176,14 +174,12 @@ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
 	{
 	  ret = constraintList_add (ret, elem);
 	}
-      
       else if (context_suppressFlagMsg(FLG_BOUNDSWRITE, loc) )
 	{
 	  DPRINTF ((message ("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
 			     constraint_unparse(elem))));
 	  constraint_free(elem);
 	}
-      
       else if (!constraint_hasMaxSet(elem) && context_suppressFlagMsg(FLG_BOUNDSREAD, loc))
 	{
 	  DPRINTF ((message("constraintList_removeSurpressed getting rid of surpressed constraint %q", 
@@ -195,11 +191,9 @@ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
 	  ret = constraintList_add (ret, elem);
 	} 
       fileloc_free(loc);
-    } 
-  end_constraintList_elements_private_only;
+    } end_constraintList_elements_private_only;
 
   constraintList_freeShallow(s);
-  
   return ret;
 }
 
@@ -646,6 +640,7 @@ constraintList constraintList_sort (/*@returned@*/ constraintList ret)
       llassert(FALSE);
       return ret;
     }
+
   qsort (ret->elements, (size_t) ret->nelements,
 	 (sizeof (*ret->elements)), 
 	 (int (*)(const void *, const void *)) constraint_compare);

@@ -339,7 +339,7 @@ context_suppressFlagMsg (flagcode flag, fileloc fl)
       return (!context_getFlag (flag)
 	      || context_inSuppressRegion ()
 	      || context_inSuppressZone (fl)
-	      || (/*@!@@#@ gc.inDerivedFile && */ context_inSuppressFlagZone (fl, flag)));
+	      || (context_inSuppressFlagZone (fl, flag))); /* removed gc.inDerivedFile from this */
     }
   else
     {
@@ -4374,8 +4374,6 @@ context_destroyMod (void)
   globSet_free (gc.globs_used);
   metaStateTable_free (gc.stateTable);
   annotationTable_free (gc.annotTable);
-
-  
 }
 
 /*

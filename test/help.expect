@@ -22,8 +22,6 @@ Topics:
    version (information on compilation, maintainer)
 
 
-Finished checking --- no code processed
-
 Source files are .c, .h and .lcl files.  If there is no suffix,
    Splint will look for <file>.c and <file>.lcl.
 

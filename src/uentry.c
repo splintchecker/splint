@@ -2499,7 +2499,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 			uentry_unparse (ue)),
 	       uentry_whereLast (ue)))
 	    {
-	      /*@i! annotationInfo_showContextError (ainfo, ue); */
+	      /* annotationInfo_showContextError (ainfo, ue); */
 	    }
 	}
     }
@@ -10380,10 +10380,7 @@ uentry_mergeValueStates (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other,
       ** Copy values from other
       */
       
-      /*@i$@#@*/
-      DPRINTF (("Has value table: %s", sRef_unparseFull (other->sref)));
-      DPRINTF (("No value table: %s", sRef_unparseFull (res->sref)));
-      ;
+      /* ??? */
     }
   else
     {

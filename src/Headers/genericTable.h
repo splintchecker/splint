@@ -17,7 +17,7 @@
    abst_typedef null struct _genericTable *genericTable;
 */
 
-/*@private@*/ typedef struct
+/*:private:*/ typedef struct
 {
   /*@only@*/ cstring key;
   /*@only@*/ void *val;

@@ -52,9 +52,9 @@
 # define TABINCH 	'\t'
 
 
-/*@private@*/ typedef struct
+/*:private:*/ typedef struct
 {
-  /*:open:*/ /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
+  /*@open@*/ /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
   /*@reldef@*/ cstring name;
 } outFile;
 

@@ -7,7 +7,7 @@
 # ifndef MTTRANSFERCLAUSELIST_H
 # define MTTRANSFERCLAUSELIST_H
 
-/*@private@*/ typedef /*@only@*/ mtTransferClause o_mtTransferClause;
+/*:private:*/ typedef /*@only@*/ mtTransferClause o_mtTransferClause;
 
 struct s_mtTransferClauseList
 {

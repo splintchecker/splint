@@ -375,10 +375,6 @@ extern void exprNode_freeShallow (/*@only@*/ exprNode p_e);
 extern void exprNode_destroyMod (void) /*@modifies internalState@*/ ;
 extern /*@falsewhennull@*/ bool exprNode_isAssign (exprNode p_e) /*@*/ ;
 
-/* added 8-15-00
-   by DRL */
-extern /*@observer@*/ fileloc exprNode_getfileloc (exprNode p_e) ;
-
 /*@-exportlocal@*/
 extern bool exprNode_isDefaultMarker (exprNode p_e) /*@*/ ;
 extern bool exprNode_isCaseMarker (exprNode p_e) /*@*/ ;

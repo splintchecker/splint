@@ -2047,12 +2047,11 @@ void usymtab_load (FILE *f)
     {
       constraintList preconditions;
       constraintList postconditions;
-
-      cstring name = cstring_fromChars(reader_getWord(&s) );
+      cstring name = cstring_fromChars (reader_getWord (&s));
       cstring temp;
-      ue = usymtab_lookup ( name );
 
-      cstring_free(name);
+      ue = usymtab_lookup (name);
+      cstring_free (name);
       
       preconditions = constraintList_undefined;
       postconditions = constraintList_undefined;

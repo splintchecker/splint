@@ -183,7 +183,7 @@ osd_getPath (cstring path, cstring file, cstring *returnPath)
       *fullPath == '\0' || 
       (*file == CONNECTCHAR || (file[0] != '\0' && file[1] == ':'))
 # else
-    (*file == CONNECTCHAR)
+      (*file == CONNECTCHAR)
 # endif
       )
     {
@@ -203,8 +203,8 @@ osd_getPath (cstring path, cstring file, cstring *returnPath)
       /* Path specified. Loop through directories in path looking for the */
       /* first occurrence of the file.				    */
       
-      while (nextdir (&fullPath, &dirPtr, &dirLen) &&
-	     rVal == OSD_FILENOTFOUND)
+      while (nextdir (&fullPath, &dirPtr, &dirLen) 
+	     && rVal == OSD_FILENOTFOUND)
 	{
 	  if ((dirLen + strlen (file) + 2) <= MAXPATHLEN)
 	    {

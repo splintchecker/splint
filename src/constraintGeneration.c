@@ -679,26 +679,21 @@ exprNode_doGenerateConstraintSwitch
 	  *savedRequires = constraintList_mergeRequiresFreeFirst (*savedRequires, *currentRequires);
 	}
       
-      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle
-					(stmt->edata), exprNode_getfileloc(stmt));
+      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle (stmt->edata), exprNode_loc (stmt));
 
-
-      constraintList_free(*currentEnsures);
+      constraintList_free (*currentEnsures);
       *currentEnsures = constraintList_makeNew();
       *currentEnsures = constraintList_add(*currentEnsures, con);
 
       constraintList_free(*currentRequires);
       *currentRequires = constraintList_makeNew();
-      DPRINTF((message("exprNode_doGenerateConstraintSwitch: (switch %s) %s savedRequires:"
-			"%s savedEnsures:%s",
-			exprNode_unparse(switchExpr), exprNode_unparse(body),
-			constraintList_unparse(*savedRequires), constraintList_unparse(*savedEnsures)
-			)));
-
+      DPRINTF (("exprNode_doGenerateConstraintSwitch: (switch %s) %s savedRequires:"
+		"%s savedEnsures:%s",
+		exprNode_unparse(switchExpr), exprNode_unparse(body),
+		constraintList_unparse(*savedRequires), constraintList_unparse(*savedEnsures)
+		));
     }
-
-  else if (exprNode_isCaseMarker(stmt))
-    /* prior case has no break. */
+  else if (exprNode_isCaseMarker(stmt)) /* prior case has no break. */
     {
       /* 
 	 We don't do anything to the sved constraints because the case hasn't ended
@@ -708,38 +703,28 @@ exprNode_doGenerateConstraintSwitch
       
       constraintList temp;
       constraint con;
-
       constraintList ensuresTemp;
 
-      DPRINTF ((message("Got case marker with no prior break")));
-
-      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle
-					(stmt->edata), exprNode_getfileloc(stmt));
-
-      ensuresTemp = constraintList_makeNew();
-
+      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle (stmt->edata), exprNode_loc (stmt));
+      
+      ensuresTemp = constraintList_makeNew ();
       ensuresTemp = constraintList_add (ensuresTemp, con);
 
-      if (exprNode_isError(stmtList))
+      if (exprNode_isError (stmtList))
 	{
-	  constraintList_free(*currentEnsures);
-
-	  *currentEnsures = constraintList_copy(ensuresTemp);
-	  constraintList_free(ensuresTemp);
-
+	  constraintList_free (*currentEnsures);
+	  *currentEnsures = constraintList_copy (ensuresTemp);
+	  constraintList_free (ensuresTemp);
 	}
       else
 	{
-	  
 	  temp = constraintList_logicalOr (*currentEnsures, ensuresTemp);
-	  
-	  constraintList_free(*currentEnsures);
-	  constraintList_free(ensuresTemp);
-
+	  constraintList_free (*currentEnsures);
+	  constraintList_free (ensuresTemp);
 	  *currentEnsures = temp;
 	}
-      constraintList_free(*currentRequires);
-      
+
+      constraintList_free (*currentRequires);
       *currentRequires = constraintList_makeNew();
     }
   else
@@ -751,11 +736,12 @@ exprNode_doGenerateConstraintSwitch
       BADEXIT;
     }
 
-  DPRINTF((message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
-		    "%s currentEnsures:%s",
-		    exprNode_unparse(switchExpr), exprNode_unparse(body),
-		    constraintList_unparse(*currentRequires), constraintList_unparse(*currentEnsures)
-		   )));
+  DPRINTF (("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
+	    "%s currentEnsures:%s",
+	    exprNode_unparse(switchExpr), exprNode_unparse(body),
+	    constraintList_unparse(*currentRequires), constraintList_unparse(*currentEnsures)
+	    ));
+
   /*@-onlytrans@*/ 
   return;
   /*@=onlytrans@*/ 

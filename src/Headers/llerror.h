@@ -78,7 +78,7 @@ extern void llhint (/*@only@*/ cstring p_s)
    /*@globals g_currentloc, g_warningstream;@*/ 
    /*@modifies g_warningstream@*/ ;
 
-extern /*@private@*/ /*@noreturn@*/ void 
+extern /*:private:*/ /*@noreturn@*/ void 
 xllfatalbug (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/
    /*@modifies g_errorstream@*/ ;
@@ -90,7 +90,7 @@ extern /*@noreturn@*/ void llfatalbug (/*@only@*/ cstring p_s)
 # define llfatalbug(p_s) \
      xllfatalbug (__FILE__, __LINE__, p_s)
 
-extern /*@private@*/ bool xllgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
+extern /*:private:*/ bool xllgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
 				       /*@only@*/ cstring p_s, fileloc p_fl)
      /*@modifies g_warningstream@*/ ;
 
@@ -99,7 +99,7 @@ extern bool llgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_fl)
 # define llgenerror(p_o, p_s, p_fl) \
      xllgenerror (__FILE__, __LINE__, p_o, p_s, p_fl)
 
-extern /*@private@*/ bool 
+extern /*:private:*/ bool 
    xllgenhinterror (char *p_srcFile, int p_srcLine,
 		    flagcode p_o, /*@only@*/ cstring p_s, /*@only@*/ cstring p_hint, 
 		    fileloc p_fl) 
@@ -121,7 +121,7 @@ extern void llerror (flagcode p_o, /*@only@*/ cstring p_s)
 extern void llgenmsg (/*@only@*/ cstring p_s, fileloc p_fl)
    /*@modifies g_warningstream@*/ ;
 
-extern /*@noreturn@*/ /*@private@*/ 
+extern /*@noreturn@*/ /*:private:*/ 
 void xllfatalerror (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s) 
    /*@modifies g_errorstream@*/ ;
 
@@ -129,7 +129,7 @@ extern /*@noreturn@*/ void llfatalerror (/*@only@*/ cstring p_s)
    /*@modifies g_errorstream@*/ ;
 # define llfatalerror(p_s) xllfatalerror (__FILE__, __LINE__, p_s)
 
-extern /*@noreturn@*/ /*@private@*/ void 
+extern /*@noreturn@*/ /*:private:*/ void 
 xllfatalerrorLoc (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/ 
    /*@modifies g_errorstream@*/ ;
@@ -139,7 +139,7 @@ extern /*@noreturn@*/ void llfatalerrorLoc (/*@only@*/ cstring p_s)
    /*@modifies g_errorstream@*/ ;
 # define llfatalerrorLoc(p_s) xllfatalerrorLoc (__FILE__, __LINE__, p_s)
 
-extern /*@private@*/ void
+extern /*:private:*/ void
    xllparseerror (char *p_srcFile, int p_srcLine, /*@only@*/ cstring p_s)
    /*@globals g_currentloc@*/
    /*@modifies g_warningstream@*/ ;
@@ -234,7 +234,7 @@ optgenerror2n (flagcode p_f1, flagcode p_f2, /*@only@*/ cstring p_s, fileloc p_l
 # define optgenerror2n(p_f1, p_f2, p_s, p_loc) \
   (xoptgenerror2n (__FILE__, __LINE__, p_f1, p_f2, p_s, p_loc))
 
-extern /*@private@*/ bool xlloptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
+extern /*:private:*/ bool xlloptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
   /*@modifies *g_warningstream, internalState@*/ ;
 
 extern bool lloptgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
@@ -251,7 +251,7 @@ extern bool llnoptgenerror (flagcode p_o, /*@only@*/ cstring p_s, fileloc p_loc)
 # define llnoptgenerror(p_o, p_s, p_loc) \
    (xllnoptgenerror (__FILE__, __LINE__, p_o, p_s, p_loc))
 
-extern /*@private@*/ bool 
+extern /*:private:*/ bool 
    xllgenformattypeerror (char *p_srcFile, int p_srcLine,
 			  ctype p_t1, exprNode p_e1, 
 			  ctype p_t2, exprNode p_e2,
@@ -317,7 +317,7 @@ extern void
   /*@modifies *g_warningstream, internalState@*/ ;
 #define voptgenerror(o, s, loc)   ((void) optgenerror(o,s,loc))
 
-extern /*@private@*/ bool 
+extern /*:private:*/ bool 
   xfsgenerror (char *p_srcFile, int p_srcLine,
 		flagSpec p_fs, /*@only@*/ cstring p_s, fileloc p_fl) 
      /*@modifies g_warningstream, internalState@*/ ;
@@ -373,7 +373,7 @@ extern void
     ((void) llgenhinterror(o, s, h, loc))
 
 
-extern /*@private@*/ bool /*@alt void@*/ xllforceerror (char *p_srcFile, int p_srcLine, flagcode p_code, /*@only@*/ cstring p_s, fileloc p_fl) 
+extern /*:private:*/ bool /*@alt void@*/ xllforceerror (char *p_srcFile, int p_srcLine, flagcode p_code, /*@only@*/ cstring p_s, fileloc p_fl) 
      /*@modifies g_warningstream@*/ ; 
 
 extern bool /*@alt void@*/ llforceerror (flagcode p_code, /*@only@*/ cstring p_s, fileloc p_fl) 
@@ -381,7 +381,7 @@ extern bool /*@alt void@*/ llforceerror (flagcode p_code, /*@only@*/ cstring p_s
 # define llforceerror(p_code, p_s, p_fl) \
      (xllforceerror (__FILE__, __LINE__, p_code, p_s, p_fl))
 
-extern /*@private@*/ bool xcppoptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
+extern /*:private:*/ bool xcppoptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
 			     /*@only@*/ cstring p_s, cppReader *p_pfile)
      /*@modifies g_warningstream, p_pfile@*/ ;
 

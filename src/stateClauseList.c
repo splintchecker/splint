@@ -297,7 +297,7 @@ void stateClauseList_checkAll (uentry ue)
 				    stateClause_unparse (cl)),
 			   uentry_whereLast (ue)))
 			{
-			  /*@i! annotationInfo_showContextError (ainfo, ue); */
+			  /* annotationInfo_showContextError (ainfo, ue); */
 			}
 		    }
 		}

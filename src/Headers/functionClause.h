@@ -10,7 +10,7 @@
 # ifndef FUNCTIONCLAUSE_H
 # define FUNCTIONCLAUSE_H
 
-/*@private@*/ typedef enum { 
+/*:private:*/ typedef enum { 
   FCK_GLOBALS,
   FCK_MODIFIES,
   FCK_WARN,

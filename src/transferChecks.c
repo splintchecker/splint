@@ -4017,7 +4017,6 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 	  }
 	else
 	  {
-	    /*@i#!@!!@*/
 	    DPRINTF (("Cannot find meta state for: %s / to: %s / %s", sRef_unparseFull (fref),
 		      sRef_unparseFull (tref),
 		      fkey));
@@ -4176,7 +4175,6 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	  }
 	else
 	  {
-	    /*@i#!@!!@*/
 	    DPRINTF (("Metastate transfer: %s => %s",
 		      exprNode_unparse (fexp), exprNode_unparse (texp)));
 	    DPRINTF (("Cannot find meta state for: %s / to: %s / %s", sRef_unparseFull (fref),

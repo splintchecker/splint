@@ -83,7 +83,6 @@ version:
 
 help:
 	-@$(SPLINT)
-	-@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
 	-@$(SPLINT) -help
 	-@$(SPLINTP) -asdf
 	-@$(SPLINTP) +boolint +boolint 

@@ -83,7 +83,7 @@ extern /*@only@*/ constraintList constraintList_makeFixedArrayConstraints ( /*@o
 extern void constraintList_printErrorPostConditions (constraintList p_s, fileloc p_loc) ;
 extern void constraintList_printError (constraintList p_s, /*@observer@*/ fileloc p_loc) ;
 
-extern constraintList constraintList_sort (/*@returned@*/ constraintList p_ret) /*@modifes p_ref@*/ ;
+extern constraintList constraintList_sort (/*@returned@*/ constraintList p_ret) /*@modifies p_ret@*/ ;
 
 void constraintList_dump (/*@observer@*/ constraintList p_c,  FILE * p_f);
 

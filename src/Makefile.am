@@ -397,7 +397,7 @@ etags:
 lintnew: splintme
 
 splintme: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude  $(OVERFLOWCHSRC) $(LINTSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude  $(OVERFLOWCHSRC) $(LINTSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw -mts tainted
 
 splintmesupcounts: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude  $(OVERFLOWCHSRC) $(LINTSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments  -fcnuse -incondefs -exportlocal -supcounts -constuse -mts file -mts filerw 

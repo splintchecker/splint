@@ -42,10 +42,11 @@
 static void printIndentMessage (FILE *p_stream, /*@only@*/ cstring p_sc, int p_indent)
    /*@modifies *p_stream@*/ ;
 
-static int lclerrors = 0;
-static size_t lastfileloclen = 10;
-static /*@only@*/ cstring lastmsg = cstring_undefined;
-static int mcount = 0;
+static bool s_scanOpen = FALSE;
+static int s_lclerrors = 0;
+static size_t s_lastfileloclen = 10;
+static /*@only@*/ cstring s_lastmsg = cstring_undefined;
+static int s_mcount = 0;
 static /*@only@*/ cstring saveOneMessage = cstring_undefined;
 static /*@only@*/ fileloc lastparseerror = fileloc_undefined;
 static /*@only@*/ fileloc lastbug = fileloc_undefined;
@@ -65,7 +66,7 @@ static void generateCSV (flagcode p_code, cstring p_s, cstring p_addtext, filelo
      /*@modifies g_csvstream@*/ ;
 
 static void printError (FILE *p_stream, /*@only@*/ cstring p_sc)
-   /*@globals lastfileloclen @*/
+   /*@globals s_lastfileloclen @*/
    /*@modifies *p_stream@*/ ;
 static void printMessage (FILE *p_stream, /*@only@*/ cstring p_s)
    /*@modifies *p_stream@*/ ;
@@ -240,7 +241,7 @@ llsuppresshint2 (char c, flagcode f1, flagcode f2)
 	{
 	  cstring desc = flagcodeHint (f1);
 	  context_setNeednl ();
-	  lastfileloclen = 8;
+	  s_lastfileloclen = 8;
 
 	  if (cstring_isUndefined (desc))
 	    {
@@ -301,7 +302,7 @@ llsuppresshint (char c, flagcode f)
 	{
 	  cstring desc = flagcodeHint (f);
 	  context_setNeednl ();
-	  lastfileloclen = 8;
+	  s_lastfileloclen = 8;
 
 	  if (flagcode_isNamePrefixFlag (f))
 	    {
@@ -329,7 +330,7 @@ llnosuppresshint (flagcode f)
     {
       cstring desc = flagcodeHint (f);
       context_setNeednl ();
-      lastfileloclen = 8;
+      s_lastfileloclen = 8;
 
       if (cstring_isDefined (desc))
 	{
@@ -345,6 +346,17 @@ llnosuppresshint (flagcode f)
 # define MINLINE 35
 
 typedef /*@null@*/ /*@dependent@*/ char *nd_charp;
+
+/*
+** mstring_split
+**
+** Divides a string into lines of up to maxline characters.
+**
+** Initial string: *sp
+**
+** Output split: *sp / *tp
+**                     possibly null
+*/
 
 static void
 mstring_split (/*@returned@*/ char **sp,
@@ -371,8 +383,6 @@ mstring_split (/*@returned@*/ char **sp,
       osp = s;
     }
 
-  nl = strchr (s, '\n');
-
   /*
   ** splitting:
   **
@@ -388,6 +398,8 @@ mstring_split (/*@returned@*/ char **sp,
   **    special code: slash [1-9] after a newline means indent the rest <n> chars
   **
   */
+
+  nl = strchr (s, '\n');
 
   if ((nl != NULL) && ((nl - s) < maxline))
     {
@@ -411,7 +423,7 @@ mstring_split (/*@returned@*/ char **sp,
     }
   else if (size_toInt (strlen (s)) < maxline)
     {
-      llassertprotect (*tp == NULL || (*tp > osp));
+      llassertprotect (*tp == NULL);
       return;
     }
   else
@@ -467,7 +479,11 @@ mstring_split (/*@returned@*/ char **sp,
 	    }
 	}
       
-      while (*t != ' ' && *t != '\t' && i < MAXSEARCH)
+      /*
+      ** Search for any breaking point (at least 4 letters past s)
+      */
+
+      while (*t != ' ' && *t != '\t' && i < MAXSEARCH && t > (s + 4))
 	{
 	  t--;
 	  i++;
@@ -505,16 +521,7 @@ mstring_split (/*@returned@*/ char **sp,
 
 	  *tp = t;
 
-# if 0
-	  /* Hack to prevent error case for wierd strings. */
-	  if (t <= osp)
-	    {
-	      *tp = NULL;
-	      return;
-	    }
-	  llassertprotect (*tp == NULL || (*tp > osp));
-# endif	  
-
+	  llassert (*sp != *tp);
 	  return;
 	}
     }
@@ -525,7 +532,7 @@ mstring_split (/*@returned@*/ char **sp,
 static
 void limitmessage (/*@only@*/ cstring s, fileloc loc)
 {
-  if (mcount > context_getLimit () + 1)
+  if (s_mcount > context_getLimit () + 1)
     {
       cstring_free (s);
     }
@@ -533,7 +540,7 @@ void limitmessage (/*@only@*/ cstring s, fileloc loc)
     {
       cstring flstring = fileloc_unparse (loc);
 
-      lastfileloclen = cstring_length (flstring);
+      s_lastfileloclen = cstring_length (flstring);
       cstring_free (saveOneMessage);
       saveOneMessage = message ("%q: %q", flstring, s);
     }
@@ -551,7 +558,7 @@ void cleanupMessages ()
     }
   else
     {
-      int unprinted = mcount - context_getLimit ();
+      int unprinted = s_mcount - context_getLimit ();
 
       if (unprinted > 0)
 	{
@@ -572,19 +579,19 @@ void cleanupMessages ()
 
 	      fprintf (g_warningstream, "%s: (%d more similar errors unprinted)\n",
 		       cstring_toCharsSafe (fileloc_filename (g_currentloc)),
-		       mcount - context_getLimit ());
+		       s_mcount - context_getLimit ());
 	    }
 	}
     }
 
-  mcount = 0;
+  s_mcount = 0;
 }
 
 void
 llgenmsg (/*@only@*/ cstring s, fileloc fl)
 {
   cstring flstring = fileloc_unparse (fl);
-  lastfileloclen = cstring_length (flstring);
+  s_lastfileloclen = cstring_length (flstring);
 
   prepareMessage ();
   (void) printError (g_warningstream, message ("%q: %q", flstring, s));
@@ -1121,16 +1128,16 @@ llgenerrorreal (flagcode code, char *srcFile, int srcLine,
 	  *savechar = ':';
 	}
 
-      if (cstring_equal (lastmsg, cstring_fromChars (tmpmsg)))
+      if (cstring_equal (s_lastmsg, cstring_fromChars (tmpmsg)))
 	{
-	  mcount++;
-	  if (mcount == (context_getLimit () + 1))
+	  s_mcount++;
+	  if (s_mcount == (context_getLimit () + 1))
 	    {
 	      limitmessage (s, fl);
 	      return FALSE;
 	    }
 
-	  if (mcount > (context_getLimit ()))
+	  if (s_mcount > (context_getLimit ()))
 	    {
 	      cstring_free (s);
 	      return FALSE;
@@ -1139,9 +1146,9 @@ llgenerrorreal (flagcode code, char *srcFile, int srcLine,
       else
 	{
 	  cleanupMessages ();
-	  mcount = 0;
-	  cstring_free (lastmsg);
-	  lastmsg = cstring_fromCharsNew (tmpmsg);
+	  s_mcount = 0;
+	  cstring_free (s_lastmsg);
+	  s_lastmsg = cstring_fromCharsNew (tmpmsg);
 	}
     }
 
@@ -1230,7 +1237,7 @@ llgenerrorreal (flagcode code, char *srcFile, int srcLine,
     }
 
   flstring = fileloc_unparse (fl);
-  lastfileloclen = cstring_length (flstring);
+  s_lastfileloclen = cstring_length (flstring);
 
   generateCSV (code, s, addtext, fl);
 
@@ -1296,7 +1303,7 @@ static
 void printError (FILE *stream, /*@only@*/ cstring sc)
 {
   int maxlen = context_getLineLen ();
-  size_t nspaces = lastfileloclen + 5;
+  size_t nspaces = s_lastfileloclen + 5;
   int nextlen = maxlen - size_toInt (nspaces);
   size_t len = cstring_length (sc);
   int indent = 0;
@@ -1566,7 +1573,7 @@ xllfatalerrorLoc (char *srcFile, int srcLine, /*@only@*/ cstring s)
 bool
 lclHadError (void)
 {
-  return (lclerrors > 0);
+  return (s_lclerrors > 0);
 }
 
 bool
@@ -1574,9 +1581,9 @@ lclHadNewError (void)
 {
   static int lastcall = 0;
 
-  if (lclerrors > lastcall)
+  if (s_lclerrors > lastcall)
     {
-      lastcall = lclerrors;
+      lastcall = s_lclerrors;
       return TRUE;
     }
   else
@@ -1588,18 +1595,18 @@ lclHadNewError (void)
 int
 lclNumberErrors (void)
 {
-  return (lclerrors);
+  return (s_lclerrors);
 }
 
 void
 xlclerror (char *srcFile, int srcLine, ltoken t, /*@only@*/ cstring msg)
 {
-  lclerrors++;
+  s_lclerrors++;
 
   if (ltoken_getCode (t) != NOTTOKEN)
     {
       cstring loc = ltoken_unparseLoc (t);
-      lastfileloclen = cstring_length (loc);
+      s_lastfileloclen = cstring_length (loc);
 
       printError (g_warningstream, message ("%q: %q", loc, msg));
       showSourceLoc (srcFile, srcLine);
@@ -1614,7 +1621,7 @@ xlclerror (char *srcFile, int srcLine, ltoken t, /*@only@*/ cstring msg)
 void
 lclplainerror (/*@only@*/ cstring msg)
 {
-  lclerrors++;
+  s_lclerrors++;
   printError (g_warningstream, msg);
 }
 
@@ -1624,7 +1631,7 @@ lclfatalerror (ltoken t, /*@only@*/ cstring msg)
   if (ltoken_getCode (t) != NOTTOKEN)
     {
       cstring loc = ltoken_unparseLoc (t);
-      lastfileloclen = cstring_length (loc);
+      s_lastfileloclen = cstring_length (loc);
       printError (g_errorstream, message ("%q: %q", loc, msg));
     }
   else
@@ -1675,7 +1682,7 @@ void genppllerror (flagcode code, /*@only@*/ cstring s)
     {
       if (context_getFlag (code))
 	{
-	  if (!context_isInCommandLine ())
+	  if (s_scanOpen)
 	    {
 	      displayScanClose ();
 	    }
@@ -1736,7 +1743,11 @@ void pplldiagmsg (cstring s)
 {
   if (!context_isInCommandLine ())
     {
-      displayScanClose ();
+      if (s_scanOpen) 
+	{
+	  displayScanClose ();
+	}
+
       lldiagmsg (s);
       displayScanOpen (cstring_makeLiteral ("< more preprocessing ."));
     }
@@ -2045,8 +2056,6 @@ void llflush (void)
   (void) fflush (g_warningstream);
   (void) fflush (g_messagestream);
 }
-
-static bool s_scanOpen = FALSE;
 
 void displayScan (cstring msg)
 {

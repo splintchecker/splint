@@ -10,7 +10,7 @@
 # ifndef MTDECLARATIONPIECE_H
 # define MTDECLARATIONPIECE_H
 
-/*@private@*/ typedef enum { 
+/*:private:*/ typedef enum { 
   MTP_DEAD,
   MTP_CONTEXT, MTP_VALUES, MTP_DEFAULTS, MTP_DEFAULTVALUE,
   MTP_ANNOTATIONS, MTP_MERGE,

@@ -5,7 +5,9 @@
 
 # ifdef WIN32
 /* Microsoft doesn't support ISO C99 yet */
+/*@-namechecks@*/
 typedef int bool; 
+/*@=namechecks@*/
 # endif
 
 abst_typedef /*@null@*/ struct s_sRef *sRef;
@@ -82,7 +84,7 @@ abst_typedef /*@null@*/ ctypeList fileIdList;
 
 abst_typedef /*@null@*/ struct s_constraintExpr *constraintExpr;
 
-abst_typedef /*@untainted@*/ /*@null@*/ char *cstring;
+abst_typedef /*@null@*/ char *cstring;
 typedef /*@only@*/ cstring o_cstring;
 
 abst_typedef /*@null@*/ struct s_cstringSList *cstringSList;

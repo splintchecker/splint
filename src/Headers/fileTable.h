@@ -20,7 +20,7 @@
 typedef enum { FILE_NORMAL, FILE_LSLTEMP, FILE_NODELETE,
 	       FILE_HEADER, FILE_XH, FILE_MACROS, FILE_METASTATE } fileType;
 
-/*@private@*/ typedef struct
+/*:private:*/ typedef struct
 {
   bool     ftemp     BOOLBITS;
   bool     fsystem   BOOLBITS;

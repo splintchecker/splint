@@ -2925,7 +2925,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 		      uentry_unparse (le)));
       
       params = ctype_argsFunction (ct);
-      return; /*@32 ! remove this? */
+      return; /* No checking for non-function */
     }
 
   /*
@@ -11438,29 +11438,20 @@ static void checkUniqueParams (exprNode fcn,
     } end_exprNodeList_elements;
 }
 
-long exprNode_getLongValue (exprNode e) {
+long exprNode_getLongValue (exprNode e) 
+{
   long value;
-
-  if (exprNode_hasValue (e) 
-      && multiVal_isInt (exprNode_getValue (e)))
+  
+  if (exprNode_hasValue (e) && multiVal_isInt (exprNode_getValue (e)))
     {
       value = multiVal_forceInt (exprNode_getValue (e));
     }
   else
     {
-      /*@!! BADBRANCH;*/
-      value = 0;
+      value = 0; /* Unknown value */
     }
   
   return value;
-}
-
-/*@observer@*/ fileloc exprNode_getfileloc (exprNode p_e)
-{
-  if (exprNode_isDefined (p_e) )
-    return ( p_e->loc );
-  else
-    return fileloc_undefined;
 }
 
 /*@only@*/ fileloc exprNode_getNextSequencePoint (exprNode e)

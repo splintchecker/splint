@@ -135,8 +135,8 @@ extern int /*pid_t*/ osd_getPid (void) ;
 ** full path name.							
 */
 
-# define    CONNECTSTR	":"
-# define    CONNECTCHAR	':'
+# define CONNECTSTR	":"
+# define CONNECTCHAR	':'
 
 /* Directory separator character for search list. */
 /*@constant static char PATH_SEPARATOR; @*/

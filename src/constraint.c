@@ -256,31 +256,22 @@ constraint constraint_setFcnPre (/*@returned@*/ constraint c)
 
 fileloc constraint_getFileloc (constraint c)
 {
- 
   llassert (constraint_isDefined (c) );
  
   if (exprNode_isDefined (c->generatingExpr))
-    return (fileloc_copy (exprNode_getfileloc (c->generatingExpr)));
+    return (fileloc_copy (exprNode_loc (c->generatingExpr)));
   
   return (constraintExpr_getFileloc (c->lexpr));
-  
-
 }
 
 static bool checkForMaxSet (constraint c)
-{
-  
-  llassert (constraint_isDefined (c) );
- 
-  if (constraintExpr_hasMaxSet (c->lexpr) || constraintExpr_hasMaxSet (c->expr))
-    return TRUE;
-
-  return FALSE;
+{  
+  llassert (constraint_isDefined (c));
+  return (constraintExpr_hasMaxSet (c->lexpr) || constraintExpr_hasMaxSet (c->expr));
 }
 
 bool constraint_hasMaxSet (constraint c)
 {
-  
   llassert (constraint_isDefined (c) );
  
   if (checkForMaxSet (c))
@@ -302,47 +293,44 @@ constraint constraint_makeReadSafeExprNode (exprNode po, exprNode ind)
   po = po;
   ind = ind;
   ret->lexpr = constraintExpr_makeMaxReadExpr (po);
-  ret->ar    = GTE;
-  ret->expr  = constraintExpr_makeValueExpr (ind);
+  ret->ar = GTE;
+  ret->expr = constraintExpr_makeValueExpr (ind);
   ret->post = FALSE;
   return ret;
 }
 
-constraint constraint_makeWriteSafeInt (   exprNode po, int ind)
+constraint constraint_makeWriteSafeInt (exprNode po, int ind)
 {
   constraint ret = constraint_makeNew ();
- 
   ret->lexpr =constraintExpr_makeMaxSetExpr (po);
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
-  /*@i1*/return ret;
+  /*@i1*/ return ret;
 }
 
 constraint constraint_makeSRefSetBufferSize (sRef s, long int size)
 {
- constraint ret = constraint_makeNew ();
- ret->lexpr = constraintExpr_makeSRefMaxset (s);
- ret->ar = EQ;
- ret->expr =  constraintExpr_makeIntLiteral ((int)size);
- ret->post = TRUE;
- return ret;
+  constraint ret = constraint_makeNew ();
+  ret->lexpr = constraintExpr_makeSRefMaxset (s);
+  ret->ar = EQ;
+  ret->expr =  constraintExpr_makeIntLiteral ((int)size);
+  ret->post = TRUE;
+  return ret;
 }
 
 constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
 {
   constraint ret = constraint_makeNew ();
-
- 
   ret->lexpr = constraintExpr_makeSRefMaxset ( s);
   ret->ar = GTE;
-  ret->expr =  constraintExpr_makeIntLiteral (ind);
+  ret->expr = constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
   return ret;
 }
 
 /* drl added 01/12/2000
-   
-  makes the constraint: Ensures index <= MaxRead (buffer) */
+** makes the constraint: Ensures index <= MaxRead (buffer) 
+*/
 
 constraint constraint_makeEnsureLteMaxRead (exprNode index, exprNode buffer)
 {
@@ -358,7 +346,6 @@ constraint constraint_makeEnsureLteMaxRead (exprNode index, exprNode buffer)
 constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew ();
-
  
   ret->lexpr =constraintExpr_makeMaxSetExpr (po);
   ret->ar = GTE;
@@ -367,13 +354,13 @@ constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
 }
 
 
-constraint constraint_makeReadSafeInt ( exprNode t1, int index)
+constraint constraint_makeReadSafeInt (exprNode t1, int index)
 {
   constraint ret = constraint_makeNew ();
 
   ret->lexpr = constraintExpr_makeMaxReadExpr (t1);
-  ret->ar    = GTE;
-  ret->expr  = constraintExpr_makeIntLiteral (index);
+  ret->ar = GTE;
+  ret->expr = constraintExpr_makeIntLiteral (index);
   ret->post = FALSE;
   return ret;
 }
@@ -381,8 +368,7 @@ constraint constraint_makeReadSafeInt ( exprNode t1, int index)
 constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
 {
   constraint ret = constraint_makeNew ();
-
- 
+  
   ret->lexpr = constraintExpr_makeSRefMaxRead (s);
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
@@ -392,10 +378,8 @@ constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
 
 constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, fileloc sequencePoint)
 {
-  constraint ret;
-  
-  ret = constraint_makeReadSafeExprNode (t1, t2);   
-  llassert (constraint_isDefined (ret) );
+  constraint ret = constraint_makeReadSafeExprNode (t1, t2);   
+  llassert (constraint_isDefined (ret));
  
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);  
   ret->post = TRUE;  
@@ -403,56 +387,46 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, filelo
   return ret;
 }
 
-static constraint constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintExpr c1, /*@only@*/ constraintExpr c2, fileloc sequencePoint,  arithType  ar)
+static constraint 
+constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintExpr c1, /*@only@*/ constraintExpr c2, 
+					fileloc sequencePoint, arithType ar)
 {
-
-  constraint ret;
-  
+  constraint ret = constraint_makeNew ();
   llassert (constraintExpr_isDefined (c1) && constraintExpr_isDefined (c2));
-
-  ret = constraint_makeNew ();
-  
   ret->lexpr = c1;
   ret->ar = ar;
   ret->post = TRUE;
-  ret->expr =  c2;
+  ret->expr = c2;
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
   return ret;
 }
 
-static constraint constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@dependent@*/ exprNode e2, fileloc sequencePoint,  arithType  ar)
+static constraint 
+constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@dependent@*/ exprNode e2, 
+			  fileloc sequencePoint, arithType ar)
 {
   constraintExpr c1, c2;
-  constraint ret;
-  exprNode e;
-
-  if (! (exprNode_isDefined (e1) && exprNode_isDefined (e2)))
+  
+  if (!(exprNode_isDefined (e1) && exprNode_isDefined (e2)))
     {
-      llcontbug ((message ("null exprNode, Exprnodes are %s and %s",
-		       exprNode_unparse (e1), exprNode_unparse (e2))
-		));
+      llcontbug (message ("Invalid exprNode, Exprnodes are %s and %s",
+			  exprNode_unparse (e1), exprNode_unparse (e2)));
     }
-
-  e  =  e1;
-  c1 =  constraintExpr_makeValueExpr (e);
   
-  e  =  e2;
-  c2 =  constraintExpr_makeValueExpr (e);
+  c1 = constraintExpr_makeValueExpr (e1);
+  c2 = constraintExpr_makeValueExpr (e2);
 
-  ret = constraint_makeEnsuresOpConstraintExpr (c1, c2, sequencePoint, ar);
-  
-  return ret;
+  return constraint_makeEnsuresOpConstraintExpr (c1, c2, sequencePoint, ar);
 }
-
 
 /* make constraint ensures e1 == e2 */
 
 constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
-  return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
+  return (constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
 }
 
-/*make constraint ensures e1 < e2 */
+/* make constraint ensures e1 < e2 */
 constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
   constraintExpr t1, t2;
@@ -461,19 +435,17 @@ constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequ
   t1 = constraintExpr_makeValueExpr (e1);
   t2 = constraintExpr_makeValueExpr (e2);
 
-  /*change this to e1 <= (e2 -1) */
+  /* change this to e1 <= (e2 -1) */
 
   t2 = constraintExpr_makeDecConstraintExpr (t2);
-
-  t3 =  constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, LTE);
-
-  t3 = constraint_simplify(t3);
+  t3 = constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, LTE);
+  t3 = constraint_simplify (t3);
   return (t3);
 }
 
 constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
- return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, LTE));
+  return (constraint_makeEnsuresOp (e1, e2, sequencePoint, LTE));
 }
 
 constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint)
@@ -484,12 +456,10 @@ constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc s
   t1 = constraintExpr_makeValueExpr (e1);
   t2 = constraintExpr_makeValueExpr (e2);
 
-
   /* change this to e1 >= (e2 + 1) */
   t2 = constraintExpr_makeIncConstraintExpr (t2);
   
   t3 =  constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, GTE);
-
   t3 = constraint_simplify(t3);
   
   return t3;
@@ -817,7 +787,7 @@ static /*@only@*/ cstring  constraint_unparseDetailedPostCondition (/*@observer@
       cstring temp;
 
       temp = message ("\nOriginal Generating expression %q: %s\n", 
-		      fileloc_unparse ( exprNode_getfileloc (c->generatingExpr)),
+		      fileloc_unparse (exprNode_loc (c->generatingExpr)),
 		      genExpr);
       st = cstring_concatFree (st, temp);
 

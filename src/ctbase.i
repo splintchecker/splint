@@ -40,7 +40,7 @@ abst_typedef /*@null@*/ struct s_ctbase *ctbase;
    ((cid) == CT_ABST || (cid) == CT_USER || (cid) == CT_NUMABST)
 /*@=macrofcndecl@*/ /*@=macroparams@*/
 
-/*@private@*/ typedef struct {
+/*:private:*/ typedef struct {
   ctkind kind;
   ctbase ctbase; 
   ctype base;     /* type I point to (or element of array) */

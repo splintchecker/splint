@@ -7,7 +7,7 @@
 # ifndef FUNCTIONCLAUSELIST_H
 # define FUNCTIONCLAUSELIST_H
 
-/*@private@*/ typedef /*@only@*/ functionClause o_functionClause;
+/*:private:*/ typedef /*@only@*/ functionClause o_functionClause;
 
 struct s_functionClauseList
 {

@@ -7,7 +7,7 @@
 # ifndef mtDefaultsDeclLIST_H
 # define mtDefaultsDeclLIST_H
 
-/*@private@*/ typedef /*@only@*/ mtDefaultsDecl o_mtDefaultsDecl;
+/*:private:*/ typedef /*@only@*/ mtDefaultsDecl o_mtDefaultsDecl;
 
 struct s_mtDefaultsDeclList
 {

@@ -747,9 +747,7 @@ bool cscannerHelp_handleSpecial (char *yyt)
 	}
 
       llassert (*tmp == '\"');
-
       tmp++;
-
       fname = tmp;
       
       while (*tmp != '\"' && *tmp != '\0')
@@ -758,7 +756,6 @@ bool cscannerHelp_handleSpecial (char *yyt)
 	}
 
       llassert (*tmp == '\"');
-
       *tmp = '\0';
 
 # if defined(OS2) || defined(MSDOS) || defined(WIN32)

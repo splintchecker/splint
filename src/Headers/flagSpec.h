@@ -10,7 +10,7 @@
 # ifndef flagSpec_H
 # define flagSpec_H
 
-/*@private@*/ typedef struct
+/*:private:*/ typedef struct
 {
   cstring name;
   flagcode code; 

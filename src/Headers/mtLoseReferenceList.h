@@ -7,7 +7,7 @@
 # ifndef MTLoseReferenceLIST_H
 # define MTLoseReferenceLIST_H
 
-/*@private@*/ typedef /*@only@*/ mtLoseReference o_mtLoseReference;
+/*:private:*/ typedef /*@only@*/ mtLoseReference o_mtLoseReference;
 
 struct s_mtLoseReferenceList
 {

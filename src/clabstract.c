@@ -505,42 +505,43 @@ The current semantics are generated constraints of the form MaxSet(p) >= 0 and M
 unless the @out@ annotation has been applied to a parameter, then we only want to generate maxSet(p) > = 0
 */
 
-void  setImplictfcnConstraints (void)
+void setImplictfcnConstraints (void)
 {
   uentryList params;
   sRef s;
   constraint c;
   params = currentParamList;
 
-  if (constraintList_isDefined(implicitFcnConstraints) )
-    constraintList_free(implicitFcnConstraints);
+  if (constraintList_isDefined (implicitFcnConstraints))
+    {
+      constraintList_free (implicitFcnConstraints);
+    }
   
-  implicitFcnConstraints  = constraintList_makeNew();
+  implicitFcnConstraints = constraintList_makeNew();
   
   uentryList_elements (params, el)
     {
-      DPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
+      DPRINTF (("setImplictfcnConstraints doing: %s", uentry_unparse(el)));
       
-      if ( uentry_isVariable (el) )
+      if (uentry_isVariable (el))
 	{
 	  s = uentry_getSref(el);
-	  if (sRef_isReference (s) )
+	  
+	  if (sRef_isReference (s))
 	    {
-	      
 	      DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
 	      /*drl 4/26/01
 		chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 */
 	      c = constraint_makeSRefWriteSafeInt (s, 0);
 	      
-	      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+	      implicitFcnConstraints = constraintList_add (implicitFcnConstraints , c);
 	      
 	      /*drl 10/23/2002 added support for out*/
-
-	      if (!uentry_isOut(el) )
+	      
+	      if (!uentry_isOut(el))
 		{
 		  c = constraint_makeSRefReadSafeInt (s, 0);
-		  
-		  implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+		  implicitFcnConstraints = constraintList_add (implicitFcnConstraints , c);
 		}
 	    }
 	  else
@@ -548,31 +549,24 @@ void  setImplictfcnConstraints (void)
 	      DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
 	    }
 	} /*end uentry_isVariable*/
-
       else if (uentry_isElipsisMarker (el) )      
 	{
-	  /*just ignore these*/
+	  /* just ignore these*/
 	  ;
 	}
       
       else
 	{
-	  /*just ignore this
-	    I'm not sure if this is possible though
+	  /* just ignore this
+	     I'm not sure if this is possible though
 	  */
-	  /*@warning take this out befor@*/
-	  llassert(FALSE);
+	  ;
 	}
-    }
-  
-  end_uentryList_elements;
-  DPRINTF((message("implicitFcnConstraints has been set to %s\n",
-		   constraintList_print(implicitFcnConstraints) ) ));
-  
+    } end_uentryList_elements;
 }
 
 
-/*@observer@*/ constraintList  getImplicitFcnConstraints (void)
+/*@observer@*/ constraintList getImplicitFcnConstraints (void)
 {
   return implicitFcnConstraints;
 }
@@ -584,7 +578,7 @@ void setCurrentParams (/*@dependent@*/ uentryList ue)
 
 void clearCurrentParams (void)
 {
-    currentParamList = uentryList_undefined;
+  currentParamList = uentryList_undefined;
 }
 
 /*
@@ -2221,15 +2215,19 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
-  DPRINTF (("constraint id: %s", uentry_unparseFull (ue)));
   sr = uentry_getSref (ue);
 
-  if (sRef_isInvalid (sr) )
+  if (sRef_isInvalid (sr))
     {
-      llfatalerrorLoc (cstring_makeLiteral("Macro defined constants can not be used in function constraints unless they are specifed with the constant annotation.  To use a macro defined constant include an annotation of the form /*@constant <type> <name>=<value>@*/ somewhere before the function constraint.  This restriction may be removed in future releases if it is determined to be excessively burdensome." ));
+      llfatalerrorLoc (cstring_makeLiteral ("Macro defined constants can not be used in function "
+					    "constraints unless they are specifed with the constant "
+					    "annotation. To use a macro defined constant include an "
+					    "annotation of the form /*@constant <type> <name>=<value>@*/ "
+					    "somewhere before the function constraint. This restriction "
+					    "may be removed in future releases."));
     }
 
-  /*@ savedCopy to used to mitigate danger of accessing freed memory*/
+  /* saveCopy to used to mitigate danger of accessing freed memory*/
   return sRef_saveCopy (sr); 
 }
 
