@@ -211,12 +211,14 @@ bool exprNode_stmtList  (exprNode e)
   stmt1 = exprData_getPairA (e->edata);
   stmt2 = exprData_getPairB (e->edata);
 
-  
+
+  DPRINTF(("XW        stmtlist       ") );
+  DPRINTF ((message("XW%s    |        %s", exprNode_unparse(stmt1), exprNode_unparse(stmt2) ) ) );
+   
   exprNode_stmt (stmt1);
   DPRINTF(("\nstmt after stmtList call " ));
 
   exprNode_stmt (stmt2);
-
   mergeResolve (e, stmt1, stmt2 );
   DPRINTF ( (message ("smtlist constraints are: pre: %s \n and \t post %s\n",
 		      constraintList_print(e->requiresConstraints),

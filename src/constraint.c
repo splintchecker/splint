@@ -350,7 +350,7 @@ cstring  constraint_printDetailed (constraint c)
     }
   else
     {
-    st = message ("Function Post condition:\nBased on the constraint %s this function appears to have the post condition %s", constraint_print (c), constraint_print(c->orig) );
+    st = message ("Function Post condition:\nThis function appears to have the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
     }
   return st;
 }

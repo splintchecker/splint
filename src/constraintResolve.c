@@ -187,6 +187,22 @@ constraint solveforterm (constraint c)
     return c;
 }
 
+constraint solveforOther (constraint c)
+{
+  constraintExpr p;
+    p = c->expr;
+    while (p->expr != NULL)
+      {
+	TPRINTF( (message("Moving %s", constraintExpr_print (c->expr) ) ) );
+	c->lexpr = termMove(c->lexpr, p);
+	p->op = p->expr->op;
+	#warning memleak
+
+	p->expr = p->expr->expr;
+      }
+    return c;
+}
+
 constraint constraint_simplify (constraint c)
 {
   c =  solveforterm (c);
@@ -230,11 +246,76 @@ constraintExpr constraintExpr_substituteTerm (constraintExpr expr, constraintTer
 
    return expr;
 }
-constraint constraint_substituteTerm (constraint c, constraintTerm oldterm, constraintExpr replacement)
+
+/* returns true  if fileloc for term2 is closer to file for term1 than is term3*/
+
+bool fileloc_closer (constraintTerm term1, constraintTerm term2, constraintTerm term3)
 {
-  c->lexpr = constraintExpr_substituteTerm (c->lexpr, oldterm, replacement);
-  c->expr   = constraintExpr_substituteTerm (c->expr, oldterm, replacement);
-  return c;
+   if ( fileloc_lessthan (term1->loc, term2->loc) )
+     {
+       if (fileloc_lessthan (term2->loc, term3->loc) )
+	 {
+	   llassert (fileloc_lessthan (term1->loc, term3->loc) );
+	   return TRUE;
+	 }
+       else
+	 {
+	   return FALSE;
+	 }
+     }
+
+   if ( ! (fileloc_lessthan (term1->loc, term2->loc) ) )
+     {
+       if (!fileloc_lessthan (term2->loc, term3->loc) )
+	 {
+	   llassert (fileloc_lessthan (term3->loc, term1->loc) );
+	   return TRUE;
+	 }
+       else
+	 {
+	   return FALSE;
+	   
+	 }
+     }
+
+   llassert(FALSE);
+   return FALSE;
+}
+
+constraint constraint_substituteTerm (constraint c, constraint subs)
+{
+  constraintTerm oldterm;
+  constraintExpr replacement;
+  
+    llassert(subs->lexpr->expr == NULL);
+    
+
+    oldterm = subs->lexpr->term;
+    replacement = subs->expr;       
+    
+    // Chessy hack assumes that subs always has the form g:1 = g:2 + expr
+
+    /*@i2*/
+    
+    /*find out which value to substitute*/
+    TPRINTF((message ("doing substitute for %s and %s", constraint_print (c), constraint_print(subs) ) ) );
+    if ( constraintExpr_containsTerm (subs->expr, subs->lexpr->term) )
+      {
+	TPRINTF(("doing new stuff"));
+	if (fileloc_closer (c->lexpr->term, subs->expr->term, subs->lexpr->term) )
+	  {
+	    // use the other term
+	    constraint new;
+	    new = constraint_copy (subs);
+	    new = solveforOther(new);
+	    oldterm = new->expr->term;
+	    replacement = new->lexpr;
+	  }
+      }
+
+    c->lexpr = constraintExpr_substituteTerm (c->lexpr, oldterm, replacement);
+    c->expr   = constraintExpr_substituteTerm (c->expr, oldterm, replacement);
+    return c;
 }
 
 constraint substitute (constraint c, constraintList p)
@@ -243,19 +324,18 @@ constraint substitute (constraint c, constraintList p)
     {
       if ( el->ar == EQ)
 	if (constraint_hasTerm (c, el->lexpr->term) )
-	  //	    constraintTerm_same(c->lexpr->term, el->lexpr->term) )
 	  {
-	    {
+	      llassert(el->lexpr->expr == NULL);
 	      DPRINTF((message ("doing substitute for %s", constraint_print (c) ) ) );
-	      c = constraint_substituteTerm (c, el->lexpr->term, el->expr); 
+	      
+	      c = constraint_substituteTerm (c, el); 
 	      DPRINTF((message ("substituted constraint is now %s", constraint_print (c) ) ) );
 	      // c->lexpr = constraintExpr_copy (el->expr);
 	      c = constraint_simplify(c);
 	      c = constraint_simplify(c);
 	      c = constraint_simplify(c);
 	      return c;
-	    }
-	}
+	  }
     }
   end_constraintList_elements;
 
@@ -280,6 +360,25 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
     } end_constraintList_elements;
 
     return ret;
+}
+
+bool constraintExpr_containsTerm (constraintExpr p, constraintTerm term)
+{
+  TPRINTF(("constraintExpr_containsTerm"));
+  
+  while (p != NULL)
+    {
+      if (constraintTerm_similar (p->term, term) )
+	return TRUE;
+
+      p = p->expr->expr;
+    }
+  DPRINTF((
+	   message ("constraintExpr_hasTerm returned fallse for %s %S",
+		    constraint_print(c), constraintTerm_print(term)
+		    )
+	   ));
+  return FALSE;
 }
 
 
@@ -330,16 +429,16 @@ constraintExpr solveEq (constraint c, constraintTerm t)
 
 constraint updateConstraint (constraint c, constraintList p)
 {
-  DPRINTF(("start updateConstraints"));
+  TPRINTF(("start updateConstraints"));
   constraintList_elements (p, el)
     {
       
       if (constraintTerm_same(c->lexpr->term, el->lexpr->term) )
 	{
-	  DPRINTF((""));
+	  TPRINTF((""));
 	  if ( el->ar == EQ)
 	    {
-	      	  TPRINTF((""));
+	      	  TPRINTF(("j"));
 
 	      if  (constraintExpr_hasTerm (el, c->lexpr->term) )
 		{
@@ -373,7 +472,7 @@ constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
     {
       if (!resolve (el, post1) )
 	{
-	  temp = updateConstraint (el, post1);
+	  temp = substitute (el, post1);
 	  if (temp != NULL)
 	    ret = constraintList_add (ret, temp);
 	}
@@ -387,21 +486,30 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   constraintList temp;
   DPRINTF( (message ("magically merging constraint into parent:%s for children:  %s and %s", exprNode_unparse (parent), exprNode_unparse (child1), exprNode_unparse(child2) )
 	    ) );
-  llassert (!exprNode_isError (child1)  || !exprNode_isError(child2) );
-  if (exprNode_isError (child1) )
-      {
-	parent->requiresConstraints = constraintList_copy (child2->requiresConstraints);
-	parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
-	DPRINTF((message ("Copied child constraints: pre: %s and post: %s",
-			  constraintList_print( child2->requiresConstraints),
-			  constraintList_print (child2->ensuresConstraints)
-			  )
-		 ));
-	return;
-      }
+   if (exprNode_isError (child1)  || exprNode_isError(child2) )
+     {
+       if (exprNode_isError (child1) && !exprNode_isError(child2) )
+	 {
+	   parent->requiresConstraints = constraintList_copy (child2->requiresConstraints);
+	   parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
+	   DPRINTF((message ("Copied child constraints: pre: %s and post: %s",
+			     constraintList_print( child2->requiresConstraints),
+			     constraintList_print (child2->ensuresConstraints)
+			     )
+		    ));
+	   return;
+	 }
+       else
+	 {
+	   llassert(exprNode_isError(child2) );
+	   parent->requiresConstraints = constraintList_new();
+	   parent->ensuresConstraints = constraintList_new();
+	   return;
+	 }
+     }
 
-  llassert(!exprNode_isError(child2) );
-  
+   llassert(!exprNode_isError (child1)  && ! exprNode_isError(child2) );
+   
   DPRINTF( (message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
 		     constraintList_print (child1->ensuresConstraints),
