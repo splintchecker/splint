@@ -1517,7 +1517,8 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  
 			case 'p': /* pointer */
 			  expecttype = ctype_makePointer (ctype_void);
-			  /* really! */
+			  uentry_setDefState (regArg, SS_RELDEF); /* need not be defined */
+			  sRef_setPosNull (uentry_getSref (regArg), fileloc_undefined); /* could be null */
 			  /*@switchbreak@*/ break;
 			  
 			case 'n': /* pointer to int, modified by call! */
@@ -1589,7 +1590,7 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		      
 		      uentry_setType (regArg, ctype_unknown);
 		      uentry_fixupSref (regArg);
-		  
+		      
 		      if (modified)
 			{
 			  exprNode_checkCallModifyVal (a->sref, args, f, ret);
@@ -1835,10 +1836,17 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			      
 			      expecttype = ctype_string;
 			      /*@switchbreak@*/ break;
+
 			      
 			    case 'p': /* pointer */
+			      voptgenerror
+				(FLG_FORMATCODE,
+				 message ("Format code should not be used in scanf: %s", 
+					  cstring_fromChars (origcode)),
+				 fileloc_isDefined (formatloc) 
+				 ? formatloc : g_currentloc);
+			      
 			      expecttype = ctype_unknown;
-			      /* really! */
 			      /*@switchbreak@*/ break;
 			      
 			    case 'n': /* pointer to int, modified by call! */
