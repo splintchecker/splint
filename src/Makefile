@@ -76,9 +76,6 @@ lclint : $(OBJ)
 	@echo '// '
 	$(CC) -o lclint $(OBJ) $(LINKFLAGS)
 
-purify: ${OBJ}
-	purify ${CC} -o lclint ${OBJ} ${LINKFLAGS}
-
 ###
 ### grammars
 ###
@@ -174,6 +171,7 @@ Headers/signature2.h : signature.c
 Headers/signature_gen.h : signature.c
 Headers/cgrammar2.h : cgrammar.c
 Headers/cgrammar_tokens.h : cgrammar.c
+Headers/llgrammar_gen.h: llgrammar.c
 Headers/llgrammar.h : llgrammar.c
 Headers/mtgrammar_tokens.h : mtgrammar.c
 
@@ -193,7 +191,7 @@ LCLINT29 = ${HOME}/lclint-2.9c/src/lclint
 	-../bin/lclint $(CPPFLAGS) $(LINTFLAGS) $(SINGLEFLAGS) -load lclint.lcd +neverinclude $*.c +showsourceloc -mts file
 #	-$(LCLINT29) $(CPPFLAGS) $(LINTFLAGS) $(SINGLEFLAGS) -load lclint.lcd +neverinclude $*.c +showsourceloc
 
-lcllib.c: Headers/llgrammar.h
+lcllib.c: Headers/llgrammar.h Headers/llgrammar_gen.h
 clabstract.c: Headers/cgrammar_tokens.h 
 scan.c: Headers/signature2.h  Headers/signature_gen.h
 stateClause.c: Headers/cgrammar_tokens.h 
@@ -273,7 +271,7 @@ updateversion:
 	@echo '# define LCL_COMPILE "Compiled using '$(CC)' on '`uname -a`' by '`whoami`'"' >> Headers/herald.h
 
 localconstants:
-	@$(MV) Headers/local_constants.h Headers/local_constants.last
+	@-$(MV) Headers/local_constants.h Headers/local_constants.last
 	@echo '/* local_constants.h - created automatically by gmake localconstants */' \
                 > Headers/local_constants.h
 ifndef SYSTEM_LIBDIR

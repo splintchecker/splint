@@ -179,6 +179,7 @@ endif
 	@echo '// '
 	@echo '//  Run: '$(MAKE)' test to check'
 	@echo '// '
+	-mkdir bin
 	mv src/lclint bin/lclint
 
 test:

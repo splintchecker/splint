@@ -1,4 +1,4 @@
 #!/bin/sh
 
-etags *.y Headers/* *.c  *.l  *.i || etags *.y Headers/* *.c  *.l  *.i;
+etags *.y Headers/* *.c  *.l  *.i || echo "Error creating TAGS file (ignoring)"
 
