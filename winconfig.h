@@ -15,6 +15,9 @@
 /* alternate include directory */
 #define GCC_INCLUDE_DIR2 "C:/local/include"
 
+#define TARGET_CPU "x86"
+#define UNAME "WIN32"
+
 /* String describing who compiled this binary and how */
 #define LCL_COMPILE "Compiled using Microsoft Visual C++ 6.0"
 
