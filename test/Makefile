@@ -72,9 +72,7 @@ LCLOBJ = $(lcl_OBJECTS)
 LEX = flex
 LN_S = ln -s
 MV = mv
-PACKAGE = splint
 RM = rm
-VERSION = 3.0.1.4
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
