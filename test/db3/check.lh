@@ -1,6 +1,0 @@
-/* Output from Splint 3.0.0.20 */
-
-# include "bool.h"
-# include "bool.h"
-
-extern /*@falseexit@*/ void check (bool  /* x */);
