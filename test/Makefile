@@ -48,8 +48,10 @@ LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 
 # removed for now: nullret nullassign warnuse
 
+#  fileio tainted mergestate metastate \
+
 UNITTESTS = \
-  fileio tainted mergestate metastate \
+  fileio tainted  metastate \
   help sizeoftest bufferTest simplebufferConstraintTests \
   moreBufferTests globalbufferannotation maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \

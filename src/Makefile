@@ -217,7 +217,13 @@ endif
 backup:
 	tar zcvf ../lclint-`date +%Y-%d-%m-%H-%M`.tgz ${ALLSRC} ${GRAMS} Headers/*.h *.i flags.def
 
+
+#drl 09-25-001 fixed so that betarelease nolonger assumes
+#the source is in ~/LCLintDev/src
+
+SRCPWD = ~/reTmp/LCLintDev/src
 betarelease:
+	echo ${SRCPWD}
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`/src
 	cp Makefile* ${ALLSRC} ${GRAMS} *.i flags.def ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
@@ -238,8 +244,8 @@ betarelease:
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -r test/temp
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -f *~ */*~ */*/*~ #* */#* */*/#* .#* */.#* */*/.#* */*.core
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
-	cd ~/temp/; tar czvf ~/public_html/lclint/lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`.src.tgz lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`
-	chmod 644 ~/public_html/lclint/lclint-`cat ${VERSION_NUMBER}`.src.tgz
+	cd ~/temp/; tar czvf ~/public_html/lclint/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`
+	chmod 644 ~/public_html/lclint/lclint-`cat ${SRCPWD}/${VERSION_NUMBER}`.src.tgz
 	ls -l ~/public_html/lclint/lclint-*.tgz
 	@echo "Made release lclint-`cat ${VERSION_NUMBER}`"
 
