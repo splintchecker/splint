@@ -235,7 +235,7 @@ betarelease:
 	cp ../configure ../Makefile* ../LICENSE ../README ../BUFFERCHECKING ~/temp/lclint-`cat ${VERSION_NUMBER}`/
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; mkdir bin
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -r test/temp
-	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -f *~ */*~ */*/*~ #* */#* */*/#* .#* */.#* */*/.# */*.core
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -f *~ */*~ */*/*~ #* */#* */*/#* .#* */.#* */*/.#* */*.core
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
 	cd ~/temp/; tar czvf ~/public_html/lclint/lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`.src.tgz lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`
 	chmod 644 ~/public_html/lclint/lclint-`cat ${VERSION_NUMBER}`.src.tgz

@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.7 2001/08/19 18:04:29 evans Exp $
+ * $Id: posix.h,v 1.8 2001/08/27 05:07:32 evans Exp $
  */
 
 /*
@@ -197,17 +197,15 @@ struct flock {
   pid_t l_pid;
 };
 
-	extern int
-creat (const char *path, mode_t mode)
-	/*@modifies errno@*/;
+extern int creat (const char *path, mode_t mode)
+   /*@modifies errno@*/;
 
-	extern int
-fcntl (int fd, int cmd, ...)
-	/*@modifies errno@*/;
+extern int fcntl (int fd, int cmd, ...)
+   /*@modifies errno@*/;
 
-	extern int
-open (const char *path, int oflag, ...)
-	/*@modifies errno@*/;
+extern int open (const char *path, int oflag, ...)
+  /*:checkerror -1 - returns -1 on error */
+  /*@modifies errno@*/;
 
 /*
 ** grp.h
@@ -231,6 +229,27 @@ getgrnam (const char *nm)
 ** limits.h
 */
 
+/* These are always defined: */
+
+/*@constant int CHAR_BIT@*/
+/*@constant char CHAR_MIN@*/
+/*@constant char CHAR_MAX@*/
+/*@constant int INT_MIN@*/
+/*@constant int INT_MAX@*/
+/*@constant long LONG_MIN@*/
+/*@constant long LONG_MAX@*/
+/*@constant int MB_LEN_MAX@*/
+/*@constant signed char SCHAR_MIN@*/
+/*@constant signed char SCHAR_MAX@*/
+/*@constant short SHRT_MIN@*/
+/*@constant short SHRT_MAX@*/
+/*@constant unsigned char UCHAR_MAX@*/
+/*@constant unsigned int UINT_MAX@*/
+/*@constant unsigned long ULONG_MAX@*/
+/*@constant unsigned short USHRT_MAX@*/
+
+/* When _POSIX_SOURCE is defined */
+
 /*@constant long ARG_MAX@*/
 /*@constant long CHILD_MAX@*/
 /*@constant long LINK_MAX@*/
@@ -239,6 +258,7 @@ getgrnam (const char *nm)
 /*@constant long NAME_MAX@*/
 /*@constant long NGROUPS_MAX@*/
 /*@constant long OPEN_MAX@*/
+/*@constant long PATH_MAX@*/
 /*@constant long PIPE_BUF@*/
 /*@constant long SSIZE_MAX@*/
 /*@constant long STREAM_MAX@*/
@@ -394,16 +414,16 @@ extern int fileno (FILE *fp) /*@modifies errno@*/;
 /*@constant int S_IXUSR@*/
 
 struct stat {
-  mode_t	st_mode;
+  mode_t st_mode;
   ino_t	st_ino;
   dev_t	st_dev;
-  nlink_t	st_nlink;
+  nlink_t st_nlink;
   uid_t	st_uid;
   gid_t	st_gid;
   off_t	st_size;
-  time_t	st_st_atime;
-  time_t	st_st_mtime;
-  time_t	st_st_ctime;
+  time_t st_atime; /* evans 2001-08-23 - these were previously st_st_atime - POSIX spec says st_atime */
+  time_t st_mtime; /* evans 2001-08-23 - these were previously st_st_mtime - POSIX spec says st_mtime */
+  time_t st_ctime; /* evans 2001-08-23 - these were previously st_st_ctime - POSIX spec says st_ctime */
 } ;
 
 /*
@@ -429,27 +449,24 @@ extern SBOOLINT S_ISFIFO (/*@sef@*/ mode_t m) /*@*/ ;
 
 extern SBOOLINT S_ISREG (/*@sef@*/ mode_t m) /*@*/ ;
 
-extern int chmod (const char *path, mode_t mode)
-   /*@modifies fileSystem, errno@*/ ;
-   
-extern int fstat (int fd, /*@out@*/ struct stat *buf)
+int chmod (const char *path, mode_t mode)
+     /*@modifies fileSystem, errno@*/ ;
+     
+int fstat (int fd, /*@out@*/ struct stat *buf)
      /*@modifies errno, *buf@*/ ;
      
-extern int
-mkdir (const char *path, mode_t mode)
-	/*@modifies fileSystem, errno@*/;
+int mkdir (const char *path, mode_t mode)
+     /*@modifies fileSystem, errno@*/;
+     
+int mkfifo (const char *path, mode_t mode)
+     /*@modifies fileSystem, errno@*/;
 
-	extern int
-mkfifo (const char *path, mode_t mode)
-	/*@modifies fileSystem, errno@*/;
+int stat (const char *path, /*@out@*/ struct stat *buf)
+     /*:errorcode -1*/
+     /*@modifies errno, *buf@*/;
 
-	extern int
-stat (const char *path, /*@out@*/ struct stat *buf)
-	/*@modifies errno, *buf@*/;
-
-	extern int
-umask (mode_t cmask)
-	/*@modifies systemState@*/;
+int umask (mode_t cmask)
+     /*@modifies systemState@*/;
 
 /*
 ** sys/times.h

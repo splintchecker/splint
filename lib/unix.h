@@ -55,7 +55,7 @@ extern void /*@alt void * @*/
 
 extern int strcasecmp (char *s1, char *s2) /*@*/ ;
 extern int strncasecmp (char *s1, char *s2, int n) /*@*/ ;
-extern char *strdup (char *s) /*@*/ ;
+extern /*@null@*/ /*@only@*/ char *strdup (char *s) /*@*/ ;
 
 extern /*@null@*/ char *tempnam (char *dir, /*@null@*/ char *pfx) 
    /*@modifies internalState@*/ ;
@@ -1193,10 +1193,60 @@ setgrfile (const char *name)
 setgroupent (int stayopen)
 	/*@modifies internalState@*/;
 
-/*________________________________________________________________________
- * sys/stat.h
- */
+/*
+** sys/stat.h
+**
+** evans 2001-08-26 - updated from http://www.opengroup.org/onlinepubs/007908799/xsh/sysstat.h.html
+*/
 
+/*
+** struct stat replaces POSIX version - more required fields in Unix
+*/
+
+struct stat {
+  dev_t     st_dev; /* ID of device containing file */
+  ino_t     st_ino; /* file serial number */
+  mode_t    st_mode; /* mode of file (see below) */
+  nlink_t   st_nlink; /* number of links to the file */
+  uid_t     st_uid; /* user ID of file */
+  gid_t     st_gid; /* group ID of file */
+  dev_t     st_rdev; /* device ID (if file is character or block special) */
+  off_t     st_size; /* file size in bytes (if file is a regular file) */
+  time_t    st_atime; /* time of last access */
+  time_t    st_mtime; /* time of last data modification */
+  time_t    st_ctime; /* time of last status change */
+  blksize_t st_blksize; /* a filesystem-specific preferred I/O block size for
+			   this object.  In some filesystem types, this may
+			   vary from file to file */
+  blkcnt_t  st_blocks; /*  number of blocks allocated for this object */
+}
+
+/*@constant mode_t S_IFMT@*/
+/*@constant mode_t S_IFBLK@*/
+/*@constant mode_t S_IFCHR@*/
+/*@constant mode_t S_IFIFO@*/
+/*@constant mode_t S_IFREG@*/
+/*@constant mode_t S_IFDIR@*/
+/*@constant mode_t S_IFLNK@*/
+
+/*@constant mode_t S_IRWXU@*/
+/*@constant mode_t S_IRUSR@*/
+/*@constant mode_t S_IWUSR@*/
+/*@constant mode_t S_IXUSR@*/
+/*@constant mode_t S_IRWXG@*/
+/*@constant mode_t S_IRGRP@*/
+/*@constant mode_t S_IWGRP@*/
+/*@constant mode_t S_IXGRP@*/
+/*@constant mode_t S_IRWXO@*/
+/*@constant mode_t S_IROTH@*/
+/*@constant mode_t S_IWOTH@*/
+/*@constant mode_t S_IXOTH@*/
+/*@constant mode_t S_ISUID@*/
+/*@constant mode_t S_ISGID@*/
+/*@constant mode_t S_ISVTX@*/
+
+# if 0
+These are the old definitions - they don't appear to be in the Single UNIX Specification
 /*@constant int S_ISTXT@*/
 /*@constant int S_IREAD@*/
 /*@constant int S_IWRITE@*/
@@ -1222,30 +1272,37 @@ setgroupent (int stayopen)
 /*@constant int UF_NODUMP@*/
 /*@constant int UF_IMMUTABLE@*/
 /*@constant int UF_APPEND@*/
+# endif
 
-	extern int /*@alt lltX_bool@*/
-S_ISLNK (/*@sef@*/ mode_t m)
-	/*@*/;
+int /*@alt lltX_bool@*/ S_ISBLK (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt lltX_bool@*/ S_ISCHR (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt lltX_bool@*/ S_ISDIR (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt lltX_bool@*/ S_ISFIFO (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt lltX_bool@*/ S_ISREG (/*@sef@*/ mode_t m) /*@*/;
+int /*@alt lltX_bool@*/ S_ISLNK (/*@sef@*/ mode_t m) /*@*/;
 
-	extern int /*@alt lltX_bool@*/
-S_ISSOCK (/*@sef@*/ mode_t m)
-	/*@*/;
+int /*@alt lltX_bool@*/ S_TYPEISMQ (/*@sef@*/ struct stat *buf) /*@*/ ;
+int /*@alt lltX_bool@*/ S_TYPEISSEM (/*@sef@*/ struct stat *buf) /*@*/ ;
+int /*@alt lltX_bool@*/ S_TYPEISSHM  (/*@sef@*/ struct stat *buf) /*@*/ ;
 
-	extern int
-chflags (const char *path, u_long flags)
-	/*@modifies fileSystem, errno@*/;
+/* in POSIX: chmod, fstat, mkdir, mkfifo, stat, umask */
 
-	extern int
-fchflags (int fd, u_long flags)
-	/*@modifies fileSystem, errno@*/;
+int lstat(const char *, /*@out@*/ struct stat *)
+  /*:errorcode -1:*/
+  /*@modifies errno@*/ ;
 
-	extern int
-fchmod (int fd, mode_t mode)
-	/*@modifies fileSystem, errno@*/;
+int mknod (const char *, mode_t, dev_t)
+  /*@warn portability "The only portable use of mknod is to create FIFO-special file. If mode is not S_IFIFO or dev is not 0, the behaviour of mknod() is unspecified."@*/
+  /*:errorcode -1:*/
+  /*@modifies errno@*/ ;
 
-	extern int
-lstat (const char *path, /*@out@*/ struct stat *buf)
-	/*@modifies errno, *buf@*/;
+int chflags (const char *path, u_long flags)
+  /*@warn unixstandard "Not in Single UNIX Specification Version 2"@*/
+  /*@modifies fileSystem, errno@*/;
+
+int fchflags (int fd, u_long flags)
+  /*@warn unixstandard "Not in Single UNIX Specification Version 2"@*/
+  /*@modifies fileSystem, errno@*/;
 
 /*________________________________________________________________________
  * stropts.h
@@ -1483,3 +1540,23 @@ int chroot (/*@notnull@*/ /*@nullterminated@*/ const char *path)
 int fchroot (int fildes)
    /*:statusreturn@*/
    /*@warn superuser "Only super-user processes may call fchroot."@*/ ;
+
+/*
+** ctype.h 
+**
+** evans 2001-08-26 - added from http://www.opengroup.org/onlinepubs/007908799/xsh/ctype.h.html
+*/
+
+# ifdef STRICT
+lltX_bool isascii(int) /*@*/ ;
+lltX_bool toascii(int) /*@*/ ;
+char _toupper(/*@sef@*/ int) /*@*/ ;
+char  _tolower(/*@sef@*/ int) /*@*/ ;
+# else
+lltX_bool /*@alt int@*/ isascii(int /*@alt unsigned char@*/) /*@*/ ;
+lltX_bool /*@alt int@*/ toascii(int /*@alt unsigned char@*/);
+char  /*@alt int@*/ _toupper(/*@sef@*/ int /*@alt unsigned char@*/);
+char /*@alt int@*/ _tolower(/*@sef@*/ int /*@alt unsigned char@*/);
+# endif
+
+/* other ctype.h functions in ansi.h */

@@ -362,6 +362,8 @@ L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ());
 	    	         RETURN_INT (ctype_ullint, processDec ()); } 
 '(\\.|[^\\'])+'	       { setTokLengthT (mstring_length (yytext)); 
                          RETURN_CHAR (processChar ()); }
+L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext)); 
+                         RETURN_CHAR (processChar ()); }
 {Digit}+{E}[fF]        { setTokLengthT (mstring_length (yytext)); 
 			 RETURN_FLOAT (ctype_float, processFloat ()); }
 {Digit}+{E}[lL]        { setTokLengthT (mstring_length (yytext)); 

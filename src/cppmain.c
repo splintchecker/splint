@@ -166,24 +166,36 @@ int cppProcess (/*@dependent@*/ cstring infile,
   return 0;
 }
 
-void cppAddIncludeDir (cstring dir) 
+void cppAddIncludeDir (cstring dir)
 {
-  /* -I option (Add directory to include path) */
-  struct file_name_list *dirtmp = (struct file_name_list *) dmalloc (sizeof (*dirtmp));
+  /* evans 2001-08-26
+  ** Add the -I- code.  This code provided by Robin Watts <Robin.Watts@wss.co.uk>
+  */
 
-  DPRINTF (("Add include: %s", dir));
-
-  dirtmp->next = 0;		/* New one goes on the end */
-  dirtmp->control_macro = 0;
-  dirtmp->c_system_include_path = FALSE;
-  
-  /* This copy is necessary...but shouldn't be? */
-  /*@-onlytrans@*/
-  dirtmp->fname = cstring_copy (dir);
-  /*@=onlytrans@*/
-  
-  dirtmp->got_name_map = FALSE;
-  cppReader_addIncludeChain (&g_cppState, dirtmp);
+  if (cstring_equalLit (dir, "-I-"))
+    {
+      struct cppOptions *opts = CPPOPTIONS (&g_cppState);    
+      opts->ignore_srcdir = TRUE;
+    } 
+  else 
+    {
+      /* -I option (Add directory to include path) */
+      struct file_name_list *dirtmp = (struct file_name_list *) dmalloc (sizeof (*dirtmp));
+      
+      DPRINTF (("Add include: %s", dir));
+      
+      dirtmp->next = 0;		/* New one goes on the end */
+      dirtmp->control_macro = 0;
+      dirtmp->c_system_include_path = FALSE;
+      
+      /* This copy is necessary...but shouldn't be? */
+      /*@-onlytrans@*/
+      dirtmp->fname = cstring_copy (dir);
+      /*@=onlytrans@*/
+      
+      dirtmp->got_name_map = FALSE;
+      cppReader_addIncludeChain (&g_cppState, dirtmp);
+    }
 }
 
 void cppDoDefine (cstring str)

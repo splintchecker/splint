@@ -2986,6 +2986,14 @@ static flaglist flags =
     0, 0,
   },
   {
+    FK_OPS, FK_NONE, modeFlag,
+    "unsignedcompare",
+    FLG_UNSIGNEDCOMPARE,
+    "comparison using <, <=, >= between an unsigned integral and zero constant",
+    "An unsigned value is used in a comparison with zero in a way that is either a bug or confusing.",
+    0, 0,
+  },
+  {
     FK_OPS, FK_POINTER, modeFlag,
     "ptrarith",
     FLG_POINTERARITH,
@@ -3718,6 +3726,22 @@ static flaglist flags =
     FLG_MULTITHREADED,
     "function is not reentrant",
     "Non-reentrant function should not be used in multithreaded code.",
+    0, 0
+  },
+  {
+    FK_WARNUSE, FK_SECURITY, modeFlag,
+    "portability",
+    FLG_PORTABILITY,
+    "function may have undefined behavior",
+    "Use of function that may have implementation-dependent behavior.",
+    0, 0
+  },
+  {
+    FK_WARNUSE, FK_SECURITY, modeFlag,
+    "unixstandard",
+    FLG_UNIXSTANDARD,
+    "function is not required in Standard UNIX Specification",
+    "Use of function that need not be provided by UNIX implementations",
     0, 0
   },
   {

@@ -3192,9 +3192,13 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 			  DPRINTF (("elements: %s", sRef_unparseFull (s)));
 			  
 			  DPRINTF (("Reflecting state clause on: %s / %s",
-				    sRef_unparse (sel), sRef_unparse (s)));
+				    sRef_unparseFull (sel), sRef_unparseFull (s)));
 			  
-			  modf (s, eparam, exprNode_loc (f));
+			  /* evans 2001-08-24 - added aliasSetCompleteParam */
+			  sRef_aliasSetCompleteParam (modf, s, eparam, exprNode_loc (f));
+
+			  DPRINTF (("After reflecting state clause on: %s / %s",
+				    sRef_unparseFull (sel), sRef_unparseFull (s)));
 			} end_sRefSet_elements;
 		    }
 		}
@@ -5598,6 +5602,21 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	      tret = ctype_bool;
 	    }
 
+	  /* certain comparisons on unsigned's and zero look suspicious */
+
+	  if (opid == TLT || opid == LE_OP || opid == GE_OP)
+	    {
+	      if ((ctype_isUnsigned (tr1) && exprNode_isZero (e2))
+		  || (ctype_isUnsigned (tr2) && exprNode_isZero (e1)))
+		{
+		  voptgenerror 
+		    (FLG_UNSIGNEDCOMPARE,
+		     message ("Comparison of unsigned value involving zero: %s",
+			      exprNode_unparse (ret)),
+		     e1->loc);
+		}
+	    }
+
 	  /* EQ_OP should NOT be used with booleans (unless one is FALSE) */
 	  
 	  if ((opid == EQ_OP || opid == NE_OP) && 
@@ -5941,6 +5960,7 @@ exprNode_assign (/*@only@*/ exprNode e1,
 
       /* evans 2001-07-22: removed if (!sRef_isMacroParamRef (e1->sref)) */
 
+      DPRINTF (("Setting: %s -> %s", exprNode_unparse (ret), sRef_unparse (e1->sref)));
       exprNode_checkSet (ret, e1->sref);
       
       if (isjustalloc) 
@@ -9652,8 +9672,7 @@ exprNode_checkSet (exprNode e, /*@exposed@*/ sRef s)
 	}
      
       if (sRef_isMeaningful (s))
-	{
-	  
+	{	  
 	  if (sRef_isDead (s))
 	    {
 	      sRef base = sRef_getBaseSafe (s);

@@ -2413,8 +2413,12 @@ cpp_expand_to_buffer (cppReader *pfile, char *buf, size_t length)
   char *limit = buf + length;
   char *buf1, *p1, *p2;
 
+  /* evans - 2001-08-26
+  ** length is unsigned - this doesn't make sense
   if (length < 0)
     abort ();
+  **
+  */
 
   /* Set up the input on the input stack.  */
 
@@ -7501,7 +7505,8 @@ static int cpp_openIncludeFile (char *filename)
 {
   int res = open (filename, O_RDONLY, 0666);
 
-  if (res) 
+  /* evans 2001-08-23: was (res) - open returns -1 on error! reported by Robin Watts */
+  if (res >= 0)
     {
       if (!fileTable_exists (context_fileTable (),
 			     cstring_fromChars (filename)))
@@ -7514,7 +7519,6 @@ static int cpp_openIncludeFile (char *filename)
 	  DPRINTF (("File already exists: %s", filename));
 	}
     }
-		
 
   return res;
 }
