@@ -331,28 +331,14 @@ extern void context_addAnnotation (/*@only@*/ annotationInfo)
 extern void context_addMetaState (/*@only@*/ cstring, /*@only@*/ metaStateInfo)
      /*@modifies internalState@*/ ;
 
-extern valueTable context_createValueTable (sRef p_s, /*@only@*/ stateInfo p_sinfo)
+extern valueTable context_createValueTable (sRef p_s, /*@only@*/ stateInfo p_info)
      /*@globals internalState@*/ ;
 
-extern valueTable context_createGlobalMarkerValueTable (/*@only@*/ stateInfo p_sinfo)
+extern valueTable context_createGlobalMarkerValueTable (/*@only@*/ stateInfo p_info)
      /*@globals internalState@*/ ;
 
 extern int context_getBugsLimit (void) /*@*/ ;
 # define context_getBugsLimit()  ((int)context_getValue(FLG_BUGSLIMIT))
-
-/*drl 12/30/2001 these are some ugly functions that were added to facilitate struct annotations */
-/*drl 1/6/2001: I didn't think these functions were solid enough to include in the
-  stable  release of splint.  I commented them out so that they won't break anything
-  but didn't delete them because they will be fixed and included later
-*/
-
-/*extern void  setGlobalStructInfo(ctype p_ct, constraintList p_list); */
-
-/*extern constraintList getInvariants (ctype p_ct); */
-
-/* static int getSref (ctype ct, sRef s); */
-
-/* sRef fixSref (ctype p_ct, sRef p_base, sRef p_fix); */
 
 extern ctype context_setLastStruct (/*@returned@*/ ctype p_s) /*@modifies internalState@*/;
 extern ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies internalState@*/;

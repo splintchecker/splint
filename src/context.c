@@ -4795,27 +4795,23 @@ metaStateInfo context_lookupMetaStateInfo (cstring key)
 
 /*@null@*/ annotationInfo context_lookupAnnotation (cstring annot) 
 {
-  annotationInfo ainfo;
-
-  ainfo = annotationTable_lookup (gc.annotTable, annot);
-
-  return ainfo;
+  return annotationTable_lookup (gc.annotTable, annot);
 }
 
-void context_addAnnotation (annotationInfo ainfo)
+void context_addAnnotation (annotationInfo info)
 {
-  if (annotationTable_contains (gc.annotTable, annotationInfo_getName (ainfo)))
+  if (annotationTable_contains (gc.annotTable, annotationInfo_getName (info)))
     {
       voptgenerror 
 	(FLG_SYNTAX,
-	 message ("Duplicate annotation declaration: %s", annotationInfo_getName (ainfo)),
-	 annotationInfo_getLoc (ainfo));
+	 message ("Duplicate annotation declaration: %s", annotationInfo_getName (info)),
+	 annotationInfo_getLoc (info));
 
-      annotationInfo_free (ainfo);
+      annotationInfo_free (info);
     }
   else
     {
-      annotationTable_insert (gc.annotTable, ainfo);
+      annotationTable_insert (gc.annotTable, info);
     }
 }
 
@@ -4837,7 +4833,7 @@ void context_addMetaState (cstring mname, metaStateInfo msinfo)
     }
 }
 
-valueTable context_createValueTable (sRef s, stateInfo sinfo)
+valueTable context_createValueTable (sRef s, stateInfo info)
 {
   if (metaStateTable_size (gc.stateTable) > 0)
     {
@@ -4858,7 +4854,7 @@ valueTable context_createValueTable (sRef s, stateInfo sinfo)
 		(res,
 		 cstring_copy (metaStateInfo_getName (msi)),
 		 stateValue_createImplicit (metaStateInfo_getDefaultValue (msi, s), 
-					    stateInfo_copy (sinfo)));
+					    stateInfo_copy (info)));
 	    }
 	  else
 	    {
@@ -4867,18 +4863,18 @@ valueTable context_createValueTable (sRef s, stateInfo sinfo)
 	} 
       end_metaStateTable_elements ;
       
-      stateInfo_free (sinfo);
+      stateInfo_free (info);
       DPRINTF (("Value table: %s", valueTable_unparse (res)));
       return res;
     }
   else
     {
-      stateInfo_free (sinfo);
+      stateInfo_free (info);
       return valueTable_undefined;
     }
 }
 
-valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
+valueTable context_createGlobalMarkerValueTable (stateInfo info)
 {
   if (metaStateTable_size (gc.stateTable) > 0)
     {
@@ -4894,17 +4890,17 @@ valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
 	  valueTable_insert (res,
 			     cstring_copy (metaStateInfo_getName (msi)),
 			     stateValue_create (metaStateInfo_getDefaultGlobalValue (msi),
-						stateInfo_copy (sinfo)));
+						stateInfo_copy (info)));
 	} 
       end_metaStateTable_elements ;
       
-      stateInfo_free (sinfo);
+      stateInfo_free (info);
       DPRINTF (("Value table: %s", valueTable_unparse (res)));
       return res;
     }
   else
     {
-      stateInfo_free (sinfo);
+      stateInfo_free (info);
       return valueTable_undefined;
     }
 }

@@ -87,32 +87,32 @@ void stateInfo_free (/*@only@*/ stateInfo a)
     }
 }
 
-static /*@observer@*/ stateInfo stateInfo_sort (/*@temp@*/ stateInfo sinfo)
+static /*@observer@*/ stateInfo stateInfo_sort (/*@temp@*/ stateInfo stinfo)
      /* Sorts in reverse location order */
 {
-  DPRINTF (("Sorting: %s", stateInfo_unparse (sinfo)));
+  DPRINTF (("Sorting: %s", stateInfo_unparse (stinfo)));
 
-  if (sinfo == NULL || sinfo->previous == NULL) 
+  if (stinfo == NULL || stinfo->previous == NULL) 
     {
-      return sinfo;
+      return stinfo;
     }
   else
     {
-      stateInfo snext = stateInfo_sort (sinfo->previous);
+      stateInfo snext = stateInfo_sort (stinfo->previous);
       stateInfo sfirst = snext;
 
-      DPRINTF (("sinfo/sext: %s // %s", stateInfo_unparse (sinfo), stateInfo_unparse (snext)));
+      DPRINTF (("stinfo/sext: %s // %s", stateInfo_unparse (stinfo), stateInfo_unparse (snext)));
       llassert (snext != NULL);
 
-      if (!fileloc_lessthan (sinfo->loc, snext->loc))
+      if (!fileloc_lessthan (stinfo->loc, snext->loc))
 	{
-	  /*@i2@*/ sinfo->previous = sfirst; /* spurious? */
-	  DPRINTF (("Sorted ==> %s", stateInfo_unparse (sinfo)));
-	  /*@i2@*/ return sinfo; /* spurious? */
+	  /*@i2@*/ stinfo->previous = sfirst; /* spurious? */
+	  DPRINTF (("Sorted ==> %s", stateInfo_unparse (stinfo)));
+	  /*@i2@*/ return stinfo; /* spurious? */
 	}
       else
 	{
-	  while (snext != NULL && fileloc_lessthan (sinfo->loc, snext->loc))
+	  while (snext != NULL && fileloc_lessthan (stinfo->loc, snext->loc))
 	    {
 	      /*
 	      ** swap the order
@@ -121,22 +121,22 @@ static /*@observer@*/ stateInfo stateInfo_sort (/*@temp@*/ stateInfo sinfo)
 	      stateAction taction = snext->action;
 	      sRef tref = snext->ref;
 	      
-	      DPRINTF (("in while: sinfo/sext: %s // %s", stateInfo_unparse (sinfo), stateInfo_unparse (snext)));
+	      DPRINTF (("in while: stinfo/sext: %s // %s", stateInfo_unparse (stinfo), stateInfo_unparse (snext)));
       
-	      snext->loc = sinfo->loc;
-	      snext->action = sinfo->action;
+	      snext->loc = stinfo->loc;
+	      snext->action = stinfo->action;
 	      /*@-modobserver@*/
-	      snext->ref = sinfo->ref; /* Doesn't actually modifie sfirst */ 
+	      snext->ref = stinfo->ref; /* Doesn't actually modifie sfirst */ 
 	      /*@=modobserver@*/
 	      
-	      sinfo->loc = tloc;
-	      sinfo->action = taction;
-	      sinfo->ref = tref;
+	      stinfo->loc = tloc;
+	      stinfo->action = taction;
+	      stinfo->ref = tref;
 	      /*@-mustfreeonly@*/
-	      sinfo->previous = snext->previous;
+	      stinfo->previous = snext->previous;
 	      /*@=mustfreeonly@*/
 	      snext = snext->previous;
-	      DPRINTF (("in while: sinfo/sext: %s // %s", stateInfo_unparse (sinfo), stateInfo_unparse (snext)));
+	      DPRINTF (("in while: stinfo/sext: %s // %s", stateInfo_unparse (stinfo), stateInfo_unparse (snext)));
 	    }
 	  
 	  DPRINTF (("Sorted ==> %s", stateInfo_unparse (sfirst)));
