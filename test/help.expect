@@ -22,12 +22,7 @@ Topics:
    version (information on compilation, maintainer)
 
 
-Cannot find standard library: ansi.lcd
-     Check LARCH_PATH environment variable.
-Continuing without LCL init file: lclinit.lci
-Continuing without LSL init file: lslinit.lsi
-Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
-variable.
+Finished LCLint checking --- no code processed
 
 Source files are .c, .h and .lcl files.  If there is no suffix,
    LCLint will look for <file>.c and <file>.lcl.
