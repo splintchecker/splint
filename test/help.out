@@ -328,6 +328,7 @@ Finished LCLint checking --- no code processed
    oldstyle                    
    onlytrans                   
    onlyunqglobaltrans          
+   orconstraint                
    overload                    
    ownedtrans                  
    paramimptemp                
@@ -902,6 +903,7 @@ fcnpost --- Function has the post condition
 fcnconstraint --- unresolved constraint
 constraintlocation --- display full c expression for every constraint generated
 implictconstraint --- Try to generate implicit constraints for functions
+orconstraint --- Use limited OR expressions to resolve constraints
 nullterminated --- misuse of nullterminated allocation
 nullderef --- possible dereferencce of null pointer
 fcnderef --- dereferencce of a function type
