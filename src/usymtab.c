@@ -3185,6 +3185,7 @@ usymtab_allDefined (void)
 				      ekind_capName (uentry_getKind (e)),
 				      uentry_getName (e)),
 			     dloc);
+			  DPRINTF (("decl: %s", uentry_unparseFull (e)));
 			}
 		    }
 		}

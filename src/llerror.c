@@ -1422,25 +1422,6 @@ llfatalerrorLoc (/*@only@*/ cstring s)
   llexit (LLFAILURE);
 }
 
-void
-xllgloberror (char *srcFile, int srcLine, /*@only@*/ cstring s)
-{
-  if (context_inSuppressRegion ())
-    {
-      cstring_free (s);
-    }
-  else
-    {
-      context_setNeednl ();
-      prepareMessage ();
-      context_hasError ();
-      flagcode_recordError (FLG_SPECIAL);
-      printError (g_msgstream, s);
-      showSourceLoc (srcFile, srcLine);
-      closeMessage ();
-    }
-}
-
 # ifndef NOLCL
 bool
 lclHadError (void)

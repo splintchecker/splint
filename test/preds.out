@@ -57,9 +57,13 @@ preds.c:30:7: Use of == with bool variables (risks inconsistency because of
   lclint/lib) provides bool_equal for safe bool comparisons. (-boolcompare will
   suppress message)
 preds.c:35:7: Test expression for if not bool, type char: c
-preds.c:3:5: Function f declared but not used
+bool.h:21:13: Function bool_initMod declared but not used
   A function is declared but not used. Use /*@unused@*/ in front of function
   header to suppress message. (-fcnuse will suppress message)
+bool.h:24:29: Function bool_unparse declared but not used
+bool.h:27:13: Function bool_not declared but not used
+bool.h:30:13: Function bool_equal declared but not used
+preds.c:3:5: Function f declared but not used
    preds.c:41:1: Definition of f
 
-Finished LCLint checking --- 8 code errors found, as expected
+Finished LCLint checking --- 12 code errors found, as expected

@@ -37,7 +37,7 @@
 SHELL = /bin/csh -f
 
 # Command to run lclint
-LCLINT  = ${HOME}/LCLintDev/bin/lclint
+LCLINT  = ${HOME}/LCLintDev/src/lclint
 LCLINTP = $(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
@@ -465,10 +465,14 @@ outglob:
 outparam:
 	$(LCLINTR) outparam -expect 12
 
+#
+# Four new +fcnuse errors for -strict (evans 2001-07-22)
+# 
+
 preds:
 	$(LCLINTR) +hints preds.c -expect 6
 	$(LCLINTRN) +hints preds.c -weak -expect 1
-	$(LCLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 8
+	$(LCLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 12
 
 prefixes:
 	$(LCLINTR) prefixes.c +partial

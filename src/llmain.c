@@ -929,8 +929,10 @@ int main (int argc, char *argv[])
 		  else
 		    {
 		      DPRINTF (("Error!"));
-		      llgloberror (message ("Unrecognized option: %s", 
-					    cstring_fromChars (thisarg)));
+		      voptgenerror (FLG_BADFLAG,
+				    message ("Unrecognized option: %s", 
+					     cstring_fromChars (thisarg)),
+				    g_currentloc);
 		    }
 		}
 	      else

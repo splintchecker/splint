@@ -40,6 +40,7 @@ extern bool filelocList_isEmpty (/*@sef@*/ filelocList p_s);
 
 extern filelocList 
   filelocList_append (/*@returned@*/ filelocList p_s, /*@only@*/ filelocList p_t);
+
 extern /*@only@*/ filelocList filelocList_new (void) /*@*/ ;
 extern filelocList 
   filelocList_add (/*@returned@*/ filelocList p_s, /*@only@*/ fileloc p_el)

@@ -77,14 +77,6 @@ extern /*@exits@*/ void llfatalbug (/*@only@*/ cstring p_s)
 # define llfatalbug(p_s) \
      xllfatalbug (__FILE__, __LINE__, p_s)
 
-extern /*@private@*/ void xllgloberror (char *p_srcFile, int p_srcLine, 
-					/*@only@*/ cstring p_s)
-     /*@modifies g_msgstream@*/ ;
-
-extern void llgloberror (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
-# define llgloberror(p_s) \
-     xllgloberror (__FILE__, __LINE__, p_s)
-
 extern /*@private@*/ bool xllgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
 				       /*@only@*/ cstring p_s, fileloc p_fl)
      /*@modifies g_msgstream@*/ ;

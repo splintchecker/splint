@@ -90,6 +90,16 @@ static /*@only@*/ /*@notnull@*/ uentry
   uentry_makeVariableAux (cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f,
 			  /*@exposed@*/ sRef p_s, bool p_priv, vkind p_kind);
 
+static void uentry_convertVarFunction (uentry ue) /*@modifies ue@*/
+{
+  if (uentry_isVariable (ue) 
+      && (ctype_isFunction (ctype_realType (uentry_getType (ue)))
+	  || ctype_isUnknown (uentry_getType (ue))))
+    {
+      uentry_makeVarFunction (ue);
+    }
+}
+
 static /*@out@*/ /*@notnull@*/ uentry uentry_alloc (void) /*@*/ 
 {
   uentry ue = (uentry) dmalloc (sizeof (*ue));
@@ -101,7 +111,8 @@ static /*@out@*/ /*@notnull@*/ uentry uentry_alloc (void) /*@*/
 }
 
 static cstring uentry_getOptName (uentry p_e) /*@*/ ;
-static void uentry_copyInto (/*@out@*/ /*@unique@*/ uentry p_unew, uentry p_old);
+static void uentry_updateInto (/*@unique@*/ uentry p_unew, uentry p_old) /*@modifies p_unew, p_old@*/ ;
+
 static void uentry_setNullState (/*@notnull@*/ uentry p_ue, nstate p_ns);
 static void uentry_setAliasKind (/*@notnull@*/ uentry p_ue, alkind p_ak);
 static /*@only@*/ /*@null@*/ uinfo uinfo_copy (uinfo p_u, ekind p_kind);
@@ -1500,11 +1511,7 @@ uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
 	}
       else
 	{
-	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	    {
-	      uentry_makeVarFunction (ue);
-	    }
-	  
+	  uentry_convertVarFunction (ue);
 	  llassertfatal (uentry_isFunction (ue));
 	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
 	  
@@ -1596,26 +1603,19 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
 
   if (uentry_isValid (ue))
     {
-      {
-	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	  {
-	    uentry_makeVarFunction (ue);
-	  }
-	
-	llassertfatal (uentry_isFunction (ue));
-	
-	if (functionConstraint_isDefined (ue->info->fcn->preconditions))
-	  {
-	    BADBRANCH; /* should conjoin constraints? */
-	    /*@notreached@*/ 
-	    ue->info->fcn->preconditions = functionConstraint_conjoin (ue->info->fcn->preconditions, preconditions);
-	  }
-	else
-	  {
-	    ue->info->fcn->preconditions = preconditions;
-	  }
-      }
+      uentry_convertVarFunction (ue);
+      llassertfatal (uentry_isFunction (ue));
       
+      if (functionConstraint_isDefined (ue->info->fcn->preconditions))
+	{
+	  BADBRANCH; /* should conjoin constraints? */
+	  /*@notreached@*/ 
+	  ue->info->fcn->preconditions = functionConstraint_conjoin (ue->info->fcn->preconditions, preconditions);
+	}
+      else
+	{
+	  ue->info->fcn->preconditions = preconditions;
+	}
     }
   else
     {
@@ -1642,25 +1642,19 @@ uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postcondition
 
   if (uentry_isValid (ue))
     {
-      {
-	if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	  {
-	    uentry_makeVarFunction (ue);
-	  }
-	
-	llassertfatal (uentry_isFunction (ue));
-	
-	if (functionConstraint_isUndefined (ue->info->fcn->postconditions))
-	  {
-	    ue->info->fcn->postconditions = postconditions;
-	  }
-	else
-	  {
-	    BADBRANCH; /* should conjoin */
-	    /*@notreached@*/ 
-	    ue->info->fcn->postconditions = functionConstraint_conjoin (ue->info->fcn->postconditions, postconditions);
-	  }	    
-      }
+      uentry_convertVarFunction (ue);
+      llassertfatal (uentry_isFunction (ue));
+      
+      if (functionConstraint_isUndefined (ue->info->fcn->postconditions))
+	{
+	  ue->info->fcn->postconditions = postconditions;
+	}
+      else
+	{
+	  BADBRANCH; /* should conjoin */
+	  /*@notreached@*/ 
+	  ue->info->fcn->postconditions = functionConstraint_conjoin (ue->info->fcn->postconditions, postconditions);
+	}	    
     }
   else
     {
@@ -2349,11 +2343,8 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
     }
   else if (qual_isNullPred (qel))
     {
-      if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	{
-	  uentry_makeVarFunction (ue);
-	}
-      
+      uentry_convertVarFunction (ue);
+
       if (uentry_isFunction (ue))
 	{
 	  ctype typ = uentry_getType (ue);
@@ -2982,11 +2973,7 @@ static void checkSpecialFunction (/*@notnull@*/ uentry ue)
 void
 uentry_setPrintfLike (uentry ue)
 {
-  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-    {
-      uentry_makeVarFunction (ue);
-    }
-  
+  uentry_convertVarFunction (ue);
   llassertfatal (uentry_isFunction (ue));
   ue->info->fcn->specialCode = SPC_PRINTFLIKE;
   checkSpecialFunction (ue);
@@ -2995,11 +2982,7 @@ uentry_setPrintfLike (uentry ue)
 void
 uentry_setScanfLike (uentry ue)
 {
-  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-    {
-      uentry_makeVarFunction (ue);
-    }
-  
+  uentry_convertVarFunction (ue);
   llassertfatal (uentry_isFunction (ue));
   ue->info->fcn->specialCode = SPC_SCANFLIKE;
   checkSpecialFunction (ue);
@@ -3008,11 +2991,7 @@ uentry_setScanfLike (uentry ue)
 void
 uentry_setMessageLike (uentry ue)
 {
-  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-    {
-      uentry_makeVarFunction (ue);
-    }
-  
+  uentry_convertVarFunction (ue);  
   llassertfatal (uentry_isFunction (ue));
   ue->info->fcn->specialCode = SPC_MESSAGELIKE;
   checkSpecialFunction (ue);
@@ -3362,7 +3341,7 @@ void uentry_makeVarFunction (uentry ue)
   ** expanded macro is marked used (until I write a pre-processor)
   */
 
-  ue->used |= (oldInfo->kind == VKEXPMACRO);
+  ue->used = ue->used || (oldInfo->kind == VKEXPMACRO);
 
   ue->ukind = KFCN;
   ue->info->fcn = (ufinfo) dmalloc (sizeof (*ue->info->fcn));
@@ -3382,9 +3361,8 @@ void uentry_makeVarFunction (uentry ue)
   /*end */
 
   /*drl 12/28/2000*/
-  ue->info->fcn->postconditions = functionConstraint_undefined;
+  ue->info->fcn->postconditions = functionConstraint_undefined; 
   /*end */
-
   
   if (ctype_isFunction (ue->utype))
     {
@@ -3446,8 +3424,7 @@ void uentry_makeVarFunction (uentry ue)
 
   if (oldInfo->kind == VKEXPMACRO)
     {
-      fileloc_free (loc);
-      ue->whereDeclared = fileloc_undefined;
+      ;
     }
   else
     {
@@ -3575,10 +3552,7 @@ uentry_setGlobals (uentry ue, /*@owned@*/ globSet globs)
     }
   else
     {
-      if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
-	{
-	  uentry_makeVarFunction (ue);
-	}
+      uentry_convertVarFunction (ue);
       
       llassert (uentry_isFunction (ue));
       llassert (!ue->info->fcn->hasGlobs 
@@ -6121,7 +6095,9 @@ uentry_setDefined (uentry e, fileloc f)
 bool
 uentry_isCodeDefined (uentry e)
 {
-  return (uentry_isValid (e) && fileloc_isDefined (e->whereDefined));
+  llassert (uentry_isValid (e));
+
+  return (fileloc_isDefined (e->whereDefined));
 }
 
 bool
@@ -6199,14 +6175,10 @@ uentry_resetParams (uentry ue, /*@only@*/ uentryList pn)
   
   llassert (uentry_isValid (ue));
 
-  rct = ctype_realType (ue->utype);
-
-  if (uentry_isVariable (ue) && (ctype_isFunction (rct) || ctype_isUnknown (rct)))
-    {
-      uentry_makeVarFunction (ue);
-    }
-
+  uentry_convertVarFunction (ue);
   llassert (uentry_isFunction (ue));
+
+  rct = ctype_realType (ue->utype);
 
   if (ctype_isFunction (rct))
     {
@@ -6219,7 +6191,6 @@ uentry_resetParams (uentry ue, /*@only@*/ uentryList pn)
 void
 uentry_setRefParam (uentry e)
 {
-  
   if (!uentry_isVar (e))
     {
       llbug (message ("uentry_setParam: not variable: %q", uentry_unparse (e)));
@@ -6837,7 +6808,7 @@ KindConformanceError (/*@unique@*/ uentry old, uentry unew, bool mustConform)
 	}
     }
 
-  uentry_copyInto (old, unew);
+  uentry_updateInto (old, unew);
 }
 
 /*
@@ -8136,7 +8107,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   if (uentry_isForward (old))
     {
       mustConform = FALSE;
-      uentry_copyInto (old, unew);
+      uentry_updateInto (old, unew);
       return;
     }
 
@@ -8476,9 +8447,6 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	}
       /*@=branchstate@*/ /*@i23 shouldn't need this@*/
     }
-
-  DPRINTF (("After state: %s",
-	    uentry_unparseFull (old)));
 
   if (fileloc_isUndefined (old->whereDeclared))
     {
@@ -8911,14 +8879,14 @@ uentry_checkConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	  ** When a function is defined with an unparam macro
 	  */
 
-	  uentry_copyInto (old, unew);
+	  uentry_updateInto (old, unew);
 	  return;
 	}
 
       if (uentry_isExpandedMacro (old) 
 	  && uentry_isEitherConstant (unew))
 	{
-	  uentry_copyInto (old, unew);
+	  uentry_updateInto (old, unew);
 	  return;
 	}
 
@@ -8945,7 +8913,7 @@ uentry_checkConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 		    }
 		}
 
-	      uentry_copyInto (old, unew);
+	      uentry_updateInto (old, unew);
 	      return;
 	    }
 	  else
@@ -8982,7 +8950,7 @@ uentry_checkConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 							      old->whereDefined);
 			}
 
-		      uentry_copyInto (old, unew);
+		      uentry_updateInto (old, unew);
 		      old->used = unew->used = TRUE;
 		      return;
 		    }
@@ -9156,6 +9124,8 @@ static void uentry_mergeConstraints (uentry spec, uentry def)
       DPRINTF (("Here: %s / %s",
 		uentry_unparseFull (spec),
 		uentry_unparseFull (def)));
+      /* evans 2001-07-21 */
+      llassert (uentry_isFunction (spec));
 
       if (functionConstraint_isDefined (def->info->fcn->preconditions))
 	{
@@ -9229,6 +9199,21 @@ uentry_mergeEntries (uentry spec, /*@only@*/ uentry def)
   llassert (uentry_isValid (spec));
   llassert (uentry_isValid (def));
   llassert (cstring_equal (spec->uname, def->uname));
+
+  if (uentry_isFunction (def))
+    {
+      if (uentry_isConstant (spec))
+	{
+	  llassert (ctype_isUnknown (spec->utype) || ctype_isFunction (spec->utype));
+	  uentry_makeConstantFunction (spec);
+	}
+      else
+	{
+	  uentry_convertVarFunction (spec);
+	}
+
+      llassert (uentry_isFunction (spec));
+    }
   
   DPRINTF (("Merge entries: %s / %s",
 	    uentry_unparseFull (spec),
@@ -9357,15 +9342,10 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 	    uentry_unparseFull (old),
 	    uentry_unparseFull (unew)));
  
-  if (uentry_isExtern (unew))
-    {
-      uentry_setUsed (old, unewdef);
-    }
-
   wasForward = 
     fileloc_isUndefined (olddef) 
-      && fileloc_isDefined (uentry_whereDefined (old)) 
-	&& !uentry_isExpandedMacro (old);
+    && fileloc_isDefined (uentry_whereDefined (old)) 
+    && !uentry_isExpandedMacro (old);
   
   if (!context_getFlag (FLG_INCONDEFSLIB)
       && (fileloc_isLib (olddef) || fileloc_isImport (olddef)))
@@ -9380,6 +9360,30 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
   llassert (uentry_isValid (old));
   llassert (uentry_isValid (unew));
   llassert (cstring_equal (old->uname, unew->uname));
+
+  if (uentry_isFunction (unew) && !uentry_isFunction (old))
+    {
+      if (uentry_isConstant (old))
+	{
+	  llassert (ctype_isUnknown (old->utype) || ctype_isFunction (old->utype));
+	  uentry_makeConstantFunction (old);
+	}
+      else
+	{
+	  uentry_convertVarFunction (old);
+	}
+
+      llassert (uentry_isFunction (old));
+    }
+
+  DPRINTF (("uentry merge: %s / %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
+
+  if (uentry_isExtern (unew))
+    {
+      uentry_setUsed (old, unewdef);
+    }
 
   /*
   ** should check old one was extern!
@@ -9446,7 +9450,7 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 		  /*
 		  if (uentry_isDatatype (old) || uentry_isAnyTag (old))
 		    {
-		      uentry_copyInto (old, unew);
+		      uentry_updateInto (old, unew);
 		      old->sref = sRef_saveCopy (old->sref);
 		    }
 		    */
@@ -9490,8 +9494,11 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 	}
     }
 
-  uentry_mergeConstraints (old, unew);
+  DPRINTF (("uentry merge: %s / %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
 
+  uentry_mergeConstraints (old, unew);
   uentry_checkConformance (old, unew, mustConform, FALSE);
 
   old->used = old->used || unew->used;
@@ -9644,27 +9651,59 @@ uentry_sameKind (uentry u1, uentry u2)
   return FALSE;
 }
    
-static void uentry_copyInto (/*@unique@*/ uentry unew, uentry old)
+static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
 {
+  ekind okind = unew->ukind;
   llassert (uentry_isValid (unew));
   llassert (uentry_isValid (old));
 
   unew->ukind = old->ukind;
-  unew->uname = cstring_copy (old->uname);
+  llassert (cstring_equal (unew->uname, old->uname));
   unew->utype = old->utype;
 
-  unew->whereSpecified = fileloc_copy (old->whereSpecified);
-  unew->whereDefined = fileloc_copy (old->whereDefined);
-  unew->whereDeclared = fileloc_copy (old->whereDeclared);
+  if (fileloc_isDefined (unew->whereSpecified) 
+      && !fileloc_isDefined (old->whereSpecified))
+    {
+      ; /* Keep the old value */
+    }
+  else
+    {
+      fileloc_free (unew->whereSpecified); /*@i523 why no error without this? */
+      unew->whereSpecified = fileloc_copy (old->whereSpecified);
+    }
+
+  if (fileloc_isDefined (unew->whereDefined) 
+      && !fileloc_isDefined (old->whereDefined))
+    {
+      ; /* Keep the old value */
+    }
+  else
+    {
+      fileloc_free (unew->whereDefined); /*@i523 why no error without this? */
+      unew->whereDefined = fileloc_copy (old->whereDefined);
+    }
+
+  if (fileloc_isDefined (unew->whereDeclared) 
+      && !fileloc_isDefined (old->whereDeclared))
+    {
+      ; /* Keep the old value */
+    }
+  else
+    {
+      fileloc_free (unew->whereDeclared); /*@i523 why no error without this? */
+      unew->whereDeclared = fileloc_copy (old->whereDeclared);
+    }
 
   unew->sref = sRef_saveCopy (old->sref); /* Memory leak! */
   unew->used = old->used;
   unew->lset = FALSE;
   unew->isPrivate = old->isPrivate;
   unew->hasNameError = old->hasNameError;
-  unew->uses = filelocList_undefined;
+  unew->uses = filelocList_append (unew->uses, old->uses);
+  old->uses = filelocList_undefined;
 
   unew->storageclass = old->storageclass;
+  uinfo_free (unew->info, okind);
   unew->info = uinfo_copy (old->info, old->ukind);
 }
 
@@ -9676,7 +9715,25 @@ uentry_copy (uentry e)
     {
       uentry enew = uentry_alloc ();
       DPRINTF (("copy: %s", uentry_unparseFull (e)));
-      uentry_copyInto (enew, e);
+      enew->ukind = e->ukind;
+      enew->uname = cstring_copy (e->uname);
+      enew->utype = e->utype;
+      
+      enew->whereSpecified = fileloc_copy (e->whereSpecified);
+      enew->whereDefined = fileloc_copy (e->whereDefined);
+      enew->whereDeclared = fileloc_copy (e->whereDeclared);
+      
+      enew->sref = sRef_saveCopy (e->sref); /* Memory leak! */
+      enew->used = e->used;
+      enew->lset = FALSE;
+      enew->isPrivate = e->isPrivate;
+      enew->hasNameError = e->hasNameError;
+      enew->uses = filelocList_undefined;
+      
+      enew->storageclass = e->storageclass;
+      enew->info = uinfo_copy (e->info, e->ukind);
+      enew->warn = warnClause_copy (e->warn);
+
       DPRINTF (("Here we are..."));
       DPRINTF (("original: %s", uentry_unparseFull (e)));
       DPRINTF (("copy: %s", uentry_unparse (enew)));

@@ -44,10 +44,9 @@ tainted.c:20:18: Invalid transfer from tainted t to untainted (Possibly tainted
 Finished LCLint checking --- 9 code errors found, as expected
 
 tainted2.c: (in function test)
-tainted2.c:18:5: Control branches merge with incompatible states for stk
-    (untainted and tainted): Incompatible state merge (default behavior)
+tainted2.c:20:10: Invalid transfer from tainted stk to untainted (Possibly
+                     tainted storage used as untainted.): return stk
    tainted2.c:17:14: Meta state stk becomes tainted
-   tainted2.c:11:7: Meta state stk becomes untainted
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -71,3 +70,14 @@ tainted5.c:13:3: Requires clause of called function checkTainted not satisfied
                     by *def (state is untainted): requires tainted *def
 
 Finished LCLint checking --- 2 code errors found, as expected
+
+taintedmerge.c: (in function f)
+taintedmerge.c:11:18: Invalid transfer from tainted t to untainted (Possibly
+                         tainted storage used as untainted.): t
+   taintedmerge.c:10:3: Meta state t becomes tainted
+taintedmerge.c:14:18: Invalid transfer from tainted t to untainted (Possibly
+                         tainted storage used as untainted.): t
+   taintedmerge.c:13:3: Meta state t becomes tainted
+taintedmerge.c:16:10: Stack-allocated storage t reachable from return value: t
+
+Finished LCLint checking --- 3 code errors found, as expected

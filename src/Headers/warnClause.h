@@ -30,6 +30,8 @@ extern warnClause warnClause_create (/*@only@*/ lltok,
 				     /*@only@*/ flagSpec p_flag,
 				     /*@only@*/ exprNode p_msg) /*@*/ ;
 
+extern /*@only@*/ warnClause warnClause_copy (warnClause) /*@*/ ;
+
 extern /*@observer@*/ flagSpec warnClause_getFlag (warnClause p_w) /*@*/ ;
 
 extern /*@only@*/ cstring warnClause_dump (warnClause p_wc) /*@*/ ;

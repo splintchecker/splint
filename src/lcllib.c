@@ -247,7 +247,7 @@ dumpState (cstring cfname)
   
   if (f == NULL)
     {
-      llgloberror (message ("Cannot open dump file for writing: %s", fname));
+      lldiagmsg (message ("Cannot open dump file for writing: %s", fname));
     }
   else
     {

@@ -53,6 +53,20 @@ extern warnClause warnClause_create (lltok tok, flagSpec flag, exprNode msg)
   return res;
 }
 
+warnClause warnClause_copy (warnClause w)
+{
+  if (warnClause_isDefined (w))
+    {
+      return warnClause_createAux (fileloc_copy (w->loc),
+				   flagSpec_copy (w->flag),
+				   /*@i32@*/ w->msg); /*@i32 should exprNode_copy (w->msg)); */
+    }
+  else
+    {
+      return warnClause_undefined;
+    }
+}
+
 extern flagSpec warnClause_getFlag (warnClause w)
 {
   return w->flag;
@@ -93,7 +107,7 @@ extern void warnClause_free (warnClause w)
   if (warnClause_isDefined (w))
     {
       flagSpec_free (w->flag);
-      exprNode_free (w->msg);
+      /*@i43 should be copied! exprNode_free (w->msg); */
       fileloc_free (w->loc);
       sfree (w);
     }

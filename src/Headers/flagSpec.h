@@ -35,6 +35,7 @@ extern /*@only@*/ flagSpec flagSpec_createPlain (/*@only@*/ cstring) ;
 extern /*@only@*/ flagSpec 
    flagSpec_createOr (/*@only@*/ cstring, /*@only@*/ flagSpec) ;
 
+extern /*@only@*/ flagSpec flagSpec_copy (flagSpec) /*@*/ ;
 extern /*@unused@*/ /*@only@*/ cstring flagSpec_unparse (flagSpec) /*@*/ ;
 extern void flagSpec_free (/*@only@*/ flagSpec) ;
 
