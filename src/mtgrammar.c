@@ -48,6 +48,10 @@
 
 /*drl added 11/27/2001*/
 /*@-bounds@*/
+
+/*drl added 12/11/2002*/
+/*@-type@*/
+
 /* < end of bison.head > */
 
 /* A Bison parser, made from mtgrammar.y
@@ -1719,3 +1723,6 @@ static void yyprint (FILE *file, int type, YYSTYPE value)
 
 /*drl added 11/27/2001*/
 /*@=bounds@*/
+
+/*drl added 12/11/2002*/
+/*@=type@*/

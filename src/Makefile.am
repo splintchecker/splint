@@ -301,7 +301,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
-	  echo '* Expect 154 shift/reduce conflicts and 115 reduce/reduce conflicts.'; \
+	  echo '* Expect 154 shift/reduce conflicts and 116 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \

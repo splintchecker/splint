@@ -48,6 +48,10 @@
 
 /*drl added 11/27/2001*/
 /*@-bounds@*/
+
+/*drl added 12/11/2002*/
+/*@-type@*/
+
 /* < end of bison.head > */
 
 #ifndef BISON_LLGRAMMAR_TAB_H
@@ -310,3 +314,6 @@ extern YYSTYPE yllval;
 
 /*drl added 11/27/2001*/
 /*@=bounds@*/
+
+/*drl added 12/11/2002*/
+/*@=type@*/

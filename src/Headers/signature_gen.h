@@ -48,6 +48,10 @@
 
 /*drl added 11/27/2001*/
 /*@-bounds@*/
+
+/*drl added 12/11/2002*/
+/*@-type@*/
+
 /* < end of bison.head > */
 
 #ifndef BISON_SIGNATURE_TAB_H
@@ -163,3 +167,6 @@ typedef union {
 
 /*drl added 11/27/2001*/
 /*@=bounds@*/
+
+/*drl added 12/11/2002*/
+/*@=type@*/
