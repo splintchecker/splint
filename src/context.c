@@ -912,6 +912,11 @@ context_resetAllFlags (void)
   gc.flags[FLG_GNUEXTENSIONS] = TRUE;
 
   /*
+    Changed for 3.0.0.19
+   */
+  gc.flags[FLG_ORCONSTRAINT] = TRUE;
+  gc.flags[FLG_CONSTRAINTLOCATION] = TRUE;
+  /*
   ** On by default for Win32, but not Unix (to support MS/VC++ error message format).
   */
 

@@ -1878,6 +1878,14 @@ static flaglist flags =
     "Display function post conditions.",
     0, 0
   },
+  {
+    FK_BOUNDS, FK_DISPLAY, modeFlag,
+    "redundantconstraints",
+    FLG_REDUNDANTCONSTRAINTS,
+    "display seemingly redundant constraints",
+    "Display seemingly redundant constraints",
+    0, 0
+  },
   /*drl7x added 6/18/01 */    
   {
     FK_BOUNDS, FK_MEMORY, modeFlag,

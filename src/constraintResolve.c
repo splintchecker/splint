@@ -125,6 +125,13 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
 
   DPRINTF((message ("constraintList_mergeRequires: merging  %s and %s ", constraintList_print (list1), constraintList_print(list2) ) ) );
 
+  if (context_getFlag (FLG_REDUNDANTCONSTRAINTS) )
+    {
+      ret = constraintList_copy(list1);
+      ret = constraintList_addList(ret, list2);
+      return ret;
+    }
+    
   /* get constraints in list1 not satified by list2 */
   temp = constraintList_reflectChanges(list1, list2);
   DPRINTF((message ("constraintList_mergeRequires: temp = %s", constraintList_print(temp) ) ) );
