@@ -2139,6 +2139,10 @@ void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f)
   constraintExprKind kind;
   constraintTerm t;
   
+
+  DPRINTF((message("constraintExpr_dump:: dumping constraintExpr %s",
+		   constraintExpr_unparse(expr)
+		   ) ));
   
   kind = expr->kind;
   

@@ -581,6 +581,10 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	    fprintf(f, "Param %s %d\n", cstring_toCharsSafe(ctString), (int) param );
 	    cstring_free(ctString);
 	  }
+	else if (sRef_isField (s) )
+	  {
+	    fprintf(f, "sRef_dump %s\n", cstring_toCharsSafe(sRef_dump(s)) );
+	  }
 	else
 	  {
 	    u = sRef_getUentry(s);
@@ -650,6 +654,11 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	    t = ctype_undump(&str2) ;
 	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc));
 	    free (ostr2);
+	  }
+	else if (strcmp (term, "sRef_dump" ) == 0 )
+	  {
+	    reader_checkChar(&str, ' ');
+	    s = sRef_undump (&str);
 	  }
 	else  /* This must be an identified that we can search for in usymTab */
 	  {
