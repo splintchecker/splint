@@ -29,9 +29,6 @@ clauses3.c:61:5: Storage x->x is released in one path, but live in another.
 
 Finished checking --- 2 code warnings, as expected
 
-Command Line: Selecting unix library.  Unix library is ad hoc addition to POSIX
-    library.  Recommend use +posixlib to select POSIX library instead. Use
-    -warnunixlib to suppress this message.
 clauses3.c: (in function h)
 clauses3.c:48:5: Storage x->x is released in one path, but live in another.
    clauses3.c:46:10: Storage x->x released

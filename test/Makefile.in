@@ -1407,7 +1407,7 @@ null:
 	-$(SPLINTR) null1.c -null -mustdefine -expect 4
 	-$(SPLINTR) null2.c -expect 11
 	-$(SPLINTR) null3.c -expect 15
-	-$(SPLINTR) null3.c -warnunixlib +unixlib -expect 16
+	-$(SPLINTR) null3.c +unixlib -expect 16
 	-$(SPLINTR) null4.c -expect 1
 	-$(SPLINTR) null5.c -expect 4
 	-$(SPLINTR) null6 -expect 4

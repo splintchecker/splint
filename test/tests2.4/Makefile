@@ -49,7 +49,7 @@ print:
 	$(SPLINT) print.c 
 
 syslog:
-	$(SPLINT) syslog.c -warnunixlib +unixlib 
+	$(SPLINT) syslog.c +unixlib 
 
 error:
 	$(SPLINT) error.c -expect 1 

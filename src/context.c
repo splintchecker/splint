@@ -884,7 +884,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_WARNFLAGS] = TRUE;
   gc.flags[FLG_WARNRC] = TRUE;
   gc.flags[FLG_FILEEXTENSIONS] = TRUE;
-  gc.flags[FLG_WARNUNIXLIB] = TRUE;
+  gc.flags[FLG_WARNUNIXLIB] = FALSE;
   gc.flags[FLG_WARNPOSIX] = TRUE;
   gc.flags[FLG_SHOWCOL] = TRUE;
   gc.flags[FLG_SHOWDEEPHISTORY] = FALSE; /* TRUE; */
@@ -3787,8 +3787,8 @@ context_userSetFlag (flagcode f, bool b)
 	      llerror_flagWarning
 		(cstring_makeLiteral
 		 ("Selecting unix library.  Unix library is "
-		  "ad hoc addition to POSIX library.  Recommend "
-		  "use +posixlib to select POSIX library instead. "
+		  "based on the Single Unix Specification, Version 2.  Not all "
+		  "Unix implementations are consistend with this specification. "
 		  "Use -warnunixlib to suppress this message."));
 	    }
 	}

@@ -455,6 +455,7 @@ typedef /*@unsignedintegraltype@*/ sa_family_t;
 ** (updated 26 May 2002)
 */
 
+typedef /*@unsignedintegraltype@*/ __socklen_t; /* not in USB, but needed by linux */
 typedef /*@unsignedintegraltype@*/ socklen_t;
 
 struct sockaddr {

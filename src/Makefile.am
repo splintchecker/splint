@@ -211,7 +211,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/letDeclNodeList.h        Headers/typeNameNodeList.h \
           Headers/lh.h                     Headers/typeNamePack.h \
           Headers/limwr.h                  Headers/typeNode.h \
-          	              Headers/uentry.h \
+          Headers/uentry.h \
           Headers/llerror.h                Headers/uentryList.h \
           Headers/llglobals.h              Headers/usymId.h \
           Headers/llgrammar2.h             Headers/usymIdSet.h \
@@ -317,7 +317,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
- 	  echo '*      Note: Expect 157 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'; \
+          echo '*      Note: Expect 157 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
@@ -334,7 +334,7 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
 	  echo '* Making mtgrammar.c'; \
-	  echo '* Expect 11 shift/reduce conflicts.'; \
+	  echo '*      Note: Expect 11 shift/reduce conflicts.'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -350,7 +350,7 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 	  $(CP) llgrammar.c.der llgrammar.c; \
 	else \
 	  echo '* Making llgrammar.c'; \
-	  echo '* Expect 2 shift/reduce conflicts'; \
+	  echo '*      Note: Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
 	  $(CP) llgrammar.c llgrammar.c.der; \
