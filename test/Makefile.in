@@ -115,7 +115,7 @@ UNITTESTS = \
   args blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray \
-  funcpointer glob globals impabstract init inparam internal iter keep libs \
+  funcpointer glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
@@ -132,7 +132,7 @@ SPLINTTESTS = $(UNITTESTS) $(INTEGTESTS)
 
 QUICKTESTS = db3
 
-CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:"
+CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:" | $(GREP) -v "config.status: creating test/Makefile" | $(GREP) -v "cd .. && " | $(GREP) -v "CONFIG_HEADERS=" | $(GREP) -v "CONFIG_FILES="
 
 
 ### Rules for tests start here
@@ -1210,6 +1210,14 @@ impabstract:
 	$(SPLINTR) -accessmodule impabstract.c 
 	$(SPLINTR) -accessmodule +hints +impabstract impabstract.c -expect 2
 	$(SPLINTR) -accessmodule +hints +impabstract impabstract -expect 4
+
+###
+### evans 2001-12-30: Handle unrecognized pre-processor directives
+###    (Reported by Pierluigi Sanzani)
+
+.PHONY: info
+info:
+	${SPLINTR} info.c -expect 4
 
 ### evans 2001-10-14: Expected errors updated
 .PHONY: init
