@@ -957,12 +957,23 @@ checkTypeDecl (uentry e, ctype rep)
 		      uentry ue = usymtab_lookupSafe (ye);
 
 		      llassert (uentry_isEitherConstant (ue));
-		      llassertprint (ctype_match (uentry_getType (ue), rrep),
-				     ("Bad enum: %s / %s",
-				      uentry_unparse (ue),
-				      ctype_unparse (rrep)));
-		      
-		      uentry_setType (ue, at);
+
+		      /* evans 2002-04-22 */
+		      if (ctype_isBool (uentry_getType (ue)))
+			{
+			  /*
+			  ** If set using -booltrue or -boolfalse, don't change the type.
+			  */
+			}
+		      else
+			{
+			  llassertprint (ctype_match (uentry_getType (ue), rrep),
+					 ("Bad enum: %s / %s",
+					  uentry_unparse (ue),
+					  ctype_unparse (rrep)));
+			  
+			  uentry_setType (ue, at);
+			}
 		    }
 		} end_enumNameList_elements;
 	    }

@@ -101,6 +101,12 @@ fileTable_getIndex (fileTable ft, cstring s)
   cstring abspath;
   if (ft == NULL) return NOT_FOUND;
   abspath = osd_absolutePath (cstring_undefined, s);
+  
+  if (context_getFlag (FLG_CASEINSENSITIVEFILENAMES))
+    {
+      abspath = cstring_downcase (abspath);
+    }
+
   DPRINTF (("Absolute path: %s: %s", s, abspath));
   res = cstringTable_lookup (ft->htable, abspath);
   cstring_free (abspath);
@@ -277,7 +283,18 @@ fileTable_internAddEntry (fileTable ft, /*@only@*/ ftentry e)
   ft->nspace--;
 
   DPRINTF (("Adding: %s", e->fname));
-  cstringTable_insert (ft->htable, e->fname, ft->nentries);
+
+  if (context_getFlag (FLG_CASEINSENSITIVEFILENAMES))
+    {
+      cstring sd = cstring_downcase (e->fname);
+      cstringTable_insert (ft->htable, sd, ft->nentries);
+      cstring_free (e->fname);
+    }
+  else
+    {
+      cstringTable_insert (ft->htable, e->fname, ft->nentries); 
+    }
+
   ft->elements[ft->nentries] = e;
 
   ft->nentries++;
@@ -644,7 +661,18 @@ fileTable_setFilePath (fileTable ft, fileId fid, cstring path)
 fileId
 fileTable_lookupBase (fileTable ft, cstring base)
 {
-  int tindex = fileTable_getIndex (ft, base);
+  int tindex;
+
+  if (context_getFlag (FLG_CASEINSENSITIVEFILENAMES))
+    {
+      cstring dbase = cstring_downcase (base);
+      tindex = fileTable_getIndex (ft, dbase);
+      cstring_free (dbase);
+    }
+  else
+    {
+      tindex = fileTable_getIndex (ft, base);
+    }
 
   if (tindex == NOT_FOUND)
     {

@@ -236,7 +236,8 @@ ctype_realishType (ctype c)
 bool
 ctype_isUA (ctype c)
 {
-  return (!ctype_isUnknown (c) && ctbase_isUA (ctype_getCtbase (c)));
+  return (!ctype_isUnknown (c) 
+	  && ctbase_isUA (ctype_getCtbase (c)));
 }
 
 bool

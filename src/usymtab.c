@@ -363,6 +363,8 @@ usymtab_initGlobalMarker () /*@globals globtab@*/
 void
 usymtab_initBool ()
 {
+  DPRINTF (("Init bool!"));
+
   if (context_getFlag (FLG_NOLIB))
     {
       ctype boolt = ctype_bool;

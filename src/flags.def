@@ -2935,6 +2935,13 @@ static flaglist flags =
     "Should use <stdarg.h> instead.",
     0, 0
   },
+  {
+    FK_HEADERS, FK_FILES, plainFlag,
+    "caseinsensitivefilenames",
+    FLG_CASEINSENSITIVEFILENAMES,
+    "file names are case insensitive (file.h and FILE.H are the same file)",
+    NULL, 0, 0
+  },
 
   /* 14.2 Generating Libraries */
 

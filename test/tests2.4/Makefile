@@ -70,7 +70,7 @@ fink:
 	$(SPLINT) fink.c 
 
 driverstub:
-	$(SPLINT) driverstub.c
+	$(SPLINT) driverstub.c -sysdirs "/usr/"
 
 alignof:
 	$(SPLINT) alignof.c -expect 2

@@ -352,7 +352,7 @@ fileloc_sameModule (fileloc f1, fileloc f2)
 	  cstring s1 = fileloc_getBase (f1);
 	  cstring s2 = fileloc_getBase (f2);
 	  
-	  return (cstring_equal (s1, s2));
+	  return (cstring_equal (s1, s2)); 
 	}
     }
 }

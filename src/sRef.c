@@ -7315,7 +7315,9 @@ sRef_makeConst (ctype ct)
   /* start modification */
   s->bufinfo.bufstate = BB_NULLTERMINATED;
   /* end modification */
-  if (ctype_isUA (ct))
+
+  /* evans 2002-04-22: added isManifestBool to avoid errors for -boolfalse initializations */
+  if (!ctype_isManifestBool (ct) && ctype_isUA (ct)) 
     {
       typeId uid = ctype_typeId (ct);
       uentry te = usymtab_getTypeEntrySafe (uid);
@@ -7325,7 +7327,6 @@ sRef_makeConst (ctype ct)
 	  sRef_mergeStateQuiet (s, uentry_getSref (te));
 	}
     }
-  
   
   s->oaliaskind = s->aliaskind;
   s->oexpkind = s->expkind;

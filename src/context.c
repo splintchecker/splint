@@ -936,11 +936,12 @@ context_resetAllFlags (void)
   gc.flags[FLG_WARNSYSFILES] = TRUE;
 
   /*
-  ** On by default for Win32, but not Unix (to support MS/VC++ error message format).
+  ** On by default for Win32, but not Unix
   */
 
 # ifdef WIN32
   gc.flags[FLG_PARENFILEFORMAT] = TRUE;
+  gc.flags[FLG_CASEINSENSITIVEFILENAMES] = TRUE;
 # endif
 }
 
@@ -2897,6 +2898,20 @@ context_setString (flagcode flag, cstring val)
 
   switch (flag)
     {
+      /*
+    case FLG_BOOLTRUE:
+      usymtab_supGlobalEntry 
+	(uentry_makeConstantValue (val, ctype_bool, 
+				   fileloc_getBuiltin (), TRUE, 
+				   multiVal_makeInt (1)));
+      break;
+    case FLG_BOOLFALSE:
+      usymtab_supGlobalEntry 
+	(uentry_makeConstantValue (val, ctype_bool, 
+				   fileloc_getBuiltin (), FALSE, 
+				   multiVal_makeInt (0)));
+      break;
+      */
     case FLG_MESSAGESTREAM:
     case FLG_WARNINGSTREAM:
     case FLG_ERRORSTREAM:
@@ -3110,7 +3125,6 @@ void context_initMod (void)
   end_allFlagCodes ;
   
   usymtab_initMod ();
-
   context_resetAllFlags ();
 
   assertSet (gc.flags); /* Can't use global in defines */
