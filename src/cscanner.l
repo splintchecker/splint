@@ -3226,25 +3226,43 @@ processSpec (int tok)
   
   if (s_inSpecPart)
     {
-      
-#if 0
 
+      /*drl 12/11/2002
+	patched to fix assert failures in constraint code.
+	Added the else if test so that splint does not treat MaxSet and MaxRead
+	as identifies*/
+	
       if (s_whichSpecPart == QMODIFIES
 	  || s_whichSpecPart == QDEFINES
 	  || s_whichSpecPart == QUSES 
 	  || s_whichSpecPart == QALLOCATES
 	  || s_whichSpecPart == QSETS
-	  || s_whichSpecPart == QRELEASES
-	  || s_whichSpecPart == QPRECLAUSE
-	  || s_whichSpecPart == QPOSTCLAUSE
-	  || s_whichSpecPart == QINVARIANT)
+	  || s_whichSpecPart == QRELEASES)
+	
 	{
+	  DPRINTF((message("Treating specifaction keyword %s as an identifiers.  (This corresponds to"
+			   " token %d and we're in the  specification denoted by %d see cgrammar_tokens.h"
+			   " for an explanation of these numbers",
+			   yytext, tok, s_whichSpecPart)
+		   ));
+			   
 	  ; /* Allow specificiation keywords to be used as identifiers in these contexts. */
 	}
+      else if ( (s_whichSpecPart == QPRECLAUSE
+		 || s_whichSpecPart == QPOSTCLAUSE
+		 || s_whichSpecPart == QINVARIANT )
+		&&  (!isConstraintToken(tok) )
+	      )
+	{
+	  DPRINTF((message("Treating specifaction keyword %s as an identifiers.  (This corresponds to"
+			   " token %d and we're in the  specification denoted by %d see cgrammar_tokens.h"
+			   " for an explanation of these numbers",
+			   yytext, tok, s_whichSpecPart)
+		   ));
+	  
+	  /* Allow specificiation keywords to be used as identifiers in these contexts. */
+	}
       else
-
-#endif
-
 	{
 	  setTokLengthT (length);
 	  RETURN_TOK (tok);
@@ -3267,4 +3285,30 @@ void cscanner_clearExpectingMetaStateName ()
 {
   llassert (expectingMetaStateName);
   expectingMetaStateName = FALSE;
+}
+
+/*drl added 12/11/2002
+  Tell whether a token has special meaning
+  within a function constraint
+*/
+
+/*uncomment the additional if statement tests
+  when minSet and minRead are supported
+*/
+int isConstraintToken(int tok)
+{
+  if (   tok == QMAXSET
+	 || tok == QMAXREAD
+      
+	 /*      || tok == QMINREAD
+		 || tok == QMINSET */
+
+     )
+    {
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
 }
