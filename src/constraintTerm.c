@@ -19,7 +19,7 @@
 
 /*@access exprNode @*/
 
-static bool constraintTerm_isDefined (constraintTerm t)
+bool constraintTerm_isDefined (constraintTerm t)
 {
   return t != NULL;
 }

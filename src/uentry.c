@@ -9116,7 +9116,7 @@ uentry_clearDecl (void)
 void
 uentry_checkDecl (void)
 {
-  if (uentry_isValid (posRedeclared))
+  if (uentry_isValid (posRedeclared) && !fileloc_isXHFile (posLoc))
     {
       llassert (fileloc_isDefined (posLoc));
 

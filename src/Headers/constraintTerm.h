@@ -26,6 +26,9 @@ struct _constraintTerm {
 
 abst_typedef struct _constraintTerm *constraintTerm;
 
+/*@i311 shouldn't need this...never null */
+extern bool constraintTerm_isDefined (constraintTerm t) /*@*/ ;
+
 extern constraintTermType constraintTerm_getKind (constraintTerm) ;
 extern /*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm) ;
 
