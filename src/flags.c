@@ -1784,7 +1784,11 @@ flags_processFlags (bool inCommandLine,
 		    {
 		      if (++i < argc)
 			{
-			  cstring arg = cstring_fromChars (argv[i]);
+			  /*drl 10/21/2002
+			    Changed this because arg can be freed when it's passed to
+			    lslinit_setInitFile and freeing argv[i] causes a seg fault
+			  */
+			  cstring arg =  cstring_fromCharsNew (argv[i]);
 			  
 			  if (opt == FLG_OPTF)
 			    {
