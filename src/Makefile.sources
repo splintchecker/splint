@@ -1,0 +1,93 @@
+###
+### Makefile.sources
+###
+
+SETSRC = globSet.c intSet.c typeIdSet.c guardSet.c usymIdSet.c sRefSet.c
+
+LISTSRC = clauseStack.c filelocStack.c \
+   cstringList.c cstringSList.c sRefSetList.c ctypeList.c \
+   enumNameList.c enumNameSList.c exprNodeList.c exprNodeSList.c \
+   uentryList.c fileIdList.c filelocList.c qualList.c \
+   flagMarkerList.c idDeclList.c
+
+CPPSRC = cppmain.c cpplib.c cppexp.c cpphash.c cpperror.c
+
+CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c specialClauses.c \
+   ctype.c cvar.c clabstract.c idDecl.c clause.c
+
+LCLINTSRC = exprNode.c exprChecks.c llmain.c
+ CHECKSRC   = structNames.c aliasChecks.c varKinds.c nameChecks.c
+
+ GLOBSRC    = context.c globals.c flags.c general.c osd.c
+
+GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y
+GRAMSRC    = cgrammar.c cscanner.c 
+
+GENERALSRC = cstring.c fileloc.c message.c source.c \
+    fileTable.c hashTable.c llerror.c messageLog.c \
+    flagMarker.c aliasTable.c ynm.c sRefTable.c \
+    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c \
+    constraint.c \
+    constraintTerm.c \
+    constraintExpr.c \
+    constraintExprData.c \
+    constraintResolve.c \
+    constraintOutput.c \
+    environmentTable.c \
+    constraintList.c \
+    constraintGeneration.c \
+    forjunk.c \
+    exprData.c
+
+###
+### These source files are relevant for LCL only.
+### Not uses if NOLCL is set.
+###
+
+LCLONLYSRC = usymtab_interface.c abstract.c ltoken.c lclscanline.c \
+   lclsyntable.c lcltokentable.c sort.c symtable.c lclinit.c \
+   shift.c lclscan.c lsymbol.c mapping.c
+
+LSLSRC    = tokentable.c scan.c scanline.c lslparse.c \
+   lh.c checking.c lclctypes.c imports.c lslinit.c syntable.c 
+
+LCLGRAMS    = llgrammar.y signature.y
+LCLGRAMSSRC = llgrammar.c signature.c
+
+LCLSETSRC = lsymbolSet.c sigNodeSet.c lslOpSet.c sortSet.c
+
+LCLLISTSRC = initDeclNodeList.c sortList.c declaratorInvNodeList.c \
+   interfaceNodeList.c sortSetList.c declaratorNodeList.c \
+   letDeclNodeList.c stDeclNodeList.c lslOpList.c storeRefNodeList.c \
+   lsymbolList.c termNodeList.c ltokenList.c traitRefNodeList.c \
+   pairNodeList.c typeNameNodeList.c fcnNodeList.c paramNodeList.c \
+   programNodeList.c varDeclarationNodeList.c varNodeList.c \
+   quantifierNodeList.c replaceNodeList.c importNodeList.c
+
+ifeq ($(NOLCL), 1)
+LCLSRC     =
+else 
+LCLSRC     = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) $(LCLGRAMSSRC)
+endif
+
+COMMONSRC = $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) $(GLOBSRC) \
+             $(IFACESRC) $(LISTSRC) $(SETSRC) $(LCLSRC) $(LCLGRAMSRC)
+
+SRC        = $(COMMONSRC) $(LCLINTSRC)
+ALLSRC     = $(SRC) $(GRAMSRC) 
+
+## all except cscanner.c
+ALMOSTALLSRC = llgrammar.c cgrammar.c signature.c $(SRC)  
+OBJ        = $(subst .c,.o,$(ALLSRC)) 
+
+CHECKS     = $(subst .c,.check,$(SRC))
+
+ALLHEADERS = 
+
+SANITIZERSRC = $(COMMONSRC) cscanner.c sgrammar.c sNode.c sChecks.c sMain.c
+SANITIZEROBJ = $(subst .c,.o,$(SANITIZERSRC))
+
+
+
+
+
