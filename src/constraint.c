@@ -716,6 +716,22 @@ void constraint_printErrorPostCondition (constraint c, fileloc loc)
     }
 }
 
+ /*drl added 8-11-001*/
+cstring constraint_printLocation (/*@observer@*/ /*@temp@*/ constraint c) /*@*/
+{
+  cstring string, ret;
+  fileloc errorLoc;
+  
+  string = constraint_print(c);
+
+  errorLoc = constraint_getFileloc(c);
+
+  ret = message ("constraint: %q @ %q", string, fileloc_unparse(errorLoc) );
+
+  fileloc_free(errorLoc);
+  return ret;
+
+}
 
 
 
@@ -737,7 +753,7 @@ void constraint_printError (constraint c, fileloc loc)
   else
     {
       llassert(FALSE);
-      DPRINTF(( message("constraint %s had undefined fileloc %s", constraint_print(c), fileloc_unparse(temp) ) ));
+      TPRINTF(( message("constraint %s had undefined fileloc %s", constraint_print(c), fileloc_unparse(temp) ) ));
       fileloc_free(temp);
       errorLoc = fileloc_copy(errorLoc);
     }
@@ -1123,7 +1139,7 @@ void constraint_dump (/*@observer@*/ constraint c,  FILE *f)
 }
 
 
-int constraint_compare (/*@observer@*/ /*@temp@*/ constraint * c1, /*@observer@*/ /*@temp@*/ constraint * c2) /*@*/
+int constraint_compare (/*@observer@*/ /*@temp@*/ const constraint * c1, /*@observer@*/ /*@temp@*/ const constraint * c2) /*@*/
 {
   fileloc loc1, loc2;
 

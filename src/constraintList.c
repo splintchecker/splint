@@ -166,6 +166,52 @@ extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList
 }
 
 
+
+static /*@only@*/ cstring
+constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
+{
+  int i;
+  cstring st = cstring_undefined;
+  bool first = TRUE;
+  
+  if (!constraintList_isDefined (s))
+    {
+      return cstring_makeLiteral ("<undefined>");
+    }
+
+  if (s->nelements == 0)
+    {
+      st = cstring_makeLiteral("<List Empty>");
+      return st;
+    }
+
+  for (i = 0; i < s->nelements; i++)
+    {
+      cstring type = cstring_undefined;
+      constraint current = s->elements[i];
+
+      if (constraint_isDefined(current) )
+	{
+	  cstring temp1;
+	      temp1 = constraint_printLocation(current);
+	  type = message ("%q %q\n", type, temp1 );
+	}
+
+      if (first)
+	{
+	  st = type;
+	  first = FALSE;
+	}
+      else
+	{
+	  st = message ("%q, %q", st, type);
+	}
+    } //end for
+
+  return st;
+}
+     
+
 /*@only@*/ cstring
 constraintList_print (/*@temp@*/ constraintList s) /*@*/
 {
@@ -529,7 +575,16 @@ void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
 
 constraintList constraintList_sort (/*@returned@*/ constraintList ret)
 {
+  
+  DPRINTF(( message("Before constraint_sort %q",  constraintList_printLocation(ret) ) ));
+  
   qsort (ret->elements, (size_t) ret->nelements,
 	 (sizeof (*ret->elements) ), constraint_compare);
+
+    DPRINTF((message("After constraint_sort %q",  constraintList_printLocation(ret) ) ));
+
+    DPRINTF((message("onstraint_sort returning") ));
   return ret;
 }
+
+
