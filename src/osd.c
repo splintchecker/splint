@@ -1078,11 +1078,16 @@ cstring osd_outputPath (cstring filename)
     }
   else
     {
+
+      /* drl   2002-10/14 I had to put this code back*/
+      /* the case that needs it is when splint is given an absolute path name of a file outside of the current directory and the subdirectories below the current directory. e.g. cd /home/; splint /tmp/prog.c
+       */
+      
       /* evans 2002-02-05 This is horrible code, which I've removed.  I couldn't find any
       ** test cases that need it, so I hope I'm not breaking anything.
       */
+      /*#if 0*/
 
-# if 0      
       if (*path_p != '\0')
         {
           --cwd_p;
@@ -1100,7 +1105,7 @@ cstring osd_outputPath (cstring filename)
 
       /* Find out how many directory levels in cwd were *not* matched.  */
       while (*cwd_p != '\0')
-	{s
+	{
 	  if (osd_isConnectChar (*cwd_p++))
 	    unmatched_slash_count++;
 	}
@@ -1113,8 +1118,9 @@ cstring osd_outputPath (cstring filename)
 	  /* fprintf (stderr, "Returning filename: %s [%p]\n", filename); */
 	  return cstring_copy (filename);
 	}
-# endif
-      
+
+      /*drl 10-14-2002 end previously removed code */
+      /*#endif*/
       /* For each of them, put a `../' at the beginning of the short name.  */
       while (unmatched_slash_count-- > 0)
         {
