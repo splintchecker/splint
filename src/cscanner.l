@@ -660,10 +660,15 @@ struct skeyword s_keytable[] = {
   { "reldef", QRELDEF } ,
   { "observer", QOBSERVER } ,
   { "exits", QEXITS } ,
+  { "noreturn", QEXITS } ,
   { "mayexit", QMAYEXIT } ,
+  { "maynotreturn", QMAYEXIT } ,
   { "trueexit", QTRUEEXIT } ,
   { "falseexit", QFALSEEXIT } ,
+  { "noreturnwhentrue", QTRUEEXIT } ,
+  { "noreturnwhenfalse", QFALSEEXIT } ,
   { "neverexit", QNEVEREXIT } ,
+  { "alwaysreturns", QNEVEREXIT } ,
   { "temp", QTEMP } ,
   { "shared", QSHARED } ,
   { "ref", QREF } ,
@@ -2027,7 +2032,7 @@ static int handleLlSpecial ()
 	  if (!context_getFlag (FLG_NOCOMMENTS))
 	    {
 	      cstring flagname = thisflag;
-	      flagcode fflag = identifyFlag (flagname);
+	      flagcode fflag = flags_identifyFlag (flagname);
 	      
 	      if (flagcode_isSkip (fflag))
 		{

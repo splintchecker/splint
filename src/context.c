@@ -724,21 +724,21 @@ context_resetAllFlags (void)
 	    case FLG_INDENTSPACES: 
 	      val = DEFAULT_INDENTSPACES; break;
 	    case FLG_EXTERNALNAMELEN:
-	      val = DEFAULT_EXTERNALNAMELEN; break;
+	      val = ISO99_EXTERNALNAMELEN; break;
 	    case FLG_INTERNALNAMELEN:
-	      val = DEFAULT_INTERNALNAMELEN; break;
+	      val = ISO99_INTERNALNAMELEN; break;
 	    case FLG_COMMENTCHAR: 
 	      val = (int) DEFAULT_COMMENTCHAR; break;
 	    case FLG_CONTROLNESTDEPTH:
-	      val = (int) DEFAULT_CONTROLNESTDEPTH; break;
+	      val = (int) ISO99_CONTROLNESTDEPTH; break;
 	    case FLG_STRINGLITERALLEN:
-	      val = (int) DEFAULT_STRINGLITERALLEN; break;
+	      val = (int) ISO99_STRINGLITERALLEN; break;
 	    case FLG_INCLUDENEST:
-	      val = (int) DEFAULT_INCLUDENEST; break;
+	      val = (int) ISO99_INCLUDENEST; break;
 	    case FLG_NUMSTRUCTFIELDS:
-	      val = (int) DEFAULT_NUMSTRUCTFIELDS; break;
+	      val = (int) ISO99_NUMSTRUCTFIELDS; break;
 	    case FLG_NUMENUMMEMBERS:
-	      val = (int) DEFAULT_NUMENUMMEMBERS; break;
+	      val = (int) ISO99_NUMENUMMEMBERS; break;
 	    case FLG_EXPECT:
 	    case FLG_LCLEXPECT:
 	      break;
@@ -3855,8 +3855,8 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
       DOSET (FLG_SPECRETIMPONLY, b);
       DOSET (FLG_SPECSTRUCTIMPONLY, b);
       break;
-    case FLG_ANSILIMITS: 
-      DOSET (FLG_ANSILIMITS, b);
+    case FLG_ANSI89LIMITS: 
+      DOSET (FLG_ANSI89LIMITS, b);
       DOSET (FLG_CONTROLNESTDEPTH, b);
       DOSET (FLG_STRINGLITERALLEN, b);
       DOSET (FLG_INCLUDENEST, b);
@@ -3865,11 +3865,32 @@ context_setFlagAux (flagcode f, bool b, bool inFile,
       
       if (b)
 	{
-	  context_setValue (FLG_CONTROLNESTDEPTH, DEFAULT_CONTROLNESTDEPTH);
-	  context_setValue (FLG_STRINGLITERALLEN, DEFAULT_STRINGLITERALLEN);
-	  context_setValue (FLG_INCLUDENEST, DEFAULT_INCLUDENEST);
-	  context_setValue (FLG_NUMSTRUCTFIELDS, DEFAULT_NUMSTRUCTFIELDS);
-	  context_setValue (FLG_NUMENUMMEMBERS, DEFAULT_NUMENUMMEMBERS);
+	  context_setValue (FLG_CONTROLNESTDEPTH, ANSI89_CONTROLNESTDEPTH);
+	  context_setValue (FLG_STRINGLITERALLEN, ANSI89_STRINGLITERALLEN);
+	  context_setValue (FLG_INCLUDENEST, ANSI89_INCLUDENEST);
+	  context_setValue (FLG_NUMSTRUCTFIELDS, ANSI89_NUMSTRUCTFIELDS);
+	  context_setValue (FLG_NUMENUMMEMBERS, ANSI89_NUMENUMMEMBERS);
+	  context_setValue (FLG_EXTERNALNAMELEN, ANSI89_EXTERNALNAMELEN);
+	  context_setValue (FLG_INTERNALNAMELEN, ANSI89_INTERNALNAMELEN);
+	}
+      break;
+    case FLG_ISO99LIMITS: 
+      DOSET (FLG_ISO99LIMITS, b);
+      DOSET (FLG_CONTROLNESTDEPTH, b);
+      DOSET (FLG_STRINGLITERALLEN, b);
+      DOSET (FLG_INCLUDENEST, b);
+      DOSET (FLG_NUMSTRUCTFIELDS, b);
+      DOSET (FLG_NUMENUMMEMBERS, b);
+      
+      if (b)
+	{
+	  context_setValue (FLG_CONTROLNESTDEPTH, ISO99_CONTROLNESTDEPTH);
+	  context_setValue (FLG_STRINGLITERALLEN, ISO99_STRINGLITERALLEN);
+	  context_setValue (FLG_INCLUDENEST, ISO99_INCLUDENEST);
+	  context_setValue (FLG_NUMSTRUCTFIELDS, ISO99_NUMSTRUCTFIELDS);
+	  context_setValue (FLG_NUMENUMMEMBERS, ISO99_NUMENUMMEMBERS);
+	  context_setValue (FLG_EXTERNALNAMELEN, ISO99_EXTERNALNAMELEN);
+	  context_setValue (FLG_INTERNALNAMELEN, ISO99_INTERNALNAMELEN);
 	}
       break;
     case FLG_EXTERNALNAMELEN:

@@ -49,6 +49,7 @@ void annotationInfo_free (annotationInfo ainfo)
     {
       cstring_free (ainfo->name);
       fileloc_free (ainfo->loc);
+      mtContextNode_free (ainfo->context); /* evans 2002-01-03 */
       sfree (ainfo);
     }
 }

@@ -864,17 +864,12 @@ flags_identifyFlagAux (cstring s, bool quiet)
     }
 
   /*
-  ** For our European friends...
+  ** Backwards compatibility for our American friends...
   */
 
-  if (cstring_equalLit (s, "isolib"))
+  if (cstring_equalLit (s, "ansilib"))
     {
       return FLG_ANSILIB;
-    }
-
-  if (cstring_equalLit (s, "isostrictlib"))
-    {
-      return FLG_STRICTLIB;
     }
 
   if (cstring_equalLit (s, "ansistrictlib"))
@@ -882,24 +877,19 @@ flags_identifyFlagAux (cstring s, bool quiet)
       return FLG_STRICTLIB;
     }
 
-  if (cstring_equalLit (s, "skipisoheaders"))
+  if (cstring_equalLit (s, "skipansiheaders"))
     {
       return FLG_SKIPANSIHEADERS;
     }
 
-  if (cstring_equalLit (s, "isoreserved"))
+  if (cstring_equalLit (s, "ansireserved"))
     {
       return FLG_ANSIRESERVED;
     }
 
-  if (cstring_equalLit (s, "isoreservedinternal"))
+  if (cstring_equalLit (s, "ansireservedinternal"))
     {
       return FLG_ANSIRESERVEDLOCAL;
-    }
-
-  if (cstring_equalLit (s, "isolimits"))
-    {
-      return FLG_ANSILIMITS;
     }
 
   /*
@@ -918,6 +908,16 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	      "see lclint -help accessmodule"));
 	}
       
+      return SKIP_FLAG;
+    }
+  else if (cstring_equalLit (s, "ansilimits"))
+    {
+	  llerror_flagWarning 
+	    (cstring_makeLiteral
+	     ("ansilimits flag is no longer supported.  It has been replaced by ansi89limits and "
+	      "iso99limits to select either the lower translation limits imposed by the ANSI89 "
+	      "standard or the typically higher limits prescribed by ISO C99."));
+
       return SKIP_FLAG;
     }
   else if (cstring_equalLit (s, "staticmods"))

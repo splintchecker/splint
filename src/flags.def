@@ -1523,10 +1523,10 @@ static flaglist flags =
   },
   {
     FK_LIBS, FK_INIT, globalFlag,
-    "ansilib",
+    "isolib",
     FLG_ANSILIB,
-    "use ANSI (ISO) standard library",
-    "Library based on the ANSI standard library specification is used.", 
+    "use normal standard library",
+    "Library based on the ISO standard library specification is used.", 
     0, 0
   },
   {
@@ -2171,7 +2171,7 @@ static flaglist flags =
     "readonlystrings",
     FLG_READONLYSTRINGS,
     "string literals are read-only (error if one is modified or released)",
-    "String literals are read-only (ANSI semantics). An error is reported "
+    "String literals are read-only. An error is reported "
     "if a string literal may be modified or released.",
     0, 0
   },
@@ -2446,10 +2446,10 @@ static flaglist flags =
   },
   {
     FK_NAMES, FK_ANSI, modeFlag,
-    "ansireserved",
+    "isoreserved",
     FLG_ANSIRESERVED,
     "external name conflicts with name reserved for system or standard library",
-    "External name is reserved for system in ANSI standard.",
+    "External name is reserved for system use by ISO C99 standard.",
     0, 0
   },
   {
@@ -2464,10 +2464,10 @@ static flaglist flags =
   },
   {
     FK_NAMES, FK_ANSI, modeFlag,
-    "ansireservedinternal",
+    "isoreservedinternal",
     FLG_ANSIRESERVEDLOCAL,
     "internal name conflicts with name reserved for system or standard library",
-    "Internal name is reserved for system in ANSI standard (this should not be necessary unless you are worried about C library implementations that violate the standard and use macros).",
+    "Internal name is reserved for system in ISO C99 standard (this should not be necessary unless you are worried about C library implementations that violate the standard and use macros).",
     0, 0
   },
   {
@@ -2480,7 +2480,7 @@ static flaglist flags =
     "using the number of significant characters. According to "
     "ANSI Standard (3.1), an implementation may only consider the first 6 "
     "characters significant, and ignore alphabetical case "
-    "distinctions. The "
+    "distinctions (ISO C99 requires 31). The "
     "+externalnamelen <n> flag may be used to change the number "
     "of significant characters, and -externalnamecaseinsensitive to make "
     "alphabetical case significant in external names.",
@@ -2491,8 +2491,9 @@ static flaglist flags =
     "externalnamelen",
     FLG_EXTERNALNAMELEN,
     "set the number of significant characters in an external name",
-    "Sets the number of significant characters in an external name (ANSI "
-    "default is 6.)  Sets +distinctexternalnames.",
+    "Sets the number of significant characters in an external name (default is 6 for old "
+    "ANSI89 limit, C99 requires 31). "
+    "Sets +distinctexternalnames.",
     0, 0
   },
   {
@@ -2500,7 +2501,7 @@ static flaglist flags =
     "externalnamecaseinsensitive",
     FLG_EXTERNALNAMECASEINSENSITIVE,
     "alphabetic comparisons for external names are case-insensitive",
-    "Make alphabetic case insignificant in external names. By ANSI "
+    "Make alphabetic case insignificant in external names. By ANSI89 "
     "standard, case need not be significant in an external name. "
     "If +distinctexternalnames is not set, sets "
     "+distinctexternalnames with unlimited external name length.",
@@ -2514,8 +2515,8 @@ static flaglist flags =
     "the number of significant characters",
     "An internal name is not distinguishable from another internal name "
     "using the number of significant characters. According to "
-    "ANSI Standard (3.1), an implementation may only consider the first 31 "
-    "characters significant. The "
+    "ANSI89 Standard (3.1), an implementation may only consider the first 31 "
+    "characters significant (ISO C99 specified 63). The "
     "+internalnamelen <n> flag changes the number "
     "of significant characters, -internalnamecaseinsensitive to makes "
     "alphabetical case significant, and "
@@ -2528,7 +2529,7 @@ static flaglist flags =
     "internalnamelen",
     FLG_INTERNALNAMELEN,
     "set the number of significant characters in an internal name",
-    "Sets the number of significant characters in an internal name (ANSI "
+    "Sets the number of significant characters in an internal name (ANSI89 "
     "default is 31.)  Sets +distinctinternalnames.",
     0, 0
   },
@@ -2540,7 +2541,7 @@ static flaglist flags =
     "(-internalnamecaseinsensitive means case is significant)" ,
     "Set whether case is significant an internal names "
     "(-internalnamecaseinsensitive "
-    "means case is significant). By ANSI default, case is not "
+    "means case is significant). By ANSI89 default, case is not "
     "significant.  If +distinctinternalnames is not set, sets "
     "+distinctinternalnames with unlimited internal name length.",
     0, 0
@@ -2775,7 +2776,7 @@ static flaglist flags =
     "controlnestdepth",
     FLG_CONTROLNESTDEPTH,
     "set maximum nesting depth of compound statements, iteration control "
-    "structures, and selection control structures (ANSI minimum is 15)",
+    "structures, and selection control structures (ANSI89 minimum is 15; ISO99 is 63)",
     "Maximum number of control levels exceeded.",
     0, 0
   },
@@ -2783,7 +2784,7 @@ static flaglist flags =
     FK_LIMITS, FK_ANSI, modeValueFlag,
     "stringliterallen",
     FLG_STRINGLITERALLEN,
-    "set maximum length of string literals (ANSI minimum is 509)",
+    "set maximum length of string literals (ANSI89 minimum is 509; ISO99 is 4095)",
     "Maximum length of string literal exceeded.",
     0, 0
   },
@@ -2791,7 +2792,7 @@ static flaglist flags =
     FK_LIMITS, FK_ANSI, modeValueFlag,
     "numstructfields",
     FLG_NUMSTRUCTFIELDS,
-    "set maximum number of fields in a struct or union (ANSI minimum is 127)",
+    "set maximum number of fields in a struct or union (ANSI89 minimum is 127; ISO99 is 1023)",
     "Maximum number of fields in a struct or union exceeded.",
     0, 0
   },
@@ -2799,7 +2800,7 @@ static flaglist flags =
     FK_LIMITS, FK_ANSI, modeValueFlag,
     "numenummembers",
     FLG_NUMENUMMEMBERS,
-    "set maximum number of members of an enum (ANSI minimum is 127)",
+    "set maximum number of members of an enum (ANSI89 minimum is 127; ISO99 is 1023)",
     "Limit on maximum number of members of an enum is exceeded.",
     0, 0
   },
@@ -2813,10 +2814,19 @@ static flaglist flags =
   },
   {
     FK_LIMITS, FK_ANSI, specialFlag,
-    "ansilimits",
-    FLG_ANSILIMITS,
+    "ansi89limits",
+    FLG_ANSI89LIMITS,
     "check for violations of standard limits (controlnestdepth, "
-    "stringliterallen, includenest, numstructfields, numenummembers)",
+    "stringliterallen, includenest, numstructfields, numenummembers) based on ANSI89 standard",
+    NULL,
+    0, 0
+  },
+  {
+    FK_LIMITS, FK_ANSI, specialFlag,
+    "iso99limits",
+    FLG_ISO99LIMITS,
+    "check for violations of standard limits (controlnestdepth, "
+    "stringliterallen, includenest, numstructfields, numenummembers) based on ISO99 standard",
     NULL,
     0, 0
   },

@@ -53,7 +53,7 @@ idDecl_free (idDecl t)
     {
       cstring_free (t->id);
       qtype_free (t->typ);
-      /*@!#@#! functionClauseList_free (t->clauses);*/
+      functionClauseList_free (t->clauses); /* evans 2002-01-03: splint catches this now! */
       sfree (t);
     }
 }

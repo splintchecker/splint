@@ -74,19 +74,23 @@ lltX_bool isxdigit (int c) /*@*/ ;
 char tolower (int c) /*@*/ ;
 char toupper (int c) /*@*/ ;
 # else
-lltX_bool /*@alt int@*/ isalnum (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isalpha (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ iscntrl (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isdigit (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isgraph (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ islower (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isprint (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ ispunct (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isspace (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isupper (int /*@alt unsigned char@*/ c) /*@*/ ;
-lltX_bool /*@alt int@*/ isxdigit (int /*@alt unsigned char@*/ c) /*@*/ ;
-char /*@alt int@*/ tolower (int /*@alt unsigned char@*/ c) /*@*/ ;
-char /*@alt int@*/ toupper (int /*@alt unsigned char@*/ c) /*@*/ ;
+/*
+** evans 2002-01-03: added alt char (was alt unsigned char)
+*/
+
+lltX_bool /*@alt int@*/ isalnum (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isalpha (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ iscntrl (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isgraph (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ islower (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isprint (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ ispunct (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isspace (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isupper (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+lltX_bool /*@alt int@*/ isxdigit (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+char /*@alt int@*/ tolower (int /*@alt char, unsigned char@*/ c) /*@*/ ;
+char /*@alt int@*/ toupper (int /*@alt char, unsigned char@*/ c) /*@*/ ;
 # endif
 
 /*
