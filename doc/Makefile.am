@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 #this is just a hack to get make dist to work.
 
 ## Include them in the distribution
-EXTRA_DIST = splint.1 freebsd.html linux.html sunos.html
+EXTRA_DIST = splint.1 freebsd.html linux.html sunos.html manual.doc faq.txt realloc.doc
 
 man_MANS = splint.1 
 

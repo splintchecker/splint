@@ -1,0 +1,138 @@
+
+Can we use your software in our company?  (We are not a GNU organization.)
+
+Yes, splint is GPL-licensed.  Anyone may use it.  If you want to
+redistribute it, check the license for details or contact us.
+
+I downloaded the splint tgz file but can't figure out how to extract it.  There is no 'z' option on the tar on my system.
+
+Check to see if there is GNU tar on your system, it is usually invoked by the command gtar or gnutar.  GNU tar supports the -z option.
+
+You can also unzip the file then untar it.  Do: gunzip filename.tar.gz to unzip then tar -xvf filename.tar
+
+I want to use Splint in win2000.  How do I do that?
+
+See www.splint.org for information on Splint.
+http://www.splint.org/win32.html for Windows instructions.
+
+ I have installed Splint for Windows 2000.  Where should I put the ".splintrc" file?
+
+ For Win32, Splint looks for splint.rc instead of .splintrc due to the DOS
+filename problems.  It will look first in the current directory, then in
+your home directory.  See the Splint manual for more information.
+
+What are all the compilers Splint can support ?
+
+It is independent from your compiler.
+
+
+How does Splint handle const?
+
+Splint doesn't interpret const (at all).  See the manual section on
+modifies checking (http://www.splint.org/manual/html/sec7.html).
+
+Why do I get a warning when multiplying different integer types?  The C standard says this is ok.  Why is this wrong?
+
+There are lots of things that the C spec allows and defines clearly, that 
+Splint will provide warnings for.  It's not a question of it being "wrong",
+it's a matter of it being likely to reveal a programming mistake.
+
+The C standard says that what I'm doing is okay. Why does Splint give me a warning?
+
+See the previous question.
+
+Splint complains if I ignore the return value of scanf but not printf?
+
+This is just a strategic decision --- we view ignoring the result of a
+scanf to be more likely to reveal a problem with the code than ignoring
+the result of a printf, even though strict programmers will want to check
+printf also.
+
+If you want stricter checking use the flags  +ansistrictlib, +posixstrictlib, +unixstrictlib to select the strict versions of these libraries.
+
+I develop code on an embedded system with a compiler that uses nonstandard key words and data types.  I would like run Splint on my code but these nonstandard keywords cause parse errors.  What should I do?
+
+You can often use -D to solve this problem.
+
+If you just want to ignore a keyword, you can add
+
+-Dnonstandardkeyword=
+
+to make the preprocessor eliminate the keyword, where nonstandardkeyword is the name of the keyword.  Similarly, you can use
+-Dspecialtype=int
+to make a custom type parse as an int.
+
+How can I get Splint to recognize directory trees and local source include directories?  I've tried putting them in my path but it doesn't seem to look beyond the current directory.
+
+You can use -I to set the include path like you would with a compiler.
+
+I heard that we will get lot of parse errors when we run this tool first time. Hence we need to modify source code . Is it correct ?
+
+It depends, splint doesn't support all C99 extensions.
+
+I heard that Splint can generate some spurious errors ( not genuine errors).  Is it correct ?
+
+Yes, please see www.splint.org for details.
+
+When I build Splint I get the following error:
+
+ Checking for...
+ Checking manual...
+cmx   > / Checking tests2.2...
+ Checking tests2.4...
+ Checking tests2.5...
+ Checking db1...
+ 0a1,2
+ > /cmx/tools/make -e clean
+ > /cmx/tools/make -e check
+ *** FAIL ***
+ Checking db2...
+ 0a1,/tools/make -e clean
+ > /cmx/tools/make -e check
+ *** FAIL ***
+ Checking db3...
+
+Should I be worried?
+ 
+Those diffs look harmless.  It is likely that your make is set up slightly differently than ours.
+
+I just installed Splint on a new machine.  I get a bunch of errors in the test suite.  When I look through the results, it seems like Splint is not reporting any errors in the code it analyzes.  What is going on?
+
+One possibility is that the installation directory where the test suite is
+running is on the system path (hence, splint won't report errors if
+-sysdirerrors is set, as it is by default).  Try adding +sysdirerrors to
+the command line for the test suite to see if that is the problem, or installing Splint in a different directory not in the system path.
+
+
+I get parse errors when I try to run Splint on code like #define MACROdebug(...) blahblah .  Can I use variadic macros in Splint?
+
+Sorry, Splint doesn't yet support variadic macros. We hope to fix this in a future release.
+
+I use realloc in my code how can I get Splint in check this code more effectively?
+
+realloc has complicated semantics that make it difficult to use correctly.  Make sure that you understand realloc and that you need to use it.
+
+If you decide to use realloc we recommend that you wrapper it.  The document using wrapper functions explains how to do this.  That doucment is included in the Splint documentation and is also available at:
+HTTP://INSERT_A_VALID_URL_WHEN_THE_document_is_ready.
+
+I think I've found a bug in Splint what should I do?
+
+See http://www.splint.org/bugs.html for a list of known bugs and instructions on reporting bugs.
+
+Splint tells me that there is a bug and I should report it.  What information should I send?
+
+Ideally we would like enough code to reproduce the problem.  Small snipits of code which trigger the bug are the best.
+
+If we're not able to reproduce the problem than we are unlikely to be able to patch Splint.  However, we would still appreciate hearing about the bug and may be able at least to offer you advice on working around the problem.
+
+My question isn't answered here.  How can I get more information about Splint?
+
+First check the Splint manual and the mailing list archives.
+
+The Splint manual is available at: http://www.splint.org/manual/
+The mailing list archives are at:
+http://www.mail-archive.com/lclint-interest%40virginia.edu/
+
+If you're still unable to find the information to answer your question, you can try posting your question to the splint-discuss mailing list (see http://www.splint.org/lists.html)
+
+You can also email us at splint@splint.org.
