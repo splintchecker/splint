@@ -1205,6 +1205,17 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 				      sRef_unparse (fref)),
 			     loc);
 			}
+		      /* evans 2001-08-21: added this branch for global returns */
+		      else if (transferType == TT_GLOBRETURN)
+			{
+			  voptgenerror 
+			    (FLG_UNIONDEF,
+			     message ("Union %q reachable from global %q has "
+				      "no defined field",
+				      sRef_unparse (fref),
+				      sRef_unparse (sRef_getRootBase (fref))),
+			     loc);
+			}
 		      else if (transferType == TT_DOASSIGN
 			       || transferType == TT_FIELDASSIGN
 			       || transferType == TT_GLOBINIT)
@@ -3998,8 +4009,6 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 	    
 	    if (nval == stateValue_error)
 	      {
-		llassert (cstring_isDefined (msg));
-		
 		if (transferType == TT_LEAVETRANS)
 		  {
 		    BADBRANCH;
@@ -4009,12 +4018,13 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Function returns with global %q in inconsistent state (%q is %q, should be %q): %q",
+			 ("Function returns with global %q in inconsistent state (%q is %q, should be %q)%q",
 			  sRef_unparse (sRef_getRootBase (fref)),
 			  sRef_unparse (fref),
 			  stateValue_unparseValue (fval, minfo),
 			  stateValue_unparseValue (tval, minfo),
-			  msg),
+			  cstring_isDefined (msg) 
+			  ? message (": %s", msg) : cstring_undefined),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
@@ -4025,12 +4035,13 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Function called with global %q in inconsistent state (%q is %q, should be %q): %q",
+			 ("Function called with global %q in inconsistent state (%q is %q, should be %q)%q",
 			  sRef_unparse (sRef_getRootBase (fref)),
 			  stateValue_unparseValue (fval, minfo),
 			  sRef_unparse (fref),
 			  stateValue_unparseValue (tval, minfo),
-			  msg),
+			  cstring_isDefined (msg) 
+			  ? message (": %s", msg) : cstring_undefined),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
@@ -4041,12 +4052,13 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Function returns with parameter %q in inconsistent state (%q is %q, should be %q): %q",
+			 ("Function returns with parameter %q in inconsistent state (%q is %q, should be %q)%q",
 			  sRef_unparse (sRef_getRootBase (fref)),
+			  sRef_unparse (fref),			
 			  stateValue_unparseValue (fval, minfo),
-			  sRef_unparse (fref),
 			  stateValue_unparseValue (tval, minfo),
-			  msg),
+			  cstring_isDefined (msg) 
+			  ? message (": %s", msg) : cstring_undefined),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
@@ -4057,12 +4069,13 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Invalid transfer from %q %x to %q (%q): %q",
+			 ("Invalid transfer from %q %x to %q (%q)%q",
 			  stateValue_unparseValue (fval, minfo),
 			  sRef_unparse (fref),
 			  stateValue_unparseValue (tval, minfo),
 			  sRef_unparse (tref),
-			  msg),
+			  cstring_isDefined (msg) 
+			  ? message (": %s", msg) : cstring_undefined),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
@@ -4070,7 +4083,7 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 		  }
 
 	      }
-	    
+	    	    
 	    if (stateValue_getValue (fval) != nval)
 	      {
 		stateValue_updateValueLoc (fval, nval, loc);
@@ -4182,22 +4195,24 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	      }
 	    else
 	      {
-		if (cstring_isDefined (msg)) 
+		if (nval == stateValue_error)
 		  {
 		    /*@i32 print extra info for assignments@*/
 		    
 		    if (optgenerror 
 			(FLG_STATETRANSFER,
 			 message
-			 ("Invalid transfer from %q %x to %q (%s): %q",
+			 ("Invalid transfer from %q %x to %q%q: %q",
 			  stateValue_unparseValue (fval, minfo),
 			  sRef_unparse (fref),
 			  stateValue_unparseValue (tval, minfo),
-			  msg,
+			  cstring_isDefined (msg) 
+			  ? message (" (%s)", msg) : cstring_undefined,
 			  transferErrorExcerpt (transferType, fexp, texp, fcn)),
 			 loc))
 		      {
 			sRef_showMetaStateInfo (fref, fkey);
+			sRef_showMetaStateInfo (tref, fkey);
 		      }
 		    else
 		      {

@@ -165,7 +165,7 @@ struct s_uentry
 /*
 ** There is no uentry_isDefined to avoid confusion with
 ** uentry_isCodeDefined (which was previously called 
-** uentry_isDefined.
+** uentry_isDefined).
 */
 
 extern /*@truenull@*/ bool uentry_isUndefined (/*@special@*/ uentry p_e) 

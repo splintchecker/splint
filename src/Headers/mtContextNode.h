@@ -12,7 +12,7 @@
 
 typedef enum
 {
-  MTC_ANY = 0, MTC_PARAM, MTC_RESULT, MTC_REFERENCE, MTC_CLAUSE, MTC_LITERAL, MTC_NULL,
+  MTC_ANY = 0, MTC_PARAM, MTC_RESULT, MTC_REFERENCE, MTC_CLAUSE, MTC_LITERAL, MTC_NULL
 } mtContextKind ;
 
 /*@constant int MTC_NUMCONTEXTS@*/
@@ -55,6 +55,8 @@ extern bool mtContextNode_matchesRef (mtContextNode, sRef) /*@*/ ;
 
 extern bool mtContextNode_matchesRefStrict (mtContextNode, sRef) /*@*/ ;
    /* Doesn't allow matches with unknown type. */
+
+extern void mtContextNode_showRefError (mtContextNode, sRef) ;
 
 # else
 # error "Multiple include"

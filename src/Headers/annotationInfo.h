@@ -56,6 +56,8 @@ extern void annotationInfo_free (/*@only@*/ annotationInfo) ;
 extern /*@observer@*/ cstring annotationInfo_dump (annotationInfo) ;
 extern /*@observer@*/ annotationInfo annotationInfo_undump (char **p_s) /*@modifies *p_s@*/ ;
 
+extern void annotationInfo_showContextRefError (annotationInfo, sRef) /*@*/ ;
+
 # else
 # error "Multiple include"
 # endif 

@@ -3,12 +3,15 @@ file1.c: (in function main)
 file1.c:10:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): checkOpen(..., fle, ...)
    file1.c:6:14: fle becomes implicitly unopen
+   file1.c:1:53: parameter 1 becomes open
 file1.c:19:16: Invalid transfer from implicitly open fle to unopen (open file
                   passed as unopen): checkClosed(..., fle, ...)
    file1.c:12:3: fle becomes implicitly open
+   file1.c:2:57: parameter 1 becomes unopen
 file1.c:23:14: Invalid transfer from unopen fle to open (unopen file passed as
                   open): checkOpen(..., fle, ...)
    file1.c:22:10: fle becomes unopen
+   file1.c:1:53: parameter 1 becomes open
 file1.c:7:8: Variable s declared but not used
 
 Finished LCLint checking --- 4 code errors found, as expected
@@ -38,6 +41,7 @@ file4.c: (in function main)
 file4.c:15:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): checkOpen(..., fle, ...)
    file4.c:11:14: fle becomes implicitly unopen
+   file4.c:1:53: parameter 1 becomes open
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -53,9 +57,11 @@ file5.c: (in function main)
 file5.c:25:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): checkOpen(..., fle, ...)
    file5.c:21:14: fle becomes implicitly unopen
+   file5.c:1:53: parameter 1 becomes open
 file5.c:35:18: Invalid transfer from unopen fle to open (unopen file passed as
                   open): fclose(..., fle, ...)
    file5.c:34:3: fle becomes unopen
+   ./file.xh:1:44: parameter 1 becomes open
 
 Finished LCLint checking --- 4 code errors found, as expected
 
@@ -63,6 +69,7 @@ file6.c: (in function newOpenBad)
 file6.c:20:10: Invalid transfer from unopen res to open (unopen file passed as
                   open): return res
    file6.c:19:10: res becomes unopen
+   file6.c:14:2: becomes open
 file6.c: (in function main)
 file6.c:30:12: Return loses reference fle in invalid state implicitly open
                   (open file not closed)
@@ -107,8 +114,8 @@ sockets2.c:24:3: Control branches merge with incompatible global states
 Finished LCLint checking --- 2 code errors found, as expected
 
 struct.c: (in function source_badClose)
-struct.c:10:2: Function returns with parameter s in inconsistent state (unopen
-                  is s->file, should be open): unopen file passed as open
+struct.c:10:2: Function returns with parameter s in inconsistent state (s->file
+                  is unopen, should be open): unopen file passed as open
    struct.c:9:10: s->file becomes unopen
 
 Finished LCLint checking --- 1 code error found, as expected
@@ -119,7 +126,7 @@ nullbranch.c:30:22: Possibly null storage f passed as non-null param:
    nullbranch.c:22:7: Storage f may become null
 nullbranch.c:32:2: Return loses reference f in invalid state open (open file
                       not closed)
-   nullbranch.c:31:5: State becomes open
+   nullbranch.c:22:3: State becomes open
 
 Finished LCLint checking --- 2 code errors found, as expected
 

@@ -6,7 +6,7 @@ attribute openness
       closed ==> closed
 
    merge
-      open + closed ==> error 
+      open + closed ==> error
 
    transfers
       open as closed ==> error

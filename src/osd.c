@@ -45,6 +45,14 @@
 # include <sys/stat.h>
 /* Fix suggested by Lars Rasmussen */
 # include <errno.h>
+
+/* POSIX platforms should defined getpid in unistd.h */
+# if defined (WIN32) || (defined(OS2) && defined(__IBMC__))
+# include <process.h>
+# else
+# include <unistd.h>
+# endif
+
 /*@end@*/
 /*@=allmacros*/
 # include "lclintMacros.nf"
@@ -445,6 +453,7 @@ int osd_system (cstring cmd)
 # endif
 
 # ifndef unlink
+/* This should be defined by unistd.h */
 /*@-redecl@*/
 extern /*@external@*/ int unlink (const char *) /*@modifies fileSystem@*/ ;
 /*@=redecl@*/
@@ -465,12 +474,6 @@ int osd_unlink (cstring fname)
   
   return res;
 }
-
-# if defined (WIN32) || (defined(OS2) && defined(__IBMC__))
-# include <process.h>
-# elif defined OS2
-# include <unistd.h>
-# endif
 
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 int

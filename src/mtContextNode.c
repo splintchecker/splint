@@ -214,6 +214,12 @@ bool mtContextNode_matchesType (mtContextNode context, ctype ct)
     }
   else
     {
+      /* evans 2001-08-21 - don't match if only one type is unknown */
+      if (ctype_isUnknown (ct) && !ctype_isUnknown (context->type))
+	{
+	  return FALSE;
+	}
+
       DPRINTF (("Type okay: %s / %s",
 		ctype_unparse (context->type),
 		ctype_unparse (ct)));
@@ -271,6 +277,65 @@ bool mtContextNode_isNull (mtContextNode n)
   return (n->context == MTC_NULL);
 }
 
+void mtContextNode_showRefError (mtContextNode context, sRef sr)
+{
+  ctype ct;
+
+  llassert (mtContextNode_isDefined (context));
+  llassert (!mtContextNode_matchesRef (context, sr));
+
+  DPRINTF (("Matches context: %s / %s",
+	    mtContextNode_unparse (context), sRef_unparse (sr)));
+
+  switch (context->context)
+    {
+    case MTC_ANY: break; /* everything matches */
+    case MTC_RESULT:
+      if (!sRef_isResult (sr))
+	{
+	  llgenindentmsgnoloc 
+	    (message ("Context is result, doesn't match %q", sRef_unparse (sr)));
+	  return;
+	}
+      break;
+    case MTC_PARAM: 
+      if (!sRef_isResult (sr))
+	{
+	  llgenindentmsgnoloc 
+	    (message ("Context is parameter, doesn't match %q", sRef_unparse (sr)));
+	  return;
+	}
+      break;
+    case MTC_LITERAL:
+      DPRINTF (("Literal: %s", sRef_unparse (sr)));
+      if (!sRef_isConst (sr))
+	{
+	  llgenindentmsgnoloc
+	    (message ("Context is literal, doesn't match %q", sRef_unparse (sr)));
+	  return;
+	}
+      break;
+    case MTC_NULL:
+    case MTC_REFERENCE:
+      break;
+    case MTC_CLAUSE:
+      BADBRANCH;
+    }
+
+  ct = sRef_getType (sr);
+  
+  if (!mtContextNode_matchesType (context, ct))
+    {
+      llgenindentmsgnoloc
+	(message ("Context type is %s, doesn't match type %s", 
+		  ctype_unparse (context->type),
+		  ctype_unparse (ct)));
+    }
+  else
+    {
+      BADBRANCH;
+    }
+}
 
 
 

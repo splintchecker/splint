@@ -46,16 +46,20 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 
-UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
-   charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
-   init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
-   modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
-   outglob outparam preds prefixes \
-   printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
-   staticarray strings structassign \
-typequals ud ulstypes union unreachable unused ullint void \
-   tests2.2 tests2.2a tests2.4 tests2.5 
+UNITTESTS = \
+  fileio tainted mergestate nullret nullassign warnuse metastate \
+  help sizeoftest bufferTest simplebufferConstraintTests \
+  moreBufferTests globalbufferannotation maxset strchr for \
+  abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
+  charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
+  init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
+  modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
+  outglob outparam preds prefixes \
+  printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
+  staticarray strings structassign \
+  typequals ud ulstypes union unreachable unused ullint void \
+  tests2.2 tests2.2a tests2.4 tests2.5 
 
 ###
 ### Attribute checking is not ready for the 3.0.0.9 alpha release:

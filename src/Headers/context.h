@@ -39,6 +39,9 @@ extern bool context_loadingLibrary (void) /*@*/ ;
 
 extern void context_setInCommandLine (void) /*@modifies internalState@*/ ;
 extern void context_clearInCommandLine (void) /*@modifies internalState@*/ ;
+
+extern void context_checkGlobalScope (void) /*@modifies internalState@*/ ;
+
 extern bool context_isInCommandLine (void) /*@*/ ;
 extern bool context_inXHFile (void) /*@*/ ;
 
@@ -137,7 +140,7 @@ extern bool context_globAccess (sRef p_s);
 extern /*@observer@*/ globSet context_getUsedGlobs (void);
 extern bool context_hasAccess (typeId p_t);
 extern bool context_couldHaveAccess (typeId p_t);
-extern /*@only@*/ cstring context_unparse (void);
+extern /*@only@*/ cstring context_unparse (void) /*@*/ ; 
 extern void context_setFunctionDefined (fileloc p_loc);
 extern void context_setFlagTemp (flagcode p_f, bool p_b);
 
@@ -206,7 +209,7 @@ extern bool context_inFunctionLike (void) /*@*/ ;
 extern void context_setMacroMissingParams (void);
 extern void context_resetMacroMissingParams (void);
 extern bool context_isMacroMissingParams (void) /*@*/ ;
-extern bool context_inMacroUnknown (void) /*@*/ ;
+extern bool context_inUnknownMacro (void) /*@*/ ;
 
 /*@observer@*/ cstring context_getDump (void) /*@*/ ;
 /*@observer@*/ cstring context_getMerge (void) /*@*/ ;

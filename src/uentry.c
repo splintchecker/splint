@@ -1436,6 +1436,7 @@ uentry_fixupSref (uentry ue)
   
   if (uentry_isVariable (ue))
     {
+      /*@i634 	  ue->sref = sRef_saveCopyShallow (ue->info->var->origsref); */
       sRef_setDefState (sr, ue->info->var->defstate, fileloc_undefined);
       sRef_setNullState (sr, ue->info->var->nullstate, fileloc_undefined);
     }
@@ -3259,6 +3260,7 @@ static /*@only@*/ /*@notnull@*/
   e->info->var = (uvinfo) dmalloc (sizeof (*e->info->var));
   e->info->var->kind = kind;
 
+  /*@i523 e->info->var->origsref = sRef_saveCopy (e->sref); */
   e->info->var->checked = CH_UNKNOWN;
 
   DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
@@ -4161,7 +4163,7 @@ uentry_compare (uentry u1, uentry u2)
       ** Functions are never equivalent
       */
       
-      if ((int) u1 < (int) u2)
+      if (u1 - u2 < 0) /* evans 2001-08-21: was: ((int) u1 < (int) u2), changed to remove gcc warning */
 	{
 	  return -1;
 	}
@@ -6142,6 +6144,28 @@ sRef uentry_getSref (uentry e)
 
 sRef uentry_getOrigSref (uentry e)
 {
+  /*@i523
+  if (uentry_isValid (e))
+    {
+      if (uentry_isVariable (e))
+	{
+	  return e->info->var->origsref;
+	}
+      else
+	{
+	  sRef sr = sRef_copy (uentry_getSref (e));
+	  
+	  sRef_resetState (sr);
+	  sRef_clearDerived (sr);
+	  return (sr);
+	}
+    }
+  else
+    {
+      return sRef_undefined;
+    }
+  */
+
   if (uentry_isValid (e))
     {
       sRef sr = sRef_copy (uentry_getSref (e));
@@ -6570,6 +6594,8 @@ uvinfo_copy (uvinfo u)
   ret->nullstate = u->nullstate;
   ret->defstate = u->defstate;
   ret->checked = u->checked;
+
+  /*@i523 ret->origsref = sRef_copy (u->origsref); */
 
   /* drl added 07-02-001 */
   /* copy null terminated information */
@@ -10109,13 +10135,19 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 }
 
 static void
-uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
+uentry_mergeValueStates (uentry res, uentry other, fileloc loc, bool mustReturn, /*@unused@*/ bool flip)
 {
   valueTable rvalues;
   valueTable ovalues;
 
   DPRINTF (("Merge values: %s / %s", sRef_unparseFull (res->sref), sRef_unparseFull (other->sref)));
   
+  if (mustReturn)
+    {
+      return;
+    }
+  /* flip? */
+
   rvalues = sRef_getValueTable (res->sref);
   ovalues = sRef_getValueTable (other->sref);
   
@@ -10166,13 +10198,18 @@ uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
 	      {
 		sRef_setMetaStateValueComplete (res->sref, 
 						fkey, stateValue_getValue (fval), 
-						loc);
+						stateValue_getLoc (fval));
 		DPRINTF (("Setting res: %s", sRef_unparseFull (res->sref)));
 	      }
 	    else if (stateValue_isError (tval)
 		     || sRef_definitelyNullAltContext (other->sref))
 	      {
 		DPRINTF (("Other branch is definitely null!"));
+	      }
+	    else if (sRef_isStateUndefined (res->sref)
+		     || sRef_isDead (res->sref))
+	      {
+		; /* Combination state doesn't matter if it is undefined or dead */
 	      }
 	    else 
 	      {
@@ -10199,7 +10236,7 @@ uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
 		DPRINTF (("nval: %d / %d / %d", nval,
 			  stateValue_getValue (fval), stateValue_getValue (tval)));
 
-		if (cstring_isDefined (msg)) 
+		if (nval == stateValue_error)
 		  {
 		    /*@i32 print extra info for assignments@*/
 
@@ -10208,10 +10245,11 @@ uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
 			if (optgenerror 
 			    (FLG_STATEMERGE,
 			     message
-			     ("Control branches merge with incompatible global states (%s and %s): %s",
+			     ("Control branches merge with incompatible global states (%s and %s)%q",
 			      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
 			      metaStateInfo_unparseValue (minfo, stateValue_getValue (tval)),
-			      msg),
+			      cstring_isDefined (msg) 
+			      ? message (": %s", msg) : cstring_undefined),
 			     loc))
 			  {
 			    sRef_showMetaStateInfo (res->sref, fkey);
@@ -10223,11 +10261,12 @@ uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
 			if (optgenerror 
 			    (FLG_STATEMERGE,
 			     message
-			     ("Control branches merge with incompatible states for %q (%s and %s): %s",
+			     ("Control branches merge with incompatible states for %q (%s and %s)%q",
 			      uentry_getName (res),
 			      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
 			      metaStateInfo_unparseValue (minfo, stateValue_getValue (tval)),
-			      msg),
+			      cstring_isDefined (msg) 
+			      ? message (": %s", msg) : cstring_undefined),
 			     loc))
 			  {
 			    sRef_showMetaStateInfo (res->sref, fkey);
@@ -10353,7 +10392,7 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 	    uentry_unparseFull (other)));
   
   uentry_mergeAliasStates (res, other, loc, mustReturn, flip, opt, cl);
-  uentry_mergeValueStates (res, other, loc);
+  uentry_mergeValueStates (res, other, loc, mustReturn, flip);
   uentry_mergeSetStates (res, other, loc, flip, cl);
 }
 

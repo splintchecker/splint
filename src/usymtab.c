@@ -5860,7 +5860,6 @@ usymtab_unparseLocalAux (/*@notnull@*/ usymtab s)
   return (c);
 }
 
-# if 0
 static cstring /*@unused@*/ /*@only@*/ 
 usymtab_unparseLocalList (/*@notnull@*/ usymtab s)
 {
@@ -5888,7 +5887,6 @@ usymtab_unparseLocalList (/*@notnull@*/ usymtab s)
 
   return (c);
 }
-# endif
 
 void
 usymtab_printLocal (void)

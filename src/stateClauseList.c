@@ -213,7 +213,7 @@ int stateClauseList_compare (stateClauseList s1, stateClauseList s2)
     }
   else
     {
-      if ((int) s1 > (int) s2) 
+      if (s1 - s2 > 0) /* evans 2001-08-21: was (int) s1 > (int) s2) */
 	{
 	  return 1;
 	}
@@ -263,6 +263,22 @@ void stateClauseList_checkAll (uentry ue)
 	      sRef rb = sRef_getRootBase (el);
 
 	      DPRINTF (("Check: %s", sRef_unparse (el)));
+
+	      if (sRef_isResult (rb)) 
+		{
+		  /*
+		  ** The result type is now know, need to set it:
+		  */
+		  
+		  if (ctype_isUnknown (sRef_getType (rb)))
+		    {
+		      ctype utype = uentry_getType (ue);
+		      llassert (ctype_isFunction (utype));
+
+		      sRef_setTypeFull (rb, ctype_getReturnType (utype));
+		      DPRINTF (("el: %s", sRef_unparseFull (el)));
+		    }
+		}
 	      
 	      if (stateClause_setsMetaState (cl))
 		{

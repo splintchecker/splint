@@ -30,7 +30,6 @@ extern /*@falseexit@*/ void llassertretnull (/*@sef@*/ bool p_test);
 	   lldiagmsg (message ("%s:%d: at source point", \
 			       cstring_makeLiteralTemp (__FILE__), __LINE__)); \
 	   llbuglit ("llassert failed: " #tst); \
-           return NULL; \
        }} while (FALSE)
 
 /*

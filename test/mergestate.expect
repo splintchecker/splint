@@ -11,12 +11,15 @@ taintednm.c: (in function f)
 taintednm.c:16:18: Invalid transfer from tainted t to untainted (Possibly
                       tainted storage used as untainted.): system(..., t, ...)
    taintednm.c:15:7: t becomes tainted
+   taintednm.xh:23:55: s becomes untainted
 taintednm.c:19:18: Invalid transfer from tainted t to untainted (Possibly
                       tainted storage used as untainted.): system(..., t, ...)
    taintednm.c:18:7: t becomes tainted
+   taintednm.xh:23:55: s becomes untainted
 taintednm.c:22:18: Invalid transfer from tainted t to untainted (Possibly
                       tainted storage used as untainted.): system(..., t, ...)
    taintednm.c:18:7: t becomes tainted
+   taintednm.xh:23:55: s becomes untainted
 taintednm.c:24:10: Stack-allocated storage t reachable from return value: t
 
 Finished LCLint checking --- 4 code errors found, as expected

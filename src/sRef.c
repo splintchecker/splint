@@ -2798,9 +2798,7 @@ sRef_unparseWithArgs (sRef s, uentryList args)
 	      return uentry_getName (ue);
 	  }
 
-	return (message ("<bad param: %q / args %q",
-			 sRef_unparseDebug (s),
-			 uentryList_unparse (args)));
+	return (message ("parameter %d", s->info->paramno + 1));
       }
     case SK_ARRAYFETCH:
       if (s->info->arrayfetch->indknown)
