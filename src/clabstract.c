@@ -1088,12 +1088,6 @@ fixUnnamedDecl (qtype q)
 
   if (ctype_isStruct (ct) || ctype_isUnion (ct))
     {
-      /* evans 2002-03-16: this seems like a really bad idea!
-      uentryList res = ctype_getFields (ct);
-
-      return (uentryList_copy (res));
-      */
-
       return uentryList_single (uentry_makeUnnamedVariable (ct));
     }
   else if (ctype_isEnum (ct))
@@ -1102,8 +1096,11 @@ fixUnnamedDecl (qtype q)
       return uentryList_undefined;
     }
   else
-    {      
-      BADBRANCHCONT;
+    { 
+      voptgenerror 
+	(FLG_SYNTAX,
+	 message ("Type name in field declarations: %s", qtype_unparse (q)),
+	 g_currentloc);
     }
 
   return uentryList_undefined;
