@@ -2640,7 +2640,8 @@ static int processIdentifier (cstring id)
 	       || cstring_equalLit (id, "__PRETTY_FUNCTION__")) 
 	{
 	  /* These tokens hold the name of the current function as strings */
-	  yylval.expr = exprNode_stringLiteral (id, fileloc_copy (g_currentloc));
+	  /* evans 2001-12-30: changed from exprNode_stringLiteral; bug reported by Jim Zelenka. */
+	  yylval.expr = exprNode_makeConstantString (id, fileloc_copy (g_currentloc));
 	  tokLength = 0;
 	  lastWasString = TRUE;
 	  tok = CCONSTANT;

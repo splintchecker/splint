@@ -926,6 +926,22 @@ exprNode exprNode_fromUIO (cstring c)
   return (e);
 }
 
+exprNode exprNode_makeConstantString (cstring c, /*@only@*/ fileloc loc)
+{
+  exprNode e  = exprNode_createPlain (ctype_unknown);
+  e->kind = XPR_VAR;
+  e->loc = loc; 
+  e->sref = sRef_makeConst (ctype_string);
+  e->edata = exprData_makeId (uentry_makeUnrecognized (c, fileloc_copy (loc)));
+  e->typ = ctype_string;
+
+  /* No alias errors for unrecognized identifiers */
+  sRef_setAliasKind (e->sref, AK_STATIC, loc); 
+  sRef_setExKind (e->sref, XO_OBSERVER, loc);
+  
+  return (e);
+}
+
 exprNode exprNode_createId (/*@observer@*/ uentry c)
 {
   if (uentry_isValid (c))

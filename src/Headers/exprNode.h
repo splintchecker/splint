@@ -347,6 +347,7 @@ extern exprNode
   exprNode_floatLiteral (double p_d, ctype p_ct, 
 			 cstring p_text, /*@only@*/ fileloc p_loc);
 extern /*@notnull@*/ exprNode exprNode_createId (/*@observer@*/ uentry p_c);
+extern /*@notnull@*/ exprNode exprNode_makeConstantString (/*@temp@*/ cstring p_c, /*@only@*/ fileloc p_loc) /*@*/ ;
 extern exprNode exprNode_cast (/*@only@*/ lltok p_tok, /*@only@*/ exprNode p_e, /*@only@*/ qtype p_q);
 extern bool exprNode_matchLiteral (ctype p_expected, exprNode p_e);
 extern void exprNode_checkUseParam (exprNode p_current);

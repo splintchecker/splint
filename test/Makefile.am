@@ -46,7 +46,7 @@ UNITTESTS = \
   args blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray \
-  funcpointer glob globals impabstract info init inparam internal iter keep libs \
+  funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   postnotnull preds prefixes printflike rc refcounts release repexpose \
@@ -376,6 +376,10 @@ format:
 .PHONY: funcpointer
 funcpointer:
 	$(SPLINTR) +memchecks +noparams funcpointer.c -expect 18
+
+.PHONY: functionmacro
+functionmacro:
+	$(SPLINTR) functionmacro.c -expect 2
 
 .PHONY: glob
 glob:
