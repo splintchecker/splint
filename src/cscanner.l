@@ -1819,7 +1819,11 @@ static bool handleSpecial (char *yyt)
       
       if (!(fileId_isValid (fid)))
 	{
-	  if (isHeaderFile (fname))
+	  if (context_inXHFile ())
+	    {
+	      fid = fileTable_addXHFile (context_fileTable (), fname);
+	    }
+	  else if (isHeaderFile (fname))
 	    {
 	      fid = fileTable_addHeaderFile (context_fileTable (), fname);
 	    }

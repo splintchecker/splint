@@ -158,6 +158,9 @@ cgrammar.o : cgrammar.c
 cscanner.o : cscanner.c
 	$(CC) $(CPPFLAGS) -c $*.c
 
+mtgrammar.o : mtgrammar.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
 llgrammar.o : llgrammar.c
 	$(CC) $(CPPFLAGS) -c $*.c
 
@@ -171,6 +174,7 @@ Headers/signature_gen.h : signature.c
 Headers/cgrammar2.h : cgrammar.c
 Headers/cgrammar_tokens.h : cgrammar.c
 Headers/llgrammar.h : llgrammar.c
+Headers/mtgrammar_tokens.h : mtgrammar.c
 
 Headers/flag_codes.gen : flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen

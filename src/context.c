@@ -35,7 +35,6 @@
 
 # include "lclintMacros.nf"
 # include "llbasic.h"
-# include "mtincludes.h"
 
 # ifndef NOLCL
 # include "usymtab_interface.h"

@@ -570,7 +570,6 @@ fileTable_lookupBase (fileTable ft, cstring base)
 
   if (tindex == NOT_FOUND)
     {
-      
       return fileId_invalid;
     }
   else

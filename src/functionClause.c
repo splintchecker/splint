@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 static /*@only@*/ /*@notnull@*/ /*@special@*/ functionClause  /*@i32 need special? @*/
 functionClause_alloc (functionClauseKind kind) /*@defines result->kind@*/

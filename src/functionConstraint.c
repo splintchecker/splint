@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 static /*@only@*/ /*@notnull@*/ /*@special@*/ functionConstraint  /*@i32 need special? @*/
 functionConstraint_alloc (functionConstraintKind kind) /*@defines result->kind@*/

@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtContextNode.h"
 
 annotationInfo annotationInfo_create (cstring name,
 				      metaStateInfo state, mtContextNode context, 

@@ -48,7 +48,6 @@ extern void yyerror (char *);
 # include "lclintMacros.nf"
 # include "basic.h"
 # include "cscanner.h"
-# include "mtincludes.h"
 # include "cgrammar.h"
 # include "exprChecks.h"
 
