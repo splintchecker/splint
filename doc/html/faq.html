@@ -12,12 +12,11 @@
     <!--#include virtual="header.html"-->
     <h1>Splint - Frequently Asked Questions</h1>
     <h3>Index</h3>
-    	
     <ol>
-    <a href="#genquest"><h4>General Questions About Splint</h4></a>
-      <li>
-        <a href="#quest1">
-        What is the difference between Splint and LCLint?</a><br />
+      <li style="list-style: none">
+        <h4><a href="#genquest">General Questions About Splint</a></h4>
+      </li>
+      <li><a href="#quest1">What is the difference between Splint and LCLint?</a><br />
       </li>
       <li><a href="#quest2">What is the Splint logo?<br />
       </a></li>
@@ -26,12 +25,13 @@
       <li><a href="#quest4">Can we use your software in our company? (We are not a GNU
       organization.)<br />
       </a></li>
-            <li><a href="#quest9">Which compilers does Splint support?<br />
+      <li><a href="#quest9">Which compilers does Splint support?<br />
       </a></li>
       <li><a href="#quest5">Does Splint handle C++?<br />
       </a></li>
-
-      <a href="#install"><h4> Installation</h4></a>
+      <li style="list-style: none">
+        <h4><a href="#install">Installation</a></h4>
+      </li>
       <li><a href="#quest6">I downloaded the Splint .tgz file but can't figure out how to
       extract it. There is no 'z' option on the tar on my system.<br />
       </a></li>
@@ -40,15 +40,18 @@
       <li><a href="#quest8">I have installed Splint for Windows 2000. Where should I put
       the ".splintrc" file?<br />
       </a></li>
-            <li><a href="#quest17">When I build Splint I get the following errors.... Should I be worried?<br />
+      <li><a href="#quest17">When I build Splint I get the following errors.... Should I
+      be worried?<br />
       </a></li>
-       <li><a href="#quest18">I just installed Splint on a new machine. I get a bunch of
+      <li><a href="#quest18">I just installed Splint on a new machine. I get a bunch of
       errors during building when the test suite is run. When I look through the results,
       it seems like Splint is not reporting any errors in the code it analyzes. What is
       going on?<br />
       </a></li>
-      <a href="#usage"><h4>Usage</h4></a>
-           <li><a href="#quest15">I heard that we will get lot of parse errors when we run
+      <li style="list-style: none">
+        <h4><a href="#usage">Usage</a></h4>
+      </li>
+      <li><a href="#quest15">I heard that we will get lot of parse errors when we run
       this tool first time. Hence we need to modify source code. Is it correct ?<br />
       </a></li>
       <li><a href="#quest16">I heard that Splint can generate some spurious errors ( not
@@ -56,19 +59,19 @@
       </a></li>
       <li><a href="#quest10">How does Splint handle const?<br />
       </a></li>
-       <li><a href="#quest14">I develop code on an embedded system with a compiler that
+      <li><a href="#quest14">I develop code on an embedded system with a compiler that
       uses nonstandard key words and data types. I would like to run Splint on my code
       but these nonstandard keywords cause parse errors. What should I do?<br />
       </a></li>
       <li><a href="#quest14b">How can I get Splint to recognize directory trees and local
       source include directories?<br />
       </a></li>
-      
       <li><a href="#quest20">I use realloc in my code. How can I get Splint in check this
       code more effectively?<br />
       </a></li>
-				   
-     <a href="#warnerror"><h4>Warnings and Errors</h4></a>
+      <li style="list-style: none">
+        <h4><a href="#warnerror">Warnings and Errors</a></h4>
+      </li>
       <li><a href="#quest11">Why do I get a warning when multiplying different integer
       types? The C standard says this is ok. Why is this wrong?<br />
       </a></li>
@@ -81,20 +84,26 @@
       <li><a href="#quest18b">I get parse errors when I try to run Splint on code like
       #define MACROdebug(...) blahblah . Can I use variadic macros in Splint?<br />
       </a></li>
-      <a href="#bugs"><h4>Bugs</h4></a>
+      <li style="list-style: none">
+        <h4><a href="#bugs">Bugs</a></h4>
+      </li>
       <li><a href="#quest21">I think I've found a bug in Splint. What should I do?<br />
-      </a></li>
-      <li><a href="#quest22">Splint tells me that there is a bug and I should report it.
+     </a></li>
+       <li><a href="#quest22">Splint tells me that there is a bug and I should report it.
       What information should I send?<br />
       </a></li>
-           <a href="#adinfo"> <h4>Additional Information</h4></a>
+      <li style="list-style: none">
+               <h4><a href="#adinfo">Additional Information</a></h4>
+      </li>
       <li><a href="#quest23">My question isn't answered here. How can I get more
       information about Splint?<br />
       </a></li>
     </ol>
     <h3>Questions and Answers</h3>
     <ol>
-        <a id="genquest" name="genquest"><h4>General Questions About Splint</h4>
+      <li style="list-style: none">
+        <h4><a id="genquest" name="genquest">General Questions About Splint</a></h4>
+      </li>
       <li>
         <p><a id="quest1" name="quest1">What is the difference between Splint and
         LCLint?</a></p>
@@ -143,16 +152,14 @@
           <br />
         </blockquote>
       </li>
-
-	          <li>
+      <li>
         <p><a id="quest9" name="quest9">Which compilers does Splint support?</a></p>
         <blockquote>
           It is independent from your compiler.<br />
           <br />
         </blockquote>
       </li>
-
-	          <li>
+      <li>
         <p><a id="quest5" name="quest5">Does Splint handle C++?</a></p>
         <blockquote>
           No. Splint handles ISO C99 (and some gcc extensions if +gnuextensions is used).
@@ -162,7 +169,9 @@
           <br />
         </blockquote>
       </li>
-      <a id="install" name="install"><h4>Installation</h4>
+      <li style="list-style: none">
+        <h4><a id="install" name="install">Installation</a></h4>
+      </li>
       <li>
         <p><a id="quest6" name="quest6">I downloaded the Splint .tgz file but can't
         figure out how to extract it. There is no 'z' option on the tar on my
@@ -200,7 +209,6 @@
           <p>your home directory. See the Splint manual for more information.</p>
         </blockquote>
       </li>
-      
       <li>
         <p><a id="quest17" name="quest17">When I build Splint I get the following
         error:</a></p>
@@ -244,8 +252,10 @@
           <br />
         </blockquote>
       </li>
-           <a id="usage" name="usage"><h4>Usage</h4>
-  <li>
+      <li style="list-style: none">
+        <h4><a id="usage" name="usage">Usage</a></h4>
+      </li>
+      <li>
         <p><a id="quest15" name="quest15">I heard that we will get lot of parse errors
         when we run this tool first time. Hence we need to modify source code. Is it
         correct ?</a></p>
@@ -272,7 +282,7 @@
           <br />
         </blockquote>
       </li>
-          <li>
+      <li>
         <p><a id="quest14" name="quest14">I develop code on an embedded system with a
         compiler that uses nonstandard key words and data types. I would like to run
         Splint on my code but these nonstandard keywords cause parse errors. What should
@@ -294,7 +304,7 @@
           <br />
         </blockquote>
       </li>
-       <li>
+      <li>
         <p><a id="quest20" name="quest20">I use realloc in my code. How can I get Splint
         in check this code more effectively?</a></p>
         <blockquote>
@@ -309,7 +319,9 @@
           href="http://www.splint.org/documentation/realloc.htm">http://www.splint.org/documentation/realloc.htm</a></p>
         </blockquote>
       </li>
-         <a id="warnerror" name="warnerror"><h4>Warnings and Errors</h4>
+      <li style="list-style: none">
+        <h4><a id="warnerror" name="warnerror">Warnings and Errors</a></h4>
+      </li>
       <li>
         <p><a id="quest11" name="quest11">Why do I get a Warning when multiplying
         different integer types? The C standard says this is ok. Why is this
@@ -345,7 +357,8 @@
           </blockquote>
         </blockquote>
       </li>
-    <li><p><a id="quest18b" name="quest18b">I get parse errors when I try to run Splint
+      <li>
+        <p><a id="quest18b" name="quest18b">I get parse errors when I try to run Splint
         on code like #define MACROdebug(...) blahblah . Can I use variadic macros in
         Splint?</a></p>
         <blockquote>
@@ -354,8 +367,9 @@
           <br />
         </blockquote>
       </li>
-
-     <a id="bugs" name="bugs"><h4>Bugs</h4>
+      <li style="list-style: none">
+        <h4><a id="bugs" name="bugs">Bugs</a></h4>
+      </li>
       <li>
         <p><a id="quest21" name="quest21">I think I've found a bug in Splint. What should
         I do?</a></p>
@@ -379,7 +393,9 @@
           may be able to at least to offer you advice on working around the problem.</p>
         </blockquote>
       </li>
-     <a id="adinfo" name="adinfo"><h4>Additional Information</h4>
+      <li style="list-style: none">
+        <h4><a id="adinfo" name="adinfo">Additional Information</a></h4>
+      </li>
       <li>
         <p><a id="quest23" name="quest23">My question isn't answered here. How can I get
         more information about Splint?</a></p>
