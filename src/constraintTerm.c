@@ -1,5 +1,5 @@
 /*
-** constraintTerm.c
+** constraintExpr.c
 */
 
 # include <ctype.h> /* for isdigit */
@@ -13,221 +13,67 @@
 # include "exprNodeSList.h"
 # include "exprData.i"
 
-int constraintTerm_getValue (constraintTerm term)
-{
-  if (term->kind == EXPRNODE)
-    {
-      return (multiVal_forceInt (term->value.expr->val) );
-    }
-  if (term->kind == INTLITERAL )
-    {
-      return (term->value.intlit);
-    }
-  llassert(FALSE);
-  return 0;
-}
+/*@-czechfcns@*/
 
-/*@out@*/ static  constraintTerm new_constraintTermExpr (void)
+//#include "constraintExpr.h"
+
+bool constraintTerm_isIntLiteral (constraintTerm term)
 {
-  constraintTerm ret;
-  ret = dmalloc (sizeof (* ret ) );
-  return ret;
+  llassert(term);
+  
+  if (term->kind == INTLITERAL)
+    return TRUE;
+
+  return FALSE;
 }
 
 constraintTerm constraintTerm_simplify (constraintTerm term)
 {
-  if (term->constrType == VALUE)
+  if (term->kind == EXPRNODE)
     {
-      if (term->kind == EXPRNODE)
+      if ( exprNode_knownIntValue (term->value.expr ) )
 	{
-	  if ( exprNode_knownIntValue (term->value.expr ) )
-	    {
-	      int temp;
-	      temp  = exprNode_getLongValue (term->value.expr);
-	      term->value.intlit = temp;
-	      term->kind = INTLITERAL;
-	    }
-	  
+	  int temp;
+	  temp  = exprNode_getLongValue (term->value.expr);
+	  term->value.intlit = temp;
+	  term->kind = INTLITERAL;
 	}
-
     }
-
-  if (term->kind == CONSTRAINTEXPR )
-    {
-      if ( (term->constrType == MAXREAD) || (term->constrType == MAXSET) )
-	{
-	  // ms(var + intlit) = ms (var) - intlit
-	  if (term->value.constrExpr->expr == NULL)
-	    return term;
-
-	  if (term->value.constrExpr->expr->term->kind == INTLITERAL)
-	    {
-	      if (term->constrType == MAXREAD) 
-		term->value.constrExpr->term->constrType = MAXREAD;
-	      else if (term->constrType == MAXSET) 
-		term->value.constrExpr->term->constrType = MAXSET;
-	      else
-		llassert(FALSE);
-
-	      term->constrType = VALUE;
-
-	      if (term->value.constrExpr->op == PLUS)
-		term->value.constrExpr->op = MINUS;
-	      else
-		term->value.constrExpr->op = PLUS;
-	    }
-	  
-	}
-      
-    }
-  
-
   return term;
+}
 
+fileloc constraintTerm_getFileloc (constraintTerm t)
+{
+  return (fileloc_copy (t->loc) );
+}
+
+constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e)
+{
+  constraintTerm ret = new_constraintTermExpr();
+  ret->loc =  exprNode_getfileloc(e);
+  ret->value.expr = e;
+  ret->kind = EXPRNODE;
+  ret = constraintTerm_simplify(ret);
+  return ret;
 }
 
 constraintTerm constraintTerm_copy (constraintTerm term)
 {
   constraintTerm ret;
   ret = new_constraintTermExpr();
-  ret->constrType = term->constrType;
   ret->loc = fileloc_copy (term->loc);
   ret->value= term->value;
   ret->kind = term->kind;
   return ret;
 }
 
-constraintTerm exprNode_makeConstraintTerm (/*@only@*/ exprNode e)
+constraintTerm constraintTerm_setFileloc (constraintTerm term, fileloc loc)
 {
-  constraintTerm ret = new_constraintTermExpr();
-  ret->loc =  exprNode_getfileloc(e);
-  ret->value.expr = e;
-  ret->kind = EXPRNODE;
-  return ret;
+  llassert(term);
+  term->loc = fileloc_copy(loc);
+  return term;
 }
 
-
-constraintTerm constraintTerm_makeMaxSetexpr (exprNode e)
-{
-  constraintTerm ret;
-  ret = exprNode_makeConstraintTerm (e);
-  ret->constrType = MAXSET;
-  return ret;
-}
-
-constraintTerm constraintTerm_makeMinSetexpr (exprNode e)
-{
-  constraintTerm ret;
-  ret = exprNode_makeConstraintTerm (e);
-  ret->constrType = MINSET;
-  return ret;
-}
-
-constraintTerm constraintTerm_makeMaxReadexpr (exprNode e)
-{
-  constraintTerm ret;
-  ret = exprNode_makeConstraintTerm (e);
-  ret->constrType = MAXREAD;
-  return ret;
-}
-
-constraintTerm constraintTerm_makeMinReadexpr (exprNode e)
-{
-  constraintTerm ret;
-  ret = exprNode_makeConstraintTerm (e);
-  ret->constrType = MINREAD;
-  return ret;
-}
-
-constraintTerm constraintTerm_makeValueexpr (exprNode e)
-{
-  constraintTerm ret;
-  ret = exprNode_makeConstraintTerm (e);
-  ret->constrType = VALUE;
-  ret = constraintTerm_simplify (ret);
-  return ret;
-}
-
-
-constraintTerm intLit_makeConstraintTerm (int i)
-{
-  constraintTerm ret = new_constraintTermExpr();
-  ret->value.intlit = i;
-  ret->kind = INTLITERAL;
-  ret->loc =  fileloc_undefined;
-  return ret;
-}
-
-
-constraintTerm constraintTerm_makeIntLitValue (int i)
-{
-  constraintTerm ret;
-  ret = intLit_makeConstraintTerm (i);
-  ret->constrType = VALUE;
-  return ret;
-
-}
-
-/* constraintTerm constraintTerm_makeMinSetexpr (int i) */
-/* { */
-/*   constraintTerm ret; */
-/*   ret = intLit_makeConstraintTerm (i); */
-/*   ret->constrType = MINSET; */
-/* } */
-
-/* constraintTerm constraintTerm_makeMaxReadexpr (int i) */
-/* { */
-/*   constraintTerm ret; */
-/*   ret = intLit_makeConstraintTerm (i); */
-/*   ret->constrType = MAXREAD; */
-/* } */
-/* constraintTerm constraintTerm_makeMinReadexpr (int i) */
-/* { */
-/*   constraintTerm ret; */
-/*   ret = exprNode_makeConstraintTerm (i); */
-/*   ret->constrType = MINREAD; */
-/* } */
-
-
-
-
-cstring  constraintType_print (constraintType constrType)
-{
-  cstring st = cstring_undefined;
-  
-  switch (constrType)
-    {
-    case VALUE:
-      st = cstring_makeLiteral("VALUE");
-      break;
-    case CALLSAFE:
-      st = cstring_makeLiteral("CALLSAFE");
-      break;
-    case  MAXSET:
-      st = cstring_makeLiteral ("MAXSET");
-      break;
-    case    MINSET:
-      st = cstring_makeLiteral ("MINSET");
-      break;
-    case MAXREAD:
-      st = cstring_makeLiteral ("MAXREAD");
-      break;
-    case MINREAD:
-      st = cstring_makeLiteral ("MINREAD");
-      break;
-    case NULLTERMINATED:
-      st = cstring_makeLiteral ("NULLTERMINATED");
-      break;
-    case UNDEFINED:
-      st = cstring_makeLiteral (("Unhandled value for constraintType"));
-      llassert(FALSE);
-      break;
-    default:
-      st = cstring_makeLiteral (("Unhandled value for constraintType"));
-      llassert(FALSE);
-    }
-  return st;
-}
 cstring constraintTerm_print (constraintTerm term)
 {
   cstring s;
@@ -243,35 +89,43 @@ cstring constraintTerm_print (constraintTerm term)
 		   fileloc_unparse (term->loc) );
       break;
     case INTLITERAL:
-    {
       s = message (" %d ", term->value.intlit);
       break;
-    }
+      
     case SREF:
       s = cstring_makeLiteral("Not Implemented\n");
       llassert(FALSE);
       break;
-    case CONSTRAINTEXPR:
-      s = message ("%s ", constraintExpr_print (term->value.constrExpr) );
     }
-  s = message (" %s  ( %s ) ", constraintType_print (term->constrType), s);
-  return s;
   
+  return s;
 }
 
 
-bool constraintTerm_hasTerm (constraintTerm term, constraintTerm searchTerm)
+constraintTerm constraintTerm_makeIntLiteral (int i)
 {
-  if (term->kind == CONSTRAINTEXPR)
-    return (constraintExpr_includesTerm (term->value.constrExpr, searchTerm) );
-
-  if ( (term->kind == EXPRNODE) && (searchTerm->kind == EXPRNODE) )
-    {
-      return sRef_same (term->value.expr->sref, searchTerm->value.expr->sref);
-    }
-  return FALSE;
-    
+  constraintTerm ret = new_constraintTermExpr();
+  ret->value.intlit = i;
+  ret->kind = INTLITERAL;
+  ret->loc =  fileloc_undefined;
+  return ret;
 }
+
+bool constraintTerm_canGetValue (constraintTerm term)
+{
+  if (term->kind == INTLITERAL)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+int constraintTerm_getValue (constraintTerm term) 
+{
+  llassert (term->kind == INTLITERAL);
+  return term->value.intlit;
+}
+
+
 
 /* same and similar are similar but not the same*/
 
@@ -279,10 +133,6 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
 {
   llassert (term1 !=NULL && term2 !=NULL);
 
-  if (term1->constrType != term2->constrType)
-    {
-      return FALSE;
-    }
   if ( (term1->kind != term2->kind) || (term1->kind != EXPRNODE) )
     {
       return FALSE;
@@ -311,10 +161,6 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
 {
   llassert (term1 !=NULL && term2 !=NULL);
 
-  //  if (term1->constrType != term2->constrType)
-  //    {
-  //      return FALSE;
-  //    }
   if ( (term1->kind != term2->kind) || (term1->kind != EXPRNODE) )
     {
       return FALSE;
@@ -338,4 +184,6 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
    }     
     
 }
+
+
 

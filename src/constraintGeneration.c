@@ -179,9 +179,10 @@ bool exprNode_stmt (exprNode e)
   loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
   notError = exprNode_exprTraverse (snode, FALSE, FALSE, loc);
   e->requiresConstraints = exprNode_traversRequiresConstraints(snode);
-  // printf ("%s\n", constraintList_print(e->requiresConstraints) );
+  printf ("For: %s \n", exprNode_unparse (e) );
+  printf ("%s\n", constraintList_print(e->requiresConstraints) );
   e->ensuresConstraints  = exprNode_traversEnsuresConstraints(snode);
-  // printf ("Ensures that:\n %s\n", constraintList_print(e->ensuresConstraints) );
+  printf ("Ensures that:\n %s\n", constraintList_print(e->ensuresConstraints) );
   llassert(notError);
   return notError;
   
@@ -220,6 +221,7 @@ bool exprNode_stmtList  (exprNode e)
 
   exprNode_stmt (stmt2);
   mergeResolve (e, stmt1, stmt2 );
+  
   DPRINTF ( (message ("smtlist constraints are: pre: %s \n and \t post %s\n",
 		      constraintList_print(e->requiresConstraints),
 		      constraintList_print(e->ensuresConstraints) ) ) );

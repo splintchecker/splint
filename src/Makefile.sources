@@ -27,6 +27,8 @@ GENERALSRC = cstring.c fileloc.c message.c source.c \
     fileTable.c hashTable.c llerror.c messageLog.c \
     constraint.c \
     constraintTerm.c \
+    constraintExpr.c \
+    constraintExprData.c \
     constraintResolve.c \
     environmentTable.c \
     constraintList.c \

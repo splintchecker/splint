@@ -38,6 +38,22 @@ constraint constraint_copy (constraint c)
   return ret;
 }
 
+/*like copy expect it doesn't allocate memory for the constraint*/
+
+void constraint_overWrite (constraint c1, constraint c2)
+{
+  c1->lexpr = constraintExpr_copy (c2->lexpr);
+  c1->ar = c2->ar;
+  c1->expr =  constraintExpr_copy (c2->expr);
+  c1->post = c2->post;
+  /*@i33 fix this*/
+  if (c2->orig != NULL)
+    c1->orig = constraint_copy (c2->orig);
+  else
+    c1->orig = NULL;
+
+}
+
 bool constraint_resolve (/*@unused@*/ constraint c)
 {
   return FALSE;
@@ -57,102 +73,14 @@ bool constraint_resolve (/*@unused@*/ constraint c)
   ret->orig = NULL;
   /*@i23*/return ret;
 }
-/*@-czechfcns@*/
-constraintExpr constraintExpr_alloc ()
+
+fileloc constraint_getFileloc (constraint c)
 {
-  constraintExpr ret;
-  ret = dmalloc (sizeof (*ret) );
-  ret->term = NULL;
-  ret->expr = NULL;
-  ret->op = PLUS;
-  return ret;
+  return (constraintExpr_getFileloc (c->lexpr) );
+
+
 }
 
-constraintExpr constraintExpr_copy (constraintExpr expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_copy(expr->term);
-  ret->op   = expr->op;
-  if (expr->expr != NULL)
-    {
-      ret->expr = constraintExpr_copy (expr->expr);
-    }
-  else
-    {
-      ret->expr = NULL;
-    }
-  return ret;
-}
-
-constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_makeMaxSetexpr(expr);
-  return ret;
-}
-
-constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_makeMaxReadexpr(expr);
-  return ret;
-}
-
-constraintExpr  constraintExpr_makeMinSetExpr (exprNode expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_makeMinSetexpr(expr);
-  return ret;
-}
-
-constraintExpr  constraintExpr_makeMinReadExpr (exprNode expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_makeMinReadexpr(expr);
-  return ret;
-}
-
-constraintExpr constraintExpr_makeValueExpr (exprNode expr)
-{
-  constraintExpr ret;
-  ret = constraintExpr_alloc();
-  ret->term = constraintTerm_makeValueexpr(expr);
-  return ret;
-}
-
-
-constraintExpr makeConstraintExprIntlit (int i)
-{
-  constraintExpr ret;
-  ret = dmalloc (sizeof (*ret) );
-  ret->term = constraintTerm_makeIntLitValue(i);
-  ret->expr = NULL;
-  ret->op = PLUS;
-  /*@i1*/ return ret;
-}
-
-
-constraintExpr constraintExpr_makeValueInt (int i)
-{
-  return makeConstraintExprIntlit(i);
-}
-
-constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
-{
-  constraint ret = constraint_makeNew();
-  constraintTerm term;
- 
-  ret->lexpr =constraintExpr_makeMaxSetExpr(po);
-  ret->ar = GTE;
-  ret->expr =  constraintExpr_makeValueExpr (ind);
-  /*@i1*/return ret;
-}
-				       
 constraint constraint_makeReadSafeExprNode ( exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew();
@@ -168,14 +96,25 @@ constraint constraint_makeReadSafeExprNode ( exprNode po, exprNode ind)
 constraint constraint_makeWriteSafeInt (exprNode po, int ind)
 {
   constraint ret = constraint_makeNew();
-  constraintTerm term;
+
  
   ret->lexpr =constraintExpr_makeMaxSetExpr(po);
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeValueInt (ind);
   /*@i1*/return ret;
 }
-				       
+	
+constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
+{
+  constraint ret = constraint_makeNew();
+
+ 
+  ret->lexpr =constraintExpr_makeMaxSetExpr(po);
+  ret->ar = GTE;
+  ret->expr =  constraintExpr_makeValueExpr (ind);
+  /*@i1*/return ret;
+}
+			       
 constraint constraint_makeReadSafeInt ( exprNode po, int ind)
 {
   constraint ret = constraint_makeNew();
@@ -191,94 +130,53 @@ constraint constraint_makeReadSafeInt ( exprNode po, int ind)
 constraint constraint_makeEnsureMaxReadAtLeast (exprNode e1, exprNode t2, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
-  constraintTerm term;
+
 
   e1 = exprNode_fakeCopy (e1);
   t2 = exprNode_fakeCopy (t2);
   
   ret = constraint_makeReadSafeExprNode(e1, t2);
-  if (ret->lexpr->term->loc != NULL) 
-    fileloc_free(ret->lexpr->term->loc);
+
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
   
-  ret->lexpr->term->loc = fileloc_copy (sequencePoint);
   ret->post = TRUE;  
 
-  fileloc_incColumn (ret->lexpr->term->loc);
+  //  fileloc_incColumn (ret->lexpr->term->loc);
   return ret;
 }
 
-
-constraint constraint_makeEnsureMinReadAtMost (exprNode po, exprNode ind, fileloc sequencePoint)
-{
-  constraint ret = constraint_makeNew();
-  constraintTerm term;
-  po = exprNode_fakeCopy(po);
-  ind = exprNode_fakeCopy(ind);
-
-  ret->lexpr = constraintExpr_makeMinReadExpr(po);
-  ret->ar = LTE;
-  ret->expr = constraintExpr_makeValueExpr (ind);
-  ret->post = TRUE;
-
-  if (ret->lexpr->term->loc != NULL)
-    fileloc_free(ret->lexpr->term->loc);
-  
-  ret->lexpr->term->loc = fileloc_copy (sequencePoint);
-  /*make this refer to element after preconditions */
-  fileloc_incColumn (ret->lexpr->term->loc);
-  /*@i1*/ return ret;
-}
-
-constraintExpr makeMaxSetPostOpInc (exprNode e)
-{
-  constraintExpr ret;
-  ret = constraintExpr_makeValueExpr (e);
-  ret->op = PLUS;
-  ret->expr =  makeConstraintExprIntlit (1);
-  return ret;
-}
 
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
   //constraintTerm term;
-  exprNode t2;
+
   e = exprNode_fakeCopy(e);
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
-  ret->expr = makeMaxSetPostOpInc(e);
+  ret->expr =  constraintExpr_makeValueExpr (e);
+  ret->expr =  constraintExpr_makeIncConstraintExpr (ret->expr);
 
-  fileloc_incColumn (  ret->lexpr->term->loc);
-  fileloc_incColumn (  ret->lexpr->term->loc);
+  ret->expr = constraintExpr_setFileloc (ret->expr, sequencePoint);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
+//   fileloc_incColumn (  ret->lexpr->term->loc);
   return ret;
 }
 
-constraintExpr makeMaxReadPostOpInc (exprNode e)
-{
-  constraintExpr ret;
-  ret = constraintExpr_makeValueExpr (e);
-  ret->term  = constraintTerm_makeMaxReadexpr (e);
-  ret->op = MINUS;
-  ret->expr =  makeConstraintExprIntlit (1);
-  return ret;
-}
+// constraint constraint_makeMaxReadSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
+// {
+//   constraint ret = constraint_makeNew();
+//   //constraintTerm term;
 
-constraint constraint_makeMaxReadSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
-{
-  constraint ret = constraint_makeNew();
-  //constraintTerm term;
-  exprNode t2;
-  e = exprNode_fakeCopy(e);
-  ret->lexpr = constraintExpr_makeMaxReadExpr(e);
-  ret->ar = EQ;
-  ret->post = TRUE;
-  ret->expr = makeMaxReadPostOpInc(e);
-
-  fileloc_incColumn (  ret->lexpr->term->loc);
-  fileloc_incColumn (  ret->lexpr->term->loc);
-  return ret;
-}
+//   e = exprNode_fakeCopy(e);
+//   ret->lexpr = constraintExpr_makeMaxReadExpr(e);
+//   ret->ar = EQ;
+//   ret->post = TRUE;
+//   ret->expr = constraintExpr_makeIncConstraintExpr (e);
+//   ret->lexpr = constraintExpr_setFileLoc (ret->lexpr, sequencePoint);
+//   return ret;
+// }
 
 
 cstring arithType_print (arithType ar)
@@ -310,30 +208,6 @@ cstring arithType_print (arithType ar)
     default:
       llassert(FALSE);
       break;
-    }
-  return st;
-}
-
-cstring constraintExpr_print (constraintExpr ex)
-{
-  cstring st;
-  cstring opStr;
-  llassert (ex != NULL);
-
-  st = message ("%s",
-		constraintTerm_print (ex->term));
-  
-    if (ex->expr != NULL)
-    {
-      if (ex->op == PLUS)
-	{
-	 opStr = cstring_makeLiteral (" + ");
-	}
-      else
-	{
-	  opStr = cstring_makeLiteral (" - ");
-	}
-    st = message ("%s %s %s", st, opStr, constraintExpr_print (ex->expr) );
     }
   return st;
 }
@@ -377,31 +251,18 @@ cstring  constraint_print (constraint c)
   return st;
 }
 
-bool constraint_hasTerm (constraint c, constraintTerm term)
-{
-  DPRINTF((message ("Constraint %s", constraint_print (c) ) ) );
+// bool constraint_hasTerm (constraint c, constraintTerm term)
+// {
+//   DPRINTF((message ("Constraint %s", constraint_print (c) ) ) );
   
-  if (constraintExpr_includesTerm (c->lexpr, term) )
-    return TRUE;
+//   if (constraintExpr_includesTerm (c->lexpr, term) )
+//     return TRUE;
 
-  if (constraintExpr_includesTerm (c->expr, term) )
-    return TRUE;
+//   if (constraintExpr_includesTerm (c->expr, term) )
+//     return TRUE;
 
-  return FALSE;
-}
-
-bool constraintExpr_includesTerm (constraintExpr expr, constraintTerm term)
-{
-  if (constraintTerm_hasTerm (expr->term, term) )
-    return TRUE;
-
-  if ( (expr->expr) != NULL)
-    {
-      return ( constraintExpr_includesTerm (expr->expr, term) );
-    }
-  return FALSE;
-
-}
+//   return FALSE;
+// }
 
 constraint constraint_preserveOrig (constraint c)
 {
