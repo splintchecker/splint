@@ -1286,7 +1286,13 @@ llexit (int status)
   if (status != LLFAILURE)
     {
       usymtab_destroyMod ();
-      context_destroyMod ();
+
+      /*drl I'm commenting this line out
+	        because it is causing Splint to crash when built with
+		        2.95 I'm not sure if this is a compiler bug or if if has to do with bool
+			        Any way if we're going to exist the program why do we bother freeing stuff...
+      */
+      /*      context_destroyMod (); */
       exprNode_destroyMod ();
       cppReader_destroyMod ();
       sRef_destroyMod ();
