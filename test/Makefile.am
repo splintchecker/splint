@@ -8,9 +8,12 @@ DIFFFLAGS =
 
 # -u show context
 
+#drl 3/27/2002 get the test suit to print a warning when splint is built under /usr/
+
+
 ## Set up the splint commands
 
-SPLINT    = $(top_builddir)/src/splint$(EXEEXT)
+SPLINT    =  $(top_builddir)/src/splint$(EXEEXT)
 
 ### These are shell-specific
 ## unexport LARCH_PATH
@@ -139,8 +142,11 @@ CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^mak
 #	   cat $$TEST.expect; \
 #	 done
 
+CheckSystemDir = (pwd | grep -q  "/usr" && echo "Warning tests which not run correctly when splint is built in /usr or a subdirectory under /usr.  Build splint in a different directory or disregard test failures." )
+
 .PHONY: quicktest
 quicktest:
+	$(CheckSystemDir)	
 	@for TEST in $(QUICKTESTS); do \
 	   echo "Checking $$TEST..."; \
 	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \

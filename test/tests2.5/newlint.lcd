@@ -1,5 +1,5 @@
 ;;; Splint Library  newlint.lcd
-;;Splint 3.0.1.7 --- 01 Mar 2002
+;;Splint 3.0.1.7 --- 28 Mar 2002
 ;;lib:299
 ;;ctTable
 0 u-2 19 38
@@ -846,18 +846,19 @@
 ^143 20@+@+@0@0@0@0@210#FILE
 ^144 20@+@+@0@0@0@0@211#fpos_t
 *1 (Constant)
-^145 5$#_IOFBF#_IOLBF#_IONBF#BUFSIZ#EOF#FOPEN_MAX#FILENAME_MAX#L_tmpnam#SEEK_CUR#SEEK_END#SEEK_SET#TMP_MAX
+^145 63$#_IOFBF#_IOLBF#_IONBF#BUFSIZ
+^149 5$#EOF#FOPEN_MAX#FILENAME_MAX#L_tmpnam#SEEK_CUR#SEEK_END#SEEK_SET#TMP_MAX
 *3 (Variable)
 ^157 212|@1|6@0@0@0@1#stderr
 *4 (Function)
 ^158 214$@0@s3,g24@6@0@1@s3,g24$@0#remove
 ^159 216$@0@s3,g24@6@0@1@s3,g24$@0#rename
-^160 219@6@5@1@0@0@0@s3@1@s3@3@0@0#tmpfile
+^160 219@6@5@1@0@0@0@s3,g24@6@0@1@s3,g24@18@0@0#tmpfile
 ^161 222$@0@s1@1@tp0,s1@19@3@0#tmpnam
 ^162 224$@0@g24@6@0,s3@1@tp0,g24,s3$@0#fclose
 ^163 226$@0@g24@6@0,s3@1@tp0,g24,s3$@0#fflush
 ^164 229@6@5@1@0@0@0@s3@1@s3@18@0@0#fopen
-^165 232@6@5@1@0@0@0@s3,g24@6@0@1@tp2,s3,g24@3@0@0#freopen
+^165 232@6@5@1@0@0@0@s3,g24@6@0@1@tp2,s3,g24@18@0@0#freopen
 ^166 234$@0@s3@1@s3,tp0,tp1$@0#setbuf
 ^167 236$@0@s3@1@s3,tp0,tp1$@0#setvbuf
 ^168 240@6@0@1@1@0@0@s3@1@s3,tp0$@0#fprintf

@@ -91,6 +91,8 @@ DIFFFLAGS =
 
 
 # -u show context
+
+#drl 3/27/2002 get the test suit to print a warning when splint is built under /usr/
 SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
 ### These are shell-specific
@@ -146,6 +148,19 @@ SPLINTTESTS = $(UNITTESTS) $(SUBDIRTESTS)
 QUICKTESTS = db3
 
 CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:" | $(GREP) -v "^gmake.*\[[1-9]*\]:" |   $(GREP) -v "^gmake -e" |  $(GREP) -v "^make -e" |$(GREP) -v "config.status: creating test/Makefile" | $(GREP) -v "cd .. && " | $(GREP) -v "CONFIG_HEADERS=" | $(GREP) -v "CONFIG_FILES="
+
+
+#drl temporally take this out.
+#.PHONY: expects
+#expects:
+#	@echo "Saving old expects..."; \
+#	 cat *.expect >expects-`date +"%y-%m-%d-%H"`
+#	@for TEST in $(UNITTESTS) $(INTEGTESTS); do \
+#	   echo "Making $$TEST.expect..."; \
+#	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.expect; \
+#	   cat $$TEST.expect; \
+#	 done
+CheckSystemDir = (pwd | grep -q  "/usr" && echo "Warning tests which not run correctly when splint is built in /usr or a subdirectory under /usr.  Build splint in a different directory or disregard test failures." )
 
 #drl 11/29/2001 This is a very ugly hack to get make dist to work
 EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
@@ -950,19 +965,9 @@ $(SPLINT):
 .c.diff:
 	$(MAKE) $* |& $(CLEANOUTPUT) >$*.out && diff $*.expect $*.out
 
-#drl temporally take this out.
-#.PHONY: expects
-#expects:
-#	@echo "Saving old expects..."; \
-#	 cat *.expect >expects-`date +"%y-%m-%d-%H"`
-#	@for TEST in $(UNITTESTS) $(INTEGTESTS); do \
-#	   echo "Making $$TEST.expect..."; \
-#	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.expect; \
-#	   cat $$TEST.expect; \
-#	 done
-
 .PHONY: quicktest
 quicktest:
+	$(CheckSystemDir)	
 	@for TEST in $(QUICKTESTS); do \
 	   echo "Checking $$TEST..."; \
 	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
