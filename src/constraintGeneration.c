@@ -196,10 +196,12 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
       
       DPRINTF (("Not Stmt") );
       DPRINTF ( (message ("%s ", exprNode_unparse (e)) ) );
-      if (exprNode_isMultiStatement (e) )
+
+      if (exprNode_isMultiStatement (e))
 	{
-	  return exprNode_multiStatement (e );
+	  exprNode_multiStatement (e); /* evans 2001-08-21: spurious return removed */
 	}
+
       DPRINTF( (message ("Ignoring non-statement %s", exprNode_unparse(e) ) ) );
       return; 
     }
@@ -215,7 +217,7 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
   
   if (exprNode_isMultiStatement (snode))
     {
-	exprNode_multiStatement (snode);
+      exprNode_multiStatement (snode);
       (void) exprNode_copyConstraints (e, snode);
       return;
     }
@@ -237,7 +239,6 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
 
   return; 
 }
-
 
 static void exprNode_stmtList  (/*@dependent@*/ exprNode e)
 {
@@ -806,9 +807,6 @@ static exprNode doSwitch (/*@returned@*/ exprNode e)
   exprNode_generateConstraintSwitch (e);
   return e;
 }
-
-
-
 
 void exprNode_multiStatement (/*@dependent@*/ exprNode e)
 {

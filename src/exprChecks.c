@@ -638,7 +638,7 @@ void exprNode_checkMacroBody (/*@only@*/ exprNode e)
       uentry hdr;
 
       if (!(context_inFunctionLike () || context_inMacroConstant ()
-	    || context_inMacroUnknown ()))
+	    || context_inUnknownMacro ()))
 	{
 	  llcontbug 
 	    (message 
@@ -732,7 +732,7 @@ void exprNode_checkMacroBody (/*@only@*/ exprNode e)
 		}
 	    }
 	}
-      else if (context_inMacroFunction () || context_inMacroUnknown ())
+      else if (context_inMacroFunction () || context_inUnknownMacro ())
 	{
 	  ctype rettype = context_getRetType ();
 
@@ -1087,7 +1087,7 @@ void exprChecks_checkEmptyMacroBody (void)
   uentry hdr;
   
   if (!(context_inFunctionLike () || context_inMacroConstant ()
-	|| context_inMacroUnknown ()))
+	|| context_inUnknownMacro ()))
     {
       llcontbug 
 	(message ("exprNode_checkEmptyMacroBody: not in macro function or constant: %q", 
@@ -1522,6 +1522,16 @@ static void checkSafeReturnExpr (/*@notnull@*/ exprNode e)
 {
   ctype tr = ctype_getReturnType (context_currentFunctionType ());
   ctype te = exprNode_getType (e);
+
+  /* evans 2001-08-21: added test to warn about void returns from void functions */
+  if (ctype_isVoid (tr))
+    {
+      (void) gentypeerror
+	(te, e, tr, exprNode_undefined,
+	 message ("Return expression from function declared void: %s", exprNode_unparse (e)),
+	 e->loc);
+      return;
+    }
 
   if (!ctype_forceMatch (tr, te) && !exprNode_matchLiteral (tr, e))
     {

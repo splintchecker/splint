@@ -135,7 +135,6 @@ static struct
   /*@reldef@*/ maccesst *moduleaccess; /* Not defined is nmods == 0. */
   
   kcontext kind;
-  kcontext savekind;
 
   ctype boolType;
 
@@ -152,12 +151,15 @@ static struct
 
   metaStateTable stateTable; /* User-defined state information. */
   annotationTable annotTable; /* User-defined annotations table. */
-  union 
+  union u_cont
     {
       bool glob;
       int  cdepth;
       /*@dependent@*/ /*@exposed@*/ uentry  fcn;
     } cont;
+
+  kcontext savekind;
+  union u_cont savecont;
 } gc;
 
 static /*@exposed@*/ cstring context_exposeString (flagcode p_flag) ;
@@ -1378,6 +1380,11 @@ context_removeFileAccessType (typeId t)
 
 void context_enterFunctionHeader (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter function header: %q", context_unparse ()));
+    }
+
   if (gc.kind != CX_GLOBAL)
     {
       llparseerror (cstring_makeLiteral
@@ -1393,6 +1400,11 @@ void context_enterFunctionHeader (void)
 
 void context_exitFunctionHeader (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Exit function header: %q", context_unparse ()));
+    }
+
   DPRINTF (("Exit function header!"));
   gc.inFunctionHeader = FALSE;
 }
@@ -1404,21 +1416,38 @@ bool context_inFunctionHeader (void)
 
 void context_enterFunctionDeclaration (uentry e)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter function declaration: %q", context_unparse ()));
+    }
+
   DPRINTF (("Enter function decl"));
   llassert (gc.savekind == CX_ERROR);
   gc.savekind = gc.kind;
+  gc.savecont = gc.cont;
   gc.kind = CX_FCNDECLARATION;
   gc.cont.fcn = e;
 }
 
 void context_exitFunctionDeclaration (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Exit function declaration: %q", context_unparse ()));
+    }
+
   DPRINTF (("Exit function decl"));
   llassert (gc.savekind != CX_ERROR);
   llassert (gc.kind == CX_FCNDECLARATION);
   gc.kind = gc.savekind;
-  gc.cont.fcn = uentry_undefined;
+  gc.cont = gc.savecont;
+
   gc.savekind = CX_ERROR;
+
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("After exit function declaration: %q", context_unparse ()));
+    }
 }
 
 bool context_inFunctionDeclaration (void)
@@ -2361,13 +2390,17 @@ context_returnFunction (void)
 void
 context_exitFunction (void)
 {    
+  DPRINTF (("Exit function: %s", context_unparse ()));
+
   if (!context_inFunction () && !context_inMacroConstant () 
-      && !context_inMacroUnknown () 
+      && !context_inUnknownMacro () 
       && !context_inIterDef () && !context_inIterEnd ())
     {
       /*
       ** not a bug because of parse errors
       */
+
+      BADBRANCH;
     }
   else
     {
@@ -2412,6 +2445,7 @@ context_exitFunction (void)
 
   llassert (clauseStack_isEmpty (gc.clauses));
   llassert (gc.inclause == NOCLAUSE);
+  DPRINTF (("After exit function: %s", context_unparse ()));
 }
 
 void
@@ -2422,7 +2456,7 @@ context_quietExitFunction (void)
       context_exitInnerPlain ();
     }
 
-  if (!context_inFunction () && !context_inMacroConstant () && !context_inMacroUnknown () 
+  if (!context_inFunction () && !context_inMacroConstant () && !context_inUnknownMacro () 
       && !context_inIterDef () && !context_inIterEnd ())
     {
     }
@@ -2842,7 +2876,10 @@ void context_initMod (void)
    /*@globals undef gc; @*/
 {
   gc.kind = CX_GLOBAL;
+
   gc.savekind = CX_ERROR;
+  gc.savecont.glob = FALSE;
+
   gc.instandardlib = FALSE;
   gc.numerrors = 0;
   gc.neednl = FALSE;
@@ -2973,7 +3010,9 @@ context_unparse (void)
       s = message ("Global Context:%q", fileloc_unparse (g_currentloc));
       break;
     case CX_INNER:
-      s = message ("Inner Context:%q", fileloc_unparse (g_currentloc));
+      s = message ("Inner Context [%d] : %q", 
+		   gc.cont.cdepth,
+		   fileloc_unparse (g_currentloc));
       break;
     case CX_FUNCTION:
       s = message ("Function %q :%q \n\taccess %q\n\tmodifies %q",
@@ -2996,6 +3035,9 @@ context_unparse (void)
       break;
     case CX_ITEREND:
       s = message ("Iter end %q", uentry_unparse (gc.cont.fcn));
+      break;
+    case CX_FCNDECLARATION:
+      s = message ("Function declaration %q", uentry_unparse (gc.cont.fcn));
       break;
     default:
       s = message ("Un-unparseable context: %d", (int) gc.kind);
@@ -3029,6 +3071,11 @@ context_currentFunctionType (void)
 void
 context_enterInnerContext (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter inner context: %q", context_unparse ()));
+    }
+
   if (gc.kind == CX_GLOBAL)
     {
       gc.kind = CX_INNER;
@@ -3056,7 +3103,11 @@ context_exitInnerPlain (void) /*@modifies gc;@*/
 void
 context_exitInner (exprNode exp)
 {
-  
+   if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter inner context: %q", context_unparse ()));
+    }
+ 
   llassertprint (gc.inclause == NOCLAUSE || gc.inclause == CASECLAUSE,
 		 ("inclause = %s", clause_nameTaken (gc.inclause)));
 
@@ -3087,6 +3138,11 @@ context_exitInner (exprNode exp)
 void
 context_enterStructInnerContext (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter struct inner context: %q", context_unparse ()));
+    }
+
   if (gc.kind == CX_GLOBAL)
     {
       gc.kind = CX_INNER;
@@ -3102,18 +3158,39 @@ context_enterStructInnerContext (void)
     }
 
   usymtab_enterScope ();
+
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Enter struct inner context: %q", context_unparse ()));
+    }
 }
 
 void
 context_exitStructInnerContext (void)
 {
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Exit struct inner context: %q [%d]", context_unparse (), gc.cont.cdepth));
+    }
+
   if (gc.kind == CX_INNER)
     {
-      if (--gc.cont.cdepth == 0)
+      if (gc.cont.cdepth <= 0)
 	{
+	  llcontbuglit ("Attempt to exit inner context with no depth");
 	  gc.kind = CX_GLOBAL;
 	  gc.cont.glob = TRUE;
+	  gc.cont.cdepth = 0;
 	}
+      else {
+	gc.cont.cdepth--;
+
+	if (gc.cont.cdepth == 0)
+	  {
+	    gc.kind = CX_GLOBAL;
+	    gc.cont.glob = TRUE;
+	  }
+      }
     }
   else 
     {
@@ -3125,17 +3202,26 @@ context_exitStructInnerContext (void)
     }
 
   usymtab_exitScope (exprNode_undefined);
+
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("After exit struct inner context: %q [%d]", context_unparse (), gc.cont.cdepth));
+    }
 }
 
 void
 context_exitInnerSafe (void)
 {
-  
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Exit inner safe: %q", context_unparse ()));
+    }
+
   if (gc.kind == CX_INNER)
     {
-      if (--gc.cont.cdepth == 0)
+      if (--gc.cont.cdepth <= 0)
 	{
-	  gc.cont.cdepth++;
+	  gc.cont.cdepth = 0;
 	}
     }
   else if (gc.kind == CX_GLOBAL)
@@ -3990,14 +4076,14 @@ void context_setFilename (fileId fid, int lineno)
 
 void context_enterIterDef (/*@observer@*/ uentry le)
 {
-    context_enterMacro (le);
+  context_enterMacro (le);
   gc.acct = typeIdSet_subtract (gc.facct, gc.nacct);
   gc.kind = CX_ITERDEF;
 }
 
 void context_enterIterEnd (/*@observer@*/ uentry le)
 {
-    context_enterMacro (le);
+  context_enterMacro (le);
   gc.kind = CX_ITEREND;
 }
 
@@ -4209,7 +4295,7 @@ bool context_inMacroConstant (void)
   return (gc.kind == CX_MACROCONST);
 }
 
-bool context_inMacroUnknown (void)
+bool context_inUnknownMacro (void)
 {   
   return (gc.kind == CX_UNKNOWNMACRO);
 }
@@ -4303,6 +4389,30 @@ void context_resetSpecLines (void)
 bool context_inGlobalContext (void)
 {
   return (gc.kind == CX_GLOBAL);
+}
+
+static void context_quietExitScopes (void)
+{
+  /*
+  ** Try to restore the global scope (after an error).
+  */
+
+  while (!usymtab_inFileScope ())
+    {
+      usymtab_quietExitScope (g_currentloc);
+    }
+
+  gc.cont.glob = TRUE;
+  gc.kind = CX_GLOBAL;
+}
+
+void context_checkGlobalScope (void)
+{
+  if (gc.kind != CX_GLOBAL)
+    {
+      llcontbug (message ("Not in global scope as expected: %q", context_unparse ()));
+      context_quietExitScopes ();
+    }
 }
 
 void context_setFileId (fileId s)

@@ -3733,7 +3733,7 @@ static flaglist flags =
     "implementationoptional",
     FLG_IMPLEMENTATIONOPTIONAL,
     "declarator is implementation optional (ISO99 does not require an implementation to provide it)",
-    "Use of a declarator that is implementation optional, not requires by ISO99.",
+    "Use of a declarator that is implementation optional, not required by ISO99.",
     0, 0
   }, 
 

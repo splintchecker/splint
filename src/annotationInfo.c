@@ -173,3 +173,30 @@ cstring annotationInfo_dump (annotationInfo ainfo)
 
   BADBRANCH;
 }
+
+void annotationInfo_showContextRefError (annotationInfo a, sRef sr)
+{
+  mtContextNode mcontext;
+  llassert (!annotationInfo_matchesContextRef (a, sr));
+  llassert (annotationInfo_isDefined (a));
+  mcontext = a->context;
+
+  if (mtContextNode_matchesRef (mcontext, sr))
+    {
+      /* Matches annotation context, must also match meta state context. */
+      metaStateInfo minfo = a->state;
+
+      if (mtContextNode_matchesRef (metaStateInfo_getContext (minfo), sr))
+	{
+	  BADBRANCH;
+	}
+      else
+	{
+	  mtContextNode_showRefError (metaStateInfo_getContext (minfo), sr);
+	}
+    }
+  else
+    {
+      mtContextNode_showRefError (mcontext, sr);
+    }
+}

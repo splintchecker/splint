@@ -3307,18 +3307,17 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 				  
 				  if (nval == stateValue_error)
 				    {
-				      llassert (cstring_isDefined (msg));
-				      
 				      if (optgenerror 
 					  (FLG_STATEMERGE,
 					   message
 					   ("Attributes merged in ensures clause in states that "
-					    "cannot be combined (%q is %q, %q is %q): %s",
+					    "cannot be combined (%q is %q, %q is %q)%q",
 					    sRef_unparse (lastref),
 					    stateValue_unparseValue (sval, msinfo),
 					    sRef_unparse (fs),
 					    stateValue_unparseValue (tval, msinfo),
-					    msg),
+					    cstring_isDefined (msg) ? 
+					    message (": %s", msg) : cstring_undefined),
 					   exprNode_loc (f)))
 					{
 					  sRef_showMetaStateInfo (fs, key);
@@ -3377,18 +3376,17 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 			      
 			      if (nval == stateValue_error)
 				{
-				  llassert (cstring_isDefined (msg));
-				  
 				  if (optgenerror 
 				      (FLG_STATEMERGE,
 				       message
 				       ("Attributes merged in ensures clause in states that "
-					"cannot be combined (%q is %q, %q is %q): %s",
+					"cannot be combined (%q is %q, %q is %q)%q",
 					sRef_unparse (lastref),
 					stateValue_unparseValue (sval, msinfo),
 					sRef_unparse (fs),
 					stateValue_unparseValue (tval, msinfo),
-					msg),
+ 					cstring_isDefined (msg) 
+ 					? message (": %s", msg) : cstring_undefined),
 				       exprNode_loc (f)))
 				    {
 				      sRef_showMetaStateInfo (fs, key);

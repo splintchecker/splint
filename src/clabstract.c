@@ -2326,11 +2326,3 @@ sRef clabstract_checkGlobal (exprNode e)
   exprNode_free (e);
   return sRef_copy (s);
 }
-
-
-
-
-
-
-
-

@@ -87,6 +87,6 @@ VERSION_NUMBER  = lastversion
 ###
 
 SYSTEM_LIBDIR   = "/usr/include"
-DEFAULT_LARCHPATH = "/usr/local/lclint-2.5m/lib"
-DEFAULT_LCLIMPORTDIR = "/usr/local/lclint-2.5m/imports"
+DEFAULT_LARCHPATH = "/usr/local/lclint/lib"
+DEFAULT_LCLIMPORTDIR = "/usr/local/lclint/imports"
 

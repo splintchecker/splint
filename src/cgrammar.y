@@ -314,8 +314,8 @@ file
  | externalDefs
 
 externalDefs
- : externalDef
- | externalDefs externalDef 
+ : externalDef { context_checkGlobalScope (); }
+ | externalDefs externalDef { context_checkGlobalScope (); }
 
 externalDef
  : fcnDef optSemi { uentry_clearDecl (); } 
@@ -1861,7 +1861,7 @@ void yyerror (/*@unused@*/ char *s)
       llerror (FLG_SYNTAX, message ("Macro syntax not parseable: %s", 
 				    context_inFunctionName ()));
       
-      if (context_inMacroUnknown ())
+      if (context_inUnknownMacro ())
 	{
 	  if (!givehint)
 	    {

@@ -101,7 +101,7 @@ endif
 cgrammar.c : cgrammar.c.der cgrammar.y
 ifdef BISON
 	$(BISON) $(YFLAGS) cgrammar.y
-	@echo '//           Expect 119 shift/reduce conflicts and 115 reduce/reduce conflicts.'
+	@echo '//           Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts.'
 	@echo '//           (see cgrammar.y for explanation)'
 	@$(CAT) bison.head cgrammar.tab.c bison.reset > cgrammar.c
 	-@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
@@ -221,14 +221,26 @@ betarelease:
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`/src
 	cp Makefile* ${ALLSRC} ${GRAMS} *.i flags.def ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
+	cp cscanner.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/cscanner.c.der
+	cp lastversion maketags ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
+	cp *.head *.reset ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
+	cp cgrammar.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/cgrammar.c.der
+	cp llgrammar.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/llgrammar.c.der
+	cp signature.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/signature.c.der
+	cp mtgrammar.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/mtgrammar.c.der
 	cp -r Headers ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
 	cp -r ../lib ~/temp/lclint-`cat ${VERSION_NUMBER}`/lib
 	cp -r ../imports ~/temp/lclint-`cat ${VERSION_NUMBER}`/imports
 	cp -r ../test ~/temp/lclint-`cat ${VERSION_NUMBER}`/test
-	cp ../configure ../Makefile* ../README ~/temp/lclint-`cat ${VERSION_NUMBER}`/
-	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm */*.core ; tar zcvf ~/public_html/lclint/lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`-beta.tgz *
-	chmod 644 ~/public_html/lclint/lclint-`cat ${VERSION_NUMBER}`.tgz
-	@echo "Make release lclint-`cat ${VERSION_NUMBER}`
+	cp ../configure ../Makefile* ../LICENSE ../README ../BUFFERCHECKING ~/temp/lclint-`cat ${VERSION_NUMBER}`/
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; mkdir bin
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -r test/temp
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -f *~ */*~ */*/*~ #* */#* */*/#* .#* */.#* */*/.# */*.core
+	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; rm -rf CVS */CVS */*/CVS */*/*/CVS */*/*/*/CVS
+	cd ~/temp/; tar czvf ~/public_html/lclint/lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`.src.tgz lclint-`cat ~/LCLintDev/src/${VERSION_NUMBER}`
+	chmod 644 ~/public_html/lclint/lclint-`cat ${VERSION_NUMBER}`.src.tgz
+	ls -l ~/public_html/lclint/lclint-*.tgz
+	@echo "Made release lclint-`cat ${VERSION_NUMBER}`"
 
 opt :
 ifneq (,$(findstring csh, $(SHELL)))

@@ -239,12 +239,11 @@ fileloc_compare (fileloc f1, fileloc f2)
 
 
   /* drl 8-11-01 fix what I think is a bug
-     line no should more important than column number*/
-  INTCOMPARERETURN (f1->lineno, f2->lineno); 
-  
+     lineno should more important than column number*/
+
+  INTCOMPARERETURN (f1->lineno, f2->lineno);   
   INTCOMPARERETURN (f1->column, f2->column);
   
-
   return 0;
 }
 
