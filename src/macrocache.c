@@ -236,7 +236,7 @@ static void pushString (/*@only@*/ cstring s)
       cstring fname;
       mtid = fileTable_addMacrosFile (context_fileTable ());
       
-      fname = fileName (mtid);
+      fname = fileTable_fileName (mtid);
       s_macFile = fileTable_openFile (context_fileTable (), fname, "wb+");
       
       if (s_macFile == NULL)

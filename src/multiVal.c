@@ -53,8 +53,8 @@ static /*@special@*/ /*@notnull@*/ multiVal multiVal_create (mvkind kind)
 /*@only@*/ multiVal multiVal_makeChar (char x)
 {
   multiVal mv = multiVal_create (MVCHAR);
-    mv->value.cval = x;
-    return mv;
+  mv->value.cval = x;
+  return mv;
 }
 
 /*@only@*/ multiVal multiVal_makeDouble (double x)
@@ -298,7 +298,7 @@ multiVal multiVal_add (multiVal m1, multiVal m2)
   switch (m1->kind)
     {
     case MVLONG:   return (multiVal_makeInt (m1->value.ival + m2->value.ival));
-    case MVCHAR:   return (multiVal_makeChar (m1->value.cval + m2->value.cval));
+    case MVCHAR:   return (multiVal_makeChar ((char) (m1->value.cval + m2->value.cval)));
     case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval + m2->value.fval));
     case MVSTRING: return multiVal_undefined;
     }
@@ -316,7 +316,7 @@ multiVal multiVal_subtract (multiVal m1, multiVal m2)
   switch (m1->kind)
     {
     case MVLONG:   return (multiVal_makeInt (m1->value.ival - m2->value.ival));
-    case MVCHAR:   return (multiVal_makeChar (m1->value.cval - m2->value.cval));
+    case MVCHAR:   return (multiVal_makeChar ((char) (m1->value.cval - m2->value.cval)));
     case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval - m2->value.fval));
     case MVSTRING: return multiVal_undefined;
     }
@@ -334,7 +334,7 @@ multiVal multiVal_multiply (multiVal m1, multiVal m2)
   switch (m1->kind)
     {
     case MVLONG:   return (multiVal_makeInt (m1->value.ival * m2->value.ival));
-    case MVCHAR:   return (multiVal_makeChar (m1->value.cval * m2->value.cval));
+    case MVCHAR:   return (multiVal_makeChar ((char) (m1->value.cval * m2->value.cval)));
     case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval * m2->value.fval));
     case MVSTRING: return multiVal_undefined;
     }
@@ -352,7 +352,7 @@ multiVal multiVal_divide (multiVal m1, multiVal m2)
   switch (m1->kind)
     {
     case MVLONG:   return (multiVal_makeInt (m1->value.ival / m2->value.ival));
-    case MVCHAR:   return (multiVal_makeChar (m1->value.cval / m2->value.cval));
+    case MVCHAR:   return (multiVal_makeChar ((char) (m1->value.cval / m2->value.cval)));
     case MVDOUBLE: return (multiVal_makeDouble (m1->value.fval / m2->value.fval));
     case MVSTRING: return multiVal_undefined;
     }

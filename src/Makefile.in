@@ -261,7 +261,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/gram.h                   Headers/sRefList.h \
           Headers/guardSet.h               Headers/sRefSet.h \
           Headers/handle.h                 Headers/sRefSetList.h \
-          Headers/hashTable.h              Headers/sRefSetStack.h \
+          Headers/sRefSetStack.h \
           Headers/idDecl.h                 Headers/sRefTable.h \
           Headers/idDeclList.h             Headers/stateClause.h \
           Headers/importNode.h             Headers/stateClauseList.h \
@@ -575,7 +575,7 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in
+DIST_COMMON = ChangeLog Makefile.am Makefile.in
 SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 
 all: $(BUILT_SOURCES)

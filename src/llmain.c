@@ -69,7 +69,7 @@
 # include "imports.h"
 # endif
 
-# include "version.h"
+# include "Headers/version.h" /* Visual C++ finds the wrong version.h */
 # include "fileIdList.h"
 # include "lcllib.h"
 # include "cgrammar.h"
@@ -323,7 +323,7 @@ lslProcess (fileIdList lclfiles)
   fileIdList_elements (lclfiles, fid)
     {
       cstring actualName = cstring_undefined;
-      cstring fname = fileName (fid);
+      cstring fname = fileTable_fileName (fid);
       
       if (osd_getPath (cstring_fromChars (g_localSpecPath), 
 		       fname, &actualName) == OSD_FILENOTFOUND)
@@ -1133,7 +1133,7 @@ int main (int argc, char *argv[])
 				    }
 				  else
 				    {
-				      setStringFlag (opt, arg);
+				      setStringFlag (opt, cstring_copy (arg));
 				    }
 				}
 			    }
@@ -1294,10 +1294,10 @@ int main (int argc, char *argv[])
 
       if (context_getFlag (FLG_SHOWSCAN))
 	{
-	  lldiagmsg (message ("< processing %s >", rootFileName (mtfile)));
+	  lldiagmsg (message ("< processing %s >", fileTable_rootFileName (mtfile)));
 	}
       
-      mtreader_readFile (cstring_copy (fileName (mtfile)));
+      mtreader_readFile (cstring_copy (fileTable_fileName (mtfile)));
     } end_fileIdList_elements;
 
   libtime = clock ();
@@ -1402,7 +1402,7 @@ int main (int argc, char *argv[])
 
   fileIdList_elements (dercfiles, fid)
     {
-      sourceFile = inputStream_create (cstring_copy (fileName (fid)), C_EXTENSION, TRUE);
+      sourceFile = inputStream_create (cstring_copy (fileTable_fileName (fid)), C_EXTENSION, TRUE);
       context_setFileId (fid);
       
       /* Open source file  */
@@ -1410,7 +1410,7 @@ int main (int argc, char *argv[])
       if (inputStream_isUndefined (sourceFile) || (!inputStream_open (sourceFile)))
 	{
 	  /* previously, this was ignored  ?! */
-	  llbug (message ("Could not open temp file: %s", fileName (fid)));
+	  llbug (message ("Could not open temp file: %s", fileTable_fileName (fid)));
 	}
       else
 	{
@@ -1420,7 +1420,7 @@ int main (int argc, char *argv[])
 
 	  if (context_getFlag (FLG_SHOWSCAN))
 	    {
-	      lldiagmsg (message ("< checking %q >", osd_outputPath (rootFileName (fid))));
+	      lldiagmsg (message ("< checking %q >", osd_outputPath (fileTable_rootFileName (fid))));
 	    }
 	  
 	  /*
@@ -2659,7 +2659,7 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 
   fileIdList_elements (fl, fid)
     {
-      cstring ppfname = fileName (fid);
+      cstring ppfname = fileTable_fileName (fid);
 
       if (!(osd_fileIsReadable (ppfname)))
 	{
@@ -2694,10 +2694,12 @@ static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
 	      filesprocessed++;
 	    }
 
-	  if (cppProcess (ppfname, fileName (dfile)) != 0) 
+	  DPRINTF (("outfile: %s", fileTable_fileName (dfile)));
+
+	  if (cppProcess (ppfname, fileTable_fileName (dfile)) != 0) 
 	    {
 	      llfatalerror (message ("Preprocessing error for file: %s", 
-				     rootFileName (fid)));
+				     fileTable_rootFileName (fid)));
 	    }
 	  
 	  fileIdList_add (dfiles, dfile);

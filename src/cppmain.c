@@ -52,6 +52,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "cpphash.h"
 # include "cpperror.h"
 # include "llmain.h"
+# include "osd.h"
 
 # include <stdio.h>
 
@@ -120,6 +121,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
   if (ofile == NULL) 
     {
       fileTable_noDelete (context_fileTable (), outfile);
+      osd_setTempError ();
       llfatalerror (message ("Cannot create temporary file for "
 			     "pre-processor output.  Trying to "
 			     "open: %s.  Use -tmpdir to change "

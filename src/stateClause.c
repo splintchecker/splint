@@ -128,6 +128,11 @@ bool stateClause_isMemoryAllocation (stateClause cl)
 ** An error is reported if the test is NOT true.
 */
 
+# ifdef WIN32
+/* Microsoft doesn't believe in higher order functions... */
+# pragma warning( disable : 4550 )
+# endif  
+
 sRefTest stateClause_getPreTestFunction (stateClause cl)
 {
   switch (cl->kind)

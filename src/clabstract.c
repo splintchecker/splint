@@ -2265,12 +2265,14 @@ sRef fixStateClausesId (cstring s)
 
 	  /*@i222@*/
 	  /*check that we're in a structure */
-	  /*@unused@*/	  uentryList ueL;
+# if 0
+		  /*@unused@*/	  uentryList ueL;
 	  /*@unused@*/ uentry ue2;
 	  /*@unused@*/ ctype ct;
+# endif
 	  fileloc loc = fileloc_decColumn (g_currentloc, cstring_length (s));
 	  ret = sRef_undefined; 
-
+# if 0
 	  /*drl commenting this out for now 
 	  ct = context_getLastStruct ( ct );
 
@@ -2291,6 +2293,8 @@ sRef fixStateClausesId (cstring s)
 	      return ret;
 	    }
 	  */
+# endif
+
 	  voptgenerror 
 	    (FLG_UNRECOG, 
 	     message ("Unrecognized identifier in function clause: %s", s), 

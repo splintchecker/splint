@@ -140,6 +140,10 @@ static /*@observer@*/ cstring argcode_unparse (argcode arg)
     case ARG_SPECIAL:
       BADBRANCH;
     }
+# ifdef WIN32
+/* Make Microsoft VC++ happy */
+# pragma warning (disable:4715) 
+# endif
 }      
 
 typedef struct { 

@@ -33,7 +33,7 @@
 # include "llbasic.h"
 # include "llmain.h"
 # include "cpperror.h"
-# include "version.h"
+# include "Headers/version.h" /* Visual C++ finds a different version.h on some path! */
 
 /* Don't allow possibly-recursive assertion failures. */
 # undef llassert

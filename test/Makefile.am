@@ -518,7 +518,7 @@ mystrncat:
 
 .PHONY: noeffect
 noeffect:
-	${SPLINT} -nof noeffect.c +allmacros +checks -expect 3
+	${SPLINTP} noeffect.c +allmacros +checks -expect 3
 
 ###
 ### 2002-01-01: null1.c: expect increased to 15 because out must be defined

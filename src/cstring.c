@@ -692,7 +692,7 @@ cstring_appendChar (/*@only@*/ cstring s1, char c)
   else
     {
       *(s) = c;
-     /*drl bee: dm*/  *(s + 1) = '\0';
+      /*drl bee: dm*/  *(s + 1) = '\0';
     } 
 
   return s;

@@ -1,6 +1,6 @@
 dnl Process with autoconf to create a configure script  -*- Autoconf -*-
 AC_PREREQ(2.50)
-AC_INIT([Splint], [3.0.1.1], [splint-bug@cs.virginia.edu], [splint])
+AC_INIT([Splint], [3.0.1.1], [splint-bug@splint.org], [splint])
 
 dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])

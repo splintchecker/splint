@@ -8,7 +8,12 @@
 # define BASIC_H
 
 # ifdef HAVE_CONFIG_H
+# ifdef WIN32
+/* Win32 uses its own hand-generated config file */
+# include "../../winconfig.h"
+# else 
 # include "../../config.h"
+# endif
 # else
 # error "No config.h file!"
 # endif

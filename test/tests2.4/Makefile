@@ -4,7 +4,7 @@ SPLINT = splint
 
 all: check
 
-check: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source
+check: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source 
 
 emptycase:
 	$(SPLINT) emptycase.c 

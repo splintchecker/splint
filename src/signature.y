@@ -37,7 +37,9 @@
 # include "lslparse.h"
 # include "signature.h"
 
-void lslerror (char *);
+static void lslerror (char *);
+extern int lsllex ();
+
 /*@dependent@*/ /*@null@*/ lslOp importedlslOp;
 
 /*@-noparams@*/ /* Can't list params since YYSTYPE isn't defined yet. */

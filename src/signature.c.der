@@ -117,7 +117,9 @@
 # include "lslparse.h"
 # include "signature.h"
 
-void lslerror (char *);
+static void lslerror (char *);
+extern int lsllex ();
+
 /*@dependent@*/ /*@null@*/ lslOp importedlslOp;
 
 /*@-noparams@*/ /* Can't list params since YYSTYPE isn't defined yet. */
@@ -225,10 +227,10 @@ static const short yyrhs[] = {    49,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   137,   139,   144,   148,   154,   156,   160,   162,   164,   166,
-   168,   170,   172,   174,   176,   179,   182,   185,   188,   191,
-   194,   199,   204,   206,   208,   211,   213,   216,   218,   221,
-   223,   226,   229,   231,   234,   236,   239,   245
+   139,   141,   146,   150,   156,   158,   162,   164,   166,   168,
+   170,   172,   174,   176,   178,   181,   184,   187,   190,   193,
+   196,   201,   206,   208,   210,   213,   215,   218,   220,   223,
+   225,   228,   231,   233,   236,   238,   241,   247
 };
 #endif
 

@@ -386,7 +386,7 @@ callLSL (/*@unused@*/ cstring specfile, /*@only@*/ cstring text)
   cstring noext;
   FILE *inptr;
 
-  infile = fileName (fileTable_addltemp (context_fileTable ()));
+  infile = fileTable_fileName (fileTable_addltemp (context_fileTable ()));
   inptr = fileTable_openFile (context_fileTable (), infile, "w");
   
   if (inptr == NULL)
@@ -409,7 +409,7 @@ callLSL (/*@unused@*/ cstring specfile, /*@only@*/ cstring text)
 
   /* the default is to delete the input file */
 
-  outfile = fileName (fileTable_addltemp (context_fileTable ()));
+  outfile = fileTable_fileName (fileTable_addltemp (context_fileTable ()));
   invokeLSL (infile, outfile, context_getFlag (FLG_KEEP));
   cstring_free (text);
 }

@@ -7,7 +7,7 @@
 .SUFFIXES: .lcl .lcs .lh .h .c .o
 .PHONY: check clean
 
-SHELL = /bin/csh -f
+### SHELL = /bin/csh -f
 
 SPLINT = splint -booltype "bool"
 LCL = $(SPLINT) -specundef +lh +quiet -nof

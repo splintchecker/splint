@@ -95,6 +95,23 @@ fileTable_getIndex (fileTable ft, cstring s)
   return res;
 }
 
+static cstring ftentry_unparse (fileTable ft, ftentry fte)
+{
+  if (fileId_isValid (fte->fder))
+    {
+      return message ("%s %q %d (%s)", 
+		      fte->fname, 
+		      fileType_unparse (fte->ftype),
+		      fte->fder,
+		      ft->elements[fte->fder]->fname);
+    }
+  else
+    {
+      return message ("%s %q", fte->fname,
+		      fileType_unparse (fte->ftype));
+    }
+}
+
 /*@only@*/ cstring
 fileTable_unparse (fileTable ft)
 {
@@ -108,21 +125,8 @@ fileTable_unparse (fileTable ft)
 
   for (i = 0; i < ft->nentries; i++)
     {
-      if (fileId_isValid (ft->elements[i]->fder))
-	{
-	  s = message ("%s\n[%d] %s %q %d (%s)", 
-		       s, i, 
-		       ft->elements[i]->fname, 
-		       fileType_unparse (ft->elements[i]->ftype),
-		       ft->elements[i]->fder,
-		       ft->elements[ft->elements[i]->fder]->fname);
-	}
-      else
-	{
-	  s = message ("%s\n[%d] %s %q", s, i, ft->elements[i]->fname,
-		       fileType_unparse (ft->elements[i]->ftype));
-	}
-          }
+      s = message ("%s\n[%d] %q", s, i, ftentry_unparse (ft, ft->elements[i]));
+    }
 
   return s;
 }
@@ -270,11 +274,15 @@ void fileTable_noDelete (fileTable ft, cstring name)
 {
   fileId fid = fileTable_lookup (ft, name);
 
-  if (fileId_isValid (fid)) {
-    llassert (fileTable_isDefined (ft));
-
-    ft->elements[fid]->ftype = FILE_NODELETE;
-  }
+  if (fileId_isValid (fid)) 
+    {
+      llassert (fileTable_isDefined (ft));
+      ft->elements[fid]->ftype = FILE_NODELETE;
+    }
+  else
+    {
+      DPRINTF (("Invalid no delete: %s", name));
+    }
 }
 
 static fileId
@@ -284,7 +292,8 @@ fileTable_addFilePrim (fileTable ft, /*@temp@*/ cstring name,
 {
   cstring absname = osd_absolutePath (NULL, name);
   int tindex = fileTable_getIndex (ft, absname);
-
+  
+  DPRINTF (("Got abs path: %s", absname));
   llassert (ft != fileTable_undefined);
 
   if (tindex != NOT_FOUND)
@@ -471,6 +480,9 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
 		  C_EXTENSION);
   fileId res;
 
+  DPRINTF (("tmp dir: %s", context_tmpdir ()));
+  DPRINTF (("new name: %s", newname));
+
   llassert (fileTable_isDefined (ft));
 
   if (!fileId_isValid (ft->elements[fid]->fder))
@@ -498,6 +510,7 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
 	}
     }
 
+  DPRINTF (("Added file: %s", fileTable_fileName (res)));
   cstring_free (newname);
   return res;
 }
@@ -751,6 +764,7 @@ fileTable_cleanup (fileTable ft)
 	  /*
           ** Make sure it is really a derived file
 	  */
+
 	  
 	  if (fe->ftype == FILE_LSLTEMP || fe->ftype == FILE_NODELETE)
 	    {
@@ -897,8 +911,13 @@ static /*@only@*/ cstring makeTempName (cstring dir, cstring pre, cstring suf)
   maxlen = (cstring_length (dir) + cstring_length (pre) + mstring_length (msg) 
 	    + cstring_length (pidname) + cstring_length (suf) + 2);
 
+  DPRINTF (("Dir: %s / %s / %s / %s / %s",
+	    dir, pre, pidname, msg, suf));
+
   smsg = message ("%s%s%s%s%s", dir, pre, pidname, cstring_fromChars (msg), suf);
   nextMsg (msg);
+
+  DPRINTF (("Trying: %s", smsg));
 
   while (osd_fileExists (smsg))
     {

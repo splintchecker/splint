@@ -45,6 +45,10 @@
 # include <sys/stat.h>
 /* Fix suggested by Lars Rasmussen */
 # include <errno.h>
+# ifdef WIN32
+# include <direct.h>
+# define getcwd _getcwd
+# endif
 
 /* POSIX platforms should defined getpid in unistd.h */
 # if defined (WIN32) || (defined(OS2) && defined(__IBMC__))
@@ -318,14 +322,25 @@ osd_fileExists (cstring filespec)
 # endif
 }
 
+# if defined(__IBMC__) && defined(OS2)
+# define S_IFMT (unsigned short)0xFFFF
+# endif
+
+/*
+** Works form Win32 at least...
+*/
+
+# ifndef S_IXUSR
+/*@-macrounrecog@*/
+# define S_IXUSR _S_IEXEC
+/*@=macrounrecog@*/
+# endif
+
 bool
 osd_executableFileExists (/*@unused@*/ char *filespec)
 {
 # ifdef UNIX
-	struct stat buf;
-# if defined(__IBMC__) && defined(OS2)
-# define S_IFMT (unsigned short)0xFFFF
-# endif
+  struct stat buf;
   if (stat (filespec, &buf) == 0)
     { 
       /* mask by file type */
@@ -334,14 +349,14 @@ osd_executableFileExists (/*@unused@*/ char *filespec)
 	{
 	  /* as long as it is an executable file */
 # if defined(__IBMC__) && defined(OS2)
-      int com_or_exe_pos = strlen( filespec) - 4;
-      return stricmp( &filespec[com_or_exe_pos], ".exe") == 0
-        || stricmp( &filespec[com_or_exe_pos], ".com") == 0
-        || stricmp( &filespec[com_or_exe_pos], ".bat") == 0
-        || stricmp( &filespec[com_or_exe_pos], ".cmd") == 0;
+	  int com_or_exe_pos = strlen( filespec) - 4;
+	  return stricmp( &filespec[com_or_exe_pos], ".exe") == 0
+	    || stricmp( &filespec[com_or_exe_pos], ".com") == 0
+	    || stricmp( &filespec[com_or_exe_pos], ".bat") == 0
+	    || stricmp( &filespec[com_or_exe_pos], ".cmd") == 0;
 # else
 	  return (((buf.st_mode & S_IXUSR)
-# if !defined(MSDOS) && !defined(OS2) 
+# if defined (S_IXGRP) && defined (S_IXOTH)
 		   | (buf.st_mode & S_IXGRP) |
 		   (buf.st_mode & S_IXOTH)
 # endif
@@ -349,7 +364,6 @@ osd_executableFileExists (/*@unused@*/ char *filespec)
 # endif
 	}
     }
-
 # endif
   return (FALSE);
 
@@ -468,6 +482,13 @@ extern /*@external@*/ int unlink (const char *) /*@modifies fileSystem@*/ ;
 /*@=redecl@*/
 # endif
 
+static s_tempError = FALSE;
+
+void osd_setTempError (void)
+{
+  s_tempError = TRUE;
+}
+
 int osd_unlink (cstring fname)
 {
   int res;
@@ -476,9 +497,12 @@ int osd_unlink (cstring fname)
 
   if (res != 0)
     {
-      llcontbug (message ("Cannot remove temporary file: %s (%s)",
-			  fname,
-			  cstring_fromChars (strerror (errno))));
+      if (!s_tempError)
+	{
+	  llcontbug (message ("Cannot remove temporary file: %s (%s)",
+			      fname,
+			      cstring_fromChars (strerror (errno))));
+	}
     }
   
   return res;
@@ -750,6 +774,20 @@ osd_dirAbsolute (char *str)
   char *ret = NULL;
   size_t size = PATH_MAX * sizeof (*ret);
   
+  DPRINTF (("Absolute for: %s", str));
+
+# ifdef WIN32
+  if (strlen (str) > 1 && str[1] == ':')
+    {
+      /*
+      ** Its a drive letter
+      */
+      
+      ret = dmalloc ((strlen (str) + 1) * sizeof (*ret));
+      strcpy (ret, str);
+    }
+  else
+# endif
   if (osd_isConnectChar (str[0]))
     {
       ret = dmalloc ((strlen (str) + 1) * sizeof (*ret));
@@ -970,6 +1008,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
   /*@noaccess cstring@*/
   return cstring_fromChars (abs_buffer);
 # else
+  DPRINTF (("Here: %s", filename));
   return cstring_copy (filename);
 # endif
 }

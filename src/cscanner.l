@@ -69,7 +69,15 @@ ULSuffix                ({U}{L}|{L}{U})
    /* needed for isatty()... */
 # include <io.h>
 # else
+
+/*
+** Win32 doesn't have unistd.h
+*/
+
+# ifndef WIN32
 # include <unistd.h>
+# endif
+
 # endif
 
 # include "basic.h"

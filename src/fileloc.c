@@ -43,7 +43,7 @@ static /*@only@*/ fileloc fileloc_createPrim (flkind p_kind, fileId p_fid, int p
 
 static flkind fileId_kind (fileId s)
 {
-  cstring fname = rootFileName (s);
+  cstring fname = fileTable_rootFileName (s);
   
   if (fileLib_isLCLFile (fname))
     {
@@ -211,7 +211,7 @@ cstring fileloc_getBase (fileloc f)
 {
   llassert (fileloc_isDefined (f));
 
-  return (fileNameBase (f->fid));
+  return (fileTable_fileNameBase (f->fid));
 }
 
 bool
@@ -591,14 +591,14 @@ fileloc fileloc_create (fileId fid, int line, int col)
 /*@observer@*/ cstring
 fileloc_filename (fileloc f)
 {
-  return (fileloc_isDefined (f) ? rootFileName (f->fid) : cstring_makeLiteralTemp ("<unknown>"));
+  return (fileloc_isDefined (f) ? fileTable_rootFileName (f->fid) : cstring_makeLiteralTemp ("<unknown>"));
 }
 
 /*@only@*/ cstring fileloc_outputFilename (fileloc f)
 {
   if (fileloc_isDefined (f))
     {
-      return osd_outputPath (rootFileName (f->fid));
+      return osd_outputPath (fileTable_rootFileName (f->fid));
     }
   else
     {

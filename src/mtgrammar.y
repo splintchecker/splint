@@ -42,9 +42,10 @@ extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
     # include "mtscanner.h"
   */
 
-static /*@exits@*/ void mterror (char *);
+static /*@noreturn@*/ void mterror (char *);
 
 /*@-noparams@*/ /* Can't list params since YYSTYPE isn't defined yet. */
+extern int mtlex () ;
 static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 /*@=noparams@*/
 

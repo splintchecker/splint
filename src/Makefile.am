@@ -180,7 +180,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/gram.h                   Headers/sRefList.h \
           Headers/guardSet.h               Headers/sRefSet.h \
           Headers/handle.h                 Headers/sRefSetList.h \
-          Headers/hashTable.h              Headers/sRefSetStack.h \
+          Headers/sRefSetStack.h \
           Headers/idDecl.h                 Headers/sRefTable.h \
           Headers/idDeclList.h             Headers/stateClause.h \
           Headers/importNode.h             Headers/stateClauseList.h \

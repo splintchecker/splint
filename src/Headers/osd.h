@@ -72,6 +72,8 @@ extern /*@observer@*/ cstring
 extern filestatus osd_findOnLarchPath (cstring p_file, /*@out@*/ cstring *p_returnPath) 
   /*@modifies *p_returnPath@*/ ;
 
+extern void osd_setTempError (void) /*@modifies internalState@*/ ;
+
 extern /*@observer@*/  cstring osd_getHomeDir (void) /*@*/ ;
 
 extern /*@observer@*/ cstring osd_getEnvironmentVariable (cstring) ;

@@ -537,7 +537,7 @@ context_exitLCLfile (void)
   if (gc.kind != CX_LCLLIB)
     {
       cstring lclname =  
-	fileLib_withoutExtension (fileName (currentFile ()), LCL_EXTENSION);
+	fileLib_withoutExtension (fileTable_fileName (currentFile ()), LCL_EXTENSION);
       
       addModuleAccess (fileLib_removePath (lclname), gc.facct);
       cstring_free (lclname);
@@ -3448,7 +3448,7 @@ context_processMacros (void)
   if (fileId_isValid (currentFile ()))
     {
       fileloc lastfl;
-      cstring cbase = fileLib_removePathFree (fileLib_removeAnyExtension (fileName (currentFile ())));
+      cstring cbase = fileLib_removePathFree (fileLib_removeAnyExtension (fileTable_fileName (currentFile ())));
       
       gc.inmacrocache = TRUE;
 

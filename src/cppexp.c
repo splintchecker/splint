@@ -807,7 +807,11 @@ left_shift (cppReader *pfile, long a, bool unsignedp, size_t b)
   else
     {
       long l = int_toNonNegative (a) << b;
-      
+
+# ifdef WIN32
+# pragma warning( disable : 4018 )
+# endif
+
       if (int_toNonNegative (l) >> b != a)
 	{
 	  integer_overflow (pfile);

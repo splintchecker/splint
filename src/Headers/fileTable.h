@@ -120,15 +120,13 @@ extern bool fileTable_isSpecialFile (fileTable p_ft, fileId p_fid) /*@*/ ;
 extern bool fileTable_isSystemFile (fileTable p_ft, fileId p_fid) /*@*/ ;
 extern bool fileTable_isXHFile (fileTable p_ft, fileId p_fid) /*@*/ ;
 
-/*@-czechfcns@*/
-extern /*@observer@*/ cstring fileName (fileId p_fid) /*@*/ ;
-extern /*@observer@*/ cstring fileNameBase (fileId p_fid) /*@*/ ;
-extern /*@observer@*/ cstring rootFileName (fileId p_fid) /*@*/ ;
-/*@=czechfcns@*/
+extern /*@observer@*/ cstring fileTable_fileName (fileId p_fid) /*@*/ ;
+extern /*@observer@*/ cstring fileTable_fileNameBase (fileId p_fid) /*@*/ ;
+extern /*@observer@*/ cstring fileTable_rootFileName (fileId p_fid) /*@*/ ;
 
-# define fileName(fid)     (fileTable_getName(context_fileTable(), fid))
-# define fileNameBase(fid) (fileTable_getNameBase(context_fileTable(), fid))
-# define rootFileName(fid) (fileTable_getRootName(context_fileTable(), fid))
+# define fileTable_fileName(fid)     (fileTable_getName(context_fileTable(), fid))
+# define fileTable_fileNameBase(fid) (fileTable_getNameBase(context_fileTable(), fid))
+# define fileTable_rootFileName(fid) (fileTable_getRootName(context_fileTable(), fid))
 
 extern void fileTable_noDelete (fileTable, cstring);
 extern bool fileId_baseEqual (/*@sef@*/ fileId p_t1, /*@sef@*/ fileId p_t2) /*@*/ ;
