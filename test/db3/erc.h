@@ -18,7 +18,7 @@ typedef ercInfo *erc;
 
 # define erc_initMod() \
     do { bool_initMod(); employee_initMod();\
-         eref_initMod(); } while (0)
+         eref_initMod(); } while (FALSE)
 
 # define erc_elements(c, m_x) \
   { erc m_c = (c); ercElem *m_ec = (m_c)->vals; int m_i = 0; \

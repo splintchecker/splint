@@ -1,7 +1,7 @@
 # ifndef EMPLOYEE_H
 # define EMPLOYEE_H
 
-# define maxEmployeeName ((size_t) 20)
+# define maxEmployeeName   ((size_t) 20)
 # define employeePrintSize (63)
 
 /*@notfunction@*/

@@ -15,12 +15,12 @@ typedef ercList *ercIter;
 # define erc_choose(c) ((c->vals)->val)
 # define erc_initMod() \
     do { bool_initMod(); employee_initMod();\
-         eref_initMod(); } while (0)
+         eref_initMod(); } while (FALSE)
 
 # define erc_iterFinal(it) (free(it)) 
 
 # define erc_iterReturn(it, result) \
-    do { erc_iterFinal(it); return result; } while (0)
+    do { erc_iterFinal(it); return result; } while (FALSE)
 
 # define for_ercElems(er, it, c)\
     for (er = erc_yield (it = erc_iterStart (c)); \
