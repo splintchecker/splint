@@ -1,7 +1,7 @@
 dnl Process with autoconf to create a configure script  -*- Autoconf -*-
 AC_PREREQ(2.50)
 
-AC_INIT([Splint], [3.1.1], [splint-bug@splint.org], [splint])
+AC_INIT([Splint], [3.1.1.1], [splint-bug@splint.org], [splint])
 
 dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])
@@ -17,8 +17,8 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 AM_CONFIG_HEADER([config.h:config.hin])
 
 dnl Prepare for Splint processing of config.h
-AH_TOP([/*@-constmacros@*/])
-AH_BOTTOM([/*@=constmacros@*/])
+AH_TOP([/*@ -constmacros@*/])
+AH_BOTTOM([/*@ =constmacros@*/])
 
 dnl Checks for programs.
 #drl 12-19-2001 commented out so Splint won't depend on C++

@@ -1,6 +1,6 @@
 /* config.hin.  Generated from configure.ac by autoheader.  */
 
-/*constmacros@*/
+/*@-constmacros@*/
 
 /* build */
 #undef BUILD

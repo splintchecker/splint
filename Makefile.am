@@ -44,7 +44,6 @@ binaryDerivedFiles = Makefile.binary.in configure.binary
 configure.binary:configure.binary.ac
 	-autoconf -oconfigure.binary configure.binary.ac
 
-
 Makefile.binary.in:Makefile.binary.am
 	-automake Makefile.binary
 	$(SED) -e s/Makefile\.binary/Makefile/ Makefile.binary.in > tMakefile.binary.in
@@ -52,9 +51,6 @@ Makefile.binary.in:Makefile.binary.am
 	$(CP) tMakefile.binary.in Makefile.binary.in
 #drl add this hack 3/1/2003
 #make the generated makefile depend on Makefile not Makefile.binary
-
-
-
 
 $(binaryDir)/Makefile.in: $(binaryDir)/Makefile.am
 	-automake $(binaryDir)/Makefile
