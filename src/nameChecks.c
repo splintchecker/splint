@@ -1285,9 +1285,9 @@ checkAnsiName (uentry ue)
       hasError |= optgenerror2
 	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message 
-	 ("Name %s is reserved for future ANSI library extensions. "
+	 ("Name %s is reserved for future library extensions. "
 	  "Macros beginning with E and a digit or uppercase letter "
-	  "may be added to <errno.h>. (See ANSI, Section 4.13.1)",
+	  "may be added to <errno.h>. (ISO99:7.26.3)",
 	  name),
 	 uentry_whereLast (ue));
     }
@@ -1307,9 +1307,9 @@ checkAnsiName (uentry ue)
       hasError |= optgenerror2
 	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
+	 ("Name %s is reserved for future library extensions.  "
 	  "Macros beginning with \"LC_\" and an uppercase letter may "
-	  "be added to <locale.h>. (See ANSI, Section 4.13.3)",
+	  "be added to <locale.h>. (ISO99:7.26.5)",
 	  name),
 	 uentry_whereLast (ue));
     }
@@ -1328,10 +1328,10 @@ checkAnsiName (uentry ue)
       hasError |= optgenerror2
 	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
 	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
+	 ("Name %s is reserved for future library extensions.  "
 	  "Macros that begin with SIG and an uppercase letter or SIG_ "
 	  "and an uppercase letter may be added to "
-	  "<signal.h>. (See ISO99 7.14 or ANSI 4.13.5)",
+	  "<signal.h>. (ISO99:7.14)",
 	  name),
 	 uentry_whereLast (ue));
     }
@@ -1373,9 +1373,9 @@ checkAnsiName (uentry ue)
 	  hasError |= optgenerror2
 	    (flg, FLG_NAMECHECKS,
 	     message
-	     ("Name %s is reserved for future ANSI library extensions.  "
+	     ("Name %s is reserved for future library extensions.  "
 	      "Functions beginning with \"is\" or \"to\" and a lowercase "
-	      "letter may be added to <ctype.h>. (See ANSI, Section 4.13.2)",
+	      "letter may be added to <ctype.h>. (ISO99:7.26.2)",
 	      name),
 	     uentry_whereLast (ue));
 
@@ -1425,9 +1425,9 @@ checkAnsiName (uentry ue)
 	  hasError |= optgenerror2
 	    (flg, FLG_NAMECHECKS,
 	     message
-	     ("Name %s is reserved for future ANSI library extensions.  "
+	     ("Name %s is reserved for future library extensions.  "
 	      "The names of all existing functions in <math.h> suffixed "
-	      "with 'f' or 'l' may be added to <math.h>. (See ANSI, Section 4.13.4)",
+	      "with 'f' or 'l' may be added to <math.h>. (ISO:7.26.1)",
 	      name),
 	     uentry_whereLast (ue));
 	}
@@ -1450,9 +1450,9 @@ checkAnsiName (uentry ue)
 	  hasError |= optgenerror2
 	    (flg, FLG_NAMECHECKS,
 	     message
-	     ("Name %s is reserved for future ANSI library extensions.  "
+	     ("Name %s is reserved for future library extensions.  "
 	      "Functions that begin with \"str\" and a lowercase letter "
-	      "may be added to <stdlib.h> or <string.h>. (See ANSI, Section 4.13.7)",
+	      "may be added to <stdlib.h> or <string.h>. (ISO99:7.26.9)",
 	      name),
 	     uentry_whereLast (ue));
 	}
@@ -1472,9 +1472,9 @@ checkAnsiName (uentry ue)
 	  hasError |= optgenerror2
 	    (flg, FLG_NAMECHECKS,
 	     message
-	     ("Name %s is reserved for future ANSI library extensions.  "
+	     ("Name %s is reserved for future library extensions.  "
 	      "Functions that begin with \"mem\" or \"wcs\" and a "
-	      "lowercase letter letter may be added to <string.h>. (See ANSI, Section 4.13.8)",
+	      "lowercase letter letter may be added to <string.h>. (ISO:7.26.11)",
 	      name),
 	     uentry_whereLast (ue));
 	}

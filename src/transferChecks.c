@@ -1286,14 +1286,14 @@ static /*@observer@*/ cstring dscCode_unparse (dscCode desc) /*@*/
 }
 
 static bool 
-  checkCompletelyDestroyed (exprNode p_fexp, sRef p_fref, bool p_topLevel, 
-			    fileloc p_loc, int p_depth, dscCode p_desc,
-			    bool p_hideErrors);
+checkCompletelyDestroyed (exprNode p_fexp, sRef p_fref, bool p_topLevel, bool p_isField,
+			  fileloc p_loc, int p_depth, dscCode p_desc,
+			  bool p_hideErrors);
 
 bool transferChecks_globalDestroyed (sRef fref, fileloc loc)
 {
   DPRINTF (("Global destroyed: %s", sRef_unparseFull (fref)));
-  return (checkCompletelyDestroyed (exprNode_undefined, fref, TRUE,
+  return (checkCompletelyDestroyed (exprNode_undefined, fref, TRUE, FALSE,
 				    loc, 0, DSC_GLOB, FALSE));
 }
 
@@ -1306,7 +1306,7 @@ void transferChecks_localDestroyed (sRef fref, fileloc loc)
     }
   else
     {
-      (void) checkCompletelyDestroyed (exprNode_undefined, fref, TRUE,
+      (void) checkCompletelyDestroyed (exprNode_undefined, fref, TRUE, FALSE,
 				       loc, 0, DSC_LOCAL, FALSE);
     }
 }
@@ -1322,19 +1322,21 @@ void transferChecks_structDestroyed (sRef fref, fileloc loc)
     }
   else
     {
-      (void) checkCompletelyDestroyed (exprNode_undefined, fref, TRUE,
+      (void) checkCompletelyDestroyed (exprNode_undefined, fref, TRUE, FALSE,
 				       loc, 0, DSC_STRUCT, FALSE);
     }
 }
 
 static bool
-  checkCompletelyDestroyed (exprNode fexp, sRef fref, bool topLevel,
-			    fileloc loc, int depth,
-			    dscCode desc, bool hideErrors)
+checkCompletelyDestroyed (exprNode fexp, sRef fref, bool topLevel, bool isField,
+			  fileloc loc, int depth,
+			  dscCode desc, bool hideErrors)
 {
   ctype ct;
-
-  DPRINTF (("Check completely destroyed: %s", sRef_unparseFull (fref)));
+  
+  DPRINTF (("Check completely destroyed: %s / %s",
+	    sRef_unparse (fref),
+	    bool_unparse (hideErrors)));
 
   if (depth > MAXDEPTH)
     {
@@ -1394,14 +1396,16 @@ static bool
 
   if (sRef_isPdefined (fref) 
       && ctype_isAP (ct)
-      && !context_getFlag (FLG_STRICTDESTROY)) 
+      && !isField
+      && !context_getFlag (FLG_STRICTDESTROY))
     {
       /*
       ** Don't report errors for array elements (unless strictdestroy)
       ** when at least one appears to have been destroyed.
       */
 
-      DPRINTF (("Partial: %s", sRef_unparseFull (fref)));
+      DPRINTF (("Partial: %s / hiding errors: %s", sRef_unparseFull (fref),
+		ctype_unparse (ct)));
       hideErrors = TRUE;
       /* Don't report any more errors, but still change ownership. */
     }
@@ -1559,8 +1563,8 @@ static bool
       sRef fptr = sRef_constructDeadDeref (fref);
       bool res;
 
-      res = checkCompletelyDestroyed (fexp, fptr, FALSE, loc,
-				      depth + 1, desc, hideErrors);
+      res = checkCompletelyDestroyed (fexp, fptr, FALSE, FALSE,
+				      loc, depth + 1, desc, hideErrors);
       
       return res;
     }
@@ -1579,8 +1583,8 @@ static bool
 	{
 	  sRef farr = sRef_constructDeadDeref (fref);
 	  
-	  return (checkCompletelyDestroyed (fexp, farr, FALSE, loc, 
-					    depth + 1, desc, hideErrors));
+	  return (checkCompletelyDestroyed (fexp, farr, FALSE, FALSE,
+					    loc, depth + 1, desc, hideErrors));
 	}
     }
   else if (ctype_isStruct (ct))
@@ -1614,12 +1618,12 @@ static bool
 	      
 	      DPRINTF (("Check field: %s", sRef_unparseFull (field)));
 
-	      isOk = (checkCompletelyDestroyed (fexp, field, FALSE, loc,
-						depth + 1, desc, hideErrors)
+	      isOk = (checkCompletelyDestroyed (fexp, field, FALSE, TRUE,
+						loc, depth + 1, desc, hideErrors)
 		      && isOk);
 	    } end_uentryList_elements;
 	}
-
+      
       return isOk;
     }
   else
@@ -1944,8 +1948,8 @@ transferChecks_passParam (exprNode fexp, uentry arg, bool isSpec,
 	    }
 	}
       
-      (void) checkCompletelyDestroyed (fexp, fref, TRUE, exprNode_loc (fexp),
-				       0, DSC_PARAM, FALSE);
+      (void) checkCompletelyDestroyed (fexp, fref, TRUE, FALSE,
+				       exprNode_loc (fexp), 0, DSC_PARAM, FALSE);
 
       /* make it defined now, so checkTransfer is okay */
       sRef_setDefined (fref, exprNode_loc (fexp)); 

@@ -131,10 +131,10 @@ cstring qual_unparse (qual q)
       case QU_RELNULL:    return cstring_makeLiteralTemp ("relnull");
       case QU_NOTNULL:    return cstring_makeLiteralTemp ("notnull");
       case QU_NULLTERMINATED: return cstring_makeLiteralTemp ("nullterminated");
-      case QU_RETURNED:   return cstring_makeLiteralTemp ("  returned");
+      case QU_RETURNED:   return cstring_makeLiteralTemp ("returned");
       case QU_EXPOSED:    return cstring_makeLiteralTemp ("exposed");
-      case QU_EXITS:      return cstring_makeLiteralTemp ("exits");
-      case QU_MAYEXIT:    return cstring_makeLiteralTemp ("mayexit");
+      case QU_EXITS:      return cstring_makeLiteralTemp ("noreturn");
+      case QU_MAYEXIT:    return cstring_makeLiteralTemp ("maynotreturn");
       case QU_UNUSED:     return cstring_makeLiteralTemp ("unused");
       case QU_EXTERNAL:   return cstring_makeLiteralTemp ("external");
       case QU_SEF:        return cstring_makeLiteralTemp ("sef");
@@ -146,9 +146,9 @@ cstring qual_unparse (qual q)
       case QU_TEMPREF:    return cstring_makeLiteralTemp ("tempref"); 
       case QU_OWNED:      return cstring_makeLiteralTemp ("owned");
       case QU_DEPENDENT:  return cstring_makeLiteralTemp ("dependent");
-      case QU_NEVEREXIT:  return cstring_makeLiteralTemp ("neverexit");
-      case QU_TRUEEXIT:   return cstring_makeLiteralTemp ("trueexit");
-      case QU_FALSEEXIT:  return cstring_makeLiteralTemp ("falseexit");
+      case QU_NEVEREXIT:  return cstring_makeLiteralTemp ("alwaysreturns");
+      case QU_TRUEEXIT:   return cstring_makeLiteralTemp ("noreturnwhentrue");
+      case QU_FALSEEXIT:  return cstring_makeLiteralTemp ("noreturnwhenfalse");
       case QU_UNDEF:      return cstring_makeLiteralTemp ("undef");
       case QU_KILLED:     return cstring_makeLiteralTemp ("killed");
       case QU_PRINTFLIKE: return cstring_makeLiteralTemp ("printflike");

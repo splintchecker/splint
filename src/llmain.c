@@ -1936,11 +1936,11 @@ printAnnotations (void)
   llmsglit ("   /*@falsenull@*/ - if result is TRUE, first parameter is not NULL");
   llmsglit ("");
   llmsglit ("Execution:");
-  llmsglit ("   /*@exits@*/ - function never returns");
-  llmsglit ("   /*@mayexit@*/ - function may or may not return");
-  llmsglit ("   /*@trueexit@*/ - function does not return if first parameter is TRUE");
-  llmsglit ("   /*@falseexit@*/ - function does not return if first parameter if FALSE");
-  llmsglit ("   /*@neverexit@*/ - function always returns");
+  llmsglit ("   /*@noreturn@*/ - function never returns");
+  llmsglit ("   /*@maynotreturn@*/ - function may or may not return");
+  llmsglit ("   /*@noreturnwhentrue@*/ - function does not return if first parameter is TRUE");
+  llmsglit ("   /*@noreturnwhenfalse@*/ - function does not return if first parameter if FALSE");
+  llmsglit ("   /*@alwaysreturns@*/ - function always returns");
   llmsglit ("");
   llmsglit ("Side-Effects:");
   llmsglit ("   /*@sef@*/ - corresponding actual parameter has no side effects");
@@ -2223,7 +2223,7 @@ cleanupFiles (void)
 ** cleans up temp files (if necessary) and exits
 */
 
-/*@exits@*/ void
+/*@noreturn@*/ void
 llexit (int status)
 {
   DPRINTF (("llexit: %d", status));

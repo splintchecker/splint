@@ -4,7 +4,7 @@
 /* doesn't exit! */
 extern void cppReader_fatalError (cppReader *p_pfile, /*@only@*/ cstring p_str);
 
-extern /*@exits@*/ void cppReader_pfatalWithName (cppReader *p_pfile, 
+extern /*@noreturn@*/ void cppReader_pfatalWithName (cppReader *p_pfile, 
 						  cstring p_name);
 
 extern void cppReader_errorLit (cppReader *p_pfile, /*@observer@*/ cstring p_msg);

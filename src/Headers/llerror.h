@@ -12,7 +12,7 @@ extern bool /*@alt void@*/ check (bool p_x);
 
 extern bool doCheck (bool p_x, cstring p_pred, cstring p_file, int p_line);
 
-extern /*@falseexit@*/ void llassert (/*@sef@*/ bool p_test);
+extern /*@noreturnwhenfalse@*/ void llassert (/*@sef@*/ bool p_test);
 /*@-macroredef@*/
 # define llassert(tst) \
     do { if (!(tst)) { \
@@ -23,7 +23,7 @@ extern /*@falseexit@*/ void llassert (/*@sef@*/ bool p_test);
        }} while (FALSE)
 /*@=macroredef@*/
 
-extern /*@falseexit@*/ void llassertretnull (/*@sef@*/ bool p_test);
+extern /*@noreturnwhenfalse@*/ void llassertretnull (/*@sef@*/ bool p_test);
 # define llassertretnull(tst) \
     do { if (!(tst)) { \
            if (context_getFlag (FLG_TRYTORECOVER)) checkParseError (); \
@@ -38,7 +38,7 @@ extern /*@falseexit@*/ void llassertretnull (/*@sef@*/ bool p_test);
 ** the normal error generation routines are used).
 */
 
-extern /*@falseexit@*/ void llassertprotect (/*@sef@*/ bool p_test);
+extern /*@noreturnwhenfalse@*/ void llassertprotect (/*@sef@*/ bool p_test);
 # define llassertprotect(tst) \
     do { if (!(tst)) { \
 	   fprintf (stderr, "%s:%d: at source point: ", __FILE__, __LINE__); \
@@ -46,7 +46,7 @@ extern /*@falseexit@*/ void llassertprotect (/*@sef@*/ bool p_test);
            llexit (EXIT_FAILURE); \
        }} while (FALSE)
 
-extern /*@falseexit@*/ void llassertfatal (/*@sef@*/ bool p_test);
+extern /*@noreturnwhenfalse@*/ void llassertfatal (/*@sef@*/ bool p_test);
 # define llassertfatal(tst) \
     do { if (!(tst)) \
 	   llfatalbug (message("%s:%d: fatal llassert failed: " #tst, \
@@ -65,12 +65,12 @@ extern void llhint (/*@only@*/ cstring p_s)
    /*@globals g_currentloc, g_msgstream;@*/ 
    /*@modifies g_msgstream@*/ ;
 
-extern /*@private@*/ /*@exits@*/ void xllfatalbug (char *p_srcFile, int p_srcLine,
+extern /*@private@*/ /*@noreturn@*/ void xllfatalbug (char *p_srcFile, int p_srcLine,
 						  /*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/
    /*@modifies stderr@*/ ;
 
-extern /*@exits@*/ void llfatalbug (/*@only@*/ cstring p_s) 
+extern /*@noreturn@*/ void llfatalbug (/*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/
    /*@modifies stderr@*/ ;
 # define llfatalbug(p_s) \
@@ -105,8 +105,8 @@ extern void llerror (flagcode p_o, /*@only@*/ cstring p_s)
    ((void) llgenerror (p_o, p_s, g_currentloc))
 
 extern void llgenmsg (/*@only@*/ cstring p_s, fileloc p_fl) /*@modifies g_msgstream@*/ ;
-extern /*@exits@*/ void llfatalerror (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
-extern /*@exits@*/ void llfatalerrorLoc (/*@only@*/ cstring p_s) 
+extern /*@noreturn@*/ void llfatalerror (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+extern /*@noreturn@*/ void llfatalerrorLoc (/*@only@*/ cstring p_s) 
    /*@globals g_currentloc@*/ 
    /*@modifies stderr@*/ ;
 extern void llparseerror (/*@only@*/ cstring p_s) 
@@ -114,11 +114,11 @@ extern void llparseerror (/*@only@*/ cstring p_s)
    /*@modifies g_msgstream@*/ ;
 
 # ifndef NOLCL
-extern /*@exits@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_msgstream@*/ ;
-extern /*@exits@*/ void lclfatalbug (/*@temp@*/ char *p_msg) /*@modifies g_msgstream@*/ ;
+extern /*@noreturn@*/ void lclplainfatalerror (/*@only@*/ cstring p_msg) /*@modifies g_msgstream@*/ ;
+extern /*@noreturn@*/ void lclfatalbug (/*@temp@*/ char *p_msg) /*@modifies g_msgstream@*/ ;
 extern int lclNumberErrors (void) /*@*/ ;
 extern bool lclHadNewError (void) /*@modifies internalState@*/ ;
-extern /*@exits@*/ void lclfatalerror (ltoken p_t, /*@only@*/ cstring p_msg);
+extern /*@noreturn@*/ void lclfatalerror (ltoken p_t, /*@only@*/ cstring p_msg);
 
 extern void xlclerror (char *p_srcFile, int p_srcLine, ltoken p_t, /*@only@*/ cstring p_msg) ;
 
@@ -134,11 +134,11 @@ extern void lclRedeclarationError (ltoken p_id);
 
 extern void llerror_flagWarning (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
 
-extern /*@exits@*/ void llbugaux (cstring p_file, int p_line, /*@only@*/ cstring p_s) 
+extern /*@noreturn@*/ void llbugaux (cstring p_file, int p_line, /*@only@*/ cstring p_s) 
    /*@globals g_msgstream, g_currentloc@*/
    /*@modifies *g_msgstream@*/ ; 
 
-extern /*@exits@*/ void llbug (/*@only@*/ cstring p_s) 
+extern /*@noreturn@*/ void llbug (/*@only@*/ cstring p_s) 
    /*@globals g_msgstream, g_currentloc@*/
    /*@modifies *g_msgstream@*/ ; 
 
@@ -348,7 +348,7 @@ extern void llerrorlit (flagcode p_o, char *p_s);
 
 extern void llgenindentmsg (/*@only@*/ cstring p_s, fileloc p_fl) /*@modifies g_msgstream@*/ ;
 
-extern /*@exits@*/ void llbugexitlit (char *p_s);
+extern /*@noreturn@*/ void llbugexitlit (char *p_s);
 # define llbugexitlit(s)    (llbug (cstring_makeLiteral (s)))
 
 extern void llbuglit (char *p_s);

@@ -30,7 +30,7 @@ extern int main (int p_argc, char *p_argv[])
 # endif
   ;
 
-extern /*@exits@*/ void llexit (int p_status);      
+extern /*@noreturn@*/ void llexit (int p_status);      
 extern void showHerald (void);
 
 /*@-redecl@*/ /*@-incondefs@*/

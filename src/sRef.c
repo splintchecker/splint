@@ -1028,9 +1028,7 @@ void sRef_setModified (sRef s)
 	{
 	  sRef base = sRef_getBase (s);
 	  
-	  
 	  llassert (s->kind == SK_FIELD);
-	  
 	  
 	  if (sRef_isPointer (base))
 	    {
@@ -1066,7 +1064,6 @@ sRef_canModifyVal (sRef s, sRefSet sl)
 bool
 sRef_canModify (sRef s, sRefSet sl)
 {
-  
   if (context_getFlag (FLG_MUSTMOD))
     {
       return (sRef_doModify (s, sl));
@@ -5273,6 +5270,7 @@ void sRef_setPdefined (sRef s, fileloc loc)
 	    { 
 	      sRef nb;
 	      
+	      DPRINTF (("set pdefined: %s", sRef_unparseFull (base)));
 	      base->defstate = SS_PDEFINED; 
 	      nb = sRef_getBaseSafe (base); 
 	      base = nb;
@@ -5310,9 +5308,9 @@ static void sRef_setStateAux (sRef s, sstate ss, fileloc loc)
 	      if (base->defstate == SS_DEFINED) 
 		{ 
 		  sRef nb;
-		  
+
+		  DPRINTF (("set pdefined: %s", sRef_unparseFull (s)));		  
 		  base->defstate = SS_PDEFINED; 
-		  
 		  nb = sRef_getBaseSafe (base); 
 		  base = nb;
 		}
@@ -5322,8 +5320,7 @@ static void sRef_setStateAux (sRef s, sstate ss, fileloc loc)
 		}
 	    }
 	}
-
-          }
+    }
 }
 
 void sRef_setAllocatedComplete (sRef s, fileloc loc)
@@ -5573,13 +5570,12 @@ void sRef_setKept (sRef s, fileloc loc)
 	  if (base->defstate == SS_DEFINED) 
 	    {
 	      base->defstate = SS_PDEFINED; 
-	      	      base = sRef_getBaseSafe (base); 
+	      base = sRef_getBaseSafe (base); 
 	    }
 	  else 
 	    {
 	      break; 
 	    }
-
 	}
 
       s->aliaskind = AK_KEPT;
@@ -6177,7 +6173,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
   else
     {
       ctype ct = ctype_realType (rec->type);
-
+      
       DPRINTF (("Field of: %s", sRef_unparse (rec)));
       
       s = sRef_newRef ();      
@@ -6221,7 +6217,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
 	      
 	      s->oaliaskind = s->aliaskind;
 	      s->oexpkind = s->expkind;
-
+	      
 	      DPRINTF (("sref: %s", sRef_unparseFull (s)));
 	    }
 	  else

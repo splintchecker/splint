@@ -67,6 +67,7 @@ void metaStateInfo_free (/*@only@*/ metaStateInfo msinfo)
       stateCombinationTable_free (msinfo->sctable);
       stateCombinationTable_free (msinfo->mergetable);
       fileloc_free (msinfo->loc);
+      mtContextNode_free (msinfo->context); /* evans 2002-01-03 */
       sfree (msinfo);
     }
 }

@@ -681,7 +681,7 @@ extern void sRef_setValue (sRef p_s, /*@only@*/ multiVal p_val) /*@modifies p_s@
 extern bool sRef_hasValue (sRef p_s) /*@*/ ;
 extern /*@observer@*/ multiVal sRef_getValue (sRef p_s) /*@*/ ;
 
-extern /*@mayexit@*/ void sRef_checkValid (/*@temp@*/ sRef p_s) /*@modifies stderr@*/ ;
+extern /*@maynotreturn@*/ void sRef_checkValid (/*@temp@*/ sRef p_s) /*@modifies stderr@*/ ;
 
 extern void
 sRef_aliasSetComplete (void (p_predf) (sRef, fileloc), sRef p_s, fileloc p_loc)

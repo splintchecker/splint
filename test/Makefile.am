@@ -54,7 +54,8 @@ UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 SUBDIRTESTS = metastate mergestate tainted fileio \
    simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
-   maxset strchr for 
+   maxset strchr for manual
+
 ### warnuse doesn't work yet!
 SUBDIRTESTS += tests2.2
 SUBDIRTESTS += tests2.4
@@ -333,7 +334,7 @@ exports:
 .PHONY: external
 external:
 	-$(SPLINTR) external.c +partial
-	-$(SPLINTR) external.c +partial +distinctexternalnames -expect 2
+	-$(SPLINTR) external.c +partial +distinctexternalnames +ansi89limits -expect 2
 	-$(SPLINTR) external.c -nolib +partial -externalnamelength 3 -expect 3
 	-$(SPLINTR) external.c -nolib +partial -externalnamelength 3 +externalnamecaseinsensitive -expect 3
 	-$(SPLINTR) external.c +partial -externalnamelength 3 -expect 4
@@ -416,7 +417,8 @@ inparam:
 .PHONY: internal
 internal:
 	-$(SPLINTR) internal.c -expect 1
-	-$(SPLINTR) internal.c +distinctinternalnames -expect 2
+	-$(SPLINTR) internal.c +distinctinternalnames -expect 1
+	-$(SPLINTR) internal.c +distinctinternalnames +ansi89limits -expect 2
 	-$(SPLINTR) internal.c -internalnamelen 28 -expect 3
 	-$(SPLINTR) internal.c +internalnamecaseinsensitive -expect 3
 	-$(SPLINTR) internal.c +internalnamecaseinsensitive +internalnamelookalike -expect 11

@@ -40,21 +40,21 @@ drive.c:123: Return value (type db_status) ignored: hire(e)
 
 Finished checking --- 16 code warnings, as expected
 
-employee.h:2: Name EMPLOYEE_H is reserved for future ANSI library extensions.
-    Macros beginning with E and a digit or uppercase letter may be added to
-    <errno.h>. (See ANSI, Section 4.13.1)
-eref.h:2: Name EREF_H is reserved for future ANSI library extensions. Macros
+employee.h:2: Name EMPLOYEE_H is reserved for future library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
-    (See ANSI, Section 4.13.1)
-empset.h:2: Name EMPSET_H is reserved for future ANSI library extensions.
-    Macros beginning with E and a digit or uppercase letter may be added to
-    <errno.h>. (See ANSI, Section 4.13.1)
-erc.h:2: Name ERC_H is reserved for future ANSI library extensions. Macros
+    (ISO99:7.26.3)
+eref.h:2: Name EREF_H is reserved for future library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
-    (See ANSI, Section 4.13.1)
-ereftab.h:4: Name EREFTAB_H is reserved for future ANSI library extensions.
-    Macros beginning with E and a digit or uppercase letter may be added to
-    <errno.h>. (See ANSI, Section 4.13.1)
+    (ISO99:7.26.3)
+empset.h:2: Name EMPSET_H is reserved for future library extensions. Macros
+    beginning with E and a digit or uppercase letter may be added to <errno.h>.
+    (ISO99:7.26.3)
+erc.h:2: Name ERC_H is reserved for future library extensions. Macros beginning
+    with E and a digit or uppercase letter may be added to <errno.h>.
+    (ISO99:7.26.3)
+ereftab.h:4: Name EREFTAB_H is reserved for future library extensions. Macros
+    beginning with E and a digit or uppercase letter may be added to <errno.h>.
+    (ISO99:7.26.3)
 bool.h:20: Modifies list for bool_initMod uses global internal state, not
               included in globals list.
    bool.h:20: Declaration of bool_initMod

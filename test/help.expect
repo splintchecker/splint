@@ -76,10 +76,7 @@ Finished checking --- no code processed
    allimponly                  
    allmacros                   
    annotationerror             
-   ansilib                     
-   ansilimits                  
-   ansireserved                
-   ansireservedinternal        
+   ansi89limits                
    arraybounds                 
    arrayboundsread             
    arrayread                   
@@ -243,6 +240,10 @@ Finished checking --- no code processed
    internalnamecaseinsensitive 
    internalnamelen             
    internalnamelookalike       
+   iso99limits                 
+   isolib                      
+   isoreserved                 
+   isoreservedinternal         
    iterloopexec                
    iterprefix                  
    iterprefixexclude           
@@ -737,7 +738,7 @@ hasyield --- iter declaration has no yield parameters
 dump --- save state for merging (default suffix .lcd)
 load --- load state from dump file (default suffix .lcd)
 nolib --- do not load standard library
-ansilib --- use ANSI (ISO) standard library
+isolib --- use normal standard library
 strictlib --- interpret standard library strictly
 unixlib --- use UNIX (sort-of) standard library
 unixstrictlib --- use strict version of UNIX (sort-of) library
@@ -884,10 +885,10 @@ czechoslovakconsts --- czechoslovak naming convention violated in a constant
 declaration
 czechoslovaktypes --- czechoslovak naming convention violated in a user-defined
 type definition
-ansireserved --- external name conflicts with name reserved for system or
+isoreserved --- external name conflicts with name reserved for system or
 standard library
 cppnames --- external or internal name is a C++ keyword or reserved word
-ansireservedinternal --- internal name conflicts with name reserved for system
+isoreservedinternal --- internal name conflicts with name reserved for system
 or standard library
 distinctexternalnames --- external name is not distinguishable from another
 external name using the number of significant characters
@@ -941,17 +942,21 @@ corresponding declaration must match (after removing the protoparamprefix
 protoparamprefixexclude --- the protoparamprefix may not be used for
 non-declaraction parameter identifiers
 controlnestdepth --- set maximum nesting depth of compound statements,
-iteration control structures, and selection control structures (ANSI minimum is
-15)
-stringliterallen --- set maximum length of string literals (ANSI minimum is
-509)
-numstructfields --- set maximum number of fields in a struct or union (ANSI
-minimum is 127)
-numenummembers --- set maximum number of members of an enum (ANSI minimum is
-127)
+iteration control structures, and selection control structures (ANSI89 minimum
+is 15; ISO99 is 63)
+stringliterallen --- set maximum length of string literals (ANSI89 minimum is
+509; ISO99 is 4095)
+numstructfields --- set maximum number of fields in a struct or union (ANSI89
+minimum is 127; ISO99 is 1023)
+numenummembers --- set maximum number of members of an enum (ANSI89 minimum is
+127; ISO99 is 1023)
 includenest --- set maximum number of nested #include files
-ansilimits --- check for violations of standard limits (controlnestdepth,
-stringliterallen, includenest, numstructfields, numenummembers)
+ansi89limits --- check for violations of standard limits (controlnestdepth,
+stringliterallen, includenest, numstructfields, numenummembers) based on ANSI89
+standard
+iso99limits --- check for violations of standard limits (controlnestdepth,
+stringliterallen, includenest, numstructfields, numenummembers) based on ISO99
+standard
 null --- misuses of null pointer
 nullterminated --- misuse of nullterminated allocation
 arrayread --- possible out of bounds read
