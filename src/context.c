@@ -4432,8 +4432,15 @@ void context_checkGlobalScope (void)
 {
   if (gc.kind != CX_GLOBAL)
     {
-      llcontbug (message ("Not in global scope as expected: %q", context_unparse ()));
-      context_quietExitScopes ();
+      if (context_inMacro ())
+	{
+	  ; /* evans 2001-10-14: Okay to be in a macro here! */ 
+	}
+      else
+	{
+	  llcontbug (message ("Not in global scope as expected: %q", context_unparse ()));
+	  context_quietExitScopes ();
+	}
     }
 }
 

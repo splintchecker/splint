@@ -2,7 +2,9 @@
 
 LCLINT = lclint
 
-all: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source
+all: check
+
+check: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source
 
 emptycase:
 	$(LCLINT) emptycase.c 
@@ -17,21 +19,21 @@ bitfields:
 	$(LCLINT) bitfields.c
 
 bugs:
-	$(LCLINT) bug1.c ; \
-	$(LCLINT) bug2.c -expect 5 ; \
+	$(LCLINT) bug1.c 
+	$(LCLINT) bug2.c -expect 5 
 	$(LCLINT) bug3.c -expect 3
 
 tests:
-	$(LCLINT) test0.c ; \
-	$(LCLINT) test1.c ; \
+	$(LCLINT) test0.c 
+	$(LCLINT) test1.c 
 	$(LCLINT) test2.c 
 
 hexconstants:
-	$(LCLINT) hexconstants.c -expect 1 ; \
+	$(LCLINT) hexconstants.c -expect 1 
 	$(LCLINT) +checks hexconstants.c -expect 4
 
 innercomment:
-	$(LCLINT) innercomment.c -expect 2 +forcehints ; \
+	$(LCLINT) innercomment.c -expect 2 +forcehints 
 	$(LCLINT) innercomment.c -nestcomment
 
 nothing:
@@ -75,3 +77,12 @@ alignof:
 
 source:
 	$(LCLINT) -D DBL_MANT_DIG=25 source.c
+
+
+
+
+
+
+
+
+

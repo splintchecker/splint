@@ -504,6 +504,8 @@ L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext));
 		      
 		      if (processMacro ()) 
 			{
+			  DPRINTF (("Here we are: %s", context_unparse ()));
+			  
 			  if (context_inIterDef ()) 
 			    {
 			      RETURN_TOK (LLMACROITER); 

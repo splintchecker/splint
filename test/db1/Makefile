@@ -21,9 +21,13 @@ test:
 	$(MAKE) -e clean
 	$(MAKE) -e check
 
+###
+### Removed +showscan, produces different results on different platforms
+###
+
 check: $(LCSFILES)
-	$(LCLINT) -showcol -weak +showscan $(MODULES) -expect 16
-	$(LCLINT) -showcol +strict -modfilesystem +showscan +showsummary $(MODULES) -expect 333
+	$(LCLINT) -showcol -weak $(MODULES) -expect 16
+	$(LCLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 333
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

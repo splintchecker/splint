@@ -37,4 +37,4 @@ strncatNotReallyGood.c:4:21: Possible out-of-bounds store:
      derived from strncat precondition: requires maxSet(<parameter 1>) >=
     maxRead(<parameter 1>) + <parameter 3>
 
-Finished LCLint checking --- 8 code errors found
+Finished LCLint checking --- 8 code errors found, as expected

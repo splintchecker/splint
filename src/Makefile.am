@@ -185,6 +185,15 @@ CHECKS = $(subst .c,.check,$(lclint_SOURCES))
 nocheck:
 	$(MAKE) CHECK=0
 
+.PHONY: test
+test:
+	cd ../; ${MAKE} check
+
+### Automake generates wrong tags
+.PHONY: etags
+etags:
+	maketags
+
 lintnew: 
 	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(ALLSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \

@@ -22,9 +22,9 @@ test:
 	$(MAKE) -e check
 
 check: $(LCSFILES)
-	$(LCLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude +showscan $(MODULES) -expect 15
-	$(LCLINT) -exportlocal -showcol +allimponly +showscan $(MODULES) -expect 25
-	$(LCLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude +showscan $(MODULES)
+	$(LCLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude $(MODULES) -expect 15
+	$(LCLINT) -exportlocal -showcol +allimponly $(MODULES) -expect 25
+	$(LCLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude $(MODULES)
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

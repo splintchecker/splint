@@ -87,6 +87,11 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 DIFFFLAGS = -u
 
 LCLINT = $(top_builddir)/bin/lclint$(EXEEXT)
+
+### This is horrible!  Can't we make top_builddir absolute?
+LCLINTNEST = ../$(top_builddir)/bin/lclint$(EXEEXT)
+
+LCLINTPNEST = @$(LCLINTNEST)
 LCLINTP = @$(LCLINT)
 
 # Make sure .lclintrc files are not used so test results do not
@@ -94,15 +99,23 @@ LCLINTP = @$(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal +debugfcnconstraint
 
+LCLINTRNNEST = $(LCLINTPNEST) -nof -hints -booltype "bool"
+LCLINTRNEST = $(LCLINTRNNEST) -exportlocal +debugfcnconstraint
+
 
 ###
 ### !!! 
 ### These tests have been temporarily removed because of problems with the new build process:
-###   fileio tainted mergestate metastate help sizeoftest bufferTest \
+###   fileio tainted mergestate metastate \
 ###   tests2.2 tests2.2a tests2.4 tests2.5 
-###   simplebufferConstraintTests moreBufferTests globalbufferannotation \
+###  
 ###   maxset strchr for
 UNITTESTS = \
+  help \
+  fileio tainted mergestate metastate sizeof buffertest \
+  tests2.2 tests2.2a tests2.4 tests2.5  \
+  simplebufferConstraintTests moreBufferTests globalbufferannotation \
+  maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder \
   args blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
@@ -127,21 +140,15 @@ QUICKTESTS = db3
 CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "$(LCLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:"
 
 
-#!!!!
-#	@echo ""
-#	@echo "Integration tests:"
-#	@echo ""
-#	@for TEST in $(INTEGTESTS); do \
-#	   echo "Checking $$TEST..."; \
-#	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
-#	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
-#               echo "*** FAIL ***"; \
-#	 done
+### Rules for tests start here
 
 ###
 ### Bugs fixed and new features since version 2.1b
 ###
-SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses tests2.2 tests2.4 tests2.5 db1 db2 db3
+SUBDIRTESTS = metastate mergestate tainted fileio warnuse ensuresclauses \
+   simplebufferConstraintTests moreBufferTests globalbufferannotation \
+   maxset strchr for \
+tests2.2 tests2.2a tests2.4 tests2.5 db1 db2 db3
 subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -269,7 +276,7 @@ version:
 .PHONY: help
 help:
 	-@$(LCLINTP)
-	-@LARCH_PATH=/dev/null $(LCLINTP) empty.lcl
+	-@LARCH_PATH=/dev/null; $(LCLINT) empty.lcl
 	-@$(LCLINTP) -help
 	-@$(LCLINTP) -asdf
 	-@$(LCLINTP) +boolint +boolint 
@@ -324,6 +331,15 @@ fulltest:
 	@echo "Unit tests:"
 	@echo ""
 	@for TEST in $(UNITTESTS); do \
+	   echo "Checking $$TEST..."; \
+	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
+	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
+               echo "*** FAIL ***"; \
+	 done
+	@echo ""
+	@echo "Integration tests:"
+	@echo ""
+	@for TEST in $(INTEGTESTS); do \
 	   echo "Checking $$TEST..."; \
 	   $(MAKE) $$TEST 2>&1 | $(CLEANOUTPUT) >$$TEST.out && \
 	     $(DIFF) $(DIFFFLAGS) $$TEST.expect $$TEST.out || \
@@ -901,70 +917,17 @@ linked:
 freearray:
 	${LCLINTR} freearray.c -expect 1
 
-.PHONY: tests2.2a
-tests2.2a:
-	@cd tests2.2a ; \
-	$(LCLINTR) erik.c -expect 1 ; \
-	$(LCLINTR) boolcomp.c -expect 5 ; \
-	$(LCLINTR) boolenum.c ; \
-	$(LCLINTR) addassign.c -expect 1; \
-	$(LCLINTR) toralf.c -expect 5 ; \
-	$(LCLINTR) fred.c -booltype Bool ; \
-	$(LCLINTR) sizeof.c ; \
-	$(LCLINTR) arrayparam.c -expect 5 ; \
-	$(LCLINTR) notreached.c ; \
-	$(LCLINTR) duff.c -casebreak -firstcase ; \
-	$(LCLINTR) obviousloop.c -expect 4 ; \
-	$(LCLINTR) bitops.c +bitwisesigned -expect 11 ; \
-	$(LCLINTR) bitops.c -expect 5 ; \
-	$(LCLINTR) isalpha.c +strictlib -expect 1 ; \
-	$(LCLINTR) isalpha.c -expect 1 ; \
-	$(LCLINTR) dobb.c ; \
-	$(LCLINTR) popik.c -expect 11
+.PHONY: sizeof
+sizeof:
+	$(LCLINTR) +arraybounds +arrayboundsread sizeof.c -expect 1
 
-.PHONY: sizeotest
-sizeoftest:
-	@cd sizeoftest; \
-	$(LCLINTR) +arraybounds  +arrayboundsread sizeof.c
-
-.PHONY: bufferTest
-bufferTest:
-	@cd bufferTest; \
-	$(LCLINTR) +arraybounds  +arrayboundsread test4.c test6.c
-
-.PHONY: simplebufferConstraintTests
-simplebufferConstraintTests:
-	@cd simplebufferConstraintTests; \
-	$(LCLINTR) +arraybounds  +arrayboundsread m.c  sizeof.c  test3.c  test7.c
-
-.PHONY: moreBufferTests
-moreBufferTests:
-	@cd moreBufferTests; \
-	$(LCLINTR) +arraybounds  +arrayboundsread  unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
-
-.PHONY: maxset
-maxset:
-	@cd maxset; \
-	$(LCLINTR) +arraybounds maxsetannotations.c; \
-	$(LCLINTR) +arraybounds maxsetnoannotations.c -expect 1
-
-.PHONY: globalbufferannotation
-globalbufferannotation:
-	@cd globalbufferannotation; \
-	$(LCLINTR) +arraybounds  +arrayboundsread globalvariable.c
-
-.PHONY: strchr
-strchr:
-	@cd strchr; \
-	$(LCLINTR) +arraybounds +arrayboundsread  strchr.c -expect 2
-
-.PHONY: for
-for:
-	@cd for; $(LCLINTR) +arraybounds +arrayboundsread for.c
+.PHONY: buffertest
+buffertest:
+	$(LCLINTR) +arraybounds +arrayboundsread buffertest1.c -expect 5
 
 .PHONY: $(SUBDIRTESTS)
 $(SUBDIRTESTS):
-	cd $@; $(MAKE) LCLINT="$(LCLINTRN)"
+	cd $@; $(MAKE) LCLINT="$(LCLINTRNNEST)"
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

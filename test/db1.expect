@@ -1,18 +1,9 @@
+make -e clean
+make -e check
 
-< reading spec bool.lcl >
-< reading spec employee.lcl >
-< reading spec eref.lcl >
-< reading spec empset.lcl >
-< reading spec ereftab.lcl >
-< reading spec erc.lcl >
-< reading spec dbase.lcl >
-< preprocessing >
-< checking employee.c >
 employee.c: (in function employee_equal)
 employee.c:25: Function strncmp expects arg 3 to be size_t gets int:
                   maxEmployeeName
-< checking eref.c >
-< checking empset.c >
 empset.c: (in function empset_insert)
 empset.c:28: Variable er declared but not used
 empset.c: (in function empset_disjointUnion)
@@ -29,11 +20,9 @@ empset.c: (in function empset_subset)
 empset.c:139: Undocumented modification of s1 possible from call to
                  erc_iterStart: erc_iterStart(s1)
 empset.c:135: Variable e declared but not used
-< checking ereftab.c >
 ereftab.c: (in function ereftab_lookup)
 ereftab.c:34: Undocumented modification of t possible from call to
                  erc_iterStart: erc_iterStart(t)
-< checking erc.c >
 erc.c: (in function erc_member)
 erc.c:47: Operands of == are abstract type (eref): tmpc->val == er
 erc.c: (in function erc_delete)
@@ -43,48 +32,29 @@ erc.c:141: Function malloc expects arg 1 to be size_t gets int:
               erc_size(c) * (employeePrintSize + 1) + 1
 erc.c:151: Undocumented modification of c possible from call to erc_iterStart:
               erc_iterStart(c)
-< checking dbase.c >
 dbase.c: (in function query)
 dbase.c:210: Variable er declared but not used
 dbase.c:211: Variable e declared but not used
-< checking drive.c >
 drive.c: (in function main)
 drive.c:123: Return value (type db_status) ignored: hire(e)
-< checking macros bool.h >
-< global checks >
-< cleaning .......... >
 
 Finished LCLint checking --- 16 code errors found, as expected
 
-< reading spec bool.lcl >
-< reading spec employee.lcl >
-< reading spec eref.lcl >
-< reading spec empset.lcl >
-< reading spec ereftab.lcl >
-< reading spec erc.lcl >
-< reading spec dbase.lcl >
-< preprocessing >
 employee.h:2: Name EMPLOYEE_H is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
     <errno.h>. (See ANSI, Section 4.13.1)
-< more preprocessing . >
 eref.h:2: Name EREF_H is reserved for future ANSI library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
     (See ANSI, Section 4.13.1)
-< more preprocessing . >
 empset.h:2: Name EMPSET_H is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
     <errno.h>. (See ANSI, Section 4.13.1)
-< more preprocessing . >
 erc.h:2: Name ERC_H is reserved for future ANSI library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
     (See ANSI, Section 4.13.1)
-< more preprocessing . >
 ereftab.h:4: Name EREFTAB_H is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
     <errno.h>. (See ANSI, Section 4.13.1)
-< more preprocessing . >
-< checking employee.c >
 bool.h:20: Modifies list for bool_initMod uses global internal state, not
               included in globals list.
    bool.h:20: Declaration of bool_initMod
@@ -121,7 +91,6 @@ employee.h:14: Called procedure bool_initMod may access internal state, but
                   globals list does not include globals internalState
 employee.h:14: Undocumented modification of internal state possible from call
                   to bool_initMod: bool_initMod()
-< checking eref.c >
 eref.h:9: Constant exported, but not specified: used
 eref.h:9: Constant exported, but not specified: avail
 eref.h:9: Type exported, but not specified: eref_status
@@ -215,7 +184,6 @@ eref.h:25: Undocumented use of global eref_Pool
 eref.h: (in macro eref_equal)
 eref.h:26: Macro parameter used without parentheses: er1
 eref.h:26: Macro parameter used without parentheses: er2
-< checking empset.c >
 erc.h:6: Name _elem is in the implementation name space (any identifier
             beginning with underscore)
 erc.h:6: Type exported, but not specified: ercElem
@@ -284,7 +252,6 @@ empset.c:156: Undocumented modification of initDone: initDone = TRUE
 empset.h: (in macro empset_member)
 empset.h:30: Undetected modification possible from call to unconstrained
                 function _empset_get: _empset_get
-< checking ereftab.c >
 ereftab.c: (in function ereftab_delete)
 ereftab.c:24: Return value (type bool) ignored: erc_delete(t, er)
 ereftab.c: (in function ereftab_lookup)
@@ -293,7 +260,6 @@ ereftab.c:34: Undocumented modification of t possible from call to
 ereftab.c:37: Body of if statement is not a block: return er
 ereftab.c: (in function ereftab_initMod)
 ereftab.c:47: Statement has no effect: erc_initMod()
-< checking erc.c >
 erc.c: (in function erc_create)
 erc.c:8: Parameter to sizeof is type ercInfo: sizeof(ercInfo)
 erc.c:13: Argument to exit has implementation defined behavior: 1
@@ -358,7 +324,6 @@ erc.h: (in macro erc_iterFinal)
 erc.h:20: Only storage *it->next (type struct _elem *) derived from released
              storage is not released (memory leak): it
 erc.h:20: Implicitly temp storage it passed as only param: free (it)
-< checking dbase.c >
 dbase.c: (in function db_initMod)
 dbase.c:21: Undocumented use of global initDone
 dbase.c:27: Statement has no effect: employee_initMod()
@@ -572,7 +537,6 @@ dbase.c:272: Operands of <= have incompatible types (int, enum { mMGRS, fMGRS,
 dbase.c:274: Undocumented use of global db
 dbase.c:272: Incompatible types for <= (int, enum { mMGRS, fMGRS, mNON, fNON })
                 (in post loop test): i <= fNON
-< checking drive.c >
 drive.c: (in function main)
 drive.c:22: Statement has no effect: employee_initMod()
 drive.c:23: Statement has no effect: empset_initMod()
@@ -594,8 +558,6 @@ drive.c:131: Variable j used before definition
 drive.c:134: Return value (type bool) ignored: fire(17)
 drive.c:158: Return value (type bool) ignored: fire(empset_choo...
 drive.c:11: Parameter argv not used
-< checking macros bool.h >
-< global checks >
 dbase.c:11: Type employeeKinds declared but not used
 eref.lh:8: Function exported but not used outside eref: eref_free
    eref.h:23: Definition of eref_free
@@ -635,7 +597,6 @@ dbase.c:56: Function _db_keyGet exported but not declared in header file
    dbase.c:71: Definition of _db_keyGet
 dbase.c:73: Function _db_addEmpls exported but not declared in header file
    dbase.c:92: Definition of _db_addEmpls
-< cleaning .......... >
 
 Error Type                Reported  Suppressed
 ===================       ========  =========
