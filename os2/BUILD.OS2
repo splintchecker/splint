@@ -1,32 +1,38 @@
-Building lclint:
+Building splint:
 ----------------
 
-This file is originally part of the binary distribution of lclint for OS/2.
+This file is originally part of the binary distribution of splint 
+for OS/2.
 
-For building lclint for OS/2 you need the complete "original" source
-package (available e.g. via Dave Evans' lclint homepage) and maybe 
-some more recent patches for the OS/2 version. The LCLint home page
+For building splint for OS/2 you need the complete "original" source
+package (available e.g. via Dave Evans' splint homepage) and maybe 
+some more recent patches for the OS/2 version. The splint home page
 is at:
 
-  http://lclint.cs.virginia.edu/
+  http://www.splint.org
 
 My fixes can be found at:
 
   http://www.fh-wedel.de/pub/fh-wedel/staff/di/lclint/index.html
 
-You may want to set the correct date and version to be written into the 
-lclint.exe binary in the Makefile.os2 file, although it is not strictly 
-necessary. This should be enough to build the program. During make 
-execution then some information will be written to a config file read 
-by the sub makefile in the src/ directory.
+You also need a couple of Unix tools. These are available as free 
+software (GNU tools) or freeware (IBM aixlike tools). In particular
+the tools needed are:
+
+ - A Unix shell. I use ksh, but others may do as well
+ - The Unix `date', `cp', `mv', `rm' and `echo' commands
+ - The `sed' and `tr' filters
+ - GNU make (IBM/M$'s `nmake' does *not* work here)
+ - Optionally, `flex' and `bison' (if not available, comment out
+   the corresponding entries from the Makefile.os2 file)
 
 Use the batch file makeos2.cmd from inside the os2/ directory to build 
-lclint. The options to that batch file are:
+splint. The options to that batch file are:
 
   makeos2 [--emx|-e|--gcc|-g|--icc|-i|--oldconf|-o|--test|-t|--package|-p]
 
 This batch should be called from inside the os2 directory. The options 
-starting with "e" build LCLint using emx/gcc with debug code. The letter 
+starting with "e" build splint using emx/gcc with debug code. The letter 
 "g" stands for gcc using the OMF object format and optimization rather 
 than debug code. For IBMs icc compiler use "i".  Each of the above 
 options will create a new configuration. To continue a build with an 
@@ -36,16 +42,13 @@ of the test suite (other tests are not yet supported).
 If you experience problems with the automatic configuration file creation
 from within Makefile.os2 you may alternatively call makeos2.cmd with the
 `-o' option and use the existing config.inc file (assuming that you use
-IBMC, else edit it by hand). In that case you may also want to edit the
-local_constants.h and herald.h files from this directory to have it match 
-your setup.
+IBMC, else edit it by hand). The files to check are `setenv.cmd', 
+`make.vars' and `..\config.h'. 
 
 After building the program you may want to testrun it, using the batch
-file `run_lclint.cmd' or go through the test suite using `makeos2 -t'. 
-Before that you will need to set the environment variables in the 
-`setenv.cmd' file that is called from the other two batches.
+file `run_splint.cmd' or go through the test suite using `makeos2 -t'. 
 
-Please, be aware that you need the flex library in order to build lclint.
+Please, be aware that you need the flex library in order to build splint.
 As far as I remember the OS/2 version of flex comes with this library for
 the emx/gcc compiler. If not, you will easily be able to compile it 
 following the instructions from flex'es README.OS2 file.
@@ -79,24 +82,24 @@ a.out format defined in Makefile.os2 do *not* produce an executable that
 runs under DOS):
 
     @echo off
-    if exist bin\lclint del bin\lclint
+    if exist bin\splint del bin\splint
     make all -f makefile.os2 "COMPILER=gcc-emx" "CC=gcc -O3" "E="
     if errorlevel 1 goto end
     cd bin
     echo on
-    emxbind lclint -p
+    emxbind splint -p
     @echo off
     cd ..
     :end
 
 Please be aware that for debugging purposes the a.out format is the best 
-choice. I did not succeed in debugging any single step of lclint using 
-ipmd as it crashed each time I tried to load the lclint executable.
+choice. I did not succeed in debugging any single step of splint using 
+ipmd as it crashed each time I tried to load the splint executable.
 
 The Makefile.os2 is currently configured to use flex and bison to generate 
 some source files. If you do not have these tools on your system you should 
 change the corresponding section to use the .der files shipping with the 
-lclint sources.
+splint sources.
 
 Herbert in September 2001
 

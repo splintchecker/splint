@@ -1,0 +1,39 @@
+#
+# splint Makefile for GNU Make on OS/2 systems
+#
+# Derived from original Unix makefile by Herbert
+#
+
+include ../os2/make.vars
+
+DATAFILES = standard.h standard.lcd standardstrict.lcd posix.h posix.lcd \
+	posixstrict.lcd unix.h unix.lcd unixstrict.lcd 
+SPLINT = ../bin/splint$(EXEEXT)
+
+all: $(DATAFILES)
+
+clean: $(RM) -f $(DATAFILES)
+
+standard.lcd: standard.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard
+	@touch $@
+
+standardstrict.lcd: standard.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h -dump standardstrict
+	@touch $@
+
+posix.lcd: standard.h posix.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj standard.h posix.h -dump posix
+	@touch $@
+
+posixstrict.lcd: standard.h posix.h $(SPLINT)
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h posix.h -dump posixstrict
+	@touch $@
+
+unix.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
+	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj standard.h posix.h unix.h stdio.h stdlib.h -dump unix
+	@touch $@
+
+unixstrict.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
+	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT standard.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
+	@touch $@

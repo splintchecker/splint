@@ -1,0 +1,33 @@
+/* config.h.  Generated automatically by configure.  */
+/* config.hin.  Generated automatically from configure.ac by autoheader.  */
+
+/*@-constmacros@*/
+
+/* The directory where Splint's library files live */
+#define DEFAULT_LARCHPATH "@DEFAULT_LARCHPATH@"
+
+/* Splint's imports directory */
+#define DEFAULT_LCLIMPORTDIR "@DEFAULT_LCLIMPORTDIR@"
+
+/* system include directory */
+#define GCC_INCLUDE_DIR "@GCC_INCLUDE_DIR@"
+
+/* alternate include directory */
+#define GCC_INCLUDE_DIR2 "@GCC_INCLUDE_DIR2@"
+
+#define TARGET_CPU "@TARGET_CPU@"
+#define UNAME "@UNAME@"
+
+/* String describing who compiled this binary and how */
+#define LCL_COMPILE "@LCL_COMPILE@"
+
+/* Splint's version number */
+#define LCL_PARSE_VERSION "@LCL_PARSE_VERSION@"
+
+/* Splint's version number and configure/build date */
+#define SPLINT_VERSION "@SPLINT_VERSION@"
+
+/* The system's main include directory */
+#define SYSTEM_LIBDIR "@SYSTEM_LIBDIR@"
+
+/*@=constmacros@*/

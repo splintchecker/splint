@@ -1,6 +1,6 @@
 @echo off
 rem *****************************************************************
-rem run LCLint from the source\os2 directory with proper environment
+rem run splint from the source\os2 directory with proper environment
 rem *****************************************************************
 setlocal
 call setenv.cmd

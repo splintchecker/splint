@@ -1,6 +1,6 @@
 ##################################################
 ###
-### Makefile for OS/2 version of LCLint
+### Makefile for OS/2 version of splint
 ###
 ### designed for use with gmake (GNU make)
 ###
@@ -23,112 +23,95 @@
 ### Commands:
 ###
 ### make all
-###    builds a release version of lclint from scratch using optimizations
+###    builds a release version of splint from scratch using optimizations
 ###
 ### This makefile uses gmake, the gnu version of make.
 ###
-### Run gmake to build LCLint.
+### Run gmake to build splint.
 ###     gmake install to install.
 ###
 
-###
-### lclint version and date:
-###
+SHELL=/usr/bin/ksh
 
-LCL_VERSION=3.0.0.16
-LCL_DATE=28 Sep 2001
 
-# this gets written into the binary, add your name, your compiler settings
-#  etc. if you like.
-TODAY=Monday 28 Sep 23:43 MEST 2001
-ME=herbert
-MACHINE=i586
-COMPILE_MSG=\# define LCL_COMPILE \"Compiled using $(CC)\\n on OS/2 $(TODAY) $(MACHINE) by $(ME),\\n OS/2 specific subversion is 5\"
+###
+### This needs to be configured:
+###
 
 ### Directory containing system include files:
 
-SYSTEM_LIBDIR   = "\\\\usr\\\\include"
+SYSTEM_LIBDIR = e:/usr/include
 
 ### default preprocessor command:
 
-CPPCMD = "cpp "
+CPPCMD = cpp 
+
+### directory for splint standard imports
+DEFAULT_LCLIMPORTDIR = .;e:/usr/lib/splint/imports
+
+### directory for splint libraries
+DEFAULT_LARCHPATH  = .;e:/usr/lib/splint/lib
+
+### directory for splint binary
+INSTALLDIR = e:/usr/bin
+
+### system include directory
+GCC_INCLUDE_DIR = e:/usr/include
+
+### alternate system include directory
+GCC_INCLUDE_DIR2 = e:/emx/include
 
 ###
-### Select installation directories:
+### Cosmetic stuff (goes into the executable
 ###
-### The LIBDIR and IMPORTSDIR are compiled into the binary to 
-### select the default LARCH_PATH and LCLIMPORTDIR, which can 
-### also be overridden by environment variables.
+
+LCL_OS2 = 1
+TARGET_CPU = i586
+UNAME = OS/2 Warp 4 (Paulina)
+
 ###
-### It may be a good idea to edit these variables not only in this
-### makefile but also in the header file src/Headers/local_constants.h
-### 
+### do you have bison and/or flex?
+### (Note: yacc will probably not work; lex might work but is not recommended.)
+###
 
-### directory for lclint libraries
-LIBDIR     = \\\\usr\\\\lib\\\\lclint\\\\lib
+BISON     = bison
+FLEX      = flex
+YFLAGS    = -v -t -d
+LFLAGS    =
 
-### directory for lclint standard imports
-IMPORTSDIR = \\\\usr\\\\lib\\\\lclint\\\\imports
+###
+### Set automatically: splint version and date etc.
+###
 
-### these are automatically set:
+LCL_VERSION := $(shell grep "^VERSION" ../configure | sed "s/VERSION *= *//")
+LCL_DATE := $(shell date +"%d %b %Y")
+BUILD_DATE := $(shell date +"%c")
+ME := $(shell whoami)
+BASEDIR := $(shell (cd ..; cmd /c cd | tr '\\' '/'))
 
-SYSTEM_IMPORTSDIR = "$(IMPORTSDIR)"
-SYSTEM_LARCHPATH  = ".;$(LIBDIR)"
+LCL_COMPILE = Compiled using $(CC)\\n on $(UNAME) $(TARGET_CPU) $(BUILD_DATE) by $(ME),\\n OS/2 specific subversion is $(LCL_OS2)
+LCL_PARSE_VERSION = Splint $(LCL_VERSION)
+SPLINT_VERSION = $(LCL_PARSE_VERSION) -- $(LCL_DATE)
 
-### directory for lclint binary
-INSTALLDIR = \\usr\\bin
-
-### this should be the complete path for the directory where this
-### Makefile is, with no trailing / or spaces.
-
-# BASEDIR = e:\\usr\\src\\lclint-$(LCL_VERSION)
 
 ###
 ### Then, run:
 ###
 ###	make
 ###
-### I recommend doing this in an emacs shell (or buffered terminal) so
-### you can scroll through the output.
-###
-### This should (hopefully) work on most systems without further changes.
-###
-### If you do not have gcc, set CC = cc (or some other compiler)
-### later in this file. 
-###
-### It should:
-###     o build lclint
-###     o put lclint in BASEDIR/bin/lclint
-###
-### If you have installed the test suite, then do:
-###
-###	make test
-###
-### to verify lclint.
 ###
 
-###
-### If you wish to install lclint in some other directory, set these 
-### variables, and do 
-###
-###	make install
-###
-
-### installation command (I use emx GNUish utilities)
+### file-related commands (I use emx GNUish utilities)
 CP = cp
 MV = mv
-CAT = type
+CAT = cat
 RM = rm
 INSTALL = cp
 INSTALLFLAGS =           
-ECHO = "echo.exe"
+ECHO = echo
 
 ###
-### end of installation variables
-###
-
-###
-### compiler --- gcc is recommended, but lclint has been compiled
+### compiler --- gcc is recommended, but splint has been compiled
 ###              without changes using cc on several platforms.
 ###
 
@@ -143,91 +126,86 @@ ifeq ($(COMPILER), gcc-emx)
  CPPFLAGS=-I.\Headers -DSTDC_HEADERS=1 -DOS2
  CFLAGS=-Wall 
  OFLAG=-o 
- LINKFLAGS = -lfl
+ LDFLAGS = -lfl
  O=.o
- E=.exe
+ EXEEXT=.exe
 else
  ifeq ($(COMPILER), gcc-os2)
   CC = gcc -Zsys -Zomf -O3
   CPPFLAGS=-I.\Headers -DSTDC_HEADERS=1 -DOS2
   CFLAGS=-Wall 
   OFLAG=-o 
-  LINKFLAGS = lclint.def -lfl
+  LDFLAGS = splint.def -lfl
   O=.obj
-  E=.exe
+  EXEEXT=.exe
  else
   ifeq ($(COMPILER), icc-os2)
    # Shame! Normally no warnings should be turned off, but IBM's are
    # so stupid they warn me about each llassert(). Let's check our
-   # code using lclint then develop it on gcc and then move to IBMC...
+   # code using splint then develop it on gcc and then move to IBMC...
    CC = icc -q -W2 -Dunlink=unlink -O+ -G5 -Gf+ -Gi+ -Gs+ 
    #CSet 2.01 needs this:
    #-D__STDC__
    CPPFLAGS=-I.\Headers -DSTDC_HEADERS=1 -DOS2 
    CFLAGS=
    OFLAG=-fe
-   LINKFLAGS = -B/noe setargv.obj fl.lib lclint.def
+   LDFLAGS = -B/noe setargv.obj fl.lib splint.def
    O=.obj
-   E=.exe
+   EXEEXT=.exe
   endif
  endif
 endif
 
-###
-### do you have bison and/or flex?
-### (Note: yacc will probably not work; lex might work but is not recommended.)
-###
+.PHONY: all clean config confclean
 
-BISON     = bison
-FLEX      = flex
-YFLAGS    = -v -t -d
-LFLAGS    =
+all: make.vars ../config.h setenv.cmd
+	$(MAKE) --directory=../src -f Makefile.os2 all
+	$(MAKE) --directory=../lib -f Makefile.os2 all
 
-all: 
-	@$(ECHO)
-	@$(ECHO) "Creating configuration file. Syntax error message can be ignored..."
-	@$(ECHO)
-	$(MAKE) -f Makefile.os2 --warn-undefined-variables configinc  
-	@$(ECHO)
-	@$(ECHO) "Creating local constants header file. Syntax error messages can be ignored..."
-	@$(ECHO)
-	$(MAKE) ARGV=$(ARGV) -f Makefile.os2 --directory=..\\src --warn-undefined-variables localconstants 
-	@$(ECHO)
-	@$(ECHO) "Now building lclint executable file..."
-	@$(ECHO)
-	$(MAKE) -f Makefile.os2 --directory=..\\src --warn-undefined-variables
-	@$(ECHO)
-	@$(ECHO) "Now moving lclint executable file to bin directory..."
-	@$(ECHO)
-	@if not exist ..\\bin mkdir ..\\bin
-	$(MV) ..\src\lclint$E ..\\bin\\lclint$E
+make.vars:
+	echo "CC = $(CC)" >make.vars
+	echo "CPPFLAGS = $(CPPFLAGS)" >>make.vars
+	echo "CFLAGS = $(CFLAGS)" >>make.vars
+	echo "OFLAG = $(OFLAG)" >>make.vars
+	echo "LDFLAGS = $(LDFLAGS)" >>make.vars
+	echo "O = $(O)" >>make.vars
+	echo "EXEEXT = $(EXEEXT)" >>make.vars
+	echo "BISON = $(BISON)" >>make.vars
+	echo "FLEX = $(FLEX)" >>make.vars
+	echo "YFLAGS = $(YFLAGS)" >>make.vars
+	echo "LFLAGS = $(LFLAGS)" >>make.vars
+	echo "CPPCMD = $(CPPCMD)" >>make.vars
+	echo "CP = $(CP)" >>make.vars
+	echo "MV = $(MV)" >>make.vars
+	echo "CAT = $(CAT)" >>make.vars
+	echo "RM = $(RM)" >>make.vars
+	echo "INSTALL = $(INSTALL)" >>make.vars
+	echo "INSTALLFLAGS = $(INSTALLFLAGS)" >>make.vars
+	echo "ECHO = $(ECHO)" >>make.vars
 
-configinc:
-	$(ECHO) "CC=$(CC)" >config.inc
-	$(ECHO) "CFLAGS=$(CFLAGS)" >>config.inc
-	$(ECHO) "CPPFLAGS=$(CPPFLAGS)" >>config.inc
-	$(ECHO) "BISON=$(BISON)" >>config.inc
-	$(ECHO) "FLEX=$(FLEX)" >>config.inc
-	$(ECHO) "YFLAGS=$(YFLAGS)" >>config.inc
-	$(ECHO) "LFLAGS=$(LFLAGS)" >>config.inc
-	$(ECHO) "SYSTEM_LIBDIR=\"$(SYSTEM_LIBDIR)\"" >>config.inc
-	$(ECHO) "DEFAULT_LCLIMPORTDIR=\"$(SYSTEM_IMPORTSDIR)\"" >>config.inc
-	$(ECHO) "DEFAULT_LARCHPATH=\"$(SYSTEM_LARCHPATH)\"" >>config.inc
-	$(ECHO) "DEFAULT_CPPCMD=\"$(CPPCMD)\"" >>config.inc
-	$(ECHO) "LINKFLAGS=$(LINKFLAGS)" >>config.inc
-	$(ECHO) "O=$O" >>config.inc
-	$(ECHO) "E=$E" >>config.inc
-	$(ECHO) "OFLAG=$(OFLAG)lclint$E" >>config.inc
-	$(ECHO) "CAT=$(CAT)" >>config.inc
-	$(ECHO) "MV=$(MV)" >>config.inc
-	$(ECHO) "CP=$(CP)" >>config.inc
-	$(ECHO) "ECHO=\"$(ECHO)\"" >>config.inc
-	$(CP) ..\src\Headers\herald.h ..\src\Headers\herald.last
-	$(ECHO) "/* herald.h - created automatically from herald.os2 and Makefile.os2 */" >..\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_VERSION;@*/" >>..\src\Headers\herald.h
-	$(ECHO) "# define LCL_VERSION \"LCLint $(LCL_VERSION) --- $(LCL_DATE)\"" >>..\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_PARSE_VERSION;@*/" >>..\src\Headers\herald.h
-	$(ECHO) "# define LCL_PARSE_VERSION \"LCLint $(LCL_VERSION)\"" >>..\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_COMPILE;@*/" >>..\src\Headers\herald.h
-	$(ECHO) "$(COMPILE_MSG)" >>..\src\Headers\herald.h
+../config.h: os2config.h.in
+	sed -e 's|@DEFAULT_LARCHPATH@|$(DEFAULT_LARCHPATH)|' \
+	-e 's|@DEFAULT_LCLIMPORTDIR@|$(DEFAULT_LCLIMPORTDIR)|' \
+	-e 's|@GCC_INCLUDE_DIR@|$(GCC_INCLUDE_DIR)|' \
+	-e 's|@GCC_INCLUDE_DIR2@|$(GCC_INCLUDE_DIR2)|' \
+	-e 's|@TARGET_CPU@|$(TARGET_CPU)|' \
+	-e 's|@UNAME@|$(UNAME)|' \
+	-e 's|@LCL_COMPILE@|$(LCL_COMPILE)|' \
+	-e 's|@LCL_PARSE_VERSION@|$(LCL_PARSE_VERSION)|' \
+	-e 's|@SPLINT_VERSION@|$(SPLINT_VERSION)|' \
+	-e 's|@SYSTEM_LIBDIR@|$(SYSTEM_LIBDIR)|' \
+	os2config.h.in >../config.h
 
+setenv.cmd: setenv.cmd.in
+	sed -e 's|@LCL_VERSION@|$(LCL_VERSION)|' \
+	-e 's|@BASEDIR@|$(BASEDIR)|' \
+	setenv.cmd.in | tr '/' '\\\\' >setenv.cmd
+
+config: make.vars ../config.h setenv.cmd
+
+confclean:
+	$(RM) -f make.vars ../config.h setenv.cmd
+
+clean: confclean
+	$(MAKE) --directory=../src -f Makefile.os2 clean
+	$(MAKE) --directory=../lib -f Makefile.os2 clean

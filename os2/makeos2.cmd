@@ -30,32 +30,29 @@ set COMPILER=icc-os2
 goto initial
 
 :initial
-sh -c "export TODAY=`date.exe`; export LCL_DATE=`date.exe | cut -d ' ' -f 2,3,6`; make -e -f Makefile.os2 %2 %3 %4 %5 %6 %7 %8 %9"
+make -f Makefile.os2 confclean
+make -e -f Makefile.os2 %2 %3 %4 %5 %6 %7 %8 %9
 goto end
 
 :oldconf
-if not exist ..\src\Headers\local_constants.h copy local_constants.h ..\src\Headers\local_constants.h
-if not exist ..\src\Headers\heral.h copy local_constants.h ..\src\Headers\herald.h
 make -f Makefile.os2 --directory=../src --warn-undefined-variables %2 %3 %4 %5 %6 %7 %8 %9 
-if not exist ..\bin mv ..\src\lclint.exe ..\bin
-if errorlevel 0 mv ..\src\lclint.exe ..\bin
 goto end
 
 :test
 cd ..\test
 echo it's %LARCH_PATH% and %LCLIMPORTDIR%
-make LCLINT=%basedir%\bin\lclint %2 %3 %4 %4 %5 %6 %7 %8 %9 -e -f Makefile-test.os2
+make LCLINT=%basedir%\bin\splint %2 %3 %4 %4 %5 %6 %7 %8 %9 -e -f Makefile.os2
 cd ..\os2
 goto end
 
 :package
 cd %basedir%\..
-rm -f lclint-%version%-os2-*.tar*
-tar cvf lclint-%version%-os2-bin.tar lclint-%version%\bin lclint-%version%\imports lclint-%version%\lib lclint-%version%\os2 lclint-%version%\test lclint-%version%\BUFFERCHECKING lclint-%version%\LICENSE lclint-%version%\README
-tar cvf lclint-%version%-os2-all.tar lclint-%version%
-cd \export\lclint
-tar cvf %basedir%\..\lclint-%version%-os2-add.tar lclint-%version%
-gzip %basedir%\..\lclint-%version%-os2-*.tar
+rm -f splint-%version%-os2-*.tar*
+tar cvf splint-%version%-os2-bin.tar splint-%version%\bin splint-%version%\imports splint-%version%\lib splint-%version%\os2 splint-%version%\test splint-%version%\LICENSE splint-%version%\README
+tar cvf splint-%version%-os2-all.tar splint-%version%
+cd \export\splint
+tar cvf %basedir%\..\splint-%version%-os2-add.tar splint-%version%
+gzip %basedir%\..\splint-%version%-os2-*.tar
 goto end
 
 :end
