@@ -133,6 +133,8 @@ constraint constraint_copy (constraint c)
   ret->ar = c->ar;
   ret->expr =  constraintExpr_copy (c->expr);
   ret->post = c->post;
+  ret->generatingExpr = c->generatingExpr;
+  
   /*@i33 fix this*/
   if (c->orig != NULL)
     ret->orig = constraint_copy (c->orig);
@@ -154,7 +156,7 @@ void constraint_overWrite (constraint c1, constraint c2)
     c1->orig = constraint_copy (c2->orig);
   else
     c1->orig = NULL;
-
+  c1->generatingExpr = c2->generatingExpr;
 }
 
 bool constraint_resolve (/*@unused@*/ constraint c)
@@ -173,14 +175,52 @@ constraint constraint_makeNew (void)
   ret->ar = LT;
   ret->post = FALSE;
   ret->orig = NULL;
+  ret->generatingExpr = NULL;
   /*@i23*/return ret;
+}
+
+constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e)
+{
+    
+  if (c->generatingExpr == NULL)
+    {
+      c->generatingExpr = e;
+      DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_print(c), exprNode_unparse(e) )  ));
+    }
+  else
+    {
+      DPRINTF ((message ("Not setting generatingExpr for %s to %s", constraint_print(c), exprNode_unparse(e) )  ));
+    }
+  return c;
 }
 
 fileloc constraint_getFileloc (constraint c)
 {
+  if (c->generatingExpr)
+    return (exprNode_getfileloc (c->generatingExpr) );
+	    
   return (constraintExpr_getFileloc (c->lexpr) );
 
 
+}
+
+static bool checkForMaxSet (constraint c)
+{
+  if (constraintExpr_hasMaxSet(c->lexpr) || constraintExpr_hasMaxSet(c->expr) )
+    return TRUE;
+
+  return FALSE;
+}
+
+bool constraint_hasMaxSet(constraint c)
+{
+  if (c->orig)
+    {
+      if (checkForMaxSet(c->orig) )
+	return TRUE;
+    }
+
+  return (checkForMaxSet(c) );
 }
 
 constraint constraint_makeReadSafeExprNode ( exprNode po, exprNode ind)
@@ -436,16 +476,23 @@ cstring arithType_print (arithType ar)
 void constraint_printError (constraint c, fileloc loc)
 {
   cstring string;
-
+  fileloc errorLoc;
+  
   string = constraint_printDetailed (c);
+
+  errorLoc = loc;
+
+  if (constraint_getFileloc(c) )
+    errorLoc = constraint_getFileloc(c);
+  
   
   if (c->post)
     {
-       voptgenerror (FLG_FUNCTIONPOST, string, loc);
+       voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
     }
   else
     {
-      voptgenerror (FLG_FUNCTIONCONSTRAINT, string, loc);
+      voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
     }
       
 }
@@ -469,6 +516,22 @@ cstring  constraint_printDetailed (constraint c)
 	st = message ("Block Post condition:\nThis function block has the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
       else
 	st = message ("Block Post condition:\nThis function block has the post condition %s", constraint_print (c));	
+    }
+
+  if (context_getFlag (FLG_CONSTRAINTLOCATION) )
+    {
+      cstring temp;
+      // llassert (c->generatingExpr);
+      temp = message ("\nOriginal Generating expression %s: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
+		      exprNode_unparse(c->generatingExpr) );
+      st = cstring_concat (st, temp);
+
+      if (constraint_hasMaxSet(c) )
+	{
+	  cstring temp2;
+	  temp2 = message ("\nHas MaxSet\n");
+	  st = cstring_concat (st, temp2);
+	}
     }
   return st;
 }

@@ -30,6 +30,7 @@ constraintList exprNode_traversRequiresConstraints (exprNode e);
 constraintList exprNode_traversEnsuresConstraints (exprNode e);
 
 constraintList exprNode_traversTrueEnsuresConstraints (exprNode e);
+constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
 
 extern constraintList reflectChanges (constraintList pre2, constraintList post1);
 
@@ -37,6 +38,8 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2);
 exprNode makeDataTypeConstraints (exprNode e);
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
 constraintList checkCall (exprNode fcn, exprNodeList arglist);
+
+void checkArgumentList (exprNode temp, exprNodeList arglist, fileloc sequencePoint);
 
 //bool exprNode_testd()
 //{
@@ -113,15 +116,15 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
   if (exprNode_isError (e) )
     return FALSE;
   
+  e->requiresConstraints = constraintList_new();
+  e->ensuresConstraints = constraintList_new();
+  e->trueEnsuresConstraints = constraintList_new();
+  e->falseEnsuresConstraints = constraintList_new();
+
   if (exprNode_isUnhandled (e) )
     {
       DPRINTF( (message("Warning ignoring %s", exprNode_unparse (e) ) ) );
-      e->requiresConstraints = constraintList_new();
-      e->ensuresConstraints = constraintList_new();
-      e->trueEnsuresConstraints = constraintList_new();
-      e->falseEnsuresConstraints = constraintList_new();
-      //  llassert(FALSE);
-      return FALSE;
+        return FALSE;
     }
 
   
@@ -136,6 +139,11 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
     }
   else
     {
+      fileloc loc;
+      
+      loc = exprNode_getNextSequencePoint(e); 
+      exprNode_exprTraverse(e, FALSE, FALSE, loc);
+      
       //    llassert(FALSE);
       return FALSE;
     }
@@ -187,7 +195,8 @@ bool exprNode_stmt (exprNode e)
   exprNode snode;
   fileloc loc;
   bool notError;
-
+  char * s;
+  
   if (exprNode_isError(e) )
     {
       return FALSE;
@@ -198,8 +207,9 @@ bool exprNode_stmt (exprNode e)
   
  
   DPRINTF(( "STMT:") );
-  DPRINTF ( ( cstring_toCharsSafe ( exprNode_unparse(e)) )
-	   );
+  s =  exprNode_unparse(e);
+  // DPRINTF ( ( message("STMT: %s ") ) );
+  
   if (e->kind == XPR_INIT)
     {
       DPRINTF (("Init") );
@@ -304,9 +314,20 @@ exprNode doIf (exprNode e, exprNode test, exprNode body)
   e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
   e->requiresConstraints = reflectChanges (e->requiresConstraints,
 					   test->ensuresConstraints);
+  e->requiresConstraints = constraintList_addList(e->requiresConstraints, test->requiresConstraints);
 #warning bad
   e->ensuresConstraints = constraintList_copy (test->ensuresConstraints);
+
+  DPRINTF ((message ("doIf: if requiers %s ", constraintList_print(e->requiresConstraints) ) ) );
+  
   return e;
+}
+
+
+exprNode doWhile (exprNode e, exprNode test, exprNode body)
+{
+  DPRINTF ((message ("doWhile: %s ", exprNode_unparse(e) ) ) );
+  return doIf (e, test, body);
 }
 
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
@@ -387,6 +408,8 @@ void doFor (exprNode e, exprNode forPred, exprNode forBody)
       
 }
 
+
+
 bool exprNode_multiStatement (exprNode e)
 {
   
@@ -439,11 +462,27 @@ bool exprNode_multiStatement (exprNode e)
       exprNode_generateConstraints (exprData_getTripleInit (data) );
       test = exprData_getTripleTest (data);
       exprNode_exprTraverse (test,FALSE, FALSE, exprNode_loc(e));
+      exprNode_generateConstraints (exprData_getTripleInc (data) );
+    
       if (!exprNode_isError(test) )
 	test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
 
       exprNode_generateConstraints (exprData_getTripleInc (data));
       break;
+
+    case XPR_WHILE:
+      e1 = exprData_getPairA (data);
+      e2 = exprData_getPairB (data);
+      
+       exprNode_exprTraverse (e1,
+			      FALSE, FALSE, exprNode_loc(e1));
+       
+       exprNode_generateConstraints (e2);
+
+       e = doWhile (e, e1, e2);
+      
+      break; 
+
     case XPR_IF:
       DPRINTF(( "IF:") );
       DPRINTF ((exprNode_unparse(e) ) );
@@ -461,7 +500,8 @@ bool exprNode_multiStatement (exprNode e)
       
       //      e->constraints = constraintList_exprNodemerge (exprData_getPairA (data),exprData_getPairB(data));
       break;
-      
+
+     
     case XPR_IFELSE:
       DPRINTF(("Starting IFELSE"));
       //      ret = message ("if (%s) %s else %s",
@@ -474,21 +514,31 @@ bool exprNode_multiStatement (exprNode e)
       exprNode_generateConstraints (trueBranch);
       exprNode_generateConstraints (falseBranch);
 
+      p->ensuresConstraints = exprNode_traversEnsuresConstraints (p);
+      p->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(p);
+      //      p->falseEnsuresConstraints =  exprNode_traversFalseEnsuresConstraints(p);
+     
       // do requires clauses
-      
+
+      {
+	constraintList c1, c2;
+	c1 = constraintList_copy (p->ensuresConstraints);
+				  
       cons = reflectChanges (trueBranch->requiresConstraints, p->trueEnsuresConstraints);
       cons  = reflectChanges (cons,
 			      p->ensuresConstraints);
       e->requiresConstraints = constraintList_copy (cons);
-
+      /*
       cons = reflectChanges (falseBranch->requiresConstraints, p->falseEnsuresConstraints);
       cons  = reflectChanges (cons,
-			      p->ensuresConstraints);
+			      c1);
       e->requiresConstraints = constraintList_addList (e->requiresConstraints,
 						       cons);
       e->requiresConstraints = constraintList_addList (e->requiresConstraints,
 						       p->requiresConstraints);
-      
+      */
+
+      }
       // do ensures clauses
       // find the  the ensures lists for each subbranch
       t = constraintList_mergeEnsures (p->trueEnsuresConstraints, trueBranch->ensuresConstraints);
@@ -502,29 +552,7 @@ bool exprNode_multiStatement (exprNode e)
       e->ensuresConstraints = constraintList_logicalOr (t, f);
       DPRINTF( ("Done IFELSE") );
       break;
-    case XPR_WHILE:
-       e1 = exprData_getPairA (data);
-       e2 = exprData_getPairB (data);
-      exprNode_exprTraverse (e1,
-			     FALSE, FALSE, exprNode_loc(e1));
-
-      exprNode_generateConstraints (e2);
-      
-      e1->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(e1);
-      
-      e->requiresConstraints = reflectChanges (e2->requiresConstraints, e1->trueEnsuresConstraints);
-      
-      e->requiresConstraints = reflectChanges (e->requiresConstraints,
-					       e1->ensuresConstraints);
-#warning bad
-      e->ensuresConstraints = constraintList_copy (e1->ensuresConstraints);
-      
-      //      ret = message ("while (%s) %s",
-		     exprNode_generateConstraints (exprData_getPairA (data));
-		     exprNode_generateConstraints (exprData_getPairB (data));
-		     //      e->constraints = constraintList_exprNodemerge (exprData_getPairA (data), exprData_getPairB (data) );
-      break;
-
+ 
     case XPR_DOWHILE:
       // ret = message ("do { %s } while (%s)",
 		     exprNode_generateConstraints (exprData_getPairB (data));
@@ -697,7 +725,7 @@ if (lltok_isLe_Op (tok) )
 
 bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint)
 {
-  exprNode t1, t2;
+  exprNode t1, t2, fcn;
   lltok tok;
   bool handledExprNode;
   exprData data;
@@ -755,7 +783,7 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       cons = constraint_makeEnsureMaxReadAtLeast (t1, t2, sequencePoint);
       e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
 
-      cons = constraint_makeEnsureLteMaxRead (t1, t2);
+      cons = constraint_makeEnsureLteMaxRead (t2, t1);
       e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
 	
       //      cons = constraint_makeEnsureMinReadAtMost (t1, t2, sequencePoint);
@@ -824,17 +852,25 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       break;
       
     case XPR_CALL:
-      exprNode_exprTraverse (exprData_getFcn (data), definatelv, definaterv, sequencePoint );
+      fcn = exprData_getFcn(data);
+      
+      exprNode_exprTraverse (fcn, definatelv, definaterv, sequencePoint );
       exprNodeList_unparse (exprData_getArgs (data) );
-      DPRINTF ( (message ("Got call that %s ( %s) ",  exprNode_unparse(exprData_getFcn(data) ),   exprNodeList_unparse (exprData_getArgs (data) ) ) ) );
+      DPRINTF ( (message ("Got call that %s ( %s) ",  exprNode_unparse(fcn),   exprNodeList_unparse (exprData_getArgs (data) ) ) ) );
 
-     
+      fcn->requiresConstraints = constraintList_addList (fcn->requiresConstraints,
+						 checkCall (fcn, exprData_getArgs (data)  ) );      
 
-      e->requiresConstraints = constraintList_addList (e->requiresConstraints,
-						 checkCall (exprData_getFcn (data), exprData_getArgs (data)  ) );      
+      fcn->ensuresConstraints = constraintList_addList (fcn->ensuresConstraints,
+						 getPostConditions(fcn, exprData_getArgs (data),e  ) );
 
-      e->ensuresConstraints = constraintList_addList (e->ensuresConstraints,
-						 getPostConditions(exprData_getFcn (data), exprData_getArgs (data),e  ) );      
+      t1 = exprNode_createNew (exprNode_getType (e) );
+      
+      checkArgumentList (t1, exprData_getArgs(data), sequencePoint);
+
+      
+      mergeResolve (e, t1, fcn);
+      
       //      e->constraints = constraintList_add (e->constraints, constraint_create (e,exprNode_undefined, GT,  CALLSAFE ) );
       break;
       
@@ -932,7 +968,11 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
   e->requiresConstraints =  constraintList_preserveOrig ( e->requiresConstraints);
   e->ensuresConstraints  =  constraintList_preserveOrig ( e->ensuresConstraints);
-  DPRINTF((message ("ensures constraint for %s are %s", exprNode_unparse(e), constraintList_print(e->ensuresConstraints) ) ));
+  e->requiresConstraints = constraintList_addGeneratingExpr ( e->requiresConstraints, e);
+
+  e->ensuresConstraints  = constraintList_addGeneratingExpr ( e->ensuresConstraints, e);
+
+  DPRINTF((message ("ensures constraint for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
   
   return handledExprNode; 
 }
@@ -940,7 +980,7 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
 constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
 {
-  //  exprNode t1, t2;
+  exprNode t1, t2;
 
   bool handledExprNode;
   //  char * mes;
@@ -960,6 +1000,10 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
   
   switch (e->kind)
     {
+    case XPR_WHILEPRED:
+      t1 = exprData_getSingle (data);
+      ret = constraintList_addList ( ret,exprNode_traversTrueEnsuresConstraints (t1) );
+      break;
       
     case XPR_FETCH:
       
@@ -1064,11 +1108,141 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
   return ret;
 }
 
+constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
+{
+   exprNode t1, t2;
+
+  bool handledExprNode;
+  //  char * mes;
+  exprData data;
+  constraintList ret;
+
+   if (exprNode_handleError (e))
+     {
+       ret = constraintList_new();
+       return ret;
+     }
+  ret = constraintList_copy (e->falseEnsuresConstraints );
+   
+   handledExprNode = TRUE;
+   
+  data = e->edata;
+  
+  switch (e->kind)
+    {
+   case XPR_WHILEPRED:
+      t1 = exprData_getSingle (data);
+      ret = constraintList_addList ( ret,exprNode_traversFalseEnsuresConstraints (t1) );
+      break;
+      
+    case XPR_FETCH:
+      
+      ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getPairA (data) ) );
+        
+      ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getPairB (data) ) );
+      break;
+    case XPR_PREOP:
+          
+      ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getUopNode (data) ) );
+      break;
+      
+    case XPR_PARENS: 
+      ret = constraintList_addList (ret, exprNode_traversFalseEnsuresConstraints
+				    (exprData_getUopNode (data) ) );
+      break;
+    case XPR_ASSIGN:
+        ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getOpA (data) ) );
+        
+       ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getOpB (data) ) );
+       break;
+    case XPR_OP:
+       ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getOpA (data) ) );
+        
+       ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getOpB (data) ) );
+       break;
+    case XPR_SIZEOFT:
+      
+      //      ctype_unparse (qtype_getType (exprData_getType (data) ) );
+      
+      break;
+      
+    case XPR_SIZEOF:
+          
+       ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				     (exprData_getSingle (data) ) );
+       break;
+      
+    case XPR_CALL:
+      ret = constraintList_addList (ret,
+				     exprNode_traversFalseEnsuresConstraints
+				    (exprData_getFcn (data) ) );
+      /*@i11*/      //   exprNodeList_unparse (exprData_getArgs (data) );
+         break;
+      
+    case XPR_RETURN:
+      ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getSingle (data) ) );
+      break;
+  
+    case XPR_NULLRETURN:
+      //      cstring_makeLiteral ("return");;
+      break;
+            
+    case XPR_FACCESS:
+          ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getFieldNode (data) ) );
+       //exprData_getFieldName (data) ;
+      break;
+   
+    case XPR_ARROW:
+        ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getFieldNode (data) ) );
+	//      exprData_getFieldName (data);
+      break;
+   
+    case XPR_STRINGLITERAL:
+      //      cstring_copy (exprData_getLiteral (data));
+      break;
+      
+    case XPR_NUMLIT:
+      //      cstring_copy (exprData_getLiteral (data));
+      break;
+    case XPR_POSTOP:
+
+           ret = constraintList_addList (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (exprData_getUopNode (data) ) );
+	   break;
+    default:
+      break;
+    }
+
+  return ret;
+}
+
 
 /* walk down the tree and get all requires Constraints in each subexpression*/
 constraintList exprNode_traversRequiresConstraints (exprNode e)
 {
-  //  exprNode t1, t2;
+  exprNode t1, t2;
 
   bool handledExprNode;
   //  char * mes;
@@ -1088,6 +1262,10 @@ constraintList exprNode_traversRequiresConstraints (exprNode e)
   
   switch (e->kind)
     {
+   case XPR_WHILEPRED:
+      t1 = exprData_getSingle (data);
+      ret = constraintList_addList ( ret,exprNode_traversRequiresConstraints (t1) );
+      break;
       
     case XPR_FETCH:
       
@@ -1196,7 +1374,7 @@ constraintList exprNode_traversRequiresConstraints (exprNode e)
 /* walk down the tree and get all Ensures Constraints in each subexpression*/
 constraintList exprNode_traversEnsuresConstraints (exprNode e)
 {
-  //  exprNode t1, t2;
+  exprNode t1, t2;
 
   bool handledExprNode;
   //  char * mes;
@@ -1227,6 +1405,10 @@ constraintList exprNode_traversEnsuresConstraints (exprNode e)
   
   switch (e->kind)
     {
+   case XPR_WHILEPRED:
+      t1 = exprData_getSingle (data);
+      ret = constraintList_addList ( ret,exprNode_traversEnsuresConstraints (t1) );
+      break;
       
     case XPR_FETCH:
       

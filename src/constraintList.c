@@ -235,7 +235,7 @@ constraintList_free (constraintList s)
 }
 
 constraintList
-constraintList_copy (constraintList s)
+constraintList_copy (constraintList s) /*@*/
 {
   constraintList ret = constraintList_new ();
 
@@ -252,6 +252,19 @@ constraintList constraintList_preserveOrig (constraintList c)
   constraintList_elements (c, el)
   {
     el = constraint_preserveOrig (el);
+  }
+  end_constraintList_elements;
+  return c;
+}
+
+constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
+{
+  DPRINTF ((message ("entering constraintList_addGeneratingExpr for %s ", exprNode_unparse(e) ) ));
+  
+  constraintList_elements (c, el)
+  {
+    DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_print(el), exprNode_unparse(e) )  ));
+    el = constraint_addGeneratingExpr (el, e);
   }
   end_constraintList_elements;
   return c;

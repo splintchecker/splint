@@ -94,6 +94,13 @@ void checkandsetBufState(idDecl id, exprNode is);
  /*@only@*/ exprNodeList alist;
  /*@only@*/ sRefSet srset; 
  /*@only@*/ cstringList cstringlist;
+  /*drl
+    added 1/19/2001
+  */
+  constraint con;
+  constraintList conL;
+  constraintExpr conE;
+  /* drl */
 }
 
 /* standard C tokens */
@@ -209,16 +216,17 @@ void checkandsetBufState(idDecl id, exprNode is);
 %type <sr>    mExpr modListExpr specClauseListExpr
 
 /*drl*/
-%type <sr>    BufConstraint
+%type <con>    BufConstraint
 %type <tok> relationalOp
 %type <tok> BufBinaryOp
 %type <tok> bufferModifier
 
-%type <sr> BufConstraintExpr
+%type <conE> BufConstraintExpr
 
-%type <sr> BufConstraintTerm
+%type <conE> BufConstraintTerm
+%type <sr> BufConstraintSrefExpr
 
-%type <sr>    BufConstraintList
+%type <conL>    BufConstraintList
 
 %type <tok>  BufUnaryOp
 
@@ -462,14 +470,40 @@ BufConstraintExpr
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
 
 BufConstraintTerm
-: id                              { /* $$ = constraintExpr_makeTermsRef (checkSpecClausesId ($1)); */
- $$ = constraintExpr_makeTermsRef (checkbufferConstraintClausesId ($1));}
- | NEW_IDENTIFIER                  { $$ = constraintExpr_makeTermsRef(fixSpecClausesId ($1) ); }
+: BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef($1);} 
  | CCONSTANT {  char *t; int c;
   t =  cstring_toCharsSafe (exprNode_unparse($1));
   c = atoi( t );
   $$ = constraintExpr_makeIntLiteral (c);
 }
+
+
+BufConstraintSrefExpr
+: id                              {
+   $$ =
+     checkbufferConstraintClausesId ($1);}
+ | NEW_IDENTIFIER                  { $$ = fixSpecClausesId ($1); }
+
+ | BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
+ |  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
+     char *t; int c;
+  t =  cstring_toCharsSafe (exprNode_unparse($3));
+  c = atoi( t );
+   $$ = sRef_makeArrayFetchKnown($1, c); }
+ | TMULT  BufConstraintSrefExpr               { $$ = sRef_constructPointer ($2); }
+ | TLPAREN BufConstraintSrefExpr TRPAREN     { $$ = $2; }  
+ |  BufConstraintSrefExpr TDOT newId          { cstring_markOwned ($3);
+					    $$ = sRef_buildField ($1, $3); }
+ |  BufConstraintSrefExpr ARROW_OP newId      { cstring_markOwned ($3);
+                                            $$ = sRef_makeArrow ($1, $3); }
+
+/*
+| BufConstraintTerm TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
+ | specClauseListExpr TLSQBR mExpr TRSQBR { $$ = sRef_makeAnyArrayFetch ($1); }
+ | TLPAREN specClauseListExpr TRPAREN     { $$ = $2; }  
+ | specClauseListExpr TDOT newId          { cstring_markOwned ($3);
+					    $$ = sRef_buildField ($1, $3); }
+*/
 
 /*BufConstraintExpr
 : BufConstraintTerm 
