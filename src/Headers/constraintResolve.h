@@ -9,12 +9,7 @@ extern /*@only@*/ constraint substitute (/*@observer@*/ constraint c, constraint
 
 //extern constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new);
 
-static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType ar2, /*@observer@*/ constraintExpr expr2);
-static bool satifies (/*@observer@*/ constraint pre, /*@observer@*/ constraint post);
-
 extern bool resolve ( /*@observer@*/ constraint c,  /*@observer@*/ constraintList p);
-
-static /*@only@*/ constraintList reflectChangesEnsures (/*@observer@*/ constraintList pre2, constraintList post1);
 
 extern constraint constraint_simplify ( /*@returned@*/ constraint c);
 

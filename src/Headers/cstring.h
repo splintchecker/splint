@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -21,6 +21,7 @@
 /* typedefs in forwardTypes */
 
 extern /*@notnull@*/ cstring cstring_create (int p_n) /*@*/ ;
+extern /*@only@*/ /*@notnull@*/  cstring cstring_newEmpty (void) ;
 extern /*@notnull@*/ cstring cstring_appendChar (/*@only@*/ cstring p_s1, char p_c);
 
 extern cstring cstring_concatLength (/*@only@*/ cstring p_s1, char *p_s2, int p_len) /*@*/ ;
@@ -38,7 +39,7 @@ typedef enum {
   CGE_DISTINCT, /* significant differences */
   CGE_CASE,     /* case differences */
   CGE_LOOKALIKE /* lookalike differences */
-  } cmpcode;
+} cmpcode;
 
 extern cmpcode cstring_genericEqual (cstring p_s, cstring p_t,
 				     int p_nchars,
@@ -127,7 +128,7 @@ extern void cstring_free (/*@only@*/ cstring p_s);
 extern /*@falsenull@*/ bool cstring_isDefined (cstring p_s) /*@*/ ;
 extern /*@truenull@*/ bool cstring_isUndefined (cstring p_s) /*@*/ ;
 
-extern bool cstring_isEmpty (cstring p_s) /*@*/ ;
+extern /*@truenull@*/ bool cstring_isEmpty (cstring p_s) /*@*/ ;
 extern /*@falsenull@*/ bool cstring_isNonEmpty (cstring p_s) /*@*/ ;
 
 # define cstring_isDefined(s)   ((s) != cstring_undefined)
@@ -179,6 +180,9 @@ extern cstring cstring_beforeChar (cstring p_s, char p_c) /*@*/ ;
 # define end_cstring_chars }}
 
 extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring) /*@*/ ;
+
+extern /*@only@*/ /*@notnull@*/ cstring
+cstring_copySegment (cstring p_s, int p_findex, int p_tindex) /*@*/ ;
 
 extern bool cstring_containsLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;
 # define cstring_containsLit(c,sub) \

@@ -33,7 +33,8 @@ struct _constraintTerm {
 
 abst_typedef struct _constraintTerm * constraintTerm;
 
-
+extern constraintTermType constraintTerm_getKind (constraintTerm) ;
+extern /*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm) ;
 
 extern /*@falsenull@*/ bool constraintTerm_isDefined (constraintTerm p_e) /*@*/;
 extern /*@unused@*/ /*@truenull@*/ bool constraintTerm_isUndefined (constraintTerm p_e) /*@*/ ;

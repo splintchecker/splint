@@ -643,6 +643,8 @@ extern long int sRef_getArraySize (sRef p_s) /*@*/;
 extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
 /* end modifications */
 
+extern void sRef_resetLen (sRef p_s) /*@modifies p_s@*/ ;
+
 # else
 # error "Multiple include"
 # endif

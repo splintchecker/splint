@@ -83,7 +83,9 @@ constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr
 
 bool constraintExpr_isLit (constraintExpr expr);
 
-/*@only@*/ constraintExpr constraintExpr_makeAddConstraintExpr (/*@only@*/constraintExpr expr, /*@only@*/ constraintExpr add);
+/*@only@*/ constraintExpr constrainExpr_makeAddExpr (/*@only@*/constraintExpr expr, /*@only@*/ constraintExpr add);
+
+/*@only@*/  constraintExpr constraintExpr_makeSubtractExpr (/*@only@*/ constraintExpr expr, /*@only@*/ constraintExpr addent);
 
 /*@only@*/ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op,/*@only@*/ constraintExpr cexpr);
 

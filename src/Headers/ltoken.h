@@ -75,9 +75,9 @@ extern unsigned int ltoken_getLine (/*@sef@*/ ltoken p_tok);
 # define ltoken_getLine(tok) \
   (ltoken_isValid (tok) ? (tok)->line : 0)
 
-extern void ltoken_setLine (/*@sef@*/ ltoken p_tok, unsigned int p_line);
+extern void ltoken_setLine (/*@sef@*/ ltoken p_tok, /*@sef@*/ unsigned int p_line);
 # define ltoken_setLine(tok, ln) \
-  (ltoken_isValid (tok) ? (tok)->line = (ln) : (ln))
+  (ltoken_isValid (tok) ? (tok)->line = (ln) : 0)
 
 extern unsigned int ltoken_getCol (/*@sef@*/ ltoken p_tok);
 # define ltoken_getCol(tok) \
@@ -182,9 +182,9 @@ extern /*@observer@*/ cstring ltoken_fileName (/*@sef@*/ ltoken p_s);
 # define ltoken_fileName(s) \
   (ltoken_isValid(s) ? lsymbol_toString ((s)->fname) : cstring_undefined)
 
-extern void ltoken_setFileName (/*@sef@*/ ltoken p_tok, char *p_fname);
+extern void ltoken_setFileName (/*@sef@*/ ltoken p_tok, /*@sef@*/ char *p_fname);
 # define ltoken_setFileName(tok,f) \
-  (ltoken_isValid(tok) ? (tok)->fname = lsymbol_fromChars (f) : (f, lsymbol_undefined))
+  (ltoken_isValid(tok) ? (tok)->fname = lsymbol_fromChars (f) : lsymbol_undefined)
 
 extern bool ltoken_isChar (ltoken p_tok);
 # define ltoken_isChar(t) \

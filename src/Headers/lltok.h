@@ -56,9 +56,9 @@ bool lltok_isLe_Op (lltok tok);
 
 
 /*drl7x added 11 30 2000*/
-bool  lltok_isPlus_Op (lltok tok);
+bool lltok_isPlus_Op (lltok tok);
 
-bool  lltok_isMinus_Op (lltok tok);
+bool lltok_isMinus_Op (lltok tok);
 
 /*end drl added */
 
@@ -66,8 +66,10 @@ bool  lltok_isMinus_Op (lltok tok);
   added 1/14/2001
 */
 bool lltok_isDec_Op  (lltok tok);
+bool lltok_isAmpersand_Op (lltok tok);
 
-bool  lltok_isAmpersand_Op (lltok tok);
+extern bool lltok_isExcl_Op (lltok tok);
+extern bool lltok_isTilde_Op (lltok tok);
 
 # else
 # error "Multiple include"

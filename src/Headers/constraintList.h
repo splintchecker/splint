@@ -26,7 +26,8 @@ extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p
 # define constraintList_isUndefined(e)  ((e) == constraintList_undefined)
 # define constraintList_isError(e)      ((e) == constraintList_undefined)
 
-
+extern /*@only@*/ constraintList constraintList_addListFree (/*@only@*/ constraintList, /*@only@*/ constraintList) ;
+extern constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList p_c, exprNode p_fcn) ;
 
 /*@iter constraintList_elements (sef constraintList x, yield exposed constraint el); @*/
 # define constraintList_elements(x, m_el) \
@@ -76,7 +77,10 @@ extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exp
 
 /*@only@*/ constraintList constraintList_doFixResult ( /*@only@*/ constraintList postconditions, /*@observer@*/ exprNode fcnCall) /*@modifies postconditions@*/;
 
-constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
+extern constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
+extern constraintList constraintList_makeFixedArrayConstraints (sRefSet p_s) ;
+extern void constraintList_printErrorPostConditions (constraintList p_s, fileloc p_loc) ;
+extern void constraintList_printError (constraintList p_s, fileloc p_loc) ;
 
 # else
 # error "Multiple include"

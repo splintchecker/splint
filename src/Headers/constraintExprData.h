@@ -52,6 +52,9 @@ extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (/*@observer@*
 # define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
 # define constraintExprData_isError(e)        ((e) == constraintExprData_undefined)
 
+extern void constraintExprData_freeBinaryExpr (/*@only@*/ constraintExprData) ;
+extern void constraintExprData_freeUnaryExpr (/*@only@*/ constraintExprData) ;
+extern void constraintExprData_freeTerm (/*@only@*/ constraintExprData) ;
 
 /*@reldef@*/ constraintExprData constraintExprData_termSetTerm (/*@reldef@*/ /*@returned@*/ constraintExprData data, /*@only@*/ constraintTerm term);
 

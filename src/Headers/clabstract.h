@@ -115,6 +115,8 @@ void setFunctionConstraints (constraintList c);
 sRef checkbufferConstraintClausesId (uentry ue);
 void  setImplictfcnConstraints (void);
 
+/*@observer@*/ constraintList  getImplicitFcnConstraints (void);
+
 /* end drl*/
 
 

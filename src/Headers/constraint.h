@@ -31,7 +31,7 @@ extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*
 # define constraint_isUndefined(e)      ((e) == constraint_undefined)
 # define constraint_isError(e)          ((e) == constraint_undefined)
 
-void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
+extern void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
 
 //constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
 
@@ -45,83 +45,87 @@ void constraint_free (/*@only@*/ /*@notnull@*/ constraint c);
      
 //constraintExpr makeConstraintExprIntlit (int p_i);
 
-/*@relnull@*/ constraint constraint_makeReadSafeExprNode ( exprNode p_po, exprNode p_ind);
+extern /*@relnull@*/ constraint constraint_makeReadSafeExprNode ( exprNode p_po, exprNode p_ind);
 
-/*@only@*/ constraint constraint_makeWriteSafeExprNode (exprNode p_po, exprNode p_ind);
+extern /*@only@*/ constraint constraint_makeWriteSafeExprNode (exprNode p_po, exprNode p_ind);
 
-/*@only@*/ constraint constraint_makeReadSafeInt (exprNode p_t1, int p_index);
+extern /*@only@*/ constraint constraint_makeReadSafeInt (exprNode p_t1, int p_index);
 
-/*@only@*/ constraint constraint_makeEnsureMaxReadAtLeast (exprNode p_t1, exprNode p_t2, fileloc p_sequencePoint);
+extern /*@only@*/ constraint constraint_makeEnsureMaxReadAtLeast (exprNode p_t1, exprNode p_t2, fileloc p_sequencePoint);
 
-void constraint_overWrite (constraint c1, /*@observer@*/ constraint c2) /*@modifies c1 @*/;
+extern void constraint_overWrite (constraint c1, /*@observer@*/ constraint c2) /*@modifies c1 @*/;
 
-/*@only@*/ constraint constraint_copy (/*@observer@*/ constraint c);
+extern /*@only@*/ constraint constraint_copy (/*@observer@*/ constraint c);
 
-//constraintExpr makePostOpInc (exprNode t1);
+extern bool fileloc_closer (/*@observer@*/ fileloc  loc1, /*@observer@*/ fileloc  loc2, /*@observer@*/ fileloc  loc3) /*@*/;
 
+extern /*@only@*/ cstring arithType_print (arithType ar) /*@*/;
 
-bool fileloc_closer (/*@observer@*/ fileloc  loc1,/*@observer@*/ fileloc  loc2,/*@observer@*/ fileloc  loc3) /*@*/;
+extern /*@only@*/ fileloc constraint_getFileloc (constraint c);
+extern /*@only@*/ cstring constraint_print (constraint c) /*@*/;
 
+extern /*@only@*/ constraint constraint_makeWriteSafeInt (exprNode po, int ind);
 
-/*@only@*/ cstring arithType_print (arithType ar) /*@*/;
+extern exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src) /*@modifies dst @*/;
 
+extern /*@only@*/ constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
 
-/*@only@*/fileloc constraint_getFileloc (constraint c);
-/*@only@*/ cstring constraint_print (constraint c) /*@*/;
+extern /*@only@*/ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint);
 
-/*@only@*/constraint constraint_makeWriteSafeInt (exprNode po, int ind);
+extern constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/;
+extern /*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,
+							    exprNodeList arglist);
+extern /*@only@*/ cstring  constraint_printDetailed (constraint c);
 
-exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src) /*@modifies dst @*/;
+extern /*@only@*/ constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint);
+extern /*@only@*/ constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
 
-/*@only@*/ constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
-
-/*@only@*/ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint);
-
-constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/;
-/*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,
-						     exprNodeList arglist);
-
-/*@only@*/ cstring  constraint_printDetailed (constraint c);
-
-/*@only@*/ constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint);
-
-/*@only@*/ constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
-
-/*@only@*/ constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint);
-/*@only@*/ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
+extern /*@only@*/ constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint);
+extern /*@only@*/ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
 
 /*drl add 11/28/2000 */
-/*@only@*/ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind);
-/*@unused@*/ /*@only@*/ constraint constraint_makeSRefReadSafeInt (sRef s, int ind);
+extern /*@only@*/ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind);
+extern /*@unused@*/ /*@only@*/ constraint constraint_makeSRefReadSafeInt (sRef s, int ind);
 /*drl add 11/26/2000 */
-void constraint_printError (/*@observer@*/ constraint c, /*@observer@*/ fileloc loc);
+extern void constraint_printError (/*@observer@*/ constraint c, /*@observer@*/ fileloc loc);
 
-/*@only@*/ constraint constraint_doSRefFixConstraintParam (constraint precondition,
-						exprNodeList arglist);
+extern /*@only@*/ constraint constraint_doSRefFixConstraintParam (constraint precondition,
+								  exprNodeList arglist);
 
-/*@only@*/ constraint constraint_makeSRefSetBufferSize (sRef s, long int size);
+extern /*@only@*/ constraint constraint_makeSRefSetBufferSize (sRef s, long int size);
 
-/*@only@*/ constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall);
+extern /*@only@*/ constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall);
 
-/*@only@*/ constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer);
+extern /*@only@*/ constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer);
 
-/*@only@*/ constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint);
+extern /*@only@*/ constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint);
 
-bool constraint_search (constraint c, constraintExpr old);
+extern bool constraint_search (constraint c, constraintExpr old);
 
-/*@only@*/ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r);
+extern /*@only@*/ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r);
 
-constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e);
+extern constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e);
 
-bool constraint_hasMaxSet(constraint c);
+extern bool constraint_hasMaxSet(constraint c);
 
 /*from constraintGenreation.c*/
-void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv, /*@observer@*/  fileloc sequencePoint);
+extern void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv, /*@observer@*/  fileloc sequencePoint);
 
-/*@only@*/ constraintList exprNode_traversRequiresConstraints (exprNode e);
-/*@only@*/ constraintList exprNode_traversEnsuresConstraints (exprNode e);
+extern /*@only@*/ constraintList exprNode_traversRequiresConstraints (exprNode e);
+extern /*@only@*/ constraintList exprNode_traversEnsuresConstraints (exprNode e);
 
-constraint constraint_togglePost (/*@returned@*/ constraint c);
+extern constraint constraint_togglePost (/*@returned@*/ constraint c);
+extern bool constraint_same (constraint c1, constraint c2) ;
+
+/*@only@*/ cstring  constraint_printOr (constraint c) /*@*/;
+extern void constraint_printErrorPostCondition (constraint p_c, fileloc p_loc) ;
+extern constraint constraint_setFcnPre (/*@returned@*/ constraint p_c) ;
+extern constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint p_c, exprNode p_e) ;
+
+extern bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode p_e) ;
+constraint constraint_togglePostOrig (/*@returned@*/ constraint c);
+
+bool constraint_hasOrig( /*@observer@*/ /*@temp@*/ constraint c);
 
 /*@only@*/ cstring  constraint_printOr (constraint c) /*@*/;
 
