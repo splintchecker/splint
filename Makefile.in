@@ -439,8 +439,11 @@ bindist: $(binaryDerivedFiles)
 	$(MAKE)
 	$(RM) -f $(binaryDir)/splint
 	$(CP) src/splint $(binaryDir)/splint
+	$(MV) install.html installSource.html
+	$(CP) doc/` uname | tr [A-Z] [a-z]`.html install.html
 	$(MAKE) -e dist dh_script=$(binaryfixscript) SUBDIRS="$(binaryDir) lib imports  doc"
-	$(MV) $(distdir).tar.gz $(distdir).`uname`.tgz 
+	$(MV) $(distdir).tar.gz $(distdir).`uname`.tgz
+	$(MV) installSource.html install.html
 
 dist-hook:
 	cd $(distdir); 	pwd; $(dh_script)

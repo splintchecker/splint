@@ -89,7 +89,7 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 
 
 #this is just a hack to get make dist to work.
-EXTRA_DIST = splint.1
+EXTRA_DIST = splint.1 freebsd.html linux.html sunos.html
 subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
