@@ -14,7 +14,7 @@ struct s_warnClause
 {
   /*@only@*/ fileloc loc;
   /*@only@*/ flagSpec flag;
-  /*@only@*/ exprNode msg;
+  /*@only@*/ cstring msg;
 } ;
 
 /*@constant null warnClause warnClause_undefined; @*/
@@ -28,7 +28,7 @@ extern /*@truenull@*/ bool warnClause_isUndefined (/*@null@*/ warnClause p_f) /*
 
 extern warnClause warnClause_create (/*@only@*/ lltok,
 				     /*@only@*/ flagSpec p_flag,
-				     /*@only@*/ exprNode p_msg) /*@*/ ;
+				     /*@only@*/ cstring p_msg) /*@*/ ;
 
 extern /*@only@*/ warnClause warnClause_copy (warnClause) /*@*/ ;
 
@@ -37,7 +37,7 @@ extern /*@observer@*/ flagSpec warnClause_getFlag (warnClause p_w) /*@*/ ;
 extern /*@only@*/ cstring warnClause_dump (warnClause p_wc) /*@*/ ;
 extern /*@only@*/ warnClause warnClause_undump (char **p_s) /*@modifies p_s@*/ ;
 
-extern bool warnClause_hasMessage (warnClause p_w) /*@*/ ;
+extern /*@falsenull@*/ bool warnClause_hasMessage (warnClause p_w) /*@*/ ;
 
 extern /*@observer@*/ cstring warnClause_getMessage (warnClause p_w) /*@*/ ;
 extern /*@only@*/ cstring warnClause_unparse (warnClause p_w) /*@*/ ;

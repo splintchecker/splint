@@ -217,7 +217,11 @@ extern /*@exposed@*/ sRef exprNode_getSref (exprNode p_e) /*@*/ ;
 extern /*@observer@*/ uentry exprNode_getUentry (exprNode p_e) 
    /*@globals internalState@*/ ;
 extern void exprNode_produceGuards (exprNode p_pred) /*@modifies p_pred@*/ ;
+
 extern /*@observer@*/ fileloc exprNode_loc (exprNode p_e) /*@*/ ;
+extern /*@observer@*/ fileloc exprNode_getLoc (exprNode p_e) /*@*/ ;
+# define exprNode_getLoc exprNode_loc
+
 extern exprNode
   exprNode_charLiteral (char p_c, cstring p_text, /*@only@*/ fileloc p_loc) /*@*/ ;
 extern /*@observer@*/ exprNode exprNode_makeMustExit (void) /*@*/ ;

@@ -10,6 +10,7 @@
 # define METASTATESPECIFIER_H
 
 struct s_metaStateSpecifier {
+  bool elipsis;
   sRef sr;
   /*@observer@*/ metaStateInfo msinfo;
 } ;
@@ -17,6 +18,10 @@ struct s_metaStateSpecifier {
 extern metaStateSpecifier
 metaStateSpecifier_create (/*@only@*/ sRef, /*@observer@*/ metaStateInfo) ;
 
+extern metaStateSpecifier
+metaStateSpecifier_createElipsis (/*@observer@*/ metaStateInfo) ;
+
+extern bool metaStateSpecifier_isElipsis (metaStateSpecifier) /*@*/ ;
 extern /*@exposed@*/ sRef metaStateSpecifier_getSref (metaStateSpecifier) /*@*/ ;
 extern /*@observer@*/ metaStateInfo metaStateSpecifier_getMetaStateInfo (metaStateSpecifier) /*@*/ ;
 

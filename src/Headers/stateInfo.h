@@ -33,6 +33,7 @@ extern /*@only@*/ stateInfo
 
 extern /*@only@*/ stateInfo stateInfo_copy (stateInfo p_a); 
 
+extern /*@only@*/ /*@notnull@*/ stateInfo stateInfo_currentLoc (void) ;
 extern /*@only@*/ /*@notnull@*/ stateInfo stateInfo_makeLoc (fileloc p_loc) ;
 extern /*@only@*/ stateInfo stateInfo_makeRefLoc (/*@exposed@*/ sRef p_ref, fileloc p_loc) ;
 

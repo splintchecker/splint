@@ -2325,7 +2325,7 @@ sRef_undumpGlobal (char **c)
 	reader_checkChar (c, '@');
 	nullstate = nstate_fromInt (reader_getInt (c));
 
-	ret = sRef_makeGlobal (uid, ctype_unknown);
+	ret = sRef_makeGlobal (uid, ctype_unknown, stateInfo_currentLoc ());
 	sRef_setNullStateN (ret, nullstate);
 	ret->defstate = defstate;
 	return ret;
@@ -2367,9 +2367,9 @@ static /*@exposed@*/ sRef sRef_undumpBody (char **c)
   switch (p)
     {
     case 'g':
-      return (sRef_makeGlobal (usymId_fromInt (reader_getInt (c)), ctype_unknown));
+      return (sRef_makeGlobal (usymId_fromInt (reader_getInt (c)), ctype_unknown, stateInfo_currentLoc ()));
     case 'p':
-      return (sRef_makeParam (reader_getInt (c), ctype_unknown));
+      return (sRef_makeParam (reader_getInt (c), ctype_unknown, stateInfo_makeLoc (g_currentloc)));
     case 'r':
       return (sRef_makeResult (ctype_undump (c)));
     case 'a':
@@ -3106,7 +3106,7 @@ bool sRef_isUnconstrained (sRef s)
 }
 
 static /*@dependent@*/ /*@notnull@*/ sRef 
-  sRef_makeCvarAux (int level, usymId index, ctype ct)
+  sRef_makeCvarAux (int level, usymId index, ctype ct, /*@only@*/ stateInfo stinfo)
 {
   sRef s = sRef_newRef ();
   
@@ -3147,13 +3147,13 @@ static /*@dependent@*/ /*@notnull@*/ sRef
 
   DPRINTF (("Made cvar: [%p] %s", s, sRef_unparseDebug (s)));
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stinfo); 
   return s;
 }
 
-/*@dependent@*/ sRef sRef_makeCvar (int level, usymId index, ctype ct)
+/*@dependent@*/ sRef sRef_makeCvar (int level, usymId index, ctype ct, /*@only@*/ stateInfo stinfo)
 {
-  return (sRef_makeCvarAux (level, index, ct));
+  return (sRef_makeCvarAux (level, index, ct, stinfo));
 }
 
 int sRef_lexLevel (sRef s)
@@ -3175,9 +3175,9 @@ int sRef_lexLevel (sRef s)
 }
 
 sRef
-sRef_makeGlobal (usymId l, ctype ct)
+sRef_makeGlobal (usymId l, ctype ct, /*@only@*/ stateInfo stinfo)
 {
-  return (sRef_makeCvar (globScope, l, ct));
+  return (sRef_makeCvar (globScope, l, ct, stinfo));
 }
 
 void
@@ -3189,7 +3189,7 @@ sRef_setParamNo (sRef s, int l)
 }
 
 /*@dependent@*/ sRef
-sRef_makeParam (int l, ctype ct)
+sRef_makeParam (int l, ctype ct, stateInfo stinfo)
 {
   sRef s = sRef_new ();
 
@@ -3203,7 +3203,7 @@ sRef_makeParam (int l, ctype ct)
   /* (probably defined, unless its an out parameter) */
 
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stinfo);
   return s;
 }
 
@@ -3291,7 +3291,7 @@ static bool sRef_isZerothArrayFetch (/*@notnull@*/ sRef s)
 	}
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s);
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
       return s;
     }
 }
@@ -3464,7 +3464,7 @@ sRef_makeObject (ctype o)
   s->info = (sinfo) dmalloc (sizeof (*s->info));
   s->info->object = o;
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
   return s;
 }
 
@@ -3483,7 +3483,7 @@ sRef sRef_makeExternal (sRef t)
   s->type = t->type;
   s->info->ref = t; /* sRef_copy (t); */ /*@i32 was exposed@*/
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
   return s;
 }
 
@@ -3499,7 +3499,7 @@ sRef sRef_makeExternal (sRef t)
       
       s->type = t->type;
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s);
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
       return s;
     }
   else
@@ -4310,7 +4310,7 @@ sRef sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef a, /*@exposed@*/ sRef b)
       s->aliaskind = alkind_resolve (a->aliaskind, b->aliaskind);
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s);
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
       return s;
     }
   else
@@ -4395,7 +4395,7 @@ sRef_makeGlobalMarker (void)
 {
   sRef s = sRef_makeSpecial (SR_GLOBALMARKER);
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createGlobalMarkerValueTable ();
+  s->state = context_createGlobalMarkerValueTable (stateInfo_undefined);
   return s;
 }
 
@@ -4410,7 +4410,7 @@ sRef_makeResult (ctype c)
   s->aliaskind = AK_UNKNOWN;
   sRef_setNullStateN (s, NS_UNKNOWN);
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 
   DPRINTF (("Result: [%p] %s", s, sRef_unparseFull (s)));
   return s;
@@ -6498,7 +6498,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       
       if (valueTable_isUndefined (s->state))
 	{
-	  s->state = context_createValueTable (s);
+	  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 	}
 
       return (s);
@@ -6556,7 +6556,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       sRef_addDeriv (arr, s);
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s);
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 
       return (s);
     }
@@ -6792,7 +6792,7 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
 
   if (valueTable_isUndefined (s->state))
     {
-      s->state = context_createValueTable (s);
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
     }
 
   return s;
@@ -7143,7 +7143,7 @@ sRef_makeType (ctype ct)
   s->oaliaskind = s->aliaskind;
   s->oexpkind = s->expkind;
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 
   DPRINTF (("Create: %s", sRef_unparseFull (s)));
   return s;
@@ -7180,7 +7180,7 @@ sRef_makeConst (ctype ct)
   s->oexpkind = s->expkind;
 
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s);
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 
   return s;
 }

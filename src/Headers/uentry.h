@@ -457,12 +457,12 @@ extern /*@notnull@*/ /*@only@*/ uentry
 
 # ifndef NOLCL
 extern /*@notnull@*/ /*@only@*/ 
-  uentry uentry_makeVariableParam (cstring p_n, ctype p_t);
+  uentry uentry_makeVariableParam (cstring p_n, ctype p_t, fileloc p_loc);
 # endif
 
 extern /*@notnull@*/ /*@only@*/ 
-  uentry uentry_makeVariableSrefParam (cstring p_n, ctype p_t, 
-				       /*@exposed@*/ sRef p_s);
+uentry uentry_makeVariableSrefParam (cstring p_n, ctype p_t, /*@only@*/ fileloc p_loc,
+				     /*@exposed@*/ sRef p_s);
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeIdFunction (idDecl p_id);
 extern /*@notnull@*/ /*@only@*/ 

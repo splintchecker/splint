@@ -1272,13 +1272,14 @@ static void uentry_implicitParamAnnots (/*@notnull@*/ uentry e)
 }
 
 static /*@only@*/ /*@notnull@*/ uentry 
-uentry_makeVariableParamAux (cstring n, ctype t, /*@dependent@*/ sRef s, sstate defstate) /*@i32 exposed*/
+uentry_makeVariableParamAux (cstring n, ctype t, /*@dependent@*/ sRef s, 
+			     /*@only@*/ fileloc loc, sstate defstate) /*@i32 exposed*/
 {
   cstring pname = makeParam (n);
   uentry e;
 
   DPRINTF (("Sref: %s", sRef_unparseFull (s)));
-  e = uentry_makeVariableAux (pname, t, setLocation (), s, FALSE, VKPARAM);
+  e = uentry_makeVariableAux (pname, t, loc, s, FALSE, VKPARAM);
 
   cstring_free (pname);
   DPRINTF (("Param: %s", uentry_unparseFull (e)));
@@ -1410,9 +1411,9 @@ void checkGlobalsModifies (/*@notnull@*/ uentry ue, sRefSet sr)
 }
 
 uentry
-uentry_makeVariableSrefParam (cstring n, ctype t, /*@exposed@*/ sRef s)
+uentry_makeVariableSrefParam (cstring n, ctype t, /*@only@*/ fileloc loc, /*@exposed@*/ sRef s)
 {
-  return (uentry_makeVariableParamAux (n, t, s, SS_UNKNOWN));
+  return (uentry_makeVariableParamAux (n, t, s, loc, SS_UNKNOWN));
 }
 
 void
@@ -2438,7 +2439,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	{
 	  if (optgenerror
 	      (FLG_ANNOTATIONERROR,
-	       message ("Meta state anntation %s used in inconsistent context: %q",
+	       message ("Meta state annotation %s used in inconsistent context: %q",
 			qual_unparse (qel),
 			uentry_unparse (ue)),
 	       uentry_whereLast (ue)))
@@ -3012,9 +3013,11 @@ uentry_isSpecialFunction (uentry ue)
 {
   ctype ct = idDecl_getCtype (t);
   ctype base = ct;
-  sRef pref = sRef_makeParam (i, ct);
-  uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, pref);
+  fileloc loc = setLocation ();
+  sRef pref = sRef_makeParam (i, ct, stateInfo_makeLoc (loc));
+  uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, loc, pref);
 
+  DPRINTF (("Make param: %s", uentry_unparseFull (ue)));
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
   uentry_implicitParamAnnots (ue);
 
@@ -3073,9 +3076,9 @@ uentry_isSpecialFunction (uentry ue)
 }
 
 # ifndef NOLCL
-/*@notnull@*/ uentry uentry_makeVariableParam (cstring n, ctype t)
+/*@notnull@*/ uentry uentry_makeVariableParam (cstring n, ctype t, fileloc loc)
 {
-  return (uentry_makeVariableParamAux (n, t, sRef_makeType (t), SS_DEFINED));
+  return (uentry_makeVariableParamAux (n, t, sRef_makeType (t), fileloc_copy (loc), SS_DEFINED));
 }
 # endif
 
@@ -3277,11 +3280,11 @@ static /*@only@*/ /*@notnull@*/
   e->info->var->defstate = sRef_getDefState (e->sref);  
   e->info->var->nullstate = sRef_getNullState (e->sref);
 
-/* start modifications */
-/* This function sets the uentry for a pointer or array variable declaration,
-   it allocates memory and sets the fields. We check if the type of the variable
-   is a pointer or array and allocate a `bbufinfo' struct accordingly */
-
+  /* start modifications */
+  /* This function sets the uentry for a pointer or array variable declaration,
+     it allocates memory and sets the fields. We check if the type of the variable
+     is a pointer or array and allocate a `bbufinfo' struct accordingly */
+  
   if( ctype_isArray (t) || ctype_isPointer(t)) {
     /*@i222@*/e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
      e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
@@ -7247,6 +7250,10 @@ paramTypeError (uentry old, uentry oldCurrent, ctype oldType,
   
   if (hasError)
     {
+      DPRINTF (("Here: %s / %s",
+		uentry_unparseFull (oldCurrent),
+		uentry_unparseFull (newCurrent)));
+
       if (!uentry_isUndefined (oldCurrent))
 	{
 	  if (!uentry_isUndefined (newCurrent) 

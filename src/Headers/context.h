@@ -325,10 +325,10 @@ extern void context_addAnnotation (/*@only@*/ annotationInfo)
 extern void context_addMetaState (/*@only@*/ cstring, /*@only@*/ metaStateInfo)
      /*@modifies internalState@*/ ;
 
-extern valueTable context_createValueTable (sRef p_s)
+extern valueTable context_createValueTable (sRef p_s, /*@only@*/ stateInfo p_sinfo)
      /*@globals internalState@*/ ;
 
-extern valueTable context_createGlobalMarkerValueTable (void)
+extern valueTable context_createGlobalMarkerValueTable (/*@only@*/ stateInfo p_sinfo)
      /*@globals internalState@*/ ;
 
 extern int context_getBugsLimit (void) /*@*/ ;

@@ -112,6 +112,12 @@ void stateInfo_free (/*@only@*/ stateInfo a)
 }
 
 /*@only@*/ /*@notnull@*/ stateInfo
+stateInfo_currentLoc (void)
+{
+  return stateInfo_makeLoc (g_currentloc);
+}
+
+/*@only@*/ /*@notnull@*/ stateInfo
 stateInfo_makeLoc (fileloc loc)
 {
   stateInfo ret = (stateInfo) dmalloc (sizeof (*ret));

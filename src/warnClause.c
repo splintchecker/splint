@@ -30,7 +30,7 @@
 
 static warnClause warnClause_createAux (/*@only@*/ fileloc loc, 
 					/*@only@*/ flagSpec flag, 
-					/*@only@*/ exprNode msg)
+					/*@only@*/ cstring msg)
 {
   warnClause res = (warnClause) dmalloc (sizeof (*res));
   
@@ -41,14 +41,10 @@ static warnClause warnClause_createAux (/*@only@*/ fileloc loc,
   return res;
 }
 
-extern warnClause warnClause_create (lltok tok, flagSpec flag, exprNode msg) 
+extern warnClause warnClause_create (lltok tok, flagSpec flag, cstring msg) 
 {
   warnClause res;
-  DPRINTF (("Create warn message: %s/ %s ", 
-	    flagSpec_unparse (flag), exprNode_unparse(msg)));
-  
-  res = warnClause_createAux (lltok_stealLoc (tok),
-			      flag, msg);
+  res = warnClause_createAux (lltok_stealLoc (tok), flag, msg);
   lltok_release (tok);
   return res;
 }
@@ -59,7 +55,7 @@ warnClause warnClause_copy (warnClause w)
     {
       return warnClause_createAux (fileloc_copy (w->loc),
 				   flagSpec_copy (w->flag),
-				   w->msg); /*@i32 should exprNode_copy (w->msg)); */
+				   cstring_copy (w->msg)); 
     }
   else
     {
@@ -69,6 +65,7 @@ warnClause warnClause_copy (warnClause w)
 
 extern flagSpec warnClause_getFlag (warnClause w)
 {
+  llassert (warnClause_isDefined (w));
   return w->flag;
 }
 
@@ -76,8 +73,7 @@ extern cstring warnClause_unparse (warnClause w)
 {
   if (warnClause_isDefined (w))
     {
-      return message ("<%q> %s",
-		      flagSpec_unparse (w->flag), exprNode_unparse (w->msg));
+      return message ("<%q> %s", flagSpec_unparse (w->flag), w->msg);
     }
   else
     {
@@ -87,15 +83,13 @@ extern cstring warnClause_unparse (warnClause w)
 
 extern bool warnClause_hasMessage (warnClause w)
 {
-  return warnClause_isDefined (w) && exprNode_isDefined (w->msg)
-    && cstring_isDefined (multiVal_forceString (exprNode_getValue (w->msg)));
+  return warnClause_isDefined (w) && cstring_isDefined (w->msg);
 }
 
 extern /*@observer@*/ cstring warnClause_getMessage (warnClause w)
 {
-  if (warnClause_isDefined (w) && exprNode_isDefined (w->msg)) {
-    llassert (exprNode_knownStringValue (w->msg));
-    return multiVal_forceString (exprNode_getValue (w->msg));
+  if (warnClause_isDefined (w)) {
+    return w->msg;
   } else {
     return cstring_undefined;
   }
@@ -107,8 +101,8 @@ extern void warnClause_free (warnClause w)
   if (warnClause_isDefined (w))
     {
       flagSpec_free (w->flag);
-      /*@i43 should be copied! exprNode_free (w->msg); */
       fileloc_free (w->loc);
+      cstring_free (w->msg);
       sfree (w);
     }
 }
@@ -117,7 +111,7 @@ extern void warnClause_free (warnClause w)
 warnClause_dump (warnClause wc)
 {
   cstring st = cstring_undefined;
-
+  llassert (warnClause_isDefined (wc));
   llassert (!cstring_containsChar (warnClause_getMessage (wc), '#'));
 
   if (warnClause_hasMessage (wc))
@@ -138,7 +132,6 @@ warnClause_undump (char **s)
 {
   flagSpec flag;
   cstring msg;
-  exprNode emsg;
 
   DPRINTF (("Undump: %s", *s));
   flag = flagSpec_undump (s);
@@ -158,7 +151,5 @@ warnClause_undump (char **s)
   DPRINTF (("Here: %s", *s));
   reader_checkChar (s, '#');
 
-  emsg = exprNode_rawStringLiteral (msg, fileloc_copy (g_currentloc));
-  
-  return warnClause_createAux (fileloc_copy (g_currentloc), flag, emsg);
+  return warnClause_createAux (fileloc_copy (g_currentloc), flag, msg);
 }

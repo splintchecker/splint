@@ -114,8 +114,9 @@ bool mtContextNode_matchesEntry (mtContextNode context, uentry ue)
 	}
       break;
     case MTC_PARAM: 
-      if (!uentry_isParam (ue))
+      if (!uentry_isAnyParam (ue))
 	{
+	  DPRINTF (("not param: %s", uentry_unparseFull (ue)));
 	  return FALSE;
 	}
       break;

@@ -1577,14 +1577,13 @@ static /*@exposed@*/ sRef fixTermNode (termNode n, fcnNode f, uentryList cl)
 			  }
 		      }
 		    else
-		      return (sRef_makeGlobal (usym, ctype_unknown));
+		      return (sRef_makeGlobal (usym, ctype_unknown, stateInfo_currentLoc ()));
 		  }
 		
 		else
 		  {
-		    sRef p = sRef_makeParam (i, ctype_unknown);
-
-		    		    return (p);
+		    sRef p = sRef_makeParam (i, ctype_unknown, stateInfo_currentLoc ());
+		    return (p);
 		  }
 	      }
 	  }
@@ -1700,7 +1699,7 @@ paramNode_toUentry (paramNode p)
 	  ctype cr = convertTypeExpr (qtype_getType (ct), p->paramdecl);
 	  cstring pname = (p->paramdecl == (typeExpr)0) ? cstring_undefined 
 	                                                : paramNode_name (p);
-	  uentry ue = uentry_makeVariableParam (pname, cr);
+	  uentry ue = uentry_makeVariableParam (pname, cr, g_currentloc);
 
 	  uentry_reflectQualifiers (ue, qtype_getQuals (ct));
 	  qtype_free (ct);

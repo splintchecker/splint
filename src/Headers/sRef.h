@@ -329,20 +329,20 @@ extern /*@notnull@*/ /*@exposed@*/ sRef
 extern /*@notnull@*/ /*@dependent@*/ sRef
   sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef p_a, /*@exposed@*/ sRef p_b);
 extern /*@notnull@*/ /*@dependent@*/ sRef
-  sRef_makeCvar (int p_level, usymId p_index, ctype p_ct);
+  sRef_makeCvar (int p_level, usymId p_index, ctype p_ct, /*@only@*/ stateInfo p_stinfo);
 extern /*@notnull@*/ /*@dependent@*/ sRef
   sRef_makeConst (ctype p_ct);
 extern /*@exposed@*/ sRef
   sRef_makeField (sRef p_rec, /*@dependent@*/ cstring p_f);
 extern /*@notnull@*/ /*@dependent@*/ sRef 
-  sRef_makeGlobal (usymId p_l, ctype p_ct);
+  sRef_makeGlobal (usymId p_l, ctype p_ct, /*@only@*/ stateInfo);
 extern /*@exposed@*/ sRef
   sRef_makeNCField (/*@exposed@*/ sRef p_rec, /*@dependent@*/ cstring p_f) /*@*/ ;
 extern void sRef_maybeKill (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern /*@unused@*/ /*@notnull@*/ /*@dependent@*/ sRef 
   sRef_makeObject (ctype p_o) /*@*/ ;
 extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeType (ctype p_ct) /*@*/ ;
-extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeParam (int p_l, ctype p_ct) /*@*/ ;
+extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeParam (int p_l, ctype p_ct, /*@only@*/ stateInfo p_stinfo) /*@*/ ;
 extern /*@exposed@*/ sRef sRef_makePointer (/*@exposed@*/ sRef p_s) /*@modifies p_s@*/ ;
 extern void sRef_makeSafe (sRef p_s) /*@modifies p_s@*/ ;
 extern void sRef_makeUnsafe (sRef p_s) /*@modifies p_s@*/ ;

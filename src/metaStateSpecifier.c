@@ -34,12 +34,30 @@ metaStateSpecifier_create (/*@only@*/ sRef sr, /*@observer@*/ metaStateInfo msin
   metaStateSpecifier res = (metaStateSpecifier) dmalloc (sizeof (*res));
   res->sr = sr;
   res->msinfo = msinfo;
+  res->elipsis = FALSE;
   return res;
+}
+
+metaStateSpecifier 
+metaStateSpecifier_createElipsis (/*@observer@*/ metaStateInfo msinfo)
+{
+  metaStateSpecifier res = (metaStateSpecifier) dmalloc (sizeof (*res));
+  res->sr = sRef_undefined;
+  res->msinfo = msinfo;
+  res->elipsis = TRUE;
+  return res;
+}
+
+bool
+metaStateSpecifier_isElipsis (metaStateSpecifier m)
+{
+  return m->elipsis;
 }
 
 sRef
 metaStateSpecifier_getSref (metaStateSpecifier m)
 {
+  llassert (!metaStateSpecifier_isElipsis (m));
   return m->sr;
 }
 
@@ -52,14 +70,29 @@ metaStateSpecifier_getMetaStateInfo (metaStateSpecifier m)
 metaStateSpecifier 
 metaStateSpecifier_copy (metaStateSpecifier m)
 {
-  return metaStateSpecifier_create (sRef_saveCopy (m->sr), m->msinfo);
+  if (metaStateSpecifier_isElipsis (m))
+    {
+      return metaStateSpecifier_createElipsis (m->msinfo);
+    }
+  else
+    {
+      return metaStateSpecifier_create (sRef_saveCopy (m->sr), m->msinfo);
+    }
 }
 
 cstring metaStateSpecifier_unparse (metaStateSpecifier m) 
 {
-  return message ("%q:%s", 
-		  sRef_unparse (m->sr),
-		  metaStateInfo_getName (m->msinfo));
+  if (m->elipsis)
+    {
+      return message ("...:%s", 
+		      metaStateInfo_getName (m->msinfo));
+    }
+  else
+    {
+      return message ("%q:%s", 
+		      sRef_unparse (m->sr),
+		      metaStateInfo_getName (m->msinfo));
+    }
 }
 
 void metaStateSpecifier_free (/*@only@*/ metaStateSpecifier m) 

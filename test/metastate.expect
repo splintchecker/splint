@@ -2,6 +2,7 @@
 file1.c: (in function main)
 file1.c:10:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): fle
+   file1.c:6:14: Meta state fle becomes implicitly unopen
 file1.c:19:16: Invalid transfer from implicitly open fle to unopen (open file
                   passed as unopen): fle
    file1.c:12:3: Meta state fle becomes implicitly open
@@ -36,6 +37,7 @@ Finished LCLint checking --- 2 code errors found, as expected
 file4.c: (in function main)
 file4.c:15:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): fle
+   file4.c:11:14: Meta state fle becomes implicitly unopen
 
 Finished LCLint checking --- 1 code error found, as expected
 
@@ -50,6 +52,7 @@ file5.c:16:10: Result state fle does not satisfy ensures clause:
 file5.c: (in function main)
 file5.c:25:14: Invalid transfer from implicitly unopen fle to open (unopen file
                   passed as open): fle
+   file5.c:21:14: Meta state fle becomes implicitly unopen
 file5.c:35:18: Invalid transfer from unopen fle to open (unopen file passed as
                   open): fle
    file5.c:34:3: Meta state fle becomes unopen
@@ -67,11 +70,11 @@ file6.c:30:12: Return loses reference fle in invalid state implicitly open
 
 Finished LCLint checking --- 2 code errors found, as expected
 
-filebad.c:1:23: Meta state anntation open used in inconsistent context:
+filebad.c:1:23: Meta state annotation open used in inconsistent context:
                    int badOpen(FILE *)
-filebad.c:3:52: Meta state anntation closed used in inconsistent context:
+filebad.c:3:52: Meta state annotation closed used in inconsistent context:
                    int p_x
-filebad.c:3:12: Meta state anntation open used on inappropriate reference p_x
+filebad.c:3:12: Meta state annotation open used on inappropriate reference p_x
                    in ensures open clause of badEnsures: ensures open p_x
 
 Finished LCLint checking --- 3 code errors found, as expected
