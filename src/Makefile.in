@@ -57,30 +57,21 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
-AMTAR = @AMTAR@
-AWK = @AWK@
 BISON = @BISON@
 CAT = @CAT@
 CC = @CC@
 CP = @CP@
 CPP = @CPP@
 CXX = @CXX@
-DEPDIR = @DEPDIR@
 DIFF = @DIFF@
-EXEEXT = @EXEEXT@
 GREP = @GREP@
-INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LCLOBJ = @LCLOBJ@
 LEX = @LEX@
 LN_S = @LN_S@
 MV = @MV@
-OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 RM = @RM@
 VERSION = @VERSION@
-am__include = @am__include@
-am__quote = @am__quote@
-install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
@@ -314,7 +305,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
 
 IFILES = ctbase.i  cttable.i  exprDataQuite.i
 
-EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC) flags.def cscanner.l flex.head flex.reset $(IFILES)
+EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC) flags.def cscanner.l flex.head flex.reset $(IFILES) 256_random_numbers.nf  lclintMacros.nf	reservedNames.nf
 
 #Files that are used on systems that do not have bison or yacc
 DER_BISON_FILES = signature.c.der  cgrammar.c.der  mtgrammar.c.der \

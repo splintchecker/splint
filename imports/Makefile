@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/lclint
 pkgincludedir = $(includedir)/lclint
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /net/af9/drl7x/reQuickFix/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /net/af9/drl7x/reQuickFix/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /net/af9/drl7x/reQuickFix/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /net/af9/drl7x/reQuickFix/LCLintDev/config/missing --run autoheader
+ACLOCAL = ${SHELL} /home/drl7x/LCLintDev/config/missing --run aclocal
+AUTOCONF = ${SHELL} /home/drl7x/LCLintDev/config/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/drl7x/LCLintDev/config/missing --run automake
+AUTOHEADER = ${SHELL} /home/drl7x/LCLintDev/config/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -57,30 +57,21 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = 
 host_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /net/af9/drl7x/reQuickFix/LCLintDev/config/missing --run tar
-AWK = gawk
 BISON = bison
 CAT = cat
 CC = gcc
 CP = cp
 CPP = gcc -E
 CXX = g++
-DEPDIR = .deps
 DIFF = diff
-EXEEXT = 
 GREP = grep
-INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
 LCLOBJ = $(lcl_OBJECTS)
 LEX = flex
 LN_S = ln -s
 MV = mv
-OBJEXT = o
 PACKAGE = lclint
 RM = rm
 VERSION = 3.0.0.19
-am__include = include
-am__quote = 
-install_sh = /net/af9/drl7x/reQuickFix/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
