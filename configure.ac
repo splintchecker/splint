@@ -154,7 +154,6 @@ AC_DEFINE_UNQUOTED(LCL_COMPILE,
                    "Compiled using $CC $CFLAGS on `uname -a` by `whoami`",
                    [String describing who compiled this binary and how])
 
-
 dnl TODO: Use result AC_CANONICAL_HOST to figure out what to define
 AC_DEFINE(UNIX, 1, [Define if you're on a Unixy system])
 
