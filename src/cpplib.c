@@ -821,6 +821,29 @@ cppReader_showIncludeChain (cppReader *pfile)
     }
 }
 
+cstring 
+cppReader_getIncludePath ()
+{
+  cppReader *pfile = &g_cppState;
+  struct file_name_list *dirs = CPPOPTIONS (pfile)->include;
+  cstring res = cstring_undefined;
+
+  if (dirs != NULL)
+    {
+      while (dirs != NULL)
+	{
+	  res = message ("%q%c%s", res, PATH_SEPARATOR, dirs->fname);
+	  dirs = dirs->next;
+	}
+    }
+  else
+    {
+      res = cstring_makeLiteral ("<no include path>");
+    }
+
+  return res;
+}
+
 void
 cppReader_addIncludeChain (cppReader *pfile, struct file_name_list *dir)
 {
@@ -6467,7 +6490,7 @@ parseMoveMark (struct parse_marker *pmark, cppReader *pfile)
 void cppReader_initializeReader (cppReader *pfile) /* Must be done after library is loaded. */
 {
   struct cppOptions *opts = CPPOPTIONS (pfile);
-  char *xp;
+  cstring xp;
 
   /* The code looks at the defaults through this pointer, rather than through
      the constant structure above.  This pointer gets changed if an environment
@@ -6482,11 +6505,11 @@ void cppReader_initializeReader (cppReader *pfile) /* Must be done after library
      but that seems pointless: it comes before them, so it overrides them
      anyway.  */
 
-  xp = (char *) getenv ("CPATH");
+  xp = osd_getEnvironmentVariable (INCLUDEPATH_VAR);
 
-  if (xp != 0 && ! opts->no_standard_includes)
+  if (cstring_isDefined (xp) && !opts->no_standard_includes)
     {
-      path_include (pfile, xp);
+      path_include (pfile, cstring_toCharsSafe (xp));
     }
 
   /* Now that dollars_in_ident is known, initialize is_idchar.  */

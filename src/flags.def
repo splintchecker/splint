@@ -766,7 +766,7 @@ static flaglist flags =
     "sysdirs",
     FLG_SYSTEMDIRS,
     "set directories for system files (default /usr/include). Separate "
-    "directories with colons (e.g., \"/usr/include:/usr/local/lib\"). "
+    "directories with path separator (colons in Unix, semi-colons in Windows). "
     "Flag settings propagate to files in a system directory. If "
     "-sysdirerrors is set, no errors are reported for files in "
     "system directories.",
@@ -3681,6 +3681,22 @@ static flaglist flags =
     FLG_TOCTOU,
     "possible time of check, time of use vulnerability",
     "Possible time of check, time of use vulnerability.",
+    0, 0
+  },
+  {
+    FK_WARNUSE, FK_SECURITY, modeFlag,
+    "multithreaded",
+    FLG_MULTITHREADED,
+    "function is not reentrant",
+    "Non-reentrant function should not be used in multithreaded code.",
+    0, 0
+  },
+  {
+    FK_WARNUSE, FK_SECURITY, modeFlag,
+    "superuser",
+    FLG_SUPERUSER,
+    "function is restricted to superusers",
+    "Call to function restricted to superusers.",
     0, 0
   },
 

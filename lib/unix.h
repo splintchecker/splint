@@ -241,11 +241,19 @@ typedef u_long fixpt_t;
 typedef long segsz_t;
 typedef /*@abstract@*/ fd_set;
 
+/* Check ISO C99 inttypes.h ... */
+typedef unsigned int u_int32_t;
+typedef unsigned int uint32_t;
+
+typedef unsigned short int u_int16_t;
+typedef unsigned short int uint16_t;
+
 int ttyname_r (int fg, /*@out@*/ char *buffer, int len) /*@modifies buffer@*/ ;
 int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg) 
    /*@modifies *arg, errno@*/ ;  /* depends on request! */
 
-int gethostname (/*@out@*/ char *address, int address_len) 
+int gethostname (/*@out@*/ char *address, size_t address_len) 
+   /*:errorstatus@*/
    /*@modifies address@*/ ;
 
 pid_t vfork (void) /*@modifies fileSystem@*/ ;
@@ -450,16 +458,14 @@ bind (int s, struct sockaddr *name, int namelen)
 connect (int s, struct sockaddr *name, int namelen)
 	/*@modifies errno, internalState@*/;
 
-	extern int
-getpeername (int s, /*@out@*/ struct sockaddr *name, int *namelen)
+int getpeername (int s, /*@out@*/ struct sockaddr *name, size_t *namelen)
 	/*@modifies *name, *namelen, errno@*/;
 
-	extern int
-getsockname (int s, struct sockaddr *name, int *namelen)
-	/*@modifies *name, *namelen, errno@*/;
+int getsockname (int s, struct sockaddr *address, size_t *address_len)
+  /*?requires maxSet(address) > *address_len@*/ 
+  /*@modifies *address, *address_len, errno@*/;
 
-	extern int
-getsockopt (int s, int level, int optname, /*@out@*/ void *optval, int *optlen)
+int getsockopt (int s, int level, int optname, /*@out@*/ void *optval, size_t *optlen)
 	/*@modifies *optval, *optlen, errno@*/;
 
 	extern int
@@ -1448,4 +1454,118 @@ setpriority (int which, int who, int prio)
 	extern int
 setrlimit (int resource, const struct rlimit *rlp)
 	/*@modifies errno, internalState@*/;
+
+
+/*
+** in <netdb.h>
+*/
+
+struct servent
+{
+  /*@observer@*/ char *s_name;			/* Official service name.  */
+  /*@observer@*/ char **s_aliases;		/* Alias list.  */
+  int s_port;			                /* Port number.  */
+  /*@observer@*/ char *s_proto;		        /* Protocol to use.  */
+} ;
+
+/*@observer@*/ /*@dependent@*/ /*@null@*/ struct servent *getservbyname (const char *name, /*@null@*/ const char *proto) 
+     /*@warn multithreaded "Unsafe in multithreaded applications, use getsrvbyname_r instead"@*/ ;
+
+struct servent *getservbyname_r (const char *name, /*@null@*/ const char *proto, /*@out@*/ /*@returned@*/ struct servent *result, /*@out@*/ char *buffer, int buflen) 
+     /*@requires maxSet (buffer) >= buflen@*/ ;
+
+
+/*@observer@*/ /*@dependent@*/ struct servent *getservbyport (int port, /*@null@*/ const char *proto)
+     /*@warn multithreaded "Unsafe in multithreaded applications, use getservbyport_r instead"@*/ ;
+
+struct servent *getservbyport_r (int port, /*@null@*/ const char *proto, /*@out@*/ /*@returned@*/ struct servent *result, /*@out@*/ char *buffer, int buflen)
+     /*@requires maxSet (buffer) >= buflen@*/ ;
+
+/*@null@*/ struct servent *getservent (void);
+
+/*@null@*/ struct servent *getservent_r (struct servent *result, char *buffer, int buflen);
+
+int setservent (int stayopen);
+
+int endservent (void);
+
+
+extern int h_errno;
+
+/*@null@*/ /*@observer@*/ struct hostent *gethostbyname (/*@nullterminated@*/ /*@notnull@*/ const char *name)
+     /*@warn multithreaded "Unsafe in multithreaded applications, use gethostbyname_r instead"@*/ 
+     /*@modifies h_errno@*/ ;
+
+struct hostent *gethostbyname_r (/*@nullterminated@*/ const char *name, /*@notnull@*/ /*@returned@*/ struct hostent *hent, /*@out@*/ /*@exposed@*/ char *buffer, int bufsize, /*@out@*/ int *h_errnop)
+     /*@requires maxSet(buffer) >= bufsize@*/ ;
+
+/*@null@*/ /*@observer@*/ struct hostent *gethostbyaddr (/*@notnull@*/ const void *addr, size_t addrlen, int type) 
+     /*@requires maxRead(addr) == addrlen@*/ /*@i534 ??? is this right? */
+     /*@warn multithreaded "Unsafe in multithreaded applications, use gethostbyaddr_r instead"@*/ 
+     /*@modifies h_errno@*/ ;
+
+struct hostent *gethostbyaddr_r (/*@notnull@*/ const void *addr, size_t addrlen, int type, 
+				 /*@returned@*/ /*@out@*/ struct hostent *hent, 
+				 /*@exposed@*/ /*@out@*/ char *buffer, int bufsize, /*@out@*/ int *h_errnop)
+     /*@requires maxRead(addr) == addrlen 
+          /\ maxSet(buffer) >= bufsize@*/ /*@i534 ??? is this right? */ ;
+
+/*@observer@*/ /*@null@*/ struct hostent *gethostent (void)
+    /*@warn multithreaded "Unsafe in multithreaded applications, use gethostent_r instead"@*/ ;
+
+struct hostent *gethostent_r (/*@out@*/ /*@returned@*/ struct hostent *hent, /*@exposed@*/ /*@out@*/ char *buffer, int bufsize)
+     /*@requires maxSet(buffer) >= bufsize@*/ ;
+
+     /*@i534 need to annotate these: */
+struct hostent *fgethostent(FILE *f);
+
+struct hostent *fgethostent_r(FILE*f, struct hostent *hent, char buffer, int bufsize);
+
+void sethostent(int stayopen);
+
+void endhostent(void);
+
+void herror(const char *string);
+
+char *hstrerror(int err);
+
+struct hostent {
+  /*@observer@*/ /*@nullterminated@*/ char *h_name;   /* official name of host */
+  /*@observer@*/ /*@nullterminated@*/ char * /*:observer@*/ /*:nullterminated@*/ *h_aliases;   /* alias list */
+  int  h_addrtype;   /* host address type*/
+  int  h_length;   /* length ofaddress*/
+  /*@observer@*/ /*@nullterminated@*/ char * /*:observer@*/ /*:nullterminated@*/ *h_addr_list; /* list of addressesfrom name server */
+  /*@observer@*/ /*@nullterminated@*/ char *h_addr; /* first address in list (backward compatibility) */
+} ;
+
+/*
+** arpa/inet.h
+*/
+
+typedef uint32_t in_addr_t;
+
+struct in_addr
+{
+  in_addr_t s_addr;
+};
+
+typedef uint16_t in_port_t;
+
+in_addr_t htonl (in_addr_t hostlong) /*@*/ ;
+in_port_t htons (in_port_t hostshort) /*@*/ ;
+in_addr_t ntohl (in_addr_t netlong) /*@*/ ;
+in_port_t ntohs (in_port_t netshort) /*@*/ ;
+
+/*
+** unistd.h
+*/
+
+int chroot (/*@notnull@*/ /*@nullterminated@*/ const char *path)
+   /*:statusreturn@*/
+   /*@warn superuser "Only super-user processes may call chroot."@*/
+     /*: other wanings? */ ;
+
+int fchroot (int fildes)
+   /*:statusreturn@*/
+   /*@warn superuser "Only super-user processes may call fchroot."@*/ ;
 

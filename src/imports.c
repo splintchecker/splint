@@ -189,7 +189,7 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
   switch (kind)
     {
     case IMPPLAIN:
-      path = message ("%s%c%s", cstring_fromChars (g_localSpecPath), SEPCHAR, 
+      path = message ("%s%c%s", cstring_fromChars (g_localSpecPath), PATH_SEPARATOR, 
 		      context_getLarchPath ());
 
       break;

@@ -637,6 +637,11 @@ void printAlphaFlags ()
 /*@observer@*/ cstring
 flagcode_unparse (flagcode code)
 {
+  if (code == INVALID_FLAG)
+    {
+      return cstring_makeLiteralTemp ("<invalid flag>");
+    }
+
   return cstring_fromChars (flags[code].flag);
 }
 

@@ -1297,7 +1297,7 @@ context_isSystemDir (cstring dir)
 {
   cstring sysDirs = context_exposeString (FLG_SYSTEMDIRS);
   char *thisdir = cstring_toCharsSafe (sysDirs);
-  char *nextdir = strchr (thisdir, SEPCHAR);
+  char *nextdir = strchr (thisdir, PATH_SEPARATOR);
 
   if (nextdir != NULL)
     {
@@ -1313,7 +1313,7 @@ context_isSystemDir (cstring dir)
 	{
 	  if (nextdir != NULL)
 	    {
-	      *(nextdir - 1) = SEPCHAR;
+	      *(nextdir - 1) = PATH_SEPARATOR;
 	    }
 	  
 	  return TRUE;
@@ -1321,13 +1321,13 @@ context_isSystemDir (cstring dir)
 
       if (nextdir != NULL)
 	{
-	  *(nextdir - 1) = SEPCHAR;
+	  *(nextdir - 1) = PATH_SEPARATOR;
 	}
 
       if (nextdir != NULL)
 	{
 	  thisdir = nextdir;
-	  nextdir = strchr (thisdir, SEPCHAR);
+	  nextdir = strchr (thisdir, PATH_SEPARATOR);
 	  
 	  if (nextdir != NULL)
 	    {

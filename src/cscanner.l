@@ -310,7 +310,9 @@ L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processString ());
 "killed"                { return (processSpec (QKILLED)); }
 "nullterminated"        { return (processSpec (QNULLTERMINATED));}
 "MaxSet"                { return (processSpec (QMAXSET));}
-"MaxRead"                { return (processSpec (QMAXREAD));}
+"MaxRead"               { return (processSpec (QMAXREAD));}
+"maxSet"                { return (processSpec (QMAXSET));}
+"maxRead"               { return (processSpec (QMAXREAD));}
 
 {Letter}({Letter}|{Digit})* { int tok; 
 			      context_saveLocation (); 

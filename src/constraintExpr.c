@@ -85,6 +85,8 @@ static bool isZeroBinaryOp (constraintExpr expr)
 {
   constraintExpr e2;
   
+  llassert (expr != NULL); /* evans 2001-07-18 */
+
   if (!constraintExpr_isBinaryExpr (expr) )
     {
       return FALSE;
@@ -92,6 +94,8 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
   
   e2 = constraintExprData_binaryExprGetExpr2(expr->data);
+
+  llassert (e2 != NULL); /* evans 2001-07-18 */
 
   if (constraintExpr_isBinaryExpr (e2) )
     {
@@ -128,13 +132,14 @@ static bool isZeroBinaryOp (constraintExpr expr)
   if (!isZeroBinaryOp(expr) )
     return expr;
 
+  llassert (expr != NULL); /* evans 2001-07-18 */
   
   expr1 = constraintExprData_binaryExprGetExpr1(expr->data);
   expr2 = constraintExprData_binaryExprGetExpr2(expr->data);
   op = constraintExprData_binaryExprGetOp(expr->data);
 
-  llassert( constraintExpr_isBinaryExpr(expr2) );
-	    
+  llassert( constraintExpr_isBinaryExpr(expr2) );	    
+
   temp = constraintExprData_binaryExprGetExpr2 (expr2->data);
   temp = constraintExpr_copy (temp);
 
@@ -261,6 +266,10 @@ static bool isZeroBinaryOp (constraintExpr expr)
 	  constraintExpr_free(expr);
 	  
 	  return temp;
+	}
+      else
+	{
+	  BADBRANCH; /* evans 2001-07-18 */
 	}
     }
   

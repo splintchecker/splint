@@ -1333,6 +1333,31 @@
 3 f5 (5|$#,5|$#,5|$#,)!
 3 f0 (5|$#,1322|$#,)!
 3 f5 (5|$#,1322|$#,)!
+3 Sservent{23|@1|0@0@18@3@0#s_name,289|@1|0@0@18@3@0#s_aliases,5|@1|^#s_port,23|@1|0@0@18@3@0#s_proto,}!
+0 s1446|-1 1335 -1
+3 f0 (23|$#,23|0@5@7&#,)!
+3 f19 (23|$#,23|0@5@7&#,)!
+1 t1332|1332&
+3 f1335 (23|$#,23|0@5@7&#,)!
+3 f0 (23|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f19 (23|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f1335 (23|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f0 (5|$#,23|0@5@7&#,)!
+3 f19 (5|$#,23|0@5@7&#,)!
+3 f1335 (5|$#,23|0@5@7&#,)!
+3 f0 (5|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f19 (5|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f1335 (5|$#,23|0@5@7&#,1335|@5|4@0@7&#,23|4@0@7&#,5|$#,)!
+3 f0 ()!
+3 f19 ()!
+3 f1335 ()!
+3 f0 (1335|$#,23|$#,5|$#,)!
+3 f19 (1335|$#,23|$#,5|$#,)!
+3 f1335 (1335|$#,23|$#,5|$#,)!
+3 f0 (5|$#,)!
+3 f5 (5|$#,)!
+3 f0 ()!
+3 f5 ()!
 ;;tistable
 0
 28
@@ -2189,6 +2214,17 @@
 ^1443 1326$@0@g22@6@0@1@tp1,g22$@0#getrusage
 ^1444 1328$@0@g22@6@0,s1@1@g22,s1$@0#setpriority
 ^1445 1330$@0@g22@6@0,s1@1@g22,s1$@0#setrlimit
+*7 (Struct tag)
+^1446 1331@1332#@servent
+*4 (Function)
+^1447 1336@6@5@1@0@0$@18@3@0@W:multithreaded#Unsafe in multithreaded applications##getservbyname
+^1448 1339$$$@0#getservbyname_r
+^1449 1342$$@18@3@0@W:multithreaded#Unsafe in multithreaded applications##getservbyport
+^1450 1345$$$@0#getservbyport_r
+^1451 1348@6@5@1@0@0$@3@0@0#getservent
+^1452 1351@6@5@1@0@0$@3@0@0#getservent_r
+^1453 1353$$$@0#setservent
+^1454 1355$$$@0#endservent
 ;; Library constraints
 fgets
 pre:
@@ -2862,6 +2898,38 @@ r
 3
 25
 ;; end precondition constraints
+getservbyname_r
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 3
+r
+2
+2
+Param 5 4
+;; end precondition constraints
+post:EMPTY
+getservbyport_r
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 3
+r
+2
+2
+Param 5 4
+;; end precondition constraints
+post:EMPTY
 ;; Modules access
 lltX_bool#1@
 types#1@

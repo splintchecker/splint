@@ -743,7 +743,7 @@ static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
   switchExpr = exprData_getPairA(switchStmt->edata);
   body = exprData_getPairB(switchStmt->edata);
 
-  //*@i22*/
+  /*@i22*/
   if ( body->kind == XPR_BLOCK)
     body = exprData_getSingle(body->edata);
 
