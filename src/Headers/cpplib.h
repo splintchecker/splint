@@ -329,7 +329,7 @@ struct cppOptions {
 
   char output_conditionals;
 
-  char ignore_srcdir;
+  bool ignore_srcdir;
 
   /* Zero means dollar signs are punctuation.
      This used to be needed for conformance to the C Standard,

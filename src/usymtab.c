@@ -853,13 +853,21 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 
 	      if (uentry_isDeclared (ce))
 		{
-		  llassert ((st->lexlevel > fileScope || !sRef_modInFunction ()));
+		  /* evans 2001-08-26
+		    No - this can happen for internal typedefs
+		    llassert ((st->lexlevel > fileScope || !sRef_modInFunction ()));
+		  */
+
 		  DPRINTF (("Merge defn"));
 		  uentry_mergeDefinition (ce, e);
 		}
 	      else 
 		{
-		  llassert ((st->lexlevel > fileScope || !sRef_modInFunction ()));
+		  /* evans 2001-08-26
+		    No - this can happen for internal typedefs
+		    llassert ((st->lexlevel > fileScope || !sRef_modInFunction ()));
+		  */
+
 		  DPRINTF (("Merge entries..."));
 		  uentry_mergeEntries (ce, e);
 		  DPRINTF (("After: %s", uentry_unparseFull (ce)));
@@ -4178,7 +4186,7 @@ void usymtab_checkFinalScope (bool isReturn)
 					{
 					  ss (sr);
 					}
-
+				      
 				      DPRINTF (("Storage: %s", sRef_unparseFull (sr)));
 				    }  
 				}

@@ -414,7 +414,8 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
 
 /*@observer@*/ /*@null@*/ cstring osd_getEnvironmentVariable (cstring var)
 {
-# if defined(UNIX) || defined(OS) || defined(MSDOS) || defined(WIN32)
+  /* evans - 2001-08-26 fixed OS instead of OS2 bug, reported by Alexander Mai */
+# if defined(UNIX) || defined(OS2) || defined(MSDOS) || defined(WIN32)
   char *val = getenv (cstring_toCharsSafe (var));
 
   if (val == NULL) 

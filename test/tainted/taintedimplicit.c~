@@ -1,8 +1,0 @@
-char *taintme (char *s)
-     /*@ensures result:taintedness = s:taintedness@*/
-{
-  char *res = (char *) malloc (sizeof (*res) * strlen (s));
-
-  strcpy (res, s);
-  return s;
-}

@@ -359,6 +359,7 @@ Finished LCLint checking --- no code processed
    parenfileformat             
    partial                     
    passunknown                 
+   portability                 
    posixlib                    
    posixstrictlib              
    predassign                  
@@ -462,6 +463,7 @@ Finished LCLint checking --- no code processed
    uncheckedmacroprefixexclude 
    uniondef                    
    unixlib                     
+   unixstandard                
    unixstrictlib               
    unqualifiedinittrans        
    unqualifiedtrans            
@@ -469,6 +471,7 @@ Finished LCLint checking --- no code processed
    unrecog                     
    unrecogcomments             
    unrecogflagcomments         
+   unsignedcompare             
    unusedspecial               
    usedef                      
    usereleased                 
@@ -953,6 +956,8 @@ boolcompare --- comparison between bools (dangerous because of multiple TRUE
 values)
 realcompare --- dangerous comparison between reals (dangerous because of
 inexact floating point representations)
+unsignedcompare --- comparison using <, <=, >= between an unsigned integral and
+zero constant
 ptrarith --- arithmetic involving pointer and integer
 nullptrarith --- arithmetic involving possibly null pointer and integer
 ptrcompare --- comparison between pointer and number
@@ -1061,6 +1066,8 @@ bufferoverflowhigh --- likely buffer overflow vulnerability
 bufferoverflow --- possible buffer overflow vulnerability
 toctou --- possible time of check, time of use vulnerability
 multithreaded --- function is not reentrant
+portability --- function may have undefined behavior
+unixstandard --- function is not required in Standard UNIX Specification
 superuser --- function is restricted to superusers
 implementationoptional --- declarator is implementation optional (ISO99 does
 not require an implementation to provide it)

@@ -679,6 +679,18 @@ extern /*@observer@*/ multiVal sRef_getValue (sRef p_s) /*@*/ ;
 
 extern /*@mayexit@*/ void sRef_checkValid (/*@temp@*/ sRef p_s) /*@modifies stderr@*/ ;
 
+extern void
+sRef_aliasSetComplete (void (p_predf) (sRef, fileloc), sRef p_s, fileloc p_loc)
+     /*@modifies p_s@*/ ;
+
+extern void
+sRef_aliasSetCompleteParam (void (p_predf) (sRef, int, fileloc), sRef p_s, 
+			    int p_kind, fileloc p_loc)
+   /*@modifies p_s@*/ ;
+
+
+
+
 # else
 # error "Multiple include"
 # endif

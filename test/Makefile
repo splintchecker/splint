@@ -14,11 +14,11 @@
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
 .PHONY: list macros macrosef merge mergestate modifies modtest moduncon mongoincludes 
-.PHONY: noeffect null observer oldstyle outglob outparam preds prefixes printflike rc 
+.PHONY: noeffect null observer oldstyle outglob outparam postnotnull preds prefixes printflike rc 
 .PHONY: refcounts release repexpose returned sharing slovaknames special
 .PHONY: specclauses stack staticarray 
 .PHONY: strings structassign nullret
-.PHONY: tainted typequals ud ulstypes union unreachable unused ullint void
+.PHONY: tainted typequals ud ulstypes union unreachable unused ullint unsignedcompare void
 .PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
 .PHONY: warnuse metastate
@@ -46,8 +46,10 @@ LCLINTP = $(LCLINT)
 LCLINTRN = $(LCLINTP) -nof -hints -booltype "bool"
 LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 
+# removed for now: nullret nullassign warnuse
+
 UNITTESTS = \
-  fileio tainted mergestate nullret nullassign warnuse metastate \
+  fileio tainted mergestate metastate \
   help sizeoftest bufferTest simplebufferConstraintTests \
   moreBufferTests globalbufferannotation maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
@@ -55,10 +57,10 @@ UNITTESTS = \
   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
   init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
   modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
-  outglob outparam preds prefixes \
+  outglob outparam postnotnull preds prefixes \
   printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
   staticarray strings structassign \
-  typequals ud ulstypes union unreachable unused ullint void \
+  typequals ud ulstypes union unreachable unsignedcompare unused ullint void \
   tests2.2 tests2.2a tests2.4 tests2.5 
 
 ###
@@ -489,6 +491,10 @@ outglob:
 outparam:
 	$(LCLINTR) outparam -expect 12
 
+### evans 2001-08-26: postnotnull new
+
+postnotnull:
+	${LCLINTR} postnotnull.c -expect 1
 #
 # Four new +fcnuse errors for -strict (evans 2001-07-22)
 # 
@@ -605,6 +611,10 @@ unreachable:
 	$(LCLINTR) unreachable.c -expect 5
 	$(LCLINTR) -unreachable unreachable.c -expect 2
 	$(LCLINTR) switch.c -expect 4
+
+unsignedcompare:
+	${LCLINT} +posixlib unsignedcompare.c -expect 2
+
 
 ###
 ### 2001-06-08 evans: 2 new errors after fixing ansireserved name checks

@@ -139,7 +139,7 @@ lcllib_isSkipHeader (cstring sname)
       
       voptgenerror 
 	(FLG_USEVARARGS,
-	 message ("Include file <%s> is inconsistent with "
+	 message ("Include file <%s.h> is inconsistent with "
 		  "ANSI library (should use <stdarg.h>)",
 		  cstring_fromChars (libname)),
 	 tmp);
@@ -211,7 +211,7 @@ lcllib_isSkipHeader (cstring sname)
 	  
 	  voptgenerror 
 	    (FLG_WARNPOSIX,
-	     message ("Include file <%s> matches the name of a "
+	     message ("Include file <%s.h> matches the name of a "
 		      "POSIX library, but the POSIX library is "
 		      "not being used.  Consider using +posixlib "
 		      "or +posixstrictlib to select the POSIX "

@@ -9,5 +9,3 @@
 
 extern void cscanner_expectingMetaStateName (void) /*@modifies internalState@*/ ;
 extern void cscanner_clearExpectingMetaStateName (void) /*@modifies internalState@*/ ;
-extern void cscanner_processMacroParams (/*@observer@*/ uentry) /*@modifies internalState@*/ ;
-extern void cscanner_clearMacro (void) /*@modifies internalState@*/ ;

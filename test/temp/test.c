@@ -1,15 +1,9 @@
-char *x;
-
-int f (void)
+static int
+PutPixel32MSB(char * chp, int x)
 {
-  if (3 > 4) 
-    {
-      x = 0;
-    }
-  else
-    {
-      return 1;
-    }
+    unsigned char *addr;
 
-  return 3;
+    addr = &((unsigned char *)chp) [x];
+    addr[0] = 3;
+    return 1;
 }

@@ -63,10 +63,6 @@ static void sRef_updateNullState (sRef p_res, sRef p_other) /*@modifies p_res@*/
 static bool sRef_isAllocatedStorage (sRef p_s) /*@*/ ;
 static void sRef_setNullErrorLoc (sRef p_s, fileloc) /*@*/ ;
 
-static void
-  sRef_aliasSetComplete (void (p_predf) (sRef, fileloc), sRef p_s, fileloc p_loc)
-  /*@modifies p_s@*/ ;
-
 static int sRef_depth (sRef p_s) /*@*/ ;
 
 static void
@@ -78,11 +74,6 @@ static void
 sRef_innerAliasSetCompleteParam (void (p_predf) (sRef, sRef), sRef p_s, sRef p_t)
      /*@modifies p_s@*/ ;
      
-static void
-  sRef_aliasSetCompleteParam (void (p_predf) (sRef, alkind, fileloc), sRef p_s, 
-			      alkind p_kind, fileloc p_loc)
-  /*@modifies p_s@*/ ;
-
 static speckind speckind_fromInt (int p_i);
 static bool sRef_equivalent (sRef p_s1, sRef p_s2);
 static bool sRef_isDeepUnionField (sRef p_s);
@@ -4863,7 +4854,10 @@ void sRef_clearAliasState (sRef s, fileloc loc)
 void sRef_setAliasKindComplete (sRef s, alkind kind, fileloc loc)
 {
   sRef_checkMutable (s);  
-  sRef_aliasSetCompleteParam (sRef_setAliasKind, s, kind, loc);
+  /*@+enumint*/ /* we allow alkind to match int for this */
+  sRef_aliasSetCompleteParam (sRef_setAliasKind, s, kind, loc); 
+  /* gcc give warning for this, should provide typesafe versions of aliasSetCompleteParam */
+  /*@=enumint@*/
 }
 
 void sRef_setAliasKind (sRef s, alkind kind, fileloc loc)
@@ -6266,6 +6260,10 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
     }
 
   /* a hack, methinks... makeArrayFetch (&a[0]) ==> a[] */
+  /* evans - 2001-08-27: not sure where this was necessary - it
+  ** causes an assertion in in aliasCheckPred to fail.
+  */
+
   if (sRef_isAddress (arr)) 
     {
       sRef t = arr->info->ref;
@@ -6468,6 +6466,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	  check (sRefSet_delete (arr->deriv, s));
 	  res = sRef_buildArrayFetch (arr);
 	  sRef_copyState (res, s);
+	  llassert (res->info->arrayfetch->arr == arr); 
 	  return res;
 	}
 
@@ -6513,25 +6512,28 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 
   if (ctype_isRealPointer (arr->type))
     {
-       (void) sRef_buildPointer (arr); /* do this to define arr! */
+      (void) sRef_buildPointer (arr); /* do this to define arr! */
     }
 
   s = sRef_findDerivedArrayFetch (arr, TRUE, i, FALSE);
-      
+
   if (sRef_isValid (s))
     {
       /* evans 2001-07-12: this is bogus, clean-up hack */
       if (s->info->arrayfetch->arr != arr)
 	{
 	  sRef res;
+
 	  check (sRefSet_delete (arr->deriv, s));
 	  res = sRef_buildArrayFetchKnown (arr, i);
+
+	  llassert (res->info->arrayfetch->arr == arr);
 	  sRef_copyState (res, s);
+	  llassert (res->info->arrayfetch->arr == arr);
 	  return res;
 	}
 
       sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);      
-
       llassert (s->info->arrayfetch->arr == arr);
       return s;
     }
@@ -6545,16 +6547,16 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       s->info->arrayfetch->arr = arr; /* sRef_copy (arr); */ /*@i32@*/
       s->info->arrayfetch->indknown = TRUE;
       s->info->arrayfetch->ind = i;
-      
+
       sRef_setArrayFetchState (s, arr);
-      
+      /* evans 2001-08-27 no: can change this - llassert (s->info->arrayfetch->arr == arr); */
+
       s->oaliaskind = s->aliaskind;
       s->oexpkind = s->expkind;
       sRef_addDeriv (arr, s);
 
       llassert (valueTable_isUndefined (s->state));
       s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
-
       return (s);
     }
 }
@@ -8165,7 +8167,6 @@ sRef_aliasCheckPred (bool (predf) (sRef, exprNode, sRef, exprNode),
   else
     {
       sRefSet aliases = usymtab_allAliases (s);
-
       
       sRefSet_realElements (aliases, current)
 	{
@@ -8252,7 +8253,7 @@ sRef_aliasCompleteSimplePred (bool (predf) (sRef), sRef s)
   return result;
 }
 
-static void
+void
 sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 {
   sRefSet aliases;
@@ -8275,9 +8276,9 @@ sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
   sRefSet_free (aliases);
 }
 
-static void
-sRef_aliasSetCompleteParam (void (predf) (sRef, alkind, fileloc), sRef s, 
-			    alkind kind, fileloc loc)
+void
+sRef_aliasSetCompleteParam (void (predf) (sRef, int, fileloc), sRef s, 
+			    int kind, fileloc loc)
 {
   sRefSet aliases;
 
@@ -8314,7 +8315,6 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 
   if (!sRef_isValid (s)) return;
 
-  
   /*
   ** Type equivalence checking is necessary --- there might be casting.
   */
@@ -8368,13 +8368,19 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 		    {
 		      sRef af = sRef_makeArrayFetchKnown (current, s->info->arrayfetch->ind);
 		      DPRINTF (("Defining: %s", sRef_unparseFull (af)));
-		      llassert (af->info->arrayfetch->arr == current);
+		      /* evans 2001-08-27 This isn't true:
+			   llassert (af->info->arrayfetch->arr == current);
+			 see comments in buildArrayFetchKnown
+		      */
 		      ((*predf)(af, loc));
 		    }
 		  else
 		    {
 		      sRef af = sRef_makeArrayFetch (current);
-		      llassert (af->info->arrayfetch->arr == current);
+		      /* evans 2001-08-27 This isn't true:
+			 llassert (af->info->arrayfetch->arr == current);
+			 see comments in buildArrayFetch
+		      */ 
 		      DPRINTF (("Defining: %s", sRef_unparseFull (af)));
 		      ((*predf)(af, loc));
 		    }
@@ -8440,7 +8446,6 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
 
   if (!sRef_isValid (s)) return;
 
-  
   /*
   ** Type equivalence checking is necessary --- there might be casting.
   */
