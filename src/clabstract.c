@@ -36,6 +36,8 @@
 # include "structNames.h"
 # include "nameChecks.h"
 
+# include "cscannerHelp.h"
+
 # ifdef SANITIZER
 # include "sgrammar_tokens.h"
 # else
