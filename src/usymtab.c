@@ -2749,6 +2749,10 @@ usymtab_popAndBranch (exprNode pred, /*@unused@*/ exprNode expr)
 	}
     }
 
+  DPRINTF (("Popping and: %s / %s",
+	    guardSet_unparse (utab->guards),
+	    guardSet_unparse (exprNode_getGuards (pred))));
+
   utab->guards = guardSet_levelUnionFree (utab->guards, 
 					  guardSet_invert (exprNode_getGuards (pred)), 
 					  utab->lexlevel);

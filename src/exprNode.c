@@ -1011,6 +1011,7 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
 	}
 
       e->guards = guardSet_new ();
+
       e->sets = sRefSet_new ();
       e->msets = sRefSet_new ();
       e->uses = sRefSet_new ();
@@ -5369,10 +5370,14 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 
   if (opid == OR_OP)
     {
+      exprNode_produceGuards (e2); 
       ret->guards = guardSet_or (ret->guards, e2->guards);
     }
   else if (opid == AND_OP)
     {
+      exprNode_produceGuards (e2); /* evans 2003-08-13: need to produce guards for expression */
+      /* Shouldn't this have already happened? */
+      DPRINTF (("Anding guards: %s / %s", guardSet_unparse (ret->guards), guardSet_unparse (e2->guards)));
       ret->guards = guardSet_and (ret->guards, e2->guards);
     }
   else

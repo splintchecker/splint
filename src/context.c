@@ -1579,7 +1579,7 @@ context_enterUnknownMacro (/*@dependent@*/ uentry e)
 
 void context_enterAndClause (exprNode e)
 {
-  
+  DPRINTF (("enter and clause: %s", exprNode_unparse (e)));
   usymtab_trueBranch (guardSet_copy (exprNode_getGuards (e)));
   pushClause (ANDCLAUSE);
 }
