@@ -2914,6 +2914,86 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+echo "$as_me:2917: checking whether we need _ALL_SOURCE to expose mode_t" >&5
+echo $ECHO_N "checking whether we need _ALL_SOURCE to expose mode_t... $ECHO_C" >&6
+all=no
+cat >conftest.$ac_ext <<_ACEOF
+#line 2921 "configure"
+#include "confdefs.h"
+
+#include <stdio.h>
+mode_t x;
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:2936: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:2939: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:2942: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:2945: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  :
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+all=maybe
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+if test $all = maybe ; then
+cat >conftest.$ac_ext <<_ACEOF
+#line 2956 "configure"
+#include "confdefs.h"
+
+#define _ALL_SOURCE
+#include <stdio.h>
+mode_t x;
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:2972: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:2975: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:2978: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:2981: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  cat >>confdefs.h <<\EOF
+#define _ALL_SOURCE 1
+EOF
+ all=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+fi
+if test $all = maybe ; then all=no ; fi
+echo "$as_me:2994: result: $all" >&5
+echo "${ECHO_T}$all" >&6
+
 LCLOBJ='$(lcl_OBJECTS)'
 
 # Check whether --with-lcl or --without-lcl was given.
@@ -2921,14 +3001,14 @@ if test "${with_lcl+set}" = set; then
   withval="$with_lcl"
   ac_cv_use_lcl=$withval
 else
-  echo "$as_me:2924: checking whether to include support for LCL files" >&5
+  echo "$as_me:3004: checking whether to include support for LCL files" >&5
 echo $ECHO_N "checking whether to include support for LCL files... $ECHO_C" >&6
 if test "${ac_cv_use_lcl+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_cv_use_lcl=yes
 fi
-echo "$as_me:2931: result: $ac_cv_use_lcl" >&5
+echo "$as_me:3011: result: $ac_cv_use_lcl" >&5
 echo "${ECHO_T}$ac_cv_use_lcl" >&6
 fi;
 if test x$ac_cv_use_lcl != xyes; then
@@ -3078,7 +3158,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:3081: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:3161: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -3254,7 +3334,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:3257: error: ambiguous option: $1
+    { { echo "$as_me:3337: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -3273,7 +3353,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:3276: error: unrecognized option: $1
+  -*) { { echo "$as_me:3356: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -3325,7 +3405,7 @@ do
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h:config.hin" ;;
-  *) { { echo "$as_me:3328: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:3408: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -3571,7 +3651,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:3574: creating $ac_file" >&5
+    { echo "$as_me:3654: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -3589,7 +3669,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:3592: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:3672: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -3602,7 +3682,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:3605: error: cannot find input file: $f" >&5
+           { { echo "$as_me:3685: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -3663,7 +3743,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:3666: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:3746: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -3674,7 +3754,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:3677: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:3757: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -3687,7 +3767,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:3690: error: cannot find input file: $f" >&5
+           { { echo "$as_me:3770: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -3804,7 +3884,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:3807: $ac_file is unchanged" >&5
+      { echo "$as_me:3887: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \

@@ -1750,7 +1750,7 @@ static flaglist flags =
     FLG_USERELEASED,
     "storage used after release",
     "Memory is used after it has been released (either by passing "
-    "as an only param or assigning to an only global.",
+    "as an only param or assigning to an only global).",
     0, 0
   },
   {
@@ -1759,7 +1759,7 @@ static flaglist flags =
     FLG_STRICTUSERELEASED,
     "element used after it may have been released",
     "Memory (through fetch) is used after it may have been released "
-    "(either by passing as an only param or assigning to an only global.",
+    "(either by passing as an only param or assigning to an only global).",
     0, 0
   },
   {
