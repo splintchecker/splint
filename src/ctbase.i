@@ -458,7 +458,14 @@ ctbase_typeId (ctbase c)
     {
       if (ctbase_isConj (c)) 
 	{
-	  return ctbase_typeId (ctype_getCtbase (ctbase_getConjA (c)));
+	  if (ctype_isUA (ctbase_getConjA (c))) {
+	    return ctbase_typeId (ctype_getCtbase (ctbase_getConjA (c)));
+	  } else if (ctype_isUA (ctbase_getConjB (c))) {
+	    return ctbase_typeId (ctype_getCtbase (ctbase_getConjB (c)));
+	  } else {
+	    llcontbug (message ("ctbase_typeId: bad call: %q", ctbase_unparse (c)));
+	    return typeId_invalid;
+	  }
 	}
       else
 	{

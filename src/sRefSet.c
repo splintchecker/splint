@@ -831,7 +831,8 @@ sRefSet_free (/*@only@*/ sRefSet s)
 {
   if (!sRefSet_isUndefined (s))
     {
-      llassertprint (s->entries < 1000, ("sRefSet free size: %d", s->entries));
+      /* evans 2003-10-20: increase size sanity limit from 1000 */
+      llassertprint (s->entries < 99999, ("sRefSet free size: %d", s->entries));
 
       sfree (s->elements); 
       sfree (s);

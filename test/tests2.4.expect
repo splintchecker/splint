@@ -88,7 +88,7 @@ error.c:5:9: Variable x initialized to type char, expects int: 'a'
 Finished checking --- 1 code warning, as expected
 
 ulrich.c: (in function utl_calloc)
-ulrich.c:14:13: Possibly null storage newblock returned as non-null: newblock
+ulrich.c:15:12: Possibly null storage newblock returned as non-null: newblock
    ulrich.c:12:16: Storage newblock may become null
 
 Finished checking --- 1 code warning, as expected
