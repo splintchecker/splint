@@ -80,10 +80,22 @@ YFLAGS    = -v -t -d
 LFLAGS    =
 
 ###
+### file-related commands (I use emx GNUish utilities)
+###
+CP = cp
+MV = mv
+CAT = cat
+RM = rm
+INSTALL = cp
+INSTALLFLAGS =           
+ECHO = echo
+SED = sed
+
+###
 ### Set automatically: splint version and date etc.
 ###
 
-LCL_VERSION := $(shell grep "^VERSION" ../configure | sed "s/VERSION *= *//")
+LCL_VERSION := $(shell grep "^VERSION" ../configure | $(SED) "s/VERSION *= *//")
 LCL_DATE := $(shell date +"%d %b %Y")
 BUILD_DATE := $(shell date +"%c")
 ME := $(shell whoami)
@@ -93,22 +105,6 @@ LCL_COMPILE = Compiled using $(CC)\\n on $(UNAME) $(TARGET_CPU) $(BUILD_DATE) by
 LCL_PARSE_VERSION = Splint $(LCL_VERSION)
 SPLINT_VERSION = $(LCL_PARSE_VERSION) -- $(LCL_DATE)
 
-
-###
-### Then, run:
-###
-###	make
-###
-###
-
-### file-related commands (I use emx GNUish utilities)
-CP = cp
-MV = mv
-CAT = cat
-RM = rm
-INSTALL = cp
-INSTALLFLAGS =           
-ECHO = echo
 
 ###
 ### compiler --- gcc is recommended, but splint has been compiled
@@ -182,9 +178,10 @@ make.vars:
 	echo "INSTALL = $(INSTALL)" >>make.vars
 	echo "INSTALLFLAGS = $(INSTALLFLAGS)" >>make.vars
 	echo "ECHO = $(ECHO)" >>make.vars
+	echo "SED = $(SED)" >>make.vars
 
 ../config.h: os2config.h.in
-	sed -e 's|@DEFAULT_LARCHPATH@|$(DEFAULT_LARCHPATH)|' \
+	$(SED) -e 's|@DEFAULT_LARCHPATH@|$(DEFAULT_LARCHPATH)|' \
 	-e 's|@DEFAULT_LCLIMPORTDIR@|$(DEFAULT_LCLIMPORTDIR)|' \
 	-e 's|@GCC_INCLUDE_DIR@|$(GCC_INCLUDE_DIR)|' \
 	-e 's|@GCC_INCLUDE_DIR2@|$(GCC_INCLUDE_DIR2)|' \
@@ -197,7 +194,7 @@ make.vars:
 	os2config.h.in >../config.h
 
 setenv.cmd: setenv.cmd.in
-	sed -e 's|@LCL_VERSION@|$(LCL_VERSION)|' \
+	$(SED) -e 's|@LCL_VERSION@|$(LCL_VERSION)|' \
 	-e 's|@BASEDIR@|$(BASEDIR)|' \
 	setenv.cmd.in | tr '/' '\\\\' >setenv.cmd
 

@@ -46,9 +46,10 @@ CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
-       metaStateExpression.c metaStateSpecifier.c functionConstraint.c
+       metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
+       pointers.c
 
-SPLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c mtreader.c
@@ -111,7 +112,7 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) 
 
 #files to run Splint on
-LINTSRC = $(COMMONSRC) $(SPLINTSRC)
+LINTSRC = $(COMMONSRC) $(SPLINTSRC) cscanner.c cgrammar.c
 
 LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
 lcl_SOURCES = $(LCLSRC)
@@ -144,32 +145,29 @@ lcl_OBJECTS = lsymbolSet$O sigNodeSet$O \
 
 splint_OBJECTS = cgrammar$O cscanner$O \
 	mtscanner$O mtgrammar$O llgrammar$O \
-	signature$O constraintGeneration$O \
-	constraintTerm$O constraintExprData$O \
-	constraintExpr$O constraint$O \
-	constraintList$O constraintResolve$O \
-	constraintOutput$O loopHeuristics$O \
-	cppmain$O cpplib$O cppexp$O \
-	cpphash$O cpperror$O uentry$O \
-	cprim$O macrocache$O qual$O \
-	qtype$O stateClause$O stateClauseList$O \
-	ctype$O cvar$O clabstract$O \
-	idDecl$O clause$O globalsClause$O \
+	signature$O cppmain$O cpplib$O \
+	cppexp$O cpphash$O cpperror$O \
+	context$O uentry$O cprim$O \
+	macrocache$O qual$O qtype$O \
+	stateClause$O stateClauseList$O ctype$O \
+	cvar$O clabstract$O idDecl$O \
+	clause$O globalsClause$O \
 	modifiesClause$O warnClause$O \
 	functionClause$O functionClauseList$O \
 	metaStateConstraint$O metaStateConstraintList$O \
 	metaStateExpression$O metaStateSpecifier$O \
-	functionConstraint$O structNames$O \
-	transferChecks$O varKinds$O \
-	nameChecks$O exprData$O cstring$O \
-	fileloc$O message$O inputStream$O \
-	fileTable$O cstringTable$O valueTable$O \
+	functionConstraint$O pointers$O \
+	structNames$O transferChecks$O \
+	varKinds$O nameChecks$O exprData$O \
+	cstring$O fileloc$O message$O \
+	inputStream$O fileTable$O \
+	cstringTable$O valueTable$O \
 	stateValue$O llerror$O messageLog$O \
 	flagMarker$O aliasTable$O ynm$O \
 	sRefTable$O genericTable$O ekind$O \
 	usymtab$O multiVal$O lltok$O \
 	sRef$O lcllib$O randomNumbers$O \
-	fileLib$O context$O globals$O \
+	fileLib$O globals$O \
 	flags$O general$O osd$O \
 	reader$O mtreader$O clauseStack$O \
 	filelocStack$O cstringList$O \
@@ -195,7 +193,12 @@ splint_OBJECTS = cgrammar$O cscanner$O \
 	mtLoseReference$O mtDefaultsDeclList$O \
 	mtDefaultsDecl$O mtMergeItem$O \
 	mtMergeClause$O mtMergeClauseList$O \
-	exprNode$O exprChecks$O llmain$O
+	exprNode$O exprChecks$O llmain$O \
+	help$O rcfiles$O constraintGeneration$O \
+	constraintTerm$O constraintExprData$O \
+	constraintExpr$O constraint$O \
+	constraintList$O constraintResolve$O \
+	constraintOutput$O loopHeuristics$O snprintf$O
 
 # Keep it fake
 .PHONY: lcl$(EXEEXT)
@@ -236,10 +239,14 @@ else
 	@echo "Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts."
 	@echo "(see cgrammar.y for explanation)"
 	$(BISON) $(YFLAGS) cgrammar.y
-	$(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c
+	$(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) \
+	  -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/' \
+	  >cgrammar.c
 	$(CP) cgrammar.c cgrammar.c.der
 	-$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
-	$(CAT) bison.head cgrammar.tab.h bison.reset >Headers/cgrammar_tokens.h
+	$(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) \
+	  -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' \
+	  >Headers/cgrammar_tokens.h
 	$(RM) cgrammar.tab.c cgrammar.tab.h
 endif
 
@@ -278,12 +285,12 @@ endif
 
 cscanner.c: cscanner.l
 	$(FLEX) $(LFLAGS) cscanner.l 
-	$(CAT) flex.head lexyy.c flex.reset > cscanner.c
+	$(CAT) flex.head lexyy.c flex.reset | $(SED) \
+	  -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' \
+	  >cscanner.c
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
-	$(MAKE)
-	cd ../lib; $(MAKE)
 
 $(binDir)/splint$(EXEEXT):  splint$(EXEEXT)
 	-$(RM) -f $(binDir)/splint$(EXEEXT)

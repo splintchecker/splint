@@ -34,7 +34,7 @@ SPLINTRNEST = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args arraydims arrayinit arraylit blocks break cases cast charlit clauses commentchar compdestroy \
+  args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
@@ -42,7 +42,7 @@ UNITTESTS = \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
-  returned sharing shifts slovaknames \
+  returned sharing shifts sizesigns slovaknames \
   specclauses \
   special stack staticarray strings \
   stringliteral \
@@ -76,10 +76,10 @@ quicktest: $(SPLINTTESTS)
 help:
 	-@$(SPLINT)
 	#@LARCH_PATH=/dev/null; $(SPLINT) -nof empty.lcl
-	@$(SPLINTP) -help
+	@$(SPLINT) -help
 	@$(SPLINTP) -asdf
 	@$(SPLINTP) +boolint +boolint 
-	@$(SPLINTP) -help flags alpha
+	@$(SPLINT) -help flags alpha
 
 .PHONY: abstptr
 abstptr:
@@ -172,6 +172,10 @@ cases:
 cast:
 	$(SPLINTR) cast -accessmodule -expect 20
 	$(SPLINTRN) cast2.c +checks -exportlocal -exportheader -expect 3
+
+.PHONY: chararraylit
+chararraylit:
+	-$(SPLINTR) chararraylit.c -expect 2
 
 ### Two addition errors detected with 2.5 with -numliteral.
 
@@ -277,6 +281,10 @@ divzero:
 enum:
 	$(SPLINTR) enum -expect 16
 	$(SPLINTR) enum -misscase -expect 14
+
+.PHONY: enumtag
+enumtag:
+	-$(SPLINTR) enumtag.c -expect 2
 
 .PHONY: exports
 exports:
@@ -621,6 +629,13 @@ shifts:
 	$(SPLINTR) shifts.c -shiftimplementation -expect 3
 	$(SPLINTR) shifts.c -shiftnegative -expect 1
 
+### evans - added 2002-08-17: check warnings with arbitrary integral types
+sizesigns:
+	-$(SPLINTR) +strict sizesigns.c
+	-$(SPLINTR) +strict +ignoresigns sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
+
 .PHONY: slovaknames
 slovaknames:
 	$(SPLINTR) +hints slovaknames.c -expect 1
@@ -633,7 +648,7 @@ slovaknames:
 specclauses:
 	$(SPLINTR) specclauses.c -expect 6
 	$(SPLINTR) specclauses2.c -expect 8
-	$(SPLINTR) specclauses3.c -expect 6
+	$(SPLINTR) specclauses3.c -expect 5
 	$(SPLINTR) specclauses4.c -expect 3
 	$(SPLINTR) specclauses5.c -expect 3
 
@@ -763,7 +778,7 @@ ullint:
 
 .PHONY: utypes
 utypes:
-	${SPLINTRN} utypes.c -expect 6
+	${SPLINTRN} utypes.c -expect 2
 
 ###
 
