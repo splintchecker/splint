@@ -80,7 +80,7 @@ MV = mv
 OBJEXT = o
 PACKAGE = splint
 RM = rm
-VERSION = 3.0.1.5
+VERSION = 3.0.1.6
 am__include = include
 am__quote = 
 install_sh = /net/af9/drl7x/reTmp/LCLintDev/config/install-sh
@@ -116,12 +116,12 @@ UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-  decl enum exports external fields flags forbody format freearray \
+  decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
-  postnotnull preds prefixes printflike rc refcounts release repexpose \
+  parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned sharing shifts slovaknames \
   specclauses \
   special stack staticarray strings \
@@ -775,7 +775,9 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
                   moreBufferTests2/fixedArrayType.c oldstyle2.c \
-                  stringliteral.expect  stringliteral.c
+                  divzero.expect parentype.expect \
+                  divzero.c parentype.c \
+stringliteral.expect  stringliteral.c
 
 subdir = test
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -1152,6 +1154,10 @@ decl:
 	-$(SPLINTRN) decl.c +strict -exportlocal -expect 5
 	-$(SPLINTR) decl2 -expect 4
 
+.PHONY: divzero
+divzero:
+	-$(SPLINTR) divzero.c -varuse -expect 0
+
 .PHONY: enum
 enum:
 	-$(SPLINTR) enum -expect 16
@@ -1407,6 +1413,12 @@ outparam:
 .PHONY: postnotnull
 postnotnull:
 	${SPLINTR} postnotnull.c -expect 1
+
+### evans 2002-02-09: added parentype.c
+.PHONY: parentype
+parentype:
+	${SPLINTR} parentype.c 
+
 #
 # Four new +fcnuse errors for -strict (evans 2001-07-22)
 # 

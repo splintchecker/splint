@@ -48,7 +48,7 @@ Makefile.binary.in:Makefile.binary.am
 $(binaryDir)/Makefile.in: $(binaryDir)/Makefile.am
 	-automake $(binaryDir)/Makefile
 
-EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) $(binaryDirFiles)
+EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) $(binaryDirFiles) install.html
 
 preDist:  $(binaryDir)/Makefile.in  $(binaryDerivedFiles) 
 
