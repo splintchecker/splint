@@ -1,0 +1,103 @@
+;;LCLint Dump: warnuse.lcd
+;;LCLint 2.9a --- 6 April 2001
+;;lib:166
+;;ctTable
+0 u-2 19 38
+0 p1|-2 20 39
+0 b-2 21 40
+0 p3|-2 22 41
+0 p4|-2 23 42
+0 p5|-2 24 43
+0 p6|-2 25 44
+0 p7|-2 26 45
+0 p8|-2 27 46
+0 p9|-2 28 47
+0 p10|-2 29 48
+0 p11|-2 30 49
+0 p12|-2 31 50
+0 p13|-2 32 51
+0 p14|-2 33 52
+0 p15|-2 34 53
+0 p16|-2 35 54
+0 p17|-2 36 55
+0 p18|-2 37 56
+1 t0|0&
+1 t1|1&
+1 t2|2&
+1 t3|3&
+1 t4|4&
+1 t5|5&
+1 t6|6&
+1 t7|7&
+1 t8|8&
+1 t9|9&
+1 t10|10&
+1 t11|11&
+1 t12|12&
+1 t13|13&
+1 t14|14&
+1 t15|15&
+1 t16|16&
+1 t17|17&
+1 t18|18&
+2 y0|0&
+2 y1|1&
+2 y2|2&
+2 y3|3&
+2 y4|4&
+2 y5|5&
+2 y6|6&
+2 y7|7&
+2 y8|8&
+2 y9|9&
+2 y10|10&
+2 y11|11&
+2 y12|12&
+2 y13|13&
+2 y14|14&
+2 y15|15&
+2 y16|16&
+2 y17|17&
+2 y18|18&
+-2 ?!
+0 a0|&
+0 s10|&
+0 s11|&
+0 s12|&
+3 f0 ()!
+3 f5 ()!
+3 f0 ()!
+3 f5 ()!
+3 f0 ()!
+3 f5 ()!
+;;tistable
+0
+;;symTable
+*0 (Datatype)
+^0 2@+@-@0@0@0@0@2#lltX_bool
+*1 (Constant)
+^1 2@i0@0@6#FALSE
+^2 2@i1@0@0#TRUE
+*11 (GlobalMarker)
+*1 (Constant)
+^4 5$#__LINE__
+^5 23$#__DATE__#__FILE__#__BASE_FILE__
+^8 5$#__INCLUDE_LEVEL__
+^9 23$#__VERSION__
+*0 (Datatype)
+^10 13@-@-@0@0@0@0@59#__SIZE_TYPE__
+^11 13@-@-@0@0@0@0@60#__PTRDIFF_TYPE__
+^12 13@-@-@0@0@0@0@61#__WCHAR_TYPE__
+*1 (Constant)
+^13 23$#__USER_LABEL_PREFIX__#__REGISTER_PREFIX__#__TIME__
+^16 5$#__LCLINT__
+*3 (Variable)
+^17 0|@1|^#stdin#stdout
+*4 (Function)
+^19 63$$$@0@W:wusef#f is a very dangerous function!##f
+^20 65$$$@0@W:bufferoverflow#g is a very dangerous function!##g
+^21 67$$$@0#wfunc
+;; Modules access
+lltX_bool#1@
+types#1@
+;;End
