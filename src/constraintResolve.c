@@ -736,94 +736,108 @@ static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arit
   switch (ar1)
  {
  case GTE:
-      if (constraintExpr_similar (expr1, expr2) )
-	 return TRUE;
-      /*@fallthrough@*/
- case GT:
-   if (!  (constraintExpr_canGetValue (expr1) &&
-	   constraintExpr_canGetValue (expr2) ) )
-     {
-       constraintExpr e1, e2;
-       bool p1, p2;
-       int const1, const2;
-       
-       e1 = constraintExpr_copy(expr1);
-       e2 = constraintExpr_copy(expr2);
-
-       e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
-
-       e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
-
-       if (p1 && p2)
-	 if (const1 <= const2)
-	   if (constraintExpr_similar (e1, e2) )
-	     {
-	       constraintExpr_free(e1);
-	       constraintExpr_free(e2);
-	       return TRUE;
-	     }
-       
-       DPRINTF( ("Can't Get value"));
-       
-       constraintExpr_free(e1);
-       constraintExpr_free(e2);
-       return FALSE;
-     }
-   
-   if (constraintExpr_compare (expr2, expr1) >= 0)
-     return TRUE;
-  
-  return FALSE;
- case EQ:
-   if (constraintExpr_similar (expr1, expr2) )
-	 return TRUE;
-   
-   return FALSE;
- case LTE:
-   if (constraintExpr_similar (expr1, expr2) )
-	 return TRUE;
-   /*@fallthrough@*/
- case LT:
+       if (constraintExpr_similar (expr1, expr2) )
+	  return TRUE;
+       /*@fallthrough@*/
+  case GT:
     if (!  (constraintExpr_canGetValue (expr1) &&
-	   constraintExpr_canGetValue (expr2) ) )
-     {
-      constraintExpr e1, e2;
-       bool p1, p2;
-       int const1, const2;
-       
-       e1 = constraintExpr_copy(expr1);
-       e2 = constraintExpr_copy(expr2);
+	       constraintExpr_canGetValue (expr2) ) )
+           {
+	          constraintExpr e1, e2;
+	          bool p1, p2;
+	          int const1, const2;
 
-       e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
+	          e1 = constraintExpr_copy(expr1);
+	          e2 = constraintExpr_copy(expr2);
 
-       e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
+	          e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
 
-       if (p1 && p2)
-	 if (const1 >= const2)
-	   if (constraintExpr_similar (e1, e2) )
-	     {
-	       constraintExpr_free(e1);
-	       constraintExpr_free(e2);
-	       return TRUE;
-	     }
-       constraintExpr_free(e1);
-       constraintExpr_free(e2);
-       
-       DPRINTF( ("Can't Get value"));
-       return FALSE;
-     }
-   
-   if (constraintExpr_compare (expr2, expr1) <= 0)
-     return TRUE;
+	          e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
+
+	          if (p1 || p2)
+		     {
+		      if (!p1)
+			   const1 = 0;
+
+		      if (!p2)
+			   const2 = 0;
+
+		      if (const1 <= const2)
+			   if (constraintExpr_similar (e1, e2) )
+			          {
+				         constraintExpr_free(e1);
+				         constraintExpr_free(e2);
+				         return TRUE;
+				       }
+		      }
+	          DPRINTF( ("Can't Get value"));
+
+	          constraintExpr_free(e1);
+	          constraintExpr_free(e2);
+	          return FALSE;
+	        }
+
+    if (constraintExpr_compare (expr2, expr1) >= 0)
+           return TRUE;
 
    return FALSE;
-   
- default:
-     llcontbug((message("Unhandled case in switch: %q", arithType_print(ar1) ) ) );
- }
+  case EQ:
+    if (constraintExpr_similar (expr1, expr2) )
+       return TRUE;
+
+    return FALSE;
+  case LTE:
+    if (constraintExpr_similar (expr1, expr2) )
+       return TRUE;
+    /*@fallthrough@*/
+  case LT:
+     if (!  (constraintExpr_canGetValue (expr1) &&
+	        constraintExpr_canGetValue (expr2) ) )
+            {
+	          constraintExpr e1, e2;
+	           bool p1, p2;
+	           int const1, const2;
+
+	           e1 = constraintExpr_copy(expr1);
+	           e2 = constraintExpr_copy(expr2);
+
+	           e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
+
+	           e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
+
+	           if (p1 || p2)
+		      {
+		       if (!p1)
+			    const1 = 0;
+
+		       if (!p2)
+			    const2 = 0;
+
+		       if (const1 >= const2)
+			    if (constraintExpr_similar (e1, e2) )
+			           {
+				          constraintExpr_free(e1);
+				          constraintExpr_free(e2);
+				          return TRUE;
+				        }
+		       }
+	           constraintExpr_free(e1);
+	           constraintExpr_free(e2);
+
+	           DPRINTF( ("Can't Get value"));
+	           return FALSE;
+	         }
+
+    if (constraintExpr_compare (expr2, expr1) <= 0)
+           return TRUE;
+
+    return FALSE;
+
+  default:
+      llcontbug((message("Unhandled case in switch: %q", arithType_print(ar1) ) ) );
+  }
   BADEXIT;
 }
-
 
 static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr newExpr)
 {

@@ -74,7 +74,7 @@ static bool exprNode_isUnhandled (/*@dependent@*/ /*@obsever@*/ exprNode e)
     case XPR_TOK:
     case XPR_FTDEFAULT:
     case XPR_DEFAULT:
-    case XPR_SWITCH:
+      //    case XPR_SWITCH:
     case XPR_FTCASE:
     case XPR_CASE:
       //    case XPR_INIT:
@@ -180,6 +180,7 @@ if (exprNode_handleError (e) != NULL)
     case XPR_BLOCK:
     case XPR_STMT:
     case XPR_STMTLIST:
+    case XPR_SWITCH:
       return TRUE;
     default:
       return FALSE;
@@ -571,17 +572,23 @@ static exprNode doSwitch (/*@returned@*/ exprNode e)
   exprData data;
 
   data = e->edata;
-  llassert(FALSE);
-  //DPRINTF (( message ("doSwitch for: switch (%s) %s", 
-  //	     exprNode_unparse (exprData_getPairA (data)),
-  //		     exprNode_unparse (exprData_getPairB (data))) ));
-
+  //  llassert(FALSE);
+  DPRINTF (( message ("doSwitch for: switch (%s) %s", 
+		      exprNode_unparse (exprData_getPairA (data)),
+		      exprNode_unparse (exprData_getPairB (data))) ));
+  
   body = exprData_getPairB (data);
   
-  // exprNode_generateConstraints(body);
+  exprNode_generateConstraints(body);
   
-  // e->requiresConstraints = constraintList_copy ( body->requiresConstraints );
-  //e->ensuresConstraints = constraintList_copy ( body->ensuresConstraints );
+  constraintList_free(e->requiresConstraints);
+  constraintList_free(e->ensuresConstraints);
+  
+  e->requiresConstraints = NULL;
+  e->ensuresConstraints  = NULL;
+
+  e->requiresConstraints = constraintList_copy ( body->requiresConstraints );
+  e->ensuresConstraints = constraintList_copy ( body->ensuresConstraints );
   
   return e;
 }
@@ -1353,14 +1360,14 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
   exprData data;
   constraintList ret;
 
-   if (exprNode_handleError (e))
-     {
-       ret = constraintList_makeNew();
-       return ret;
-     }
+  if (exprNode_handleError (e))
+    {
+      ret = constraintList_makeNew();
+      return ret;
+    }
   ret = constraintList_copy (e->trueEnsuresConstraints );
    
-   handledExprNode = TRUE;
+  handledExprNode = TRUE;
    
   data = e->edata;
   
@@ -1392,6 +1399,14 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret, exprNode_traversTrueEnsuresConstraints
 				    (exprData_getUopNode (data) ) );
       break;
+
+    case XPR_INIT:
+      ret = constraintList_addListFree (ret,
+					exprNode_traversTrueEnsuresConstraints
+					(exprData_getInitNode (data) ) );
+	break;
+
+
     case XPR_ASSIGN:
         ret = constraintList_addListFree (ret,
 				    exprNode_traversTrueEnsuresConstraints
@@ -1530,6 +1545,12 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret, exprNode_traversFalseEnsuresConstraints
 				    (exprData_getUopNode (data) ) );
       break;
+    case XPR_INIT:
+        ret = constraintList_addListFree (ret,
+				    exprNode_traversFalseEnsuresConstraints
+				    (	exprData_getInitNode (data) ) );
+	break;
+
     case XPR_ASSIGN:
         ret = constraintList_addListFree (ret,
 				    exprNode_traversFalseEnsuresConstraints
@@ -1670,6 +1691,12 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret, exprNode_traversRequiresConstraints
 				    (exprData_getUopNode (data) ) );
       break;
+    case XPR_INIT:
+      ret = constraintList_addListFree (ret,
+					exprNode_traversRequiresConstraints
+					(exprData_getInitNode (data) ) );
+	break;
+
     case XPR_ASSIGN:
         ret = constraintList_addListFree (ret,
 				    exprNode_traversRequiresConstraints
@@ -1821,6 +1848,14 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
       ret = constraintList_addListFree (ret, exprNode_traversEnsuresConstraints
 				    (exprData_getUopNode (data) ) );
       break;
+      
+    case XPR_INIT:
+      ret = constraintList_addListFree (ret,
+					exprNode_traversEnsuresConstraints
+					(exprData_getInitNode (data) ) );
+	break;
+
+
     case XPR_ASSIGN:
         ret = constraintList_addListFree (ret,
 				    exprNode_traversEnsuresConstraints
