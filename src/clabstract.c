@@ -51,11 +51,8 @@
 ** right values are available in the right place.
 */
 
-/*drl */
-static /*@only@*/   constraintList implicitFcnConstraints = NULL;
-
-
-//static  constraintList fcnPreConditions = NULL;
+/*drl*/
+static /*@only@*/ constraintList implicitFcnConstraints = NULL;
 
 static void clabstract_prepareFunction (uentry p_e) /*@modifies p_e@*/ ;
 static bool fcnNoGlobals = FALSE;
@@ -531,7 +528,7 @@ void  setImplictfcnConstraints (void)
 	chagned this is MaxSet(s) == 0 to MaxSet(s) >= 0 */
       
       c = constraint_makeSRefWriteSafeInt (s, 0);
-	// constraint_makeSRefSetBufferSize (s, 0);
+      /* constraint_makeSRefSetBufferSize (s, 0); */
       implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
     }
   end_uentryList_elements;

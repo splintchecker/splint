@@ -60,6 +60,7 @@ ULSuffix                ({U}{L}|{L}{U})
 */
 
 # include "lclintMacros.nf"
+# include <unistd.h>
 # include "basic.h"
 
 # include "cgrammar.h"
@@ -79,14 +80,7 @@ static char savechar = '\0';
 /*@notfunction@*/
 # define yyinput() (incColumn (), getc (yyin))
 
-/*@-noparams@*/
-/*@-incondefs@*/
-extern /*@external@*/ int read ();
-/*@=incondefs@*/
-/*@=noparams@*/
-
 static /*@owned@*/ cstring lastidprocessed = cstring_undefined;
-
 static int lminput (void);
 static int tokLength = 0;
 static bool inSpecPart = FALSE;

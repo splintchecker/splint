@@ -46,9 +46,9 @@ LINKFLAGS     = -lfl
 
 
 ifeq ($(CC), gcc)
-  CFLAGS       = $(CPPFLAGS) -Wpointer-arith -Wcast-qual -Wcomment -Wswitch -Wunused -Wreturn-type -ansi -pedantic
+  CFLAGS       = -Wpointer-arith -Wcast-qual -Wcomment -Wswitch -Wunused -Wreturn-type -ansi -pedantic
 else
-  CFLAGS       = $(CPPFLAGS)
+  CFLAGS       = 
 endif
 
 DEBUGFLAGS = -DYYDEBUG=1 -DYYIMPURE=1 # don't change this

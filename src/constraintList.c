@@ -91,7 +91,7 @@ constraintList_add (/*@returned@*/ constraintList s, /*@only@*/ constraint el)
   llassert (constraintList_isDefined (s));
 
   /*drl7x */
-  //   el = constraint_simplify (el);
+
   if (constraintList_resolve (el, s) )
     {
       constraint_free (el);
@@ -247,7 +247,7 @@ constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
 	{
 	  st = message ("%q, %q", st, type);
 	}
-    } //end for
+    } 
 
   return st;
 }
@@ -295,7 +295,7 @@ constraintList_print (/*@temp@*/ constraintList s) /*@*/
 	{
 	  st = message ("%q, %q", st, type);
 	}
-    } //end for
+    } 
 
   return st;
 }
@@ -480,7 +480,6 @@ constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,
 
   constraintList_elements_private (c, el)
   {
-    //  el = constraint_preserveOrig (el);
     el = constraint_setFcnPre(el);
     el = constraint_origAddGeneratingExpr (el, fcn);
   }

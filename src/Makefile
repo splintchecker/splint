@@ -203,8 +203,8 @@ stateClause.c: Headers/cgrammar_tokens.h
 ifeq ($(CHECK), 1)
 	${MAKE} $*.check
 endif
-	@echo '//  Compiling '$*.c' / compiled: '`$(OFILES)`'  (of 161 files)'
-	$(CC) $(CFLAGS) -c $*.c
+	@echo '//  Compiling '$*.c' / compiled: '`$(OFILES)`'  (of 181 files)'
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c
 
 ###
 ### alternatives (tests, releases, backups, etc.)
@@ -346,7 +346,7 @@ up:
 ###
 
 depend:
-	$(MAKEDEPEND) $(CINCLUDES) $(CFLAGS) -f Makefile.depend $(SRC) $(GRAMS)
+	$(MAKEDEPEND) $(CINCLUDES) $(CPPFLAGS) -f Makefile.depend $(SRC) $(GRAMS)
 
 ###
 ### analysing dependancies takes a long time and doesn't work terribly

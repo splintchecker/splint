@@ -3,7 +3,7 @@
 ** constraintResolve.c
 */
 
-//#define DEBUGPRINT 1
+/* #define DEBUGPRINT 1 */
 
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
@@ -56,8 +56,6 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
   constraintList ret;
   constraintList temp;
 
-  //ret = constraintList_makeNew();
-
   llassert(constraintList_isDefined(list1) );
   llassert(constraintList_isDefined(list2) );
 
@@ -82,8 +80,6 @@ static /*@only@*/ constraintList reflectChangesEnsuresFree1 (/*@only@*/ constrai
   
 
   return temp;
-  //ret = constraintList_addList (ret, list2);
-  //return ret;
 }
 
 
@@ -150,8 +146,6 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
        else
 	 {
 	   llassert(exprNode_isError(child2) );
-	   //parent->requiresConstraints = constraintList_makeNew();
-	   //parent->ensuresConstraints = constraintList_makeNew();
 	   return;
 	 }
      }
@@ -262,13 +256,11 @@ static /*@only@*/ constraintList reflectChangesNoOr (/*@observer@*/ /*@temp@*/ c
 	  temp = constraint_substitute (el, post1);
 	  if (!constraintList_resolve (temp, post1) )
 	    {
-	      // try inequality substitution
-	      //constraint temp2;
-	      
-	      // the inequality substitution may cause us to lose information
-	      //so we don't want to store the result but we do it anyway
+	      /* try inequality substitution
+		 the inequality substitution may cause us to lose information
+		 so we don't want to store the result but we do it anyway
+	      */
 	      temp2 = constraint_copy (temp);
-	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
 	      temp2 = inequalitySubstitute (temp2, post1); 
 	      if (!constraintList_resolve (temp2, post1) )
 		{
@@ -363,61 +355,61 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
       
       if (!resolveOr (temp, post1) )
 	{
-	  // try inequality substitution
+	  /* try inequality substitution */
 	  constraint temp2;
 	  
-	      // the inequality substitution may cause us to lose information
-	      //so we don't want to store the result but we do  anyway
-	      temp2 = constraint_copy (c);
-	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
-	      temp2 = inequalitySubstitute (temp2, post1);
-	      if (!resolveOr (temp2, post1) )
-		{
-		  constraint temp3;
-		  temp3 = constraint_copy(temp2);
-		  
-		  temp3 = inequalitySubstituteStrong (temp3, post1);
-		  if (!resolveOr (temp3, post1) )
-		    {
-		      temp2 = inequalitySubstituteUnsound (temp2, post1); 
-		      if (!resolveOr (temp2, post1) )
-			{
-			  if (!constraint_same (temp, temp2) )
-			    temp = constraint_addOr (temp, temp2);
+	  /* the inequality substitution may cause us to lose information
+	     so we don't want to store the result but we do  anyway
+	  */
+	  temp2 = constraint_copy (c);
+	  temp2 = inequalitySubstitute (temp2, post1);
 
-			  if (!constraint_same (temp, temp3) && !constraint_same (temp3, temp2) )
-			    temp = constraint_addOr (temp, temp3);
-			  
-			  *resolved = FALSE;
-			  
-			  constraint_free(temp2);
-			  constraint_free(temp3);
-			  constraint_free(c);
-			  
-			  return temp;
-			}
-		      constraint_free(temp2);
-		      constraint_free(temp3);
-		    }
-		  else
+	  if (!resolveOr (temp2, post1) )
+	    {
+	      constraint temp3;
+	      temp3 = constraint_copy(temp2);
+	      
+	      temp3 = inequalitySubstituteStrong (temp3, post1);
+	      if (!resolveOr (temp3, post1) )
+		{
+		  temp2 = inequalitySubstituteUnsound (temp2, post1); 
+		  if (!resolveOr (temp2, post1) )
 		    {
+		      if (!constraint_same (temp, temp2) )
+			temp = constraint_addOr (temp, temp2);
+		      
+		      if (!constraint_same (temp, temp3) && !constraint_same (temp3, temp2) )
+			temp = constraint_addOr (temp, temp3);
+		      
+		      *resolved = FALSE;
+		      
 		      constraint_free(temp2);
 		      constraint_free(temp3);
+		      constraint_free(c);
+		      
+		      return temp;
 		    }
+		  constraint_free(temp2);
+		  constraint_free(temp3);
 		}
 	      else
 		{
 		  constraint_free(temp2);
-		}		  
-
+		  constraint_free(temp3);
+		}
 	    }
-	  constraint_free(temp);
+	  else
+	    {
+	      constraint_free(temp2);
+	    }		  
+	  
 	}
- constraint_free(c);
- 
- *resolved = TRUE;
- return NULL;
-
+      constraint_free(temp);
+    }
+  constraint_free(c);
+  
+  *resolved = TRUE;
+  return NULL;
 }
 
 static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c, constraintList post1, /*@out@*/bool * resolved)
@@ -564,10 +556,11 @@ static bool constraint_conflict (constraint c1, constraint c2)
 	  }
     }  
 
-  // This is a slight kludg to prevent circular constraints like
-  // strlen(str) == maxRead(s) + strlen(str);
+  /* This is a slight kludg to prevent circular constraints like
+     strlen(str) == maxRead(s) + strlen(str);
+  */
 
-  /*@i324234*/ //clean this up
+  /*@i324234*/ /* clean this up */
   
   if (c1->ar == EQ)
     if (c1->ar == c2->ar)
@@ -626,8 +619,11 @@ static bool conflict (constraint c, constraintList list)
 
 }
 
-//check if constraint in list1 conflicts with constraints in List2.  If so we
-//remove form list1 and change list2.
+/*
+  check if constraint in list1 conflicts with constraints in List2.  If so we
+  remove form list1 and change list2.
+*/
+
 constraintList constraintList_fixConflicts (constraintList list1, constraintList list2)
 {
   constraintList ret;
@@ -701,7 +697,6 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
 
     case LT:
     case LTE:
-      //      llassert(FALSE); 
       if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
 	return TRUE;
       break;
@@ -770,7 +765,6 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
   l = constraintExpr_copy (c->lexpr);
   r = constraintExpr_copy (c->expr);
 
-  //  l = constraintExpr_propagateConstants (l, &lHasConstant, &lConstant);
   r = constraintExpr_propagateConstants (r, &rHasConstant, &rConstant);
 
   if (constraintExpr_similar (l,r) && (rHasConstant ) )
@@ -944,7 +938,7 @@ bool constraint_search (constraint c, constraintExpr old) /*@*/
   return ret;
 }
 
-//adjust file locs and stuff
+/* adjust file locs and stuff */
 static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@observer@*/ constraint old)
 {
   fileloc loc1, loc2, loc3;
@@ -954,13 +948,10 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
 		   ));
 
   loc1 = constraint_getFileloc (old);
-
   loc2 = constraintExpr_getFileloc (substitute->lexpr);
-
   loc3 = constraintExpr_getFileloc (substitute->expr);
-
   
-  // special case of an equality that "contains itself"
+  /* special case of an equality that "contains itself" */
   if (constraintExpr_search (substitute->expr, substitute->lexpr) )
       if (fileloc_closer (loc1, loc3, loc2))
       {
@@ -996,16 +987,11 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
   constraintList_elements (p, el)
     {
       if ( (el->ar == LT )  )
-	 //	 if (!constraint_conflict (c, el) )
+	/* if (!constraint_conflict (c, el) ) */ /*@i523 explain this! */
 	   {
-	     //constraint temp;
 	     constraintExpr  temp2;
 	     
 	     /*@i22*/
-
-	     //temp = constraint_copy(el);
-	     
-	     //	     temp = constraint_adjust(temp, c);
 
 	     if (constraintExpr_same (el->expr, c->expr) )
 	       {
@@ -1053,16 +1039,11 @@ static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, con
       DPRINTF (( message ("inequalitySubstituteStrong examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
 
       if ( (el->ar == LT ) ||  (el->ar == LTE )  )
-	 //	 if (!constraint_conflict (c, el) )
+	/* if (!constraint_conflict (c, el) ) */ /*@i523@*/
 	   {
-	     //constraint temp;
 	     constraintExpr  temp2;
 	     
 	     /*@i22*/
-
-	     //temp = constraint_copy(el);
-	     
-	     //	     temp = constraint_adjust(temp, c);
 
 	     if (constraintExpr_same (el->lexpr, c->expr) )
 	       {
@@ -1110,14 +1091,10 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
     {
   DPRINTF (( message ("inequalitySubstituteUnsound examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
        if ( ( el->ar == LTE) || (el->ar == LT) )
-	 //	 if (!constraint_conflict (c, el) )
+	 /* if (!constraint_conflict (c, el) ) */ /*@i532@*/
 	   {
-	     // constraint temp;
 	     constraintExpr  temp2;
-	     
-	     //temp = constraint_copy(el);
-	     
-	     //	     temp = constraint_adjust(temp, c);
+
 	     temp2   = constraintExpr_copy (el->expr);
 	     
 	     if (el->ar == LT)
@@ -1196,7 +1173,7 @@ return ret;
   constraintList_elements(target, el)
   { 
     constraint temp;
-    //drl possible problem : warning make sure that a side effect is not expected
+    /* drl possible problem : warning make sure that a side effect is not expected */
 
     temp = constraint_substitute(el, subList);
     ret = constraintList_add (ret, temp);

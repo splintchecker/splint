@@ -7,7 +7,4 @@
 # include "portab.h"
 
 
-//FLG_BUFF
-//FLG_NULLTERMINATED
-
 

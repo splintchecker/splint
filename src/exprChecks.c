@@ -921,21 +921,20 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
 
   /*@owned@*/ exprNode body;
 
- //  return;
-
- //  context_setFlag(FLG_ORCONSTRAINT, TRUE);
   context_enterInnerContext ();
 
   body = fcnBody;
 
-  // if we're not going to be printing any errors for buffer overflows
-  //we can skip the checking to improve performance
-  //
-  //FLG_DEBUGFUNCTIONCONSTRAINT controls wheather we perform the check anyway
-  // in order to find potential problems like asserts and seg faults...
+  /*
+    if we're not going to be printing any errors for buffer overflows
+    we can skip the checking to improve performance
+    
+    FLG_DEBUGFUNCTIONCONSTRAINT controls wheather we perform the check anyway
+    in order to find potential problems like asserts and seg faults...
+  */
 
   if  (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT)  )
-    // check if errors will printed
+    /* check if errors will printed */
     if (! (context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
 	   context_getFlag(FLG_FUNCTIONCONSTRAINT) ||
 	   context_getFlag(FLG_ARRAYBOUNDS) ||
@@ -1054,19 +1053,25 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
      }
    
    if (constraintList_isDefined(post) )
-     constraintList_free(post);
+     {
+       constraintList_free(post);
+     }
    
    body->ensuresConstraints = constraintList_sort(body->ensuresConstraints);
    
-   constraintList_printError(body->ensuresConstraints, g_currentloc);
+   if ( context_getFlag (FLG_FUNCTIONPOST) )
+     {
+       constraintList_printError(body->ensuresConstraints, g_currentloc);
+     }
    
    
-   //   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
+   /*   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
 
-   //   ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
+	ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
   
-     //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
-     //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
+	printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
+	printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
+   */
    
    if (constraintList_isDefined(c) )
      constraintList_free(c);

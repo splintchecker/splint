@@ -2,7 +2,7 @@
 ** forjunk.c
 */
 
-//#define DEBUGPRINT 1
+/* #define DEBUGPRINT 1 */
 
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
@@ -41,9 +41,7 @@ static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
  return FALSE;
 }
 
-
-
-// look for constraints like cexrp = cexrp + 1
+/* look for constraints like cexrp = cexrp + 1 */
 static bool incVar (/*@notnull@*/ constraint c) /*@*/
 {
   constraintExpr t1;
@@ -119,7 +117,7 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
       return FALSE;
     }
 
-  //should check preop too
+  /* should check preop too */
   if (inc->kind != XPR_POSTOP)
     {
       return FALSE;
@@ -254,7 +252,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
       llassert ( FALSE );
     }
 
-  //should check preop too
+  /* should check preop too */
   if (inc->kind != XPR_POSTOP)
     {
       llassert (FALSE );
@@ -381,7 +379,7 @@ static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@
   
   constraintList_elements (forBody->ensuresConstraints, el)
     {
-      // look for var = var + 1
+      /* look for var = var + 1 */
       if (incVar(el) )
 	{
 	  DPRINTF((message ("Found inc variable constraint : %s", constraint_print (el) )  ));

@@ -2,7 +2,7 @@
 ** constraintExpr.c
 */
 
-//#define DEBUGPRINT 1
+/* #define DEBUGPRINT 1 */
 
 # include "lclintMacros.nf"
 # include "basic.h"
@@ -11,9 +11,6 @@
 
 # include "exprChecks.h"
 # include "exprNodeSList.h"
-
-//# include "constraintExpr.h"
-
 
 /*@-czechfcns@*/
 
@@ -31,11 +28,10 @@ doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr p_e, /*@temp@*/ /*@obser
 static /*@only@*/ constraintExpr 
 doFixResultTerm (/*@only@*/ constraintExpr p_e, /*@exposed@*/ exprNode p_fcnCall)
      /*@modifies p_e@*/;
-
-
-     /*@special@*/ static constraintExpr constraintExpr_makeBinaryOp (void) ; /// @allocates result->data @ @sets result->kind @;
-
-//constraintExpr constraintExpr_makeMaxSetConstraintExpr (constraintExpr c);
+     
+     
+/*@special@*/ static constraintExpr constraintExpr_makeBinaryOp (void) 
+     /* @allocates result->data @ @sets result->kind @ */ ;
 
 void constraintExpr_free (/*@only@*/ constraintExpr expr)
 {
@@ -188,7 +184,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
   
   llassert (expr != NULL);
   
-  // we simplify unaryExpr else where
+  /* we simplify unaryExpr elsewhere */
   if (expr->kind != binaryexpr)
     return expr;
 
@@ -495,9 +491,9 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
   return ret;
 }
 
-/*@only@*/  constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
+/*@only@*/ constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
 {
-  return  oldconstraintExpr_makeTermExprNode(e); //constraintExpr_makeExprNode (e);
+  return  oldconstraintExpr_makeTermExprNode(e);
 }
 
 static constraintExpr constraintExpr_makeTerm (/*@only@*/  constraintTerm t)
@@ -542,11 +538,11 @@ constraintExpr constraintExpr_makeTermsRef (/*@temp@*/ sRef s)
 
   /*@-uniondef@*/ 
   /*@-compdef@*/
-    ret->data = constraintExprData_unaryExprSetExpr (ret->data, cexpr);
-    ret->data = constraintExprData_unaryExprSetOp (ret->data, UNARYOP_UNDEFINED);
-
+  ret->data = constraintExprData_unaryExprSetExpr (ret->data, cexpr);
+  ret->data = constraintExprData_unaryExprSetOp (ret->data, UNARYOP_UNDEFINED);
+  
   return ret;
-
+  
   /*@=compdef@*/
   /*@=uniondef@*/
 }
@@ -710,7 +706,6 @@ constraintExpr constraintExpr_makeValueInt (int i)
   ret->data->binaryOp.expr1 = constraintExpr_undefined;
   ret->data->binaryOp.expr2 = constraintExpr_undefined;
   
-  //  ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_UNDEFINED);
   return ret;
 }
 
@@ -1176,23 +1171,23 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
   expr1 = constraintExpr_copy(expr1);
   expr2 = constraintExpr_copy(expr2);
 
-//drl possible problem : warning make sure this works
-    
-    lexpr->kind = expr1->kind;
-    free (lexpr->data);
-
-    lexpr->data = copyExprData (expr1->data, expr1->kind);
-    constraintExpr_free(expr1);
-    
-    if (op == PLUS)
-      expr = constraintExpr_makeSubtractExpr (expr, expr2);
-    else if (op == MINUS)
-      expr = constraintExpr_makeAddExpr (expr, expr2);
-    else
-      BADEXIT;
-
-    
-    return expr;
+  /* drl possible problem : warning make sure this works */
+  
+  lexpr->kind = expr1->kind;
+  sfree (lexpr->data);
+  
+  lexpr->data = copyExprData (expr1->data, expr1->kind);
+  constraintExpr_free(expr1);
+  
+  if (op == PLUS)
+    expr = constraintExpr_makeSubtractExpr (expr, expr2);
+  else if (op == MINUS)
+    expr = constraintExpr_makeAddExpr (expr, expr2);
+  else
+    BADEXIT;
+  
+  
+  return expr;
 
   /*
     #warning this needs to be checked
@@ -1216,7 +1211,6 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
     {
       return c;
     }
-  // pattern mxr ( var + const) = mxr(var) - const
   
   exp = constraintExprData_unaryExprGetExpr (c->data);
   exp = constraintExpr_copy(exp);
@@ -1257,10 +1251,11 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 	  BADEXIT;
 	}
 
-      // slight Kludge to hanlde var [] = { , , };
-      // type syntax  I don't think this is sounds but it should be good
-      // enough.  The C stanrad is very confusing about initialization
-      // -- DRL 7/25/01
+      /* slight Kludge to hanlde var [] = { , , };
+      ** type syntax  I don't think this is sounds but it should be good
+      ** enough.  The C stanrad is very confusing about initialization
+      ** -- DRL 7/25/01
+      */
       
       if (constraintTerm_isInitBlock(cterm) )
 	{
@@ -1291,7 +1286,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
   if (constraintExprData_binaryExprGetOp (exp->data) == PLUS  )
     {
  
-      //      if (constraintExpr_canGetValue (constraintExprData_binaryExprGetExpr2 (exp->data) ) )
+      /* if (constraintExpr_canGetValue (constraintExprData_binaryExprGetExpr2 (exp->data) ) ) */
 	{
 	
 	  constraintExpr  temp, temp2;

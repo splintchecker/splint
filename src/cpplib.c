@@ -799,6 +799,7 @@ cppReader_appendIncludeChain (cppReader *pfile,
   opts->last_include = last;
 }
 
+# if 0
 static /*@unused@*/ void 
 cppReader_showIncludeChain (cppReader *pfile)
 {
@@ -819,6 +820,7 @@ cppReader_showIncludeChain (cppReader *pfile)
       fprintf (stderr, "No includes\n");
     }
 }
+# endif
 
 cstring 
 cppReader_getIncludePath ()

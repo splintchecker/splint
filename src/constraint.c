@@ -2,7 +2,7 @@
 ** constraint.c
 */
 
-//#define DEBUGPRINT 1
+/* #define DEBUGPRINT 1 */
 
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
@@ -25,43 +25,6 @@ static /*@notnull@*/ /*@special@*/ constraint constraint_makeNew (void)
      /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/
      /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/;
      
-/*  constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant) */
-     
-/*  { */
-/*    char *t; */
-/*    int c; */
-/*    constraint ret; */
-/*    ret = constraint_makeNew(); */
-/*    llassert (sRef_isValid(x) ); */
-/*    if (!sRef_isValid(x)) */
-/*      return ret; */
- 
-    
-/*    ret->lexpr = constraintExpr_makeTermsRef (x); */
-/*    #warning fix abstraction */
-
-/*    if (relOp.tok == GE_OP) */
-/*        ret->ar = GTE; */
-/*    else if (relOp.tok == LE_OP) */
-/*      ret->ar = LTE; */
-/*    else if (relOp.tok == EQ_OP) */
-/*      ret->ar = EQ; */
-/*    else */
-/*      llfatalbug(message ("Unsupported relational operator") ); */
-
-
-/*    t =  cstring_toCharsSafe (exprNode_unparse(cconstant)); */
-/*    c = atoi( t ); */
-/*    ret->expr = constraintExpr_makeIntLiteral (c); */
-
-/*    ret->post = TRUE; */
-/*    //  ret->orig = ret; */
-/*    DPRINTF(("GENERATED CONSTRAINT:")); */
-/*    DPRINTF( (message ("%s", constraint_print(ret) ) ) ); */
-/*    return ret; */
-/*  } */
-
-
 static void
 advanceField (char **s)
 {
@@ -95,7 +58,6 @@ static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode 
   ret->expr = constraintExpr_makeIntLiteral (c);
 
   ret->post = TRUE;
-  //  ret->orig = ret;
   DPRINTF(("GENERATED CONSTRAINT:"));
   DPRINTF( (message ("%s", constraint_print(ret) ) ) );
   return ret;
@@ -149,8 +111,8 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
   ret->orig = constraint_copy(ret);
 
   ret = constraint_simplify (ret);
-  
-  //  ret->orig = ret;
+  /* ret->orig = ret; */
+
   DPRINTF(("GENERATED CONSTRAINT:"));
   DPRINTF( (message ("%s", constraint_print(ret) ) ) );
   return ret;
@@ -161,8 +123,7 @@ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
   constraint ret;
 
   llassert (constraint_isDefined(c) );
-  // DPRINTF((message("Copying constraint %q", constraint_print) ));
-  
+
   ret = constraint_makeNew();
   ret->lexpr = constraintExpr_copy (c->lexpr);
   ret->ar = c->ar;
@@ -289,7 +250,7 @@ constraint constraint_setFcnPre (/*@returned@*/ constraint c )
   else
     {
       c->fcnPre = TRUE;
-      //      DPRINTF(( message("Warning Setting fcnPre directly") ));
+      DPRINTF(( message("Warning Setting fcnPre directly") ));
     }
   return c;
 }
@@ -332,7 +293,7 @@ bool constraint_hasMaxSet(constraint c)
 constraint constraint_makeReadSafeExprNode (  exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew();
-  //  constraintTerm term;
+
   po = po;
   ind = ind;
   ret->lexpr = constraintExpr_makeMaxReadExpr(po);
@@ -430,12 +391,9 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, filelo
   constraint ret;
   
   ret = constraint_makeReadSafeExprNode(t1, t2);
-
-  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
-  
+  ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);  
   ret->post = TRUE;  
 
-  //  fileloc_incColumn (ret->lexpr->term->loc);
   return ret;
 }
 
@@ -445,7 +403,6 @@ static constraint constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintE
   constraint ret;
   
   llassert(constraintExpr_isDefined(c1) && constraintExpr_isDefined(c2) );
-  //  llassert(sequencePoint);
 
   ret = constraint_makeNew();
   
@@ -467,11 +424,9 @@ static constraint constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@depe
     {
       llcontbug((message("null exprNode, Exprnodes are %s and %s",
 		       exprNode_unparse(e1), exprNode_unparse(e2) )
-	       ));
+		 ));
     }
 
-  //  llassert (sequencePoint);
-  
   e  =  e1;
   c1 =  constraintExpr_makeValueExpr (e);
   
@@ -594,26 +549,19 @@ constraint constraint_makeSubtractAssign (exprNode e, exprNode f, fileloc sequen
 constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
-  //constraintTerm term;
 
-  //  e = exprNode_fakeCopy(e);
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
   ret->expr =  constraintExpr_makeValueExpr (e);
   ret->expr =  constraintExpr_makeDecConstraintExpr (ret->expr);
-
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
   return ret;
 }
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
 {
   constraint ret = constraint_makeNew();
-  //constraintTerm term;
 
-  //  e = exprNode_fakeCopy(e);
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
@@ -621,8 +569,6 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
   ret->expr =  constraintExpr_makeIncConstraintExpr (ret->expr);
 
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
   return ret;
 }
 
@@ -649,22 +595,6 @@ void constraint_free (/*@only@*/ constraint c)
   free (c);
   
 }
-
-
-// constraint constraint_makeMaxReadSideEffectPostIncrement (exprNode e, fileloc sequencePoint)
-// {
-//   constraint ret = constraint_makeNew();
-//   //constraintTerm term;
-
-//   e = exprNode_fakeCopy(e);
-//   ret->lexpr = constraintExpr_makeMaxReadExpr(e);
-//   ret->ar = EQ;
-//   ret->post = TRUE;
-//   ret->expr = constraintExpr_makeIncConstraintExpr (e);
-//   ret->lexpr = constraintExpr_setFileLoc (ret->lexpr, sequencePoint);
-//   return ret;
-// }
-
 
 cstring arithType_print (arithType ar) /*@*/
 {
@@ -831,8 +761,9 @@ static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/
   if (context_getFlag (FLG_CONSTRAINTLOCATION) )
     {
       cstring temp;
-      // llassert (c->generatingExpr);
-      temp = message ("\nOriginal Generating expression %q: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
+
+      temp = message ("\nOriginal Generating expression %q: %s\n", 
+		      fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
 		      genExpr );
       st = cstring_concatFree (st, temp);
 
@@ -987,19 +918,6 @@ constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exp
   precondition->fcnPre = FALSE;
   return precondition;
 }
-
-// bool constraint_hasTerm (constraint c, constraintTerm term)
-// {
-//   DPRINTF((message ("Constraint %s", constraint_print (c) ) ) );
-  
-//   if (constraintExpr_includesTerm (c->lexpr, term) )
-//     return TRUE;
-
-//   if (constraintExpr_includesTerm (c->expr, term) )
-//     return TRUE;
-
-//   return FALSE;
-// }
 
 constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/
 {

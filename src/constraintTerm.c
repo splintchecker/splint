@@ -2,7 +2,7 @@
 ** constraintExpr.c
 */
 
-//#define DEBUGPRINT 1
+/* #define DEBUGPRINT 1 */
 
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
@@ -14,8 +14,6 @@
 # include "exprNodeSList.h"
 
 /*@-czechfcns@*/
-
-//#include "constraintExpr.h"
 
 /*@access exprNode @*/
 
@@ -47,7 +45,7 @@ void constraintTerm_free (/*@only@*/ constraintTerm term)
       /* type was set incorrectly */
       llcontbug (message("constraintTerm_free type was set incorrectly"));
     }
-  //  term->value.intlit = 0;
+
   term->kind =  ERRORBADCONSTRAINTTERMTYPE;
   free (term);
 }
@@ -257,7 +255,7 @@ static cstring constraintTerm_getName (constraintTerm term)
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  //wtf
+      /*@i334*/  /*wtf*/
       s = message ("%s", exprNode_unparse (term->value.expr) );
       break;
     case INTLITERAL:
@@ -285,18 +283,13 @@ constraintTerm_doSRefFixBaseParam (/*@returned@*/constraintTerm term, exprNodeLi
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  //wtf
-      //   s = message ("%s @ %s ", exprNode_unparse (term->value.expr),
-      //	   fileloc_unparse (term->loc) );
+      /*@i334*/  /*wtf*/
       break;
     case INTLITERAL:
-      //  s = message (" %d ", term->value.intlit);
-       break;
+      break;
       
     case SREF:
       term->value.sref = sRef_fixBaseParam (term->value.sref, arglist);
-      //      s = message ("%s ", sRef_unparse (term->value.sref) );
-
       break;
     default:
       BADEXIT;
@@ -315,7 +308,7 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  //wtf
+      /*@i334*/  /*wtf*/
       s = message ("%s @ %q", exprNode_unparse (term->value.expr),
 		   fileloc_unparse (term->loc) );
       break;
@@ -613,8 +606,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc));
 	    free (ostr2);
 	  }
-	else  //This must be an identified that we can search for
-	  // in usymTab
+	else  /* This must be an identified that we can search for in usymTab */
 	  {
 	    cstring termStr = cstring_makeLiteralTemp(term);
 
@@ -635,8 +627,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	cstring termStr;
 		
 	term = reader_getWord(&str);
-	//This must be an identifier that we can search for
-	  // in usymTab
+	/* This must be an identifier that we can search for in usymTab */
 	termStr = cstring_makeLiteralTemp(term);
 	
 	ue = usymtab_lookup (termStr);

@@ -110,30 +110,7 @@ constraintExprData constraintExprData_copyTerm (/*@observer@*/ constraintExprDat
   return ret;
 }
 
-// constraintExprData constraintExprData_copy (constraintExprData data, constraintExprKind kind)
-// {
-//   constraintExprData ret;
-//   llassert(constraintExprData_isDefined(data));
-//   ret = dmalloc (sizeof (*ret) );
-//   switch (kind)
-//     {
-//     case binaryexpr:
-//       ret->binaryOp.binaryOp = data->binaryOp.binaryOp;
-//       ret->binaryOp.expr1 = constraintExpr_copy (data->binaryOp.expr1);
-//       ret->binaryOp.expr2 = constraintExpr_copy (data->binaryOp.expr2);
-//       break;
-//     case unaryExpr:
-//       ret->unaryOp.unaryOp = data->unaryOp.unaryOp;
-//       ret->unaryOp.expr = constraintExpr_copy (data->unaryOp.expr);
-//       break;
-//     case term:
-//       ret->term = constraintTerm_copy (data->term);
-//     }
-  
-//   return ret;
-// }
-
- constraintExprData constraintExprData_termSetTerm (/*@returned@*/  constraintExprData data,  /*@only@*/constraintTerm term)
+constraintExprData constraintExprData_termSetTerm (/*@returned@*/  constraintExprData data,  /*@only@*/constraintTerm term)
 {
   llassert (constraintExprData_isDefined(data));
 
@@ -187,8 +164,9 @@ constraintExprData  constraintExprData_unaryExprSetExpr (constraintExprData data
   return data;
 }
 
-// binaryExpr stuff
-
+/*
+** binaryExpr stuff
+*/
 
 constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data)
 {
