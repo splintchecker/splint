@@ -36,15 +36,7 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@-czechfcns@*/
 
-/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
-// /*@-nullderef@*/ /* !!! DRL needs to fix this code! */
-// /*@-nullstate@*/ /* !!! DRL needs to fix this code! */
-// /*@-temptrans@*/ /* !!! DRL needs to fix this code! */
-
-/*@only@*/ /*@notnull@*/
-constraintExpr constraintExpr_makeIntLiteral (long i);
 static ctype constraintExpr_getOrigType (constraintExpr p_e);
 static bool constraintExpr_hasTypeChange(constraintExpr p_e) /*@*/;
 
@@ -301,7 +293,8 @@ static bool isZeroBinaryOp (constraintExpr expr)
 	  
 	  constraintExpr_free(expr1);
 	  constraintExpr_free(expr);
-	  
+
+	  llassert (constraintExpr_isDefined(temp) );
 	  return temp;
 	}
       else
@@ -356,7 +349,9 @@ static bool isZeroBinaryOp (constraintExpr expr)
 	}
     }
    DPRINTF ((message ("After combine %s", constraintExpr_unparse(expr) ) ) );
-  return expr;
+
+   llassert(constraintExpr_isDefined(expr) );
+   return expr;
 }
 
 /*@special@*/
@@ -432,6 +427,7 @@ constraintExpr constraintExpr_copy (constraintExpr expr)
   return ret;
 }
 
+/*@access exprNode@*/
 constraintExpr constraintExpr_makeExprNode (exprNode e)
 {
  sRef s;
@@ -565,6 +561,11 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    }
   return ret;
 }
+
+/*@noaccess exprNode@*/
+
+
+
 
 /*@only@*/ constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
 {
@@ -2092,6 +2093,8 @@ bool constraintExpr_isBinaryExpr (/*@observer@*/ constraintExpr c)
 /*drl added 8/08/001 */
 bool constraintExpr_isTerm (/*@observer@*/ constraintExpr c) /*@*/
 {
+  llassert(constraintExpr_isDefined (c) );
+  
   if (c->kind == term)
     return TRUE;
 
@@ -2102,6 +2105,8 @@ bool constraintExpr_isTerm (/*@observer@*/ constraintExpr c) /*@*/
 /*@observer@*/ /*@temp@*/ constraintTerm constraintExpr_getTerm ( /*@temp@*/ /*@observer@*/ constraintExpr c) /*@*/
 {
   constraintTerm term;
+  
+  llassert(constraintExpr_isDefined (c) );
   
   llassert(constraintExpr_isTerm(c) );
 
@@ -2150,10 +2155,19 @@ static constraintExpr  binaryExpr_undump (FILE *f)
 
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
+  if (! mstring_isDefined(str) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
   
   binaryOp = (constraintExprBinaryOpKind) reader_getInt(&str);
   
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  if (! mstring_isDefined(str) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
 
   reader_checkChar (&str, 'e');
   reader_checkChar (&str, '1');
@@ -2205,6 +2219,11 @@ static  constraintExpr  unaryExpr_undump ( FILE *f)
   os = str;
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
+  if (! mstring_isDefined(str) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
+
   unaryOp = (constraintExprUnaryOpKind) reader_getInt(&str);
   
   expr = constraintExpr_undump (f);
@@ -2222,6 +2241,8 @@ void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f)
   constraintTerm t;
   
 
+  llassert(constraintExpr_isDefined(expr) );
+  
   DPRINTF((message("constraintExpr_dump:: dumping constraintExpr %s",
 		   constraintExpr_unparse(expr)
 		   ) ));
@@ -2259,6 +2280,11 @@ void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f)
   os = s;
   
   s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  if (! mstring_isDefined(s) )
+    {
+      llfatalbug(message("Library file is corrupted") );
+    }
 
   kind = (constraintExprKind) reader_getInt(&s);
 
@@ -2321,6 +2347,9 @@ int constraintExpr_getDepth (constraintExpr ex)
 
 bool  constraintExpr_canGetCType (constraintExpr e) /*@*/
 {
+  if (constraintExpr_isUndefined(e) )
+    return FALSE;
+  
   if (e->kind == term)
     {
       return TRUE;
@@ -2336,7 +2365,9 @@ bool  constraintExpr_canGetCType (constraintExpr e) /*@*/
 ctype constraintExpr_getCType (constraintExpr e) /*@*/
 {
   constraintTerm t;
- 
+
+  llassert(constraintExpr_isDefined(e) );
+
   llassert(constraintExpr_canGetCType(e) );
 
   switch (e->kind)
@@ -2364,6 +2395,7 @@ ctype constraintExpr_getCType (constraintExpr e) /*@*/
 
 static bool constraintExpr_hasTypeChange(constraintExpr e)
 {
+  llassert(constraintExpr_isDefined(e) );
   if (constraintExpr_isDefined((e)) && (e->ct == TRUE) )
     {
       return TRUE;
@@ -2389,6 +2421,7 @@ static bool constraintExpr_hasTypeChange(constraintExpr e)
 static ctype constraintExpr_getOrigType (constraintExpr e)
 {
 
+  llassert(constraintExpr_isDefined(e) );
   llassert(constraintExpr_hasTypeChange(e) );
   
   
@@ -2420,6 +2453,8 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
   return e;
 }
 
+
+/*@access exprNode@*/ 
 static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*/ constraintExpr e, ctype ct)
 {
   exprData data;
@@ -2427,6 +2462,8 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
   lltok tok;
   constraintTerm t;
 
+  llassert(constraintExpr_isDefined(e) );
+  
   DPRINTF((
 	   message("constraintTerm_simpleDivTypeExprNode e=%s, ct=%s",
 		   constraintExpr_print(e), ctype_unparse(ct)
@@ -2436,6 +2473,9 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
   t = constraintExprData_termGetTerm(e->data);
   
   expr = constraintTerm_getExprNode(t);
+
+  llassert(constraintExpr_isDefined(e) );
+  llassert(exprNode_isDefined(expr) );
   
   if (expr->kind == XPR_OP)
     {
@@ -2446,6 +2486,9 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
       tok = exprData_getOpTok (data);
       if (lltok_isMult(tok) )
 	{
+	  llassert(exprNode_isDefined(t1) && exprNode_isDefined(t2) );
+	  /*drl 3/2/2003 we know this from the fact that it's a
+	    multiplication operation...*/
 	  
 	  if  ((t1->kind == XPR_SIZEOF) || (t1->kind == XPR_SIZEOFT) )
 	    {
@@ -2482,7 +2525,16 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 		}
 	      else
 		{
-		  ct2 = qtype_getType (exprData_getType(exprData_getSingle (t2->edata)->edata ) );
+		  exprNode exprTemp;
+		  exprData eDTemp;
+		  
+		  exprTemp = exprData_getSingle (t2->edata);
+
+		  llassert(exprNode_isDefined(exprTemp) );
+		  eDTemp = exprTemp->edata;
+		  
+		  ct2 = qtype_getType (exprData_getType(eDTemp ) );
+		  
 		}
 	      if (ctype_match (ctype_makePointer(ct2),ct) )
 		{
@@ -2500,6 +2552,7 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
     }
   return (constraintExpr_div (e, ct) );
 }
+/*@noaccess exprNode@*/ 
 
 static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, ctype ct)
 {
@@ -2507,6 +2560,8 @@ static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, cty
   DPRINTF(( (message("simpleDiv got %s ", constraintExpr_unparse(e) ) )
 	    ));
 
+  llassert(constraintExpr_isDefined(e) );
+  
   switch (e->kind)
     {
     case term:
@@ -2583,6 +2638,8 @@ bool  constraintExpr_isConstantOnly ( constraintExpr e )
   DPRINTF(( (message("constraintExpr_isConstantOnly %s ",
 		     constraintExpr_unparse(e) ) )
 	    ));
+
+  llassert(constraintExpr_isDefined(e) );
 
   switch (e->kind)
     {

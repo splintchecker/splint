@@ -52,7 +52,7 @@ int constraintExpr_compare (constraintExpr p_expr1, constraintExpr p_expr2) /*@*
 
 /* constraintExpr constraintExpr_makeValueInt (int i); */
 
-/*@only@*/ constraintExpr constraintExpr_makeIntLiteral (long p_i);
+/*@only@*/ /*@notnull@*/constraintExpr constraintExpr_makeIntLiteral (long p_i);
 
 /*@only@*/ constraintExpr constraintExpr_makeValueExpr (/*@exposed@*/ exprNode p_expr);
 
