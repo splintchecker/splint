@@ -48,6 +48,7 @@ UNITTESTS = \
   returned sharing shifts slovaknames \
   specclauses \
   special stack staticarray strings \
+  stringliteral \
   structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
   unused ullint utypes void widestrings
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
@@ -725,6 +726,11 @@ stack:
 .PHONY: staticarray
 staticarray:
 	-$(SPLINTR) staticarray.c -expect 3
+
+.PHONY: stringliteral
+stringliteral:
+	-$(SPLINTR) stringliteral.c +stringliteralnoroomfinalnull -expect 4
+	-$(SPLINTR) stringliteral.c -expect 3
 
 .PHONY: strings
 strings:
@@ -1482,4 +1488,6 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
                 loopexec.c mergenull.c shifts.c \
                 manual.expect ./manual/Makefile \
-                ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c
+                ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
+                  arraydims.expect arraydims.c \
+                  stringliteral.expect  stringliteral.c
