@@ -695,8 +695,23 @@ llgentypeerroraux (char *srcFile, int srcLine,
 	      hcode = FLG_MATCHANYINTEGRAL;
 	    }
 	  else
+	    /*drl 4-270-2003 even if ignoresigns is set there may be another
+	      problem that is causing splint to complain about a type error.
+	      Don't tell the user that they can add +ignoresigns if it's
+	      already on*/
 	    {
-	      hcode = FLG_IGNORESIGNS;
+	      DPRINTF(("TEST INGORESIGNS"));
+	      if (context_getFlag(FLG_IGNORESIGNS) )
+		{
+		  DPRINTF(("INGORESIGNS SET"));
+		  hcode = FLG_IGNOREQUALS;
+		}
+	    
+	      else
+		{
+		  DPRINTF(("INGORESIGNS NOT SET"));
+		  hcode = FLG_IGNORESIGNS;
+		}
 	    }
 	}
       else
