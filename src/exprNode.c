@@ -3188,8 +3188,20 @@ reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
 			} end_sRefSet_elements;
 		    }
 		}
-	    } end_stateClauseList_elements ;
-	    
+	    } end_stateClauseList_elements ;	    
+	}
+
+      DPRINTF (("Here: %s / %s",
+		uentry_unparseFull (le),
+		bool_unparse (uentry_hasMetaStateEnsures (le))));
+
+      if (uentry_hasMetaStateEnsures (le))
+	{
+	  metaStateConstraint msc = uentry_getMetaStateEnsures (le);
+
+	  TPRINTF (("Meta state constraint for %s: %s", uentry_unparse (le),
+		    metaStateConstraint_unparse (msc)));
+
 	}
     }
 }

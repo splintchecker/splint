@@ -2528,7 +2528,7 @@ static int processIdentifier (cstring id)
 		    }
 		  else
 		    {
-		      TPRINTF (("Not meta state name: %s", cstring_toCharsSafe (id)));
+		      DPRINTF (("Not meta state name: %s", cstring_toCharsSafe (id)));
 		    }
 		}
 	      

@@ -52,6 +52,16 @@ extern functionConstraint functionConstraint_createMetaStateConstraint (metaStat
   return res;
 }
 
+extern functionConstraint functionConstraint_conjoin (functionConstraint f1, functionConstraint f2)
+{
+  functionConstraint res = functionConstraint_alloc (FCT_CONJUNCT);
+  res->constraint.conjunct.op1 = f1;
+  res->constraint.conjunct.op2 = f2;
+  DPRINTF (("Conjoining ==> %s",
+	    functionConstraint_unparse (res)));
+  return res;
+}
+
 /*@only@*/ cstring functionConstraint_unparse (functionConstraint p)
 {
   if (functionConstraint_isDefined (p)) 
@@ -62,6 +72,10 @@ extern functionConstraint functionConstraint_createMetaStateConstraint (metaStat
 	  return constraintList_unparse (p->constraint.buffer);
 	case FCT_METASTATE:
 	  return metaStateConstraint_unparse (p->constraint.metastate);
+	case FCT_CONJUNCT:
+	  return message ("%q /\\ %q",
+			  functionConstraint_unparse (p->constraint.conjunct.op1),
+			  functionConstraint_unparse (p->constraint.conjunct.op2));
 	  BADDEFAULT;
 	}
       BADBRANCH;
@@ -75,6 +89,20 @@ extern functionConstraint functionConstraint_createMetaStateConstraint (metaStat
 extern constraintList functionConstraint_getBufferConstraint (functionConstraint node)
 {
   llassert (functionConstraint_isDefined (node));
+
+  if (node->kind == FCT_CONJUNCT)
+    {
+      if (functionConstraint_hasBufferConstraint (node->constraint.conjunct.op1))
+	{
+	  return functionConstraint_getBufferConstraint (node->constraint.conjunct.op1);
+	}
+      else
+	{
+	  llassert (functionConstraint_hasBufferConstraint (node->constraint.conjunct.op2));
+	  return functionConstraint_getBufferConstraint (node->constraint.conjunct.op2);
+	}
+    }
+
   llassert (node->kind == FCT_BUFFER);
   return node->constraint.buffer;
 }
@@ -82,13 +110,52 @@ extern constraintList functionConstraint_getBufferConstraint (functionConstraint
 extern metaStateConstraint functionConstraint_getMetaStateConstraint (functionConstraint node)
 {
   llassert (functionConstraint_isDefined (node));
+
+  if (node->kind == FCT_CONJUNCT)
+    {
+      if (functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op1))
+	{
+	  return functionConstraint_getMetaStateConstraint (node->constraint.conjunct.op1);
+	}
+      else
+	{
+	  llassert (functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op2));
+	  return functionConstraint_getMetaStateConstraint (node->constraint.conjunct.op2);
+	}
+    }
+
   llassert (node->kind == FCT_METASTATE);
   return node->constraint.metastate;
 }
 
 extern bool functionConstraint_hasBufferConstraint (functionConstraint node)
 {
-  return functionConstraint_isDefined (node) && node->kind == FCT_BUFFER;
+  if (functionConstraint_isDefined (node))
+    {
+      return node->kind == FCT_BUFFER
+	|| (node->kind == FCT_CONJUNCT 
+	    && (functionConstraint_hasBufferConstraint (node->constraint.conjunct.op1) 
+		|| functionConstraint_hasBufferConstraint (node->constraint.conjunct.op2)));
+    }
+  else
+    {
+      return FALSE;
+    }
+}
+
+extern bool functionConstraint_hasMetaStateConstraint (functionConstraint node)
+{
+  if (functionConstraint_isDefined (node))
+    {
+      return node->kind == FCT_METASTATE
+	|| (node->kind == FCT_CONJUNCT 
+	    && (functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op1) 
+		|| functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op2)));
+    }
+  else
+    {
+      return FALSE;
+    }
 }
 
 extern functionConstraint functionConstraint_copy (functionConstraint node) 
@@ -101,6 +168,9 @@ extern functionConstraint functionConstraint_copy (functionConstraint node)
 	  return functionConstraint_createBufferConstraint (constraintList_copy (node->constraint.buffer));
 	case FCT_METASTATE:
 	  return functionConstraint_createMetaStateConstraint (metaStateConstraint_copy (node->constraint.metastate));
+	case FCT_CONJUNCT:
+	  return functionConstraint_conjoin (functionConstraint_copy (node->constraint.conjunct.op1),
+					     functionConstraint_copy (node->constraint.conjunct.op2));
 	}
       
       BADBRANCH;
@@ -123,9 +193,21 @@ extern void functionConstraint_free (/*@only@*/ functionConstraint node)
 	case FCT_METASTATE:
 	  metaStateConstraint_free (node->constraint.metastate);
 	  break;
+	case FCT_CONJUNCT:
+	  functionConstraint_free (node->constraint.conjunct.op1);
+	  functionConstraint_free (node->constraint.conjunct.op2);
 	  BADDEFAULT;
 	}
       
       sfree (node);
     }
 }
+
+
+
+
+
+
+
+
+

@@ -1076,11 +1076,13 @@ conditionClausePlain
        {
 	 BADBRANCH;
        }
+
+     DPRINTF (("FunctionclauseS: %s", functionClause_unparse ($$)));
    }
 
 functionConstraint
  : BufConstraintList   { $$ = functionConstraint_createBufferConstraint ($1); }
- | metaStateConstraint { $$ = functionConstraint_createMetaStateConstraint ($1); } 
+ | metaStateConstraint { $$ = functionConstraint_createMetaStateConstraint ($1); DPRINTF (("Made constraint: %s", functionConstraint_unparse ($$))); } 
  
 exitsQualifier
  : QEXITS        { $$ = qual_createExits (); }

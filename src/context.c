@@ -1378,9 +1378,17 @@ context_removeFileAccessType (typeId t)
 
 void context_enterFunctionHeader (void)
 {
-  llassert (gc.kind == CX_GLOBAL);
-  DPRINTF (("Enter function header!"));
-  gc.inFunctionHeader = TRUE;
+  if (gc.kind != CX_GLOBAL)
+    {
+      llparseerror (cstring_makeLiteral
+		    ("Likely parse error.  Function header outside global context."));
+    }
+  else
+    {
+      llassert (gc.kind == CX_GLOBAL);
+      DPRINTF (("Enter function header!"));
+      gc.inFunctionHeader = TRUE;
+    }
 }
 
 void context_exitFunctionHeader (void)
