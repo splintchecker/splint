@@ -261,6 +261,13 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
      t = exprData_getUopNode (data);
           ret = constraintExpr_makeExprNode (t);
      break;
+   case XPR_CAST:
+     t = exprData_getCastNode (data);
+     ret = constraintExpr_makeExprNode (t);
+     break;
+   case XPR_COMMA:
+     t = exprData_getPairA(data);
+     ret = constraintExpr_makeExprNode(t); 
    default:
      ret = oldconstraintExpr_makeTermExprNode (e);
      
@@ -333,6 +340,11 @@ constraintExpr constraintExpr_makeSRefUnaryOp (sRef s,  constraintExprUnaryOpKin
   ret->data = constraintExprData_unaryExprSetOp (ret->data, op);
   return ret;
 }
+
+constraintExpr constraintExpr_makeSRefMaxRead(sRef s)
+{
+  return (constraintExpr_makeSRefUnaryOp (s, MAXREAD) );
+}     
 
 constraintExpr constraintExpr_makeSRefMaxset (sRef s)
 {
@@ -696,7 +708,7 @@ constraintExpr constraintExpr_searchandreplace (constraintExpr c, constraintExpr
   if ( constraintExpr_similar (c, old) )
     {
       #warning mem leak
-      BPRINTF((message ("Replacing %s with %s",
+      DPRINTF((message ("Replacing %s with %s",
 			constraintExpr_unparse(old), constraintExpr_unparse(new)
 			)));
       return constraintExpr_copy (new);
@@ -1149,7 +1161,7 @@ bool constraintExpr_hasMaxSet (constraintExpr expr) /*@*/
 
   t = constraintExpr_unparse(expr);
 
-  return (strstr (t, "MAXSET") );
+  return ((bool)strstr (t, "MAXSET") );
 }
 
 

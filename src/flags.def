@@ -2814,7 +2814,16 @@ NULL, NULL,
   "display full c expression for every constraint generated",
   ",  ",
   0, 0
+    },/*drl added flag 4/26/01*/
+{
+  FK_NT, FK_MEMORY, modeFlag,
+  "implictconstraint",
+  FLG_IMPLICTCONSTRAINT,
+  "Try to generate implicit constraints for functions",
+  ",  ",
+  0, 0
 },
+    
 {
   FK_NT, FK_MEMORY, modeFlag,
   "nullterminated",

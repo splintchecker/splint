@@ -57,6 +57,10 @@
 /*@only@*/ static constraintList fcnEnsuresConstraints = NULL;
 /*end drl*/
 
+/*drl */
+/*@only@*/   constraintList implicitFcnConstraints = NULL;
+
+
 //static  constraintList fcnPreConditions = NULL;
 
 
@@ -621,6 +625,43 @@ declareEnumList (enumNameList el, ctype c, fileloc loc)
 }
 
 static /*@dependent@*/ uentryList currentParamList;
+
+/*drl added 3-28-2001*/
+/* this function takes a list of paramentar and generates a list
+   of constraints.
+   Currently the only constraints gnerated are MaxSet(p) >= 0 for all pointers
+*/
+void  setImplictfcnConstraints ()
+{
+  uentryList params;
+  sRef s;
+  constraint c;
+  params = currentParamList;
+
+  implicitFcnConstraints  = constraint_makeNew();
+  
+  uentryList_elements (params, el)
+    {
+      DPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
+      
+      s = uentry_getSref(el);
+      if (sRef_isReference (s) )
+	{
+	  DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	}
+      else
+	{
+	  DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	}
+      /*drl 4/26/01
+	chagned this is MaxSet(s) == 0 to MaxSet(s) >= 0 */
+      
+      c = constraint_makeSRefWriteSafeInt (s, 0);
+	// constraint_makeSRefSetBufferSize (s, 0);
+      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+    }
+  end_uentryList_elements;
+}
 
 void setCurrentParams (/*@dependent@*/ uentryList ue)
 {

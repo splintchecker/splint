@@ -884,6 +884,7 @@ void exprNode_checkFunctionBody (exprNode body)
 	    }
 	}
 
+      /* drl added call*/
       exprNode_checkFunction (context_getHeader (), body);
       
       if (!checkret)
@@ -893,6 +894,8 @@ void exprNode_checkFunctionBody (exprNode body)
     }
 }
 /*drl modified */
+
+extern constraintList implicitFcnConstraints;
 
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
@@ -920,11 +923,11 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
        c2  =  constraintList_copy (c);
        fix =  constraintList_makeFixedArrayConstraints (body->uses);
        c2  =  reflectChanges (c2, constraintList_copy(fix) );
-
+       
        t = reflectChanges (body->requiresConstraints, constraintList_copy (c2) );
        body->requiresConstraints = constraintList_copy (t);
        
-       DPRINTF ( (message ("The body has the required cosntraints: %s", constraintList_printDetailed (t) ) ) );
+       DPRINTF ( (message ("The body has the required constraints: %s", constraintList_printDetailed (t) ) ) );
        t = constraintList_mergeEnsures (c, body->ensuresConstraints);
 
    body->ensuresConstraints = constraintList_copy (t);
@@ -941,6 +944,14 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
        DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
      }
 
+   if ( implicitFcnConstraints)
+     {
+          if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
+	      {
+		body->requiresConstraints = reflectChanges (body->requiresConstraints, constraintList_copy (implicitFcnConstraints) );
+	      }
+     }
+   
    constraintList_printError(body->requiresConstraints, g_currentloc);
    constraintList_printError(body->ensuresConstraints, g_currentloc);
    

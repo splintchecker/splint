@@ -330,10 +330,12 @@ namedDeclBase
      context_popLoc (); 
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
-   { setCurrentParams ($4); 
+   { setCurrentParams ($4);
+    
         } 
  optGlobMods  optGlobBufConstraints
-   { clearCurrentParams ();
+   { setImplictfcnConstraints ();
+     clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      context_popLoc ();
 

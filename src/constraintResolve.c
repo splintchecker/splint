@@ -45,7 +45,8 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
 {
   constraintList ret;
   constraintList temp;
-  ret = constraintList_new();
+
+  //ret = constraintList_new();
   
   ret = reflectChangesEnsures (list1, list2);
   ret = constraintList_fixConflicts (ret, list2);
@@ -59,6 +60,28 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
   //return ret;
 }
 
+constraintList constraintList_mergeRequires (constraintList list1, constraintList list2)
+{
+  constraintList ret;
+  constraintList temp;
+
+  DPRINTF((message ("constraintList_mergeRequires: merging  %s and %s ", constraintList_print (list1), constraintList_print(list2) ) ) );
+
+  /* get constraints in list1 not satified by list2 */
+  temp = reflectChanges (list1, list2);
+  DPRINTF((message ("constraintList_mergeRequires: temp = %s", constraintList_print(temp) ) ) );
+
+/*get constraints in list2 not satified by temp*/
+  ret = reflectChanges (list2, temp);
+ 
+  DPRINTF((message ("constraintList_mergeRequires: ret =  %s", constraintList_print(ret) ) ) );
+  
+  ret = constraintList_addList (ret, temp);
+  
+  DPRINTF((message ("constraintList_mergeRequires: returning  %s", constraintList_print(ret) ) ) );
+
+  return ret;
+}
 					    
 /* constraintList constraintList_resolveRequires (constraintList requires, constraintList ensures) */
 /* { */
@@ -195,7 +218,8 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   parent->requiresConstraints = constraintList_copy (child1->requiresConstraints);
   
   temp = reflectChanges (child2->requiresConstraints, child1->ensuresConstraints);
-  parent->requiresConstraints = constraintList_addList (parent->requiresConstraints, temp);
+
+  parent->requiresConstraints = constraintList_mergeRequires (parent->requiresConstraints, temp);
 
   parent->ensuresConstraints = constraintList_mergeEnsures(child1->ensuresConstraints,
 							   child2->ensuresConstraints);
@@ -231,7 +255,7 @@ constraintList constraintList_subsumeEnsures (constraintList list1, constraintLi
     return ret;
 }
 
-
+/* tries to resolve constraints in list pr2 using post1 */
 constraintList reflectChanges (constraintList pre2, constraintList post1)
 {
   
@@ -666,12 +690,13 @@ constraint substitute (constraint c, constraintList p)
 	     
 	     temp = constraint_adjust(temp, c);
 
-	     DPRINTF((message ("Substituting %s for %s",
+	     DPRINTF((message ("Substituting %s in the constraint %s",
 			       constraint_print (temp), constraint_print (c)
 			       ) ) );
 			       
 	  
 	     c = constraint_searchandreplace (c, temp->lexpr, temp->expr);
+	     DPRINTF(( message ("The new constraint is %s", constraint_print (c) ) ));
 	   }
     }
   end_constraintList_elements;

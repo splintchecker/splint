@@ -738,9 +738,9 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
   /* This expr is null terminated, so we set the len and size */
   sRef_setNullTerminatedState(e->sref);
   /*
-  TPRINTF("Len is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
-  TPRINTF("Size is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
-  TPRINTF("State is set to: %d\n\n", e->sref->bufinfo.bufstate);
+  DPRINTF("Len is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
+  DPRINTF("Size is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
+  DPRINTF("State is set to: %d\n\n", e->sref->bufinfo.bufstate);
   */
   sRef_setLen(e->sref, strlen((char *)multiVal_forceString(e->val)));
   sRef_setSize(e->sref, strlen((char *)multiVal_forceString(e->val)));
