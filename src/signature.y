@@ -35,8 +35,6 @@
 
 %{
 
-# include "bison.reset"
-
 # include <stdio.h>
 # include "lclintMacros.nf"
 # include "llbasic.h"
@@ -54,7 +52,9 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 
 # define YYDEBUG 1
 
-# include "bison.head"
+/*@-redef@*/
+/*@-readonlytrans@*/
+/*@-nullassign@*/
 
 %}
 
@@ -79,7 +79,9 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
   /*@only@*/  nameNode name;
   /*@owned@*/ lslOp operator;
   /*@only@*/  lslOpList operators;
-}
+  /*@-redef@*/ /*@-matchfields@*/ 
+} 
+/*@=redef@*/ /*@=matchfields@*/
 
 %token <ltok> LST_SIMPLEID
 %token <ltok> LST_LOGICALOP         /* \implies, \and, \not, \or */

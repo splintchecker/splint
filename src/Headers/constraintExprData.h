@@ -39,18 +39,12 @@ typedef union constraintExprData
   constraintExprBinaryOp binaryOp;
   constraintExprUnaryOp unaryOp;
   constraintTerm term;
-}  * constraintExprData;
+} *constraintExprData;
 
-/*@constant null constraintExprData constraintExprData_undefined; @*/
-# define constraintExprData_undefined ((constraintExprData) NULL)
+extern /*@falsenull@*/ bool constraintExprData_isDefined (/*@temp@*/ /*@observer@*/ /*@reldef@*/ constraintExprData p_e) /*@*/ ;
+# define constraintExprData_isDefined(e)      ((e) != NULL)
 
-extern /*@falsenull@*/ bool constraintExprData_isDefined ( /*@temp@*/ /*@observer@*/ /*@reldef@*/constraintExprData p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (/*2oberserver@*/ constraintExprData p_e) /*@*/ ;
 extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (/*@observer@*/ constraintExprData p_e) /*@*/ ;
-
-# define constraintExprData_isDefined(e)      ((e) != constraintExprData_undefined)
-# define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
-# define constraintExprData_isError(e)        ((e) == constraintExprData_undefined)
 
 extern void constraintExprData_freeBinaryExpr (/*@only@*/ constraintExprData) ;
 extern void constraintExprData_freeUnaryExpr (/*@only@*/ constraintExprData) ;

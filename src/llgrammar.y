@@ -75,6 +75,8 @@ bool g_inTypeDef = FALSE;
 
 %}
 
+/*@-readonlytrans@*/
+
 %union 
 {
   ltoken ltok;  /* a leaf is also an ltoken */
@@ -139,7 +141,8 @@ bool g_inTypeDef = FALSE;
   /*@only@*/ interfaceNode iface;
   /*@only@*/ interfaceNodeList interfacelist; 
   /*@only@*/ CTypesNode ctypes;
-}
+  /*@-redef@*/
+} /*@=redef@*/
 
 /* Order of precedence is increasing going down the list */
 
@@ -376,6 +379,9 @@ bool g_inTypeDef = FALSE;
 **   The inputs are in strict order (in AST) as well as in the position of
 **   the call to the static semantic routine. 
 */ 
+
+/*@=redef@*/
+/*@=readonlytrans@*/
 
 %%
 
