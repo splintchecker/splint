@@ -35,6 +35,7 @@ extern void context_setLibrary (flagcode) /*@modifies internalState@*/ ;
 extern void context_setPreprocessing (void) /*@modifies internalState@*/;
 extern void context_clearPreprocessing (void) /*@modifies internalState@*/;
 extern bool context_isPreprocessing (void) /*@*/;
+extern bool context_loadingLibrary (void) /*@*/ ;
 
 extern void context_setInCommandLine (void) /*@modifies internalState@*/ ;
 extern void context_clearInCommandLine (void) /*@modifies internalState@*/ ;

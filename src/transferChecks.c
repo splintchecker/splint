@@ -4046,9 +4046,28 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
       {
 	llassert (metaStateInfo_isDefined (minfo));
 	
-	if (stateValue_isError (fval) || stateValue_isError (tval))
+	if (stateValue_isError (fval))
 	  {
 	    ;
+	  }
+	else if (stateValue_isError (tval))
+	  {
+	    if (sRef_isLocalVar (tref) && transferType == TT_DOASSIGN)
+	      {
+		/* Local assignments just replace state. */
+		DPRINTF (("No transfer error assigning to local: %s", msg));
+		stateValue_updateValueLoc (tval, stateValue_getValue (fval), loc);
+		DPRINTF (("Update: %s", stateValue_unparse (tval)));
+	      }
+	    else if (transferType == TT_FCNRETURN)
+	      {
+		; /* Returning from an unannotated function */
+	      }
+	    else
+	      {
+		TPRINTF (("Transfer to error: %s", sRef_unparseFull (tref)));
+		BADBRANCH;
+	      }
 	  }
 	else 
 	  {
@@ -4070,6 +4089,7 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 		/* Local assignments just replace state. */
 		DPRINTF (("No transfer error assigning to local: %s", msg));
 		stateValue_updateValueLoc (tval, stateValue_getValue (fval), loc);
+		DPRINTF (("Update: %s", stateValue_unparse (tval)));
 	      }
 	    else
 	      {

@@ -96,7 +96,9 @@ static bool s_needsPrepare = TRUE;
 
 void prepareMessage (void)
 {
-  if (context_isPreprocessing ()
+  DPRINTF (("Prepare message: %s", bool_unparse (context_loadingLibrary ())));
+
+  if ((context_isPreprocessing () || context_loadingLibrary ())
       && s_needsPrepare
       && context_getDebug (FLG_SHOWSCAN))
     {
@@ -563,7 +565,8 @@ llgentypeerroraux (char *srcFile, int srcLine,
   ctype ut1 = t1;
   ctype ut2 = t2;
 
-  DPRINTF (("Type error: %s / %s : %s / %s",
+  DPRINTF (("Type error [%s]: %s / %s : %s / %s",
+	    flagcode_unparse (ocode),
 	    exprNode_unparse (e1), exprNode_unparse (e2),
 	    ctype_unparse (t1), ctype_unparse (t2)));
   
@@ -689,55 +692,79 @@ llgentypeerroraux (char *srcFile, int srcLine,
 	  ;
 	}
     }
-  else if (ctype_isAbstract (ut1) && !ctype_isAbstract (ut2))
-    {
-      uentry ue1 = usymtab_getTypeEntry (ctype_typeId (ut1));
-      ctype ct = uentry_getType (ue1);
-
-      if (ctype_match (ct, ut2))
-	{
-	  code = FLG_ABSTRACT;
-	  hint = message ("Underlying types match, but %s is an "
-			  "abstract type that is not accessible here.",
-			  ctype_unparse (t1));
-	}
-    }
-  else if (ctype_isAbstract (ut2) && !ctype_isAbstract (ut1))
-    {
-      uentry ue = usymtab_getTypeEntry (ctype_typeId (ut2));
-      ctype ct = uentry_getType (ue);
-
-      if (ctype_match (ct, ut1))
-	{
-	  code = FLG_ABSTRACT;
-	  hint = message ("Underlying types match, but %s is an "
-			  "abstract type that is not accessible here.",
-			  ctype_unparse (t2));
-	}
-    }
-  else if ((ctype_isEnum (ut1) && ctype_isArbitraryIntegral (ut2))
-	   || (ctype_isEnum (ut2) && ctype_isArbitraryIntegral (ut1))) 
-    {
-      code = FLG_ENUMINT;
-    }
-  else if ((ctype_isEnum (ut1) && ctype_isArbitraryIntegral (ut2))
-	   || (ctype_isEnum (ut2) && ctype_isArbitraryIntegral (ut1))) 
-    {
-      code = FLG_ENUMINT;
-    }
-  else if ((ctype_isSignedChar (ut1) && ctype_isUnsignedChar (ut2))
-	   || (ctype_isUnsignedChar (ut1) && ctype_isSignedChar (ut2)))
-    {
-      code = FLG_CHARUNSIGNEDCHAR;
-    }
-  else if (ctype_isNumeric (ut1) && ctype_isNumeric (ut2)) 
-    {
-      code = FLG_RELAXTYPES;
-    }
   else
     {
-      DPRINTF (("No special type rule: %s / %s", ctype_unparse (ut1),
-		ctype_unparse (ut2)));
+      ;
+    }
+
+  if (hcode == INVALID_FLAG)
+    {
+      DPRINTF (("[%s] %s - %s / %s",
+		ctype_unparse (ut1),
+		bool_unparse (ctype_isEnum (ut1)),
+		bool_unparse (ctype_isEnum (ctype_realType (ut1))),
+		bool_unparse (ctype_isInt (ut2))));
+
+      if (ctype_isAbstract (ut1) && !ctype_isAbstract (ut2))
+	{
+	  uentry ue1 = usymtab_getTypeEntry (ctype_typeId (ut1));
+	  ctype ct = uentry_getType (ue1);
+	  
+	  if (ctype_match (ct, ut2))
+	    {
+	      code = FLG_ABSTRACT;
+	      hint = message ("Underlying types match, but %s is an "
+			      "abstract type that is not accessible here.",
+			      ctype_unparse (t1));
+	    }
+	}
+      else if (ctype_isAbstract (ut2) && !ctype_isAbstract (ut1))
+	{
+	  uentry ue = usymtab_getTypeEntry (ctype_typeId (ut2));
+	  ctype ct = uentry_getType (ue);
+	  
+	  if (ctype_match (ct, ut1))
+	    {
+	      code = FLG_ABSTRACT;
+	      hint = message ("Underlying types match, but %s is an "
+			      "abstract type that is not accessible here.",
+			      ctype_unparse (t2));
+	    }
+	}
+      else
+	{
+	  ; /* Not an abstract mismatch. */
+	}
+				       
+
+      if (hcode == INVALID_FLAG)
+	{
+	  if ((ctype_isEnum (ut1) && ctype_isInt (ut2))
+	      || (ctype_isEnum (ut2) && ctype_isInt (ut1))) 
+	    {
+	      hcode = FLG_ENUMINT;
+	    }
+	  else if ((ctype_isEnum (ut1) && ctype_isInt (ut2))
+		   || (ctype_isEnum (ut2) && ctype_isInt (ut1))) 
+	    {
+	      hcode = FLG_ENUMINT;
+	    }
+	  else if ((ctype_isSignedChar (ut1) && ctype_isUnsignedChar (ut2))
+		   || (ctype_isUnsignedChar (ut1) && ctype_isSignedChar (ut2)))
+	    {
+	      hcode = FLG_CHARUNSIGNEDCHAR;
+	    }
+	  else if (ctype_isNumeric (ut1) && ctype_isNumeric (ut2)) 
+	    {
+	      hcode = FLG_RELAXTYPES;
+	      DPRINTF (("Setting relax types!"));
+	    }
+	  else
+	    {
+	      DPRINTF (("No special type rule: %s / %s", ctype_unparse (ut1),
+			ctype_unparse (ut2)));
+	    }
+	}
     }
 
   if (cstring_isDefined (hint))

@@ -35,6 +35,7 @@
 
 # include "lclintMacros.nf"
 # include "llbasic.h"
+# include "mtincludes.h"
 
 # ifndef NOLCL
 # include "usymtab_interface.h"
@@ -167,7 +168,7 @@ static void context_exitClauseSimp (void)  /*@modifies gc@*/ ;
 static void context_exitClausePlain (void) /*@modifies gc@*/ ;
 static void context_setJustPopped (void) /*@modifies gc.justpopped@*/ ;
 static void context_setValue (flagcode p_flag, int p_val) /*@modifies gc.flags@*/ ;
-/*drl fix*/ static  void context_setFlag (flagcode p_f, bool p_b)
+static void context_setFlag (flagcode p_f, bool p_b)
   /*@modifies gc.flags@*/ ;
 
 static void
@@ -198,6 +199,11 @@ void context_clearPreprocessing (void)
 bool context_isPreprocessing (void)
 {
   return gc.preprocessing;
+}
+
+bool context_loadingLibrary (void)
+{
+  return (fileloc_isLib (g_currentloc));
 }
 
 bool context_inXHFile (void)
@@ -819,6 +825,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_SKIPPOSIXHEADERS] = TRUE;
   gc.flags[FLG_SYSTEMDIREXPAND] = TRUE;
   gc.flags[FLG_UNRECOGCOMMENTS] = TRUE;
+  gc.flags[FLG_UNRECOGFLAGCOMMENTS] = TRUE;
   gc.flags[FLG_CASTFCNPTR] = TRUE;
   gc.flags[FLG_DOLCS] = TRUE;
   gc.flags[FLG_USEVARARGS] = TRUE;
@@ -4368,6 +4375,7 @@ void context_addMetaState (cstring mname, metaStateInfo msinfo)
     }
   else
     {
+      DPRINTF (("Adding meta state: %s", mname));
       metaStateTable_insert (gc.stateTable, mname, msinfo); 
     }
 }
@@ -4379,7 +4387,7 @@ valueTable context_createValueTable (sRef s)
       valueTable res = valueTable_create (metaStateTable_size (gc.stateTable));
       /*@i32 should use smaller value... */
       DPRINTF (("Value table for: %s", sRef_unparse (s)));
-
+      
       metaStateTable_elements (gc.stateTable, msname, msi)
 	{
 	  mtContextNode context = metaStateInfo_getContext (msi);
@@ -4389,10 +4397,11 @@ valueTable context_createValueTable (sRef s)
 	      DPRINTF (("Create: %s", metaStateInfo_unparse (msi)));
 	      llassert (cstring_equal (msname, metaStateInfo_getName (msi)));
 	      
-	      valueTable_insert (res,
-				 cstring_copy (metaStateInfo_getName (msi)),
-				 stateValue_create (metaStateInfo_getDefaultValue (msi, s),
-						    stateInfo_undefined));
+	      valueTable_insert 
+		(res,
+		 cstring_copy (metaStateInfo_getName (msi)),
+		 stateValue_createImplicit (metaStateInfo_getDefaultValue (msi, s),
+					    stateInfo_undefined));
 	    }
 	  else
 	    {

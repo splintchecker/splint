@@ -142,7 +142,7 @@ extern int inputStream_nextChar (inputStream s)
 	}
     }
 
-  TPRINTF (("Next char: %c [%d]", res, res));
+  DPRINTF (("Next char: %c [%d]", res, res));
   return res;
 }
 

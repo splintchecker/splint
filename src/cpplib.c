@@ -6879,7 +6879,6 @@ static void cpp_setLocation (cppReader *pfile)
       line = cppReader_getBuffer (pfile)->lineno;
       fileloc_free (g_currentloc);
 
-      /*@adsfads;lgkh@*/
       if (fileId_isValid (fid))
 	{
 	  g_currentloc = fileloc_create (fid, line, 1);

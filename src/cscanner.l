@@ -1999,20 +1999,22 @@ static int handleLlSpecial ()
 		    }
 		  else
 		    {
-		      llerror
-			(FLG_BADFLAG, 
+		      voptgenerror
+			(FLG_UNRECOGFLAGCOMMENTS,
 			 message ("Unrecognized option in semantic comment: %s", 
-				  flagname));
+				  flagname),
+			 g_currentloc);
 		    }
 		}
 	      else if (flagcode_isGlobalFlag (fflag))
 		{
-		  llerror
+		  voptgenerror
 		    (FLG_BADFLAG, 
 		     message 
 		     ("Semantic comment attempts to set global flag %s.  "
 		      "A global flag cannot be set locally.",
-		      flagname));
+		      flagname),
+		     g_currentloc);
 		}
 	      else
 		{
@@ -2022,12 +2024,13 @@ static int handleLlSpecial ()
 		    {
 		      if (ynm_isMaybe (set))
 			{
-			  llerror
+			  voptgenerror
 			    (FLG_BADFLAG, 
 			     message 
 			     ("Semantic comment attempts to restore flag %s.  "
 			      "A flag for setting a value cannot be restored.",
-			      flagname));
+			      flagname),
+			     g_currentloc);
 			}
 		      else
 			{ /* cut-and-pastied from llmain...blecch */

@@ -238,7 +238,8 @@ static flaglist flags =
     "gnuextensions",
     FLG_GNUEXTENSIONS,
     "support some gnu (gcc) language extensions",
-    NULL, 0, 0
+    "ANSI C does not allow some language features supported by gcc and other compilers. "
+    "Use +gnuextensions to allow some of these extensions.", 0, 0
   },
   {
     FK_ANSI, FK_NONE, plainFlag,
@@ -332,6 +333,14 @@ static flaglist flags =
     "stylized comment is unrecognized",
     "Word after a stylized comment marker does not correspond to a "
     "stylized comment.",
+    0, 0
+  },
+  {
+    FK_COMMENTS, FK_SYNTAX, plainFlag,
+    "unrecogflagcomments",
+    FLG_UNRECOGFLAGCOMMENTS,
+    "stylized flag comment uses an unrecognized flag",
+    "Semantic comment attempts to set a flag that is not recognized.",
     0, 0
   },
   {
@@ -3320,14 +3329,14 @@ static flaglist flags =
     "relaxquals",
     FLG_RELAXQUALS,
     "report qualifier mismatches only if dangerous",
-    NULL, 0, 0
+    "To allow qualifier mismatches that are not dangerous, use +relaxquals.", 0, 0
   },
   {
     FK_TYPEEQ, FK_NUMBERS, modeFlag,
     "relaxtypes",
     FLG_RELAXTYPES,
     "allow all numeric types to match",
-    NULL, 0, 0
+    "To allow all numeric types to match, use +relaxtypes.", 0, 0
   },
   {
     FK_TYPEEQ, FK_NONE, modeFlag,
