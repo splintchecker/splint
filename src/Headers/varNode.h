@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2003.
 ** See ../LICENSE for license information.
 */       
 
