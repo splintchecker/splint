@@ -5,7 +5,7 @@
 ###
 
 .SUFFIXES: .lcl .lcs .lh .h .c .o
-.PHONY: check
+.PHONY: check clean
 
 SHELL = /bin/csh -f
 
@@ -23,7 +23,7 @@ test:
 
 check: $(LCSFILES)
 	$(LCLINT) -showcol -weak +showscan $(MODULES) -expect 16
-	$(LCLINT) -showcol +strict -modfilesystem +showscan +showsummary $(MODULES) -expect 331
+	$(LCLINT) -showcol +strict -modfilesystem +showscan +showsummary $(MODULES) -expect 330
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

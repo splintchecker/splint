@@ -18,14 +18,14 @@ erc erc_create (void)
   return c;
 }
 
-void erc_clear (erc c) 
+void erc_clear (erc c) /*@ensures isnull c->vals, c->elem@*/
 {
   ercList elem;
   ercList next;
 
   for (elem = c->vals; elem != 0; elem = next) 
     {
-      next = elem->next;
+      next = elem->next; elem->next = NULL;
       free (elem);
     }
   
@@ -77,11 +77,11 @@ bool erc_delete (erc c, eref er)
     {
       if (elem->val == er) 
 	{ 
-	  if (prev == 0)
-	    c->vals = elem->next;
-	  else 
-	    prev->next = elem->next;
-	  
+	  if (prev == 0) {
+	    c->vals = elem->next; elem->next = 0;
+	  } else {
+	    prev->next = elem->next; elem->next = 0;
+	  }
 	  free (elem); 
 	  c->size--;
 	  return TRUE;
