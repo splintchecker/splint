@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -87,7 +87,7 @@ static /*@notnull@*/ ltoken ltoken_new (void)
   return tok;
 }
 
-ltoken ltoken_create (unsigned int code, lsymbol text)
+ltoken ltoken_create (ltokenCode code, lsymbol text)
 {
   ltoken tok = ltoken_new ();
 
@@ -97,7 +97,7 @@ ltoken ltoken_create (unsigned int code, lsymbol text)
   return tok;
 }
 
-ltoken ltoken_createRaw (unsigned int code, lsymbol text)
+ltoken ltoken_createRaw (ltokenCode code, lsymbol text)
 {
   ltoken tok = ltoken_new ();
 
@@ -107,7 +107,7 @@ ltoken ltoken_createRaw (unsigned int code, lsymbol text)
   return tok;
 }
 
-ltoken ltoken_createType (unsigned int code, SimpleIdCode idtype, lsymbol text)
+ltoken ltoken_createType (ltokenCode code, SimpleIdCode idtype, lsymbol text)
 {
   ltoken tok = ltoken_new ();
 
@@ -120,9 +120,9 @@ ltoken ltoken_createType (unsigned int code, SimpleIdCode idtype, lsymbol text)
   return tok;
 }
 
-ltoken ltoken_createFull (unsigned int code, lsymbol text, 
-			  cstring file, unsigned int line, 
-			  unsigned int col)
+ltoken ltoken_createFull (ltokenCode code, lsymbol text, 
+			  cstring file, int line, 
+			  int col)
 {
   ltoken tok = (ltoken) dmalloc (sizeof (*tok));
   
@@ -138,7 +138,7 @@ ltoken ltoken_createFull (unsigned int code, lsymbol text,
   return tok;
 }
 
-static /*@only@*/ cstring LCLTokenCode_unparseCodeName (unsigned int t)
+static /*@only@*/ cstring LCLTokenCode_unparseCodeName (ltokenCode t)
 {
   switch (t)
     {
@@ -294,15 +294,10 @@ lsymbol ltoken_getRawText (ltoken tok)
 {
   if (ltoken_getCode (t) != NOTTOKEN)
     {
-      if (context_getFlag (FLG_SHOWCOL))
-	{
-	  return (message ("%s:%u,%u", ltoken_fileName (t), 
-			   ltoken_getLine (t), ltoken_getCol (t)));
-	}
-      else
-	{
-	  return (message ("%s:%u", ltoken_fileName (t), ltoken_getLine (t)));
-	}
+      cstring res = fileloc_unparseRawCol (ltoken_fileName (t), 
+					   ltoken_getLine (t),
+					   ltoken_getCol (t));
+      return res;
     }
   else
     {

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -56,7 +56,7 @@ static void mappair_free (/*@null@*/ /*@only@*/ mappair *p)
     }
 }
 
-void mapping_free (/*@only@*/ mapping *m)
+void mapping_free (/*@only@*/ mapping m)
 {
   int i;
 
@@ -69,11 +69,11 @@ void mapping_free (/*@only@*/ mapping *m)
   sfree (m);
 }
 
-/*@only@*/ mapping *
+/*@only@*/ mapping
 mapping_create (void)
 {
   int i;
-  mapping *t = (mapping *) dmalloc (sizeof (*t));
+  mapping t = (mapping) dmalloc (sizeof (*t));
 
   t->buckets = (mappair **) dmalloc ((MAPPING_SIZE + 1) * sizeof (*t->buckets));
   t->count = 0;
@@ -87,7 +87,7 @@ mapping_create (void)
 }
 
 lsymbol
-mapping_find (mapping * t, lsymbol domain)
+mapping_find (mapping t, lsymbol domain)
 {
   mappair *entry;
   unsigned int key;
@@ -104,7 +104,7 @@ mapping_find (mapping * t, lsymbol domain)
 }
 
 void
-mapping_bind (mapping *t, lsymbol domain, lsymbol range)
+mapping_bind (mapping t, lsymbol domain, lsymbol range)
 {
   /* add the binding (domain -> range) to t */
   /* can assume that the binding is a new one in m, so no need

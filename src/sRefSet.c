@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -60,7 +60,7 @@ sRefSet_single (/*@exposed@*/ sRef sr)
   s->elements = (sRef *) dmalloc (sizeof (*s->elements) * sRefSetBASESIZE);
   s->elements[0] = sr;
 
-    return (s);
+  return (s);
 }
 
 static void
@@ -100,13 +100,13 @@ sRefSet_insert (sRefSet s, /*@exposed@*/ sRef el)
 
       llassert (s->elements != NULL);
       s->elements[s->entries] = el;
-
-            s->entries++;
+      s->entries++;
     }
   else
     {
-          }
-
+      ;
+    }
+  
   return s;
 }
 
@@ -130,7 +130,7 @@ sRefSet_clearStatics (sRefSet s)
   if (sRefSet_isDefined (s))
     {
       int i;
-
+      
       for (i = 0; i < s->entries; i++)
 	{
 	  sRef current = s->elements[i];
@@ -194,7 +194,7 @@ sRefSet_choose (sRefSet s)
   return (s->elements[0]);
 }
 
-sRef
+/*@exposed@*/ sRef
 sRefSet_mergeIntoOne (sRefSet s)
 {
   sRef res;
@@ -211,10 +211,10 @@ sRefSet_mergeIntoOne (sRefSet s)
     {
       sRef tmp;
 
-            tmp = sRef_makeConj (res, s->elements[i]);
-            res = tmp;
+      tmp = sRef_makeConj (res, s->elements[i]);
+      res = tmp;
     }
-
+  
   return res;
 }
 
@@ -282,7 +282,7 @@ sRefSet_union (/*@returned@*/ sRefSet s1, sRefSet s2)
 
   if (sRefSet_isEmpty (s1))
     {
-      s1 = sRefSet_copy (s1, s2);
+      s1 = sRefSet_copyInto (s1, s2);
     }
   else
     {
@@ -308,7 +308,8 @@ sRefSet_unionExcept (/*@returned@*/ sRefSet s1, sRefSet s2, sRef ex)
     {
       if (sRef_same (el, ex))
 	{
-	  	}
+	  ;
+	}
       else
 	{
 	  s1 = sRefSet_insert (s1, el);
@@ -421,8 +422,7 @@ sRefSet_levelPrune (sRefSet s, int lexlevel)
 ** s1 <- s2
 */
 
-sRefSet
-  sRefSet_copy (/*@returned@*/ sRefSet s1, /*@exposed@*/ sRefSet s2)
+sRefSet sRefSet_copyInto (/*@returned@*/ sRefSet s1, /*@exposed@*/ sRefSet s2)
 {
   int origentries;
   
@@ -580,6 +580,12 @@ sRefSet_hasRealElement (sRefSet s)
     } end_sRefSet_allElements;
 
   return FALSE;
+}
+
+bool
+sRefSet_containsSameObject (sRefSet s, sRef el)
+{
+  return (sRefSet_isElementCompare (sRef_sameObject, s, el));
 }
 
 bool
@@ -776,6 +782,31 @@ sRefSet_unparseDebug (sRefSet s)
   return st;
 }
 
+cstring
+sRefSet_unparseFull (sRefSet s)
+{
+  int i;
+  cstring st = cstring_makeLiteral ("{");
+
+  if (sRefSet_isDefined (s))
+    {
+      for (i = 0; i < sRefSet_size (s); i++)
+	{
+	  if (i == 0)
+	    {
+	      st = message ("%q %q", st, sRef_unparseFull (s->elements[i]));
+	    }
+	  else
+	    {
+	      st = message ("%q, %q", st, sRef_unparseFull (s->elements[i]));
+	    }
+	}
+    }
+  
+  st = message ("%q }", st);
+  return st;
+}
+
 void
 sRefSet_fixSrefs (sRefSet s)
 {
@@ -790,7 +821,7 @@ sRefSet_fixSrefs (sRefSet s)
 	  if (sRef_isLocalVar (current))
 	    {
 	      s->elements[i] = uentry_getSref (sRef_getUentry (current));
-	      	    }
+	    }
 	}
     }
 }
@@ -839,13 +870,12 @@ sRefSet sRefSet_addIndirection (sRefSet s)
   sRefSet_allElements (s, el)
     {
       ctype ct = ctype_realType (sRef_getType (el));
-
+      
       
       if ((ctype_isArrayPtr (ct)))
 	{
 	  
 	  sRef a = sRef_constructPointer (el);
-
 	  t = sRefSet_insert (t, a);   
 	}
     } end_sRefSet_allElements;
@@ -858,14 +888,13 @@ sRefSet sRefSet_accessField (sRefSet s, /*@observer@*/ cstring f)
   /*
   ** returns a NEW sRefSet containing references to all sRef's in s
   */
-
+  
   sRefSet t = sRefSet_new ();
-
   
   sRefSet_allElements (s, el)
     {
       ctype ct = ctype_realType (sRef_getType (el));
-
+      
       if ((ctype_isStruct (ct) || ctype_isUnion (ct))
 	  && (!uentry_isUndefined (uentryList_lookupField (ctype_getFields (ct), f))))
 	{
@@ -994,5 +1023,14 @@ sRefSet_dump (sRefSet sl)
     } end_sRefSet_allElements;
 
   return st;
+}
+
+void
+sRefSet_markImmutable (sRefSet s)
+{
+  sRefSet_allElements (s, el)
+    {
+      sRef_markImmutable (el);
+    } end_sRefSet_allElements;
 }
 

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -49,7 +49,7 @@
 # include "portab.h"
 
 /*@-incondefs@*/ /*@-redecl@*/
-extern /*@dependent@*/ FILE *yyin;
+extern /*@open@*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
 /*@constant int NUMLIBS; @*/
@@ -95,7 +95,7 @@ static ob_mstring stdlibs[NUMLIBS] =
   "wchar"
 } ;
 
-static bool loadStateFile (FILE * p_f, cstring p_name);
+static bool loadLCDFile (FILE * p_f, cstring p_name);
 
 bool
 lcllib_isSkipHeader (cstring sname)
@@ -103,18 +103,20 @@ lcllib_isSkipHeader (cstring sname)
   int i;
   bool posixlib = FALSE;
   char *libname;
-  char *name = cstring_toCharsSafe (sname);
   char *matchname;
+  cstring xname;
 
   llassert (cstring_isDefined (sname));
-  name = removeExtension (name, ".h");
+  xname = fileLib_withoutExtension (sname, cstring_makeLiteralTemp (".h"));
 
-  libname = strrchr (name, CONNECTCHAR);
+  /*@access cstring@*/
+  llassert (cstring_isDefined (xname));
+  libname = strrchr (xname, CONNECTCHAR);
   matchname = libname;
 
   if (libname == NULL) 
     {
-      libname = name;
+      libname = xname;
     }
   else
     {
@@ -135,7 +137,7 @@ lcllib_isSkipHeader (cstring sname)
 	 tmp);
       
       fileloc_free (tmp);
-      sfree (name);
+      sfree (xname);
       return TRUE;
     }
 
@@ -147,7 +149,7 @@ lcllib_isSkipHeader (cstring sname)
 	{
 	  if (mstring_equal (libname, stdlibs[i]))
 	    {
-	      sfree (name);
+	      sfree (xname);
 	      return TRUE;
 	    }
 	}
@@ -159,7 +161,7 @@ lcllib_isSkipHeader (cstring sname)
 	{
 	  char *ptr;
 	  
-	  if ((ptr = strstr (name, posixlibs[i])) != NULL) 
+	  if ((ptr = strstr (xname, posixlibs[i])) != NULL) 
 	    {
 	      if (ptr[strlen (posixlibs[i])] == '\0')
 		{
@@ -191,7 +193,7 @@ lcllib_isSkipHeader (cstring sname)
 	{
 	  if (context_getFlag (FLG_SKIPPOSIXHEADERS))
 	    {
-	      sfree (name);
+	      sfree (xname);
 	      return TRUE;
 	    }
 	}
@@ -214,7 +216,8 @@ lcllib_isSkipHeader (cstring sname)
 	}
     }
 
-  sfree (name);
+  cstring_free (xname);
+  /*@noaccess cstring@*/
   return FALSE;
 }
 
@@ -232,20 +235,18 @@ void
 dumpState (cstring cfname)
 {
   FILE *f;
-  char *fname = cstring_toCharsSafe (cfname);
+  cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
   
-  fname = addExtension (fname, DUMP_SUFFIX);
-  
-  f = fopen (fname, "w");
+  f = fopen (cstring_toCharsSafe (fname), "w");
 
   if (context_getFlag (FLG_SHOWSCAN))
     {
-      fprintf (stderr, "< Dumping to %s ", fname); 
+      fprintf (stderr, "< Dumping to %s ", cstring_toCharsSafe (fname)); 
     }
   
   if (f == NULL)
     {
-      llgloberror (message ("Cannot open dump file for writing: %s", cfname));
+      llgloberror (message ("Cannot open dump file for writing: %s", fname));
     }
   else
     {
@@ -256,29 +257,39 @@ dumpState (cstring cfname)
 
       printDot ();
 
+      /*
+      DPRINTF (("Before prepare dump:"));
+      ctype_printTable ();
+      DPRINTF (("Preparing dump..."));
+      */
+
       usymtab_prepareDump ();
 
       /*
-      ** Be careful, these lines must match loadStateFile checking.
+      ** Be careful, these lines must match loadLCDFile checking.
       */
 
-      fprintf (f, ";;LCLint Dump: %s\n", fname);
+      fprintf (f, ";;LCLint Dump: %s\n", cstring_toCharsSafe (fname));
       fprintf (f, ";;%s\n", LCL_VERSION);
       fprintf (f, ";;lib:%d\n", (int) context_getLibrary ());
       fprintf (f, ";;ctTable\n");
-
+      
+      DPRINTF (("Dumping types..."));
       printDot ();
-            ctype_dumpTable (f);
+      ctype_dumpTable (f);
       printDot ();
-
+      
+      DPRINTF (("Dumping type sets..."));
       fprintf (f, ";;tistable\n");
       typeIdSet_dumpTable (f);
       printDot ();
-
-            fprintf (f, ";;symTable\n");
+      
+      DPRINTF (("Dumping usymtab..."));
+      fprintf (f, ";;symTable\n");
       usymtab_dump (f);
       printDot ();
 
+      DPRINTF (("Dumping modules..."));
       fprintf (f, ";; Modules access\n");
       context_dumpModuleAccess (f);
       fprintf (f, ";;End\n");
@@ -290,17 +301,17 @@ dumpState (cstring cfname)
       fprintf (g_msgstream, " >\n");
     }
 
-  sfree (fname);
+  cstring_free (fname);
 }
 
 bool
 loadStandardState ()
 {
-  char *fpath;
+  cstring fpath;
   FILE *stdlib;
   bool result;
-  char *libname = addExtension (context_selectedLibrary (), DUMP_SUFFIX);
-  
+  cstring libname = fileLib_addExtension (context_selectedLibrary (), 
+					  cstring_makeLiteralTemp (DUMP_SUFFIX));
   
   if (osd_findOnLarchPath (libname, &fpath) != OSD_FILEFOUND)
     {
@@ -308,18 +319,18 @@ loadStandardState ()
 			  cstring_makeLiteralTemp 
 			  (context_getFlag (FLG_STRICTLIB) ? "strict " 
 			   : (context_getFlag (FLG_UNIXLIB) ? "unix " : "")),
-			  cstring_makeLiteralTemp (libname)));
+			  libname));
       lldiagmsg (cstring_makeLiteral ("     Check LARCH_PATH environment variable."));
       result = FALSE;
     }
   else
     {
-      stdlib = fopen (fpath, "r");
+      stdlib = fopen (cstring_toCharsSafe (fpath), "r");
 
       if (stdlib == NULL)
 	{
 	  lldiagmsg (message ("Cannot read standard library: %s",
-			  cstring_fromChars (fpath)));
+			      fpath));
 	  lldiagmsg (cstring_makeLiteral ("     Check LARCH_PATH environment variable."));
 
 	  result = FALSE;
@@ -331,12 +342,12 @@ loadStandardState ()
 	      char *t = mstring_create (MAX_NAME_LENGTH);
 	      char *ot = t;
 
-	      if (fgets (t, MAX_NAME_LENGTH, stdlib) == NULL)
+	      if ((t = reader_readLine (stdlib, t, MAX_NAME_LENGTH)) == NULL)
 		{
 		  llfatalerror (cstring_makeLiteral ("Standard library format invalid"));
 		}
 
-	      if (fgets (t, MAX_NAME_LENGTH, stdlib) != NULL)
+	      if ((t = reader_readLine (stdlib, t, MAX_NAME_LENGTH)) != NULL)
 		{
 		  if (*t == ';' && *(t + 1) == ';') 
 		    {
@@ -347,7 +358,7 @@ loadStandardState ()
 	      if (t == NULL)
 		{
 		  lldiagmsg (message ("Standard library: %s <cannot read creation information>", 
-				  cstring_fromChars (fpath)));
+				      fpath));
 		}
 	      else
 		{
@@ -357,37 +368,40 @@ loadStandardState ()
 		  if (tt != NULL)
 		    *tt = '\0';
 
-		  lldiagmsg (message ("Standard library: %s", cstring_fromChars (fpath)));
+		  lldiagmsg (message ("Standard library: %s", fpath));
 		  lldiagmsg (message ("   (created using %s)", cstring_fromChars (t)));
 		}
 
 	      sfree (ot);
 	      
 	      check (fclose (stdlib) == 0);
-	      stdlib = fopen (fpath, "r");
+	      stdlib = fopen (cstring_toCharsSafe (fpath), "r");
 	    }
 
 	  llassert (stdlib != NULL);
 
 	  fileloc_reallyFree (g_currentloc);
-	  g_currentloc = fileloc_createLib (cstring_makeLiteralTemp (libname));
+	  g_currentloc = fileloc_createLib (libname);
+
+	  DPRINTF (("Loading: %s", fpath));
 
 	  if (context_getDebug (FLG_SHOWSCAN))
 	    {
-	      context_hideShowscan ();
-	      result = loadStateFile (stdlib, cstring_fromChars (fpath));
-	      context_unhideShowscan ();
+	      fprintf (g_msgstream, "< loading standard library %s ", 
+		       cstring_toCharsSafe (fpath));
+	      result = loadLCDFile (stdlib, fpath);
+	      fprintf (g_msgstream, " >\n");
 	    }
 	  else
 	    {
-	      result = loadStateFile (stdlib, cstring_fromChars (fpath));
+	      result = loadLCDFile (stdlib, fpath);
 	    }
 
 	  check (fclose (stdlib) == 0);
 	}
     }
 
-  sfree (libname);
+  cstring_free (libname);
   return result;
 }
 
@@ -395,36 +409,36 @@ loadStandardState ()
 # define BUFLEN 128
 
 static bool
-loadStateFile (FILE *f, cstring name)
+loadLCDFile (FILE *f, cstring name)
 {
   char buf[BUFLEN];
   
   /*
-  ** Check version.  Should be >= LCL_MIN_VERSION
+  ** Check version.  Should be >= LCLINT_LIBVERSION
   */
 
-  if ((fgets (buf, BUFLEN, f) == NULL)
+  if (reader_readLine (f, buf, BUFLEN) == NULL
       || !mstring_equalPrefix (buf, ";;LCLint Dump:"))
     {
       loadllmsg (message ("Load library %s is not in LCLint library format.  Attempting "
-		      "to continue without library.", name));
+			  "to continue without library.", name));
       return FALSE;
     }
   
-  if (fgets (buf, BUFLEN, f) != NULL)
+  if (reader_readLine (f, buf, BUFLEN) != NULL)
     {
       if (!mstring_equalPrefix (buf, ";;"))
 	{
 	  loadllmsg (message ("Load library %s is not in LCLint library format.  Attempting "
-			  "to continue without library.", name));
+			      "to continue without library.", name));
 	  return FALSE;
 	}
       else if (mstring_equalPrefix (buf, ";;ctTable"))
 	{
 	  loadllmsg (message ("Load library %s is in obsolete LCLint library format.  Attempting "
-			  "to continue anyway, but results may be incorrect.  Rebuild "
-			  "the library with this version of lclint.", 
-			  name));
+			      "to continue anyway, but results may be incorrect.  Rebuild "
+			      "the library with this version of lclint.", 
+			      name));
 	}
       else 
 	{
@@ -433,21 +447,18 @@ loadStateFile (FILE *f, cstring name)
 	  if (sscanf (buf, ";;LCLint %f", &version) != 1)
 	    {
 	      loadllmsg (message ("Load library %s is not in LCLint library format (missing version "
-			      "number).  Attempting "
-			      "to continue without library.", name));
+				  "number).  Attempting "
+				  "to continue without library.", name));
 	      return FALSE;
 	    }
 	  else
 	    {
-	      if ((LCL_MIN_VERSION - version) >= FLT_EPSILON)
+	      if ((LCLINT_LIBVERSION - version) >= FLT_EPSILON)
 		{
 		  cstring vname;
 		  char *nl = strchr (buf, '\n');
 
-		  /*drl7x this is evans is code I think
-		    I'll need is find out if code is safe or if I
-		    broke it somehow... */
-		  /*@i223*/	  *nl = '\0';
+		  *nl = '\0';
 
 		  vname = cstring_fromChars (buf + 9);
 
@@ -459,7 +470,7 @@ loadStateFile (FILE *f, cstring name)
 		}
 	      else
 		{
-		  if ((fgets (buf, BUFLEN, f) == NULL))
+		  if (reader_readLine (f, buf, BUFLEN) == NULL)
 		    {
 		      loadllmsg (message ("Load library %s is not in LCLint library "
 					  "format (missing library code). Attempting "
@@ -490,9 +501,10 @@ loadStateFile (FILE *f, cstring name)
 			    }
 			  else
 			    {
-			      loadllmsg (message ("Load library %s has invalid library code.  "
+			      loadllmsg (message ("Load library %s has invalid library code (%s).  "
 						  "Attempting to continue without library.",
-						  name));
+						  name,
+						  flagcode_unparse (code)));
 			      
 			      return FALSE;
 			    }
@@ -532,26 +544,24 @@ void
 loadState (cstring cfname)
 {
   FILE *f;
-  char *fname = cstring_toCharsSafe (cfname);
-  cstring ofname = cstring_copy (cfname);
+  cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
 
-  fname = addExtension (fname, DUMP_SUFFIX);
-
-  f = fopen (fname, "r");
+  f = fopen (cstring_toCharsSafe (fname), "r");
 
   if (f == NULL)
     {
       if (context_getDebug (FLG_SHOWSCAN))
 	fprintf (g_msgstream, " >\n");
 
-      llfatalerror (message ("Cannot open dump file for loading: %s", cfname));
+      llfatalerror (message ("Cannot open dump file for loading: %s", 
+			     fname));
     }
   else
     {
       fileloc_reallyFree (g_currentloc);
-      g_currentloc = fileloc_createLib (ofname);
+      g_currentloc = fileloc_createLib (cfname);
 
-      if (!loadStateFile (f, ofname)) 
+      if (!loadLCDFile (f, cfname)) 
 	{
 	  if (!loadStandardState ()) 
 	    {
@@ -562,7 +572,7 @@ loadState (cstring cfname)
       check (fclose (f) == 0);
     }
 
-  cstring_free (ofname);
-  sfree (fname);
+  /* usymtab_printAll (); */
+  cstring_free (fname);
 }
 

@@ -1,7 +1,6 @@
-#include <assert.h> /*drl take this out*/
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -35,6 +34,10 @@
 # include "llmain.h"
 # include "version.h"
 
+/* Don't allow possibly-recursive assertion failures. */
+# undef llassert
+# define llassert llassertprotect
+
 static void printIndentMessage (FILE *p_stream, /*@only@*/ cstring p_sc, int p_indent)
    /*@modifies *p_stream@*/ ;
 
@@ -48,15 +51,30 @@ static int mcount = 0;
 static /*@only@*/ cstring saveOneMessage = cstring_undefined;
 static /*@only@*/ fileloc lastparseerror = fileloc_undefined;
 static /*@only@*/ fileloc lastbug = fileloc_undefined;
-static bool llgenerrorreal (/*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
+static bool llgenerrorreal (char *p_srcFile, int p_srcLine, 
+			    /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
                  /*@modifies g_msgstream@*/ ;
-static bool llgenerroraux (/*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
+static bool llgenerroraux (char *p_srcFile, int p_srcLine, 
+			   /*@only@*/ cstring p_s, fileloc p_fl, bool p_iserror, bool p_indent)
                  /*@modifies g_msgstream@*/ ;
+
 static void printError (FILE *p_stream, /*@only@*/ cstring p_sc)
    /*@globals lastfileloclen @*/
    /*@modifies *p_stream@*/ ;
 static void printMessage (FILE *p_stream, /*@only@*/ cstring p_s)
    /*@modifies *p_stream@*/ ;
+
+static void llgenhint (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;
+
+static void showSourceLoc (char *srcFile, int srcLine)
+     /*@modifies g_msgstream@*/
+{
+  if (context_getFlag (FLG_SHOWSOURCELOC)) {
+    llgenhint (message ("%s:%d: Source code error generation point.",
+			cstring_fromChars (srcFile), srcLine));
+  }
+  
+}
 
 static /*@null@*/ char *
 maxcp (/*@null@*/ /*@returned@*/ char *a, /*@null@*/ /*@returned@*/ char *b)
@@ -98,7 +116,7 @@ void closeMessage (void)
       llflush ();
       fprintf (stderr, "< more preprocessing .");
 
-      llassert (!s_needsPrepare);
+      llassertprotect (!s_needsPrepare);
       s_needsPrepare = TRUE;
     }
   else
@@ -154,8 +172,12 @@ void flagWarning (cstring s)
 static void
 llgenhint (/*@only@*/ cstring s) /*@modifies g_msgstream@*/
 {
+  int indent = context_getIndentSpaces () - 1;
+
+  if (indent < 0) indent = 0;
+
   context_setNeednl ();
-  printIndentMessage (g_msgstream, s, 2);
+  printIndentMessage (g_msgstream, s, indent);
 }
 
 void
@@ -189,11 +211,56 @@ llshowhint (flagcode f)
     }
 }
 
+static void
+llsuppresshint2 (char c, flagcode f1, flagcode f2)
+{
+
+  if (context_getFlag (FLG_HINTS))
+    {
+      if ((flagcode_numReported (f1) == 0
+	   || flagcode_numReported (f2) == 0)
+	  || context_getFlag (FLG_FORCEHINTS))
+	{
+	  cstring desc = flagcodeHint (f1);
+	  context_setNeednl ();
+	  lastfileloclen = 8;
+
+	  if (cstring_isUndefined (desc))
+	    {
+	      desc = flagcodeHint (f2);
+	    }
+
+	  if (flagcode_isNamePrefixFlag (f1))
+	    {
+	      f1 = FLG_NAMECHECKS;
+	    }
+
+	  if (flagcode_isNamePrefixFlag (f2))
+	    {
+	      f2 = FLG_NAMECHECKS;
+	    }
+
+	  if (cstring_isDefined (desc))
+	    {
+	      llgenhint (message ("%s (Setting either %h%s or %h%s will suppress message)", desc, 
+				  c,
+				  flagcode_unparse (f1),
+				  c,
+				  flagcode_unparse (f2)));
+	    }
+	  else
+	    {
+	      llgenhint (message ("(Setting either %h%s or %h%s will suppress message)", c,
+				  flagcode_unparse (f1),
+				  c, flagcode_unparse (f2)));
+	    }
+	}
+    }
+}
 
 static void
 llsuppresshint (char c, flagcode f)
 {
-
   if (context_getFlag (FLG_HINTS))
     {
       if ((flagcode_numReported (f) == 0) || context_getFlag (FLG_FORCEHINTS))
@@ -210,12 +277,12 @@ llsuppresshint (char c, flagcode f)
 	  if (cstring_isDefined (desc))
 	    {
 	      llgenhint (message ("%s (%h%s will suppress message)", desc, c,
-				  flagcode_name (f)));
+				  flagcode_unparse (f)));
 	    }
 	  else
 	    {
 	      llgenhint (message ("(%h%s will suppress message)", c,
-				  flagcode_name (f)));
+				  flagcode_unparse (f)));
 	    }
 	}
     }
@@ -224,7 +291,6 @@ llsuppresshint (char c, flagcode f)
 static void
 llnosuppresshint (flagcode f)
 {
-
   if (context_getFlag (FLG_FORCEHINTS))
     {
       cstring desc = flagcodeHint (f);
@@ -254,8 +320,11 @@ mstring_split (/*@returned@*/ char **sp,
   char *nl;
   char *t;
   char *s = *sp;
+  char *osp = *sp;
 
   *tp = NULL;
+
+  DPRINTF (("Split: %s / %d", *sp, maxline));
 
   if (maxline < MINLINELEN)
     {
@@ -265,6 +334,7 @@ mstring_split (/*@returned@*/ char **sp,
   if (*indentchars > 0)
     {
       s = *sp = mstring_concatFree1 (mstring_spaces (*indentchars), s);
+      osp = s;
     }
 
   nl = strchr (s, '\n');
@@ -292,6 +362,7 @@ mstring_split (/*@returned@*/ char **sp,
 
       if (*t == '\0')
 	{
+	  llassertprotect (*tp == NULL || (*tp > osp));
 	  return;
 	}
 
@@ -299,13 +370,14 @@ mstring_split (/*@returned@*/ char **sp,
 	{
 	  *indentchars += (int) (*t - '\1') + 1;
 	  t++;
-	  	}
-
+	}
+      
       *tp = t;
       return;
     }
   else if (size_toInt (strlen (s)) < maxline)
     {
+      llassertprotect (*tp == NULL || (*tp > osp));
       return;
     }
   else
@@ -327,11 +399,14 @@ mstring_split (/*@returned@*/ char **sp,
       splitat = maxcp (lcolon, lsemi);
 
       if (splitat != NULL && ((int)(splitat - s) > MINLINE)
-	  && *(splitat + 1) == ' ' && *(splitat + 2) != '}')
+	  && *(splitat) != '\0'
+	  && *(splitat + 1) == ' ' 
+	  && (*(splitat + 2) != '}' && (*(splitat + 2) != '\0'))) 
 	{
 	  *(splitat + 1) = '\0';
 	  t = splitat + 2;
 	  *tp = t;
+	  llassertprotect (*tp == NULL || (*tp > osp));
 	  return;
 	}
 
@@ -343,24 +418,28 @@ mstring_split (/*@returned@*/ char **sp,
 
       if (*t != ' ' && *t != '\t')
 	{
+	  llassertprotect (maxline > 0);
 	  t = mstring_copy (s + maxline);
 	  *(s + maxline) = '\0';
 
 	  if (*t == '\0')
 	    {
 	      sfree (t);
+	      llassertprotect (*tp == NULL || (*tp > osp));
 	      return;
 	    }
 
 	  mstring_markFree (t);
 	  *tp = t;
+	  /* Won't be true since t is a copy: llassertprotect (*tp == NULL || (*tp > osp)); */
 	  return;
 	}
       else
 	{
+
 	  *t = '\0';
 	  t++;
-
+	  
 	  if (*t == '\0') return;
 
 	  /*
@@ -368,9 +447,22 @@ mstring_split (/*@returned@*/ char **sp,
 	  */
 
 	  *tp = t;
+
+# if 0
+	  /* Hack to prevent error case for wierd strings. */
+	  if (t <= osp)
+	    {
+	      *tp = NULL;
+	      return;
+	    }
+	  llassertprotect (*tp == NULL || (*tp > osp));
+# endif	  
+
 	  return;
 	}
     }
+
+  BADBRANCH;
 }
 
 static
@@ -448,7 +540,7 @@ llgenindentmsg (/*@only@*/ cstring s, fileloc fl)
   cstring flstring = fileloc_unparse (fl);
 
   prepareMessage ();
-  (void) printIndentMessage (g_msgstream, message ("%q: %q", flstring, s), 3);
+  (void) printIndentMessage (g_msgstream, message ("%q: %q", flstring, s), context_getIndentSpaces ());
   closeMessage ();
 }
 
@@ -456,13 +548,14 @@ void
 llgenindentmsgnoloc (/*@only@*/ cstring s)
 {
   prepareMessage ();
-  (void) printIndentMessage (g_msgstream, s, 3);
+  (void) printIndentMessage (g_msgstream, s, context_getIndentSpaces ());
   closeMessage ();
 }
 
 static bool
-  llgentypeerroraux (flagcode ocode, ctype t1, exprNode e1, ctype t2, exprNode e2,
-		     /*@only@*/ cstring s, fileloc fl)
+llgentypeerroraux (char *srcFile, int srcLine,
+		   flagcode ocode, ctype t1, exprNode e1, ctype t2, exprNode e2,
+		   /*@only@*/ cstring s, fileloc fl)
 {
   cstring hint = cstring_undefined;
   flagcode code = ocode;
@@ -662,7 +755,7 @@ static bool
     }
   else
     {
-      if (llgenerroraux (s, fl, TRUE, FALSE))
+      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
 	{
 	  if (hcode != INVALID_FLAG && hcode != ocode)
 	    {
@@ -684,23 +777,25 @@ static bool
 }
 
 bool
-llgentypeerror (ctype t1, exprNode e1, ctype t2, exprNode e2,
-		/*@only@*/ cstring s, fileloc fl)
+xllgentypeerror (char *srcFile, int srcLine,
+		 ctype t1, exprNode e1, ctype t2, exprNode e2,
+		 /*@only@*/ cstring s, fileloc fl)
 {
-  return llgentypeerroraux (FLG_TYPE, t1, e1, t2, e2, s, fl);
+  return llgentypeerroraux (srcFile, srcLine, FLG_TYPE, t1, e1, t2, e2, s, fl);
 }
 
 bool
-llgenformattypeerror (ctype t1, exprNode e1, ctype t2, exprNode e2,
-		      /*@only@*/ cstring s, fileloc fl)
+xllgenformattypeerror (char *srcFile, int srcLine,
+		       ctype t1, exprNode e1, ctype t2, exprNode e2,
+		       /*@only@*/ cstring s, fileloc fl)
 {
-  return llgentypeerroraux (FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
+  return llgentypeerroraux (srcFile, srcLine, FLG_FORMATTYPE, t1, e1, t2, e2, s, fl);
 }
 
 bool
-llgenerror (flagcode o, /*@only@*/ cstring s, fileloc fl)
+xllgenerror (char *srcFile, int srcLine, flagcode o, /*@only@*/ cstring s, fileloc fl)
 {
-  if (llgenerroraux (s, fl, TRUE, FALSE))
+  if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
     {
       llnosuppresshint (o);
       flagcode_recordError (o);
@@ -715,12 +810,13 @@ llgenerror (flagcode o, /*@only@*/ cstring s, fileloc fl)
 }
 
 bool
-llgenhinterror (flagcode o, /*@only@*/ cstring s, /*@only@*/ cstring hint,
-		fileloc fl)
+xllgenhinterror (char *srcFile, int srcLine,
+		 flagcode o, /*@only@*/ cstring s, /*@only@*/ cstring hint,
+		 fileloc fl)
 {
   if (!context_suppressFlagMsg (o, fl))
     {
-      if (llgenerroraux (s, fl, TRUE, FALSE))
+      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
 	{
 	  flagcode_recordError (o);
 
@@ -750,15 +846,15 @@ llgenhinterror (flagcode o, /*@only@*/ cstring s, /*@only@*/ cstring hint,
 }
 
 static bool
-llrealerror (/*@only@*/ cstring s, fileloc fl)
+llrealerror (char *srcFile, int srcLine, /*@only@*/ cstring s, fileloc fl)
 {
-  return (llgenerrorreal (s, fl, TRUE, FALSE));
+  return (llgenerrorreal (srcFile, srcLine, s, fl, TRUE, FALSE));
 }
 
 static bool
-llgenerroraux (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
+llgenerroraux (char *srcFile, int srcLine,
+	       /*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
 {
-
   if (context_inSuppressZone (fl))
     {
       cstring_free (s);
@@ -769,19 +865,30 @@ llgenerroraux (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
       ;
     }
 
-  return (llgenerrorreal (s, fl, iserror, indent));
+  if (llgenerrorreal (srcFile, srcLine, s, fl, iserror, indent)) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
-void
-llforceerror (flagcode code, /*@only@*/ cstring s, fileloc fl)
+bool
+xllforceerror (char *srcFile, int srcLine, 
+	       flagcode code, /*@only@*/ cstring s, fileloc fl)
 {
   flagcode_recordError (code);
-  (void) llgenerrorreal (s, fl, TRUE, FALSE);
-  closeMessage ();
+
+  if (llgenerrorreal (srcFile, srcLine, s, fl, TRUE, FALSE)) {
+    closeMessage ();
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 static bool
-llgenerrorreal (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
+llgenerrorreal (char *srcFile, int srcLine, 
+		/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
 {
   cstring flstring;
 
@@ -789,6 +896,8 @@ llgenerrorreal (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
 
   if (!messageLog_add (context_messageLog (), fl, s))
     {
+      DPRINTF (("Duplicate message suppressed! %s / %s",
+		fileloc_unparse (fl), s));
       cstring_free (s);
       return FALSE;
     }
@@ -845,6 +954,8 @@ llgenerrorreal (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
 	  lastmsg = cstring_fromCharsNew (tmpmsg);
 	}
     }
+
+  DPRINTF (("Here..."));
 
   if (context_hasAliasAnnote ())
     {
@@ -929,7 +1040,6 @@ llgenerrorreal (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
     }
 
   flstring = fileloc_unparse (fl);
-
   lastfileloclen = cstring_length (flstring);
 
   if (indent)
@@ -941,6 +1051,7 @@ llgenerrorreal (/*@only@*/ cstring s, fileloc fl, bool iserror, bool indent)
       printError (g_msgstream, message ("%q: %q", flstring, s));
     }
 
+  showSourceLoc (srcFile, srcLine);
   return TRUE;
 }
 
@@ -963,22 +1074,29 @@ void printMessage (FILE *stream, /*@only@*/ cstring s)
 static
 void printIndentMessage (FILE *stream, /*@only@*/ cstring sc, int indent)
 {
+  static bool inbody = FALSE;
   int maxlen = context_getLineLen ();
   char *s = cstring_toCharsSafe (sc);
+  char *olds = NULL;
 
+  llassertprotect (!inbody);
+  inbody = TRUE;
 
   do
     {
       char *t = NULL;
       char *st = s;
 
+      llassertprotect (st != olds);
+      olds = st;
       mstring_split (&st, &t, maxlen, &indent);
       fprintf (stream, "%s\n", st);
-      llassert (t != s);
+      llassertprotect (t != s);
       s = t;
     } while (s != NULL) ;
 
   cstring_free (sc);
+  inbody = FALSE;
 }
 
 static
@@ -992,6 +1110,8 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
   char *s = cstring_toCharsSafe (sc);
   char *os = s;
   char *t = NULL;
+
+  DPRINTF (("Print error: [%s]", sc));
 
   if (len < (maxlen + nextlen) && (strchr (s, '\n') == NULL))
     {
@@ -1033,6 +1153,8 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
     }
   else
     {
+      DPRINTF (("Here 1: [%s]", sc));
+
       if (len < (maxlen + maxlen - 1) && (strchr (s, '\n') != NULL))
 	{
 	  nspaces = ((maxlen + maxlen - 1) - len) / 2;
@@ -1073,7 +1195,9 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	  nspaces = 4;
 	  nextlen = maxlen - nspaces;
 
+	  DPRINTF (("Here 2: [%s]", s));
 	  mstring_split (&s, &t, maxlen, &indent);
+	  DPRINTF (("Here 3: [%s] [%s]", s, t));
 
 	  fprintf (stream, "%s\n", s);
 
@@ -1092,8 +1216,11 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	      while (t != NULL)
 		{
 		  char *st = t;
+		  DPRINTF (("Loop: [%s]", t));
 		  mstring_split (&st, &t, nextlen, &indent);
+		  DPRINTF (("Split: [%s] [%s]", st, t));
 		  fprintf (stream, "%s%s\n", spaces, st);
+		  DPRINTF (("Next..."));
 		}
 
 	      sfree (spaces);
@@ -1101,15 +1228,17 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	}
     }
 
+  DPRINTF (("Done"));
   sfree (os);
 }
 
 void
-llfatalbug (/*@only@*/ cstring s)
+xllfatalbug (char *srcFile, int srcLine, /*@only@*/ cstring s)
 {
   prepareMessage ();
   printError (stderr, message ("%q: *** Fatal bug: %q",
 			       fileloc_unparse (g_currentloc), s));
+  showSourceLoc (srcFile, srcLine);
   printCodePoint ();
   printBugReport ();
   llexit (LLFAILURE);
@@ -1160,12 +1289,17 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   prepareMessage ();
 
+  /*@i3232@*/
+  /*
   if (fileloc_isRealLib (g_currentloc))
     {
-      llfatalerror (message ("%q: Library file appears to be corrupted.  Error: %q:%s",
-			     fileloc_unparse (g_currentloc), 
-			     fileloc_unparseRaw (file, line), s));
+      DPRINTF (("Here we are!"));
+      llfatalerror (message ("%q: Library file appears to be corrupted.  Error: %q: %s",
+			fileloc_unparse (g_currentloc), 
+			fileloc_unparseRaw (file, line), 
+			s));
     }
+  */
 
   if (fileloc_withinLines (lastparseerror, g_currentloc, 7))
     {
@@ -1188,12 +1322,12 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   numbugs++;
 
-  if (numbugs > 5 && fileloc_withinLines (lastbug, g_currentloc, 2))
+  if (numbugs > context_getBugsLimit () && fileloc_withinLines (lastbug, g_currentloc, 2))
     {
-      llfatalerror (message ("%q: Cannot recover from last bug.",
+      llfatalerror (message ("%q: Cannot recover from last bug. (If you really want LCLint to try to continue, use -bugslimit <n>.)",
 			     fileloc_unparse (g_currentloc)));
     }
-
+  
   fprintf (stderr, "       (attempting to continue, results may be incorrect)\n");
   fileloc_free (lastbug);
   lastbug = fileloc_copy (g_currentloc);
@@ -1201,7 +1335,6 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 
   (void) fflush (stderr);
   inbug = FALSE;
-  assert(FALSE); /*drl take this out*/
 }
 
 # ifndef NOLCL
@@ -1233,15 +1366,12 @@ llfatalerrorLoc (/*@only@*/ cstring s)
   (void) fflush (g_msgstream);
   printError (stderr, message ("%q: %q", fileloc_unparse (g_currentloc), s));
   printError (stderr, cstring_makeLiteral ("*** Cannot continue."));
+  (void) fflush (g_msgstream);
   llexit (LLFAILURE);
 }
 
-/*
-** free's s!
-*/
-
 void
-llgloberror (/*@only@*/ cstring s)
+xllgloberror (char *srcFile, int srcLine, /*@only@*/ cstring s)
 {
   if (context_inSuppressRegion ())
     {
@@ -1254,6 +1384,7 @@ llgloberror (/*@only@*/ cstring s)
       context_hasError ();
       flagcode_recordError (FLG_SPECIAL);
       printError (g_msgstream, s);
+      showSourceLoc (srcFile, srcLine);
       closeMessage ();
     }
 }
@@ -1288,7 +1419,7 @@ lclNumberErrors (void)
 }
 
 void
-lclerror (ltoken t, /*@only@*/ cstring msg)
+xlclerror (char *srcFile, int srcLine, ltoken t, /*@only@*/ cstring msg)
 {
   lclerrors++;
 
@@ -1299,10 +1430,12 @@ lclerror (ltoken t, /*@only@*/ cstring msg)
       lastfileloclen = cstring_length (loc);
 
       printError (g_msgstream, message ("%q: %q", loc, msg));
+      showSourceLoc (srcFile, srcLine);
     }
   else
     {
       printError (g_msgstream, msg);
+      showSourceLoc (srcFile, srcLine);
     }
 }
 
@@ -1462,21 +1595,29 @@ static void llreportparseerror (/*@only@*/ cstring s)
     }
 }
 
-bool lloptgenerror (flagcode o, /*@only@*/ cstring s, fileloc loc)
+bool xlloptgenerror (char *srcFile, int srcLine, 
+		     flagcode o, /*@only@*/ cstring s, fileloc loc)
 {
-  if (llrealerror (s, loc))
+  DPRINTF (("xllopt: %s", s));
+
+  if (llrealerror (srcFile, srcLine, s, loc))
     {
+      DPRINTF (("Here we are!"));
       llsuppresshint ('-', o);
       closeMessage ();
       flagcode_recordError (o);
       return TRUE;
     }
-
-  flagcode_recordSuppressed (o);
-  return FALSE;
+  else
+    {
+      DPRINTF (("Suppressed!"));
+      flagcode_recordSuppressed (o);
+      return FALSE;
+    }
 }
 
-bool optgenerror2 (flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
+bool xoptgenerror2 (char *srcFile, int srcLine,
+		    flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
 {
   if (context_suppressFlagMsg (f1, loc))
     {
@@ -1492,21 +1633,25 @@ bool optgenerror2 (flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
 	}
       else
 	{
-	  if (llrealerror (s, loc))
+	  if (llrealerror (srcFile, srcLine, s, loc))
 	    {
-	      llsuppresshint ('-', f2);
+	      llsuppresshint2 ('-', f1, f2);
 	      flagcode_recordError (f2);
 	      closeMessage ();
 	      return TRUE;
 	    }
-
-	  flagcode_recordSuppressed (f2);
+	  else
+	    {
+	      flagcode_recordSuppressed (f2);
+	    }
 	}
     }
+
   return FALSE;
 }
 
-bool optgenerror2n (flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
+bool xoptgenerror2n (char *srcFile, int srcLine,
+		     flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
 {
 
   if (context_suppressFlagMsg (f1, loc))
@@ -1523,7 +1668,7 @@ bool optgenerror2n (flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
 	}
       else
 	{
-	  if (llrealerror (s, loc))
+	  if (llrealerror (srcFile, srcLine, s, loc))
 	    {
 	      llsuppresshint ('+', f2);
 	      flagcode_recordError (f2);
@@ -1537,9 +1682,10 @@ bool optgenerror2n (flagcode f1, flagcode f2, /*@only@*/ cstring s, fileloc loc)
   return FALSE;
 }
 
-bool llnoptgenerror (flagcode o, /*@only@*/ cstring s, fileloc loc)
+bool xllnoptgenerror (char *srcFile, int srcLine,
+		      flagcode o, /*@only@*/ cstring s, fileloc loc)
 {
-  if (llrealerror (s, loc))
+  if (llrealerror (srcFile, srcLine, s, loc))
     {
       llsuppresshint ('+', o);
       flagcode_recordError (o);
@@ -1601,6 +1747,31 @@ void llparseerror (cstring s)
 	(message ("%q: %s (For help on parse errors, "
 		  "see lclint -help parseerrors.)",
 		  fileloc_unparse (g_currentloc), msg));
+    }
+}
+
+bool xfsgenerror (char *srcFile, int srcLine,
+		   flagSpec fs, /*@only@*/ cstring s, fileloc fl) 
+{
+  if (flagSpec_isOn (fs, fl))
+    {
+      if (llgenerroraux (srcFile, srcLine, s, fl, TRUE, FALSE))
+	{
+	  llsuppresshint ('-', flagSpec_getFirstOn (fs, fl));
+	  flagcode_recordError (flagSpec_getFirstOn (fs, fl));
+	  return TRUE;
+	}
+      else
+	{
+	  flagcode_recordSuppressed (flagSpec_getFirstOn (fs, fl));
+	  return FALSE;
+	}
+    }
+  else
+    {
+      flagcode_recordSuppressed (flagSpec_getDominant (fs));
+      cstring_free (s);
+      return FALSE;
     }
 }
 

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -77,6 +77,7 @@
 # include "llmain.h"
 # include "portab.h"
 # include "cpp.h"
+# include "mtreader.h"
 # include <time.h>
 
 extern /*@external@*/ int yydebug;
@@ -92,17 +93,20 @@ static void describePrefixCodes (void);
 static void cleanupFiles (void);
 static void showHelp (void);
 static void interrupt (int p_i);
-static void loadrc (FILE *p_rcfile, cstringSList *p_passThroughArgs);
+static void loadrc (/*@open@*/ FILE *p_rcfile, cstringSList *p_passThroughArgs)
+  ;   //   /*@ensures closed p_rcfile@*/ ;
 static void describeVars (void);
 static bool specialFlagsHelp (char *p_next);
 static bool hasShownHerald = FALSE;
+static char *specFullName (char *p_specfile, /*@out@*/ char **p_inpath) 
+     /*@modifies *p_inpath@*/ ;
 
 static bool anylcl = FALSE;
 static clock_t inittime;
 
-static /*@only@*/ /*@null@*/ tsource *initFile = (tsource *) 0;
+static /*@only@*/ /*@null@*/ inputStream initFile = inputStream_undefined;
 
-static fileIdList preprocessFiles (fileIdList)
+static fileIdList preprocessFiles (fileIdList, bool)
   /*@modifies fileSystem@*/ ;
 
 # ifndef NOLCL
@@ -150,34 +154,36 @@ static
   */
   
   cstring larchpath = context_getLarchPath ();
-  tsource *LSLinitFile = (tsource *) 0;
+  inputStream LSLinitFile = inputStream_undefined;
 
   setCodePoint ();
 
-  if (initFile == (tsource *) 0)
+  if (inputStream_isUndefined (initFile))
     {
-      initFile = tsource_create (INITFILENAME, LCLINIT_SUFFIX, FALSE);
+      initFile = inputStream_create (cstring_makeLiteral (INITFILENAME), 
+				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
+				     FALSE);
       
-      if (!tsource_getPath (cstring_toCharsSafe (larchpath), initFile))
+      if (!inputStream_getPath (larchpath, initFile))
 	{
 	  lldiagmsg (message ("Continuing without LCL init file: %s",
-			      cstring_fromChars (tsource_fileName (initFile))));
+			      inputStream_fileName (initFile)));
 	}
       else 
 	{
-	  if (!tsource_open (initFile))
+	  if (!inputStream_open (initFile))
 	    {
 	      lldiagmsg (message ("Continuing without LCL init file: %s",
-				  cstring_fromChars (tsource_fileName (initFile))));
+				  inputStream_fileName (initFile)));
 	    }
 	}
     }
   else 
     {
-      if (!tsource_open (initFile))
+      if (!inputStream_open (initFile))
 	{
 	  lldiagmsg (message ("Continuing without LCL init file: %s",
-			      cstring_fromChars (tsource_fileName (initFile))));
+			      inputStream_fileName (initFile)));
 	}
     }
 
@@ -202,9 +208,9 @@ static
   setCodePoint ();
 
   /* need this to initialize LCL checker */
-  llassert (initFile != NULL);
-      
-  if (tsource_isOpen (initFile))
+
+  llassert (inputStream_isDefined (initFile));      
+  if (inputStream_isOpen (initFile))
     {
       setCodePoint ();
 
@@ -217,24 +223,26 @@ static
       LCLProcessInitFileCleanup ();
 
       setCodePoint ();
-      check (tsource_close (initFile));
+      check (inputStream_close (initFile));
     }
   
   /* Initialize LSL init files, for parsing LSL signatures from LSL */
   
-  LSLinitFile = tsource_create ("lslinit.lsi", ".lsi", FALSE);
+  LSLinitFile = inputStream_create (cstring_makeLiteral ("lslinit.lsi"), 
+				    cstring_makeLiteralTemp (".lsi"),
+				    FALSE);
   
-  if (!tsource_getPath (cstring_toCharsSafe (larchpath), LSLinitFile))
+  if (!inputStream_getPath (larchpath, LSLinitFile))
     {
       lldiagmsg (message ("Continuing without LSL init file: %s",
-			  cstring_fromChars (tsource_fileName (LSLinitFile))));
+			  inputStream_fileName (LSLinitFile)));
     }
   else 
     {
-      if (!tsource_open (LSLinitFile))
+      if (!inputStream_open (LSLinitFile))
 	{
 	  lldiagmsg (message ("Continuing without LSL init file: %s",
-			      cstring_fromChars (tsource_fileName (LSLinitFile))));
+			      inputStream_fileName (LSLinitFile)));
 	}
     }
       
@@ -250,7 +258,7 @@ static
   lscanLineReset ();
   LSLScanInit ();
 
-  if (tsource_isOpen (LSLinitFile))
+  if (inputStream_isOpen (LSLinitFile))
     {
       setCodePoint ();
       LSLScanReset (LSLinitFile);
@@ -258,10 +266,10 @@ static
       setCodePoint ();
       LSLProcessInitFile ();
       setCodePoint ();
-      check (tsource_close (LSLinitFile));
+      check (inputStream_close (LSLinitFile));
     }
       
-  tsource_free (LSLinitFile);
+  inputStream_free (LSLinitFile);
   
   if (lclHadError ())
     {
@@ -309,38 +317,42 @@ lslProcess (fileIdList lclfiles)
 
   fileIdList_elements (lclfiles, fid)
     {
-      char *actualName = (char *) dmalloc (sizeof (*actualName));
-      char *oactualName = actualName;
-      char *fname = cstring_toCharsSafe (fileName (fid));
+      cstring actualName = cstring_undefined;
+      cstring fname = fileName (fid);
       
-      if (osd_getPath (g_localSpecPath, fname, &actualName) == OSD_FILENOTFOUND)
+      if (osd_getPath (cstring_fromChars (g_localSpecPath), 
+		       fname, &actualName) == OSD_FILENOTFOUND)
 	{
 	  if (mstring_equal (g_localSpecPath, "."))
 	    {
-	      lldiagmsg (message ("Spec file not found: %s",
-				  cstring_fromChars (fname)));
+	      lldiagmsg (message ("Spec file not found: %s", fname));
 	    }
 	  else
 	    {
 	      lldiagmsg (message ("Spec file not found: %s (on %s)", 
-				  cstring_fromChars (fname), 
+				  fname, 
 				  cstring_fromChars (g_localSpecPath)));
 	    }
 	}
       else
 	{
-	  tsource *specFile;
-	  
-	  while (*actualName == '.' && *(actualName + 1) == CONNECTCHAR) 
-	    {
-	      actualName += 2;
-	    }
-	  
-	  specFile = tsource_create (actualName, LCL_SUFFIX, TRUE);
-	  llassert (specFile != (tsource *) 0);
-	  
-	  g_currentSpec = cstring_fromChars (mstring_copy (actualName));
+	  inputStream specFile;
+	  /*@access cstring@*/
+	  char *namePtr = actualName;
 
+	  while (*namePtr == '.' && *(namePtr + 1) == CONNECTCHAR) 
+	    {
+	      namePtr += 2;
+	    }
+	  /*@noaccess cstring@*/
+
+	  g_currentSpec = cstring_fromCharsNew (namePtr);
+
+	  specFile = inputStream_create (cstring_copy (g_currentSpec),
+					 LCL_EXTENSION, TRUE);
+	  
+	  llassert (inputStream_isDefined (specFile));
+	  
 	  g_currentSpecName = specFullName 
 	    (cstring_toCharsSafe (g_currentSpec),
 	     &path);
@@ -354,11 +366,11 @@ lslProcess (fileIdList lclfiles)
 	  
 	  /* Open source file */
 	  
-	  if (!tsource_open (specFile))
+	  if (!inputStream_open (specFile))
 	    {
 	      lldiagmsg (message ("Cannot open file: %s",
-				  cstring_fromChars (tsource_fileName (specFile))));
-	      tsource_free (specFile);
+				  inputStream_fileName (specFile)));
+	      inputStream_free (specFile);
 	    }
 	  else
 	    {
@@ -387,32 +399,31 @@ lslProcess (fileIdList lclfiles)
 		{
 		  if (overallStatus)
 		    {
- 		      outputLCSFile (path, "%%FAILED Output from ",
+ 		      outputLCSFile (path, "%FAILED Output from ",
 				     g_currentSpecName);
 		    }
 		  else
 		    {
-		      outputLCSFile (path, "%%PASSED Output from ", 
+		      outputLCSFile (path, "%PASSED Output from ", 
 				     g_currentSpecName);
 		    }
 		}
 
-	      (void) tsource_close (specFile);
-	      tsource_free (specFile);
+	      (void) inputStream_close (specFile);
+	      inputStream_free (specFile);
 
 	      symtable_exitScope (g_symtab);
-	    }
+	    }      
 	}
-      
-      sfree (oactualName);
+      cstring_free (actualName);
     } end_fileIdList_elements; 
-  
+    
     /* Can cleanup lsl stuff right away */
-
-      lslCleanup ();
-  
-  g_currentSpec = cstring_undefined;
-  g_currentSpecName = NULL;
+    
+    lslCleanup ();
+    
+    g_currentSpec = cstring_undefined;
+    g_currentSpecName = NULL;
 }
 # endif
 
@@ -485,7 +496,7 @@ static void handlePassThroughFlag (char *arg)
 	** them.  This is an artifact of UNIX command line?
 	*/
 
-	def = osd_fixDefine (arg + 1);
+	def = osd_fixDefine (cstring_fromChars (arg + 1));
 	DPRINTF (("Do define: %s", def));
 	cppDoDefine (def);
 	DPRINTF (("After define"));
@@ -521,6 +532,21 @@ static void addFile (fileIdList files, /*@only@*/ cstring s)
   else
     {
       fileIdList_add (files, fileTable_addFileOnly (context_fileTable (), s));
+    }
+}
+
+static void addXHFile (fileIdList files, /*@only@*/ cstring s)
+{
+  if (fileTable_exists (context_fileTable (), s))
+    {
+      showHerald ();
+      lldiagmsg (message ("File listed multiple times: %s", s));
+      cstring_free (s);
+    }
+  else
+    {
+      fileIdList_add (files, fileTable_addXHFile (context_fileTable (), s));
+      cstring_free (s);
     }
 }
 
@@ -561,13 +587,12 @@ int main (int argc, char *argv[])
   bool showhelp = FALSE;
   bool allhelp = TRUE;
   bool expsuccess;
-  tsource *sourceFile = (tsource *) 0;
+  inputStream sourceFile = inputStream_undefined;
  
   fileIdList dercfiles;
   cstringSList fl = cstringSList_undefined;
   cstringSList passThroughArgs = cstringSList_undefined;
-  fileIdList cfiles;
-  fileIdList lclfiles;
+  fileIdList cfiles, xfiles, lclfiles, mtfiles;
   clock_t before, lcltime, libtime, pptime, cptime, rstime;
   int i = 0;
 
@@ -577,18 +602,21 @@ int main (int argc, char *argv[])
   (void) signal (SIGSEGV, interrupt); 
 
   cfiles = fileIdList_create ();
+  xfiles = fileIdList_create ();
   lclfiles = fileIdList_create ();
+  mtfiles = fileIdList_create ();
 
   flags_initMod ();
+  clabstract_initMod ();
   typeIdSet_initMod ();
   cppReader_initMod ();
-
   setCodePoint ();
-
+  
   g_currentloc = fileloc_createBuiltin ();
-
+  
   before = clock ();
   context_initMod ();
+
   context_setInCommandLine ();
 
   if (argc <= 1)
@@ -605,26 +633,28 @@ int main (int argc, char *argv[])
   */
 
   {
-    char *incval = mstring_copy (osd_getEnvironmentVariable (INCLUDE_VAR));
+    cstring incval = cstring_copy 
+      (osd_getEnvironmentVariable (cstring_makeLiteralTemp (INCLUDE_VAR)));
 
-    if (incval != NULL)
+    if (cstring_isDefined (incval))
       {
 	/*
 	** Each directory on the include path is a system include directory.
 	*/
 
 	DPRINTF (("include: %s", incval));
-	context_setString (FLG_SYSTEMDIRS, cstring_fromCharsNew (incval));
+	context_setString (FLG_SYSTEMDIRS, cstring_copy (incval));
 
-	while (incval != NULL)
+	while (cstring_isDefined (incval))
 	  {
+	    /*@access cstring@*/
 	    char *nextsep = strchr (incval, SEPCHAR);
 
 	    if (nextsep != NULL)
 	      {
 		cstring dir;
 		*nextsep = '\0';
-		dir = cstring_fromCharsNew (incval);
+		dir = cstring_copy (incval);
 
 		if (cstring_length (dir) == 0
 		    || !isalpha ((int) cstring_firstChar (dir)))
@@ -636,20 +666,23 @@ int main (int argc, char *argv[])
 		  }
 		else
 		  {
-		    DPRINTF (("Add include: %s", dir));
 		    cppAddIncludeDir (dir);
 		  }
 
 		*nextsep = SEPCHAR;
-		incval = nextsep + 1;
+		incval = cstring_fromChars (nextsep + 1);
 		cstring_free (dir);
 	      }
 	    else
 	      {
 		break;
 	      }
+
+	    /*@noaccess cstring@*/
 	  }
       }
+
+    cstring_free (incval);
   }
 
   /*
@@ -657,7 +690,7 @@ int main (int argc, char *argv[])
   */
 
   {
-    cstring home = cstring_fromChars (osd_getHomeDir ());
+    cstring home = osd_getHomeDir ();
     char *fname  = NULL;
     FILE *rcfile;
     bool defaultf = TRUE;
@@ -869,21 +902,26 @@ int main (int argc, char *argv[])
 	      
 	      thisarg++;	/* skip '-' */
 	      flagname = cstring_fromChars (thisarg);
-	      
+
+	      DPRINTF (("Flag: %s", flagname));
 	      opt = identifyFlag (flagname);
-	      
+	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
+
 	      if (flagcode_isSkip (opt))
 		{
-		  ;
+		  DPRINTF (("Skipping!"));
 		}
 	      else if (flagcode_isInvalid (opt))
 		{
+		  DPRINTF (("Invalid: %s", flagname));
+
 		  if (isMode (flagname))
 		    {
 		      context_setMode (flagname);
 		    }
 		  else
 		    {
+		      DPRINTF (("Error!"));
 		      llgloberror (message ("Unrecognized option: %s", 
 					    cstring_fromChars (thisarg)));
 		    }
@@ -952,15 +990,30 @@ int main (int argc, char *argv[])
 			      else if (opt == FLG_INIT)
 				{
 # ifndef NOLCL
-				  initFile = tsource_create 
-				    (cstring_toCharsSafe (arg), 
-				     LCLINIT_SUFFIX, FALSE);
+				  initFile = inputStream_create 
+				    (arg, 
+				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
+				     FALSE);
 # endif
 				  break;
 				}
 			      else
 				{
-				  setStringFlag (opt, arg);
+				  DPRINTF (("String flag: %s / %s",
+					    flagcode_unparse (opt), arg));
+				  if (opt == FLG_MTSFILE)
+				    {
+				      /*
+				      ** arg identifies mts files
+				      */
+				      
+				      addFile (mtfiles, message ("%s%s", arg, MTS_EXTENSION));
+				      addXHFile (xfiles, message ("%s%s", arg, XH_EXTENSION));
+				    }
+				  else
+				    {
+				      setStringFlag (opt, arg);
+				    }
 				}
 			    }
 			  else
@@ -980,6 +1033,7 @@ int main (int argc, char *argv[])
 	    }
 	  else /* its a filename */
 	    {
+	      DPRINTF (("Adding filename: %s", thisarg));
 	      fl = cstringSList_add (fl, cstring_fromChars (thisarg));
 	    }
 	}
@@ -993,35 +1047,44 @@ int main (int argc, char *argv[])
 
   cstringSList_elements (fl, current)
     {
-      char *fname = cstring_toCharsSafe (current);
-      char *ext = strrchr (fname, '.');
-
-      if (ext == NULL)
+      cstring ext = fileLib_getExtension (current);
+      
+      if (cstring_isUndefined (ext))
 	{
 	  /* no extension --- both C and LCL with default extensions */
 	  
-	  addFile (cfiles, message ("%s.c", cstring_fromChars (fname)));
-	  addFile (lclfiles, message ("%s.lcl", cstring_fromChars (fname)));
+	  addFile (cfiles, message ("%s%s", current, C_EXTENSION));
+	  addFile (lclfiles, message ("%s%s", current, LCL_EXTENSION));
 	}
-      else if (isCext (ext))
+      else if (cstring_equal (ext, XH_EXTENSION))
 	{
-	  addFile (cfiles, cstring_fromCharsNew (fname));
+	  addXHFile (xfiles, cstring_copy (current));
+	}
+      else if (cstring_equal (ext, LCL_EXTENSION)) 
+	{
+	  addFile (lclfiles, cstring_copy (current));
+	}
+      else if (fileLib_isCExtension (ext))
+	{
+	  addFile (cfiles, cstring_copy (current));
+	}
+      else if (cstring_equal (ext, MTS_EXTENSION))
+	{
+	  addFile (mtfiles, cstring_copy (current));
 	}
       else 
 	{
-	  if (!mstring_equal (ext, ".lcl"))
-	    {
-	      lldiagmsg (message ("Unrecognized file extension: %s (assuming lcl)", 
-				  cstring_fromChars (ext)));
-	    }
-
-	  addFile (lclfiles, cstring_fromCharsNew (fname));
+	  voptgenerror 
+	    (FLG_FILEEXTENSIONS,
+	     message ("Unrecognized file extension: %s (assuming %s is C source code)", 
+		      current, ext),
+	     g_currentloc);
+	  
+	  addFile (cfiles, cstring_copy (current));
 	}
     } end_cstringSList_elements;
   
-  
-  showHerald ();
-
+    showHerald (); /*@i723 move earlier? */
   
   if (showhelp)
     {
@@ -1032,6 +1095,7 @@ int main (int argc, char *argv[])
       fprintf (g_msgstream, "\n");
 
       fileIdList_free (cfiles);
+      fileIdList_free (xfiles);
       fileIdList_free (lclfiles);
       
       llexit (LLSUCCESS);
@@ -1087,8 +1151,24 @@ int main (int argc, char *argv[])
   fileloc_free (g_currentloc);
   g_currentloc = fileloc_createBuiltin ();
 
+  /*
+  ** Read metastate files (must happen before loading libraries) 
+  */
+
+  fileIdList_elements (mtfiles, mtfile)
+    {
+      context_setFileId (mtfile);
+
+      if (context_getFlag (FLG_SHOWSCAN))
+	{
+	  lldiagmsg (message ("< processing %s >", rootFileName (mtfile)));
+	}
+      
+      mtreader_readFile (cstring_copy (fileName (mtfile)));
+    } end_fileIdList_elements;
+
   libtime = clock ();
-  
+
   if (anylcl)
     {
 # ifdef NOLCL
@@ -1097,6 +1177,8 @@ int main (int argc, char *argv[])
       lslProcess (lclfiles);
 # endif
     }
+
+  usymtab_initGlobalMarker ();
 
   /*
   ** pre-processing
@@ -1108,8 +1190,6 @@ int main (int argc, char *argv[])
 
   context_setInCommandLine ();
 
-  cppReader_initialize ();
-
   DPRINTF (("Pass through: %s", cstringSList_unparse (passThroughArgs)));
   
   cstringSList_elements (passThroughArgs, thisarg) {
@@ -1120,12 +1200,16 @@ int main (int argc, char *argv[])
 
   cleanupMessages ();
 
+  DPRINTF (("Initializing cpp reader!"));
+  cppReader_initialize ();
   cppReader_saveDefinitions ();
   
   context_clearInCommandLine ();
 
   if (!context_getFlag (FLG_NOPP))
     {
+      fileIdList tfiles;
+
       llflush ();
 
       if (context_getFlag (FLG_SHOWSCAN))
@@ -1136,7 +1220,11 @@ int main (int argc, char *argv[])
       lcltime = clock ();
 
       context_setPreprocessing ();
-      dercfiles = preprocessFiles (cfiles);
+      dercfiles = preprocessFiles (xfiles, TRUE);
+      tfiles = preprocessFiles (cfiles, FALSE);
+      dercfiles = fileIdList_append (dercfiles, tfiles);
+      fileIdList_free (tfiles);
+
       context_clearPreprocessing ();
 
       fileIdList_free (cfiles);
@@ -1151,10 +1239,10 @@ int main (int argc, char *argv[])
   else
     {
       lcltime = clock ();
-      dercfiles = cfiles;
+      dercfiles = fileIdList_append (cfiles, xfiles);
       pptime = clock ();
     }
-  
+
   /*
   ** now, check all the corresponding C files
   **
@@ -1173,30 +1261,33 @@ int main (int argc, char *argv[])
 # endif
   }
 
+  DPRINTF (("Initializing..."));
+
   exprNode_initMod ();
+
+  DPRINTF (("Okay..."));
 
   fileIdList_elements (dercfiles, fid)
     {
-      sourceFile = tsource_create (cstring_toCharsSafe (fileName (fid)),
-				   C_SUFFIX, TRUE);
+      sourceFile = inputStream_create (cstring_copy (fileName (fid)), C_EXTENSION, TRUE);
       context_setFileId (fid);
       
       /* Open source file  */
       
-      if (sourceFile == (tsource *) 0 || (!tsource_open (sourceFile)))
+      if (inputStream_isUndefined (sourceFile) || (!inputStream_open (sourceFile)))
 	{
 	  /* previously, this was ignored  ?! */
 	  llbug (message ("Could not open temp file: %s", fileName (fid)));
 	}
       else
 	{
-	  yyin = sourceFile->file; /*< shared <- only */
+	  yyin = inputStream_getFile (sourceFile); /*< shared <- only */
 	
 	  llassert (yyin != NULL);
 
 	  if (context_getFlag (FLG_SHOWSCAN))
 	    {
-	      	      lldiagmsg (message ("< checking %s >", rootFileName (fid)));
+	      lldiagmsg (message ("< checking %s >", rootFileName (fid)));
 	    }
 	  
 	  /*
@@ -1213,13 +1304,13 @@ int main (int argc, char *argv[])
 	      first_time = FALSE;
 	    }
 	  
+	  DPRINTF (("Entering..."));
 	  context_enterFile ();
 	  (void) yyparse ();
-	  context_exitFile ();
+	  context_exitCFile ();
 		    
-	  (void) tsource_close (sourceFile);
-	}
-      
+	  (void) inputStream_close (sourceFile);
+	}      
     } end_fileIdList_elements;
 
   cptime = clock ();
@@ -1313,7 +1404,7 @@ int main (int argc, char *argv[])
 	if (nspecErrors == context_getLCLExpect ())
 	  {
 	    specErrors = 
-	      message ("%d spec error%p found, as expected\n       ", 
+	      message ("%d spec error%& found, as expected\n       ", 
 		       nspecErrors);
 	  }
 	else
@@ -1321,13 +1412,13 @@ int main (int argc, char *argv[])
 	    if (context_getLCLExpect () > 0)
 	      {
 		specErrors = 
-		  message ("%d spec error%p found, expected %d\n       ", 
+		  message ("%d spec error%& found, expected %d\n       ", 
 			   nspecErrors,
 			   (int) context_getLCLExpect ());
 	      }
 	    else
 	      {
-		specErrors = message ("%d spec error%p found\n       ",
+		specErrors = message ("%d spec error%& found\n       ",
 				      nspecErrors);
 		expsuccess = FALSE;
 	      }
@@ -1350,7 +1441,7 @@ int main (int argc, char *argv[])
 	    {
 	      if (!isQuiet) {
 		llmsg (message ("Finished LCLint checking --- "
-				"%s%d code error%p found, as expected",
+				"%s%d code error%& found, as expected",
 				specErrors, context_numErrors ()));
 	      }
 	    }
@@ -1361,7 +1452,7 @@ int main (int argc, char *argv[])
 		  if (!isQuiet) {
 		    llmsg (message 
 			   ("Finished LCLint checking --- "
-			    "%s%d code error%p found, expected %d",
+			    "%s%d code error%& found, expected %d",
 			    specErrors, context_numErrors (), 
 			    (int) context_getExpect ()));
 		  }
@@ -1371,11 +1462,12 @@ int main (int argc, char *argv[])
 	      else
 		{
 		  
-		  if (!isQuiet) {
-		    llmsg (message ("Finished LCLint checking --- "
-				    "%s%d code error%p found", 
-				    specErrors, context_numErrors ()));
-		  }
+		  if (!isQuiet)
+		    {
+		      llmsg (message ("Finished LCLint checking --- "
+				      "%s%d code error%& found", 
+				      specErrors, context_numErrors ()));
+		    }
 
 		  expsuccess = FALSE;
 		}
@@ -1481,19 +1573,21 @@ int main (int argc, char *argv[])
   llexit (expsuccess ? LLSUCCESS : LLFAILURE);
 }
 
+# ifdef WIN32
 /*
 ** Reenable return value warnings.
 */
-
-#pragma warning (default:4035)
+# pragma warning (default:4035)
+# endif 
 
 void
 showHelp (void)
 {
   showHerald ();
   
-  llmsglit ("Source files are .c, .h and .lcl files.  If there is no suffix,");
-  llmsglit ("   LCLint will look for <file>.c and <file>.lcl.");
+  llmsg (message ("Source files are .c, .h and %s files.  If there is no suffix,",
+		  LCL_EXTENSION));
+  llmsg (message ("   LCLint will look for <file>.c and <file>%s.", LCL_EXTENSION));
   llmsglit ("");
   llmsglit ("Use lclint -help <topic or flag name> for more information");
   llmsglit ("");
@@ -1578,8 +1672,9 @@ printParseErrors (void)
   llmsglit ("   ...");
   llmsglit ("   # endif");
   llmsglit ("");
+  /* evans 2000-12-21 fixed typo reported by Jeroen Ruigrok/Asmodai */
   llmsglit ("Missing type definitions --- an undefined type name will usually "
-	    "lead to a parse error. This ofter occurs when a standard header "
+	    "lead to a parse error. This often occurs when a standard header "
 	    "file defines some type that is not part of the standard library. ");
   llmsglit ("By default, LCLint does not process the local files corresponding "
 	    "to standard library headers, but uses a library specification "
@@ -1623,7 +1718,7 @@ printAnnotations (void)
   llmsglit ("Annotations");
   llmsglit ("-----------");
   llmsglit ("");
-  llmsglit ("Annotations are stylized comments that document certain "
+  llmsglit ("Annotations are semantic comments that document certain "
 	    "assumptions about functions, variables, parameters, and types. ");
   llmsglit ("");
   llmsglit ("They may be used to indicate where the representation of a "
@@ -1881,12 +1976,12 @@ void
 describeVars (void)
 {
   cstring eval;
-  char *def;
+  cstring def;
 
   eval = context_getLarchPath ();
   def = osd_getEnvironmentVariable (LARCH_PATH);
 
-  if (def != NULL || 
+  if (cstring_isDefined (def) || 
       !cstring_equal (eval, cstring_fromChars (DEFAULT_LARCHPATH)))
     {
       llmsg (message ("LARCH_PATH = %s", eval));
@@ -1900,9 +1995,9 @@ describeVars (void)
   llmsglit ("   --- path used to find larch initialization files and LSL traits");
 
   eval = context_getLCLImportDir ();
-  def = osd_getEnvironmentVariable (LCLIMPORTDIR);
+  def = osd_getEnvironmentVariable (cstring_makeLiteralTemp (LCLIMPORTDIR));
 
-  if (def != NULL ||
+  if (cstring_isDefined (def) ||
       !cstring_equal (eval, cstring_fromChars (DEFAULT_LCLIMPORTDIR)))
     {
       llmsg (message ("%q = %s", cstring_makeLiteral (LCLIMPORTDIR), eval));
@@ -2035,7 +2130,8 @@ llexit (int status)
 }
 
 void
-loadrc (FILE *rcfile, cstringSList *passThroughArgs)
+loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
+     //   /*@ensures closed rcfile@*/
 {
   char *s = mstring_create (MAX_LINE_LENGTH);
   char *os = s;
@@ -2044,7 +2140,7 @@ loadrc (FILE *rcfile, cstringSList *passThroughArgs)
 
   s = os;
 
-  while (fgets (s, MAX_LINE_LENGTH, rcfile) != NULL)
+  while (reader_readLine (rcfile, s, MAX_LINE_LENGTH) != NULL)
     {
       char c;
       bool set = FALSE;	    
@@ -2053,9 +2149,8 @@ loadrc (FILE *rcfile, cstringSList *passThroughArgs)
 
       DPRINTF (("Line: %s", s));
       DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
-      incLine ();
             
-      while (*s == ' ' || *s == '\t' || *s == '\n') 
+      while (*s == ' ' || *s == '\t')
 	{
 	  s++;
 	  incColumn ();
@@ -2152,6 +2247,8 @@ loadrc (FILE *rcfile, cstringSList *passThroughArgs)
 	    }
 	  else if (flagcode_isInvalid (opt))
 	    {
+	      DPRINTF (("Invalid: %s", thisflag));
+
 	      if (isMode (cstring_fromChars (thisflag)))
 		{
 		  context_setMode (cstring_fromChars (thisflag));
@@ -2282,12 +2379,12 @@ loadrc (FILE *rcfile, cstringSList *passThroughArgs)
 			  else if (opt == FLG_INIT)
 			    {
 # ifndef NOLCL
-			      llassert (initFile == NULL);
+			      llassert (inputStream_isUndefined (initFile));
 			      
-			      initFile = tsource_create 
-				(cstring_toCharsSafe (extra), 
-				 LCLINIT_SUFFIX, FALSE);
-			      cstring_markOwned (extra);
+			      initFile = inputStream_create 
+				(extra, 
+				 cstring_makeLiteralTemp (LCLINIT_SUFFIX),
+				 FALSE);
 # else
 			      cstring_free (extra);
 # endif
@@ -2347,7 +2444,7 @@ loadrc (FILE *rcfile, cstringSList *passThroughArgs)
   check (fclose (rcfile) == 0);
 }
 
-static fileIdList preprocessFiles (fileIdList fl)
+static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)
   /*@modifies fileSystem@*/
 {
   bool msg = (context_getFlag (FLG_SHOWSCAN) && fileIdList_size (fl) > 10);
@@ -2360,18 +2457,46 @@ static fileIdList preprocessFiles (fileIdList fl)
 
   fileIdList_elements (fl, fid)
     {
-      char *ppfname = cstring_toCharsSafe (fileName (fid));
+      cstring ppfname = fileName (fid);
 
-      if (!(osd_fileIsReadable (ppfname)))
+      if (xhfiles)
 	{
-	  lldiagmsg (message ("Cannot open file: %s",
-			      cstring_fromChars (ppfname)));
+	  cstring fpath;
+	  
+	  if (osd_findOnLarchPath (ppfname, &fpath) == OSD_FILEFOUND)
+	    {
+	      if (cstring_equal (ppfname, fpath))
+		{
+		  ;
+		}
+	      else
+		{
+		  DPRINTF (("xh file: %s", fpath));
+		  ppfname = fpath;
+		  fileTable_setFilePath (context_fileTable (), fid, fpath);
+		}
+	    }
+	  else
+	    {
+	      lldiagmsg (message ("Cannot find .xh file on LARCH_PATH: %s", ppfname));
+	      lldiagmsg (cstring_makeLiteral ("     Check LARCH_PATH environment variable."));
+	      ppfname = cstring_undefined;
+	    }
 	}
       else
 	{
-	  fileId  dfile = fileTable_addCTempFile (context_fileTable (), fid);
+	  if (!(osd_fileIsReadable (ppfname)))
+	    {
+	      lldiagmsg (message ("Cannot open file: %s", ppfname));
+	      ppfname = cstring_undefined;
+	    }
+	}
+
+      if (cstring_isDefined (ppfname))
+	{
+	  fileId dfile = fileTable_addCTempFile (context_fileTable (), fid);
 	  
-	  llassert (!mstring_isEmpty (ppfname));
+	  llassert (cstring_isNonEmpty (ppfname));
 	  
 	  if (msg)
 	    {
@@ -2389,8 +2514,7 @@ static fileIdList preprocessFiles (fileIdList fl)
 	      filesprocessed++;
 	    }
 
-	  if (cppProcess (cstring_fromChars (ppfname), 
-			  fileName (dfile)) != 0) 
+	  if (cppProcess (ppfname, fileName (dfile)) != 0) 
 	    {
 	      llfatalerror (message ("Preprocessing error for file: %s", 
 				     rootFileName (fid)));
@@ -2402,3 +2526,75 @@ static fileIdList preprocessFiles (fileIdList fl)
     
     return dfiles;
 }
+
+/* This should be in an lclUtils.c file... */
+# ifndef NOLCL
+char *specFullName (char *specfile, /*@out@*/ char **inpath)
+{
+  /* extract the path and the specname associated with the given file */
+  char *specname = (char *) dmalloc (sizeof (*specname) 
+				     * (strlen (specfile) + 9));
+  char *ospecname = specname;
+  char *path = (char *) dmalloc (sizeof (*path) * (strlen (specfile)));
+  size_t size;
+  long int i, j;
+  
+  /* initialized path to empty string or may have accidental garbage */
+  *path = '\0';
+
+  /*@-mayaliasunique@*/ 
+  strcpy (specname, specfile);
+  /*@=mayaliasunique@*/ 
+
+  /* trim off pathnames in specfile */
+  size = strlen (specname);
+
+  for (i = size_toInt (size) - 1; i >= 0; i--)
+    {
+      if (specname[i] == CONNECTCHAR)
+	{
+	  /* strcpy (specname, (char *)specname+i+1); */
+	  for (j = 0; j <= i; j++)	/* include '/'  */
+	    {
+	      path[j] = specname[j];
+	    }
+
+	  path[i + 1] = '\0';
+	  specname += i + 1;
+	  break;
+	}
+    }
+
+  /* 
+  ** also remove .lcl file extension, assume it's the last extension
+  ** of the file name 
+  */
+
+  size = strlen (specname);
+
+  for (i = size_toInt (size) - 1; i >= 0; i--)
+    {
+      if (specname[i] == '.')
+	{
+	  specname[i] = '\0';
+	  break;
+	}
+    }
+  
+  *inpath = path;
+
+  /*
+  ** If specname no longer points to the original char,
+  ** we need to allocate a new pointer and copy the string.
+  */
+
+  if (specname != ospecname) {
+    char *rspecname = (char *) dmalloc (sizeof (*rspecname) * (strlen (specname) + 1));
+    strcpy (rspecname, specname); /* evs 2000-05-16: Bug: was ospecname! */
+    sfree (ospecname);
+    return rspecname;
+  } 
+
+  return specname;
+}
+# endif

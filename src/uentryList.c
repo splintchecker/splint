@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -293,7 +293,6 @@ uentryList_lookupRealName (uentryList s, cstring name)
 
 uentryList uentryList_copy (uentryList s)
 {
-  
   if (uentryList_isDefined (s))
     {
       uentryList t = (uentryList) dmalloc (sizeof (*t));
@@ -309,14 +308,14 @@ uentryList uentryList_copy (uentryList s)
 	  
 	  for (i = 0; i < s->nelements; i++) 
 	    {
-	      	      t->elements[i] = uentry_copy (s->elements[i]); 
-	      	    }
+	      t->elements[i] = uentry_copy (s->elements[i]); 
+	    }
 	}
       else
 	{
 	  t->elements = NULL;
 	}
-
+      
       return t;
     }
   else
@@ -517,6 +516,10 @@ uentryList_compareFields (uentryList s, uentryList t)
 	  
 	  if (uc != 0) 
 	    { 
+	      DPRINTF (("Bad compare: %s / %s",
+			uentry_unparseFull (s->elements [i]),
+			uentry_unparseFull (t->elements [i])));
+
 	      return uc; 
 	    }
 	}
@@ -546,6 +549,7 @@ uentryList_dumpParams (uentryList s)
   
   uentryList_elements (s, current)
     {
+      DPRINTF (("Dump param: %s", uentry_unparse (current)));
       st = message ("%q%q,", st, uentry_dumpParam (current));
   } end_uentryList_elements;
 
@@ -564,10 +568,12 @@ uentryList_dumpFields (uentryList s)
     if (!uentry_isVariable (current))
       {
 	llassert (uentry_isFunction (current));
+	DPRINTF (("Dump field: %s", uentry_unparse (current)));
 	st = message ("%q!%q,", st, uentry_dump (current));
       }
     else
       {
+	DPRINTF (("Dump field: %s", uentry_unparse (current)));
 	st = message ("%q%q,", st, uentry_dump (current));
       }
   } end_uentryList_elements;
@@ -584,17 +590,17 @@ uentryList_undumpFields (char **s, fileloc loc)
     {
       if (**s == '!')
 	{
-	  checkChar (s, '!');
+	  reader_checkChar (s, '!');
 	  ul = uentryList_add (ul, uentry_undump (ekind_function, loc, s));
 	}
       else
 	{
 	  ul = uentryList_add (ul, uentry_undump (ekind_variable, loc, s));
 	}
-      checkChar (s, ',');
+      reader_checkChar (s, ',');
     }
 
-  checkChar (s, '}');
+  reader_checkChar (s, '}');
   return ul;
 }
 
@@ -621,12 +627,12 @@ uentryList_undump (char **s)
 	  uentry_free (ue);
 	}
 
-      checkChar (s, ',');
+      reader_checkChar (s, ',');
       c = **s;
       paramno++;
     }
 
-  checkChar (s, ')');
+  reader_checkChar (s, ')');
   return pn;
 }
 
@@ -779,6 +785,7 @@ uentryList_showFieldDifference (uentryList p1, uentryList p2)
       else 
 	{
 	  /* evs 2000-07-25 was ctype_match, should match uentryList_matchFields */
+
 	  if (!ctype_almostEqual (uentry_getType (cp1), uentry_getType (cp2)))
 	    {
 	      llgenindentmsg 
@@ -812,6 +819,12 @@ uentryList_showFieldDifference (uentryList p1, uentryList p2)
 }
 
 bool
+uentryList_equivFields (uentryList p1, uentryList p2)
+{
+  return (uentryList_compareFields (p1, p2) == 0);
+}
+
+bool
 uentryList_matchFields (uentryList p1, uentryList p2)
 {
   int index;
@@ -837,13 +850,17 @@ uentryList_matchFields (uentryList p1, uentryList p2)
       cp1 = p1->elements[index];
       cp2 = p2->elements[index];
 
+      /*@i32
+      **
+      ** Should compare uentry's --- need to fix report errors too.
+      */
+
       if (!(cstring_equal (uentry_rawName (cp1), uentry_rawName (cp2))
 	    && (ctype_almostEqual (uentry_getType (cp1), uentry_getType (cp2)))))
-	{     /* was ctype_match! */
+	{ 
 	  return FALSE;
 	}
     }
 
   return TRUE;
 }
-

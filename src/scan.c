@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -49,10 +49,8 @@
 # include "scan.h"
 # include "scanline.h"
 
-extern /*@external@*/ /*@unused@*/ YYSTYPE lsllval;
-
 static /*@exposed@*/ ltoken LSLScanLookAhead (void);
-static tsource *scanFile;	  /* file to scan */
+static inputStream scanFile;	  /* file to scan */
 static o_ltoken TokenList[MAXLINE]; /* available tokens */
 static int nextToken;		  /* next available token */
 static int lastToken;		  /* next available slot */
@@ -81,17 +79,17 @@ ltoken LSLScanNextToken (void)
       lastToken = 0;		
       lineNumber++;
 
-      line = tsource_nextLine (scanFile);       
+      line = inputStream_nextLine (scanFile);       
       
       if (line != (char *) 0)
 	{
-	  	  lscanLine (line);	/* tokenize */
+	  lscanLine (line);	/* tokenize */
 	  nextToken = 0;
 	  return LSLScanNextToken ();	
 	}
       else
 	{
-	  	  return LSLScanEofToken ();
+	  return LSLScanEofToken ();
 	}
     }
 }
@@ -106,7 +104,7 @@ LSLScanLookAhead (void)
   else
     {
       lastToken = 0;		
-      line = tsource_nextLine (scanFile);
+      line = inputStream_nextLine (scanFile);
 
       if (line != (char *) 0)
 	{
@@ -142,7 +140,7 @@ LSLScanFreshToken (ltoken tok)
     }
 }
 
-/*@exposed@*/ tsource *LSLScanSource (void)
+/*@exposed@*/ inputStream LSLScanSource (void)
 {
   return scanFile;
 }
@@ -154,7 +152,7 @@ LSLScanInit (void)
 }
 
 void
-LSLScanReset (tsource *s)
+LSLScanReset (inputStream s)
 {
   scanFile = s;
   lastToken = 0;

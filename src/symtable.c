@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -82,7 +82,7 @@ typedef struct
   } info;
 } idTableEntry;
 
-typedef struct _idTable
+typedef struct
 {
   unsigned int size;
   unsigned int allocated;
@@ -90,11 +90,11 @@ typedef struct _idTable
   bool exporting;
 } idTable;
 
-struct _symtableStruct
+struct s_symtableStruct
 {
   idTable *idTable;		/* data is idTableEntry */
   symHashTable *hTable;		/* data is htData */
-  mapping *type2sort;		/* maps LCL type symbol to LSL sort */
+  mapping type2sort;		/* maps LCL type symbol to LSL sort */
 } ;
 
 static /*@observer@*/ ltoken idTableEntry_getId (idTableEntry *p_x);
@@ -124,6 +124,7 @@ static void idTable_free (/*@only@*/ idTable *p_st);
 
 void varInfo_free (/*@only@*/ varInfo v)
 {
+  ltoken_free (v->id);
   sfree (v);
 }
 
@@ -172,6 +173,7 @@ static void fctInfo_free (/*@only@*/ fctInfo f)
 
 static void typeInfo_free (/*@only@*/ typeInfo t)
 {
+  ltoken_free (t->id);
   sfree (t);
 }
 
@@ -822,7 +824,7 @@ symtable_dump (symtable stable, FILE * f, bool lco)
   }
 
 lsymbol
-lsymbol_translateSort (mapping * m, lsymbol s)
+lsymbol_translateSort (mapping m, lsymbol s)
 {
   lsymbol res = mapping_find (m, s);
   if (res == lsymbol_undefined)
@@ -831,7 +833,7 @@ lsymbol_translateSort (mapping * m, lsymbol s)
 }
 
 static /*@null@*/ lslOp
-  lslOp_renameSorts (mapping *map,/*@returned@*/ /*@null@*/ lslOp op)
+  lslOp_renameSorts (mapping map,/*@returned@*/ /*@null@*/ lslOp op)
 {
   sigNode sign;
 
@@ -890,7 +892,7 @@ static /*@null@*/ signNode
  */
 
 static /*@only@*/ pairNodeList
-parseGlobals (char *line, tsource *srce)
+parseGlobals (char *line, inputStream srce)
 {
   pairNodeList plist = pairNodeList_new ();
   pairNode p;
@@ -909,8 +911,8 @@ parseGlobals (char *line, tsource *srce)
 	    (message 
 	     ("%q: Imported file contains illegal function global declaration.\n"
 	      "Skipping rest of the line: %s (%s)",
-	      fileloc_unparseRaw (cstring_fromChars (tsource_fileName (srce)), 
-				  tsource_thisLineNumber (srce)), 
+	      fileloc_unparseRaw (inputStream_fileName (srce), 
+				  inputStream_thisLineNumber (srce)), 
 	      cstring_fromChars (line), 
 	      cstring_fromChars (lineptr)));
 	  return plist;
@@ -958,11 +960,11 @@ isBlankLine (char *line)
 typedef /*@only@*/ fctInfo o_fctInfo;
 
 static void
-parseLine (char *line, tsource *srce, mapping * map)
+parseLine (char *line, inputStream srce, mapping map)
 {
   static /*@owned@*/ o_fctInfo *savedFcn = NULL;
-  char *lineptr, *lineptr2, *cimportfile = tsource_fileName (srce);
-  cstring importfile = cstring_fromChars (cimportfile);
+  char *lineptr, *lineptr2;
+  cstring importfile = inputStream_fileName (srce);
   char namestr[MAXBUFFLEN], kstr[20], sostr[MAXBUFFLEN];
   sort bsort, nullSort = sort_makeNoSort ();
   int col = 0;
@@ -971,7 +973,7 @@ parseLine (char *line, tsource *srce, mapping * map)
   
   if (inImport)
     {
-      imploc = fileloc_createImport (importfile, tsource_thisLineNumber (srce));
+      imploc = fileloc_createImport (importfile, inputStream_thisLineNumber (srce));
     }
   
   if (firstWord (line, "op"))
@@ -992,8 +994,8 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  *(lineptr2 + 1) = '\0';
 	}
 
-      llassert (cimportfile != NULL);
-      op = parseOpLine (cimportfile, lineptr + 1);
+      llassert (cstring_isDefined (importfile));
+      op = parseOpLine (importfile, cstring_fromChars (lineptr + 1));
       
       if (op == (lslOp) 0)
 	{
@@ -1001,7 +1003,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	    (message
 	     ("%q: Imported file contains illegal operator declaration:\n "
 	      "skipping this line: %s",
-	      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+	      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 	      cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
@@ -1023,7 +1025,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	{
 	  lclplainerror 
 	    (message ("%q: illegal type declaration:\n skipping this line: %s",
-		      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 		      cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
@@ -1031,7 +1033,7 @@ parseLine (char *line, tsource *srce, mapping * map)
       
       ti = (typeInfo) dmalloc (sizeof (*ti));
       ti->id = ltoken_createFull (LLT_TYPEDEF_NAME, lsymbol_fromChars (namestr),
-				    importfile, tsource_thisLineNumber (srce), col);
+				    importfile, inputStream_thisLineNumber (srce), col);
 
       bsort = sort_lookupName (lsymbol_translateSort (map, lsymbol_fromChars (sostr)));
 
@@ -1044,7 +1046,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  col = 5 + lineptr - line;	/* 5 for initial "%LCL "*/
 
 	  lclbug (message ("%q: Imported files contains unknown base sort",
-			   fileloc_unparseRawCol (importfile, tsource_thisLineNumber (srce), col)));
+			   fileloc_unparseRawCol (importfile, inputStream_thisLineNumber (srce), col)));
 
 	  bsort = nullSort;
 	}
@@ -1094,7 +1096,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  lclplainerror
 	    (message ("%q: Imported file contains illegal variable declaration.  "
 		      "Skipping this line.", 
-		      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce))));
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce))));
 	  fileloc_free (imploc);
 	  return;
 	}
@@ -1110,12 +1112,12 @@ parseLine (char *line, tsource *srce, mapping * map)
       if (sort_isNoSort (bsort))
 	{
 	  lclplainerror (message ("%q: Imported file contains unknown base sort",
-				  fileloc_unparseRawCol (importfile, tsource_thisLineNumber (srce), col)));
+				  fileloc_unparseRawCol (importfile, inputStream_thisLineNumber (srce), col)));
 	  bsort = nullSort;
 	}
 
       vi->id = ltoken_createFull (simpleId, lsymbol_fromChars (namestr),
-				  importfile, tsource_thisLineNumber (srce), col);
+				  importfile, inputStream_thisLineNumber (srce), col);
       vi->sort = bsort;
       vi->kind = VRK_VAR;
       vi->export = TRUE;
@@ -1143,7 +1145,7 @@ parseLine (char *line, tsource *srce, mapping * map)
       if (sscanf (line, "const %s %s", namestr, sostr) != 2)
 	{
 	  lclbug (message ("%q: Imported file contains illegal constant declaration: %s",
-			   fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+			   fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 			   cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
@@ -1161,12 +1163,12 @@ parseLine (char *line, tsource *srce, mapping * map)
       if (sort_isNoSort (bsort))
 	{
 	  lclplainerror (message ("%q: Imported file contains unknown base sort",
-				  fileloc_unparseRawCol (importfile, tsource_thisLineNumber (srce), col)));
+				  fileloc_unparseRawCol (importfile, inputStream_thisLineNumber (srce), col)));
 	  bsort = nullSort;
 	}
 
       vi->id = ltoken_createFull (simpleId, lsymbol_fromChars (namestr),
-				    importfile, tsource_thisLineNumber (srce), col);
+				    importfile, inputStream_thisLineNumber (srce), col);
       vi->sort = bsort;
       vi->kind = VRK_CONST;
       vi->export = TRUE;
@@ -1224,7 +1226,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  lclplainerror 
 	    (message ("%q: Unexpected function globals.  "
 		      "Skipping this line: \n%s",
-		      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 		      cstring_fromChars (line)));
 	  savedFcn = NULL;
 	  pairNodeList_free (globals);
@@ -1239,7 +1241,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	{
 	  lclplainerror 
 	    (message ("%q: illegal function declaration.  Skipping this line:\n%s",
-		      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 		      cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
@@ -1262,13 +1264,14 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  *(lineptr2 + 1) = '\0';
 	}
 
-      op = parseOpLine (cimportfile, lineptr + 1);
+      op = parseOpLine (importfile, cstring_fromChars (lineptr + 1));
 
       if (op == (lslOp) 0)
 	{
-	  lclplainerror (message ("%q: illegal function declaration: %s",
-				  fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
-				  cstring_fromChars (line)));
+	  lclplainerror
+	    (message ("%q: illegal function declaration: %s",
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
+		      cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
 	}
@@ -1292,19 +1295,27 @@ parseLine (char *line, tsource *srce, mapping * map)
 	      
 	      if (!usymtab_existsGlobEither (fname))
 		{
-		  		  (void) usymtab_addEntry (uentry_makeFunction
+		  (void) usymtab_addEntry (uentry_makeFunction
 					   (fname, ctype_unknown, 
 					    typeId_invalid, globSet_new (),
 					    sRefSet_undefined, 
+					    warnClause_undefined,
 					    fileloc_copy (imploc)));
 		}
 	    }
 	}
       else
 	{
-	  lclplainerror (message ("%q: unexpected function name: %s",
-				  fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
-				  cstring_fromChars (line)));
+	  /* evans 2001-05-27: detected by lclint after fixing external alias bug. */
+	  if (op->name != NULL) 
+	    {
+	      ltoken_free (op->name->content.opid); 
+	    }
+
+	  lclplainerror 
+	    (message ("%q: unexpected function name: %s",
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
+		      cstring_fromChars (line)));
 	}
     }
   else if (firstWord (line, "enumConst"))
@@ -1316,7 +1327,7 @@ parseLine (char *line, tsource *srce, mapping * map)
 	  lclplainerror 
 	    (message ("%q: Illegal enum constant declaration.  "
 		      "Skipping this line:\n%s",
-		      fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+		      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 		      cstring_fromChars (line)));
 	  fileloc_free (imploc);
 	  return;
@@ -1333,12 +1344,12 @@ parseLine (char *line, tsource *srce, mapping * map)
       if (sort_isNoSort (bsort))
 	{
 	  lclplainerror (message ("%q: unknown base sort\n",
-				  fileloc_unparseRawCol (importfile, tsource_thisLineNumber (srce), col)));
+				  fileloc_unparseRawCol (importfile, inputStream_thisLineNumber (srce), col)));
 	  bsort = nullSort;
 	}
 
       vi->id = ltoken_createFull (simpleId, lsymbol_fromChars (namestr),
-				    importfile, tsource_thisLineNumber (srce), col);
+				    importfile, inputStream_thisLineNumber (srce), col);
 			
       vi->sort = bsort;
       vi->kind = VRK_ENUM;
@@ -1364,7 +1375,7 @@ parseLine (char *line, tsource *srce, mapping * map)
     {
       lclplainerror 
 	(message ("%q: Unknown symbol declaration.  Skipping this line:\n%s",
-		  fileloc_unparseRaw (importfile, tsource_thisLineNumber (srce)), 
+		  fileloc_unparseRaw (importfile, inputStream_thisLineNumber (srce)), 
 		  cstring_fromChars (line)));
     }
 
@@ -1372,15 +1383,16 @@ parseLine (char *line, tsource *srce, mapping * map)
 }
 
 void
-symtable_import (tsource *imported, ltoken tok, mapping * map)
+symtable_import (inputStream imported, ltoken tok, mapping map)
 {
-  char *buf, *importfile;
-  tsource *lclsource;
+  char *buf;
+  cstring importfile;
+  inputStream lclsource;
   int old_lsldebug;
   bool old_inImport = inImport;
 
-  buf = tsource_nextLine (imported);
-  importfile = tsource_fileName (imported);
+  buf = inputStream_nextLine (imported);
+  importfile = inputStream_fileName (imported);
 
   llassert (buf != NULL);
 
@@ -1389,7 +1401,7 @@ symtable_import (tsource *imported, ltoken tok, mapping * map)
       lclsource = LCLScanSource ();
       lclfatalerror (tok, 
 		     message ("Expecting '%%LCLSymbolTable' line in import file %s:\n%s\n",
-			      cstring_fromChars (importfile), 
+			      importfile, 
 			      cstring_fromChars (buf)));
     }
 
@@ -1400,7 +1412,7 @@ symtable_import (tsource *imported, ltoken tok, mapping * map)
 
   for (;;)
     {
-      buf = tsource_nextLine (imported);
+      buf = inputStream_nextLine (imported);
       llassert (buf != NULL);
 
       
@@ -1420,7 +1432,7 @@ symtable_import (tsource *imported, ltoken tok, mapping * map)
 	      lclfatalerror 
 		(tok,
 		 message ("Expecting '%%LCL' prefix in import file %s:\n%s\n",
-			  cstring_fromChars (importfile), 
+			  importfile, 
 			  cstring_fromChars (buf)));
 	    }
 	}
@@ -2019,6 +2031,7 @@ tagKind_unparse (tagKind k)
 
 static void tagInfo_free (/*@only@*/ tagInfo tag)
 {
+  ltoken_free (tag->id);
   sfree (tag);
 }
 
@@ -2101,7 +2114,7 @@ domainMatches (ltokenList domain, sortSetList argSorts)
 	    {
 	      rangeSort = sigNode_rangeSort (sig);
 	      
-	      if ((qual == 0) || (sort_equal (&rangeSort, &qual)))
+	      if ((qual == 0) || (sort_equal (rangeSort, qual)))
 		{
 		  if (domainMatches (sig->domain, argSorts))
 		    {

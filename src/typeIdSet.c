@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -106,7 +106,7 @@ void typeIdSet_loadTable (FILE *fin)
 
   llassert (tistableentries == 1);
 
-  s = fgets (s, MAX_DUMP_LINE_LENGTH, fin);
+  s = reader_readLine (fin, s, MAX_DUMP_LINE_LENGTH);
 
   while (s != NULL && *s != ';')
     {
@@ -115,8 +115,10 @@ void typeIdSet_loadTable (FILE *fin)
       llassert (*s == '\0' || *s == '\n');
       
       tistable_addDirectEntry (u);
-      s = fgets (os, MAX_DUMP_LINE_LENGTH, fin);
+      s = reader_readLine (fin, os, MAX_DUMP_LINE_LENGTH);
     }
+
+  /*@i32 free os? @*/
 }
   
 static void tistable_grow (void)
@@ -275,7 +277,7 @@ typeIdSet typeIdSet_undump (char **s)
   int i;
 
   
-  i = getInt (s);
+  i = reader_getInt (s);
 
   llassert (i >= 0 && i < tistableentries);
   return (typeIdSet) i;

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -49,6 +49,11 @@ msgentry_create (fileloc loc, cstring mess)
   msg->msg = cstring_copy (mess);
 
   return msg;
+}
+
+static /*@unused@*/ cstring msgentry_unparse (msgentry msg) /*@*/
+{
+  return message ("%q:%s", fileloc_unparse (msg->loc), msg->msg);
 }
 
 static void msgentry_free (/*@only@*/ msgentry msg)
@@ -152,6 +157,9 @@ bool messageLog_add (messageLog s, fileloc fl, cstring mess)
     {
       if (msgentry_equal (msg, s->elements[ind + 1]))
 	{
+	  DPRINTF (("Messages equivalent: %s / %s",
+		    msgentry_unparse (msg),
+		    msgentry_unparse (s->elements[ind+1])));
 	  msgentry_free (msg);
 	  return FALSE;
 	}

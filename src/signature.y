@@ -256,11 +256,10 @@ void lslerror (char *s)
 {
   llfatalbug 
     (cstring_makeLiteral 
-     ("There has been a problem parsing an LSL signature. This is believed to "
-      "result from a problem with gcc version 2.95 optimizations, "
-      "but it has not been confirmed.  Please try rebuidling LCLint "
-      "without the -O<n> option."));
-
+     ("There has been a problem in the parser with LSL signatures. This is believed to result "
+      "from a problem with bison v. 1.25.  Please try rebuidling LCLint "
+      "using the pre-compiled grammar files by commenting out the "
+      "BISON= line in the top-level Makefile."));
 }
 
 static void yyprint (FILE *file, int type, YYSTYPE value)

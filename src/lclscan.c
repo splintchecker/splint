@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ extern bool g_inTypeDef;
 # include "lclscanline.h"
 # include "lcltokentable.h"
 
-static tsource *scanFile;	/* file to scan		*/
+static inputStream scanFile;	/* file to scan		*/
 static o_ltoken TokenList[MAXLINE];	/* available tokens	*/
 static bool restore = FALSE;      /* wasn't static! */
 static YYSTYPE restoretok;
@@ -127,7 +127,7 @@ LCLScanNextToken (void)
     {
       lastToken = 0;
       lineNumber++;
-      line = tsource_nextLine (scanFile);	
+      line = inputStream_nextLine (scanFile);	
 
       if (line != (char *) 0)
 	{
@@ -157,7 +157,7 @@ LCLScanLookAhead (void)
   else
     {
       lastToken = 0;	
-      line = tsource_nextLine (scanFile);
+      line = inputStream_nextLine (scanFile);
       if (line != (char *) 0)
 	{
 	  LCLScanLine (line);	
@@ -184,7 +184,7 @@ LCLScanFreshToken (/*@only@*/ ltoken tok)
     }
 }
 
-tsource *LCLScanSource (void)
+inputStream LCLScanSource (void)
 {
   return scanFile;
 }
@@ -196,7 +196,7 @@ LCLScanInit (void)
 }
 
 void
-LCLScanReset (tsource * s)
+LCLScanReset (inputStream  s)
 {
   scanFile = s;
   lastToken = 0;

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -1073,7 +1073,7 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
     {
       globals = f->globals;
       
-            sl = fixModifies (f, args);
+      sl = fixModifies (f, args);
 
       /*
       ** Bind let declarations in modifies list 
@@ -1113,9 +1113,8 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
 	  
 	  ue = usymtab_lookupGlob (cstring_makeLiteralTemp ("stderr"));
 	  
-	  	  globlist = globSet_insert (globlist, sRef_copy (uentry_getSref (ue)));
+	  globlist = globSet_insert (globlist, sRef_copy (uentry_getSref (ue)));
 	  sl = sRefSet_insert (sl, sRef_buildPointer (uentry_getSref (ue)));
-
 	}
     }
 
@@ -1127,7 +1126,7 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
     {
       acct = typeIdSet_single (tn);
     }
-  
+
   if (usymtab_exists (s))
     {
       uentry l = usymtab_lookup (s);
@@ -1160,7 +1159,6 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
 	    }
 
 	  uentry_reflectQualifiers (ue, qtype_getQuals (qt));
-
 	  usymtab_supEntry (ue);
 	}
       else
@@ -1173,7 +1171,6 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
 	  **	      loc);
           */
 
-	  
 	  fileloc_free (loc);
 	  sRefSet_free (sl);
 	  globSet_free (globlist);
@@ -1209,14 +1206,17 @@ declareFcnAux (fcnNode f, /*@only@*/ qtype qt, ctype ct,
 
       uentry_reflectQualifiers (le, qtype_getQuals (qt));
 
-      switch (f->special)
-	{
-	case QU_UNKNOWN:     break;
-	case QU_PRINTFLIKE:  uentry_setPrintfLike (le); break;
-	case QU_SCANFLIKE:   uentry_setScanfLike (le); break;
-	case QU_MESSAGELIKE: uentry_setMessageLike (le); break;
-	BADDEFAULT;
-	}
+      if (qual_isUnknown (f->special)) {
+	;
+      } else if (qual_isPrintfLike (f->special)) {
+	uentry_setPrintfLike (le); 
+      } else if (qual_isScanfLike (f->special)) {
+	uentry_setScanfLike (le); 
+      } else if (qual_isMessageLike (f->special)) {
+	uentry_setMessageLike (le); 
+      } else {
+	BADBRANCH;
+      }
 
       usymtab_supEntry (le);
     }
@@ -1230,7 +1230,7 @@ doDeclareFcn (fcnNode f, typeId tn, bool priv, bool spec)
   qtype qt = convertLclTypeSpecNode (f->typespec);
   ctype ct = convertTypeExpr (qtype_getType (qt), f->declarator->type);
 
-    declareFcnAux (f, qt, ct, tn, priv, spec);
+  declareFcnAux (f, qt, ct, tn, priv, spec);
 }
 
 /*

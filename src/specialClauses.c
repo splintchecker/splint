@@ -495,10 +495,10 @@ specialClause specialClause_undump (char **s)
 {
   specialClause ret = (specialClause) dmalloc (sizeof (*ret));
 
-  ret->state = (stateConstraint) getInt (s);
-  checkChar (s, '.');
-  ret->kind = (specialClauseKind) getInt (s);
-  checkChar (s, '.');
+  ret->state = (stateConstraint) reader_getInt (s);
+  reader_checkChar (s, '.');
+  ret->kind = (specialClauseKind) reader_getInt (s);
+  reader_checkChar (s, '.');
   ret->refs = sRefSet_undump (s);
 
   return ret;
@@ -770,7 +770,7 @@ specialClauses specialClauses_undump (char **s)
       specialClause sc = specialClause_undump (s);
       
       pn = specialClauses_add (pn, sc);
-      checkChar (s, '$');
+      reader_checkChar (s, '$');
       c = **s;
       paramno++;
     }

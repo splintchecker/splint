@@ -67,8 +67,9 @@
 ### Some ANSI limits exceeded (tsk, tsk, tsk...)
 
 -controlnestdepth 25 
--numenummembers 415
-
+-numenummembers 512 
++internalnamelen 50
+ 
 +posixlib
      
 ### this should be builtin to pp?
@@ -80,3 +81,5 @@
 -boolfalse FALSE
 
 +numliteral
+
+-indentspaces 3

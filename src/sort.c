@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -65,16 +65,12 @@ static void sort_addTupleMembers (sort p_tupleSort, sort p_strSort)
 
 static bool sort_isNewEntry (sortNode p_s) /*@*/ ;  
 
-static sort sort_enterNew (/*@special@*/ sortNode p_s) 
-   /*@uses p_s.kind, p_s.name, p_s.members@*/
-   /*@releases p_s.members@*/
+static sort sort_enterNew (/*@only@*/ sortNode p_s) 
    /*@modifies internalState@*/ ;
 
-static sort sort_enterGlobal (sortNode p_s) /*@modifies internalState@*/ ;
+static sort sort_enterGlobal (/*@only@*/ sortNode p_s) /*@modifies internalState@*/ ;
 
-static sort sort_enterNewForce (/*@special@*/ sortNode p_s) 
-   /*@uses p_s.kind, p_s.name, p_s.members@*/
-   /*@releases p_s.members@*/
+static sort sort_enterNewForce (/*@only@*/ sortNode p_s) 
    /*@modifies internalState@*/ ;
 
 static void genPtrOps (sort p_baseSort, sort p_ptrSort, sort p_arraySort);
@@ -131,7 +127,10 @@ static sort char_obj_ArrSort;
 /* This is used to uniqueize sort names, for anonymous C types */
 static int sortUID = 1;
 
-static /*@only@*/ /*@null@*/ sortNode *sortTable = (sortNode *) 0;
+typedef /*@only@*/ sortNode o_sortNode;
+
+static /*@only@*/ /*@null@*/ o_sortNode *sortTable = (sortNode *) 0;
+
 static int sortTableSize = 0;
 static int sortTableAlloc = 0;
 
@@ -154,24 +153,6 @@ static /*@owned@*/ nameNode condNameNode;
 static /*@owned@*/ nameNode eqNameNode;
 static /*@owned@*/ nameNode neqNameNode;
 
-static sortNode noSort;
-
-static sortNode HOFSort =
-{ 
-  SRT_HOF, 
-  HOFSORTHANDLE,
-  lsymbol_undefined,
-  lsymbol_undefined,
-  FALSE, /* was lsymbolNULL */
-  NOSORTHANDLE,
-  NOSORTHANDLE,
-  smemberInfo_undefined,
-  FALSE,
-  FALSE,
-  FALSE, 
-  FALSE
-};
-
 static ob_mstring sortKindName[] =
 {
   "FIRSTSORT", "NOSORT", "HOFSORT",
@@ -184,11 +165,10 @@ static void smemberInfo_free (/*@null@*/ /*@only@*/ smemberInfo *mem)
   sfree (mem);
 }
 
-static void sortNode_free (/*@special@*/ sortNode sn)
-   /*@uses sn.members@*/
-   /*@releases sn.members@*/
+static void sortNode_free (/*@only@*/ sortNode sn)
 {
-  smemberInfo_free (sn.members);
+  smemberInfo_free (sn->members);
+  sfree (sn);
 }
 
 void
@@ -203,11 +183,6 @@ sort_destroyMod (void)
     {
       int i;
 
-      for (i = 0; i < sortTableSize; i++)
-	{
-	  sortNode_free (sortTable[i]);
-	}
-
       nameNode_free (arrayRefNameNode);
       nameNode_free (ptr2arrayNameNode);
       nameNode_free (deRefNameNode);
@@ -217,6 +192,11 @@ sort_destroyMod (void)
       nameNode_free (condNameNode);
       nameNode_free (eqNameNode);
       nameNode_free (neqNameNode);
+
+      for (i = 0; i < sortTableSize; i++)
+	{
+	  sortNode_free (sortTable[i]);
+	}
 
       sfree (sortTable);
       /*@-branchstate@*/
@@ -235,20 +215,21 @@ sort_makeHOFSort (sort base)
   sortNode outSort;
   sort handle;
 
-  outSort.kind = SRT_HOF;
-  outSort.name = cstring_toSymbol (message ("_HOF_sort_%d", sortTableSize));
-  outSort.tag = lsymbol_undefined;
-  outSort.baseSort = base;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.mutable = FALSE;
-  outSort.abstract = FALSE;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_HOF;
+  outSort->name = cstring_toSymbol (message ("_HOF_sort_%d", sortTableSize));
+  outSort->tag = lsymbol_undefined;
+  outSort->baseSort = base;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->mutable = FALSE;
+  outSort->abstract = FALSE;
 
   llassert (sortTable != NULL);
 
-  outSort.handle = handle = sortTableSize;
+  outSort->handle = handle = sortTableSize;
   sortTable[handle] = outSort;
 
   sortTableSize++;
@@ -258,40 +239,40 @@ sort_makeHOFSort (sort base)
 static sort
 sort_construct (lsymbol name, sortKind kind, sort baseSort,
 		lsymbol tagName,
-		bool mut, sort objSort, /*@null@*/ smemberInfo *members)
+		bool mut, sort objSort, /*@null@*/ /*@only@*/ smemberInfo *members)
 {
   sortNode outSort;
   sort handle;
 
   handle = sort_lookupName (name);
 
-  outSort.kind = kind;
-  outSort.name = name;
-  outSort.tag = tagName;
-  outSort.realtag = TRUE; 
-  outSort.baseSort = baseSort;
-  outSort.objSort = objSort;
-  outSort.members = members;
-  outSort.mutable = mut;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = kind;
+  outSort->name = name;
+  outSort->tag = tagName;
+  outSort->realtag = TRUE; 
+  outSort->baseSort = baseSort;
+  outSort->objSort = objSort;
+  outSort->members = members;
+  outSort->mutable = mut;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
-      outSort.handle = handle = sort_enterNew (outSort);
+      outSort->handle = handle = sort_enterNew (outSort);
       return handle;
     }
   else
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[handle].kind != kind)
+      if (sortTable[handle]->kind != kind)
 	{
 	  sortError (ltoken_undefined, handle, outSort);
-	  smemberInfo_free (outSort.members);
-
+	  sortNode_free (outSort);
 	  return handle;
 	}
       else
@@ -320,33 +301,34 @@ static sort
     kind = SRT_PRIM;
 
   handle = sort_lookupName (name);
-  outSort.kind = kind;
-  outSort.name = name;
-  outSort.tag = lsymbol_undefined;
-  outSort.baseSort = baseSort;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.mutable = mut;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.abstract = TRUE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = kind;
+  outSort->name = name;
+  outSort->tag = lsymbol_undefined;
+  outSort->baseSort = baseSort;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->mutable = mut;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->abstract = TRUE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
-      outSort.handle = handle = sort_enterNew (outSort);
+      outSort->handle = handle = sort_enterNew (outSort);
       /* do not make sort operators. */
     }
   else
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[handle].kind != kind)
+      if (sortTable[handle]->kind != kind)
 	{
 	  sortError (ltoken_undefined, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -366,20 +348,21 @@ sort_makeSort (/*@unused@*/ ltoken t, lsymbol n)
     {
       sortNode outSort;
 
-      outSort.handle = handle;      
-      outSort.kind = SRT_PRIM;
-      outSort.name = n;
-      outSort.tag = lsymbol_undefined;
-      outSort.baseSort = NOSORTHANDLE;
-      outSort.objSort = NOSORTHANDLE;
-      outSort.members = smemberInfo_undefined;
-      outSort.export = exporting;
-      outSort.mutable = FALSE;
-      outSort.imported = context_inImport ();
-      outSort.abstract = FALSE;
+      outSort = (sortNode) dmalloc (sizeof (*outSort));
+      outSort->handle = handle;      
+      outSort->kind = SRT_PRIM;
+      outSort->name = n;
+      outSort->tag = lsymbol_undefined;
+      outSort->baseSort = NOSORTHANDLE;
+      outSort->objSort = NOSORTHANDLE;
+      outSort->members = smemberInfo_undefined;
+      outSort->export = exporting;
+      outSort->mutable = FALSE;
+      outSort->imported = context_inImport ();
+      outSort->abstract = FALSE;
 
       /* Put into sort table, sort_enter checks for duplicates. */
-      outSort.handle = handle = sort_enterNew (outSort);
+      handle = sort_enterNew (outSort);
     }
   else
     {
@@ -401,20 +384,21 @@ sort_makeSortNoOps (/*@unused@*/ ltoken t, lsymbol n) /*@modifies internalState@
     {
       sortNode outSort;
 
-      outSort.handle = handle;
-      outSort.kind = SRT_PRIM;
-      outSort.name = n;
-      outSort.tag = lsymbol_undefined;
-      outSort.baseSort = NOSORTHANDLE;
-      outSort.objSort = NOSORTHANDLE;
-      outSort.members = smemberInfo_undefined;
-      outSort.export = exporting;
-      outSort.mutable = FALSE;
-      outSort.imported = context_inImport ();
-      outSort.abstract = FALSE;
+      outSort = (sortNode) dmalloc (sizeof (*outSort));
+      outSort->handle = handle;
+      outSort->kind = SRT_PRIM;
+      outSort->name = n;
+      outSort->tag = lsymbol_undefined;
+      outSort->baseSort = NOSORTHANDLE;
+      outSort->objSort = NOSORTHANDLE;
+      outSort->members = smemberInfo_undefined;
+      outSort->export = exporting;
+      outSort->mutable = FALSE;
+      outSort->imported = context_inImport ();
+      outSort->abstract = FALSE;
       /* Put into sort table, sort_enter checks for duplicates. */
-      outSort.handle = handle = sort_enterNew (outSort);
-    }				/* don't override old info */
+      handle = sort_enterNew (outSort);
+    } /* Don't override old info */
 
   return handle;
 }
@@ -452,34 +436,35 @@ sort_makeSyn (ltoken t, sort s, lsymbol n)
 
   handle = sort_lookupName (newname);
 
-  outSort.kind = SRT_SYN;
-  outSort.name = newname;
-  outSort.baseSort = s;
-  outSort.objSort = NOSORTHANDLE;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_SYN;
+  outSort->name = newname;
+  outSort->baseSort = s;
+  outSort->objSort = NOSORTHANDLE;
   /* info is not duplicated */
-  outSort.tag = lsymbol_undefined;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.mutable = FALSE;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort->tag = lsymbol_undefined;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->mutable = FALSE;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
-      outSort.handle = handle = sort_enterNew (outSort);
+      outSort->handle = handle = sort_enterNew (outSort);
       /* No operators to generate for synonyms */
     }
   else
     {
       llassert (sortTable != NULL);
       
-      if (sortTable[handle].kind != SRT_SYN)
+      if (sortTable[handle]->kind != SRT_SYN)
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -495,7 +480,7 @@ sort_makeFormal (sort insort)
   handle = sor;
   s = sort_lookup (sor);
 
-  switch (s.kind)
+  switch (s->kind)
     {
     case SRT_STRUCT:
       handle = sort_makeTuple (ltoken_undefined, sor);
@@ -520,7 +505,7 @@ sort_makeGlobal (sort insort)
   handle = sor;
   s = sort_lookup (sor);
 
-  switch (s.kind)
+  switch (s->kind)
     {
     case SRT_ARRAY:
     case SRT_STRUCT:
@@ -550,14 +535,14 @@ sort_makeObj (sort sor)
  /* skip the synonym sort */
   baseSort = sort_getUnderlying (sor);
   baseSortNode = sort_quietLookup (baseSort);
-  switch (baseSortNode.kind)
+  switch (baseSortNode->kind)
     {
     case SRT_HOF:
     case SRT_NONE:
       return baseSort;
     case SRT_VECTOR:
-      if (baseSortNode.objSort != 0)
-	return baseSortNode.objSort;
+      if (baseSortNode->objSort != 0)
+	return baseSortNode->objSort;
       else			/* must have well-defined objSort field */
 	{
 	  llcontbuglit ("sort_makeObj: Inconsistent vector reps:invalid objSort field");
@@ -567,10 +552,10 @@ sort_makeObj (sort sor)
     case SRT_UNIONVAL:
      /* need to map *_Struct_Tuple to *_Struct and *_Union_UnionVal to
       *_Union, according to sort naming conventions */
-      if (baseSortNode.baseSort != NOSORTHANDLE)
+      if (baseSortNode->baseSort != NOSORTHANDLE)
        /* for tuples and unionvals, baseSort field keeps the map from
-          value sort to obj sort. */
-	return baseSortNode.baseSort;
+          value sort to obj sort-> */
+	return baseSortNode->baseSort;
       else			/* valid tuples and unionvals must have baseSort fields */
 	{
 	  llcontbuglit ("sort_makeObj: Inconsistent tuples or unionvals reps: invalid baseSort field");
@@ -581,40 +566,41 @@ sort_makeObj (sort sor)
 		 lsymbol_fromChars ("_Obj"));
       handle = sort_lookupName (name);
 
-      outSort.kind = SRT_OBJ;
+      outSort = (sortNode) dmalloc (sizeof (*outSort));
+      outSort->kind = SRT_OBJ;
       /* must not clash with any LSL sorts */
-      outSort.name = name;
-      outSort.tag = lsymbol_undefined;
-      outSort.baseSort = baseSort;
-      outSort.objSort = NOSORTHANDLE;
-      outSort.members = smemberInfo_undefined;
-      outSort.mutable = TRUE;
-      outSort.export = exporting;
-      outSort.abstract = FALSE;
-      outSort.handle = handle;
-      outSort.imported = TRUE;
+      outSort->name = name;
+      outSort->tag = lsymbol_undefined;
+      outSort->baseSort = baseSort;
+      outSort->objSort = NOSORTHANDLE;
+      outSort->members = smemberInfo_undefined;
+      outSort->mutable = TRUE;
+      outSort->export = exporting;
+      outSort->abstract = FALSE;
+      outSort->handle = handle;
+      outSort->imported = TRUE;
 
       if (handle == NOSORTHANDLE)
 	{
 	  if (sort_isNewEntry (outSort))
 	    {
-	      outSort.handle = handle = sort_enterNew (outSort);
+	      outSort->handle = handle = sort_enterNew (outSort);
 	    }
 	  else
 	    {
-	      outSort.handle = handle = sort_enterNew (outSort);
+	      outSort->handle = handle = sort_enterNew (outSort);
 	    }
 	}
       else
 	{
 	  llassert (sortTable != NULL);
 
-	  if (sortTable[handle].kind != SRT_OBJ)
+	  if (sortTable[handle]->kind != SRT_OBJ)
 	    {
 	      sortError (ltoken_undefined, handle, outSort);
 	    }
 
-	  smemberInfo_free (outSort.members);
+	  sortNode_free (outSort);
 	}
 
       return handle;
@@ -630,18 +616,18 @@ sort_makePtr (ltoken t, sort baseSort)
 
   s = sort_lookup (baseSort);
 
-  if (s.kind == SRT_HOF)
+  if (s->kind == SRT_HOF)
     {
       return baseSort;
     }
-  if (s.kind == SRT_NONE)
+  if (s->kind == SRT_NONE)
     {
       return baseSort;
     }
 
-  if (s.kind != SRT_ARRAY && s.kind != SRT_STRUCT &&
-      s.kind != SRT_UNION)
-    /* && s.kind != SRT_OBJ) */
+  if (s->kind != SRT_ARRAY && s->kind != SRT_STRUCT &&
+      s->kind != SRT_UNION)
+    /* && s->kind != SRT_OBJ) */
     /* base is not an SRT_ARRAY, struct or union.  Need to insert a obj. */
     baseSort = sort_makeObj (baseSort);
   
@@ -649,41 +635,44 @@ sort_makePtr (ltoken t, sort baseSort)
 	     lsymbol_fromChars ("_Ptr"));
   handle = sort_lookupName (name);
   
-  outSort.kind = SRT_PTR;
-  outSort.name = name;
-  outSort.tag = lsymbol_undefined;
-  outSort.baseSort = baseSort;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.mutable = FALSE;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_PTR;
+  outSort->name = name;
+  outSort->tag = lsymbol_undefined;
+  outSort->baseSort = baseSort;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->mutable = FALSE;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
   
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	  arrayHandle = sort_makeArr (t, baseSort);
 	  genPtrOps (baseSort, handle, arrayHandle);
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
     }
   else
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[handle].kind != SRT_PTR)
+      if (sortTable[handle]->kind != SRT_PTR)
 	{
 	  sortError (t, handle, outSort);
 	}
-      smemberInfo_free (outSort.members);
+      
+      sortNode_free (outSort);
     }
+
   return handle;
 }
 
@@ -713,13 +702,13 @@ sort_makeArr (ltoken t, sort baseSort)
 
   s = sort_lookup (baseSort);
 
-  if (s.kind == SRT_HOF)
+  if (s->kind == SRT_HOF)
     return baseSort;
-  if (s.kind == SRT_NONE)
+  if (s->kind == SRT_NONE)
     return baseSort;
 
-  if (s.kind != SRT_ARRAY && s.kind != SRT_STRUCT &&
-      s.kind != SRT_UNION && s.kind != SRT_OBJ)
+  if (s->kind != SRT_ARRAY && s->kind != SRT_STRUCT &&
+      s->kind != SRT_UNION && s->kind != SRT_OBJ)
    /* base is not an array, struct or obj.  Need to insert a Obj. */
     baseSort = sort_makeObj (baseSort);
 
@@ -727,27 +716,29 @@ sort_makeArr (ltoken t, sort baseSort)
 	     lsymbol_fromChars ("_Arr"));
   handle = sort_lookupName (name);
 
- /* must not clash with any LSL sorts */
-  outSort.name = name;
-  outSort.kind = SRT_ARRAY;
-  outSort.baseSort = baseSort;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.mutable = TRUE;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  /* must not clash with any LSL sorts */
+  outSort = (sortNode) dmalloc (sizeof (*outSort));  
+  outSort->name = name;
+  outSort->kind = SRT_ARRAY;
+  outSort->baseSort = baseSort;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->mutable = TRUE;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
   
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  handle = sort_enterNew (outSort);
+	  outSort = sort_lookup (handle);
 
 	  for (old = outSort, dim = 0;
-	       old.kind == SRT_ARRAY;
-	       dim++, old = sort_lookup (old.baseSort))
+	       old->kind == SRT_ARRAY;
+	       dim++, old = sort_lookup (old->baseSort))
 	    {
 	      ;
 	    }
@@ -757,19 +748,19 @@ sort_makeArr (ltoken t, sort baseSort)
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
     }
   else
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[handle].kind != SRT_ARRAY)
+      if (sortTable[handle]->kind != SRT_ARRAY)
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -785,49 +776,50 @@ sort_makeVec (ltoken t, sort arraySort)
 
   s = sort_lookup (arraySort);
 
-  if (s.kind == SRT_HOF)
+  if (s->kind == SRT_HOF)
     return arraySort;
-  if (s.kind == SRT_NONE)
+  if (s->kind == SRT_NONE)
     return arraySort;
 
-  if (s.kind != SRT_ARRAY)
+  if (s->kind != SRT_ARRAY)
     {
       llbug (message ("sort_makeVec: only arrays can become vectors: given sort is %s",
-		      sort_unparseKind (s.kind)));
+		      sort_unparseKind (s->kind)));
     }
 
-  if (s.baseSort == NOSORTHANDLE)
+  if (s->baseSort == NOSORTHANDLE)
     llbuglit ("sort_makeVec: arrays must have base (element) sort");
 
  /* Vectors return "values", so make array elements values. */
 
-  baseSort = s.baseSort;
+  baseSort = s->baseSort;
   elementSort = sort_makeVal (baseSort);
 
   name = sp (sp (underscoreSymbol, sort_getLsymbol (elementSort)),
 	     lsymbol_fromChars ("_Vec"));
   handle = sort_lookupName (name);
 
-  outSort.baseSort = elementSort;
-  outSort.name = name;
-  outSort.objSort = arraySort;
-  outSort.kind = SRT_VECTOR;
-  outSort.members = smemberInfo_undefined;
-  outSort.mutable = FALSE;
-  outSort.export = exporting;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->baseSort = elementSort;
+  outSort->name = name;
+  outSort->objSort = arraySort;
+  outSort->kind = SRT_VECTOR;
+  outSort->members = smemberInfo_undefined;
+  outSort->mutable = FALSE;
+  outSort->export = exporting;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort = sort_lookup (handle = sort_enterNew (outSort));
 
 	  for (old = outSort, dim = 0;
-	       old.kind == SRT_VECTOR;
-	       dim++, old = sort_lookup (old.baseSort))
+	       old->kind == SRT_VECTOR;
+	       dim++, old = sort_lookup (old->baseSort))
 	    {
 	      ;
 	    }
@@ -836,19 +828,19 @@ sort_makeVec (ltoken t, sort arraySort)
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
     }
   else
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[handle].kind != SRT_VECTOR)
+      if (sortTable[handle]->kind != SRT_VECTOR)
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -863,7 +855,7 @@ sort_makeVal (sort sor)
   llassert (sortTable != NULL);
   s = sort_quietLookup (sor);
 
-  switch (s.kind)
+  switch (s->kind)
     {
     case SRT_PRIM:
     case SRT_ENUM:
@@ -877,14 +869,14 @@ sort_makeVal (sort sor)
       retSort = sor;
       break;
     case SRT_SYN:
-      return sort_makeVal (sortTable[sor].baseSort);
+      return sort_makeVal (sortTable[sor]->baseSort);
     case SRT_OBJ:
      /* Strip out the last Obj's */
-      if (s.baseSort == NOSORTHANDLE)
+      if (s->baseSort == NOSORTHANDLE)
 	{
 	  llbuglit ("sort_makeVal: expecting a base sort for Obj");
 	}
-      retSort = s.baseSort;
+      retSort = s->baseSort;
       break;
     case SRT_ARRAY:
       retSort = sort_makeVec (ltoken_undefined, sor);
@@ -899,9 +891,9 @@ sort_makeVal (sort sor)
       llbuglit ("sort_makeVal: invalid sort kind");
     }
   rsn = sort_quietLookup (retSort);
-  if (rsn.kind == SRT_NONE)
+  if (rsn->kind == SRT_NONE)
     {
-      llfatalbug (message ("sort_makeVal: invalid return sort kind: %d", (int)rsn.kind));
+      llfatalbug (message ("sort_makeVal: invalid return sort kind: %d", (int)rsn->kind));
     }
   return retSort;
 }
@@ -914,34 +906,36 @@ sort_makeImmutable (ltoken t, lsymbol name)
 
   handle = sort_lookupName (name);
 
-  outSort.kind = SRT_PRIM;
-  outSort.name = name;
-  outSort.baseSort = NOSORTHANDLE;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.mutable = FALSE;
-  outSort.imported = context_inImport ();
-  outSort.abstract = TRUE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_PRIM;
+  outSort->name = name;
+  outSort->baseSort = NOSORTHANDLE;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->mutable = FALSE;
+  outSort->imported = context_inImport ();
+  outSort->abstract = TRUE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
-      outSort.handle = handle = sort_enterNew (outSort);
+      handle = sort_enterNew (outSort);
+      outSort = sort_lookup (handle);
       overloadSizeof (handle);
     }
   else
     {				/* complain */
       llassert (sortTable != NULL);
 
-      if ((sortTable[handle].kind != SRT_PRIM) &&
-	  (sortTable[handle].abstract) &&
-	  (!sortTable[handle].mutable))
+      if ((sortTable[handle]->kind != SRT_PRIM) &&
+	  (sortTable[handle]->abstract) &&
+	  (!sortTable[handle]->mutable))
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -962,9 +956,9 @@ sort_makeMutable (ltoken t, lsymbol name)
 
   /* to prevent duplicate error messages */
   if (immutable_old != NOSORTHANDLE &&
-      (sortTable[baseSort].kind != SRT_PRIM) &&
-      (sortTable[baseSort].abstract) &&
-      (!sortTable[baseSort].mutable))
+      (sortTable[baseSort]->kind != SRT_PRIM) &&
+      (sortTable[baseSort]->abstract) &&
+      (!sortTable[baseSort]->mutable))
     {
      /* already complained */
       handle = NOSORTHANDLE;
@@ -978,23 +972,24 @@ sort_makeMutable (ltoken t, lsymbol name)
 		    lsymbol_fromChars ("_Obj"));
       handle = sort_lookupName (objName);
 
-      outSort.kind = SRT_OBJ;
-      outSort.name = objName;
-      outSort.tag = lsymbol_undefined;
-      outSort.baseSort = baseSort;
-      outSort.objSort = NOSORTHANDLE;
-      outSort.members = smemberInfo_undefined;
-      outSort.mutable = TRUE;
-      outSort.export = exporting;
-      outSort.imported = context_inImport ();
-      outSort.abstract = TRUE;
-      outSort.handle = handle;
+      outSort = (sortNode) dmalloc (sizeof (*outSort));
+      outSort->kind = SRT_OBJ;
+      outSort->name = objName;
+      outSort->tag = lsymbol_undefined;
+      outSort->baseSort = baseSort;
+      outSort->objSort = NOSORTHANDLE;
+      outSort->members = smemberInfo_undefined;
+      outSort->mutable = TRUE;
+      outSort->export = exporting;
+      outSort->imported = context_inImport ();
+      outSort->abstract = TRUE;
+      outSort->handle = handle;
 
       if (handle == NOSORTHANDLE)
 	{
 	  if (sort_isNewEntry (outSort))
 	    {
-	      outSort.handle = handle = sort_enterNew (outSort);
+	      outSort->handle = handle = sort_enterNew (outSort);
 	    }
 	  else
 	    {
@@ -1005,14 +1000,14 @@ sort_makeMutable (ltoken t, lsymbol name)
 	{
 	  llassert (sortTable != NULL);
 
-	  if ((sortTable[handle].kind != SRT_OBJ) 
-	      && sortTable[handle].abstract
-	      && sortTable[handle].mutable)
+	  if ((sortTable[handle]->kind != SRT_OBJ) 
+	      && sortTable[handle]->abstract
+	      && sortTable[handle]->mutable)
 	    {
 	      sortError (t, handle, outSort);
 	    }
 
-	  smemberInfo_free (outSort.members);
+	  sortNode_free (outSort);
 	}
     }
   return handle;
@@ -1026,6 +1021,8 @@ sort_makeStr (ltoken opttagid)
   bool isNewTag;
   lsymbol name;
 
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+
   /* must not clash with any LSL sorts, tag2sortname adds "_" prefix */
   /* isNewTag true means that the name generated is new */
 
@@ -1033,48 +1030,48 @@ sort_makeStr (ltoken opttagid)
     {
       opttagid = ltoken_create (simpleId, newStructTag ());
 
-      outSort.realtag = FALSE;
+      outSort->realtag = FALSE;
     }
   else
     {
-      outSort.realtag = TRUE;
+      outSort->realtag = TRUE;
     }
   
   name = sortTag_toSymbol ("Struct", opttagid, &isNewTag);
   
   llassert (sortTable != NULL);
   handle = sort_lookupName (name);
-  outSort.name = name;
-  outSort.kind = SRT_STRUCT;
-  outSort.tag = ltoken_getText (opttagid);
-  outSort.baseSort = NOSORTHANDLE;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.mutable = TRUE;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort->name = name;
+  outSort->kind = SRT_STRUCT;
+  outSort->tag = ltoken_getText (opttagid);
+  outSort->baseSort = NOSORTHANDLE;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->mutable = TRUE;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNewForce (outSort);
+	  outSort->handle = handle = sort_enterNewForce (outSort);
 	}
     }
   else 
     {
-      if (sortTable[handle].kind != SRT_STRUCT)
+      if (sortTable[handle]->kind != SRT_STRUCT)
 	{
 	  sortError (opttagid, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -1091,9 +1088,9 @@ sort_updateStr (sort strSort, /*@only@*/ smemberInfo *info)
   llassert (sortTable != NULL);
   sn = sort_lookup (strSort);
 
-  if (sn.members == (smemberInfo *) 0)
+  if (sn->members == (smemberInfo *) 0)
     {
-      sortTable[strSort].members = info;
+      sortTable[strSort]->members = info;
       tupleSort = sort_makeTuple (ltoken_undefined, strSort);
       genStrOps (strSort, tupleSort);
       return TRUE;
@@ -1112,51 +1109,52 @@ sort_makeTuple (ltoken t, sort strSort)
   sortNode outSort, s = sort_lookup (strSort);
   lsymbol name;
 
-  if (s.kind != SRT_STRUCT)
+  if (s->kind != SRT_STRUCT)
     {
       llfatalbug (message ("sort_makeTuple: Only structs can become tuples: given sort is %s",
-			   sort_unparseKind (s.kind)));
+			   sort_unparseKind (s->kind)));
     }
 
-  name = sp (s.name, lsymbol_fromChars ("_Tuple"));
+  name = sp (s->name, lsymbol_fromChars ("_Tuple"));
   llassert (sortTable != NULL);
   handle = sort_lookupName (name);
 
-  outSort.kind = SRT_TUPLE;
-  outSort.name = name;
-  outSort.tag = s.tag;
-  outSort.realtag = s.realtag;
-  outSort.baseSort = strSort;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.abstract = FALSE;
-  outSort.imported = context_inImport ();
-  outSort.mutable = FALSE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_TUPLE;
+  outSort->name = name;
+  outSort->tag = s->tag;
+  outSort->realtag = s->realtag;
+  outSort->baseSort = strSort;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->abstract = FALSE;
+  outSort->imported = context_inImport ();
+  outSort->mutable = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 
 	  sort_addTupleMembers (handle, strSort);
 	  genTupleOps (handle);
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
     }
   else 
     {
-      if (sortTable[handle].kind != SRT_TUPLE)
+      if (sortTable[handle]->kind != SRT_TUPLE)
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -1172,8 +1170,8 @@ sort_addTupleMembers (sort tupleSort, sort strSort)
   /* make sure it works for empty smemberInfo */
   
   llassert (sortTable != NULL);
- 
- for (mem = sortTable[strSort].members;
+  
+  for (mem = sortTable[strSort]->members;
        mem != smemberInfo_undefined; mem = mem->next)
     {
       newinfo = (smemberInfo *) dmalloc (sizeof (*newinfo));
@@ -1197,7 +1195,7 @@ sort_addTupleMembers (sort tupleSort, sort strSort)
       /*@=branchstate@*/
     }
 
-  sortTable[tupleSort].members = top;
+  sortTable[tupleSort]->members = top;
 }
 
 static 
@@ -1217,7 +1215,7 @@ void genTupleOps (sort tupleSort)
   range = ltoken_createType (simpleId, SID_SORT, sort_getLsymbol (tupleSort));
 
   llassert (sortTable != NULL);
-  for (m = sortTable[tupleSort].members;
+  for (m = sortTable[tupleSort]->members;
        m != smemberInfo_undefined; m = m->next)
     {
       fieldsort = sort_makeVal (m->sort);
@@ -1252,7 +1250,7 @@ void genUnionOps (sort tupleSort)
   sort sort;
 
   llassert (sortTable != NULL);
-  for (m = sortTable[tupleSort].members;
+  for (m = sortTable[tupleSort]->members;
        m != smemberInfo_undefined; m = m->next)
     {
      /* Generate __.memName: strSort ->memSortObj */
@@ -1274,7 +1272,7 @@ void genStrOps (sort strSort, /*@unused@*/ sort tupleSort)
   sort sort;
   
   llassert (sortTable != NULL);
-  for (m = sortTable[strSort].members;
+  for (m = sortTable[strSort]->members;
        m != smemberInfo_undefined; m = m->next)
     {
      /* Generate __.memName: strSort ->memSortObj */
@@ -1304,48 +1302,52 @@ sort_makeUnion (ltoken opttagid)
   /* must not clash with any LSL sorts, tag2sortname adds "_" prefix */
   /* isNewTag true means that the name generated is new */
 
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+
   if (ltoken_isUndefined (opttagid))
     {
       opttagid = ltoken_create (simpleId, newUnionTag ());
-      outSort.realtag = FALSE;
+      outSort->realtag = FALSE;
     }
   else
-    outSort.realtag = TRUE;
+    {
+      outSort->realtag = TRUE;
+    }
 
   llassert (sortTable != NULL);
   name = sortTag_toSymbol ("Union", opttagid, &isNewTag);
   handle = sort_lookupName (name);
-  outSort.name = name;
-  outSort.kind = SRT_UNION;
-  outSort.tag = ltoken_getText (opttagid);
-  outSort.baseSort = NOSORTHANDLE;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.mutable = TRUE;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort->name = name;
+  outSort->kind = SRT_UNION;
+  outSort->tag = ltoken_getText (opttagid);
+  outSort->baseSort = NOSORTHANDLE;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->mutable = TRUE;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
   
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNewForce (outSort);
+	  outSort->handle = handle = sort_enterNewForce (outSort);
 	}
     }
   else 
     {
-      if (sortTable[handle].kind != SRT_UNION)
+      if (sortTable[handle]->kind != SRT_UNION)
 	{
 	  sortError (opttagid, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -1363,9 +1365,9 @@ sort_updateUnion (sort unionSort, /*@only@*/ smemberInfo *info)
 
   sn = sort_lookup (unionSort);
 
-  if (sn.members == (smemberInfo *) 0)
+  if (sn->members == (smemberInfo *) 0)
     {
-      sortTable[unionSort].members = info;
+      sortTable[unionSort]->members = info;
       uValSort = sort_makeUnionVal (ltoken_undefined, unionSort);
       /* same as struct operations */
       genStrOps (unionSort, uValSort);
@@ -1385,35 +1387,36 @@ sort_makeUnionVal (ltoken t, sort unionSort)
   sortNode outSort, s = sort_lookup (unionSort);
   lsymbol name;
 
-  if (s.kind != SRT_UNION)
+  if (s->kind != SRT_UNION)
     {
       llfatalbug (message ("sort_makeUnion: only unions can become unionVals: given sort is: %s",
-			   sort_unparseKind (s.kind)));
+			   sort_unparseKind (s->kind)));
     }
 
   llassert (sortTable != NULL);
 
-  name = sp (s.name, lsymbol_fromChars ("_UnionVal"));
+  name = sp (s->name, lsymbol_fromChars ("_UnionVal"));
   handle = sort_lookupName (name);
 
-  outSort.kind = SRT_UNIONVAL;
-  outSort.name = name;
-  outSort.tag = s.tag;
-  outSort.realtag = s.realtag;
-  outSort.baseSort = unionSort;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.abstract = FALSE;
-  outSort.imported = context_inImport ();
-  outSort.mutable = FALSE;
-  outSort.handle = handle;
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+  outSort->kind = SRT_UNIONVAL;
+  outSort->name = name;
+  outSort->tag = s->tag;
+  outSort->realtag = s->realtag;
+  outSort->baseSort = unionSort;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->abstract = FALSE;
+  outSort->imported = context_inImport ();
+  outSort->mutable = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 
 	  /* Add members to the unionVal's. */
 	  /* same as structs and tuples */
@@ -1423,17 +1426,17 @@ sort_makeUnionVal (ltoken t, sort unionSort)
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
     }
   else 
     {
-      if (sortTable[handle].kind != SRT_UNIONVAL)
+      if (sortTable[handle]->kind != SRT_UNIONVAL)
 	{
 	  sortError (t, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -1473,49 +1476,53 @@ sort_makeEnum (ltoken opttagid)
 
   llassert (sortTable != NULL);
 
+  outSort = (sortNode) dmalloc (sizeof (*outSort));
+
   if (ltoken_isUndefined (opttagid))
     {
       opttagid = ltoken_create (simpleId, newEnumTag ());
-      outSort.realtag = FALSE;
+      outSort->realtag = FALSE;
     }
   else
-    outSort.realtag = TRUE;
+    {
+      outSort->realtag = TRUE;
+    }
   
   /* must not clash with any LSL sorts, tag2sortname adds "_" prefix */
 
   name = sortTag_toSymbol ("Enum", opttagid, &isNew);
   handle = sort_lookupName (name);
-  outSort.name = name;
-  outSort.kind = SRT_ENUM;
-  outSort.tag = ltoken_getText (opttagid);
-  outSort.baseSort = NOSORTHANDLE;
-  outSort.objSort = NOSORTHANDLE;
-  outSort.members = smemberInfo_undefined;
-  outSort.export = exporting;
-  outSort.mutable = FALSE;
-  outSort.imported = context_inImport ();
-  outSort.abstract = FALSE;
-  outSort.handle = handle;
+  outSort->name = name;
+  outSort->kind = SRT_ENUM;
+  outSort->tag = ltoken_getText (opttagid);
+  outSort->baseSort = NOSORTHANDLE;
+  outSort->objSort = NOSORTHANDLE;
+  outSort->members = smemberInfo_undefined;
+  outSort->export = exporting;
+  outSort->mutable = FALSE;
+  outSort->imported = context_inImport ();
+  outSort->abstract = FALSE;
+  outSort->handle = handle;
 
   if (handle == NOSORTHANDLE)
     {
       if (sort_isNewEntry (outSort))
 	{
-	  outSort.handle = handle = sort_enterNew (outSort);
+	  outSort->handle = handle = sort_enterNew (outSort);
 	}
       else
 	{
-	  outSort.handle = handle = sort_enterNewForce (outSort);
+	  outSort->handle = handle = sort_enterNewForce (outSort);
 	}
     }
   else 
     {
-      if (sortTable[handle].kind != SRT_ENUM)
+      if (sortTable[handle]->kind != SRT_ENUM)
 	{
 	  sortError (opttagid, handle, outSort);
 	}
 
-      smemberInfo_free (outSort.members);
+      sortNode_free (outSort);
     }
 
   return handle;
@@ -1534,9 +1541,9 @@ sort_updateEnum (sort enumSort, /*@only@*/ smemberInfo *info)
   llassert (sortTable != NULL);
 
   sn = sort_lookup (enumSort);
-  if (sn.members == (smemberInfo *) 0)
+  if (sn->members == (smemberInfo *) 0)
     {
-      sortTable[enumSort].members = info;
+      sortTable[enumSort]->members = info;
       genEnumOps (enumSort);
       return TRUE;
     }
@@ -1561,7 +1568,7 @@ void genEnumOps (sort enumSort)
 
   llassert (sortTable != NULL);
 
-  for (ei = sortTable[enumSort].members;
+  for (ei = sortTable[enumSort]->members;
        ei != (smemberInfo *) 0; ei = ei->next)
     {
       mem = ltoken_createType (simpleId, SID_OP, ei->name);
@@ -1784,8 +1791,7 @@ makeArrowFieldOp (lsymbol field)
 
 void
 sort_init (void) 
-   /*@globals undef noSort,
-              undef arrayRefNameNode,
+   /*@globals undef arrayRefNameNode,
               undef ptr2arrayNameNode,
               undef deRefNameNode,
               undef nilNameNode,
@@ -1797,6 +1803,7 @@ sort_init (void)
               undef intToken; @*/
 {
   /* on alpha, declaration does not allocate storage */
+  sortNode noSort, HOFSort;
   opFormNode opform;
   opFormUnion u;
   underscoreSymbol = lsymbol_fromChars ("_");
@@ -1866,25 +1873,40 @@ sort_init (void)
   nilNameNode->content.opid = ltoken_createType (simpleId, SID_OP, 
 						 lsymbol_fromChars ("NIL"));
 
-  noSort.kind = SRT_NONE;
-  noSort.name = lsymbol_fromChars ("_unknown");;
-  noSort.tag = lsymbol_undefined;
-  noSort.baseSort = NOSORTHANDLE;
-  noSort.objSort = NOSORTHANDLE;
-  noSort.members = smemberInfo_undefined;
-  noSort.export = FALSE;
-  noSort.mutable = FALSE;
-  noSort.abstract = FALSE;
-  noSort.imported = FALSE;
-  noSort.handle = NOSORTHANDLE;
+  noSort = (sortNode) dmalloc (sizeof (*noSort));
+  noSort->kind = SRT_NONE;
+  noSort->name = lsymbol_fromChars ("_unknown");;
+  noSort->tag = lsymbol_undefined;
+  noSort->baseSort = NOSORTHANDLE;
+  noSort->objSort = NOSORTHANDLE;
+  noSort->members = smemberInfo_undefined;
+  noSort->export = FALSE;
+  noSort->mutable = FALSE;
+  noSort->abstract = FALSE;
+  noSort->imported = FALSE;
+  noSort->handle = NOSORTHANDLE;
   
+  HOFSort = (sortNode) dmalloc (sizeof (*HOFSort));
+  HOFSort->kind = SRT_HOF;
+  HOFSort->handle = HOFSORTHANDLE;
+  HOFSort->name = lsymbol_undefined;
+  HOFSort->tag = lsymbol_undefined;
+  HOFSort->realtag = FALSE;
+  HOFSort->baseSort = NOSORTHANDLE;
+  HOFSort->objSort = NOSORTHANDLE;
+  HOFSort->members = smemberInfo_undefined;
+  HOFSort->export = FALSE;
+  HOFSort->mutable = FALSE;
+  HOFSort->abstract = FALSE;
+  HOFSort->imported = FALSE;
+
   /*
   ** Store the null sort into table, and in the process initialize the sort table. 
   ** Must be the first sort_enter so NOSORTHANDLE is truly = 0. Similarly, 
   ** for HOFSORTHANDLE = 1.
   */
   
-  noSort.handle = sort_enterGlobal (noSort);
+  (void) sort_enterGlobal (noSort);
   (void) sort_enterGlobal (HOFSort); 
   
   /* Other builtin sorts */
@@ -1895,10 +1917,10 @@ sort_init (void)
   llassert (sortTable != NULL);
 
   /* make sort_Bool a synonym for sort_bool */
-  sortTable[sort_capBool].kind = SRT_SYN;
-  sortTable[sort_capBool].baseSort = sort_bool;
-  sortTable[sort_capBool].mutable = FALSE;
-  sortTable[sort_capBool].abstract = TRUE;
+  sortTable[sort_capBool]->kind = SRT_SYN;
+  sortTable[sort_capBool]->baseSort = sort_bool;
+  sortTable[sort_capBool]->mutable = FALSE;
+  sortTable[sort_capBool]->abstract = TRUE;
   
   sort_int = sort_makeLiteralSort (ltoken_undefined, 
 				   lsymbol_fromChars ("int"));
@@ -1930,7 +1952,7 @@ sort_lookupName (lsymbol name)
 
   for (i = 0; i < sortTableSize; i++)
     {
-      if (sortTable[i].name == name)
+      if (sortTable[i]->name == name)
 	{
 	  return i;
 	}
@@ -1948,7 +1970,7 @@ sort_isNewEntry (sortNode s)
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[i].kind == s.kind && sortTable[i].name == s.name)
+      if (sortTable[i]->kind == s->kind && sortTable[i]->name == s->name)
 	{
 	  return FALSE;
 	}
@@ -1959,23 +1981,26 @@ sort_isNewEntry (sortNode s)
 static sort
 sort_enterGlobal (sortNode s)
 {
-  /*@i@*/ return (sort_enterNew (s));
+  return (sort_enterNew (s));
 }
 
 static sort
 sort_enterNew (sortNode s)
 {
-  /* This ensures that the argument sortNode is not entered into
-     the sort table more than once.  isNew flag will tell the
-     caller this info, and the caller will decide whether to generate
-     operators for this sort. */
+  /*
+  ** This ensures that the argument sortNode is not entered into
+  ** the sort table more than once.  isNew flag will tell the
+  ** caller this info, and the caller will decide whether to generate
+  ** operators for this sort. 
+  */
+
   long int i;
   
   for (i = 0; i < sortTableSize; i++)
     {
       llassert (sortTable != NULL);
 
-      if (sortTable[i].kind == s.kind && sortTable[i].name == s.name)
+      if (sortTable[i]->kind == s->kind && sortTable[i]->name == s->name)
 	{
 	  sortNode_free (s);
 	  return i;
@@ -2003,21 +2028,31 @@ sort_enterNew (sortNode s)
 
   llassert (sortTable != NULL);
 
-  s.handle = sortTableSize;
+  s->handle = sortTableSize;
   sortTable[sortTableSize++] = s;
 
   /*@-compdef@*/ 
-  
-  return s.handle;
+  return s->handle;
 } /*=compdef@*/
 
 static sort sort_enterNewForce (sortNode s)
 {
-  sort sor = sort_enterNew (s); 
+  sort sor = sort_lookupName (s->name);
 
-  s.handle = sor;
-  llassert (sortTable != NULL);
-  sortTable[sor] = s;
+  if (sort_isNoSort (sor))
+    {
+      sor = sort_enterNew (s);
+      llassert (sortTable != NULL);
+      /*@-usereleased@*/
+      llassert (sortTable[sor] == s);
+      /*@=usereleased@*/
+    }
+  else
+    {
+      s->handle = sor;
+      llassert (sortTable != NULL);
+      sortTable[sor] = s;
+    }
   
   /*@-globstate@*/ return (sor); /*@=globstate@*/
 }
@@ -2043,7 +2078,9 @@ sort_lookup (sort sor)
     }
 
   llassert (sor == 0);
-  return noSort;
+  llassert (sor == NOSORTHANDLE);
+  llassert (sortTable != NULL);
+  return sortTable[NOSORTHANDLE];
 }
 
 sortNode
@@ -2057,7 +2094,8 @@ sort_quietLookup (sort sor)
     }
   else
     {
-      return noSort;
+      llassert (sortTable != NULL);
+      return (sortTable[NOSORTHANDLE]);
     }
 }
 
@@ -2103,9 +2141,9 @@ sort_unparse (sort s)
   lsymbol name;
 
   sn = sort_quietLookup (s);
-  name = sn.name;
+  name = sn->name;
 
-  switch (sn.kind)
+  switch (sn->kind)
     {
     case SRT_NONE:
       if (name == lsymbol_undefined)
@@ -2122,57 +2160,57 @@ sort_unparse (sort s)
       return (cstring_fromCharsNew (lsymbol_toChars (name)));
 
     case SRT_PTR:
-      return (message ("%q *", sort_unparse (sort_makeVal (sn.baseSort))));
+      return (message ("%q *", sort_unparse (sort_makeVal (sn->baseSort))));
     case SRT_OBJ:
-      return (message ("obj %q", sort_unparse (sn.baseSort)));
+      return (message ("obj %q", sort_unparse (sn->baseSort)));
     case SRT_ARRAY:
-      return (message ("array of %q", sort_unparse (sort_makeVal (sn.baseSort))));
+      return (message ("array of %q", sort_unparse (sort_makeVal (sn->baseSort))));
     case SRT_VECTOR:
-      return (message ("vector of %q", sort_unparse (sn.baseSort)));
+      return (message ("vector of %q", sort_unparse (sn->baseSort)));
     case SRT_TUPLE:
-      if (sn.tag != lsymbol_undefined && sn.realtag)
+      if (sn->tag != lsymbol_undefined && sn->realtag)
 	{
-	  return (message ("struct %s", cstring_fromChars (lsymbol_toChars (sn.tag))));
+	  return (message ("struct %s", cstring_fromChars (lsymbol_toChars (sn->tag))));
 	}
       else
 	{
-	  return (message ("struct {%q}", printStructMembers (sn.members)));
+	  return (message ("struct {%q}", printStructMembers (sn->members)));
 	}
     case SRT_UNIONVAL:
-      if (sn.tag != lsymbol_undefined && sn.realtag)
+      if (sn->tag != lsymbol_undefined && sn->realtag)
 	{
-	  return (message ("union %s", cstring_fromChars (lsymbol_toChars (sn.tag))));
+	  return (message ("union %s", cstring_fromChars (lsymbol_toChars (sn->tag))));
 	}
       else
 	{
-	  return (message ("union {%q}", printStructMembers (sn.members)));
+	  return (message ("union {%q}", printStructMembers (sn->members)));
 	}
     case SRT_ENUM:
-      if (sn.tag != lsymbol_undefined && sn.realtag)
+      if (sn->tag != lsymbol_undefined && sn->realtag)
 	{
-	  return (message ("enum %s", cstring_fromChars (lsymbol_toChars (sn.tag))));
+	  return (message ("enum %s", cstring_fromChars (lsymbol_toChars (sn->tag))));
 	}
       else
 	{
-	  return (message ("enum {%q}", printEnumMembers (sn.members)));
+	  return (message ("enum {%q}", printEnumMembers (sn->members)));
 	}
     case SRT_STRUCT:
-      if (sn.tag != lsymbol_undefined && sn.realtag)
+      if (sn->tag != lsymbol_undefined && sn->realtag)
 	{
-	  return (message ("obj struct %s", cstring_fromChars (lsymbol_toChars (sn.tag))));
+	  return (message ("obj struct %s", cstring_fromChars (lsymbol_toChars (sn->tag))));
 	}
       else
 	{
-	  return (message ("obj struct {%q}", printStructMembers (sn.members)));
+	  return (message ("obj struct {%q}", printStructMembers (sn->members)));
 	}
     case SRT_UNION:
-      if (sn.tag != lsymbol_undefined && sn.realtag)
+      if (sn->tag != lsymbol_undefined && sn->realtag)
 	{
-	  return (message ("obj union %s", cstring_fromChars (lsymbol_toChars (sn.tag))));
+	  return (message ("obj union %s", cstring_fromChars (lsymbol_toChars (sn->tag))));
 	}
       else
 	{
-	  return (message ("obj union {%q}", printStructMembers (sn.members)));
+	  return (message ("obj union {%q}", printStructMembers (sn->members)));
 	}
     default:
       return (cstring_makeLiteral ("illegal"));
@@ -2247,7 +2285,7 @@ sort_getUnderlyingAux (sort s, int depth)
 {
   sortNode sn = sort_quietLookup (s);
   
-  if (sn.kind == SRT_SYN)
+  if (sn->kind == SRT_SYN)
     {
       if (depth > MAX_SORT_DEPTH)
 	{
@@ -2255,7 +2293,7 @@ sort_getUnderlyingAux (sort s, int depth)
 	  return s;
 	}
       
-      return sort_getUnderlyingAux (sn.baseSort, depth + 1);
+      return sort_getUnderlyingAux (sn->baseSort, depth + 1);
     }
   
   return s;
@@ -2270,17 +2308,17 @@ sort_getUnderlying (sort s)
 static lsymbol
 underlyingSortName (sortNode sn)
 {
-  if (sn.kind == SRT_SYN)
-    return underlyingSortName (sort_quietLookup (sn.baseSort));
-  return sn.name;
+  if (sn->kind == SRT_SYN)
+    return underlyingSortName (sort_quietLookup (sn->baseSort));
+  return sn->name;
 }
 
 static /*@observer@*/ sortNode
 underlyingSortNode (sortNode sn)
 {
-  if (sn.kind == SRT_SYN)
+  if (sn->kind == SRT_SYN)
     {
-      return underlyingSortNode (sort_quietLookup (sn.baseSort));
+      return underlyingSortNode (sort_quietLookup (sn->baseSort));
     }
 
   return sn;
@@ -2291,7 +2329,7 @@ sort_mutable (sort s)
 {
  /* if s is not a valid sort, then returns false */
   sortNode sn = sort_quietLookup (s);
-  if (sn.mutable)
+  if (sn->mutable)
     return TRUE;
   return FALSE;
 }
@@ -2318,7 +2356,7 @@ bool
 sort_isValidSort (sort s)
 {
   sortNode sn = sort_quietLookup (s);
-  sortKind k = sn.kind;
+  sortKind k = sn->kind;
   if (k != SRT_NONE && k > SRT_FIRST && k < SRT_LAST)
     return TRUE;
   else
@@ -2347,7 +2385,7 @@ sort_dump (FILE *f, bool lco)
 	 variables to check, i.e., we don't rely on sorts and op's for such
 	 checking. */
       
-      if (s.kind == SRT_NONE)
+      if (s->kind == SRT_NONE)
 	continue;
       
       if (lco)
@@ -2355,58 +2393,58 @@ sort_dump (FILE *f, bool lco)
 	  fprintf (f, "%%LCL");
 	}
 
-      if (lsymbol_isDefined (s.name))
+      if (lsymbol_isDefined (s->name))
 	{
-	  fprintf (f, "sort %s ", lsymbol_toCharsSafe (s.name));
+	  fprintf (f, "sort %s ", lsymbol_toCharsSafe (s->name));
 	}
       else
 	{
 	  llcontbug (message ("Invalid sort in sort_dump: sort %d; sortname: %s.  This may result from using .lcs files produced by an old version of LCLint.  Remove the .lcs files, and rerun LCLint.",
-			      i, lsymbol_toString (s.name)));
+			      i, lsymbol_toString (s->name)));
 	  fprintf (f, "sort _error_ ");
 	}
       
-      if (!lco && !s.export)
+      if (!lco && !s->export)
 	fprintf (f, "private ");
 
       /*@-loopswitchbreak@*/
-      switch (s.kind)
+      switch (s->kind)
 	{
 	case SRT_HOF:
 	  fprintf (f, "hof nil nil\n");
 	  break;
 	case SRT_PRIM:
-	  if (s.abstract)
+	  if (s->abstract)
 	    fprintf (f, "immutable nil nil\n");
 	  else
 	    fprintf (f, "primitive nil nil\n");
 	  break;
 	case SRT_OBJ:
-	  if (s.abstract)
+	  if (s->abstract)
 	    fprintf (f, "mutable %s nil\n",
-		     lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+		     lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  else
 	    fprintf (f, "obj %s nil\n",
-		     lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+		     lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	case SRT_SYN:
 	  fprintf (f, "synonym %s nil\n",
-		   lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+		   lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	case SRT_PTR:
-	  fprintf (f, "ptr %s nil\n", lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+	  fprintf (f, "ptr %s nil\n", lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	case SRT_ARRAY:
 	  fprintf (f, "arr %s nil\n",
-		   lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+		   lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	case SRT_VECTOR:
 	  fprintf (f, "vec %s %s\n",
-		   lsymbol_toCharsSafe (sortTable[s.baseSort].name),
-		   lsymbol_toCharsSafe (sortTable[s.objSort].name));
+		   lsymbol_toCharsSafe (sortTable[s->baseSort]->name),
+		   lsymbol_toCharsSafe (sortTable[s->objSort]->name));
 	  break;
 	case SRT_STRUCT:
-	  if (s.tag == lsymbol_undefined)
+	  if (s->tag == lsymbol_undefined)
 	    {
 	      /* we need to make up a tag to prevent excessive
 		 growth of .lcs files when tags are overloaded
@@ -2414,46 +2452,46 @@ sort_dump (FILE *f, bool lco)
 	      llbuglit ("Struct has no tag");
 	    }
 	  else
-	    fprintf (f, "str %s nil\n", lsymbol_toCharsSafe (s.tag));
+	    fprintf (f, "str %s nil\n", lsymbol_toCharsSafe (s->tag));
 
-	  for (mem = s.members;
+	  for (mem = s->members;
 	       mem != smemberInfo_undefined; mem = mem->next)
 	    {
 	      if (lco)
 		fprintf (f, "%%LCL");
 	      fprintf (f, "sort %s strMem %s nil\n", lsymbol_toCharsSafe (mem->name),
-		       lsymbol_toCharsSafe (sortTable[mem->sort].name));
+		       lsymbol_toCharsSafe (sortTable[mem->sort]->name));
 	    }
 	  if (lco)
 	    fprintf (f, "%%LCL");
 	  fprintf (f, "sort strEnd nil nil nil\n");
 	  break;
 	case SRT_UNION:
-	  if (s.tag == lsymbol_undefined)
+	  if (s->tag == lsymbol_undefined)
 	    llbuglit ("Union has no tag");
 	  else
-	    fprintf (f, "union %s nil\n", lsymbol_toCharsSafe (s.tag));
-	  for (mem = s.members;
+	    fprintf (f, "union %s nil\n", lsymbol_toCharsSafe (s->tag));
+	  for (mem = s->members;
 	       mem != smemberInfo_undefined; mem = mem->next)
 	    {
 	      if (lco)
 		fprintf (f, "%%LCL");
 	      fprintf (f, "sort %s unionMem %s nil\n", lsymbol_toCharsSafe (mem->name),
-		       lsymbol_toCharsSafe (sortTable[mem->sort].name));
+		       lsymbol_toCharsSafe (sortTable[mem->sort]->name));
 	    }
 	  if (lco)
 	    fprintf (f, "%%LCL");
 	  fprintf (f, "sort unionEnd nil nil nil\n");
 	  break;
 	case SRT_ENUM:
-	  if (s.tag == lsymbol_undefined)
+	  if (s->tag == lsymbol_undefined)
 	    {
 	      llbuglit ("Enum has no tag");
 	    }
 
-	  fprintf (f, "enum %s nil\n", lsymbol_toCharsSafe (s.tag));
+	  fprintf (f, "enum %s nil\n", lsymbol_toCharsSafe (s->tag));
 
-	  for (mem = s.members;
+	  for (mem = s->members;
 	       mem != smemberInfo_undefined; mem = mem->next)
 	    {
 	      if (lco)
@@ -2465,14 +2503,15 @@ sort_dump (FILE *f, bool lco)
 	  fprintf (f, "sort enumEnd nil nil nil\n");
 	  break;
 	case SRT_TUPLE:
-	  fprintf (f, "tup %s nil\n", lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+	  fprintf (f, "tup %s nil\n", 
+		   lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	case SRT_UNIONVAL:
 	  fprintf (f, "unionval %s nil\n",
-		   lsymbol_toCharsSafe (sortTable[s.baseSort].name));
+		   lsymbol_toCharsSafe (sortTable[s->baseSort]->name));
 	  break;
 	default:
-	  fprintf (f, "sort_dump: unexpected sort: %d", (int)s.kind);
+	  fprintf (f, "sort_dump: unexpected sort: %d", (int)s->kind);
 	}			/* switch */
       /*@=loopswitchbreak@*/
     }
@@ -2524,8 +2563,8 @@ sort_loadOther (char *kstr, lsymbol sname, sort bsort)
 }
 
 static void
-parseSortLine (char *line, ltoken t, tsource * s,
-	       mapping *map, lsymbolList slist)
+parseSortLine (char *line, ltoken t, inputStream  s,
+	       mapping map, lsymbolList slist)
 {
   /* caller expects that map and slist are updated */
   /* t and importfle are only used for error messages */
@@ -2537,7 +2576,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
   static smemberInfo *enumMemList = NULL;
   static lsymbol tagName = lsymbol_undefined;
   
-  char *importfile = tsource_fileName (s);
+  cstring importfile = inputStream_fileName (s);
   char sostr[MAXBUFFLEN], kstr[10], basedstr[MAXBUFFLEN], objstr[MAXBUFFLEN];
   bool tmp;
   tagInfo ti;
@@ -2555,8 +2594,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
       lclplainerror 
 	(message ("%q: Imported file contains illegal sort declaration.   "
 		  "Skipping this line: \n%s\n",
-		  fileloc_unparseRaw (cstring_fromChars (importfile), 
-				      tsource_thisLineNumber (s)), 
+		  fileloc_unparseRaw (importfile, inputStream_thisLineNumber (s)), 
 		  cstring_fromChars (line)));
       return;
     }
@@ -2568,7 +2606,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	 in sort building routines. */
       sname = lsymbol_undefined;
       lclerror (t, message ("Illegal sort declaration in import file: %s:\n%s",
-			    cstring_fromChars (importfile), 
+			    importfile, 
 			    cstring_fromChars (line)));
     }
   
@@ -2618,7 +2656,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	  if (strName == lsymbol_undefined)
 	    {
 	      lclbug (message ("%q: Imported file contains unexpected null struct sort",
-			       fileloc_unparseRaw (cstring_fromChars (importfile), tsource_thisLineNumber (s))));
+			       fileloc_unparseRaw (importfile, inputStream_thisLineNumber (s))));
 	    }
 	  else
 	    {
@@ -2643,14 +2681,14 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	{
 	  lclbug (message ("%q: unexpected non-null struct sort or "
 			   "non-empty member list",
-			   fileloc_unparseRaw (cstring_fromChars (importfile), 
-					       tsource_thisLineNumber (s))));
+			   fileloc_unparseRaw (importfile, 
+					       inputStream_thisLineNumber (s))));
 	}
       /* see if a tag is associated with this sort */
       if (strcmp (basedstr, "nil") == 0)
 	{
 	  llfatalerror (message ("%s: Struct missing tag.  Obsolete .lcs file, remove and rerun lcl.",
-				 cstring_fromChars (importfile)));
+				 importfile));
 	  /*
 	    strName = sortTag_toSymbol ("Struct", nulltok, &tmp);
 	    tagName = lsymbol_undefined;
@@ -2704,7 +2742,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
       else
 	{
 	  lclbug (message ("%q: unexpected null enum sort or empty member list",
-			   fileloc_unparseRaw (cstring_fromChars (importfile), tsource_thisLineNumber (s))));
+			   fileloc_unparseRaw (importfile, inputStream_thisLineNumber (s))));
 	}
       enumName = lsymbol_undefined;
       enumMemList = NULL;
@@ -2716,8 +2754,8 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	{
 	  lclbug (message ("%q: Unexpected non-null enum sort or "
 			   "non-empty member list",
-			   fileloc_unparseRaw (cstring_fromChars (importfile), 
-					       tsource_thisLineNumber (s))));
+			   fileloc_unparseRaw (importfile, 
+					       inputStream_thisLineNumber (s))));
 	}
 
       /* see if a tag is associated with this sort */
@@ -2725,7 +2763,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	{
 	  llfatalerror (message ("%s: Enum missing tag.  Obsolete .lcs file, "
 				 "remove and rerun lcl.",
-				 cstring_fromChars (importfile)));
+				 importfile));
 	}
       else
 	{			/* a tag exists */
@@ -2770,7 +2808,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	    {
 	      lclbug
 		(message ("%q: Imported file contains unexpected null union sort",
-			  fileloc_unparseRaw (cstring_fromChars (importfile), tsource_thisLineNumber (s))));
+			  fileloc_unparseRaw (importfile, inputStream_thisLineNumber (s))));
 	    }
 	  else
 	    {
@@ -2799,7 +2837,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	    (message 
 	     ("%q: Unexpected non-null union sort or non-empty "
 	      "member list",
-	      fileloc_unparseRaw (cstring_fromChars (importfile), tsource_thisLineNumber (s))));
+	      fileloc_unparseRaw (importfile, inputStream_thisLineNumber (s))));
 	}
       /* see if a tag is associated with this sort */
       if (strcmp (basedstr, "nil") == 0)
@@ -2807,7 +2845,7 @@ parseSortLine (char *line, ltoken t, tsource * s,
 	  llfatalerror
 	    (message ("%s: Union missing tag.  Obsolete .lcs file, "
 		      "remove and rerun lcl.",
-	      cstring_fromChars (importfile)));
+	      importfile));
 	}
       else
 	{			/* a tag exists */
@@ -2844,8 +2882,8 @@ parseSortLine (char *line, ltoken t, tsource * s,
 
 	  llbug 
 	    (message ("%q: Imported file contains unknown base sort: %s",
-		      fileloc_unparseRawCol (cstring_fromChars (importfile), 
-					     tsource_thisLineNumber (s), col),
+		      fileloc_unparseRawCol (importfile, 
+					     inputStream_thisLineNumber (s), col),
 		      cstring_fromChars (lsymbol_toCharsSafe (bname))));
 	}
       
@@ -2864,19 +2902,20 @@ parseSortLine (char *line, ltoken t, tsource * s,
 }
 
 void
-sort_import (tsource *imported, ltoken tok, mapping * map)
+sort_import (inputStream imported, ltoken tok, mapping map)
 {
   /* tok is only used for error message line number */
-  char *buf, *importfile;
-  tsource *lclsource;
+  char *buf;
+  cstring importfile;
+  inputStream lclsource;
   sort bsort;
   lsymbolList slist = lsymbolList_new ();
 
-  buf = tsource_nextLine (imported);
+  buf = inputStream_nextLine (imported);
 
   llassert (buf != NULL);
 
-  importfile = tsource_fileName (imported);
+  importfile = inputStream_fileName (imported);
 
   if (!firstWord (buf, "%LCLSortTable"))
     {
@@ -2884,14 +2923,14 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 
       lclfatalerror (tok, message ("Expecting \"%%LCLSortTable\" line "
 				   "in import file %s:\n%s",
-				   cstring_fromChars (importfile), 
+				   importfile, 
 				   cstring_fromChars (buf)));
       
     }
 
   for (;;)
     {
-      buf = tsource_nextLine (imported);
+      buf = inputStream_nextLine (imported);
 
       llassert (buf != NULL);
 
@@ -2911,7 +2950,7 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 	      lclfatalerror
 		(tok, 
 		 message ("Expecting '%%LCL' prefix in import file %s:\n%s\n",
-			  cstring_fromChars (importfile), 
+			  importfile, 
 			  cstring_fromChars (buf)));
 	    }
 	}
@@ -2928,12 +2967,12 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 	  sor = sort_lookupName (s);
 	  sn = sort_quietLookup (sor);
 	  
-	  switch (sn.kind)
+	  switch (sn->kind)
 	    {
 	    case SRT_ENUM:
 	      {			/* update the symbol table with members of enum */
 		varInfo vi;
-		smemberInfo *mlist = sn.members;
+		smemberInfo *mlist = sn->members;
 		for (; mlist != NULL; mlist = mlist->next)
 		  {
 		    /* check that enumeration constants are unique */
@@ -2953,9 +2992,9 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 		      {
 			lclplainerror 
 			  (message ("%s: enum member %s of %s has already been declared",
-				    cstring_fromChars (importfile), 
+				    importfile, 
 				    lsymbol_toString (mlist->name),
-				    lsymbol_toString (sn.name)));
+				    lsymbol_toString (sn->name)));
 		      }
 		  }
 		/*@switchbreak@*/ break;
@@ -2963,7 +3002,7 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 	    case SRT_STRUCT:
 	    case SRT_UNION:
 	      {
-		smemberInfo *mlist = sn.members;
+		smemberInfo *mlist = sn->members;
 
 		for (; mlist != NULL; mlist = mlist->next)
 		  {
@@ -2971,9 +3010,9 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 		    if (sort_isNoSort (bsort))
 		      {
 			lclbug (message ("%s: member %s of %s has unknown sort\n",
-					 cstring_fromChars (importfile), 
+					 importfile, 
 					 cstring_fromChars (lsymbol_toChars (mlist->name)),
-					 cstring_fromChars (lsymbol_toChars (sn.name))));
+					 cstring_fromChars (lsymbol_toChars (sn->name))));
 		      }
 		    else
 		      {
@@ -2984,9 +3023,9 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 	      }
 	    default:
 	      lclbug (message ("%s: %s has unexpected sort kind %s",
-			       cstring_fromChars (importfile), 
-			       cstring_fromChars (lsymbol_toChars (sn.name)),
-			       sort_unparseKind (sn.kind)));
+			       importfile, 
+			       cstring_fromChars (lsymbol_toChars (sn->name)),
+			       sort_unparseKind (sn->kind)));
 	    }
 	}
     } end_lsymbolList_elements;
@@ -2996,20 +3035,19 @@ sort_import (tsource *imported, ltoken tok, mapping * map)
 }
 
 bool
-sort_equal (sort *s1, sort *s2)
+sort_equal (sort s1, sort s2)
 {
   sort syn1, syn2;
-  if ((s1 != 0) && (s2 != 0))
-    {
-      if ((*s1) == (*s2))
-	return TRUE;
-     /* handle synonym sorts */
-      syn1 = sort_getUnderlying (*s1);
-      syn2 = sort_getUnderlying (*s2);
-      if (syn1 == syn2)
-	return TRUE;
-     /* makes bool and Bool equal */
-    }
+
+  if (s1 == s2) return TRUE;
+  
+  /* handle synonym sorts */
+  syn1 = sort_getUnderlying (s1);
+  syn2 = sort_getUnderlying (s2);
+  
+  if (syn1 == syn2) return TRUE;
+  /* makes bool and Bool equal */
+  
   return FALSE;
 }
 
@@ -3017,10 +3055,10 @@ bool
 sort_compatible (sort s1, sort s2)
 {
   sort syn1, syn2;
- /* later: might consider "char" and enum types the same as "int" */
+  /* later: might consider "char" and enum types the same as "int" */
   if (s1 == s2)
     return TRUE;
- /* handle synonym sorts */
+  /* handle synonym sorts */
   syn1 = sort_getUnderlying (s1);
   syn2 = sort_getUnderlying (s2);
   if (syn1 == syn2)
@@ -3034,11 +3072,11 @@ sort_compatible_modulo_cstring (sort s1, sort s2)
 {
  /* like sort_compatible but also handles special cstring inits,
     allows the following 2 cases:
-     char c[] = "abc"; (LHS: char_Obj_Arr, RHS = char_Vec)
-                       (c as implicitly coerced into c^)
-     char *d = "abc";  (LHS: char_Obj_Ptr, RHS = char_Vec)
-                       (d as implicitly coerced into d[]^)
-		       */
+    char c[] = "abc"; (LHS: char_Obj_Arr, RHS = char_Vec)
+    (c as implicitly coerced into c^)
+    char *d = "abc";  (LHS: char_Obj_Ptr, RHS = char_Vec)
+    (d as implicitly coerced into d[]^)
+ */
   sort syn1, syn2;
   if (sort_compatible (s1, s2))
     return TRUE;
@@ -3053,9 +3091,8 @@ sort_compatible_modulo_cstring (sort s1, sort s2)
 lsymbol
 sort_getLsymbol (sort sor)
 {
- /*  sortNode sn = sort_lookup (sor); */
   sortNode sn = sort_quietLookup (sor);
-  return sn.name;
+  return sn->name;
 }
 
 /* a few handy routines for debugging */
@@ -3068,16 +3105,16 @@ char *sort_getName (sort s)
 /*@exposed@*/ cstring
 sort_unparseName (sort s)
 {
-    return (cstring_fromChars (sort_getName (s)));
+  return (cstring_fromChars (sort_getName (s)));
 }
 
 static void
 sortError (ltoken t, sort oldsort, sortNode newnode)
 {
   sortNode old = sort_quietLookup (oldsort);
-
-  if ((old.kind <= SRT_FIRST || old.kind >= SRT_LAST) ||
-      (newnode.kind <= SRT_FIRST || newnode.kind >= SRT_LAST))
+  
+  if ((old->kind <= SRT_FIRST || old->kind >= SRT_LAST) ||
+      (newnode->kind <= SRT_FIRST || newnode->kind >= SRT_LAST))
     {
       llbuglit ("sortError: illegal sort kind");
     }
@@ -3085,7 +3122,7 @@ sortError (ltoken t, sort oldsort, sortNode newnode)
   llassert (sortTable != NULL);
 
   lclerror (t, message ("Sort %s defined as %s cannot be redefined as %s",
-			cstring_fromChars (lsymbol_toChars (newnode.name)),
+			cstring_fromChars (lsymbol_toChars (newnode->name)),
 			sort_unparseKindName (sortTable[oldsort]),
 			sort_unparseKindName (newnode)));
 }
@@ -3093,14 +3130,14 @@ sortError (ltoken t, sort oldsort, sortNode newnode)
 static /*@observer@*/ cstring
   sort_unparseKindName (sortNode s)
 {
-  switch (s.kind)
+  switch (s->kind)
     {
     case SRT_NONE:
-      return cstring_fromChars (sortKindName[(int)s.kind]);
+      return cstring_fromChars (sortKindName[(int)s->kind]);
     default:
-      if (s.abstract)
+      if (s->abstract)
 	{
-	  if (s.mutable)
+	  if (s->mutable)
 	    {
 	      return cstring_makeLiteralTemp ("MUTABLE");
 	    }
@@ -3110,7 +3147,7 @@ static /*@observer@*/ cstring
 	    }
 	}
       else
-	return cstring_fromChars (sortKindName[(int)s.kind]);
+	return cstring_fromChars (sortKindName[(int)s->kind]);
     }
   
   BADEXIT;
@@ -3130,7 +3167,7 @@ bool
 sort_isHOFSortKind (sort s)
 {
   sortNode sn = sort_quietLookup (s);
-  if (sn.kind == SRT_HOF)
+  if (sn->kind == SRT_HOF)
     return TRUE;
   return FALSE;
 }
@@ -3143,13 +3180,13 @@ static bool
 sort_hasStateFcns (sort s)
 {
   sortNode sn = sort_quietLookup (s);
-  sortKind kind = sn.kind;
-
+  sortKind kind = sn->kind;
+  
   if (kind == SRT_SYN)
     {
-      return (sort_hasStateFcns (sn.baseSort));
+      return (sort_hasStateFcns (sn->baseSort));
     }
-
+  
   return ((kind == SRT_PTR) ||
 	  (kind == SRT_OBJ) ||
 	  (kind == SRT_ARRAY) ||

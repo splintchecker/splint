@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -43,7 +43,7 @@
 ** Temporary file used for processing macros.
 */
 
-static /*@null@*/ FILE *s_macFile = NULL;
+static /*@open@*/ /*@null@*/ FILE *s_macFile = NULL;
 
 /*
 ** mcDisable is set to TRUE when a macro is being processed, so
@@ -179,6 +179,7 @@ macrocache_addEntry (macrocache s, /*@only@*/ fileloc fl, /*@only@*/ cstring def
 void
 macrocache_addComment (macrocache s, /*@only@*/ fileloc fl, /*@only@*/ cstring def)
 {
+  DPRINTF (("Add comment: %s / %s", fileloc_unparse (fl), def));
   macrocache_addGenEntry (s, fl, def, TRUE);
 }
 
@@ -313,11 +314,15 @@ macrocache_processMacro (macrocache m, int i)
 
       if (context_inSuppressRegion () && !insup)
 	{
-	  llerrorlit (FLG_SYNTAX, "Macro ends in ignore region");
+	  voptgenerror
+	    (FLG_SYNTAX, 
+	     message ("Macro ends in ignore region: %s", m->contents[i]->def),
+	     fl);
 	}
     }
   
   incLine ();  
+  context_exitAllClauses ();
   context_exitMacroCache ();
 }
 
@@ -352,7 +357,8 @@ extern void macrocache_processUndefinedElements (macrocache m)
 		    {
 		      if (!fileloc_isLib (fl))
 			{
-			  lldiagmsg (message ("< checking macros %s >", fileloc_filename (fl)));
+			  lldiagmsg (message ("< checking macros %s >",
+					      fileloc_filename (fl)));
 			}
 		    }
 		  

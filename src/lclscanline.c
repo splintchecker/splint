@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -122,8 +122,8 @@ static charClassData LCLcharClass[LASTCHAR + 1];
 
 /* evs - sounds bogus to me! */
 
-static unsigned int colNumber;	
-static unsigned int startCol;	
+static int colNumber;	
+static int startCol;	
 static char *currentLine;      
 static char currentChar;	
 static ltokenCode tokenCode;	
@@ -1609,8 +1609,8 @@ LCLScanLine (char *line)
 	}
 
       ltoken_setCol (newToken, startCol);
-      ltoken_setLine (newToken, tsource_thisLineNumber (LCLScanSource ()));
-      ltoken_setFileName (newToken, tsource_fileName (LCLScanSource ()));
+      ltoken_setLine (newToken, inputStream_thisLineNumber (LCLScanSource ()));
+      ltoken_setFileName (newToken, inputStream_fileName (LCLScanSource ()));
 
       if (ltoken_getCode (newToken) == commentSym)
 	{
@@ -1694,8 +1694,8 @@ LCLScanEofToken (void)
     }
 
   ltoken_setCol (t, colNumber);
-  ltoken_setLine (t, tsource_thisLineNumber (LCLScanSource ()));
-  ltoken_setFileName (t, tsource_fileName (LCLScanSource ()));
+  ltoken_setLine (t, inputStream_thisLineNumber (LCLScanSource ()));
+  ltoken_setFileName (t, inputStream_fileName (LCLScanSource ()));
 
   return t;
 }
@@ -1709,10 +1709,10 @@ LCLReportEolTokens (bool setting)
 static void
 LocalUserError (char *msg)
 {
-  tsource *s = LCLScanSource ();
-  llfatalerror (message ("%s:%u,%u: %s", 
-			 cstring_fromChars (tsource_fileName (s)), 
-			 tsource_thisLineNumber (s),
+  inputStream s = LCLScanSource ();
+  llfatalerror (message ("%s:%d,%d: %s", 
+			 inputStream_fileName (s), 
+			 inputStream_thisLineNumber (s),
 			 colNumber,
 			 cstring_fromChars (msg)));
 }

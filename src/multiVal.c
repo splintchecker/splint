@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -230,13 +230,13 @@ bool multiVal_isString (multiVal m)
     {
     case 'i':
       (*s)++;
-      return multiVal_makeInt (getInt (s));
+      return multiVal_makeInt (reader_getInt (s));
     case 'c':
       (*s)++;
-      return multiVal_makeChar ((char) getInt (s));
+      return multiVal_makeChar ((char) reader_getInt (s));
     case 'd':
       (*s)++;
-      return multiVal_makeDouble (getDouble (s));
+      return multiVal_makeDouble (reader_getDouble (s));
     case 's':
       {
 	cstring st = cstring_undefined;

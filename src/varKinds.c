@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -31,7 +31,10 @@
 alkind alkind_fromInt (int n)
 {
   /*@+enumint@*/
-  llassert (n >= AK_UNKNOWN && n <= AK_LOCAL);
+  if (n < AK_UNKNOWN || n > AK_LOCAL)
+    {
+      llbug (message ("Alias kind out of range: %d", n));
+    }
   /*@=enumint@*/
 
   return ((alkind)n);
@@ -40,7 +43,8 @@ alkind alkind_fromInt (int n)
 nstate nstate_fromInt (int n)
 {
   /*@+enumint@*/
-  llassert (n >= NS_ERROR && n <= NS_ABSNULL);
+  llassertprint (n >= NS_ERROR && n <= NS_ABSNULL,
+		 ("Bad null state: %d", n));
   /*@=enumint@*/
 
   return ((nstate)n);
@@ -125,6 +129,8 @@ cstring nstate_unparse (nstate n)
     case NS_CONSTNULL: return cstring_makeLiteralTemp ("null");
     }
 
+  /*@notreached@*/ llcontbuglit ("bad null state!");
+  /*@notreached@*/ return cstring_makeLiteralTemp ("!!! bad null state !!!");
   BADEXIT;
 }
 
@@ -157,6 +163,8 @@ alkind alkind_derive (alkind outer, alkind inner)
     case AK_IMPDEPENDENT:
     case AK_DEPENDENT:
       if (inner == AK_SHARED) return AK_SHARED;
+      else if (outer == AK_DEPENDENT) return AK_IMPDEPENDENT;
+      else if (outer == AK_ONLY) return AK_IMPONLY;
       else return outer;
       /* not so sure about these? */
     case AK_REFCOUNTED:
@@ -300,11 +308,14 @@ cstring alkind_capName (alkind a)
 exkind
 exkind_fromQual (qual q)
 {
-  if (qual_isExposed (q))     return XO_EXPOSED;
-  if (qual_isObserver (q))    return XO_OBSERVER;
-  else
+  if (qual_isExposed (q)) {
+    return XO_EXPOSED;
+  } else if (qual_isObserver (q)) {
+    return XO_OBSERVER;
+  } else
     {
-      llcontbug (message ("exkind_fromQual: not exp qualifier: %d" , (int)q));
+      llcontbug (message ("exkind_fromQual: not exp qualifier: %s" , 
+			  qual_unparse (q)));
       return XO_UNKNOWN;
     }
 }
@@ -321,9 +332,8 @@ sstate_fromQual (qual q)
   else if (qual_isSpecial (q)) return SS_SPECIAL;
   else
     {
-      llcontbug (message ("sstate_fromQual: not alias qualifier: %s (%d)" , 
-			  qual_unparse (q),
-			  (int)q));
+      llcontbug (message ("sstate_fromQual: not alias qualifier: %s", 
+			  qual_unparse (q)));
       return SS_UNKNOWN;
     }
 }
@@ -362,7 +372,7 @@ alkind_fromQual (qual q)
   if (qual_isOwned (q))      return AK_OWNED;
   if (qual_isDependent (q))  return AK_DEPENDENT;
 
-  llcontbug (message ("alkind_fromQual: not alias qualifier: %d" , (int)q));
+  llcontbug (message ("alkind_fromQual: not alias qualifier: %s", qual_unparse (q)));
   return AK_ERROR;
 }    
 

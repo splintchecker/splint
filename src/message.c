@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -49,8 +49,7 @@ typedef enum
 ** advances *c to next character.
 */
 
-static ccode
-  identify_control (char **s)
+static ccode identify_control (char **s)
 {
   char c;
 
@@ -64,7 +63,7 @@ static ccode
 
   if (c >= '0' && c <= '9')
     {
-      modcode = getInt (s);
+      modcode = reader_getInt (s);
     }
 
   c = **s;
@@ -102,7 +101,7 @@ static ccode
       return (XCTYPE);
     case 'l':
       return (XFILELOC);
-    case 'p':
+    case '&':
       return (XPLURAL);
     case 'r':
       return (XREPREFIX);

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -62,11 +62,13 @@ static bool osd_executableFileExists (char *);
 static bool nextdir (char **p_current_dir, /*@out@*/ char **p_dir, 
 		     /*@out@*/ size_t *p_len);
 
-extern char *LSLRootName (char *filespec)
+extern cstring LSLRootName (cstring filespec)
 {
+  /*@access cstring@*/
   char *result, *startName, *tail;
   size_t nameLength;
 
+  llassert (cstring_isDefined (filespec));
   tail = strrchr (filespec, CONNECTCHAR);
   startName = (tail == NULL ? filespec : &tail[1]);
   tail = strrchr (startName, '.');
@@ -76,11 +78,13 @@ extern char *LSLRootName (char *filespec)
   strncpy (result, startName, nameLength);
   result[(int) nameLength] = '\0';
   return result;
+  /*@noaccess cstring@*/
 }
 
-extern /*@observer@*/ char *
-osd_getEnvironment (char *env, /*@returned@*/ char *def)
+extern /*@observer@*/ cstring
+osd_getEnvironment (cstring env, /*@returned@*/ cstring def)
 {
+  /*@access cstring@*/
   char *ret = osd_getEnvironmentVariable (env);
 
   if (ret == NULL)
@@ -91,6 +95,7 @@ osd_getEnvironment (char *env, /*@returned@*/ char *def)
     {
       return ret;
     }
+  /*@noaccess cstring@*/
 }
 
 
@@ -128,43 +133,47 @@ osd_getEnvironment (char *env, /*@returned@*/ char *def)
 **--
 */
 
-extern /*@null@*/ /*@observer@*/ char *
-  osd_getHomeDir ()
+extern /*@observer@*/ cstring osd_getHomeDir ()
 {
   /* Would something different be better for windows? */
-  return (osd_getEnvironmentVariable ("HOME"));
+  return (osd_getEnvironmentVariable (cstring_makeLiteralTemp ("HOME")));
 }
 
-filestatus osd_findOnLarchPath (char *file, char **returnPath)
+filestatus osd_findOnLarchPath (cstring file, cstring *returnPath)
 {
-  return (osd_getPath (cstring_toCharsSafe (context_getLarchPath ()), file, returnPath));
+  return (osd_getPath (context_getLarchPath (), file, returnPath));
 }
 
 extern filestatus
-osd_getPath (char *path, char *file, char **returnPath)
+osd_getPath (cstring path, cstring file, cstring *returnPath)
 {
   char *fullPath;
   char *dirPtr;
   size_t dirLen;
   char aPath[MAXPATHLEN];
   filestatus rVal = OSD_FILENOTFOUND;	/* assume file not found. */
-
+  
+  /*@access cstring@*/
+  
   fullPath = path;
-
-  if (fullPath == NULL || 
+  llassert (cstring_isDefined (file));
+  
+  if (fullPath == NULL 
+      || 
 # if defined(OS2) || defined(MSDOS) || defined(WIN32)
-    /* under OS/2 and MSDOS the includePath may be empty, if so, search 
-     * the current directory. */
-    *fullPath == '\0' || 
-    (*file == CONNECTCHAR || (file[0] != '\0' && file[1] == ':')))
+      /* under OS/2 and MSDOS the includePath may be empty, if so, search 
+       * the current directory. */
+      *fullPath == '\0' || 
+      (*file == CONNECTCHAR || (file[0] != '\0' && file[1] == ':'))
 # else
-     (*file == CONNECTCHAR))
+    (*file == CONNECTCHAR)
 # endif
+      )
     {
-     /* No path specified. Look for it in the current directory.	    */
-
+      /* No path specified. Look for it in the current directory.	    */
+      
       strcpy (&aPath[0], file);
-
+      
       if (osd_fileExists (&aPath[0]))
 	{
 	  rVal = OSD_FILEFOUND;
@@ -174,20 +183,20 @@ osd_getPath (char *path, char *file, char **returnPath)
     }
   else
     {
-     /* Path specified. Loop through directories in path looking for the */
-     /* first occurrence of the file.				    */
-
+      /* Path specified. Loop through directories in path looking for the */
+      /* first occurrence of the file.				    */
+      
       while (nextdir (&fullPath, &dirPtr, &dirLen) &&
 	     rVal == OSD_FILENOTFOUND)
 	{
 	  if ((dirLen + strlen (file) + 2) <= MAXPATHLEN)
 	    {
-	     /* Cat directory and filename, and see if file exists.  */
+	      /* Cat directory and filename, and see if file exists.  */
 	      strncpy (&aPath[0], dirPtr, dirLen);
 	      strcpy (&aPath[0] + dirLen, "");	/* Null terminate aPath. */
 	      strcat (&aPath[0], CONNECTSTR);
 	      strcat (&aPath[0], file);
-
+	      
 	      if (osd_fileExists (&aPath[0]))
 		{
 		  rVal = OSD_FILEFOUND;
@@ -201,27 +210,29 @@ osd_getPath (char *path, char *file, char **returnPath)
 	    }
 	}	
     }
-
+  
   return rVal;
+  /*@noaccess cstring@*/
 }
 
 extern filestatus
-osd_getExePath (char *path, char *file, char **returnPath)
+osd_getExePath (cstring path, cstring file, cstring *returnPath)
 {
   char *fullPath;
   char *dirPtr;
   size_t dirLen;
   char aPath[MAXPATHLEN];
   filestatus rVal = OSD_FILENOTFOUND;	/* assume file not found. */
+  /*@access cstring@*/ 
   
   fullPath = osd_getEnvironmentVariable (path);
-
+  
   if (fullPath == NULL)
     {
-     /* No path specified. Look for it in the current directory. */
-
+      /* No path specified. Look for it in the current directory. */
+      llassert (cstring_isDefined (file));
       strcpy (&aPath[0], file);
-
+      
       if (osd_fileExists (&aPath[0]))
 	{
 	  rVal = OSD_FILEFOUND;
@@ -239,7 +250,9 @@ osd_getExePath (char *path, char *file, char **returnPath)
       while (nextdir (&fullPath, &dirPtr, &dirLen) &&
 	     rVal == OSD_FILENOTFOUND)
 	{
-	  if ((dirLen + strlen (file) + 2) <= MAXPATHLEN)
+	  llassert (cstring_isDefined (file));
+
+	  if ((dirLen + cstring_length (file) + 2) <= MAXPATHLEN)
 	    {
 	      /* Cat directory and filename, and see if file exists.  */
 	      strncpy (&aPath[0], dirPtr, dirLen);
@@ -262,26 +275,28 @@ osd_getExePath (char *path, char *file, char **returnPath)
     }
 
   return rVal;
+  /*@noaccess cstring@*/
 }
 
 bool
-osd_fileExists (char *filespec)
+osd_fileExists (cstring filespec)
 {
 # ifdef UNIX
   struct stat buf;
-  return (stat (filespec, &buf) == 0);
+  return (stat (cstring_toCharsSafe (filespec), &buf) == 0);
 # else
 # if defined (WIN32) || defined (OS2)
-  FILE *test = fopen (filespec, "r");
+  FILE *test = fopen (cstring_toCharsSafe (filespec), "r");
+  
   if (test != NULL) 
-  {
-	(void) fclose (test);
-	return TRUE;
-  } 
+    {
+      (void) fclose (test);
+      return TRUE;
+    } 
   else
-  { 
-	  return FALSE;
-  }
+    { 
+      return FALSE;
+    }
 # else 
   return FALSE;
 # endif
@@ -389,20 +404,21 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
   return TRUE;
 }
 
-/*@observer@*/ /*@null@*/ char *osd_getEnvironmentVariable (char *var)
+/*@observer@*/ /*@null@*/ cstring osd_getEnvironmentVariable (cstring var)
 {
-# ifdef UNIX
-	return getenv (var);
+# if defined(UNIX) || defined(OS) || defined(MSDOS) || defined(WIN32)
+  char *val = getenv (cstring_toCharsSafe (var));
+
+  if (val == NULL) 
+    {
+      return cstring_undefined;      
+    } 
+  else 
+    {
+      return cstring_makeLiteralTemp (val);
+    }
 # else
-# if defined(OS2) || defined(MSDOS)
-	return getenv (var);
-# else
-# if defined(WIN32)
-	return getenv (var);
-# else
-	return NULL;
-# endif
-# endif
+  return cstring_undefined;
 # endif
 }
 
@@ -415,7 +431,7 @@ extern /*@external@*/ int _flushall (void) /*@modifies fileSystem@*/ ;
 # ifndef system
 extern /*@external@*/ int system (const char *) /*@modifies fileSystem@*/ ;
 # endif
-int osd_system (const char *cmd)
+int osd_system (cstring cmd)
 {
   int res;
     /* system ("printenv"); */
@@ -423,7 +439,7 @@ int osd_system (const char *cmd)
   (void) _flushall (); 
 # endif
 
-  res = system (cmd);
+  res = system (cstring_toCharsSafe (cmd));
   return res;
 }
 # endif
@@ -434,16 +450,16 @@ extern /*@external@*/ int unlink (const char *) /*@modifies fileSystem@*/ ;
 /*@=redecl@*/
 # endif
 
-int osd_unlink (const char *fname)
+int osd_unlink (cstring fname)
 {
   int res;
 
-  res = unlink (fname);
+  res = unlink (cstring_toCharsSafe (fname));
 
   if (res != 0)
     {
       llcontbug (message ("Cannot remove temporary file: %s (%s)",
-			  cstring_fromChars (fname),
+			  fname,
 			  cstring_fromChars (strerror (errno))));
     }
   
@@ -466,14 +482,16 @@ osd_getPid ()
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   int pid = _getpid ();
 # else
-   pid_t pid = getpid ();
+  pid_t pid = getpid ();
 # endif
 
   return (int) pid;
 }
   
-cstring osd_fixDefine (char *x)
+cstring osd_fixDefine (cstring x)
 {
+  /*@access cstring@*/
+  llassert (cstring_isDefined (x));
 # ifdef UNIX
   if (strchr (x, '\'') != NULL) {
     /*
@@ -507,12 +525,13 @@ cstring osd_fixDefine (char *x)
 
 # endif
 
-  return cstring_fromCharsNew (x);
+  return cstring_copy (x);
+  /*@noaccess cstring@*/
 }
 
-bool osd_fileIsReadable (char *f)
+bool osd_fileIsReadable (cstring f)
 {
-  FILE *fl = fopen (f, "r");
+  FILE *fl = fopen (cstring_toCharsSafe (f), "r");
 
   if (fl != (FILE *) 0)
     {

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -131,7 +131,6 @@ static bool matchPrefix (cstring name, cstring prefix)
 	    {
 	      n++;
 
-	      
 	      while (n <= namelen)
 		{
 		  nc = (int) cstring_getChar (name, n);
@@ -140,6 +139,7 @@ static bool matchPrefix (cstring name, cstring prefix)
 		    {
 		      return FALSE;
 		    }
+
 		  n++;
 		}
 
@@ -149,7 +149,8 @@ static bool matchPrefix (cstring name, cstring prefix)
 	    {
 	      if (n > namelen)
 		{
-		  if ((cstring_length (prefix) >= n + 1)
+		  if (namelen > 1
+		      && (cstring_length (prefix) >= n + 1)
 		      && cstring_getChar (prefix, n + 1) == '*')
 		    {
 		      return TRUE;
@@ -238,7 +239,7 @@ namespaceName (flagcode flag) /*@*/
     }
 }
 
-void 
+void
 checkPrefix (uentry ue)
 {
   cstring name = cstring_undefined;
@@ -264,7 +265,7 @@ checkPrefix (uentry ue)
     {
       flag = FLG_FILESTATICPREFIX;
     }
-  else if (uentry_isGlobal (ue))
+  else if (uentry_isGlobalVariable (ue))
     {
       flag = FLG_GLOBPREFIX;
     }
@@ -335,8 +336,7 @@ checkPrefix (uentry ue)
 
   if (context_getFlag (flag))
     {
-      name = uentry_getName (ue);
-      
+      name = uentry_observeRealName (ue);
       
       if (!matchPrefix (name, context_getString (flag)))
 	{
@@ -413,7 +413,7 @@ checkPrefix (uentry ue)
 		{
 		  if (cstring_isUndefined (name))
 		    {
-		      name = uentry_getName (ue);
+		      name = uentry_observeRealName (ue);
 		    }
 		  
 		  if (matchPrefix (name, context_getString (rcode)))
@@ -439,8 +439,6 @@ checkPrefix (uentry ue)
 	    }
 	} 
     } end_excludeFlagCodes ;
-
-  cstring_free (name);
 }
 
 static void
@@ -468,7 +466,7 @@ checkNationalName (uentry ue)
     }
   else if (uentry_isVariable (ue))
     {
-      if (uentry_isGlobal (ue) && context_getFlag (FLG_GLOBPREFIX))
+      if (uentry_isGlobalVariable (ue) && context_getFlag (FLG_GLOBPREFIX))
 	{
 	  /* prefix checks supercede national naming checks */
 	  return;
@@ -480,7 +478,7 @@ checkNationalName (uentry ue)
     }
   else if (uentry_isConstant (ue))
     {
-      if (uentry_isGlobal (ue) && context_getFlag (FLG_CONSTPREFIX))
+      if (uentry_isGlobalVariable (ue) && context_getFlag (FLG_CONSTPREFIX))
 	{
 	  /* prefix checks supercede national naming checks */
 	  return;
@@ -1095,7 +1093,7 @@ static bool checkSlovakName (uentry ue, flagcode slovakflag, bool report)
 }
 
 void
-checkGlobalName (uentry ue)
+checkExternalName (uentry ue)
 {
   if (!uentry_isStatic (ue) && uentry_hasName (ue))
     {
@@ -1110,7 +1108,23 @@ checkGlobalName (uentry ue)
 void
 checkLocalName (/*@unused@*/ uentry ue)
 {
-  ;
+  /*
+  ** No local checks (yet)
+  */
+
+  return;
+}
+
+void
+checkFileScopeName (/*@unused@*/ uentry ue)
+{
+  /*
+  ** No file scope checks (yet)
+  */
+
+  /*@i423 add a file scope naming convention policy? */
+
+  return;
 }
 
 /*
@@ -1126,8 +1140,11 @@ checkLocalName (/*@unused@*/ uentry ue)
 /*@constant int NCPPNAMES@*/
 # define NCPPNAMES 39
 
-bool checkCppName (cstring name, fileloc loc)
+void
+checkCppName (uentry ue)
 {
+  cstring name = uentry_observeRealName (ue);
+
   static ob_mstring cppNames[NCPPNAMES] =
     {
       "and", "and_eq", "asm", 
@@ -1146,20 +1163,22 @@ bool checkCppName (cstring name, fileloc loc)
   if (cstring_isDefined (cstring_bsearch (name, &cppNames[0],
 					  NCPPNAMES)))
     {
-      return (optgenerror
-	      (FLG_CPPNAMES,
-	       message ("Name %s is a keyword or reserved word in C++",
-			name),
-	       loc));
+      if (optgenerror
+	  (FLG_CPPNAMES,
+	   message ("Name %s is a keyword or reserved word in C++",
+		    name),
+	   uentry_whereLast (ue)))
+	{
+	  uentry_setHasNameError (ue);
+	}
     }
-
-  return FALSE;
 }
 
-bool
-checkAnsiName (cstring name, fileloc loc)
+void
+checkAnsiName (uentry ue)
 {
   bool hasError = FALSE;
+  cstring name = uentry_observeRealName (ue);
   int length = cstring_length (name);
   char fchar = (length >= 1) ? cstring_firstChar (name) : '\0';
   char schar = (length >= 2) ? cstring_secondChar (name) : '\0';
@@ -1178,12 +1197,11 @@ checkAnsiName (cstring name, fileloc loc)
 # include "reservedNames.nf"
     } ;
 
-  if (fileloc_isSystemFile (loc) || fileloc_isBuiltin (loc))
-    {
-      return FALSE;  /* no errors for system files */
-    }
-
 # if 0
+  /*
+  ** This code is for checking reservedNames.nf
+  */
+
   {
     int i = 0;
     char *lastname = NULL;
@@ -1201,26 +1219,56 @@ checkAnsiName (cstring name, fileloc loc)
     nreservedNames = i - 1;
   }
 # endif
+
+  if (fileloc_isSystemFile (uentry_whereLast (ue)) || fileloc_isBuiltin (uentry_whereLast (ue)))
+    {
+      return;  /* no errors for system files */
+    }
   
   if (cstring_isDefined (cstring_bsearch (name, &reservedNames[0],
 					  NRESERVEDNAMES)))
     {
-      return (optgenerror
-	      (FLG_ANSIRESERVED,
-	       message ("Name %s is reserved for the standard library",
-			name),
-	       loc));
+      hasError |= optgenerror
+	(FLG_ANSIRESERVED,
+	 message ("Name %s is reserved for the standard library",
+		  name),
+	 uentry_whereLast (ue));
     }
 
-  if (fchar == '_')
+  if (uentry_isFileStatic (ue) || uentry_isVisibleExternally (ue) || uentry_isAnyTag (ue)
+      || context_getFlag (FLG_ANSIRESERVEDLOCAL))
     {
-      hasError = optgenerror
-	(FLG_ANSIRESERVED,
-	 message 
-	 ("Name %s is in the implementation name space (any identifier "
-	  "beginning with underscore)", 
-	  name),
-	 loc);
+      if (fchar == '_')
+	{
+	  hasError |= optgenerror
+	    (FLG_ANSIRESERVED,
+	     message 
+	     ("Name %s is in the implementation name space (any identifier "
+	      "beginning with underscore)", 
+	      name),
+	     uentry_whereLast (ue));
+	}
+    }
+  else
+    {
+      /*
+      ** ISO 7.1.3:
+      ** - All identifiers that begin with an underscore and either an uppercase
+      ** letter or another underscore are always reserved for any use.
+      */
+      
+      if (fchar == '_' 
+	  && (schar == '_' || isupper ((int) schar)))
+	{
+	  hasError |= optgenerror
+	    (FLG_ANSIRESERVED,
+	     message 
+	     ("Name %s is in the implementation name space (any identifier "
+	      "beginning with underscore and either an uppercase letter or "
+	      "another underscore is always reserved for any use)", 
+	      name),
+	     uentry_whereLast (ue));
+	}
     }
 
   /*
@@ -1228,181 +1276,215 @@ checkAnsiName (cstring name, fileloc loc)
   **
   ** Macros that begin with E and a digit or E and an uppercase letter ...
   */
-
-  else if (fchar == 'E' && (isdigit ((int) schar) 
-			    || isupper ((int) schar)))
+  
+  if (fchar == 'E' && (isdigit ((int) schar) 
+		       || isupper ((int) schar)))
     {
-      hasError = optgenerror
+      hasError |= optgenerror
 	(FLG_ANSIRESERVED,
 	 message 
 	 ("Name %s is reserved for future ANSI library extensions. "
 	  "Macros beginning with E and a digit or uppercase letter "
 	  "may be added to <errno.h>. (See ANSI, Section 4.13.1)",
 	  name),
-	 loc);
+	 uentry_whereLast (ue));
     }
-  
-  /*
-  ** 4.13.2 Character Handling <ctype.h>
-  **
-  ** Function names that begin with either "is" or "to" and a lowercase letter ...
-  */
 
-  else if (((fchar == 'i' && schar == 's') 
-	    || (fchar == 't' && schar == 'o'))
-	   && (islower ((int) tchar)))
-    {
-      hasError = optgenerror
-	(FLG_ANSIRESERVED,
-	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
-	  "Functions beginning with \"is\" or \"to\" and a lowercase "
-	  "letter may be added to <ctype.h>. (See ANSI, Section 4.13.2)",
-	  name),
-	 loc);
-    }
-  
   /*
   ** 4.13.3 Localization <locale.h>
   **
   ** Macros that begin with LC_ and an uppercase letter ...
   */
-
-  else if (length >= 4 
-	   && ((fchar == 'L')
-	       && (schar == 'C')
-	       && (tchar == '_'))
-	   && (isupper ((int) rchar)))
+  
+  if (length >= 4 
+      && ((fchar == 'L')
+	  && (schar == 'C')
+	  && (tchar == '_'))
+      && (isupper ((int) rchar)))
     {
-      hasError = optgenerror
+      hasError |= optgenerror
 	(FLG_ANSIRESERVED,
 	 message
 	 ("Name %s is reserved for future ANSI library extensions.  "
 	  "Macros beginning with \"LC_\" and an uppercase letter may "
 	  "be added to <locale.h>. (See ANSI, Section 4.13.3)",
 	  name),
-	 loc);
+	 uentry_whereLast (ue));
     }
-  
-  /*
-  ** 4.13.4 Mathematics <math.h>
-  **
-  ** The names of all existing functions declared in the <math.h> header, 
-  ** suffixed with f or l...
-  */
 
-  else if ((cstring_lastChar (name) == 'f' || cstring_lastChar (name) == 'l')
-	   && 
-	   (((length == 4)
-	     && ((cstring_equalPrefix (name, "cos") ||
-		  cstring_equalPrefix (name, "sin") ||
-		  cstring_equalPrefix (name, "tan") ||
-		  cstring_equalPrefix (name, "exp") ||
-		  cstring_equalPrefix (name, "log") ||
-		  cstring_equalPrefix (name, "pow"))))
-	    || ((length == 5)
-		&& ((cstring_equalPrefix (name, "acos") ||
-		     cstring_equalPrefix (name, "asin") ||
-		     cstring_equalPrefix (name, "atan") ||
-		     cstring_equalPrefix (name, "cosh") ||
-		     cstring_equalPrefix (name, "sinh") ||
-		     cstring_equalPrefix (name, "sqrt") ||
-		     cstring_equalPrefix (name, "ceil") ||
-		     cstring_equalPrefix (name, "fabs") ||
-		     cstring_equalPrefix (name, "fmod") ||
-		     cstring_equalPrefix (name, "tanh") ||
-		     cstring_equalPrefix (name, "modf"))))
-	    || ((length == 6)
-		&& ((cstring_equalPrefix (name, "atan2") ||
-		     cstring_equalPrefix (name, "floor") ||
-		     cstring_equalPrefix (name, "frexp") ||
-		     cstring_equalPrefix (name, "ldexp") ||
-		     cstring_equalPrefix (name, "log10"))))))
-    {
-      hasError = optgenerror
-	(FLG_ANSIRESERVED,
-	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
-	  "The names of all existing functions in <math.h> suffixed "
-	  "with 'f' or 'l' may be added to <math.h>. (See ANSI, Section 4.13.4)",
-	  name),
-	 loc);
-    }
-  
   /*
   ** 4.13.5 Signal Handling <signal.h>
   **
   ** Macros that begin with either SIG or SIG_ and an uppercase letter or...
   */
-
-  else if (fchar == 'S' && schar == 'I' && tchar == 'G'
+  
+  if (fchar == 'S' && schar == 'I' && tchar == 'G'
 	   && ((rchar == '_' && ((length >= 5 
 				  && isupper ((int) cstring_getChar (name, 5)))))
 	       || (isupper ((int) rchar))))
     {
-      hasError = optgenerror
+      hasError |= optgenerror
 	(FLG_ANSIRESERVED,
 	 message
 	 ("Name %s is reserved for future ANSI library extensions.  "
 	  "Macros that begin with SIG and an uppercase letter or SIG_ "
 	  "and an uppercase letter may be added to "
-	  "<signal.h>. (See ANSI, Section 4.13.5)",
+	  "<signal.h>. (See ISO99 7.14 or ANSI 4.13.5)",
 	  name),
-	 loc);
+	 uentry_whereLast (ue));
     }
-  
-  /*
-  ** 4.13.6 Input/Output <stdio.h>
-  **
-  ** (nothing to check)
-  */
 
-  /*
-  ** 4.13.7 General Utilities <stdlib.h>
-  **
-  ** Functions names that begin with str and a lowercase letter may be added to <stdlib.h>.
-  */
+  DPRINTF (("Here..."));
 
-  else if (fchar == 's' && schar == 't' && tchar == 'r' 
-	   && (islower ((int) rchar)))
+  if ((uentry_isVisibleExternally (ue) && !uentry_isAnyTag (ue))
+      || context_getFlag (FLG_ANSIRESERVEDLOCAL))
     {
-      hasError = optgenerror
-	(FLG_ANSIRESERVED,
-	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
-	  "Functions that begin with \"str\" and a lowercase letter "
-	  "may be added to <stdlib.h> or <string.h>. (See ANSI, Section 4.13.7)",
-	  name),
-	 loc);
-    }
-  
-  /*
-  ** 4.13.8 String Handling <string.h>
-  **
-  ** Function names that begin with str, mem, or wcs and a lowercase letter ...
-  **
-  ** (Note: already checked "str" above.)
-  */
+      flagcode flg;
 
-  else if (((fchar == 'm' && schar == 'e' && tchar == 'm')
-	    || (fchar == 'w' && schar == 'c' && tchar == 's'))
-	   && (islower ((int) rchar)))
-    {
-      hasError = optgenerror
-	(FLG_ANSIRESERVED,
-	 message
-	 ("Name %s is reserved for future ANSI library extensions.  "
-	  "Functions that begin with \"mem\" or \"wcs\" and a "
-	  "lowercase letter letter may be added to <string.h>. (See ANSI, Section 4.13.8)",
-	  name),
-	 loc);
+      DPRINTF (("Okay...: %s", uentry_unparse (ue)));
+
+      if (uentry_isVisibleExternally (ue) && !uentry_isAnyTag (ue))
+	{
+	  flg = FLG_ANSIRESERVED;
+	}
+      else
+	{
+	  flg = FLG_ANSIRESERVEDLOCAL;
+	}
+
+      /*
+      ** These restrictions only apply to identifiers with global linkage.
+      */
+
+      /*
+      ** 4.13.2 Character Handling <ctype.h>
+      **
+      ** Function names that begin with either "is" or "to" and a lowercase letter ...
+      */
+      
+      if (((fchar == 'i' && schar == 's') 
+	   || (fchar == 't' && schar == 'o'))
+	  && (islower ((int) tchar)))
+	{
+	  hasError |= optgenerror
+	    (flg,
+	     message
+	     ("Name %s is reserved for future ANSI library extensions.  "
+	      "Functions beginning with \"is\" or \"to\" and a lowercase "
+	      "letter may be added to <ctype.h>. (See ANSI, Section 4.13.2)",
+	      name),
+	     uentry_whereLast (ue));
+
+	  DPRINTF (("Externally visible: %s / %s",
+		    uentry_unparseFull (ue),
+		    bool_unparse (uentry_isVisibleExternally (ue))));
+	}
+      
+      
+      /*
+      ** 4.13.4 Mathematics <math.h>
+      **
+      ** The names of all existing functions declared in the <math.h> header, 
+      ** suffixed with f or l...
+      */
+
+      DPRINTF (("Check name: %s", name));
+
+      if ((cstring_lastChar (name) == 'f' || cstring_lastChar (name) == 'l')
+	  && 
+	  (((length == 4)
+	    && ((cstring_equalPrefix (name, "cos") ||
+		 cstring_equalPrefix (name, "sin") ||
+		 cstring_equalPrefix (name, "tan") ||
+		 cstring_equalPrefix (name, "exp") ||
+		 cstring_equalPrefix (name, "log") ||
+		 cstring_equalPrefix (name, "pow"))))
+	   || ((length == 5)
+	       && ((cstring_equalPrefix (name, "acos") ||
+		    cstring_equalPrefix (name, "asin") ||
+		    cstring_equalPrefix (name, "atan") ||
+		    cstring_equalPrefix (name, "cosh") ||
+		    cstring_equalPrefix (name, "sinh") ||
+		    cstring_equalPrefix (name, "sqrt") ||
+		    cstring_equalPrefix (name, "ceil") ||
+		    cstring_equalPrefix (name, "fabs") ||
+		    cstring_equalPrefix (name, "fmod") ||
+		    cstring_equalPrefix (name, "tanh") ||
+		    cstring_equalPrefix (name, "modf"))))
+	   || ((length == 6)
+	       && ((cstring_equalPrefix (name, "atan2") ||
+		    cstring_equalPrefix (name, "floor") ||
+		    cstring_equalPrefix (name, "frexp") ||
+		    cstring_equalPrefix (name, "ldexp") ||
+		    cstring_equalPrefix (name, "log10"))))))
+	{
+	  hasError |= optgenerror
+	    (flg,
+	     message
+	     ("Name %s is reserved for future ANSI library extensions.  "
+	      "The names of all existing functions in <math.h> suffixed "
+	      "with 'f' or 'l' may be added to <math.h>. (See ANSI, Section 4.13.4)",
+	      name),
+	     uentry_whereLast (ue));
+	}
+      
+      /*
+      ** 4.13.6 Input/Output <stdio.h>
+      **
+      ** (nothing to check)
+      */
+      
+      /*
+      ** 4.13.7 General Utilities <stdlib.h>
+      **
+      ** Functions names that begin with str and a lowercase letter may be added to <stdlib.h>.
+      */
+      
+      if (fchar == 's' && schar == 't' && tchar == 'r' 
+	  && (islower ((int) rchar)))
+	{
+	  hasError |= optgenerror
+	    (flg,
+	     message
+	     ("Name %s is reserved for future ANSI library extensions.  "
+	      "Functions that begin with \"str\" and a lowercase letter "
+	      "may be added to <stdlib.h> or <string.h>. (See ANSI, Section 4.13.7)",
+	      name),
+	     uentry_whereLast (ue));
+	}
+      
+      /*
+      ** 4.13.8 String Handling <string.h>
+      **
+      ** Function names that begin with str, mem, or wcs and a lowercase letter ...
+      **
+      ** (Note: already checked "str" above.)
+      */
+      
+      if (((fchar == 'm' && schar == 'e' && tchar == 'm')
+	   || (fchar == 'w' && schar == 'c' && tchar == 's'))
+	  && (islower ((int) rchar)))
+	{
+	  hasError |= optgenerror
+	    (flg,
+	     message
+	     ("Name %s is reserved for future ANSI library extensions.  "
+	      "Functions that begin with \"mem\" or \"wcs\" and a "
+	      "lowercase letter letter may be added to <string.h>. (See ANSI, Section 4.13.8)",
+	      name),
+	     uentry_whereLast (ue));
+	}
     }
   else
     {
-      ;
+      DPRINTF (("Not checked: [%s] %s", bool_unparse (uentry_isVisibleExternally (ue)),
+		uentry_unparseFull (ue)));
     }
 
-  return hasError;
+  if (hasError)
+    {
+      uentry_setHasNameError (ue);
+    }
 }
 
 void checkParamNames (uentry ue)
@@ -1433,7 +1515,7 @@ void checkParamNames (uentry ue)
 		}
 	      else
 		{
-		  cstring pname = uentry_getName (p);
+		  cstring pname = uentry_observeRealName (p);
 		  
 		  if (!cstring_equalPrefix (pname, cstring_toCharsSafe (fpfx)))
 		    {
@@ -1450,7 +1532,6 @@ void checkParamNames (uentry ue)
 			    }
 			}
 		    }
-		  cstring_free (pname);
 		}
 	    }
 	} end_uentryList_elements ;

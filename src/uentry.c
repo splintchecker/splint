@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -30,8 +30,6 @@
 # include "structNames.h"
 # include "nameChecks.h"
 
-/*@i223*/
-/*@-type*/
 static /*@dependent@*/ uentry posRedeclared = uentry_undefined;
 static /*@only@*/ fileloc posLoc = fileloc_undefined;
 static int nuentries = 0;
@@ -44,6 +42,12 @@ static bool uentry_isRefsField (uentry p_ue) /*@*/ ;
 static bool uentry_isReallySpecified (uentry p_e) /*@*/ ;
 static void uentry_checkIterArgs (uentry p_ue);
 static cstring uentry_dumpAux (uentry p_v, bool p_isParam);
+
+static void uentry_combineModifies (uentry p_ue, /*@owned@*/ sRefSet p_sr) 
+     /*@modifies p_ue@*/ ;
+
+static void uentry_addStateClause (uentry p_ue, /*@only@*/ stateClause p_sc)
+     /*@modifies p_ue@*/ ;
 
 /*@access ekind@*/
 static void checkAliasState (/*@notnull@*/ uentry p_old,
@@ -89,6 +93,7 @@ static /*@only@*/ /*@notnull@*/ uentry
 static /*@out@*/ /*@notnull@*/ uentry uentry_alloc (void) /*@*/ 
 {
   uentry ue = (uentry) dmalloc (sizeof (*ue));
+  ue->warn = warnClause_undefined; /*@i32@*/
   nuentries++;
   totuentries++;
   
@@ -297,7 +302,6 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind)
   nstate ns = sRef_getNullState (u->sref);
   sstate ss = sRef_getDefState (u->sref);
   bool recordUnknown = FALSE;
-
   
   if (kind == AN_UNKNOWN)
     {
@@ -332,7 +336,7 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind)
 	  
 	  if (ctype_isFunction (u->utype)
 	      && !hasRet
-	      && ctype_isVisiblySharable (ctype_realType (ctype_returnValue (u->utype))))
+	      && ctype_isVisiblySharable (ctype_realType (ctype_getReturnType (u->utype))))
 	    {
 	      recordUnknown = TRUE;
 	    }
@@ -397,15 +401,6 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind)
 	}
     }
   
-
-
-
-
-
-
-
-
-
   switch (ss)
     {
     case SS_ALLOCATED: tallyAnnot (kind, QU_OUT); break;
@@ -425,7 +420,7 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind)
     case AK_UNKNOWN:    
       if (ctype_isRefCounted (ctype_realType (u->utype))
 	  || (ctype_isFunction (u->utype) &&
-	      ctype_isRefCounted (ctype_realType (ctype_returnValue (u->utype)))))
+	      ctype_isRefCounted (ctype_realType (ctype_getReturnType (u->utype)))))
 	{
 	  ;
 	}
@@ -566,7 +561,7 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 	{
 	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
 	    {
-	      TPRINTF(( (message( "Function pointer %s not doing  uentry_makeVarFunction", uentry_unparse(ue) )) ));
+	      DPRINTF(( (message( "Function pointer %s not doing  uentry_getFcnPreconditions", uentry_unparse(ue) )) ));
 	      //  uentry_makeVarFunction (ue);
 	    }
 
@@ -575,7 +570,7 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
   //llassert ((ue->info->fcn->preconditions));
 	  if (!uentry_isFunction (ue))
 	    {
-	      DPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
+	      DPRINTF( (message ("called uentry_getFcnPreconditions on nonfunction %s",
 				  uentry_unparse (ue) ) ) );
 	      	  if (!uentry_isSpecified (ue) )
 		    {
@@ -588,7 +583,7 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 		  return constraintList_undefined;
 	    }
 
-	  if (ue->info->fcn->preconditions != NULL)
+	  if (constraintList_isDefined(ue->info->fcn->preconditions))
 	    {
 	   return constraintList_copy (ue->info->fcn->preconditions);
 	    }
@@ -605,6 +600,8 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 }
 
 
+
+
 /*drl
   12/28/2000
 */
@@ -612,31 +609,38 @@ constraintList uentry_getFcnPostconditions (uentry ue)
 {
   if (uentry_isValid (ue))
     {
+      DPRINTF( (message ("called uentry_getFcnPostconditions on  %s",
+				  uentry_unparse (ue) ) ) );
 	{
 	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
 	    {
-	      TPRINTF(( (message( "Function pointer %s not doing  uentry_makeVarFunction", uentry_unparse(ue) )) ));
-	      //uentry_makeVarFunction (ue);
-	    }
-
-	  //llassert (uentry_isFunction (ue));
-	  //llassert ((ue->info->fcn->preconditions));
-	  /* if (!uentry_isSpecified (ue) )
-	    {
-	      TPRINTF((message ("called uentry_getFcnPostconditions on nonfunction %s",
-				  uentry_unparse (ue) ) ));
-	      //    return constraintList_undefined;
-	      }*/
-	  
-	  if (!uentry_isFunction (ue))
-	    {
-	      /*llcontbug*/ DPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
+	      DPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
 				  uentry_unparse (ue) ) ) );
-	      return constraintList_undefined;
+	      if (!uentry_isFunction (ue) )
+		{
+		  DPRINTF((message ("called uentry_getFcnPostconditions on nonfunction %s",
+					uentry_unparse (ue) ) ));
+		      return constraintList_undefined;
+		    }
+	  
+
+		  return constraintList_undefined;
 	    }
 
-	  if (ue->info->fcn->postconditions != NULL)
+	  //  llassert (uentry_isFunction (ue));
+	  if (!uentry_isFunction(ue) )
 	    {
+	      
+	      DPRINTF( (message ("called uentry_getFcnPostconditions on non function  %s",
+				  uentry_unparse (ue) ) ) );
+	        return constraintList_undefined;
+
+	    }
+	  if (constraintList_isDefined(ue->info->fcn->postconditions) )
+	    {
+	      DPRINTF((message ("called uentry_getFcnPostconditions on %s and returned %q",
+				uentry_unparse (ue),
+				constraintList_print(ue->info->fcn->postconditions) ) ));
 	   return constraintList_copy (ue->info->fcn->postconditions);
 	    }
 	  else
@@ -857,24 +861,38 @@ static void reflectImplicitFunctionQualifiers (/*@notnull@*/ uentry ue, bool spe
 	  
 	  if (exkind_isKnown (ek))
 	    {
+	      DPRINTF (("Setting imp dependent: %s",
+			uentry_unparseFull (ue)));
 	      sRef_setAliasKind (ue->sref, AK_IMPDEPENDENT, fileloc_undefined);
 	    }
 	  else 
 	    {
 	      if (context_getFlag (spec ? FLG_SPECRETIMPONLY : FLG_RETIMPONLY))
 		{
+		  /* evans 2000-12-22 removed ctype_realType so it will
+		     not apply to immutable abstract types. */
+
 		  if (ctype_isVisiblySharable 
-		      (ctype_realType (ctype_returnValue (ue->utype))))
+		      (ctype_realType (ctype_getReturnType (ue->utype))))
 		    {
 		      if (uentryList_hasReturned (uentry_getParams (ue)))
 			{
 			  ;
 			}
-		      else
+		      else 
 			{
-			  sRef_setAliasKind (ue->sref, AK_IMPONLY, 
-					     fileloc_undefined);
-			  			}
+			  if (ctype_isImmutableAbstract (ctype_getReturnType (ue->utype))) 
+			    {
+			      ; /* Immutable objects are not shared. */
+			    }
+			  else
+			    {
+			      sRef_setAliasKind (ue->sref, AK_IMPONLY, 
+						 fileloc_undefined);
+			      DPRINTF (("Ret imp only: %s",
+					ctype_unparse (ctype_getReturnType (ue->utype))));
+			    }
+			}
 		    }
 		}
 	    }
@@ -886,16 +904,19 @@ static /*@notnull@*/ uentry
 uentry_makeFunctionAux (cstring n, ctype t, 
 			typeIdSet access,
 			/*@only@*/ globSet globs, 
-			/*@only@*/ sRefSet mods, 
+			/*@only@*/ sRefSet mods,
+			/*@only@*/ warnClause warn,
 			/*@keep@*/ fileloc f, bool priv,
 			/*@unused@*/ bool isForward)
 {
   uentry e = uentry_alloc ();
   ctype ret;
 
+  llassert (warnClause_isUndefined (warn)); /*@i325 remove parameter! */
+
   if (ctype_isFunction (t))
     {
-      ret = ctype_returnValue (t);
+      ret = ctype_getReturnType (t);
     }
   else
     {
@@ -937,6 +958,8 @@ uentry_makeFunctionAux (cstring n, ctype t,
   e->isPrivate = priv;
   e->hasNameError = FALSE;
 
+  e->warn = warn;
+
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->fcn = (ufinfo) dmalloc (sizeof (*e->info->fcn));
 
@@ -944,7 +967,7 @@ uentry_makeFunctionAux (cstring n, ctype t,
   e->info->fcn->hasGlobs = globSet_isDefined (globs);
 
   e->info->fcn->exitCode = XK_UNKNOWN;
-  e->info->fcn->nullPred = QU_UNKNOWN;
+  e->info->fcn->nullPred = qual_createUnknown ();
   e->info->fcn->specialCode = SPC_NONE;
 
   e->info->fcn->access = access;
@@ -971,16 +994,148 @@ uentry_makeFunctionAux (cstring n, ctype t,
   return (e);
 }
 
+static void uentry_reflectClauses (uentry ue, functionClauseList clauses)
+{
+  functionClauseList_elements (clauses, el)
+    {
+      DPRINTF (("Reflect clause: %s on %s",
+		functionClause_unparse (el), uentry_getName (ue)));
+      
+      if (functionClause_isNoMods (el))
+	{
+	  modifiesClause mel = functionClause_getModifies (el);
+	  
+	  if (uentry_hasGlobs (ue))
+	    {
+	      voptgenerror 
+		(FLG_SYNTAX,
+		 message
+		 ("No globals and modifies inconsistent to globals clause for %q: %q",
+		  uentry_getName (ue),
+		  globSet_unparse (uentry_getGlobs (ue))),
+		 modifiesClause_getLoc (mel));
+	      
+	    }
+
+	  if (uentry_hasMods (ue))
+	    {
+	      voptgenerror 
+		(FLG_SYNTAX,
+		 message
+		 ("No globals and modifies inconsistent to modifies clause for %q: %q",
+		  uentry_getName (ue),
+		  sRefSet_unparse (uentry_getMods (ue))),
+		 modifiesClause_getLoc (mel));
+	    }
+
+	  uentry_setGlobals (ue, globSet_undefined);
+	  uentry_setModifies (ue, sRefSet_undefined);
+	}
+      else if (functionClause_isGlobals (el))
+	{
+	  globalsClause glc = functionClause_getGlobals (el);
+	  
+	  DPRINTF (("Globals: %s / %s", uentry_unparse (ue),
+		    globalsClause_unparse (glc)));
+
+	  if (uentry_hasGlobs (ue))
+	    {
+	      voptgenerror 
+		(FLG_SYNTAX,
+		 message
+		 ("Multiple globals clauses for %q: %q",
+		  uentry_getName (ue),
+		  globalsClause_unparse (glc)),
+		 globalsClause_getLoc (glc));
+	      uentry_setGlobals (ue, globalsClause_takeGlobs (glc)); /*@i32@*/
+	    }
+	  else
+	    {
+	      uentry_setGlobals (ue, globalsClause_takeGlobs (glc));
+	    }
+	}
+      else if (functionClause_isModifies (el))
+	{
+	  modifiesClause mlc = functionClause_getModifies (el);
+
+	  DPRINTF (("Has modifies: %s", uentry_unparseFull (ue)));
+
+	  if (uentry_hasMods (ue))
+	    {
+	      /* 
+	      ** Not an error:
+
+	      if (optgenerror 
+		  (FLG_SYNTAX,
+		   message
+		   ("Multiple modifies clauses for %s: %s",
+		    uentry_getName (ue),
+		    modifiesClause_unparse (mlc)),
+		   modifiesClause_getLoc (mlc)))
+		{
+		  llhint (message ("Previous modifies clause: ", 
+				   sRefSet_unparse (uentry_getMods (ue))));
+		}
+
+	      **
+	      */
+
+	      uentry_combineModifies (ue, modifiesClause_takeMods (mlc)); /*@i32@*/
+	    }
+	  else
+	    {
+	      uentry_setModifies (ue, modifiesClause_takeMods (mlc));
+	    }
+	}
+      else if (functionClause_isState (el))
+	{
+	  stateClause sc = functionClause_takeState (el);
+	  uentry_addStateClause (ue, sc);
+	}
+      else if (functionClause_isWarn (el))
+	{
+	  warnClause wc = functionClause_takeWarn (el);
+	  uentry_addWarning (ue, wc);
+	}
+      else 
+	{
+	  DPRINTF (("Unhandled clause: %s", functionClause_unparse (el)));
+	}
+    } end_functionClauseList_elements ;
+
+  stateClauseList_checkAll (ue);
+}
+
 /*@notnull@*/ uentry uentry_makeIdFunction (idDecl id)
 {
+  bool leaveFunc = FALSE;
   uentry ue = 
     uentry_makeFunction (idDecl_observeId (id), idDecl_getCtype (id), 
 			 typeId_invalid, globSet_undefined, 
-			 sRefSet_undefined, 
+			 sRefSet_undefined, warnClause_undefined,
 			 setLocation ());
-  
+
+  /*
+  ** This makes parameters names print out correctly.
+  ** (But we might be a local variable declaration for a function type...)
+  */
+
+  if (context_inFunctionLike ())
+    {
+      DPRINTF (("Header: %s / %s",
+		uentry_unparse (context_getHeader ()),
+		idDecl_unparse (id)));
+    }
+  else
+    {
+      context_enterFunctionDeclaration (ue);
+      leaveFunc = TRUE;
+    }
+
   uentry_reflectQualifiers (ue, idDecl_getQuals (id));
   reflectImplicitFunctionQualifiers (ue, FALSE);
+
+  uentry_reflectClauses (ue, idDecl_getClauses (id));
 
   if (!uentry_isStatic (ue)
       && cstring_equalLit (ue->uname, "main"))
@@ -991,7 +1146,7 @@ uentry_makeFunctionAux (cstring n, ctype t,
 
       llassert (ctype_isFunction (typ));
 
-      retval = ctype_returnValue (typ);
+      retval = ctype_getReturnType (typ);
 
       if (!ctype_isInt (retval))
 	{
@@ -1015,7 +1170,7 @@ uentry_makeFunctionAux (cstring n, ctype t,
 	    {
 	      voptgenerror 
 		(FLG_MAINTYPE,
-		 message ("Function main declared with %d arg%p, "
+		 message ("Function main declared with %d arg%&, "
 			  "should have 2 (int argc, char *argv[])",
 			  uentryList_size (args)),
 		 uentry_whereLast (ue));
@@ -1057,6 +1212,11 @@ uentry_makeFunctionAux (cstring n, ctype t,
 	}
     }
 
+  if (leaveFunc)
+    {
+      context_exitFunctionDeclaration ();
+    }
+
   return ue;
 }
 
@@ -1071,6 +1231,7 @@ static void uentry_implicitParamAnnots (/*@notnull@*/ uentry e)
       
       if (exkind_isKnown (ek))
 	{
+	  DPRINTF (("imp dep: %s", uentry_unparseFull (e)));
 	  sRef_setAliasKind (e->sref, AK_IMPDEPENDENT, fileloc_undefined);
 	  sRef_setOrigAliasKind (e->sref, AK_IMPDEPENDENT);
 	}
@@ -1083,20 +1244,27 @@ static void uentry_implicitParamAnnots (/*@notnull@*/ uentry e)
 }
 
 static /*@only@*/ /*@notnull@*/ uentry 
-uentry_makeVariableParamAux (cstring n, ctype t, sRef s, sstate defstate)
+uentry_makeVariableParamAux (cstring n, ctype t, /*@dependent@*/ sRef s, sstate defstate) /*@i32 exposed*/
 {
   cstring pname = makeParam (n);
-  uentry e = uentry_makeVariableAux (pname, t, setLocation (), s, FALSE, VKPARAM);
+  uentry e;
+
+  DPRINTF (("Sref: %s", sRef_unparseFull (s)));
+  e = uentry_makeVariableAux (pname, t, setLocation (), s, FALSE, VKPARAM);
 
   cstring_free (pname);
+  DPRINTF (("Param: %s", uentry_unparseFull (e)));
   uentry_implicitParamAnnots (e);
+  DPRINTF (("Param: %s", uentry_unparseFull (e)));
 
   if (!sRef_isAllocated (e->sref) && !sRef_isPartial (e->sref))
     {
+      DPRINTF (("Param: %s", uentry_unparseFull (e)));
       sRef_setDefState (e->sref, defstate, uentry_whereDeclared (e));
       e->info->var->defstate = defstate;
     }
 
+  DPRINTF (("Param: %s", uentry_unparseFull (e)));
   return (e);
 }
 
@@ -1181,7 +1349,7 @@ void checkGlobalsModifies (/*@notnull@*/ uentry ue, sRefSet sr)
     {
       sRef base = sRef_getRootBase (el);
       
-      if (sRef_isGlobal (base) || sRef_isInternalState (base)
+      if (sRef_isFileOrGlobalScope (base) || sRef_isInternalState (base)
 	  || (sRef_isKindSpecial (base) && !sRef_isNothing (base)))
 	{
 	  if (!globSet_member (ue->info->fcn->globs, base))
@@ -1214,7 +1382,7 @@ void checkGlobalsModifies (/*@notnull@*/ uentry ue, sRefSet sr)
 }
 
 uentry
-uentry_makeVariableSrefParam (cstring n, ctype t, sRef s)
+uentry_makeVariableSrefParam (cstring n, ctype t, /*@exposed@*/ sRef s)
 {
   return (uentry_makeVariableParamAux (n, t, s, SS_UNKNOWN));
 }
@@ -1244,13 +1412,27 @@ uentry_fixupSref (uentry ue)
     }
 }
 
-void uentry_setSpecialClauses (uentry ue, specialClauses clauses)
+static void uentry_addStateClause (uentry ue, stateClause sc)
+{
+  /*
+  ** Okay to allow multiple clauses of the same kind.
+  */ /*@i834 is this true?@*/
+
+  ue->info->fcn->specclauses = 
+    stateClauseList_add (ue->info->fcn->specclauses, sc);
+
+  /* Will call checkAll to check later... */
+}
+
+void uentry_setStateClauseList (uentry ue, stateClauseList clauses)
 {
   llassert (uentry_isFunction (ue));
-  llassert (!specialClauses_isDefined (ue->info->fcn->specclauses));
+  llassert (!stateClauseList_isDefined (ue->info->fcn->specclauses));
 
+  DPRINTF (("checked clauses: %s", stateClauseList_unparse (clauses)));
   ue->info->fcn->specclauses = clauses;
-  specialClauses_checkAll (ue);
+  stateClauseList_checkAll (ue);
+  DPRINTF (("checked clauses: %s", uentry_unparseFull (ue)));
 }
 
 /*
@@ -1267,22 +1449,30 @@ void uentry_setSpecialClauses (uentry ue, specialClauses clauses)
 ** If it doesn't have modifies, set them to sr.
 */
 
-void
-uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
+static bool
+uentry_checkModifiesContext (void) 
 {
   if (sRef_modInFunction ())
     {
       llparseerror
-	(message ("Modifies list not in function context.  "
-		  "A modifies list can only appear following the parameter list "
-		  "in a function declaration or header."));
-
-      /*@-mustfree@*/ return; /*@=mustfree@*/ 
+	(message
+	 ("Modifies list not in function context.  "
+	  "A modifies list can only appear following the parameter list "
+	  "in a function declaration or header."));
+      
+      return FALSE;
     }
+  
+  return TRUE;
+}
 
-  if (sRefSet_hasStatic (sr))
+void
+uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
+{
+  if (!uentry_checkModifiesContext ())
     {
-      context_recordFileModifies (sr);
+      sRefSet_free (sr);
+      return;
     }
 
   if (uentry_isValid (ue))
@@ -1312,11 +1502,67 @@ uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
 	{
 	  ue->info->fcn->hasGlobs = TRUE;
 	}
+
+      if (sRefSet_hasStatic (ue->info->fcn->mods))
+	{
+	  context_recordFileModifies (ue->info->fcn->mods);
+	}
     }
   else
     {
       sRefSet_free (sr);
     }
+}
+
+static void
+uentry_combineModifies (uentry ue, /*@owned@*/ sRefSet sr)
+{
+  /* 
+  ** Function already has one modifies clause (possibly from
+  ** a specification).
+  */
+
+  if (!uentry_checkModifiesContext ())
+    {
+      BADBRANCH;
+    }
+  
+  llassert (uentry_isValid (ue));
+
+  if (uentry_isIter (ue))
+    {
+      ue->info->iter->mods = sRefSet_unionFree (ue->info->iter->mods, sr);
+    }
+  else
+    {
+      llassertfatal (uentry_isFunction (ue));
+      llassert (ue->info->fcn->hasMods);
+      
+      checkGlobalsModifies (ue, sr);
+      ue->info->fcn->mods = sRefSet_unionFree (ue->info->fcn->mods, sr);
+      
+      if (context_getFlag (FLG_MODIFIESIMPNOGLOBALS))
+	{
+	  ue->info->fcn->hasGlobs = TRUE;
+	}
+    }
+
+  if (sRefSet_hasStatic (ue->info->fcn->mods))
+    {
+      context_recordFileModifies (ue->info->fcn->mods);
+    }
+}
+
+bool uentry_hasWarning (uentry ue)
+{
+  return (uentry_isValid (ue)
+	  && warnClause_isDefined (ue->warn));
+}
+
+void uentry_addWarning (uentry ue, /*@only@*/ warnClause warn)
+{
+  llassert (warnClause_isUndefined (ue->warn));
+  ue->warn = warn;
 }
 
 void
@@ -1343,7 +1589,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions)
 	  llassertfatal (uentry_isFunction (ue));
 	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
 	
-	  if ((ue->info->fcn->preconditions) != NULL )
+	  if (constraintList_isDefined(ue->info->fcn->preconditions) )
 	    {
 	      constraintList_free(ue->info->fcn->preconditions);
 	      ue->info->fcn->preconditions = preconditions;
@@ -1387,7 +1633,7 @@ uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions)
 	  llassertfatal (uentry_isFunction (ue));
 	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
 
-	  if ((ue->info->fcn->postconditions ) == NULL)
+	  if (constraintList_isUndefined(ue->info->fcn->postconditions) )
 	    	  ue->info->fcn->postconditions = postconditions;
 	  else
 	    {
@@ -1566,8 +1812,8 @@ checkGlobalsConformance (/*@notnull@*/ uentry old,
 	    }
 	}
       
-      unew->info->fcn->globs = globSet_copy (unew->info->fcn->globs, 
-					    old->info->fcn->globs);
+      unew->info->fcn->globs = globSet_copyInto (unew->info->fcn->globs, 
+						 old->info->fcn->globs);
     }
 }
 
@@ -1728,6 +1974,8 @@ static void
 
   if (!ctype_isRealPointer (ct) && !ctype_isRealAbstract (ct))
     {
+      DPRINTF (("Check mutable: %s", uentry_unparseFull (ue)));
+
       voptgenerror (FLG_MUTREP,
 		    message ("Mutable abstract type %q declared without pointer "
 			     "indirection: %t (violates assignment semantics)",
@@ -1814,12 +2062,13 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
     {
       if (!uentry_isRefCounted (ue))
 	{
-	  llerror 
-	    (FLG_SYNTAX, 
+	  voptgenerror
+	    (FLG_ANNOTATIONERROR,
 	     message ("Reference counting qualifier %s used on non-reference "
 		      "counted storage: %q",
 		      qual_unparse (qel), 
-		      uentry_unparse (ue)));
+		      uentry_unparse (ue)),
+	     uentry_whereLast (ue));
 	}
       else
 	{
@@ -1846,13 +2095,14 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 		{
 		  if (uentry_isValid (refs))
 		    {
-		      llerror 
-			(FLG_SYNTAX, 
+		      voptgenerror
+			(FLG_ANNOTATIONERROR, 
 			 message ("Reference counted structure type %s has "
 				  "multiple refs fields: %q and %q",
 				  ctype_unparse (ct),
 				  uentry_getName (refs),
-				  uentry_getName (field)));
+				  uentry_getName (field)),
+			 uentry_whereLast (field));
 		    }
 		  
 		  refs = field;
@@ -1873,11 +2123,12 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	    }
 	  else if (!ctype_isInt (uentry_getType (refs)))
 	    {
-	      llerror 
-		(FLG_SYNTAX, 
+	      voptgenerror
+		(FLG_ANNOTATIONERROR, 
 		 message ("Reference counted structure type %s refs field has "
 			  "type %s (should be int)", ctype_unparse (ct),
-			  ctype_unparse (uentry_getType (refs))));
+			  ctype_unparse (uentry_getType (refs))),
+		 uentry_whereLast (refs));
 	    }
 	  else
 	    {
@@ -1896,11 +2147,12 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	    }
 	  else
 	    {
-	      llerror 
-		(FLG_SYNTAX, 
+	      voptgenerror
+		(FLG_ANNOTATIONERROR, 
 		 message ("Non-pointer to structure type %s declared with "
 			  "refcounted qualifier",
-			  ctype_unparse (ct)));
+			  ctype_unparse (ct)),
+		 uentry_whereLast (ue));
 	    }
 	}
     }
@@ -1912,10 +2164,11 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	}
       else
 	{
-	  llerror 
-	    (FLG_SYNTAX, 
+	  voptgenerror 
+	    (FLG_ANNOTATIONERROR,
 	     message ("Refs qualifier used on non-structure field: %q",
-		      uentry_unparse (ue)));
+		      uentry_unparse (ue)),
+	     uentry_whereLast (ue));
 	}
     }
   else if (qual_isAliasQual (qel))
@@ -1934,16 +2187,18 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
       
       if (uentry_isEitherConstant (ue))
 	{
-	  llerror 
-	    (FLG_SYNTAX, 
+	  voptgenerror 
+	    (FLG_ANNOTATIONERROR, 
 	     message ("Alias qualifier %s used on constant: %q",
-		      alkind_unparse (ak), uentry_unparse (ue)));
+		      alkind_unparse (ak), uentry_unparse (ue)),
+	     uentry_whereLast (ue));
+
 	  okay = FALSE;
 	}
       
       if (ctype_isFunction (ut))
 	{
-	  ut = ctype_returnValue (ut);
+	  ut = ctype_getReturnType (ut);
 	}
       
       if (!(ctype_isVisiblySharable (ut) 
@@ -1952,10 +2207,11 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	{
 	  if (!qual_isImplied (qel))
 	    {
-	      llerror 
-		(FLG_SYNTAX, 
+	      voptgenerror
+		(FLG_ANNOTATIONERROR, 
 		 message ("Alias qualifier %s used on unsharable storage type %t: %q",
-			  alkind_unparse (ak), ut, uentry_getName (ue)));
+			  alkind_unparse (ak), ut, uentry_getName (ue)),
+		 uentry_whereLast (ue));
 	    }
 	  
 	  okay = FALSE;
@@ -1970,12 +2226,13 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 		{
 		  if (!qual_isImplied (qel))
 		    {
-		      llerror 
-			(FLG_SYNTAX, 
+		      voptgenerror
+			(FLG_ANNOTATIONERROR, 
 			 message 
 			 ("Alias qualifier %s used on reference counted storage: %q",
 			  alkind_unparse (ak), 
-			  uentry_unparse (ue)));
+			  uentry_unparse (ue)),
+			 uentry_whereLast (ue));
 		    }
 		  
 		  okay = FALSE;
@@ -1985,10 +2242,11 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	    {
 	      if (qual_isRefQual (qel))
 		{
-		  llerror 
-		    (FLG_SYNTAX, 
+		  voptgenerror 
+		    (FLG_ANNOTATIONERROR,
 		     message ("Qualifier %s used on non-reference counted storage: %q",
-			      alkind_unparse (ak), uentry_unparse (ue)));
+			      alkind_unparse (ak), uentry_unparse (ue)),
+		     uentry_whereLast (ue));
 		  
 		  okay = FALSE;
 		}
@@ -2027,10 +2285,11 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
     {
       if (!uentry_isDatatype (ue))
 	{
-	  llerror 
-	    (FLG_SYNTAX, 
+	  voptgenerror 
+	    (FLG_ANNOTATIONERROR, 
 	     message ("Qualifier %s used with non-datatype", 
-		      qual_unparse (qel)));
+		      qual_unparse (qel)),
+	     uentry_whereLast (ue));
 	}
       else
 	{
@@ -2041,8 +2300,10 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
     {
       if (!uentry_isDatatype (ue))
 	{
-	  llerror (FLG_SYNTAX,
-		   message ("Qualifier %s used with non-datatype", qual_unparse (qel)));
+	  voptgenerror
+	    (FLG_ANNOTATIONERROR,
+	     message ("Qualifier %s used with non-datatype", qual_unparse (qel)),
+	     uentry_whereLast (ue));
 	}
       else
 	{
@@ -2058,8 +2319,10 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
     {
       if (!uentry_isDatatype (ue))
 	{
-	  llerror (FLG_SYNTAX, message ("Qualifier %s used with non-datatype", 
-					qual_unparse (qel)));
+	  voptgenerror (FLG_ANNOTATIONERROR, 
+			message ("Qualifier %s used with non-datatype", 
+				 qual_unparse (qel)),
+			uentry_whereLast (ue));
 	}
       else
 	{
@@ -2076,7 +2339,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
       if (uentry_isFunction (ue))
 	{
 	  ctype typ = uentry_getType (ue);
-	  ctype rtype = ctype_returnValue (uentry_getType (ue));
+	  ctype rtype = ctype_getReturnType (uentry_getType (ue));
 	  
 	  if (ctype_isRealBool (rtype))
 	    {
@@ -2088,27 +2351,30 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 		}
 	      else
 		{
-		  llerror (FLG_SYNTAX, 
-			   message ("Qualifier %s used with function having %d "
-				    "arguments (should have 1)", 
-				    qual_unparse (qel),
-				    uentryList_size (pl)));
+		  voptgenerror (FLG_ANNOTATIONERROR,
+				message ("Qualifier %s used with function having %d "
+					 "arguments (should have 1)", 
+					 qual_unparse (qel),
+					 uentryList_size (pl)),
+				uentry_whereLast (ue));
 		}
 	    }
 	  else
 	    {
-	      llerror (FLG_SYNTAX, 
-		       message ("Qualifier %s used with function returning %s "
-				"(should return bool)", 
-				qual_unparse (qel),
-				ctype_unparse (rtype)));
+	      voptgenerror (FLG_ANNOTATIONERROR,
+			    message ("Qualifier %s used with function returning %s "
+				     "(should return bool)", 
+				     qual_unparse (qel),
+				     ctype_unparse (rtype)),
+			    uentry_whereLast (ue));
 	    }
 	}
       else
 	{
-	  llerror (FLG_SYNTAX, 
-		   message ("Qualifier %s used with non-function", 
-			    qual_unparse (qel)));
+	  voptgenerror (FLG_ANNOTATIONERROR,
+			message ("Qualifier %s used with non-function", 
+				 qual_unparse (qel)),
+			uentry_whereLast (ue));
 	}
     }
   else if (qual_isExitQual (qel))
@@ -2119,11 +2385,12 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	{
 	  if (exitkind_isKnown (ue->info->fcn->exitCode))
 	    {
-	      llerror (FLG_SYNTAX, 
-		       message ("Multiple exit qualifiers used on function %q:  %s, %s", 
-				uentry_getName (ue),
-				exitkind_unparse (ue->info->fcn->exitCode),
-				exitkind_unparse (exk)));
+	      voptgenerror (FLG_ANNOTATIONERROR,
+			    message ("Multiple exit qualifiers used on function %q:  %s, %s", 
+				     uentry_getName (ue),
+				     exitkind_unparse (ue->info->fcn->exitCode),
+				     exitkind_unparse (exk)),
+			    uentry_whereLast (ue));
 	    }
 	  
 	  ue->info->fcn->exitCode = exk;
@@ -2137,10 +2404,38 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	    }
 	  else
 	    {
-	      llerror (FLG_SYNTAX,
-		       message ("Exit qualifier %s used with non-function (type %s)", 
-				qual_unparse (qel),
-				ctype_unparse (uentry_getType (ue))));
+	      voptgenerror (FLG_ANNOTATIONERROR,
+			    message ("Exit qualifier %s used with non-function (type %s)", 
+				     qual_unparse (qel),
+				     ctype_unparse (uentry_getType (ue))),
+			    uentry_whereLast (ue));
+	    }
+	}
+    }
+  else if (qual_isMetaState (qel)) 
+    {
+      annotationInfo ainfo = qual_getAnnotationInfo (qel);
+
+      if (annotationInfo_matchesContext (ainfo, ue))
+	{
+	  DPRINTF (("Reflecting %s on %s", 
+		    annotationInfo_unparse (ainfo),
+		    uentry_unparseFull (ue)));
+	  
+	  sRef_reflectAnnotation (ue->sref, ainfo, g_currentloc);
+	  DPRINTF (("==> %s", sRef_unparseFull (ue->sref)));
+	  DPRINTF (("==> %s", uentry_unparseFull (ue)));
+	}
+      else
+	{
+	  if (optgenerror
+	      (FLG_ANNOTATIONERROR,
+	       message ("Meta state anntation %s used in inconsistent context: %q",
+			qual_unparse (qel),
+			uentry_unparse (ue)),
+	       uentry_whereLast (ue)))
+	    {
+	      /*@i! annotationInfo_showContextError (ainfo, ue); */
 	    }
 	}
     }
@@ -2152,7 +2447,7 @@ uentry_reflectOtherQualifier (/*@notnull@*/ uentry ue, qual qel)
 	}
       else
 	{
-	  llbug (message ("unhandled qualifier: %s", qual_unparse (qel)));
+	  llbug (message ("Unhandled qualifier: %s", qual_unparse (qel)));
 	}
     }
 }
@@ -2187,11 +2482,12 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 
 	      if (vk == VKYIELDPARAM)
 		{
-		  llerror
-		    (FLG_SYNTAX,
+		  voptgenerror
+		    (FLG_ANNOTATIONERROR,
 		     message ("Qualifier sef cannot be used with %s: %q",
 			      cstring_makeLiteralTemp (vk == VKYIELDPARAM ? "yield" : "returned"),
-			      uentry_unparse (ue)));
+			      uentry_unparse (ue)),
+		     uentry_whereLast (ue));
 		}
 	      else if (vk == VKRETPARAM)
 		{
@@ -2204,10 +2500,11 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	    }
 	  else
 	    {
-	      llerror 
-		(FLG_SYNTAX,
+	      voptgenerror 
+		(FLG_ANNOTATIONERROR,
 		 message ("Qualifier sef is meaningful only on parameters: %q", 
-			  uentry_unparse (ue)));
+			  uentry_unparse (ue)),
+		 uentry_whereLast (ue));
 	    }
 	}
       else if (qual_isExtern (qel))
@@ -2216,6 +2513,9 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	}
       else if (qual_isGlobalQual (qel)) /* undef, killed */
 	{
+	  DPRINTF (("Reflecting qual: %s / %s",
+		    qual_unparse (qel), uentry_unparse (ue)));
+
 	  if (uentry_isVariable (ue))
 	    {
 	      sstate oldstate = ue->info->var->defstate;
@@ -2237,21 +2537,21 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	    }
 	  else
 	    {
-	      llerror 
-		(FLG_SYNTAX, 
+	      voptgenerror 
+		(FLG_ANNOTATIONERROR,
 		 message ("Qualifier %s used on non-variable: %q",
-			  qual_unparse (qel), uentry_unparse (ue)));	      
+			  qual_unparse (qel), uentry_unparse (ue)),
+		 uentry_whereLast (ue));
 	    }
+
+	  DPRINTF (("After: %s", uentry_unparseFull (ue)));
 	}
       /* start modifications */
-
       else if( qual_isBufQualifier(qel) ) {
         ctype ct = ctype_realType(uentry_getType(ue));
-
         if( ctype_isArray(ct) || ctype_isPointer(ct) ) {
 
             if( uentry_hasBufStateInfo(ue) )  {
-
                 if( qual_isNullTerminated(qel) ) {  /* handle Nullterm */
                     
                    if (uentry_isAnyParam(ue) || uentry_isReturned (ue)) {
@@ -2300,6 +2600,7 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 		       message ("Qualifier %s used on non-pointer: %q",
 			  qual_unparse (qel), uentry_unparse (ue)));	      
 	 }
+	DPRINTF (("After: %s", uentry_unparseFull (ue)));
       }/* end else if */    
       else if (qual_isAllocQual (qel)) /* out, partial, reldef, special, etc. */
 	{
@@ -2308,7 +2609,7 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 
 	  if (ctype_isFunction (realType))
 	    {
-	      realType = ctype_realType (ctype_returnValue (realType));
+	      realType = ctype_realType (ctype_getReturnType (realType));
 	    }
 
 	  if (qual_isRelDef (qel))
@@ -2322,10 +2623,11 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 		  && !ctype_isUnknown (realType)
 		  && !ctype_isAbstract (ue->utype))
 		{
-		  llerror 
-		    (FLG_SYNTAX, 
+		  voptgenerror 
+		    (FLG_ANNOTATIONERROR,
 		     message ("Qualifier %s used on non-pointer or struct: %q",
-			      qual_unparse (qel), uentry_unparse (ue)));
+			      qual_unparse (qel), uentry_unparse (ue)),
+		     uentry_whereLast (ue));
 		}
 	    }
 
@@ -2345,10 +2647,11 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	    }
 	  else
 	    {
-	      llerror 
-		(FLG_SYNTAX, 
+	      voptgenerror 
+		(FLG_ANNOTATIONERROR,
 		 message ("Qualifier %s used on non-iterator parameter: %q",
-			  qual_unparse (qel), uentry_unparse (ue)));	      
+			  qual_unparse (qel), uentry_unparse (ue)),
+		 uentry_whereLast (ue));
 	    }
 	}
       else if (qual_isExQual (qel))
@@ -2356,9 +2659,12 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	  exkind ek = exkind_fromQual (qel);
 	  ctype ut = uentry_getType (ue);
 
+	  DPRINTF (("Reflect ex qual: %s / %s",
+		    uentry_unparse (ue), exkind_unparse (ek)));
+
 	  if (ctype_isFunction (ut))
 	    {
-	      ut = ctype_returnValue (ut);
+	      ut = ctype_getReturnType (ut);
 	    }
 	  
 	  if (!(ctype_isVisiblySharable (ut))
@@ -2367,10 +2673,19 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	    {
 	      if (!qual_isImplied (qel))
 		{
-		  llerror 
-		    (FLG_SYNTAX, 
-		     message ("Qualifier %s used on unsharable storage type %t: %q",
-			      exkind_unparse (ek), ut, uentry_getName (ue)));
+		  if (ctype_isImmutableAbstract (ut)) {
+		    voptgenerror 
+		      (FLG_REDUNDANTSHAREQUAL, 
+		       message ("Qualifier %s used on unsharable storage type %t: %q",
+				exkind_unparse (ek), ut, uentry_getName (ue)),
+		       uentry_whereLast (ue));
+		  } else {
+		    voptgenerror 
+		      (FLG_MISPLACEDSHAREQUAL, 
+		       message ("Qualifier %s used on unsharable storage type %t: %q",
+				exkind_unparse (ek), ut, uentry_getName (ue)),
+		       uentry_whereLast (ue));
+		  }
 		}
 	    }
 	  else
@@ -2378,11 +2693,13 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 	      alkind ak = sRef_getAliasKind (ue->sref);
 
 	      sRef_setExKind (ue->sref, ek, uentry_whereDeclared (ue));
+	      DPRINTF (("Set exkind: %s", sRef_unparseFull (ue->sref)));
 
 	      if (alkind_isUnknown (ak) || alkind_isImplicit (ak) || alkind_isStatic (ak))
 		{
 		  if (!alkind_isTemp (ak))
 		    {
+		      DPRINTF (("imp dep: %s", uentry_unparseFull (ue)));
 		      uentry_setAliasKind (ue, AK_IMPDEPENDENT);
 		    }
 		}
@@ -2526,14 +2843,28 @@ bool
 uentry_isNonLocal (uentry ue)
 {
   return (uentry_isValid (ue) && uentry_isVariable (ue)
-	  && (sRef_isGlobal (ue->sref) || uentry_isStatic (ue)));
+	  && (sRef_isFileOrGlobalScope (ue->sref) || uentry_isStatic (ue)));
 }
 
 bool
-uentry_isGlobal (uentry ue)
+uentry_isGlobalVariable (uentry ue)
 {
-  return (uentry_isValid (ue) && uentry_isVariable (ue) && 
-	  sRef_isGlobal (ue->sref));
+  return (uentry_isValid (ue) && uentry_isVariable (ue) 
+	  && sRef_isFileOrGlobalScope (ue->sref));
+}
+
+bool
+uentry_isVisibleExternally (uentry ue)
+{
+  return (uentry_isValid (ue) 
+	  && ((uentry_isVariable (ue) && sRef_isRealGlobal (ue->sref))
+	      || (!uentry_isStatic (ue) 
+		  && (uentry_isFunction (ue)
+		      || uentry_isIter (ue)
+		      || uentry_isEndIter (ue)
+		      || uentry_isConstant (ue)
+		      || uentry_isDatatype (ue)
+		      || uentry_isAnyTag (ue)))));
 }
 
 bool
@@ -2712,6 +3043,7 @@ uentry_isSpecialFunction (uentry ue)
     }
   }
 
+  DPRINTF (("Param: %s", uentry_unparseFull (ue)));
   return ue;
 }
 
@@ -2761,6 +3093,8 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   e->uname = cstring_copy (n);
   e->utype = t;
   e->storageclass = SCNONE;
+
+  e->warn = warnClause_undefined; /*@i32 warnings for constants? */
 
   e->sref  = sRef_makeConst (t);
 
@@ -2905,6 +3239,8 @@ static /*@only@*/ /*@notnull@*/
 
   e->storageclass = SCNONE;
 
+  e->warn = warnClause_undefined; /*@i32 warnings for variable @*/
+
   e->sref  = s;
 
   e->used = FALSE;
@@ -2920,18 +3256,22 @@ static /*@only@*/ /*@notnull@*/
 
   e->info->var->checked = CH_UNKNOWN;
 
+  DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
   uentry_setSpecDef (e, f);
+  DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
 
   if (ctype_isFunction (rt))
     {
-      rt = ctype_returnValue (rt);
+      rt = ctype_getReturnType (rt);
     }
 
   if (ctype_isUA (rt))
     {
+      DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
       sRef_setStateFromType (e->sref, rt);
     }
 
+  DPRINTF (("Here we are: %s", sRef_unparseFull (e->sref)));
   e->info->var->defstate = sRef_getDefState (e->sref);  
   e->info->var->nullstate = sRef_getNullState (e->sref);
 
@@ -2943,7 +3283,12 @@ static /*@only@*/ /*@notnull@*/
   if( ctype_isArray (t) || ctype_isPointer(t)) {
     /*@i222@*/e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
      e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
+     /*@access sRef@*/ /*i@222*/
+     /* It probably isn't necessary to violate the abstraction here
+      I'll fix this later
+     */
      s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+     /*@noaccess sRef@*/
   } else {
      e->info->var->bufinfo = NULL;
   }/* end else */
@@ -3003,7 +3348,7 @@ void uentry_makeVarFunction (uentry ue)
   ue->ukind = KFCN;
   ue->info->fcn = (ufinfo) dmalloc (sizeof (*ue->info->fcn));
   ue->info->fcn->exitCode = XK_UNKNOWN;
-  ue->info->fcn->nullPred = QU_UNKNOWN;
+  ue->info->fcn->nullPred = qual_createUnknown ();
   ue->info->fcn->specialCode = SPC_NONE;
   ue->info->fcn->access = typeIdSet_undefined;
   ue->info->fcn->hasGlobs = FALSE;
@@ -3024,7 +3369,7 @@ void uentry_makeVarFunction (uentry ue)
   
   if (ctype_isFunction (ue->utype))
     {
-      ue->sref = sRef_makeType (ctype_returnValue (ue->utype)); 
+      ue->sref = sRef_makeType (ctype_getReturnType (ue->utype)); 
     }
   else
     {
@@ -3041,6 +3386,7 @@ void uentry_makeVarFunction (uentry ue)
 	{
 	  if (exkind_isKnown (ek))
 	    {
+	      DPRINTF (("imp dep: %s", uentry_unparseFull (ue)));
 	      ak = AK_IMPDEPENDENT;
 	    }
 	  else 
@@ -3049,7 +3395,7 @@ void uentry_makeVarFunction (uentry ue)
 		{
 		  if (ctype_isFunction (ue->utype)
 		      && ctype_isVisiblySharable 
-		      (ctype_realType (ctype_returnValue (ue->utype))))
+		      (ctype_realType (ctype_getReturnType (ue->utype))))
 		    {
 		      if (uentryList_hasReturned (uentry_getParams (ue)))
 			{
@@ -3057,8 +3403,15 @@ void uentry_makeVarFunction (uentry ue)
 			}
 		      else
 			{
-			  ak = AK_IMPONLY;
-			  			}
+			  if (ctype_isImmutableAbstract (ctype_getReturnType (ue->utype))) 
+			    {
+			      ;
+			    }
+			  else 
+			    {
+			      ak = AK_IMPONLY;
+			    }
+			}
 		    }
 		}
 	    }
@@ -3108,14 +3461,17 @@ uentry_setGlobals (uentry ue, /*@owned@*/ globSet globs)
 		&& globSet_isUndefined (ue->info->fcn->globs));
       
       ue->info->fcn->hasGlobs = TRUE;
+      globSet_markImmutable (globs);
       /*@-mustfree@*/ ue->info->fcn->globs = globs;
       /*@=mustfree@*/
     }
 
+  /*@i23 ??? 
   if (globSet_hasStatic (globs))
     {
       context_recordFileGlobals (globs);
     }
+  */
 
   if (context_getFlag (FLG_GLOBALSIMPMODIFIESNOTHING))
     {
@@ -3151,12 +3507,15 @@ void uentry_addAccessType (uentry ue, typeId tid)
   uentry_makeFunction (cstring n, ctype t, 
 		       typeId access, 
 		       /*@only@*/ globSet globs, /*@only@*/ sRefSet mods, 
+		       /*@only@*/ warnClause warn,
 		       fileloc f)
 {
+  llassert (warnClause_isUndefined (warn)); /*@i325 remove parameter! */
   return (uentry_makeFunctionAux (n, t, 
 				  ((typeId_isInvalid (access)) ? typeIdSet_emptySet () 
 				   : typeIdSet_single (access)),
-				  globs, mods, f,
+				  globs, mods, warn,
+				  f,
 				  FALSE, FALSE));
 }
 
@@ -3167,7 +3526,8 @@ void uentry_addAccessType (uentry ue, typeId tid)
 			    globSet globs, sRefSet mods, 
 			    fileloc f)
 {
-  return (uentry_makeFunctionAux (n, t, access, globs, mods, f, TRUE, FALSE));
+  return (uentry_makeFunctionAux (n, t, access, globs, mods, warnClause_undefined,
+				  f, TRUE, FALSE));
 }
 
 
@@ -3179,8 +3539,8 @@ void uentry_addAccessType (uentry ue, typeId tid)
 			   fileloc f)
 {
   uentry ue = uentry_makeFunctionAux (n, t, access, 
-				      globs, mods, f,
-				      FALSE, FALSE);
+				      globs, mods, warnClause_undefined, 
+				      f, FALSE, FALSE);
 
   uentry_setHasGlobs (ue);
   uentry_setHasMods (ue);
@@ -3205,6 +3565,7 @@ uentry uentry_makeExpandedMacro (cstring s, fileloc f)
   uentry ue = uentry_makeFunctionAux (n, ctype_unknown, 
 				      typeIdSet_singleOpt (access),
 				      globSet_undefined, sRefSet_undefined, 
+				      warnClause_undefined,
 				      fileloc_undefined,
 				      FALSE, TRUE);
 
@@ -3220,7 +3581,7 @@ bool uentry_isForward (uentry e)
 
       return (ctype_isUnknown (ct)
 	      || (ctype_isFunction (ct)
-		  && ctype_isUnknown (ctype_returnValue (ct))));
+		  && ctype_isUnknown (ctype_getReturnType (ct))));
     }
 
   return FALSE;
@@ -3231,9 +3592,8 @@ bool uentry_isForward (uentry e)
 uentry_makeTypeListFunction (cstring n, typeIdSet access, fileloc f)
 {
   return (uentry_makeFunctionAux (n, ctype_unknown, access,
-				  globSet_new (),
-				  sRefSet_new (), f,
-				  FALSE, TRUE));
+				  globSet_undefined, sRefSet_undefined, warnClause_undefined,
+				  f,FALSE, TRUE));
 }
 
 /*@notnull@*/ uentry 
@@ -3241,8 +3601,9 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 			   typeIdSet access, 
 			   fileloc f)
 {
-  uentry ue = uentry_makeFunctionAux (n, t, access, globSet_new (),
-				      sRefSet_new (), f, FALSE, TRUE);
+  uentry ue = uentry_makeFunctionAux (n, t, access, globSet_undefined,
+				      sRefSet_undefined, warnClause_undefined,
+				      f, FALSE, TRUE);
 
   reflectImplicitFunctionQualifiers (ue, TRUE);
   return ue;
@@ -3256,7 +3617,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 /* is exported for use by usymtab_interface */
 
 /*@notnull@*/ uentry 
-  uentry_makeDatatypeAux (cstring n, ctype t, ynm mut, ynm abs, 
+  uentry_makeDatatypeAux (cstring n, ctype t, ynm mut, ynm abstract, 
 			  fileloc f, bool priv)
 {
   uentry e = uentry_alloc ();
@@ -3278,6 +3639,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 
   uentry_setSpecDef (e, f);
 
+  e->warn = warnClause_undefined; /*@i634@*/ 
   e->uses = filelocList_new ();
   e->isPrivate = priv;
   e->hasNameError = FALSE;
@@ -3287,7 +3649,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
-  e->info->datatype->abs = abs;
+  e->info->datatype->abs = abstract;
   e->info->datatype->mut = mut;
   e->info->datatype->type = ctype_undefined;
 
@@ -3296,7 +3658,7 @@ uentry_makeUnspecFunction (cstring n, ctype t,
       uentry_setDefined (e, f);
     }
 
-  if (ynm_isOn (abs) && !(uentry_isCodeDefined (e)))
+  if (ynm_isOn (abstract) && !(uentry_isCodeDefined (e)))
     {
       sRef_setNullState (e->sref, NS_ABSNULL, uentry_whereDeclared (e));
     }
@@ -3305,16 +3667,15 @@ uentry_makeUnspecFunction (cstring n, ctype t,
 }
 
 /*@notnull@*/ uentry
-  uentry_makeDatatype (cstring n, ctype t, ynm mut, ynm abs, 
-		       fileloc f)
+  uentry_makeDatatype (cstring n, ctype t, ynm mut, ynm abstract, fileloc f)
 {
-  return (uentry_makeDatatypeAux (n, t, mut, abs, f, FALSE));
+  return (uentry_makeDatatypeAux (n, t, mut, abstract, f, FALSE));
 }
 
-/*@notnull@*/ uentry uentry_makeBoolDatatype (ynm abs)
+/*@notnull@*/ uentry uentry_makeBoolDatatype (ynm abstract)
 {
   uentry ret = uentry_makeDatatypeAux (context_getBoolName (),
-				       ctype_bool, NO, abs, 
+				       ctype_bool, NO, abstract, 
 				       fileloc_getBuiltin (),
 				       FALSE);
   
@@ -3342,6 +3703,7 @@ static /*@only@*/ /*@notnull@*/ uentry
 
   uentry_setSpecDef (e, f);
 
+  e->warn = warnClause_undefined; /*@i452@*/
   e->uses = filelocList_new ();
   e->isPrivate = FALSE;
   e->hasNameError = FALSE;
@@ -3387,6 +3749,7 @@ uentry_makeEndIterAux (cstring n, typeIdSet access, /*@only@*/ fileloc f)
 
   e->info->enditer->access = access;
 
+  e->warn = warnClause_undefined; /*@i452@*/
   return (e);
 }
 
@@ -3433,6 +3796,7 @@ static /*@only@*/ /*@notnull@*/ uentry
   e->info->datatype->abs = NO;
   e->info->datatype->mut = (kind == KENUMTAG) ? NO : MAYBE;
   e->info->datatype->type = t;
+  e->warn = warnClause_undefined; /*@i452@*/
 
   if (uentry_isDeclared (e))
     {
@@ -3660,7 +4024,6 @@ uentry_compare (uentry u1, uentry u2)
   INTCOMPARERETURN (u1->ukind, u2->ukind);
   COMPARERETURN (ctype_compare (u1->utype, u2->utype));
   COMPARERETURN (bool_compare (uentry_isPriv (u1), uentry_isPriv (u2)));
-
   COMPARERETURN (sRef_compare (u1->sref, u2->sref));
 
   switch (u1->ukind)
@@ -3688,19 +4051,20 @@ uentry_compare (uentry u1, uentry u2)
       return (typeIdSet_compare (uentry_accessType (u1), 
 				  uentry_accessType (u2)));
     case KFCN:
-      COMPARERETURN (typeIdSet_compare (uentry_accessType (u1), 
-					 uentry_accessType (u2)));
-      COMPARERETURN (globSet_compare (uentry_getGlobs (u1), 
-				      uentry_getGlobs (u2)));
-      COMPARERETURN (uentryList_compareParams (uentry_getParams (u1), 
-					       uentry_getParams (u2)));
-      COMPARERETURN (generic_compare (u1->info->fcn->specialCode,
-				       u2->info->fcn->specialCode));
-      COMPARERETURN (generic_compare (u1->info->fcn->nullPred,
-				       u2->info->fcn->nullPred));
-
-      return (sRefSet_compare (uentry_getMods (u1), uentry_getMods (u2)));
+      /*
+      ** Functions are never equivalent
+      */
+      
+      if ((int) u1 < (int) u2)
+	{
+	  return -1;
+	}
+      else
+	{
+	  return 1;
+	}
     case KVAR:
+      
       COMPARERETURN (generic_compare (u1->info->var->kind, u2->info->var->kind));
       COMPARERETURN (generic_compare (sRef_getOrigAliasKind (u1->sref),
 				      sRef_getOrigAliasKind (u2->sref)));
@@ -3734,13 +4098,13 @@ uentry_compare (uentry u1, uentry u2)
 static void
 advanceField (char **s)
 {
-  checkChar (s, '@');
+  reader_checkChar (s, '@');
 }
 
 static void
 advanceName (char **s)
 {
-  checkChar (s, '#');
+  reader_checkChar (s, '#');
 }
 
 static vkind
@@ -3788,6 +4152,8 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
 
+  e->warn = warnClause_undefined; /*@i452@*/
+
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
   e->info->uconst->val = m;
@@ -3834,6 +4200,7 @@ static /*@only@*/ uentry
   e->lset = FALSE;
 
   e->uses = filelocList_new ();
+  e->warn = warnClause_undefined; /*@i452@*/
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->var = (uvinfo) dmalloc (sizeof (*e->info->var));
@@ -3857,7 +4224,7 @@ static /*@only@*/ uentry
 }
 
 static /*@only@*/ uentry  
-uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abs, 
+uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abstract, 
 			 ynm mut, ctype rtype, alkind ak, exkind exp, 
 			 sstate defstate, nstate isnull,
 			 /*@only@*/ fileloc loc)
@@ -3870,6 +4237,7 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abs,
   e->utype = ct;
   e->storageclass = SCNONE;
   e->sref  = sRef_makeUnknown ();
+  DPRINTF (("Merge null 1: %s", sRef_unparseFull (e->sref)));
 
   /*
   ** This is only setting null state.  (I think?)
@@ -3894,11 +4262,12 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abs,
 
   sRef_setDefState (e->sref, defstate, loc);
 
-  if (ynm_isOn (abs) && ctype_isUnknown (ct) && isnull == NS_UNKNOWN)
+  if (ynm_isOn (abstract) && ctype_isUnknown (ct) && isnull == NS_UNKNOWN)
     {
       isnull = NS_ABSNULL;
     }
 
+  DPRINTF (("Merge null: %s", sRef_unparseFull (e->sref)));
   sRef_mergeNullState (e->sref, isnull);
 
   e->whereDefined = fileloc_copy (loc); /*< bogus!  (but necessary for lexer) >*/
@@ -3917,17 +4286,21 @@ uentry_makeDatatypeBase (/*@only@*/ cstring name, ctype ct, ynm abs,
   e->isPrivate = FALSE;
   e->hasNameError = FALSE;
 
+  e->warn = warnClause_undefined; /*@i452@*/
+
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
-  e->info->datatype->abs = abs;
+  e->info->datatype->abs = abstract;
   e->info->datatype->mut = mut;
   e->info->datatype->type = rtype;
-  
+
+  DPRINTF (("About to store: %s", sRef_unparseFull (e->sref)));
   sRef_storeState (e->sref);
+  DPRINTF (("After store: %s", sRef_unparseFull (e->sref)));
 
   return (e);
 }
@@ -3958,14 +4331,20 @@ bool uentry_hasGlobs (uentry ue)
   return FALSE;
 }
 
-bool uentry_hasSpecialClauses (uentry ue)
+bool uentry_hasStateClauseList (uentry ue)
 {
-  return (uentry_isFunction (ue) && specialClauses_isDefined (ue->info->fcn->specclauses));
+  return (uentry_isFunction (ue) && stateClauseList_isDefined (ue->info->fcn->specclauses));
 }
 
-specialClauses uentry_getSpecialClauses (uentry ue)
+stateClauseList uentry_getStateClauseList (uentry ue)
 {
-  llassert (uentry_isFunction (ue));
+  if (!uentry_isFunction (ue))
+    {
+      llassert (uentry_isFunction (ue));
+      return stateClauseList_undefined;
+    }
+
+  DPRINTF (("Get state clause list: %s", uentry_unparse (ue)));
   return ue->info->fcn->specclauses;
 }
 
@@ -3989,7 +4368,8 @@ static uentry
 			   exitkind exitCode,
 			   specCode sCode,
 			   qual nullPred,
-			   /*@only@*/ specialClauses specclauses,
+			   /*@only@*/ stateClauseList specclauses,
+			   /*@only@*/ warnClause warnclause,
 			   /*@only@*/ fileloc loc)
 {
   uentry e = uentry_alloc ();
@@ -4003,7 +4383,7 @@ static uentry
 
   if (ctype_isFunction (ct))
     {
-      ret = ctype_returnValue (ct);
+      ret = ctype_getReturnType (ct);
     }
   else
     {
@@ -4038,6 +4418,7 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();  
+  e->warn = warnclause;
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->fcn = (ufinfo) dmalloc (sizeof (*e->info->fcn));
@@ -4107,6 +4488,7 @@ static /*@only@*/ uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
+  e->warn = warnClause_undefined; /*@i452@*/
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->datatype = (udinfo) dmalloc (sizeof (*e->info->datatype));
@@ -4151,6 +4533,7 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
+  e->warn = warnClause_undefined; /*@i452@*/
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->iter = (uiinfo) dmalloc (sizeof (*e->info->iter));
@@ -4194,6 +4577,7 @@ static uentry
   e->used = FALSE;
   e->lset = FALSE;
   e->uses = filelocList_new ();
+  e->warn = warnClause_undefined; /*@i452@*/
 
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->enditer = (ueinfo) dmalloc (sizeof (*e->info->enditer));
@@ -4215,10 +4599,12 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 {
   uentry ue;
   
+  DPRINTF (("Uentry undump: %s", *s));
+
   if (**s == '!')
     {
-      checkChar (s, '!');
-      checkChar (s, '.');
+      reader_checkChar (s, '!');
+      reader_checkChar (s, '.');
       ue = uentry_makeElipsisMarker ();
     }
   else
@@ -4237,19 +4623,19 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    exkind exp;
 	    chkind checked;
 	    
-	    checkChar (s, '|');
+	    reader_checkChar (s, '|');
 
-	    if (optCheckChar (s, '@'))
+	    if (reader_optCheckChar (s, '@'))
 	      {
-		tkind = vkind_fromInt (getInt (s));
-		checkChar (s, '|');
+		tkind = vkind_fromInt (reader_getInt (s));
+		reader_checkChar (s, '|');
 	      }
 	    else
 	      {
 		tkind = VKPARAM;
 	      }
 
-	    if (optCheckChar (s, '$'))
+	    if (reader_optCheckChar (s, '$'))
 	      {
 		defstate = SS_UNKNOWN;
 		isnull = NS_UNKNOWN;
@@ -4257,7 +4643,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 		exp = XO_UNKNOWN;
 		checked = CH_UNKNOWN;
 	      }		
-	    else if (optCheckChar (s, '&'))
+	    else if (reader_optCheckChar (s, '&'))
 	      {
 		defstate = SS_DEFINED;
 		isnull = NS_UNKNOWN;
@@ -4265,7 +4651,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 		exp = XO_UNKNOWN;
 		checked = CH_UNKNOWN;
 	      }		
-	    else if (optCheckChar (s, '^'))
+	    else if (reader_optCheckChar (s, '^'))
 	      {
 		defstate = SS_UNKNOWN;
 		isnull = NS_UNKNOWN;
@@ -4275,25 +4661,27 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	      }		
 	    else
 	      {
-		defstate = sstate_fromInt (getInt (s));      
-		advanceField (s); isnull = nstate_fromInt (getInt (s));      
-		advanceField (s); aliased = alkind_fromInt (getInt (s));      
+		defstate = sstate_fromInt (reader_getInt (s));      
+		advanceField (s); isnull = nstate_fromInt (reader_getInt (s));      
+		advanceField (s); aliased = alkind_fromInt (reader_getInt (s));      
 
-		if (optCheckChar (s, '&'))
+		if (reader_optCheckChar (s, '&'))
 		  {
 		    exp = XO_UNKNOWN;
 		    checked = CH_UNKNOWN;
 		  }
 		else
 		  {
-		    advanceField (s); exp = exkind_fromInt (getInt (s));      
-		    advanceField (s); checked = (chkind) (getInt (s));      
+		    advanceField (s); exp = exkind_fromInt (reader_getInt (s));      
+		    advanceField (s); checked = (chkind) (reader_getInt (s));      
 		  }
 	      }
 
 	    advanceName (s);
-	    name = getStringWord (s);
+	    name = reader_getStringWord (s);
 	    
+	    llassert (!cstring_equal (name, GLOBAL_MARKER_NAME));
+
 	    ue = uentry_makeVariableBase (name, ct, tkind, defstate, 
 					  isnull, aliased, exp, 
 					  checked, fileloc_copy (loc));
@@ -4301,7 +4689,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	  break;
 	case KDATATYPE: 
 	  {
-	    ynm abs;
+	    ynm abstract;
 	    ynm mut;
 	    ctype rtype;
 	    sstate defstate;
@@ -4309,17 +4697,17 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    alkind aliased;
 	    exkind exp;
 
-	    advanceField (s); abs = ynm_fromCodeChar (loadChar (s));
-	    advanceField (s); mut = ynm_fromCodeChar (loadChar (s));
-	    advanceField (s); defstate = sstate_fromInt (getInt (s));      
-	    advanceField (s); isnull = nstate_fromInt (getInt (s));      
-	    advanceField (s); aliased = alkind_fromInt (getInt (s));      
-	    advanceField (s); exp = exkind_fromInt (getInt (s));      
+	    advanceField (s); abstract = ynm_fromCodeChar (reader_loadChar (s));
+	    advanceField (s); mut = ynm_fromCodeChar (reader_loadChar (s));
+	    advanceField (s); defstate = sstate_fromInt (reader_getInt (s));      
+	    advanceField (s); isnull = nstate_fromInt (reader_getInt (s));      
+	    advanceField (s); aliased = alkind_fromInt (reader_getInt (s));      
+	    advanceField (s); exp = exkind_fromInt (reader_getInt (s));      
 	    advanceField (s); rtype = ctype_undump (s);
 	    advanceName (s); 
-	    name = getStringWord (s);
-
-	    ue = uentry_makeDatatypeBase (name, ct, abs, mut, rtype, 
+	    name = reader_getStringWord (s);
+	    DPRINTF (("Datatype %s, Exp = %s", name, exkind_unparse (exp)));
+	    ue = uentry_makeDatatypeBase (name, ct, abstract, mut, rtype, 
 					  aliased, exp, defstate, isnull, 
 					  fileloc_copy (loc));
 	  }
@@ -4338,33 +4726,34 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    globSet    globs;
 	    bool       hasMods;
 	    sRefSet    mods;
-	    specialClauses specclauses;
+	    stateClauseList specclauses = stateClauseList_undefined;
+	    warnClause warnclause = warnClause_undefined;
 
-	    if (optCheckChar (s, '$'))
+	    if (reader_optCheckChar (s, '$'))
 	      {
 		defstate = SS_DEFINED;
 		isnull = NS_UNKNOWN;
 		exitCode = XK_UNKNOWN;
 		specc = SPC_NONE;
-		nullPred = QU_UNKNOWN;
+		nullPred = qual_createUnknown ();
 	      }
 	    else
 	      {
-		advanceField (s); defstate = sstate_fromInt (getInt (s)); 
-		advanceField (s); isnull = nstate_fromInt (getInt (s)); 
-		advanceField (s); exitCode = exitkind_fromInt (getInt (s)); 
-		advanceField (s); specc = specCode_fromInt (getInt (s)); 
-		advanceField (s); nullPred = qual_fromInt (getInt (s)); 
+		advanceField (s); defstate = sstate_fromInt (reader_getInt (s)); 
+		advanceField (s); isnull = nstate_fromInt (reader_getInt (s)); 
+		advanceField (s); exitCode = exitkind_fromInt (reader_getInt (s)); 
+		advanceField (s); specc = specCode_fromInt (reader_getInt (s)); 
+		advanceField (s); nullPred = qual_undump (s);
 	      }
 
-	    if (optCheckChar (s, '$'))
+	    if (reader_optCheckChar (s, '$'))
 	      {
 		hasGlobs = FALSE;
 		globs = globSet_undefined;
 		hasMods = FALSE;
 		mods = sRefSet_undefined;
 	      }
-	    else if (optCheckChar (s, '^'))
+	    else if (reader_optCheckChar (s, '^'))
 	      {
 		hasGlobs = TRUE;
 		globs = globSet_undefined;
@@ -4373,35 +4762,48 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	      }
 	    else
 	      {
-		advanceField (s); hasGlobs = bool_fromInt (getInt (s));
+		advanceField (s); hasGlobs = bool_fromInt (reader_getInt (s));
 		advanceField (s); globs  = globSet_undump (s);
-		advanceField (s); hasMods = bool_fromInt (getInt (s));
+		advanceField (s); hasMods = bool_fromInt (reader_getInt (s));
 		advanceField (s); mods   = sRefSet_undump (s);	    
 	      }
 
-	    if (optCheckChar (s, '$'))
+	    if (reader_optCheckChar (s, '$'))
 	      {
 		ak = AK_UNKNOWN;
 		exp = XO_UNKNOWN;
 	      }
 	    else
 	      {
-		advanceField (s); ak = alkind_fromInt (getInt (s));
-		advanceField (s); exp = exkind_fromInt (getInt (s));      
+		advanceField (s); ak = alkind_fromInt (reader_getInt (s));
+		advanceField (s); exp = exkind_fromInt (reader_getInt (s));      
 	      }
 
 	    advanceField (s); access = typeIdSet_undump (s);
 
-	    if (optCheckChar (s, '@'))
+	    /*
+	    ** Optional clauses: Start with @<code>:
+	    */
+
+	    while (reader_optCheckChar (s, '@'))
 	      {
-		specclauses = specialClauses_undump (s);
-	      }
-	    else
-	      {
-		specclauses = specialClauses_undefined; 
+		if (reader_optCheckChar (s, 'W')) /* Warn clause */
+		  {
+		    reader_checkChar (s, ':');
+		    warnclause = warnClause_undump (s);
+		  }
+		else if (reader_optCheckChar (s, 'S')) /* stateClause List */
+		  {
+		    reader_checkChar (s, ':');
+		    specclauses = stateClauseList_undump (s);
+		  }
+		else
+		  {
+		    BADBRANCH;
+		  }
 	      }
 
-	    advanceName (s);  name = getStringWord (s);
+	    advanceName (s);  name = reader_getStringWord (s);
 
 	    ue = uentry_makeFunctionBase (name, ct, access, 
 					  hasGlobs, globs, 
@@ -4409,6 +4811,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 					  ak, exp, defstate, isnull, 
 					  exitCode, specc, nullPred,
 					  specclauses,
+					  warnclause,
 					  fileloc_copy (loc));
 	    DPRINTF (("Undump: %s", uentry_unparse (ue)));
 	  }
@@ -4418,7 +4821,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    typeIdSet access;
 	    
 	    advanceField (s); access = typeIdSet_undump (s);
-	    advanceName (s);  name = getStringWord (s);
+	    advanceName (s);  name = reader_getStringWord (s);
 	    
 	    ue = uentry_makeIterBase (name, access, ct,
 				      fileloc_copy (loc));
@@ -4429,7 +4832,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    typeIdSet access;
 
 	    advanceField (s); access = typeIdSet_undump (s);
-	    advanceName (s);  name = getStringWord (s);
+	    advanceName (s);  name = reader_getStringWord (s);
 	    
 	    ue = uentry_makeEndIterBase (name, access, fileloc_copy (loc));
 	  }
@@ -4441,7 +4844,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    multiVal val;
 	    nstate nullstate;
 
-	    if (optCheckChar (s, '$'))
+	    if (reader_optCheckChar (s, '$'))
 	      {
 		val = multiVal_undefined;
 		access = typeIdSet_undefined;
@@ -4451,10 +4854,10 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	      {
 		advanceField (s); val = multiVal_undump (s);
 		advanceField (s); access = typeIdSet_undump (s);
-		advanceField (s); nullstate = nstate_fromInt (getInt (s));
+		advanceField (s); nullstate = nstate_fromInt (reader_getInt (s));
 	      }
 
-	    advanceName (s);  name = getStringWord (s);
+	    advanceName (s);  name = reader_getStringWord (s);
 	    
 	    ue = uentry_makeConstantBase (name, ct, access,
 					  nullstate, fileloc_copy (loc), val);
@@ -4467,7 +4870,7 @@ uentry_undump (ekind kind, fileloc loc, char **s)
 	    ctype rtype;
 	    
 	    advanceField (s); rtype = ctype_undump (s);
-	    advanceName (s);  name = getStringWord (s);
+	    advanceName (s);  name = reader_getStringWord (s);
 	    ue = uentry_makeTagBase (name, kind, ct, rtype, fileloc_copy (loc));
 	  }
 	  break;
@@ -4504,9 +4907,11 @@ static cstring
 uentry_dumpAux (uentry v, bool isParam)
 {
   llassert (uentry_isValid (v));
+  llassert (!uentry_isGlobalMarker (v));
 
+  DPRINTF (("Dump uentry: [%p]", v));
   DPRINTF (("Dumping entry: %s", uentry_unparseFull (v)));
-
+  
   switch (v->ukind)
     {
     case KINVALID: 
@@ -4587,6 +4992,13 @@ uentry_dumpAux (uentry v, bool isParam)
 
       }
     case KDATATYPE: 
+      /*
+      DPRINTF (("Dumping datatype: %s -> %s type: %s [%d]",
+		uentry_unparse (v), 
+		exkind_unparse (sRef_getExKind (v->sref)),
+		ctype_unparse (v->utype), (int) v->utype));
+      */
+
       return (message ("%q@%s@%s@%d@%d@%d@%d@%q#%s", 
 		       ctype_dump (v->utype),
 		       ynm_unparseCode (v->info->datatype->abs),
@@ -4599,7 +5011,7 @@ uentry_dumpAux (uentry v, bool isParam)
 		       v->uname));
     case KFCN:
       {
-	cstring sdump, gdump, adump;
+	cstring sdump, gdump, adump, xdump;
 	alkind alk = sRef_getAliasKind (v->sref);
 	exkind exk = sRef_getExKind (v->sref);
 
@@ -4607,18 +5019,18 @@ uentry_dumpAux (uentry v, bool isParam)
 	    && !nstate_isKnown (sRef_getNullState (v->sref))
 	    && !exitkind_isKnown (v->info->fcn->exitCode)
 	    && v->info->fcn->specialCode == SPC_NONE
-	    && v->info->fcn->nullPred == QU_UNKNOWN)
+	    && qual_isUnknown (v->info->fcn->nullPred))
 	  {
 	    sdump = cstring_makeLiteral ("$");
 	  }
 	else
 	  {
-	    sdump = message ("@%d@%d@%d@%d@%d",
+	    sdump = message ("@%d@%d@%d@%d@%x",
 			     (int) sRef_getDefState (v->sref),
 			     (int) sRef_getNullState (v->sref),
 			     (int) v->info->fcn->exitCode,
 			     (int) v->info->fcn->specialCode,
-			     (int) v->info->fcn->nullPred);
+			     qual_dump (v->info->fcn->nullPred));
 	  }
 
 	if (!uentry_hasGlobs(v) && !uentry_hasMods (v))
@@ -4648,27 +5060,26 @@ uentry_dumpAux (uentry v, bool isParam)
 	    adump = message ("@%d@%d", (int) alk, (int) exk);
 	  }
 
-	if (uentry_hasSpecialClauses (v))
+	xdump = cstring_undefined;
+
+	if (uentry_hasWarning (v))
 	  {
-	    return (message ("%q%q%q%q@%q@%q#%s",
-			     ctype_dump (v->utype),
-			     sdump,
-			     gdump,
-			     adump,
-			     typeIdSet_dump (uentry_accessType (v)),
-			     specialClauses_dump (v->info->fcn->specclauses),
-			     v->uname));
+	    xdump = message ("%q@W:%q", xdump, warnClause_dump (v->warn));
 	  }
-	else
+
+	if (uentry_hasStateClauseList (v))
 	  {
-	    return (message ("%q%q%q%q@%q#%s",
-			     ctype_dump (v->utype),
-			     sdump,
-			     gdump,
-			     adump,
-			     typeIdSet_dump (uentry_accessType (v)),
-			     v->uname));
+	    xdump = message ("%q@S:%q", xdump, stateClauseList_dump (v->info->fcn->specclauses));
 	  }
+
+	return (message ("%q%q%q%q@%q%q#%s",
+			 ctype_dump (v->utype),
+			 sdump,
+			 gdump,
+			 adump,
+			 typeIdSet_dump (uentry_accessType (v)),
+			 xdump,
+			 v->uname));
       }
     case KITER:
       return (message ("%q@%q#%s",
@@ -4755,75 +5166,65 @@ uentry_unparseFull (uentry v)
     {
       return (cstring_makeLiteral ("<undefined>"));
     }
-  else if (uentry_isDatatype (v))
-    {
-      return (message ("[%d] [%s] %s %q : %t [%t] %s %s // %q [s: %q; d: %q]",
-		       (int) v,
-		       ekind_unparse (v->ukind),
-		       v->uname,
-		       uentry_getName (v),
-		       v->utype,
-		       ctype_isDefined (v->info->datatype->type) 
-		          ? v->info->datatype->type : ctype_unknown,
-		       ynm_unparse (v->info->datatype->mut),
-		       ynm_unparse (v->info->datatype->abs),
-		       sRef_unparseState (v->sref),
-		       fileloc_unparse (v->whereSpecified),
-		       fileloc_unparse (v->whereDefined)));
-    }
-  else if (uentry_isFunction (v))
-    {
-      return (message ("[%w] = [%s] %q : %t / sref: %q / mods: %q / "
-		       "globs: %q / [s: %q; decl: %q; def: %q]",
-		       (long unsigned) v,
-		       ekind_unparse (v->ukind),
-		       uentry_getName (v),
-		       v->utype,
-		       sRef_unparseFull (v->sref),
-		       sRefSet_unparse (v->info->fcn->mods),
-		       globSet_unparse  (v->info->fcn->globs),
-		       fileloc_unparse (v->whereSpecified),
-		       fileloc_unparse (v->whereDeclared),
-		       fileloc_unparse (v->whereDefined)));
-    }
-  else if (uentry_isIter (v))
-    {
-      return (message ("[%s] %q: %t / %q [s: %q; d: %q]",
-		       ekind_unparse (v->ukind),
-		       uentry_getName (v),
-		       v->utype,
-		       sRef_unparseFull (v->sref),
-		       fileloc_unparse (v->whereSpecified),
-		       fileloc_unparse (v->whereDefined)));
-    }
-  else if (uentry_isVariable (v))
-    {
-      return 
-	(message ("[check: %s] / [%w] = [%s] %s : %t %q [s: %q; def: %q; dec: %q] "
-		  "kind <%d> isout <%d> used <%d>",
-		  checkedName (v->info->var->checked),
-		  (long unsigned) v,
-		  ekind_unparse (v->ukind),
-		  v->uname,
-		  v->utype,
-		  sRef_unparseDeep (v->sref),
-		  fileloc_unparse (v->whereSpecified),
-		  fileloc_unparse (v->whereDefined),
-		  fileloc_unparse (v->whereDeclared),
-		  (int) v->info->var->kind,
-		  (int) v->info->var->defstate,
-		  (int) v->used));
-    }
   else
     {
-      return (message ("[%s] %s : %t %q at [s: %q; d: %q]",
-		       ekind_unparse (v->ukind),
-		       v->uname,
-		       v->utype,
-		       sRef_unparseFull (v->sref),
-		       fileloc_unparse (v->whereSpecified),
-		       fileloc_unparse (v->whereDefined)));
-      
+      cstring res;
+
+      res = message ("[%w] %s %s: %s [spec: %q; decl: %q; def: %q]",
+		     (unsigned long) v, ekind_unparse (v->ukind), v->uname,
+		     ctype_unparse (v->utype),
+		     fileloc_unparse (uentry_whereSpecified (v)),
+		     fileloc_unparse (uentry_whereDeclared (v)),
+		     fileloc_unparse (uentry_whereDefined (v)));
+
+      DPRINTF (("uentry: %s", res));
+
+      if (uentry_isDatatype (v))
+	{
+	  res = message ("%q / type: %s mut: %s abs: %s state: %q",
+			 res,
+			 ctype_unparse 
+			 (ctype_isDefined (v->info->datatype->type) 
+			  ? v->info->datatype->type : ctype_unknown),
+			 ynm_unparse (v->info->datatype->mut),
+			 ynm_unparse (v->info->datatype->abs),
+			 sRef_unparseState (v->sref));
+	}
+      else if (uentry_isFunction (v))
+	{
+	  res = message ("%q / sref: %q / mods: %q / "
+			 "globs: %q / clauses: %q",
+			 res,
+			 sRef_unparseFull (v->sref),
+			 sRefSet_unparse (v->info->fcn->mods),
+			 globSet_unparse  (v->info->fcn->globs),
+			 stateClauseList_unparse (v->info->fcn->specclauses));
+	}
+      else if (uentry_isIter (v))
+	{
+	  res = message ("%q / sref: %q",
+			 res,
+			 sRef_unparseFull (v->sref));
+	}
+      else if (uentry_isVariable (v))
+	{
+	  res = message ("%q / sref: %q / kind <%d> isout <%d> null <%d> used <%d>",
+			 res,
+			 sRef_unparseFull (v->sref),
+			 (int) v->info->var->kind,
+			 (int) v->info->var->defstate,
+			 (int) v->info->var->nullstate,
+			 (int) v->used);
+	  DPRINTF (("sref: [%p]", v->sref));
+	  DPRINTF (("sref: %s", sRef_unparseDebug (v->sref)));
+	  /* DPRINTF (("sref: %s", sRef_unparseDeep (v->sref)));	   */
+	}
+      else
+	{
+	  res = message ("%q :: %q", res, uentry_unparse (v));
+	}
+
+      return res;
     }
 }
 
@@ -5054,8 +5455,7 @@ exitkind uentry_getExitCode (uentry ue)
     }
 }
 
-qual
-uentry_nullPred (uentry u)
+qual uentry_nullPred (uentry u)
 {
   llassert (uentry_isRealFunction (u));
 
@@ -5065,9 +5465,13 @@ uentry_nullPred (uentry u)
     }
   else
     {
-      return QU_UNKNOWN;
+      return qual_createUnknown ();
     }
 }
+
+/*
+** Note for variables, this is checking the declared state, not the current state.
+*/
 
 bool
 uentry_possiblyNull (uentry u)
@@ -5128,7 +5532,8 @@ uentry_hasName (uentry e)
     {
       cstring s = e->uname;
       
-      return (!(cstring_isEmpty (s) || cstring_equalLit (s, "...")));
+      return (!(cstring_isEmpty (s) || cstring_equalLit (s, "...")
+		|| uentry_isFakeTag (e)));
     }
   else
     {
@@ -5136,9 +5541,16 @@ uentry_hasName (uentry e)
     }
 }
 
+/*
+** Returns true for fake tags.
+** This is used for dumping the library
+*/
+
 bool uentry_hasRealName (uentry e)
 {
-  return (uentry_isValid (e) && cstring_isNonEmpty (e->uname));
+  return (uentry_isValid (e) 
+	  && cstring_isNonEmpty (e->uname)
+	  && !uentry_isGlobalMarker (e));
 }
 
 
@@ -5268,10 +5680,9 @@ uentry_getName (uentry e)
 
   if (uentry_isValid (e))
     {
-      
       if (uentry_isAnyTag (e))
 	{
-	  ret = fixTagName (e->uname); 
+	  ret = fixTagName (e->uname);  
 	}
       else if (uentry_isAnyParam (e))
 	{
@@ -5280,6 +5691,36 @@ uentry_getName (uentry e)
       else
 	{
 	  ret = cstring_copy (e->uname);
+	}
+    }
+
+  return ret;
+}
+
+cstring uentry_observeRealName (uentry e)
+{
+  cstring ret = cstring_undefined;
+
+  if (uentry_isValid (e))
+    {      
+      if (uentry_isAnyTag (e))
+	{
+	  if (isFakeTag (e->uname))
+	    {
+	      ret = cstring_undefined;
+	    }
+	  else
+	    {
+	      ret = plainTagName (e->uname); 
+	    }
+	}
+      else if (uentry_isAnyParam (e))
+	{
+	  ret = fixParamName (e->uname);
+	}
+      else
+	{
+	  ret = e->uname;
 	}
     }
 
@@ -5643,7 +6084,7 @@ uentry_resetParams (uentry ue, /*@only@*/ uentryList pn)
 
   if (ctype_isFunction (rct))
     {
-      rettype = ctype_returnValue (rct);
+      rettype = ctype_getReturnType (rct);
     }
 
   ue->utype = ctype_makeNFParamsFunction (rettype, pn);      
@@ -5807,7 +6248,7 @@ ctype uentry_getRealType (uentry e)
     {
       usymId iid = ctype_typeId (ct);
       
-      if /*@access usymId@*/ (iid == uid) /*@noaccess usymId@*/
+      if (usymId_equal (iid, uid))
 	{	  
 	  llcontbug (message ("uentry_getRealType: recursive type! %s",
 			      ctype_unparse (ct)));
@@ -5817,7 +6258,12 @@ ctype uentry_getRealType (uentry e)
 	{
 	  /* evs 2000-07-25: possible infinite recursion ? */
 	  uentry ue2 = usymtab_getTypeEntry (iid);
-	  llassertprint (ue2 != e, ("Bad recursion: %s", uentry_unparseFull (e)));
+
+	  if (ue2 == e)
+	    {
+	      llcontbug (message ("Bad recursion: %q", uentry_unparseFull (e)));
+	      return ctype_unknown;
+	    }
 
 	  return uentry_getRealType (ue2);
 	}
@@ -5867,7 +6313,7 @@ ctype uentry_getForceRealType (uentry e)
     {
       usymId iid = ctype_typeId (ct);
       
-      if /*@access usymId@*/ (iid == uid) /*@noaccess usymId@*/
+      if (usymId_equal (iid, uid))
 	{	  
 	  llcontbug (message ("uentry_getRealType: recursive type! %s",
 			      ctype_unparse (ct)));
@@ -5904,6 +6350,7 @@ uentry uentry_nameCopy (cstring name, uentry e)
   enew->hasNameError = FALSE;
 
   enew->uses = filelocList_new ();
+  enew->warn = warnClause_undefined; 
 
   enew->storageclass = e->storageclass;
   enew->info = uinfo_copy (e->info, e->ukind);
@@ -5957,6 +6404,10 @@ ucinfo_free (/*@only@*/ ucinfo u)
 static void
 uvinfo_free (/*@only@*/ uvinfo u)
 {
+  /*drl7x added 6/29/01 */
+  /*free null terminated stuff */
+
+  free(u->bufinfo);
   sfree (u);
 }
 
@@ -5971,15 +6422,7 @@ ufinfo_free (/*@only@*/ ufinfo u)
 {
   globSet_free (u->globs);
   sRefSet_free (u->mods);
-  specialClauses_free (u->specclauses);
-
-  /*@i33*/
-  /*fix up if this is the right way to handle this --drl*/
-  if (u->preconditions != NULL)
-    constraintList_free(u->preconditions);
-  if (u->postconditions != NULL)
-    constraintList_free(u->postconditions);
-
+  stateClauseList_free (u->specclauses);
   sfree (u);
 }
 
@@ -6015,9 +6458,24 @@ uvinfo_copy (uvinfo u)
   ret->nullstate = u->nullstate;
   ret->defstate = u->defstate;
   ret->checked = u->checked;
-  //make sure line ok
-  //ret->bufinfo = u->bufinfo;
-  /*@i334@*/  return ret;
+
+  /* drl added 07-02-001 */
+  /* copy null terminated information */
+
+  if (u->bufinfo != NULL)
+    {
+      ret->bufinfo = (bbufinfo) dmalloc (sizeof( * u->bufinfo ) );
+      ret->bufinfo->bufstate = u->bufinfo->bufstate;
+      ret->bufinfo->size     = u->bufinfo->size;
+      ret->bufinfo->len      = u->bufinfo->len;
+      return ret;
+    }
+  else
+    {
+      ret->bufinfo = NULL;
+      return ret;
+    }
+    
 }
 
 static /*@only@*/ udinfo
@@ -6046,18 +6504,18 @@ ufinfo_copy (ufinfo u)
   ret->globs = globSet_newCopy (u->globs);
   ret->mods = sRefSet_newCopy (u->mods);
   ret->defparams = u->defparams;
-  ret->specclauses = specialClauses_copy (u->specclauses);
+  ret->specclauses = stateClauseList_copy (u->specclauses);
 
   /*drl 11 30 2000 */
   /* change 6/8/01 */
 
-  if (u->preconditions != NULL)
+  if (constraintList_isDefined(u->preconditions))
     ret->preconditions = constraintList_copy(u->preconditions);
   else
     ret->preconditions = NULL;
   /* end drl */
 
-    if (u->postconditions != NULL)
+    if (constraintList_isDefined(u->postconditions))
     ret->postconditions = constraintList_copy(u->postconditions);
   else
     ret->postconditions = NULL;
@@ -6150,6 +6608,8 @@ uentry_reallyFree (/*@notnull@*/ /*@only@*/ uentry e)
   fileloc_free (e->whereDefined); 
   fileloc_free (e->whereDeclared); 
 
+  warnClause_free (e->warn);
+
   nuentries--;
   sfree (e);
   }
@@ -6177,6 +6637,7 @@ uentry_freeComplete (/*@only@*/ uentry e)
 {
   if (uentry_isValid (e) && !uentry_isElipsisMarker (e))
     {
+      DPRINTF (("Free complete: %s", sRef_unparseFull (e->sref)));
       /*@i@*/ sRef_free (e->sref);
       e->sref = sRef_undefined;
       uentry_reallyFree (e);
@@ -6717,7 +7178,7 @@ nargsError (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew)
 {
   if (optgenerror 
       (FLG_TYPE,
-       message ("Function %s %rdeclared with %d arg%p, %s with %d",
+       message ("Function %s %rdeclared with %d arg%&, %s with %d",
 		unew->uname, 
 		uentry_isDeclared (old),
 		uentryList_size (uentry_getParams (unew)),
@@ -6737,10 +7198,10 @@ returnValueError (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew)
        message ("Function %s inconsistently %rdeclared to return %t",
 		unew->uname,
 		uentry_isDeclared (old),
-		ctype_returnValue (unew->utype)),
+		ctype_getReturnType (unew->utype)),
        uentry_whereDeclared (unew)))
     {
-      uentry_showWhereLastVal (old, ctype_unparse (ctype_returnValue (old->utype)));
+      uentry_showWhereLastVal (old, ctype_unparse (ctype_getReturnType (old->utype)));
     }
 }
 
@@ -6837,7 +7298,7 @@ void checkNullState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew, bool m
       if (oldState == NS_MNOTNULL 
 	  && (ctype_isUA (unew->utype) 
 	      || (uentry_isFunction (unew)
-		  && ctype_isUA (ctype_returnValue (unew->utype)))))
+		  && ctype_isUA (ctype_getReturnType (unew->utype)))))
 	{
 	  if (uentry_isVar (unew))
 	    {
@@ -6939,8 +7400,14 @@ void checkDefState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
       newState = sRef_getDefState (unew->sref);
     }
 
-  if (newState != oldState && newState != SS_UNKNOWN && newState != SS_DEFINED)
+  if (newState != oldState 
+      && newState != SS_UNKNOWN 
+      && newState != SS_DEFINED)
     {
+      DPRINTF (("Where declared: %s / %s",
+		fileloc_unparse (uentry_whereDeclared (unew)),
+		bool_unparse (fileloc_isXHFile (uentry_whereDeclared (unew)))));
+
       if (mustConform)
 	{
 	  if (optgenerror 
@@ -6962,7 +7429,7 @@ void checkDefState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 	      uentry_showWhereSpecified (old);
 	    }
 	}
-      
+
       if (vars) old->info->var->defstate = newState;
       sRef_setDefState (old->sref, newState, uentry_whereDeclared (unew));
     }
@@ -6984,7 +7451,7 @@ void checkDefState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 	      uentry_showWhereSpecified (old);
 	    }
 	}
-
+      
       if (vars) unew->info->var->defstate = oldState;
       sRef_setDefState (unew->sref, oldState, uentry_whereDeclared (unew));
     }
@@ -7050,6 +7517,8 @@ static void
 		{
 		  uentry_showWhereSpecified (old);
 
+		  DPRINTF (("Old: %s", sRef_unparseFull (old->sref)));
+		  DPRINTF (("New: %s", sRef_unparseFull (unew->sref)));
 		  sRef_setAliasKind (old->sref, AK_ERROR, 
 				     uentry_whereDeclared (unew));
 		}
@@ -7176,6 +7645,94 @@ static void
     }
 }
 
+static void 
+checkMetaState (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew, 
+		bool mustConform, /*@unused@*/ bool completeConform)
+{
+  valueTable newvals = sRef_getValueTable (unew->sref);
+
+  if (valueTable_isDefined (newvals))
+    {
+      DPRINTF (("Check meta state: %s -> %s",
+		uentry_unparseFull (old),
+		uentry_unparseFull (unew)));
+      
+      DPRINTF (("Check meta state refs: %s -> %s",
+		sRef_unparseFull (old->sref),
+		sRef_unparseFull (unew->sref)));
+      
+      DPRINTF (("Value table: %s", valueTable_unparse (newvals)));
+      
+      /*
+      ** Copy the new values into the old ref
+      */
+
+      valueTable_elements (newvals, key, newval)
+	{
+	  metaStateInfo msinfo = context_lookupMetaStateInfo (key);
+	  stateValue oldval = sRef_getMetaStateValue (old->sref, key);
+            
+	  llassert (metaStateInfo_isDefined (msinfo));
+
+	  if (stateValue_isUndefined (oldval))
+	    {
+	      sRef_setMetaStateValue (old->sref, key, stateValue_getValue (newval), uentry_whereLast (unew));
+	    }
+	  else
+	    {
+	      if (stateValue_isError (oldval))
+		{
+		  if (!stateValue_isError (newval))
+		    {
+		      sRef_setMetaStateValue (old->sref, key, stateValue_getValue (newval), uentry_whereLast (unew));
+		    }
+		  else
+		    {
+		      ; /* No change necessary. */
+		    }
+		}
+	      else
+		{
+		  if (stateValue_getValue (newval) != stateValue_getValue (oldval))
+		    {
+		      if (fileloc_isXHFile (uentry_whereDeclared (unew)))
+			{
+			  ;
+			}
+		      else
+			{
+			  if (mustConform 
+			      && optgenerror 
+			      (FLG_INCONDEFS,
+			       message ("%s %q inconsistently %rdeclared %s %s, %s as %s",
+					uentry_ekindName (unew),
+					uentry_getName (unew),
+					uentry_isDeclared (old),
+					fcnErrName (unew),
+					metaStateInfo_unparseValue (msinfo, 
+								    stateValue_getValue (newval)),
+					uentry_specOrDefName (old),
+					metaStateInfo_unparseValue (msinfo,
+								    stateValue_getValue (oldval))),
+			       uentry_whereDeclared (unew)))
+			    {
+			      uentry_showWhereSpecified (old);
+			    }
+			}
+		      
+		      DPRINTF (("Updating!"));
+		      sRef_setMetaStateValue (old->sref, key, stateValue_getValue (newval), uentry_whereLast (unew));
+		    }
+		  else
+		    {
+		      DPRINTF (("Values match"));
+		    }
+		}
+	    }
+	} end_valueTable_elements ;
+    }
+}
+
 static void
 uentry_checkStateConformance (/*@notnull@*/ uentry old,
 			      /*@notnull@*/ uentry unew,
@@ -7185,6 +7742,7 @@ uentry_checkStateConformance (/*@notnull@*/ uentry old,
   checkNullState (old, unew, mustConform, completeConform);
   checkAliasState (old, unew, mustConform, completeConform);
   checkExpState (old, unew, mustConform, completeConform);
+  checkMetaState (old, unew, mustConform, completeConform);
 
   sRef_storeState (old->sref);
   sRef_storeState (unew->sref);
@@ -7456,6 +8014,10 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   ctype      oldRetType = ctype_unknown;
   ctype      newRetType = ctype_unknown;
 
+  DPRINTF (("Function conform: %s ==> %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
+
   if (uentry_isForward (old))
     {
       mustConform = FALSE;
@@ -7471,14 +8033,14 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
     {
       llassert (ctype_isFunction (oldType));
 
-      oldRetType = ctype_returnValue (oldType);
+      oldRetType = ctype_getReturnType (oldType);
     }
 
   if (ctype_isKnown (newType))
     {
       llassert (ctype_isFunction (newType));
 
-      newRetType = ctype_returnValue (newType);
+      newRetType = ctype_getReturnType (newType);
     }
 
   if (ctype_isKnown (oldRetType) && ctype_isKnown (newRetType)
@@ -7516,7 +8078,11 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	}
     }
 
+  DPRINTF (("Before state: %s",
+	    uentry_unparseFull (old)));
   uentry_checkStateConformance (old, unew, mustConform, completeConform);
+  DPRINTF (("After state: %s",
+	    uentry_unparseFull (old)));
 
   if (!exitkind_equal (unew->info->fcn->exitCode, old->info->fcn->exitCode))
     {
@@ -7541,7 +8107,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 
   if (!qual_isUnknown (unew->info->fcn->nullPred))
     {
-      if (!qual_equal (old->info->fcn->nullPred, unew->info->fcn->nullPred))
+      if (!qual_match (old->info->fcn->nullPred, unew->info->fcn->nullPred))
 	{
 	  if (optgenerror
 	      (FLG_INCONDEFS,
@@ -7761,10 +8327,14 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   checkGlobalsConformance (old, unew, mustConform, completeConform);
   checkModifiesConformance (old, unew, mustConform, completeConform);
 
-  if (specialClauses_isDefined (unew->info->fcn->specclauses))
+  DPRINTF (("Before list: %s",
+	    uentry_unparseFull (old)));
+
+  if (stateClauseList_isDefined (unew->info->fcn->specclauses))
     {
-      if (!specialClauses_isDefined (old->info->fcn->specclauses))
+      if (!stateClauseList_isDefined (old->info->fcn->specclauses))
 	{
+	  /*
 	  if (optgenerror
 	      (FLG_INCONDEFS,
 	       message ("Function %q redeclared using special clauses (can only "
@@ -7774,12 +8344,26 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 	    {
 	      uentry_showWhereLast (old);
 	    }
+	  */
+
+	  /*@i23 need checking @*/ 
+
+	  old->info->fcn->specclauses = unew->info->fcn->specclauses;
 	}
       else
 	{
-	  specialClauses_checkEqual (old, unew);
+	  /*@i43 should be able to append? @*/
+
+	  stateClauseList_checkEqual (old, unew);
+	  stateClauseList_free (unew->info->fcn->specclauses);
+	  unew->info->fcn->specclauses = stateClauseList_undefined;
+	  /*@-branchstate@*/ 
 	}
+      /*@=branchstate@*/ /*@i23 shouldn't need this@*/
     }
+
+  DPRINTF (("After state: %s",
+	    uentry_unparseFull (old)));
 
   if (fileloc_isUndefined (old->whereDeclared))
     {
@@ -7844,6 +8428,9 @@ bool checkTypeConformance (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
 	{
 	  if (mustConform)
 	    {
+	      DPRINTF (("Check struct conformance: %s / %s",
+			uentry_unparseFull (old),
+			uentry_unparseFull (unew)));
 	      checkStructConformance (old, unew); 
 	    }
 	}
@@ -7873,6 +8460,10 @@ bool checkTypeConformance (/*@notnull@*/ uentry old, /*@notnull@*/ uentry unew,
     }
   else if (!ctype_match (old->utype, unew->utype))
     {
+      DPRINTF (("Type mismatch: %s / %s",
+		ctype_unparse (old->utype),
+		ctype_unparse (unew->utype)));
+
       if (cstring_equal (uentry_rawName (old), context_getBoolName ()))
 	{
 	  ctype realt = ctype_realType (unew->utype);
@@ -8453,9 +9044,17 @@ uentry_mergeEntries (uentry spec, /*@only@*/ uentry def)
   llassert (uentry_isValid (spec));
   llassert (uentry_isValid (def));
   llassert (cstring_equal (spec->uname, def->uname));
+  
+  DPRINTF (("Merge entries: %s / %s",
+	    uentry_unparseFull (spec),
+	    uentry_unparseFull (def)));
 
   uentry_checkConformance (spec, def, TRUE, 
 			   context_getFlag (FLG_NEEDSPEC));
+
+  DPRINTF (("Merge entries after conform: %s / %s",
+	    uentry_unparseFull (spec),
+	    uentry_unparseFull (def)));
 
   /* was: !(fileloc_isImport (uentry_whereSpecified (spec)))); */
 
@@ -8566,6 +9165,10 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
   fileloc unewdef = uentry_whereDeclared (unew);
   bool mustConform;
   bool wasForward;
+
+  DPRINTF (("uentry merge: %s / %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
  
   if (uentry_isExtern (unew))
     {
@@ -9026,36 +9629,49 @@ static void
     }
 }
 
-static bool notNull (sRef sr, bool flip)
+/*
+** A reference is relevant for certain checks, only if it 
+** is not definitely null on this path (but not declared
+** to always be null.)
+*/
+
+static bool uentry_relevantReference (sRef sr, bool flip)
 {
-  return (!sRef_definitelyNull (sr)
-	  && !(sRef_isKept (sr))
-	  && !(sRef_isDependent (sr))
-	  && !(flip ? usymtab_isProbableDeepNull (sr)
-	       : usymtab_isAltProbablyDeepNull (sr)));
+  if (sRef_isKept (sr) || sRef_isDependent (sr))
+    {
+      return FALSE;
+    }
+  else
+    {
+      if (flip)
+	{
+	  return !sRef_definitelyNullContext (sr);
+	}
+      else
+	{
+	  return !sRef_definitelyNullAltContext (sr);
+	}
+    }
 }
-    
-void
-uentry_mergeState (uentry res, uentry other, fileloc loc,
-		   bool mustReturn, bool flip, bool opt,
-		   clause cl)
+
+static void
+uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
+			 bool mustReturn, bool flip, bool opt,
+			 clause cl)    
 {
-  llassert (uentry_isValid (res));
-  llassert (uentry_isValid (other));
-
-  llassert (res->ukind == other->ukind);
-  llassert (res->ukind == KVAR);
-
-  DPRINTF (("Merge state: %s / %s", 
-	    uentry_unparse (res),
-	    uentry_unparse (other)));
+  DPRINTF (("Merge alias states: %s / %s",
+	    uentry_unparseFull (res),
+	    uentry_unparseFull (other)));
 
   if (sRef_isValid (res->sref))
     {
       if (!mustReturn)
 	{
+	  DPRINTF (("1"));
 	  if (incompatibleStates (res->sref, other->sref))
 	    {
+	      DPRINTF (("2"));
+
 	      if (sRef_isThroughArrayFetch (res->sref)
 		  && !context_getFlag (FLG_STRICTBRANCHSTATE))
 		{
@@ -9074,8 +9690,9 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 		}
 	      else
 		{
-		  if (notNull (other->sref, flip))
+		  if (uentry_relevantReference (other->sref, flip))
 		    {
+		      DPRINTF (("4"));
 		      if (sRef_isLocalParamVar (res->sref) 
 			  && (sRef_isLocalState (other->sref) 
 			      || sRef_isDependent (other->sref)))
@@ -9105,7 +9722,7 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 	    {
 	      if (incompatibleStates (other->sref, res->sref))
 		{
-		  if (notNull (res->sref, !flip))
+		  if (uentry_relevantReference (res->sref, !flip))
 		    {
 		      if (sRef_isLocalParamVar (res->sref) 
 			  && (sRef_isDependent (res->sref)
@@ -9130,9 +9747,9 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 			      ** its okay.
 			      ** (e.g., free (s); s = new(); ...
 			      */
-
+			      
 			      uentry uvar = usymtab_lookupSafe (other->uname);
-
+			      
 			      if (uentry_isValid (uvar)
 				  && ((sRef_isDead (other->sref) 
 				       && sRef_isOnly (uvar->sref))
@@ -9149,13 +9766,17 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 			    }
 			  else
 			    {
+			      DPRINTF (("Here: %s / %s",
+					uentry_unparseFull (res),
+					uentry_unparseFull (other)));
+
 			      branchStateAltError (res, other, 
 						   flip, cl, loc);
 			    }
 			}
 		    }
 		}
-
+	      
 	      if (sRef_isKept (other->sref))
 		{
 		  sRef_setKept (res->sref, loc);
@@ -9180,66 +9801,256 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
 	      sRef_setModified (res->sref);
 	    }
 	}
+    }
+}
 
-      if (cl == DOWHILECLAUSE)
+static void
+uentry_mergeValueStates (uentry res, uentry other, fileloc loc)
+{
+  valueTable rvalues;
+  valueTable ovalues;
+
+  DPRINTF (("Merge values: %s / %s", sRef_unparseFull (res->sref), sRef_unparseFull (other->sref)));
+  
+  rvalues = sRef_getValueTable (res->sref);
+  ovalues = sRef_getValueTable (other->sref);
+  
+  if (valueTable_isUndefined (ovalues))
+    {
+      DPRINTF (("No value table: %s", sRef_unparseFull (other->sref)));
+      ;
+    }
+  else if (valueTable_isUndefined (rvalues))
+    {
+      /*
+      ** Copy values from other
+      */
+      
+      /*@i$@#@*/
+      DPRINTF (("Has value table: %s", sRef_unparseFull (other->sref)));
+      DPRINTF (("No value table: %s", sRef_unparseFull (res->sref)));
+      ;
+    }
+  else
+    {
+      valueTable_elements (ovalues, fkey, fval) {
+	stateValue tval;
+	metaStateInfo minfo;
+	stateCombinationTable sctable;
+	cstring msg;
+	int nval;
+
+	tval = valueTable_lookup (rvalues, fkey);
+	
+	DPRINTF (("Merge value: %s / %s X %s", fkey, 
+		  stateValue_unparse (fval), stateValue_unparse (tval)));
+
+	minfo = context_lookupMetaStateInfo (fkey);
+	llassert (stateValue_isDefined (tval));
+	
+	if (metaStateInfo_isUndefined (minfo) || !stateValue_isDefined (tval)) 
+	  {
+	    DPRINTF (("Cannot find meta state for: %s", fkey));
+	    BADBRANCH;
+	  }
+	else
+	  {
+	    llassert (metaStateInfo_isDefined (minfo));
+
+	    if (stateValue_isError (fval)
+		|| sRef_definitelyNullContext (res->sref))
+	      {
+		sRef_setMetaStateValueComplete (res->sref, 
+						fkey, stateValue_getValue (fval), 
+						loc);
+		DPRINTF (("Setting res: %s", sRef_unparseFull (res->sref)));
+	      }
+	    else if (stateValue_isError (tval)
+		     || sRef_definitelyNullAltContext (other->sref))
+	      {
+		DPRINTF (("Other branch is definitely null!"));
+	      }
+	    else 
+	      {
+		DPRINTF (("Check: %s / %s / %s / %s", fkey,
+			  metaStateInfo_unparse (minfo),
+			  stateValue_unparse (fval),
+			  stateValue_unparse (tval)));
+		
+		DPRINTF (("state values: %d / %d",
+			  stateValue_getValue (fval), stateValue_getValue (tval)));
+		
+		sctable = metaStateInfo_getMergeTable (minfo);
+
+		DPRINTF (("Merge table: %s",
+			  stateCombinationTable_unparse (sctable)));
+		
+		msg = cstring_undefined;
+		
+		nval = stateCombinationTable_lookup (sctable, 
+						     stateValue_getValue (fval), 
+						     stateValue_getValue (tval), 
+						     &msg);
+
+		DPRINTF (("nval: %d / %d / %d", nval,
+			  stateValue_getValue (fval), stateValue_getValue (tval)));
+
+		if (cstring_isDefined (msg)) 
+		  {
+		    /*@i32 print extra info for assignments@*/
+
+		    if (uentry_isGlobalMarker (res))
+		      {
+			if (optgenerror 
+			    (FLG_STATEMERGE,
+			     message
+			     ("Control branches merge with incompatible global states (%s and %s): %s",
+			      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
+			      metaStateInfo_unparseValue (minfo, stateValue_getValue (tval)),
+			      msg),
+			     loc))
+			  {
+			    sRef_showMetaStateInfo (res->sref, fkey);
+			    sRef_showMetaStateInfo (other->sref, fkey);
+			  }
+		      }
+		    else
+		      {
+			if (optgenerror 
+			    (FLG_STATEMERGE,
+			     message
+			     ("Control branches merge with incompatible states for %q (%s and %s): %s",
+			      uentry_getName (res),
+			      metaStateInfo_unparseValue (minfo, stateValue_getValue (fval)),
+			      metaStateInfo_unparseValue (minfo, stateValue_getValue (tval)),
+			      msg),
+			     loc))
+			  {
+			    sRef_showMetaStateInfo (res->sref, fkey);
+			    sRef_showMetaStateInfo (other->sref, fkey);
+			    DPRINTF (("Res: %s", sRef_unparseFull (res->sref)));
+			    DPRINTF (("Other: %s", sRef_unparseFull (other->sref)));
+ 			    DPRINTF (("Null: %s / %s",
+				      bool_unparse (usymtab_isDefinitelyNull (res->sref)),
+				      bool_unparse (usymtab_isDefinitelyNull (other->sref))));
+
+			  }
+		      }
+		  }
+
+		if (nval == stateValue_getValue (fval)
+		    && nval != stateValue_getValue (tval))
+		  {
+		    loc = stateValue_getLoc (fval);
+		  }
+		else if (nval == stateValue_getValue (tval)
+			 && nval != stateValue_getValue (fval))
+		  {
+		    loc = stateValue_getLoc (tval);
+		  }
+		else
+		  {
+		    ;
+		  }
+
+		if (stateValue_getValue (sRef_getMetaStateValue (res->sref, fkey)) == nval
+		    && nval == stateValue_getValue (fval)
+		    && nval == stateValue_getValue (tval))
+		  {
+		    ;
+		  }
+		else
+		  {
+		    sRef_setMetaStateValueComplete (res->sref, fkey, nval, loc);
+		  }
+	      }
+	  }
+      } end_valueTable_elements ;
+    } 
+}
+
+
+static void
+uentry_mergeSetStates (uentry res, uentry other, /*@unused@*/ fileloc loc,
+		       bool flip, clause cl)
+{
+  if (cl == DOWHILECLAUSE)
+    {
+      res->used = other->used || res->used;
+      res->lset = other->lset || res->lset;
+      res->uses = filelocList_append (res->uses, other->uses);
+      other->uses = filelocList_undefined;
+    }
+  else
+    {
+      if (sRef_isMacroParamRef (res->sref)
+	  && !uentry_isSefParam (other)
+	  && !uentry_isSefParam (res))
+	{
+	  bool hasError = FALSE;
+	  
+	  if (bool_equal (res->used, other->used))
+	    {
+	      res->used = other->used;
+	    }
+	  else
+	    {
+	      if (other->used && !flip)
+		{
+		  hasError = 
+		    optgenerror 
+		    (FLG_MACROPARAMS,
+		     message ("Macro parameter %q used in true clause, "
+			      "but not in false clause",
+			      uentry_getName (res)),
+		     uentry_whereDeclared (res));
+		}
+	      else
+		{	
+		  hasError = 
+		    optgenerror 
+		    (FLG_MACROPARAMS,
+		     message ("Macro parameter %q used in false clause, "
+			      "but not in true clause",
+			      uentry_getName (res)),
+		     uentry_whereDeclared (res));
+		}
+	      res->used = TRUE;
+	      
+	      if (hasError)
+		{
+		  /* make it sef now, prevent more errors */
+		  res->info->var->kind = VKREFSEFPARAM;
+		}
+	    }
+	}
+      else
 	{
 	  res->used = other->used || res->used;
 	  res->lset = other->lset || res->lset;
 	  res->uses = filelocList_append (res->uses, other->uses);
 	  other->uses = filelocList_undefined;
 	}
-      else
-	{
-	  if (sRef_isMacroParamRef (res->sref)
-	      && !uentry_isSefParam (other)
-	      && !uentry_isSefParam (res))
-	    {
-	      bool hasError = FALSE;
-	      
-	      if (bool_equal (res->used, other->used))
-		{
-		  res->used = other->used;
-		}
-	      else
-		{
-		  if (other->used && !flip)
-		    {
-		      hasError = 
-			optgenerror 
-			  (FLG_MACROPARAMS,
-			   message ("Macro parameter %q used in true clause, "
-				    "but not in false clause",
-				    uentry_getName (res)),
-			   uentry_whereDeclared (res));
-		    }
-		  else
-		    {	
-		      hasError = 
-			optgenerror 
-			  (FLG_MACROPARAMS,
-			   message ("Macro parameter %q used in false clause, "
-				    "but not in true clause",
-				    uentry_getName (res)),
-			   uentry_whereDeclared (res));
-		    }
-		  res->used = TRUE;
-		  
-		  if (hasError)
-		    {
-		      /* make it sef now, prevent more errors */
-		      res->info->var->kind = VKREFSEFPARAM;
-		    }
-		}
-	    }
-	  else
-	    {
-	      res->used = other->used || res->used;
-	      res->lset = other->lset || res->lset;
-	      res->uses = filelocList_append (res->uses, other->uses);
-	      other->uses = filelocList_undefined;
-	    }
-	}
     }
+}
+
+void
+uentry_mergeState (uentry res, uentry other, fileloc loc,
+		   bool mustReturn, bool flip, bool opt,
+		   clause cl)
+{
+  llassert (uentry_isValid (res));
+  llassert (uentry_isValid (other));
+
+  llassert (res->ukind == other->ukind);
+  llassert (res->ukind == KVAR);
+
+  DPRINTF (("Merge state: %s / %s", uentry_unparseFull (res),
+	    uentry_unparseFull (other)));
+  
+  uentry_mergeAliasStates (res, other, loc, mustReturn, flip, opt, cl);
+  uentry_mergeValueStates (res, other, loc);
+  uentry_mergeSetStates (res, other, loc, flip, cl);
 }
 
 void uentry_setUsed (uentry e, fileloc loc)
@@ -9247,6 +10058,8 @@ void uentry_setUsed (uentry e, fileloc loc)
   static bool firstTime = TRUE;
   static bool showUses = FALSE;
   static bool exportLocal = FALSE;
+
+  DPRINTF (("Used: %s / %s", uentry_unparse (e), fileloc_unparse (loc)));
 
   if (firstTime)
     {
@@ -9261,7 +10074,27 @@ void uentry_setUsed (uentry e, fileloc loc)
   if (uentry_isValid (e))
     {
       int dp;
-      
+
+      if (warnClause_isDefined (e->warn))
+	{
+	  flagSpec flg = warnClause_getFlag (e->warn);
+	  cstring msg;
+
+	  if (warnClause_hasMessage (e->warn))
+	    {
+	      msg = cstring_copy (warnClause_getMessage (e->warn));
+	    }
+	  else
+	    {
+	      msg = message ("Use of possibly dangerous %s",
+			     uentry_ekindNameLC (e));
+	    }
+
+	  vfsgenerror (flg, 
+		       message ("%q: %q", msg, uentry_getName (e)),
+		       loc);
+	}
+
       if (sRef_isMacroParamRef (e->sref))
 	{
 	  if (uentry_isYield (e) || uentry_isSefParam (e))
@@ -9306,7 +10139,7 @@ void uentry_setUsed (uentry e, fileloc loc)
 	}
       
       e->used = TRUE;
-      
+
       if (!sRef_isLocalVar (e->sref))
 	{
 	  if (showUses)
@@ -9345,38 +10178,43 @@ bool uentry_isReturned (uentry u)
 {
   llassert (uentry_isRealFunction (u));
 
-  if (ctype_isFunction (u->utype)
-      && sRef_isStateSpecial (uentry_getSref (u)))
+  if (ctype_isFunction (u->utype) && sRef_isStateSpecial (uentry_getSref (u)))
     {
-      specialClauses clauses = uentry_getSpecialClauses (u);
-      sRef res = sRef_makeNew (ctype_returnValue (u->utype), u->sref, u->uname);
+      stateClauseList clauses = uentry_getStateClauseList (u);
+      sRef res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
 
+      DPRINTF (("Returned: %s", sRef_unparseFull (res)));
       sRef_setAllocated (res, g_currentloc);
 
-      specialClauses_postElements (clauses, cl)
+      DPRINTF (("ensures clause: %s / %s", uentry_unparse (u), 
+		stateClauseList_unparse (clauses)));
+
+      stateClauseList_postElements (clauses, cl)
 	{
-	  sRefSet refs = specialClause_getRefs (cl);
-	  sRefMod modf = specialClause_getEffectFunction (cl);
-
-	  sRefSet_elements (refs, el)
+	  if (!stateClause_isGlobal (cl))
 	    {
-	      sRef base = sRef_getRootBase (el);
-
-	      if (sRef_isResult (base))
+	      sRefSet refs = stateClause_getRefs (cl);
+	      sRefMod modf = stateClause_getEffectFunction (cl);
+	      
+	      sRefSet_elements (refs, el)
 		{
-		  if (modf != NULL)
+		  sRef base = sRef_getRootBase (el);
+		  
+		  if (sRef_isResult (base))
 		    {
-		      sRef sr = sRef_fixBase (el, res);
-		      modf (sr, g_currentloc);
+		      if (modf != NULL)
+			{
+			  sRef sr = sRef_fixBase (el, res);
+			  modf (sr, g_currentloc);
+			}
 		    }
-		}
-	      else
-		{
-		  ;
-		}
-	    } end_sRefSet_elements ;
-
-	} end_specialClauses_postElements ;
+		  else
+		    {
+		      ;
+		    }
+		} end_sRefSet_elements ;
+	    }
+	} end_stateClauseList_postElements ;
 
       return res;
     }
@@ -9399,10 +10237,14 @@ bool uentry_isReturned (uentry u)
 		  exprNode ecur = exprNodeList_nth (args, paramno);
 		  sRef tref = exprNode_getSref (ecur);
 		  
+		  DPRINTF (("Returned reference: %s", sRef_unparseFull (tref)));
+
 		  if (sRef_isValid (tref))
 		    {
 		      sRef tcref = sRef_copy (tref);
 		      
+		      usymtab_addForceMustAlias (tcref, tref); /* evans 2001-05-27 */
+
 		      if (sRef_isDead (tcref))
 			{
 			  sRef_setDefined (tcref, g_currentloc);
@@ -9416,7 +10258,6 @@ bool uentry_isReturned (uentry u)
 			}
 		      
 		      sRef_makeSafe (tcref);
-		      
 		      prefs = sRefSet_insert (prefs, tcref);
 		    }
 		}
@@ -9435,6 +10276,7 @@ bool uentry_isReturned (uentry u)
 	    }
 	  else
 	    {
+	      /* should this ever happen? */ /*@i534 evans 2001-05-27 */
 	      res = sRefSet_mergeIntoOne (prefs);
 	    }
 	  
@@ -9447,7 +10289,8 @@ bool uentry_isReturned (uentry u)
 	{
 	  if (ctype_isFunction (u->utype))
 	    {
-	      res = sRef_makeNew (ctype_returnValue (u->utype), u->sref, u->uname);
+	      DPRINTF (("Making new from %s  -->", uentry_unparseFull (u)));
+	      res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
 	    }
 	  else
 	    {
@@ -9460,6 +10303,7 @@ bool uentry_isReturned (uentry u)
 	    }
 	}
       
+
       if (sRef_getNullState (res) == NS_ABSNULL)
 	{
 	  ctype ct = ctype_realType (u->utype);
@@ -9505,6 +10349,7 @@ bool uentry_isReturned (uentry u)
       
       sRefSet_free (prefs);
       
+      DPRINTF (("Returns ref: %s", sRef_unparseFull (res)));
       return res;
     }
 }
@@ -9515,7 +10360,7 @@ static bool uentry_isRefCounted (uentry ue)
 
   if (ctype_isFunction (ct))
     {
-      return (ctype_isRefCounted (ctype_returnValue (ct)));
+      return (ctype_isRefCounted (ctype_getReturnType (ct)));
     }
   else
     {
@@ -9602,6 +10447,58 @@ uentry_ekindName (uentry ue)
   BADEXIT;
 }
 
+/*@observer@*/ cstring
+uentry_ekindNameLC (uentry ue)
+{
+  if (uentry_isValid (ue))
+    {
+      switch (ue->ukind)
+	{
+	case KINVALID:
+	  return cstring_makeLiteralTemp ("<error: invalid uentry>");
+	case KDATATYPE: 
+	  return cstring_makeLiteralTemp ("datatype");
+	case KENUMCONST:
+	  return cstring_makeLiteralTemp ("enum member");
+	case KCONST:  
+	  return cstring_makeLiteralTemp ("constant");
+	case KVAR:      
+	  if (uentry_isParam (ue))
+	    {
+	      return cstring_makeLiteralTemp ("parameter");
+	    }
+	  else if (uentry_isExpandedMacro (ue))
+	    {
+	      return cstring_makeLiteralTemp ("expanded macro");
+	    }
+	  else
+	    {
+	      return cstring_makeLiteralTemp ("variable");
+	    }
+	case KFCN:   
+	  return cstring_makeLiteralTemp ("function");
+	case KITER: 
+	  return cstring_makeLiteralTemp ("iterator");
+	case KENDITER:
+	  return cstring_makeLiteralTemp ("iterator finalizer");
+	case KSTRUCTTAG:
+	  return cstring_makeLiteralTemp ("struct tag");
+	case KUNIONTAG:
+	  return cstring_makeLiteralTemp ("union tag");
+	case KENUMTAG: 
+	  return cstring_makeLiteralTemp ("enum tag");
+	case KELIPSMARKER: 
+	  return cstring_makeLiteralTemp ("optional parameters");
+	}
+    }
+  else
+    {
+      return cstring_makeLiteralTemp ("<Undefined>");
+    }
+
+  BADEXIT;
+}
+
 void uentry_setHasNameError (uentry ue)
 {
   llassert (uentry_isValid (ue));
@@ -9611,15 +10508,22 @@ void uentry_setHasNameError (uentry ue)
 
 void uentry_checkName (uentry ue)
 {
+  DPRINTF (("Checking name: %s / %s / %s", uentry_unparse (ue),
+	    uentry_observeRealName (ue),
+	    bool_unparse (uentry_isVisibleExternally (ue))));
+  
   if (uentry_isValid (ue) 
+      && !context_inXHFile ()
+      && uentry_hasName (ue)
       && !uentry_isElipsisMarker (ue)
       && context_getFlag (FLG_NAMECHECKS)
       && !ue->hasNameError 
       && !uentry_isEndIter (ue)
       && !fileloc_isBuiltin (uentry_whereLast (ue))
       && (uentry_isExpandedMacro (ue) || !uentry_isForward (ue)))
-    {
-      
+    {      
+      DPRINTF (("Here..."));
+
       if (uentry_isPriv (ue))
 	{
 	  ; /* any checks here? */
@@ -9669,52 +10573,27 @@ void uentry_checkName (uentry ue)
 	      
 	      usymtab_checkDistinctName (ue, scope);
 	    }
-
+	
 	  if (context_getFlag (FLG_CPPNAMES)) 
 	    {
-	      if (checkCppName (uentry_rawName (ue), uentry_whereLast (ue)))
-		{
-		  uentry_setHasNameError (ue);
-		}
+	      checkCppName (ue);
 	    }
 
 	  if (scope == globScope)
 	    {
-	      checkGlobalName (ue);
-
-	      if (context_getFlag (FLG_ANSIRESERVED))
-		{
-		  if (uentry_hasName (ue)
-		      && !uentry_isAnyTag (ue))
-		    {
-		      if (checkAnsiName (uentry_rawName (ue),
-					 uentry_whereLast (ue)))
-			{
-			  uentry_setHasNameError (ue);
-			}
-		    }
-		}
+	      checkExternalName (ue);
 	    }
-	  else
+	  else if (scope == fileScope)
+	    {
+	      checkFileScopeName (ue);
+	    }
+	  else 
 	    {
 	      checkLocalName (ue);
-	      
-	      if (context_getFlag (FLG_ANSIRESERVEDLOCAL))
-		{
-		  if (uentry_hasName (ue)
-		      && !uentry_isAnyTag (ue))
-		    {
-		      if (checkAnsiName (uentry_rawName (ue),
-					 uentry_whereLast (ue)))
-			{
-			  uentry_setHasNameError (ue);
-			}
-		    }
-		}
 	    }
 
-	  DPRINTF (("Check prefix: %s", uentry_unparse (ue)));
 	  checkPrefix (ue);
+	  checkAnsiName (ue);
 	}
     }
 }
@@ -9756,19 +10635,54 @@ void uentry_checkName (uentry ue)
   return ue;
 }
 
+uentry uentry_makeGlobalMarker ()
+{
+  uentry ue;
+  fileloc tloc;
+
+  llassert (sRef_inGlobalScope ());
+  
+  ue = uentry_makeVariableAux
+    (GLOBAL_MARKER_NAME, ctype_unknown, fileloc_undefined, 
+     sRef_makeGlobalMarker (),
+     FALSE, VKNORMAL);
+
+  tloc = fileloc_createExternal ();
+  uentry_setUsed (ue, tloc);		  
+  uentry_setDefined (ue, tloc);
+  fileloc_free (tloc);
+  uentry_setHasNameError (ue);  
+
+  return ue;
+}
+
+
+bool uentry_isGlobalMarker (uentry ue)
+{
+  return (uentry_isValid (ue)
+	  && (cstring_equal (uentry_rawName (ue), GLOBAL_MARKER_NAME)));
+}
+
+
+//
 /* new start modifications */
-/*
-void uentry_testInRange (uentry p_e, uentry cconstant)  {
+
+/*@ignore@*/
+
+
+
+  
+static  void uentry_testInRange (uentry p_e, uentry cconstant)  {
   if( uentry_isValid(p_e) ) {
     if( sRef_isValid (p_e->sref) ) {
       char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
       int index = atoi( t );
       free (t);
-      usymtab_testInRange (p_e->sref, index);
+      //      usymtab_testInRange (p_e->sref, index);
     }//end if
   }//endif
 }
-*/
+
 
 /*  void uentry_setStringLength (uentry p_e, uentry cconstant)  { */
 /*  if( uentry_isValid(p_e) ) { */
@@ -9809,6 +10723,7 @@ requires: p_e is defined, is a ptr/array variable
 modifies: p_e
 effects: sets the state of the variable
 */
+
 
 void uentry_setPossiblyNullTerminatedState (uentry p_e)  {
   if( uentry_isValid(p_e) ) {
@@ -9906,5 +10821,5 @@ effects: sets the length of the buffer
 
   fprintf(stderr, "uentry:Error in setLen\n");
 }
-
+/*@end@*/
 /*@=type*/

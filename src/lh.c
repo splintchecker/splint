@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -55,19 +55,16 @@
 /*@constant static char TABOUTCH; @*/
 # define TABOUTCH	'\3'
 
-/*@constant static observer char *LHTMP_SUFFIX; @*/
-# define LHTMP_SUFFIX ".lh_tmp"
-
 /*
   # define TAB 		        fputc (TABCH, 	LhFile.f);
   # define TABIN		fputc (TABINCH, 	LhFile.f);
   # define TABOUT		fputc (TABOUTCH, LhFile.f);
 */
 
-typedef struct
+/*@private@*/ typedef struct
 {
-  /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
-  /*@reldef@*/ char *name;
+  /*@open@*/ /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
+  /*@reldef@*/ cstring name;
 } outFile;
 
 static bool genLh;
@@ -86,16 +83,12 @@ static cstring lhTypeSpecNode (lclTypeSpecNode p_typespec);
 static /*@only@*/ cstring lhTypeExpr (/*@null@*/ typeExpr p_x);
 static /*@only@*/ cstring lhDeclaratorNode (declaratorNode p_x);
 
-static /*@dependent@*/ /*@null@*/ FILE *out_open (char *name, char *suffix) /*@modifies fileSystem@*/
+static /*@open@*/ /*@dependent@*/ /*@null@*/ FILE *out_open (cstring name, cstring suffix)
+     /*@modifies fileSystem@*/
 {
-  char *fullname = (char *)
-    mstring_create (size_toInt (strlen (name) + strlen (suffix)));
-  FILE *ret;
-
-  strcpy (fullname, name);
-  strcat (fullname, suffix);
-  ret = fopen (fullname, "w+");
-  sfree (fullname);
+  cstring fullname = cstring_concat (name, suffix);
+  FILE *ret = fopen (cstring_toCharsSafe (fullname), "w+");
+  cstring_free (fullname);
   return ret;
 }
 
@@ -299,22 +292,18 @@ lhCleanup (void)
     {
       FILE *f;
       int c, col = 0, tabcol = 0;
-      char *fullname;
+      cstring fullname;
 
-      
-      fullname = mstring_create 
-	(size_toInt (strlen (LhFile.name) + strlen (LHTMP_SUFFIX)));
-
-      f = out_open (LhFile.name, LH_SUFFIX);
+      f = out_open (LhFile.name, LH_EXTENSION);
       llassert (LhFile.f != NULL);
-
-      strcpy (fullname, LhFile.name);
-      strcat (fullname, LHTMP_SUFFIX);
+      
+      fullname = cstring_concat (LhFile.name, LHTMP_EXTENSION);
 
       if (f == NULL)
 	{
+	  /*@i25534  check this!  does it report the right filename? */
 	  lldiagmsg (message ("Cannot open lh file for output: %s", 
-			      cstring_fromChars (fullname)));
+			      fullname));
 	}
       else
 	{
@@ -365,7 +354,7 @@ lhCleanup (void)
 	  LhFile.f = NULL;
 	}
       
-      sfree (fullname);
+      cstring_free (fullname);
     }
 }
 
@@ -401,7 +390,7 @@ lhIncludeBool (void)
 **--
 */
 
-void lhInit (tsource * f) /*@globals undef LhFile; @*/
+void lhInit (inputStream  f) /*@globals undef LhFile; @*/
 {
   static bool lherror = FALSE;
   
@@ -413,16 +402,18 @@ void lhInit (tsource * f) /*@globals undef LhFile; @*/
       return;
     }
   
-  LhFile.name = LSLRootName (tsource_fileName (f));
-  LhFile.f = out_open (LhFile.name, LHTMP_SUFFIX);
+  LhFile.name = LSLRootName (inputStream_fileName (f));
+  LhFile.f = out_open (LhFile.name, LHTMP_EXTENSION);
 
   if (LhFile.f == NULL)
     {
       genLh = FALSE;
       if (!lherror)
 	{
-	  lclplainerror (message ("Cannot write .lh file: %s.lh", 
-				  cstring_fromChars (LhFile.name)));
+	  lclplainerror (message ("Cannot write temporary %s file: %s%s", 
+				  LH_EXTENSION,
+				  LhFile.name,
+				  LHTMP_EXTENSION));
 	  lherror = TRUE;
 	}
     } 

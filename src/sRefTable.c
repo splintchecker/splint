@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -80,9 +80,9 @@ sRefTable_add (sRefTable s, /*@owned@*/ sRef el)
   
   llassert (s->elements != NULL);
   s->elements[s->entries] = el;
+  DPRINTF (("Adding to sRef table: [%p]", el));
   
   s->entries++;
-
   return s;
 }
 
@@ -95,9 +95,11 @@ sRefTable_clear (sRefTable s)
       
       for (i = 0; i < s->entries; i++)
 	{
-	  	  sRef_free (s->elements[i]); 
+	  DPRINTF (("Table clear: [%p] %s", s->elements[i], sRef_unparseDebug (s->elements[i])));
+	  /* sRef_checkValid (s->elements[i]); */
+	  sRef_free (s->elements[i]); 
 	}
-
+      
       s->nspace += s->entries;
       s->entries = 0;
     }
@@ -137,6 +139,7 @@ sRefTable_free (/*@only@*/ sRefTable s)
 
       for (i = 0; i < s->entries; i++)
 	{
+	  DPRINTF (("Table free: [%p] %s", s->elements[i], sRef_unparse (s->elements[i])));
 	  sRef_free (s->elements[i]);
 	}
 

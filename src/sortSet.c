@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -130,7 +130,7 @@ sortSet_member (sortSet s, sort el)
 
       for (i = 0; i < s->entries; i++)
 	{
-	  if (sort_equal (&el, &(s->elements[i])))
+	  if (sort_equal (el, s->elements[i]))
 	    {
 	      return TRUE;
 	    }

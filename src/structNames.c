@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -43,6 +43,13 @@
 /*@constant char MARKCHAR_PARAM; @*/
 # define MARKCHAR_PARAM  '%'
 
+/*@observer@*/ cstring plainTagName (cstring s)
+{
+  llassert (!isFakeTag (s));
+
+  return cstring_suffix (s, 1);
+}
+
 /*@only@*/ cstring fixTagName (cstring s)
 {
   if (isFakeTag (s))
@@ -53,7 +60,6 @@
 	case MARKCHAR_UNION:  return (cstring_makeLiteral ("union"));
 	case MARKCHAR_ENUM:   return (cstring_makeLiteral ("enum"));
 	default:         return (message ("<bad tag name: %s>", s));
-	  /* BADDEFAULT; */
 	}
     }
   else
