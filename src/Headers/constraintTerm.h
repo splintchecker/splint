@@ -22,27 +22,12 @@ struct _constraintTerm {
   /*@only@*/ fileloc loc;
   constraintTermValue value;
   constraintTermType kind;
-};
+} ;
 
-
-abst_typedef struct _constraintTerm * constraintTerm;
+abst_typedef struct _constraintTerm *constraintTerm;
 
 extern constraintTermType constraintTerm_getKind (constraintTerm) ;
 extern /*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm) ;
-
-extern /*@falsenull@*/ bool constraintTerm_isDefined (constraintTerm p_e) /*@*/;
-extern /*@unused@*/ /*@truenull@*/ bool constraintTerm_isUndefined (constraintTerm p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintTerm_isError (constraintTerm p_e) /*@*/ ;
-
-/*@constant null constraintTerm constraintTerm_undefined; @*/
-
-# define constraintTerm_undefined ((constraintTerm)NULL)
-
-# define constraintTerm_isDefined(e)        ((e) != constraintTerm_undefined)
-# define constraintTerm_isUndefined(e)      ((e) == constraintTerm_undefined)
-# define constraintTerm_isError(e)          ((e) == constraintTerm_undefined)
-
-
 
 void constraintTerm_free (/*@only@*/ constraintTerm term);
 

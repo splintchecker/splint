@@ -61,7 +61,7 @@ abst_typedef struct s_mtLoseReference *mtLoseReference;
 abst_typedef struct s_mtTransferAction *mtTransferAction;
 abst_typedef sRefSet globSet;
 
-abst_typedef  struct s_constraint *constraint;
+abst_typedef struct s_constraint *constraint;
 abst_typedef struct s_constraintList  *constraintList;
 
 

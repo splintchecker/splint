@@ -93,8 +93,10 @@ static void describePrefixCodes (void);
 static void cleanupFiles (void);
 static void showHelp (void);
 static void interrupt (int p_i);
+
 static void loadrc (/*@open@*/ FILE *p_rcfile, cstringSList *p_passThroughArgs)
-  ;   //   /*@ensures closed p_rcfile@*/ ;
+   /*@ensures closed p_rcfile@*/ ;
+
 static void describeVars (void);
 static bool specialFlagsHelp (char *p_next);
 static bool hasShownHerald = FALSE;
@@ -2131,7 +2133,7 @@ llexit (int status)
 
 void
 loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
-     //   /*@ensures closed rcfile@*/
+    /*@ensures closed rcfile@*/
 {
   char *s = mstring_create (MAX_LINE_LENGTH);
   char *os = s;

@@ -7571,7 +7571,7 @@ sRef_showMetaStateInfo (sRef s, cstring key)
   if (stateValue_hasLoc (val))
     {
       llgenindentmsg 
-	(message ("Meta state %qbecomes %s", sRef_unparseOpt (s), 
+	(message ("Meta state %qbecomes %q", sRef_unparseOpt (s), 
 		  stateValue_unparseValue (val, minfo)),
 	 stateValue_getLoc (val));
     }

@@ -35,7 +35,7 @@ extern void showHerald (void);
 
 /*@-redecl@*/
 extern int yyparse (void);
-extern void yyrestart (FILE *p_f);
+extern void yyrestart (FILE *);
 
 # ifndef NOLCL
 extern int ylparse (void);

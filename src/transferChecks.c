@@ -4055,7 +4055,6 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	    if (sRef_isLocalVar (tref) && transferType == TT_DOASSIGN)
 	      {
 		/* Local assignments just replace state. */
-		DPRINTF (("No transfer error assigning to local: %s", msg));
 		stateValue_updateValueLoc (tval, stateValue_getValue (fval), loc);
 		DPRINTF (("Update: %s", stateValue_unparse (tval)));
 	      }
@@ -4065,7 +4064,7 @@ checkMetaStateTransfer (exprNode fexp, sRef fref, exprNode texp, sRef tref,
 	      }
 	    else
 	      {
-		TPRINTF (("Transfer to error: %s", sRef_unparseFull (tref)));
+		DPRINTF (("Transfer to error: %s", sRef_unparseFull (tref)));
 		BADBRANCH;
 	      }
 	  }

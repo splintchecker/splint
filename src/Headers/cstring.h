@@ -51,8 +51,8 @@ extern void cstring_replaceAll (cstring p_s, char p_old, char p_snew) /*@modifie
 # endif
 
 extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew);
-extern char cstring_firstChar (cstring p_s);
-extern char cstring_secondChar (cstring p_s);
+extern char cstring_firstChar (cstring p_s) /*@*/ ;
+extern char cstring_secondChar (cstring p_s) /*@*/ ;
 extern char cstring_lastChar (cstring p_s) /*@*/ ;
 extern char cstring_getChar (cstring p_s, int p_n);
 extern void cstring_setChar (cstring p_s, int p_n, char p_c);
