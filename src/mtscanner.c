@@ -54,6 +54,7 @@ static void mtscanner_initMod (void)
   cstringTable_insert (tokenTable, cstring_makeLiteral ("defaults"), MT_DEFAULTS);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("default"), MT_DEFAULT);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("parameter"), MT_PARAMETER);
+  cstringTable_insert (tokenTable, cstring_makeLiteral ("result"), MT_RESULT);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("reference"), MT_REFERENCE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("clause"), MT_CLAUSE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("annotations"), MT_ANNOTATIONS);

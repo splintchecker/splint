@@ -17,6 +17,7 @@
 # include "message.h" 
 # include "fileloc.h"
 # include "globals.h"
+# include "cpp.h"
 # include "flag_codes.h"
 # include "flags.h"
 # include "flagSpec.h"

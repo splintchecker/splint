@@ -352,7 +352,7 @@ extern /*@dependent@*/ sRef sRef_makeSpecState (void) /*@*/ ;
 extern /*@dependent@*/ sRef sRef_makeGlobalMarker (void) /*@*/ ;
 extern /*@dependent@*/ sRef sRef_makeSystemState (void) /*@*/ ;
 
-extern /*@dependent@*/ /*@notnull@*/ sRef sRef_makeResult (void) /*@*/ ;
+extern /*@dependent@*/ /*@notnull@*/ sRef sRef_makeResult (ctype) /*@*/ ;
 extern /*@exposed@*/ sRef 
   sRef_fixResultType (/*@returned@*/ sRef p_s, ctype p_typ, uentry p_ue)
   /*@modifies p_s@*/;

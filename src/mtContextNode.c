@@ -37,6 +37,7 @@ static /*@observer@*/ cstring mtContextKind_unparse (mtContextKind ck)
     {
     case MTC_ANY: return cstring_makeLiteralTemp ("any");
     case MTC_PARAM: return cstring_makeLiteralTemp ("param"); 
+    case MTC_RESULT: return cstring_makeLiteralTemp ("result"); 
     case MTC_REFERENCE: return cstring_makeLiteralTemp ("reference");
     case MTC_CLAUSE: return cstring_makeLiteralTemp ("clause");
     }
@@ -61,6 +62,11 @@ extern mtContextNode mtContextNode_createAny ()
 extern mtContextNode mtContextNode_createParameter (ctype ct) 
 {
   return mtContextNode_create (MTC_PARAM, ct);
+}
+
+extern mtContextNode mtContextNode_createResult (ctype ct) 
+{
+  return mtContextNode_create (MTC_RESULT, ct);
 }
 
 extern mtContextNode mtContextNode_createReference (ctype ct) 
@@ -90,6 +96,12 @@ bool mtContextNode_matchesEntry (mtContextNode context, uentry ue)
   switch (context->context)
     {
     case MTC_ANY: break; /* everything matches */
+    case MTC_RESULT:
+      if (!uentry_isFunction (ue))
+	{
+	  return FALSE;
+	}
+      break;
     case MTC_PARAM: 
       if (!uentry_isParam (ue))
 	{
@@ -126,6 +138,11 @@ bool mtContextNode_matchesRef (mtContextNode context, sRef sr)
   switch (context->context)
     {
     case MTC_ANY: break; /* everything matches */
+    case MTC_RESULT:
+      DPRINTF (("Result? %s / %s",
+		sRef_unparseFull (sr),
+		bool_unparse (sRef_isResult (sr))));
+      return sRef_isResult (sr);
     case MTC_PARAM: 
       if (!sRef_isParam (sr))
 	{
@@ -207,10 +224,16 @@ bool mtContextNode_isParameter (mtContextNode n)
   return (n->context == MTC_PARAM);
 }
 
-bool mtContextNode_isRef (mtContextNode n)
+bool mtContextNode_isReference (mtContextNode n)
 {
   llassert (mtContextNode_isDefined (n));
   return (n->context == MTC_REFERENCE);
+}
+
+bool mtContextNode_isResult (mtContextNode n)
+{
+  llassert (mtContextNode_isDefined (n));
+  return (n->context == MTC_RESULT);
 }
 
 

@@ -51,6 +51,7 @@ extern void cppDoDefine (cstring);
 extern void cppDoUndefine (cstring);
 extern void cppReader_saveDefinitions (void);
 
+extern fileloc cppReader_getLoc (cppReader *);
 extern void cppReader_initialize (void);
 
 # else 

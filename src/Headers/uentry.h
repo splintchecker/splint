@@ -418,6 +418,7 @@ extern /*@notnull@*/ /*@only@*/ uentry
 extern /*@notnull@*/ uentry uentry_makeElipsisMarker (void) /*@*/ ;
 
 extern void uentry_makeVarFunction (/*@temp@*/ uentry p_ue) /*@modifies p_ue@*/ ;
+extern void uentry_makeConstantFunction (/*@temp@*/ uentry p_ue) /*@modifies p_ue@*/ ;
 
 extern bool uentry_isElipsisMarker (/*@sef@*/ uentry p_u) /*@*/ ;
 # define uentry_isElipsisMarker(u) \

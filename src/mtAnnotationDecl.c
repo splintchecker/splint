@@ -37,8 +37,10 @@ extern mtAnnotationDecl mtAnnotationDecl_create (mttok id, mtContextNode c, mtto
   res->name = mttok_getText (id);
   res->context = c;
   res->loc = mttok_stealLoc (id);
+
   llassert (mttok_isIdentifier (value));
   res->value = mttok_getText (value);
+
   mttok_free (id);
   mttok_free (value);
   return res;

@@ -12,7 +12,7 @@
 
 typedef enum
 {
-  MTC_ANY, MTC_PARAM, MTC_REFERENCE, MTC_CLAUSE
+  MTC_ANY, MTC_PARAM, MTC_RESULT, MTC_REFERENCE, MTC_CLAUSE
 } mtContextKind ;
 
 struct s_mtContextNode {
@@ -31,11 +31,13 @@ extern cstring mtContextNode_unparse (mtContextNode) /*@*/ ;
 extern mtContextNode mtContextNode_createAny (void) /*@*/ ;
 extern mtContextNode mtContextNode_createParameter (ctype) /*@*/ ;
 extern mtContextNode mtContextNode_createReference (ctype) /*@*/ ;
+extern mtContextNode mtContextNode_createResult (ctype) /*@*/ ;
 extern mtContextNode mtContextNode_createClause (ctype) /*@*/ ;
 
 extern void mtContextNode_free (/*@only@*/ mtContextNode) ;
 
-extern bool mtContextNode_isRef (mtContextNode) /*@*/;
+extern bool mtContextNode_isReference (mtContextNode) /*@*/;
+extern bool mtContextNode_isResult (mtContextNode) /*@*/;
 extern bool mtContextNode_isParameter (mtContextNode) /*@*/;
 extern bool mtContextNode_isClause (mtContextNode) /*@*/;
 

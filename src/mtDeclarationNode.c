@@ -581,7 +581,7 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 	    {
 	      int vindex = cstringList_getIndex (mvals, mvalue);
 
-	      if (mtContextNode_isRef (mcontext))
+	      if (mtContextNode_isReference (mcontext))
 		{
 		  if (metaStateInfo_getDefaultRefValue (msinfo) != stateValue_error)
 		    {
@@ -611,6 +611,22 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 		  else
 		    {
 		      metaStateInfo_setDefaultParamValue (msinfo, vindex);
+		    }
+		}
+	      else if (mtContextNode_isResult (mcontext))
+		{
+		  if (metaStateInfo_getDefaultResultValue (msinfo) != stateValue_error)
+		    {
+		      voptgenerror
+			(FLG_SYNTAX,
+			 message ("Duplicate defaults declaration for context %q: %q",
+				  mtContextNode_unparse (mcontext), 
+				  mtDefaultsDecl_unparse (mdecl)),
+			 mtDefaultsDecl_getLoc (mdecl));
+		    }
+		  else
+		    {
+		      metaStateInfo_setDefaultResultValue (msinfo, vindex);
 		    }
 		}
 	      else

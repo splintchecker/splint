@@ -87,7 +87,6 @@ static speckind speckind_fromInt (int p_i);
 static bool sRef_equivalent (sRef p_s1, sRef p_s2);
 static bool sRef_isDeepUnionField (sRef p_s);
 static void sRef_addDeriv (/*@notnull@*/ sRef p_s, /*@notnull@*/ /*@exposed@*/ sRef p_t);
-static /*@dependent@*/ sRef sRef_makeResultType (ctype p_ct) /*@*/ ;
 static bool sRef_checkModify (sRef p_s, sRefSet p_sl) /*@*/ ;
 
 static void sRef_checkMutable (/*@unused@*/ sRef s)
@@ -2370,7 +2369,7 @@ sRef_undump (char **c)
     case 'p':
       return (sRef_makeParam (reader_getInt (c), ctype_unknown));
     case 'r':
-      return (sRef_makeResultType (ctype_undump (c)));
+      return (sRef_makeResult (ctype_undump (c)));
     case 'a':
       {
 	if ((**c >= '0' && **c <= '9') || **c == '-')
@@ -4364,22 +4363,13 @@ sRef_makeGlobalMarker (void)
   return s;
 }
 
-static sRef
-sRef_makeResultType (ctype ct)
-{
-  sRef res = sRef_makeResult ();
-
-  res->type = ct;
-  return res;
-}
-
 sRef
-sRef_makeResult ()
+sRef_makeResult (ctype c)
 {
   sRef s = sRef_newRef ();
   
   s->kind = SK_RESULT;
-  s->type = ctype_unknown;
+  s->type = c;
   s->defstate = SS_UNKNOWN; 
   s->aliaskind = AK_UNKNOWN;
   sRef_setNullStateN (s, NS_UNKNOWN);

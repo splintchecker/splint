@@ -41,6 +41,7 @@ extern /*@observer@*/ cstring mttok_observeText (mttok p_t) /*@*/ ;
 # define mttok_observeText(t)  ((t)->text)
 
 extern bool mttok_isIdentifier (mttok p_t) /*@*/ ;
+extern bool mttok_isError (mttok p_t) /*@*/ ;
 
 # else
 # error "Multiple include"

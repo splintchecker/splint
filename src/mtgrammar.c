@@ -68,39 +68,40 @@
 #define	MT_DEFAULT	264
 #define	MT_REFERENCE	265
 #define	MT_PARAMETER	266
-#define	MT_CLAUSE	267
-#define	MT_ANNOTATIONS	268
-#define	MT_ARROW	269
-#define	MT_MERGE	270
-#define	MT_TRANSFERS	271
-#define	MT_PRECONDITIONS	272
-#define	MT_POSTCONDITIONS	273
-#define	MT_LOSEREFERENCE	274
-#define	MT_AS	275
-#define	MT_ERROR	276
-#define	MT_PLUS	277
-#define	MT_STAR	278
-#define	MT_BAR	279
-#define	MT_LPAREN	280
-#define	MT_RPAREN	281
-#define	MT_LBRACKET	282
-#define	MT_RBRACKET	283
-#define	MT_LBRACE	284
-#define	MT_RBRACE	285
-#define	MT_COMMA	286
-#define	MT_CHAR	287
-#define	MT_INT	288
-#define	MT_FLOAT	289
-#define	MT_DOUBLE	290
-#define	MT_VOID	291
-#define	MT_ANYTYPE	292
-#define	MT_INTEGRALTYPE	293
-#define	MT_UNSIGNEDINTEGRALTYPE	294
-#define	MT_SIGNEDINTEGRALTYPE	295
-#define	MT_CONST	296
-#define	MT_VOLATILE	297
-#define	MT_STRINGLIT	298
-#define	MT_IDENT	299
+#define	MT_RESULT	267
+#define	MT_CLAUSE	268
+#define	MT_ANNOTATIONS	269
+#define	MT_ARROW	270
+#define	MT_MERGE	271
+#define	MT_TRANSFERS	272
+#define	MT_PRECONDITIONS	273
+#define	MT_POSTCONDITIONS	274
+#define	MT_LOSEREFERENCE	275
+#define	MT_AS	276
+#define	MT_ERROR	277
+#define	MT_PLUS	278
+#define	MT_STAR	279
+#define	MT_BAR	280
+#define	MT_LPAREN	281
+#define	MT_RPAREN	282
+#define	MT_LBRACKET	283
+#define	MT_RBRACKET	284
+#define	MT_LBRACE	285
+#define	MT_RBRACE	286
+#define	MT_COMMA	287
+#define	MT_CHAR	288
+#define	MT_INT	289
+#define	MT_FLOAT	290
+#define	MT_DOUBLE	291
+#define	MT_VOID	292
+#define	MT_ANYTYPE	293
+#define	MT_INTEGRALTYPE	294
+#define	MT_UNSIGNEDINTEGRALTYPE	295
+#define	MT_SIGNEDINTEGRALTYPE	296
+#define	MT_CONST	297
+#define	MT_VOLATILE	298
+#define	MT_STRINGLIT	299
+#define	MT_IDENT	300
 
 #line 25 "mtgrammar.y"
 
@@ -165,11 +166,11 @@ typedef union {
 
 
 
-#define	YYFINAL		129
+#define	YYFINAL		131
 #define	YYFLAG		-32768
-#define	YYNTBASE	46
+#define	YYNTBASE	47
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 299 ? yytranslate[x] : 89)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 300 ? yytranslate[x] : 90)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -201,47 +202,47 @@ static const char yytranslate[] = {     0,
      7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
     17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
     27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
-    37,    38,    39,    40,    41,    42,    43,    44,    45
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46
 };
 
 #if YYDEBUG != 0
 static const short yyprhs[] = {     0,
      0,     1,     3,     7,    12,    15,    16,    19,    21,    23,
     25,    27,    29,    31,    33,    35,    37,    39,    42,    43,
-    45,    48,    51,    54,    55,    57,    59,    62,    64,    68,
-    71,    72,    74,    76,    78,    81,    83,    86,    89,    93,
-    95,    97,    99,   102,   106,   109,   113,   115,   117,   119,
-   121,   123,   125,   127,   129,   131,   133,   135,   138,   140,
-   144,   147,   150,   154,   159,   162,   164,   167,   172,   175,
-   177,   180,   186,   188,   190,   193,   196,   199,   202,   204,
-   207,   211,   213,   216,   222,   224,   226,   228,   231
+    45,    48,    51,    54,    57,    58,    60,    62,    65,    67,
+    71,    74,    75,    77,    79,    81,    84,    86,    89,    92,
+    96,    98,   100,   102,   105,   109,   112,   116,   118,   120,
+   122,   124,   126,   128,   130,   132,   134,   136,   138,   141,
+   143,   147,   150,   153,   157,   162,   165,   167,   170,   175,
+   178,   180,   183,   189,   191,   193,   196,   199,   202,   205,
+   207,   210,   214,   216,   219,   225,   227,   229,   231,   234
 };
 
 static const short yyrhs[] = {    -1,
-    47,     0,     5,    48,     4,     0,     6,     5,    48,     4,
-     0,    45,    49,     0,     0,    50,    49,     0,    51,     0,
-    66,     0,    69,     0,    68,     0,    71,     0,    74,     0,
-    80,     0,    78,     0,    79,     0,    81,     0,     7,    53,
-     0,     0,    53,     0,    12,    54,     0,    11,    54,     0,
-    13,    54,     0,     0,    55,     0,    56,     0,    56,    59,
-     0,    57,     0,    56,    25,    55,     0,    64,    58,     0,
-     0,    56,     0,    60,     0,    63,     0,    60,    63,     0,
-    24,     0,    24,    62,     0,    24,    60,     0,    24,    62,
-    60,     0,    42,     0,    43,     0,    61,     0,    62,    61,
-     0,    26,    59,    27,     0,    28,    29,     0,    63,    28,
-    29,     0,    33,     0,    34,     0,    35,     0,    36,     0,
-    37,     0,    38,     0,    39,     0,    40,     0,    41,     0,
-    65,     0,    45,     0,     8,    67,     0,    45,     0,    45,
-    32,    67,     0,    10,    88,     0,     9,    70,     0,    53,
-    15,    88,     0,    53,    15,    88,    70,     0,    14,    72,
-     0,    73,     0,    73,    72,     0,    45,    52,    15,    88,
-     0,    16,    75,     0,    76,     0,    76,    75,     0,    77,
-    23,    77,    15,    86,     0,    88,     0,    24,     0,    18,
-    84,     0,    19,    84,     0,    17,    84,     0,    20,    82,
-     0,    83,     0,    83,    82,     0,    88,    15,    87,     0,
-    85,     0,    85,    84,     0,    88,    21,    88,    15,    86,
-     0,    88,     0,    87,     0,    22,     0,    22,    44,     0,
-    45,     0
+    48,     0,     5,    49,     4,     0,     6,     5,    49,     4,
+     0,    46,    50,     0,     0,    51,    50,     0,    52,     0,
+    67,     0,    70,     0,    69,     0,    72,     0,    75,     0,
+    81,     0,    79,     0,    80,     0,    82,     0,     7,    54,
+     0,     0,    54,     0,    12,    55,     0,    11,    55,     0,
+    13,    55,     0,    14,    55,     0,     0,    56,     0,    57,
+     0,    57,    60,     0,    58,     0,    57,    26,    56,     0,
+    65,    59,     0,     0,    57,     0,    61,     0,    64,     0,
+    61,    64,     0,    25,     0,    25,    63,     0,    25,    61,
+     0,    25,    63,    61,     0,    43,     0,    44,     0,    62,
+     0,    63,    62,     0,    27,    60,    28,     0,    29,    30,
+     0,    64,    29,    30,     0,    34,     0,    35,     0,    36,
+     0,    37,     0,    38,     0,    39,     0,    40,     0,    41,
+     0,    42,     0,    66,     0,    46,     0,     8,    68,     0,
+    46,     0,    46,    33,    68,     0,    10,    89,     0,     9,
+    71,     0,    54,    16,    89,     0,    54,    16,    89,    71,
+     0,    15,    73,     0,    74,     0,    74,    73,     0,    46,
+    53,    16,    89,     0,    17,    76,     0,    77,     0,    77,
+    76,     0,    78,    24,    78,    16,    87,     0,    89,     0,
+    25,     0,    19,    85,     0,    20,    85,     0,    18,    85,
+     0,    21,    83,     0,    84,     0,    84,    83,     0,    89,
+    16,    88,     0,    86,     0,    86,    85,     0,    89,    22,
+    89,    16,    87,     0,    89,     0,    88,     0,    23,     0,
+    23,    45,     0,    46,     0
 };
 
 #endif
@@ -250,13 +251,13 @@ static const short yyrhs[] = {    -1,
 static const short yyrline[] = { 0,
    144,   145,   148,   150,   154,   158,   159,   163,   164,   165,
    166,   167,   168,   169,   170,   171,   172,   175,   179,   180,
-   183,   184,   185,   192,   193,   196,   197,   200,   201,   205,
-   208,   209,   213,   214,   215,   218,   219,   220,   221,   224,
-   225,   228,   229,   232,   233,   234,   241,   242,   243,   244,
-   245,   246,   247,   248,   249,   250,   256,   259,   262,   263,
-   267,   270,   273,   275,   279,   282,   283,   287,   291,   294,
-   295,   298,   302,   303,   306,   309,   312,   315,   318,   319,
-   322,   325,   326,   329,   333,   334,   337,   338,   341
+   183,   184,   185,   186,   193,   194,   197,   198,   201,   202,
+   206,   209,   210,   214,   215,   216,   219,   220,   221,   222,
+   225,   226,   229,   230,   233,   234,   235,   242,   243,   244,
+   245,   246,   247,   248,   249,   250,   251,   257,   260,   263,
+   264,   268,   271,   274,   276,   280,   283,   284,   288,   292,
+   295,   296,   299,   303,   304,   307,   310,   313,   316,   319,
+   320,   323,   326,   327,   330,   334,   335,   338,   339,   342
 };
 #endif
 
@@ -265,9 +266,9 @@ static const short yyrline[] = { 0,
 
 static const char * const yytname[] = {   "$","error","$undefined.","MT_BADTOK",
 "MT_END","MT_STATE","MT_GLOBAL","MT_CONTEXT","MT_ONEOF","MT_DEFAULTS","MT_DEFAULT",
-"MT_REFERENCE","MT_PARAMETER","MT_CLAUSE","MT_ANNOTATIONS","MT_ARROW","MT_MERGE",
-"MT_TRANSFERS","MT_PRECONDITIONS","MT_POSTCONDITIONS","MT_LOSEREFERENCE","MT_AS",
-"MT_ERROR","MT_PLUS","MT_STAR","MT_BAR","MT_LPAREN","MT_RPAREN","MT_LBRACKET",
+"MT_REFERENCE","MT_PARAMETER","MT_RESULT","MT_CLAUSE","MT_ANNOTATIONS","MT_ARROW",
+"MT_MERGE","MT_TRANSFERS","MT_PRECONDITIONS","MT_POSTCONDITIONS","MT_LOSEREFERENCE",
+"MT_AS","MT_ERROR","MT_PLUS","MT_STAR","MT_BAR","MT_LPAREN","MT_RPAREN","MT_LBRACKET",
 "MT_RBRACKET","MT_LBRACE","MT_RBRACE","MT_COMMA","MT_CHAR","MT_INT","MT_FLOAT",
 "MT_DOUBLE","MT_VOID","MT_ANYTYPE","MT_INTEGRALTYPE","MT_UNSIGNEDINTEGRALTYPE",
 "MT_SIGNEDINTEGRALTYPE","MT_CONST","MT_VOLATILE","MT_STRINGLIT","MT_IDENT","file",
@@ -284,107 +285,109 @@ static const char * const yytname[] = {   "$","error","$undefined.","MT_BADTOK",
 #endif
 
 static const short yyr1[] = {     0,
-    46,    46,    47,    47,    48,    49,    49,    50,    50,    50,
-    50,    50,    50,    50,    50,    50,    50,    51,    52,    52,
-    53,    53,    53,    54,    54,    55,    55,    56,    56,    57,
-    58,    58,    59,    59,    59,    60,    60,    60,    60,    61,
-    61,    62,    62,    63,    63,    63,    64,    64,    64,    64,
-    64,    64,    64,    64,    64,    64,    65,    66,    67,    67,
-    68,    69,    70,    70,    71,    72,    72,    73,    74,    75,
-    75,    76,    77,    77,    78,    79,    80,    81,    82,    82,
-    83,    84,    84,    85,    86,    86,    87,    87,    88
+    47,    47,    48,    48,    49,    50,    50,    51,    51,    51,
+    51,    51,    51,    51,    51,    51,    51,    52,    53,    53,
+    54,    54,    54,    54,    55,    55,    56,    56,    57,    57,
+    58,    59,    59,    60,    60,    60,    61,    61,    61,    61,
+    62,    62,    63,    63,    64,    64,    64,    65,    65,    65,
+    65,    65,    65,    65,    65,    65,    65,    66,    67,    68,
+    68,    69,    70,    71,    71,    72,    73,    73,    74,    75,
+    76,    76,    77,    78,    78,    79,    80,    81,    82,    83,
+    83,    84,    85,    85,    86,    87,    87,    88,    88,    89
 };
 
 static const short yyr2[] = {     0,
      0,     1,     3,     4,     2,     0,     2,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     1,     2,     0,     1,
-     2,     2,     2,     0,     1,     1,     2,     1,     3,     2,
-     0,     1,     1,     1,     2,     1,     2,     2,     3,     1,
-     1,     1,     2,     3,     2,     3,     1,     1,     1,     1,
-     1,     1,     1,     1,     1,     1,     1,     2,     1,     3,
-     2,     2,     3,     4,     2,     1,     2,     4,     2,     1,
-     2,     5,     1,     1,     2,     2,     2,     2,     1,     2,
-     3,     1,     2,     5,     1,     1,     1,     2,     1
+     2,     2,     2,     2,     0,     1,     1,     2,     1,     3,
+     2,     0,     1,     1,     1,     2,     1,     2,     2,     3,
+     1,     1,     1,     2,     3,     2,     3,     1,     1,     1,
+     1,     1,     1,     1,     1,     1,     1,     1,     2,     1,
+     3,     2,     2,     3,     4,     2,     1,     2,     4,     2,
+     1,     2,     5,     1,     1,     2,     2,     2,     2,     1,
+     2,     3,     1,     2,     5,     1,     1,     1,     2,     1
 };
 
 static const short yydefact[] = {     1,
      0,     0,     2,     6,     0,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     0,     5,     6,     8,     9,
     11,    10,    12,    13,    15,    16,    14,    17,     3,     0,
-    24,    24,    24,    18,    59,    58,     0,    62,    89,    61,
-    19,    65,    66,    74,    69,    70,     0,    73,    77,    82,
-     0,    75,    76,    78,    79,     0,     7,     4,    47,    48,
-    49,    50,    51,    52,    53,    54,    55,    57,    22,    25,
-    26,    28,    31,    56,    21,    23,     0,     0,     0,    20,
-    67,    71,     0,    83,     0,    80,     0,    36,     0,     0,
-     0,    27,    33,    34,    32,    30,    60,    63,     0,     0,
-     0,    87,    81,    40,    41,    38,    42,    37,    29,     0,
-    45,    35,     0,    64,    68,     0,     0,    88,    39,    43,
-    44,    46,    72,    86,    85,    84,     0,     0,     0
+    25,    25,    25,    25,    18,    60,    59,     0,    63,    90,
+    62,    19,    66,    67,    75,    70,    71,     0,    74,    78,
+    83,     0,    76,    77,    79,    80,     0,     7,     4,    48,
+    49,    50,    51,    52,    53,    54,    55,    56,    58,    22,
+    26,    27,    29,    32,    57,    21,    23,    24,     0,     0,
+     0,    20,    68,    72,     0,    84,     0,    81,     0,    37,
+     0,     0,     0,    28,    34,    35,    33,    31,    61,    64,
+     0,     0,     0,    88,    82,    41,    42,    39,    43,    38,
+    30,     0,    46,    36,     0,    65,    69,     0,     0,    89,
+    40,    44,    45,    47,    73,    87,    86,    85,     0,     0,
+     0
 };
 
-static const short yydefgoto[] = {   127,
-     3,     5,    17,    18,    19,    79,    37,    69,    70,    71,
-    72,    96,    92,    93,   107,   108,    94,    73,    74,    20,
-    36,    21,    22,    38,    23,    42,    43,    24,    45,    46,
-    47,    25,    26,    27,    28,    54,    55,    49,    50,   123,
-   124,    51
+static const short yydefgoto[] = {   129,
+     3,     5,    17,    18,    19,    81,    38,    70,    71,    72,
+    73,    98,    94,    95,   109,   110,    96,    74,    75,    20,
+    37,    21,    22,    39,    23,    43,    44,    24,    46,    47,
+    48,    25,    26,    27,    28,    55,    56,    50,    51,   125,
+   126,    52
 };
 
-static const short yypact[] = {    27,
-    -8,    29,-32768,     6,    40,    -8,    -2,    12,    -2,    16,
-    17,   -16,    16,    16,    16,    16,-32768,     6,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    55,
-    13,    13,    13,-32768,    28,-32768,    48,-32768,-32768,-32768,
-    -2,-32768,    17,-32768,-32768,   -16,    41,-32768,-32768,    16,
-    44,-32768,-32768,-32768,    16,    51,-32768,-32768,-32768,-32768,
+static const short yypact[] = {    33,
+     2,    45,-32768,    34,    53,     2,    21,    13,    21,    15,
+    16,   -17,    15,    15,    15,    15,-32768,    34,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    59,
+   -21,   -21,   -21,   -21,-32768,    32,-32768,    48,-32768,-32768,
+-32768,    21,-32768,    16,-32768,-32768,   -17,    42,-32768,-32768,
+    15,    46,-32768,-32768,-32768,    15,    51,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
-    -7,-32768,    13,-32768,-32768,-32768,    12,    16,    52,-32768,
--32768,-32768,   -16,-32768,    16,-32768,    47,   -12,    13,    14,
-    42,-32768,    15,    46,    45,-32768,-32768,    -2,    16,    57,
-    61,    33,-32768,-32768,-32768,-32768,-32768,   -12,-32768,    53,
--32768,    46,    49,-32768,-32768,   -17,   -17,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,    79,    81,-32768
+-32768,    -3,-32768,   -21,-32768,-32768,-32768,-32768,    13,    15,
+    55,-32768,-32768,-32768,   -17,-32768,    15,-32768,    49,   -13,
+   -21,    31,    39,-32768,    18,    44,    50,-32768,-32768,    21,
+    15,    58,    62,    35,-32768,-32768,-32768,-32768,-32768,   -13,
+-32768,    54,-32768,    44,    56,-32768,-32768,   -18,   -18,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    79,    81,
+-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,    76,    65,-32768,-32768,-32768,    -6,    23,    -5,    18,
--32768,-32768,    -4,   -81,   -23,-32768,    -3,-32768,-32768,-32768,
-    10,-32768,-32768,    -1,-32768,    50,-32768,-32768,    54,-32768,
-     5,-32768,-32768,-32768,-32768,    37,-32768,   -11,-32768,   -22,
-     7,   -10
+-32768,    77,    66,-32768,-32768,-32768,    -6,   -23,    -4,    11,
+-32768,-32768,    -2,   -83,   -22,-32768,    -1,-32768,-32768,-32768,
+    10,-32768,-32768,    -8,-32768,    52,-32768,-32768,    57,-32768,
+     8,-32768,-32768,-32768,-32768,    41,-32768,   -11,-32768,   -24,
+     9,   -10
 };
 
 
-#define	YYLAST		107
+#define	YYLAST		109
 
 
-static const short yytable[] = {    40,
-    34,    48,    52,    53,   102,    56,   106,    44,    31,    32,
-    33,    88,     7,     8,     9,    10,    88,    89,    90,    11,
-    91,    12,    13,    14,    15,    16,   119,    39,    39,   104,
-   105,     1,     2,     6,    80,    48,     4,    88,    84,    90,
-    90,    91,    91,    29,    56,    59,    60,    61,    62,    63,
-    64,    65,    66,    67,    75,    76,    35,    68,    58,    77,
-    39,    41,    78,    83,    85,    87,    99,    98,   102,    89,
-   111,   116,    48,   113,   101,   117,   118,   122,   128,   121,
-   129,    30,    57,   109,   120,   110,    97,   100,   115,   112,
-    95,    86,    81,   103,   126,     0,   114,     0,     0,    82,
-     0,     0,     0,     0,     0,   125,   125
+static const short yytable[] = {    41,
+    35,    49,    53,    54,   104,    57,   108,    45,    76,    77,
+    78,    90,    60,    61,    62,    63,    64,    65,    66,    67,
+    68,    90,    91,    92,    69,    93,   121,    40,    40,   106,
+   107,    31,    32,    33,    34,    82,    49,     1,     2,    86,
+     7,     8,     9,    10,    92,    57,    93,     4,    11,     6,
+    12,    13,    14,    15,    16,    90,    29,    92,    36,    93,
+    40,    42,    59,    80,    79,    85,    89,    87,   113,   100,
+   101,   104,   115,   118,    49,    91,   103,   119,   130,   120,
+   131,   123,    30,    58,    97,   124,   111,   122,    99,   112,
+   117,   116,   102,   114,   128,    83,    88,   105,     0,     0,
+     0,     0,     0,    84,     0,     0,     0,   127,   127
 };
 
 static const short yycheck[] = {    10,
-     7,    12,    14,    15,    22,    16,    88,    24,    11,    12,
-    13,    24,     7,     8,     9,    10,    24,    25,    26,    14,
-    28,    16,    17,    18,    19,    20,   108,    45,    45,    42,
-    43,     5,     6,     5,    41,    46,    45,    24,    50,    26,
-    26,    28,    28,     4,    55,    33,    34,    35,    36,    37,
-    38,    39,    40,    41,    32,    33,    45,    45,     4,    32,
-    45,    45,    15,    23,    21,    15,    15,    78,    22,    25,
-    29,    15,    83,    28,    85,    15,    44,    29,     0,    27,
-     0,     6,    18,    89,   108,    90,    77,    83,    99,    93,
-    73,    55,    43,    87,   117,    -1,    98,    -1,    -1,    46,
-    -1,    -1,    -1,    -1,    -1,   116,   117
+     7,    12,    14,    15,    23,    16,    90,    25,    32,    33,
+    34,    25,    34,    35,    36,    37,    38,    39,    40,    41,
+    42,    25,    26,    27,    46,    29,   110,    46,    46,    43,
+    44,    11,    12,    13,    14,    42,    47,     5,     6,    51,
+     7,     8,     9,    10,    27,    56,    29,    46,    15,     5,
+    17,    18,    19,    20,    21,    25,     4,    27,    46,    29,
+    46,    46,     4,    16,    33,    24,    16,    22,    30,    80,
+    16,    23,    29,    16,    85,    26,    87,    16,     0,    45,
+     0,    28,     6,    18,    74,    30,    91,   110,    79,    92,
+   101,   100,    85,    95,   119,    44,    56,    89,    -1,    -1,
+    -1,    -1,    -1,    47,    -1,    -1,    -1,   118,   119
 };
 #define YYPURE 1
 
@@ -1017,51 +1020,51 @@ case 22:
     break;}
 case 23:
 #line 185 "mtgrammar.y"
-{ yyval.mtcontext = mtContextNode_createClause (yyvsp[0].ctyp); ;
+{ yyval.mtcontext = mtContextNode_createResult (yyvsp[0].ctyp); ;
     break;}
 case 24:
-#line 192 "mtgrammar.y"
-{ yyval.ctyp = ctype_unknown; ;
+#line 186 "mtgrammar.y"
+{ yyval.mtcontext = mtContextNode_createClause (yyvsp[0].ctyp); ;
     break;}
 case 25:
 #line 193 "mtgrammar.y"
+{ yyval.ctyp = ctype_unknown; ;
+    break;}
+case 26:
+#line 194 "mtgrammar.y"
 { DPRINTF (("Type: %s", qtype_unparse (yyvsp[0].qtyp))); yyval.ctyp = qtype_getType (yyvsp[0].qtyp); ;
     break;}
-case 27:
-#line 197 "mtgrammar.y"
+case 28:
+#line 198 "mtgrammar.y"
 { yyval.qtyp = qtype_newBase (yyvsp[-1].qtyp, yyvsp[0].ctyp); ;
     break;}
-case 28:
-#line 200 "mtgrammar.y"
+case 29:
+#line 201 "mtgrammar.y"
 { yyval.qtyp = yyvsp[0].qtyp; ;
     break;}
-case 29:
-#line 202 "mtgrammar.y"
+case 30:
+#line 203 "mtgrammar.y"
 { yyval.qtyp = qtype_mergeAlt (yyvsp[-2].qtyp, yyvsp[0].qtyp); ;
     break;}
-case 30:
-#line 205 "mtgrammar.y"
-{ yyval.qtyp = qtype_combine (yyvsp[0].qtyp, yyvsp[-1].ctyp); ;
-    break;}
 case 31:
-#line 208 "mtgrammar.y"
-{ yyval.qtyp = qtype_unknown (); ;
+#line 206 "mtgrammar.y"
+{ yyval.qtyp = qtype_combine (yyvsp[0].qtyp, yyvsp[-1].ctyp); ;
     break;}
 case 32:
 #line 209 "mtgrammar.y"
-{ yyval.qtyp = yyvsp[0].qtyp; ;
+{ yyval.qtyp = qtype_unknown (); ;
     break;}
 case 33:
-#line 213 "mtgrammar.y"
+#line 210 "mtgrammar.y"
+{ yyval.qtyp = yyvsp[0].qtyp; ;
+    break;}
+case 34:
+#line 214 "mtgrammar.y"
 { yyval.ctyp = ctype_adjustPointers (yyvsp[0].count, ctype_unknown); ;
     break;}
-case 35:
-#line 215 "mtgrammar.y"
-{ yyval.ctyp = ctype_adjustPointers (yyvsp[-1].count, yyvsp[0].ctyp); ;
-    break;}
 case 36:
-#line 218 "mtgrammar.y"
-{ yyval.count = 1; ;
+#line 216 "mtgrammar.y"
+{ yyval.ctyp = ctype_adjustPointers (yyvsp[-1].count, yyvsp[0].ctyp); ;
     break;}
 case 37:
 #line 219 "mtgrammar.y"
@@ -1069,22 +1072,22 @@ case 37:
     break;}
 case 38:
 #line 220 "mtgrammar.y"
-{ yyval.count = 1 + yyvsp[0].count; ;
+{ yyval.count = 1; ;
     break;}
 case 39:
 #line 221 "mtgrammar.y"
 { yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 40:
-#line 224 "mtgrammar.y"
-{ /* ignored for now */; ;
+#line 222 "mtgrammar.y"
+{ yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 41:
 #line 225 "mtgrammar.y"
-{ ; ;
+{ /* ignored for now */; ;
     break;}
 case 42:
-#line 228 "mtgrammar.y"
+#line 226 "mtgrammar.y"
 { ; ;
     break;}
 case 43:
@@ -1092,184 +1095,184 @@ case 43:
 { ; ;
     break;}
 case 44:
-#line 232 "mtgrammar.y"
-{ yyval.ctyp = ctype_expectFunction (yyvsp[-1].ctyp); ;
+#line 230 "mtgrammar.y"
+{ ; ;
     break;}
 case 45:
 #line 233 "mtgrammar.y"
-{ yyval.ctyp = ctype_makeArray (ctype_unknown); ;
+{ yyval.ctyp = ctype_expectFunction (yyvsp[-1].ctyp); ;
     break;}
 case 46:
 #line 234 "mtgrammar.y"
-{ yyval.ctyp = ctype_makeArray (yyvsp[-2].ctyp); ;
+{ yyval.ctyp = ctype_makeArray (ctype_unknown); ;
     break;}
 case 47:
-#line 241 "mtgrammar.y"
-{ yyval.ctyp = ctype_char; ;
+#line 235 "mtgrammar.y"
+{ yyval.ctyp = ctype_makeArray (yyvsp[-2].ctyp); ;
     break;}
 case 48:
 #line 242 "mtgrammar.y"
-{ yyval.ctyp = ctype_int; ;
+{ yyval.ctyp = ctype_char; ;
     break;}
 case 49:
 #line 243 "mtgrammar.y"
-{ yyval.ctyp = ctype_float; ;
+{ yyval.ctyp = ctype_int; ;
     break;}
 case 50:
 #line 244 "mtgrammar.y"
-{ yyval.ctyp = ctype_double; ;
+{ yyval.ctyp = ctype_float; ;
     break;}
 case 51:
 #line 245 "mtgrammar.y"
-{ yyval.ctyp = ctype_void; ;
+{ yyval.ctyp = ctype_double; ;
     break;}
 case 52:
 #line 246 "mtgrammar.y"
-{ yyval.ctyp = ctype_unknown; ;
+{ yyval.ctyp = ctype_void; ;
     break;}
 case 53:
 #line 247 "mtgrammar.y"
-{ yyval.ctyp = ctype_anyintegral; ;
+{ yyval.ctyp = ctype_unknown; ;
     break;}
 case 54:
 #line 248 "mtgrammar.y"
-{ yyval.ctyp = ctype_unsignedintegral; ;
+{ yyval.ctyp = ctype_anyintegral; ;
     break;}
 case 55:
 #line 249 "mtgrammar.y"
+{ yyval.ctyp = ctype_unsignedintegral; ;
+    break;}
+case 56:
+#line 250 "mtgrammar.y"
 { yyval.ctyp = ctype_signedintegral; ;
     break;}
-case 57:
-#line 256 "mtgrammar.y"
+case 58:
+#line 257 "mtgrammar.y"
 { yyval.ctyp = mtscanner_lookupType (yyvsp[0].tok); ;
     break;}
-case 58:
-#line 259 "mtgrammar.y"
+case 59:
+#line 260 "mtgrammar.y"
 { yyval.mtvalues = mtValuesNode_create (yyvsp[0].cstringlist); ;
     break;}
-case 59:
-#line 262 "mtgrammar.y"
+case 60:
+#line 263 "mtgrammar.y"
 { yyval.cstringlist = cstringList_single (mttok_getText (yyvsp[0].tok)); ;
     break;}
-case 60:
-#line 264 "mtgrammar.y"
+case 61:
+#line 265 "mtgrammar.y"
 { yyval.cstringlist = cstringList_prepend (yyvsp[0].cstringlist, mttok_getText (yyvsp[-2].tok)); ;
     break;}
-case 61:
-#line 267 "mtgrammar.y"
+case 62:
+#line 268 "mtgrammar.y"
 { yyval.tok = yyvsp[0].tok; ;
     break;}
-case 62:
-#line 270 "mtgrammar.y"
+case 63:
+#line 271 "mtgrammar.y"
 { yyval.mtdefaults = mtDefaultsNode_create (yyvsp[-1].tok, yyvsp[0].mtdeflist); ;
     break;}
-case 63:
-#line 274 "mtgrammar.y"
+case 64:
+#line 275 "mtgrammar.y"
 { yyval.mtdeflist = mtDefaultsDeclList_single (mtDefaultsDecl_create (yyvsp[-2].mtcontext, yyvsp[0].tok)); ;
     break;}
-case 64:
-#line 276 "mtgrammar.y"
+case 65:
+#line 277 "mtgrammar.y"
 { yyval.mtdeflist = mtDefaultsDeclList_prepend (yyvsp[0].mtdeflist, mtDefaultsDecl_create (yyvsp[-3].mtcontext, yyvsp[-1].tok)); ;
     break;}
-case 65:
-#line 279 "mtgrammar.y"
+case 66:
+#line 280 "mtgrammar.y"
 { yyval.mtannotations = mtAnnotationsNode_create (yyvsp[0].mtannotlist); ;
     break;}
-case 66:
-#line 282 "mtgrammar.y"
+case 67:
+#line 283 "mtgrammar.y"
 { yyval.mtannotlist = mtAnnotationList_single (yyvsp[0].mtannotdecl); ;
     break;}
-case 67:
-#line 284 "mtgrammar.y"
+case 68:
+#line 285 "mtgrammar.y"
 { yyval.mtannotlist = mtAnnotationList_prepend (yyvsp[0].mtannotlist, yyvsp[-1].mtannotdecl); ;
     break;}
-case 68:
-#line 288 "mtgrammar.y"
+case 69:
+#line 289 "mtgrammar.y"
 { yyval.mtannotdecl = mtAnnotationDecl_create (yyvsp[-3].tok, yyvsp[-2].mtcontext, yyvsp[0].tok); ;
     break;}
-case 69:
-#line 291 "mtgrammar.y"
-{ yyval.mtmerge = mtMergeNode_create (yyvsp[0].mtmergeclauselist); ;
-    break;}
 case 70:
-#line 294 "mtgrammar.y"
-{ yyval.mtmergeclauselist = mtMergeClauseList_single (yyvsp[0].mtmergeclause); ;
+#line 292 "mtgrammar.y"
+{ yyval.mtmerge = mtMergeNode_create (yyvsp[0].mtmergeclauselist); ;
     break;}
 case 71:
 #line 295 "mtgrammar.y"
-{ yyval.mtmergeclauselist = mtMergeClauseList_prepend (yyvsp[0].mtmergeclauselist, yyvsp[-1].mtmergeclause); ;
+{ yyval.mtmergeclauselist = mtMergeClauseList_single (yyvsp[0].mtmergeclause); ;
     break;}
 case 72:
-#line 299 "mtgrammar.y"
-{ yyval.mtmergeclause = mtMergeClause_create (yyvsp[-4].mtmergeitem, yyvsp[-2].mtmergeitem, yyvsp[0].mttransferaction); ;
+#line 296 "mtgrammar.y"
+{ yyval.mtmergeclauselist = mtMergeClauseList_prepend (yyvsp[0].mtmergeclauselist, yyvsp[-1].mtmergeclause); ;
     break;}
 case 73:
-#line 302 "mtgrammar.y"
-{ yyval.mtmergeitem = mtMergeItem_createValue (yyvsp[0].tok); ;
+#line 300 "mtgrammar.y"
+{ yyval.mtmergeclause = mtMergeClause_create (yyvsp[-4].mtmergeitem, yyvsp[-2].mtmergeitem, yyvsp[0].mttransferaction); ;
     break;}
 case 74:
 #line 303 "mtgrammar.y"
-{ yyval.mtmergeitem = mtMergeItem_createStar (yyvsp[0].tok); ;
+{ yyval.mtmergeitem = mtMergeItem_createValue (yyvsp[0].tok); ;
     break;}
 case 75:
-#line 306 "mtgrammar.y"
-{ yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
+#line 304 "mtgrammar.y"
+{ yyval.mtmergeitem = mtMergeItem_createStar (yyvsp[0].tok); ;
     break;}
 case 76:
-#line 309 "mtgrammar.y"
+#line 307 "mtgrammar.y"
 { yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 77:
-#line 312 "mtgrammar.y"
+#line 310 "mtgrammar.y"
 { yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 78:
-#line 315 "mtgrammar.y"
-{ yyval.mtlosereferencelist = yyvsp[0].mtlosereferencelist; ;
+#line 313 "mtgrammar.y"
+{ yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 79:
-#line 318 "mtgrammar.y"
-{ yyval.mtlosereferencelist = mtLoseReferenceList_single (yyvsp[0].mtlosereference); ;
+#line 316 "mtgrammar.y"
+{ yyval.mtlosereferencelist = yyvsp[0].mtlosereferencelist; ;
     break;}
 case 80:
 #line 319 "mtgrammar.y"
-{ yyval.mtlosereferencelist = mtLoseReferenceList_prepend (yyvsp[0].mtlosereferencelist, yyvsp[-1].mtlosereference); ;
+{ yyval.mtlosereferencelist = mtLoseReferenceList_single (yyvsp[0].mtlosereference); ;
     break;}
 case 81:
-#line 322 "mtgrammar.y"
-{ yyval.mtlosereference = mtLoseReference_create (yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
+#line 320 "mtgrammar.y"
+{ yyval.mtlosereferencelist = mtLoseReferenceList_prepend (yyvsp[0].mtlosereferencelist, yyvsp[-1].mtlosereference); ;
     break;}
 case 82:
-#line 325 "mtgrammar.y"
-{ yyval.mttransferclauselist = mtTransferClauseList_single (yyvsp[0].mttransferclause); ;
+#line 323 "mtgrammar.y"
+{ yyval.mtlosereference = mtLoseReference_create (yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
     break;}
 case 83:
 #line 326 "mtgrammar.y"
-{ yyval.mttransferclauselist = mtTransferClauseList_prepend (yyvsp[0].mttransferclauselist, yyvsp[-1].mttransferclause); ;
+{ yyval.mttransferclauselist = mtTransferClauseList_single (yyvsp[0].mttransferclause); ;
     break;}
 case 84:
-#line 330 "mtgrammar.y"
-{ yyval.mttransferclause = mtTransferClause_create (yyvsp[-4].tok, yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
+#line 327 "mtgrammar.y"
+{ yyval.mttransferclauselist = mtTransferClauseList_prepend (yyvsp[0].mttransferclauselist, yyvsp[-1].mttransferclause); ;
     break;}
 case 85:
-#line 333 "mtgrammar.y"
-{ yyval.mttransferaction = mtTransferAction_createValue (yyvsp[0].tok); ;
+#line 331 "mtgrammar.y"
+{ yyval.mttransferclause = mtTransferClause_create (yyvsp[-4].tok, yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
     break;}
 case 86:
 #line 334 "mtgrammar.y"
-{ yyval.mttransferaction = yyvsp[0].mttransferaction; ;
+{ yyval.mttransferaction = mtTransferAction_createValue (yyvsp[0].tok); ;
     break;}
 case 87:
-#line 337 "mtgrammar.y"
-{ yyval.mttransferaction = mtTransferAction_createError (yyvsp[0].tok); ;
+#line 335 "mtgrammar.y"
+{ yyval.mttransferaction = yyvsp[0].mttransferaction; ;
     break;}
 case 88:
 #line 338 "mtgrammar.y"
-{ yyval.mttransferaction = mtTransferAction_createErrorMessage (yyvsp[0].tok); ;
+{ yyval.mttransferaction = mtTransferAction_createError (yyvsp[0].tok); ;
     break;}
 case 89:
-#line 341 "mtgrammar.y"
-{ yyval.tok = yyvsp[0].tok; ;
+#line 339 "mtgrammar.y"
+{ yyval.mttransferaction = mtTransferAction_createErrorMessage (yyvsp[0].tok); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
@@ -1493,7 +1496,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 343 "mtgrammar.y"
+#line 344 "mtgrammar.y"
 
 
 # include "bison.reset"
@@ -1502,9 +1505,18 @@ extern char *yytext;
 
 static void mterror (char *s) 
 {
-  llfatalbug 
-    (cstring_makeLiteral 
-     ("There has been a problem in the .mts parser."));
+  
+  if (s != NULL)
+    {
+      llparseerror
+	(message ("Parse error in meta-state file: %s", cstring_fromChars (s)));
+    }
+  else
+    {
+      llparseerror
+	(message ("Parse error in meta-state file"));
+    }
+
 }
 
 static void yyprint (FILE *file, int type, YYSTYPE value)

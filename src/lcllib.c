@@ -56,7 +56,7 @@ extern /*@open@*/ /*@dependent@*/ FILE *yyin;
 # define NUMLIBS 17
 
 /*@constant int NUMPOSIXLIBS; @*/
-# define NUMPOSIXLIBS 12
+# define NUMPOSIXLIBS 13
 
 static ob_mstring posixlibs[NUMPOSIXLIBS] = 
 {
@@ -66,6 +66,7 @@ static ob_mstring posixlibs[NUMPOSIXLIBS] =
   "fcntl",
   "grp",
   "pwd",
+  "regex",
   "sys/times",
   "sys/utsname",
   "sys/wait",

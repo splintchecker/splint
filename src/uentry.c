@@ -106,6 +106,7 @@ static void uentry_setNullState (/*@notnull@*/ uentry p_ue, nstate p_ns);
 static void uentry_setAliasKind (/*@notnull@*/ uentry p_ue, alkind p_ak);
 static /*@only@*/ /*@null@*/ uinfo uinfo_copy (uinfo p_u, ekind p_kind);
 static void uinfo_free (/*@only@*/ uinfo p_u, ekind p_kind);
+static void ucinfo_free (/*@only@*/ ucinfo p_u);
 static void uvinfo_free (/*@only@*/ uvinfo p_u);
 
 # ifdef DOANNOTS
@@ -946,7 +947,9 @@ uentry_makeFunctionAux (cstring n, ctype t,
   e->utype = t;
   e->storageclass = SCNONE;
 
-    e->sref = sRef_makeType (ret);
+  e->sref = sRef_makeResult (ret); /* evans 2001-07-19 - was sRef_makeType */
+
+  DPRINTF (("Result: %s", sRef_unparseFull (e->sref)));
 
   if (ctype_isUA (ret))
     {
@@ -3350,6 +3353,7 @@ void uentry_makeVarFunction (uentry ue)
   ak = sRef_getOrigAliasKind (ue->sref);
   ek = sRef_getOrigExKind (ue->sref);
 
+  llassert (uentry_isVariable (ue));
   oldInfo = ue->info->var;
 
   llassert (ctype_isUnknown (ue->utype) || ctype_isFunction (ue->utype));
@@ -3452,6 +3456,111 @@ void uentry_makeVarFunction (uentry ue)
     }
 
   uvinfo_free (oldInfo);
+}
+
+void uentry_makeConstantFunction (uentry ue)
+{
+  alkind ak;
+  exkind ek;
+  ucinfo oldInfo;
+  fileloc loc;
+
+  llassert (uentry_isValid (ue));
+  llassert (!sRef_modInFunction ());
+
+  ak = sRef_getOrigAliasKind (ue->sref);
+  ek = sRef_getOrigExKind (ue->sref);
+
+  llassert (uentry_isConstant (ue));
+  oldInfo = ue->info->uconst;
+
+  llassert (ctype_isUnknown (ue->utype) || ctype_isFunction (ue->utype));
+
+  /*
+  ** expanded macro is marked used (until I write a pre-processor)
+  */
+
+  ue->ukind = KFCN;
+  ue->info->fcn = (ufinfo) dmalloc (sizeof (*ue->info->fcn));
+  ue->info->fcn->exitCode = XK_UNKNOWN;
+  ue->info->fcn->nullPred = qual_createUnknown ();
+  ue->info->fcn->specialCode = SPC_NONE;
+  ue->info->fcn->access = typeIdSet_undefined;
+  ue->info->fcn->hasGlobs = FALSE;
+  ue->info->fcn->globs = globSet_undefined;
+  ue->info->fcn->hasMods = FALSE;
+  ue->info->fcn->mods = sRefSet_undefined;
+  ue->info->fcn->specclauses = NULL;
+  ue->info->fcn->defparams = uentryList_undefined;
+
+  /*drl*/
+  ue->info->fcn->preconditions = functionConstraint_undefined;
+  /*end */
+
+  /*drl 12/28/2000*/
+  ue->info->fcn->postconditions = functionConstraint_undefined;
+  /*end */
+
+  
+  if (ctype_isFunction (ue->utype))
+    {
+      ue->sref = sRef_makeType (ctype_getReturnType (ue->utype)); 
+    }
+  else
+    {
+      ue->sref = sRef_makeType (ctype_unknown); 
+    }
+
+  if (sRef_isRefCounted (ue->sref))
+    {
+      ak = AK_NEWREF;
+    }
+  else
+    {
+      if (alkind_isUnknown (ak))
+	{
+	  if (exkind_isKnown (ek))
+	    {
+	      DPRINTF (("imp dep: %s", uentry_unparseFull (ue)));
+	      ak = AK_IMPDEPENDENT;
+	    }
+	  else 
+	    {
+	      if (context_getFlag (FLG_RETIMPONLY))
+		{
+		  if (ctype_isFunction (ue->utype)
+		      && ctype_isVisiblySharable 
+		      (ctype_realType (ctype_getReturnType (ue->utype))))
+		    {
+		      if (uentryList_hasReturned (uentry_getParams (ue)))
+			{
+			  ;
+			}
+		      else
+			{
+			  if (ctype_isImmutableAbstract (ctype_getReturnType (ue->utype))) 
+			    {
+			      ;
+			    }
+			  else 
+			    {
+			      ak = AK_IMPONLY;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  loc = ue->whereDeclared;
+
+  sRef_setAliasKind (ue->sref, ak, loc);
+  sRef_setExKind (ue->sref, ek, loc);
+
+  fileloc_free (ue->whereDefined);
+  ue->whereDefined = fileloc_undefined;
+  ucinfo_free (oldInfo);
 }
 
 void
@@ -6422,9 +6531,7 @@ static void
 uvinfo_free (/*@only@*/ uvinfo u)
 {
   /*drl7x added 6/29/01 */
-  /*free null terminated stuff */
-  /*@i22*/
-  //  free(u->bufinfo);
+  free (u->bufinfo); /* evans - 2001-07-19 fixed this bug */
   sfree (u);
 }
 

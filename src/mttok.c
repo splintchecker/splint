@@ -48,6 +48,7 @@ mttok_unparse (mttok tok)
     case MT_DEFAULT:        lit = "default"; break;
     case MT_REFERENCE:      lit = "reference"; break;
     case MT_PARAMETER:      lit = "parameter"; break;
+    case MT_RESULT:         lit = "result"; break;
     case MT_CLAUSE:         lit = "clause"; break;
     case MT_ANNOTATIONS:    lit = "annotations"; break;
     case MT_ARROW:          lit = "==>"; break;
@@ -114,6 +115,11 @@ void mttok_free (mttok t)
   fileloc_free (t->loc);
   cstring_free (t->text);
   sfree (t);
+}
+
+bool mttok_isError (mttok t)
+{
+  return ((t)->tok == MT_ERROR);
 }
 
 bool mttok_isIdentifier (mttok t)

@@ -308,11 +308,9 @@ struct cppOptions {
   bool pedantic_errors;
 
   /* Nonzero means don't print warning messages.  -w.  */
-
-  bool inhibit_warnings;
+  /* bool inhibit_warnings; -- removed evans 2001-07-19 */
 
   /* Nonzero means warn if slash-star appears in a comment.  */
-
   bool warn_comments;
 
   /* Nonzero means warn if a macro argument is (or would be)

@@ -83,7 +83,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 %token <tok> MT_ONEOF
 
 %token <tok> MT_DEFAULTS MT_DEFAULT
-%token <tok> MT_REFERENCE MT_PARAMETER MT_CLAUSE
+%token <tok> MT_REFERENCE MT_PARAMETER MT_RESULT MT_CLAUSE
 
 %token <tok> MT_ANNOTATIONS
 %token <tok> MT_ARROW
@@ -182,6 +182,7 @@ optContextSelection
 contextSelection
 : MT_PARAMETER optType { $$ = mtContextNode_createParameter ($2); }
 | MT_REFERENCE optType { $$ = mtContextNode_createReference ($2); }
+| MT_RESULT optType    { $$ = mtContextNode_createResult ($2); } 
 | MT_CLAUSE optType    { $$ = mtContextNode_createClause ($2); } 
 
 /*
@@ -338,7 +339,7 @@ errorAction
 | MT_ERROR MT_STRINGLIT { $$ = mtTransferAction_createErrorMessage ($2); }
 
 valueChoice
- : MT_IDENT { $$ = $1; }
+ : MT_IDENT 
 
 %%
 
@@ -348,9 +349,18 @@ extern char *yytext;
 
 static void mterror (char *s) 
 {
-  llfatalbug 
-    (cstring_makeLiteral 
-     ("There has been a problem in the .mts parser."));
+  
+  if (s != NULL)
+    {
+      llparseerror
+	(message ("Parse error in meta-state file: %s", cstring_fromChars (s)));
+    }
+  else
+    {
+      llparseerror
+	(message ("Parse error in meta-state file"));
+    }
+
 }
 
 static void yyprint (FILE *file, int type, YYSTYPE value)

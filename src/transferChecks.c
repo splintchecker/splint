@@ -3964,36 +3964,100 @@ checkMetaStateConsistent (/*@exposed@*/ sRef fref, sRef tref,
 	  {
 	    ;
 	  }
-	else if (!stateValue_sameValue (fval, tval))
+	else if (sRef_isDefinitelyNull (fref)
+		 || usymtab_isDefinitelyNull (fref))
 	  {
-	    DPRINTF (("Check: %s / %s / %s / %s", fkey,
-		      metaStateInfo_unparse (minfo),
-		      stateValue_unparse (fval),
-		      stateValue_unparse (tval)));
-	    
-	    if (sRef_isDefinitelyNull (fref)
-		|| usymtab_isDefinitelyNull (fref))
-	      {
-		; /* No errors for null values in state transfers. */
-	      }
-	    else
-	      {
-		if (optgenerror 
-		    (FLG_STATETRANSFER,
-		     message
-		     ("Invalid transfer from %q %x to %q",
-		      stateValue_unparseValue (fval, minfo),
-		      sRef_unparse (fref),
-		      stateValue_unparseValue (tval, minfo)),
-		     loc))
-		  {
-		    sRef_showMetaStateInfo (fref, fkey);
-		  }
-	      }
+	    ; /* No errors for null values in state transfers. */
 	  }
+	
 	else
 	  {
-	    ; /* Match okay */
+	    stateCombinationTable sctable = metaStateInfo_getTransferTable (minfo);
+	    cstring msg = cstring_undefined;
+	    int nval = stateCombinationTable_lookup (sctable, 
+						     stateValue_getValue (fval), 
+						     stateValue_getValue (tval), 
+						     &msg);
+	    
+	    if (nval == stateValue_error)
+	      {
+		llassert (cstring_isDefined (msg));
+		
+		if (transferType == TT_LEAVETRANS)
+		  {
+		    BADBRANCH;
+		  }
+		else if (transferType == TT_GLOBRETURN)
+		  {
+		    if (optgenerror 
+			(FLG_STATETRANSFER,
+			 message
+			 ("Function returns with global %q in inconsistent state (%q is %q, should be %q): %q",
+			  sRef_unparse (sRef_getRootBase (fref)),
+			  sRef_unparse (fref),
+			  stateValue_unparseValue (fval, minfo),
+			  stateValue_unparseValue (tval, minfo),
+			  msg),
+			 loc))
+		      {
+			sRef_showMetaStateInfo (fref, fkey);
+		      }		    
+		  }
+		else if (transferType == TT_GLOBPASS)
+		  {
+		    if (optgenerror 
+			(FLG_STATETRANSFER,
+			 message
+			 ("Function called with global %q in inconsistent state (%q is %q, should be %q): %q",
+			  sRef_unparse (sRef_getRootBase (fref)),
+			  stateValue_unparseValue (fval, minfo),
+			  sRef_unparse (fref),
+			  stateValue_unparseValue (tval, minfo),
+			  msg),
+			 loc))
+		      {
+			sRef_showMetaStateInfo (fref, fkey);
+		      }		    
+		  }
+		else if (transferType == TT_PARAMRETURN)
+		  {
+		    if (optgenerror 
+			(FLG_STATETRANSFER,
+			 message
+			 ("Function returns with parameter %q in inconsistent state (%q is %q, should be %q): %q",
+			  sRef_unparse (sRef_getRootBase (fref)),
+			  stateValue_unparseValue (fval, minfo),
+			  sRef_unparse (fref),
+			  stateValue_unparseValue (tval, minfo),
+			  msg),
+			 loc))
+		      {
+			sRef_showMetaStateInfo (fref, fkey);
+		      }
+		  }
+		else
+		  {
+		    if (optgenerror 
+			(FLG_STATETRANSFER,
+			 message
+			 ("Invalid transfer from %q %x to %q (%q): %q",
+			  stateValue_unparseValue (fval, minfo),
+			  sRef_unparse (fref),
+			  stateValue_unparseValue (tval, minfo),
+			  sRef_unparse (tref),
+			  msg),
+			 loc))
+		      {
+			sRef_showMetaStateInfo (fref, fkey);
+		      }
+		  }
+
+	      }
+	    
+	    if (stateValue_getValue (fval) != nval)
+	      {
+		stateValue_updateValueLoc (fval, nval, loc);
+	      }
 	  }
       }
     

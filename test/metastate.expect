@@ -106,8 +106,9 @@ sockets2.c:24:3: Control branches merge with incompatible global states
 Finished LCLint checking --- 2 code errors found, as expected
 
 struct.c: (in function source_badClose)
-struct.c:25:2: Invalid transfer from unopen s->file to open
-   struct.c:24:10: Meta state s->file becomes unopen
+struct.c:10:2: Function returns with parameter s in inconsistent state (unopen
+                  is s->file, should be open): unopen file passed as open
+   struct.c:9:10: Meta state s->file becomes unopen
 
 Finished LCLint checking --- 1 code error found, as expected
 

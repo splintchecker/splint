@@ -343,6 +343,15 @@ extern bool /*@alt void@*/ llforceerror (flagcode p_code, /*@only@*/ cstring p_s
 # define llforceerror(p_code, p_s, p_fl) \
      (xllforceerror (__FILE__, __LINE__, p_code, p_s, p_fl))
 
+extern /*@private@*/ bool xcppoptgenerror (char *p_srcFile, int p_srcLine, flagcode p_o,
+			     /*@only@*/ cstring p_s, cppReader *p_pfile)
+     /*@modifies g_msgstream, p_pfile@*/ ;
+
+extern bool cppoptgenerror (flagcode p_code, /*@only@*/ cstring p_s, cppReader *p_pfile)
+     /*@modifies g_msgstream, p_pfile@*/ ;
+# define cppoptgenerror(p_code, p_s, p_pfile) \
+    (xcppoptgenerror (__FILE__, __LINE__, p_code, p_s, p_pfile))
+
 extern void llerrorlit (flagcode p_o, char *p_s);
 # define llerrorlit(o, s)   ((void) llerror (o, cstring_makeLiteral (s)))
 

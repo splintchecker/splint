@@ -63,6 +63,9 @@ Finished LCLint checking --- 4 code errors found, as expected
 
 innercomment.c:1:17: Comment starts inside comment
 innercomment.c:16:3: Comment starts inside comment
+
+Finished LCLint checking --- 2 code errors found, as expected
+
 Finished LCLint checking --- no code errors found
 
 Finished LCLint checking --- no code errors found

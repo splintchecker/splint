@@ -31,7 +31,8 @@ hexconstants:
 	$(LCLINT) +checks hexconstants.c -expect 4
 
 innercomment:
-	$(LCLINT) innercomment.c 
+	$(LCLINT) innercomment.c -expect 2 +forcehints ; \
+	$(LCLINT) innercomment.c -nestcomment
 
 nothing:
 	$(LCLINT) nothing.c 

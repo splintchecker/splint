@@ -27,6 +27,7 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
+# include "mtincludes.h"
 
 /*@notnull@*/ metaStateInfo 
 metaStateInfo_create (cstring name, 
@@ -47,6 +48,7 @@ metaStateInfo_create (cstring name,
   res->loc = loc;
   res->default_ref = stateValue_error;
   res->default_parameter = stateValue_error;
+  res->default_result = stateValue_error;
 
   llassert (stateCombinationTable_size (res->sctable) 
 	    == cstringList_size (res->valueNames));
@@ -126,14 +128,18 @@ metaStateInfo_getMergeTable (metaStateInfo info) /*@*/
 extern int metaStateInfo_getDefaultValue (metaStateInfo info, sRef s)
 {
   llassert (metaStateInfo_isDefined (info));
-  llassert (mtContextNode_matchesRef (metaStateInfo_getContext (info), s));
 
   if (sRef_isParam (s))
     {
       return info->default_parameter;
     }
+  else if (sRef_isResult (s))
+    {
+      return info->default_result;
+    }
   else 
     {
+      llassert (mtContextNode_matchesRef (metaStateInfo_getContext (info), s));
       return info->default_ref;
     }
 }
@@ -151,6 +157,13 @@ void metaStateInfo_setDefaultRefValue (metaStateInfo info, int val)
   info->default_ref = val;
 }
 
+void metaStateInfo_setDefaultResultValue (metaStateInfo info, int val)
+{
+  llassert (metaStateInfo_isDefined (info));
+  llassert (info->default_result == stateValue_error);
+  info->default_result = val;
+}
+
 void metaStateInfo_setDefaultParamValue (metaStateInfo info, int val)
 {
   llassert (metaStateInfo_isDefined (info));
@@ -162,6 +175,12 @@ int metaStateInfo_getDefaultRefValue (metaStateInfo info)
 {
   llassert (metaStateInfo_isDefined (info));
   return info->default_ref;
+}
+
+int metaStateInfo_getDefaultResultValue (metaStateInfo info)
+{
+  llassert (metaStateInfo_isDefined (info));
+  return info->default_result;
 }
 
 int metaStateInfo_getDefaultParamValue (metaStateInfo info)

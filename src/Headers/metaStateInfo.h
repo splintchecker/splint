@@ -32,6 +32,7 @@ struct s_metaStateInfo {
   /* Default values */
   int default_ref;
   int default_parameter;
+  int default_result;
 
   /* context */
   mtContextNode context;
@@ -65,10 +66,14 @@ extern void metaStateInfo_setDefaultRefValue (metaStateInfo p_info, int p_val)
 extern void metaStateInfo_setDefaultParamValue (metaStateInfo p_info, int p_val) 
      /*@modifies p_info@*/ ;
 
+extern void metaStateInfo_setDefaultResultValue (metaStateInfo p_info, int p_val) 
+     /*@modifies p_info@*/ ;
+
 extern int metaStateInfo_getDefaultValue (metaStateInfo p_info, sRef p_s) /*@*/ ;
 
 extern int metaStateInfo_getDefaultRefValue (metaStateInfo p_info) /*@*/ ;
 extern int metaStateInfo_getDefaultParamValue (metaStateInfo p_info) /*@*/ ;
+extern int metaStateInfo_getDefaultResultValue (metaStateInfo p_info) /*@*/ ;
 extern int metaStateInfo_getDefaultGlobalValue (metaStateInfo p_info) /*@*/ ;
 
 extern /*@observer@*/ mtContextNode metaStateInfo_getContext (metaStateInfo p_info) /*@*/ ;

@@ -32,6 +32,7 @@
 # include <errno.h>
 # include "llbasic.h"
 # include "llmain.h"
+# include "cpperror.h"
 # include "version.h"
 
 /* Don't allow possibly-recursive assertion failures. */
@@ -1644,6 +1645,32 @@ static void llreportparseerror (/*@only@*/ cstring s)
       fileloc_free (lastparseerror);
       lastparseerror = fileloc_copy (g_currentloc);
     }
+}
+
+bool xcppoptgenerror (char *srcFile, int srcLine,
+		      flagcode o,
+		      /*@only@*/ cstring s,
+		      cppReader *pfile)
+{
+  bool res = FALSE;
+  fileloc loc = cppReader_getLoc (pfile);
+
+  if (context_flagOn (o, loc))
+    {
+      if (xlloptgenerror (srcFile, srcLine, o, s, loc))
+	{
+	  cppReader_printContainingFiles (pfile);
+	  res = TRUE;
+	}
+    }
+  else
+    {
+      cstring_free (s);
+    }
+
+  fileloc_free (loc);
+
+  return res;
 }
 
 bool xlloptgenerror (char *srcFile, int srcLine, 
