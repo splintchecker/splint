@@ -2,7 +2,7 @@ What is the difference between Splint and LCLint?
 
 Before 2002, Splint was known as LCLint. Splint 3.0 is the successor to LCLint 2.5.
 
-LCLint was originally named for LCL, the Larch C Interface Language and lint, a well-known C program checking tool. Because our tool has diverged from LCL, and our focus now is on secure programming, it was renamed Splint. Splint's name has (at least) three interpretations: specifications lint, secure programming lint, and first aid for programmers. Its also easier to pronounce than LCLint.
+LCLint was originally named for LCL, the Larch C Interface Language and lint, a well-known C program checking tool. Because our tool has diverged from LCL, and our focus now is on secure programming, it was renamed Splint. Splint's name has (at least) three interpretations: specifications lint, secure programming lint, and first aid for programmers. It's also easier to pronounce than LCLint.
 
 What is the Splint logo?
 
@@ -10,7 +10,7 @@ Thomas Jefferson's Serpentine Walls at the University of Virginia. The walls are
 
 Can I include Splint in my software distribution?
 
-Yes. Splint is licensed under the GNU General Public License. You may redistributed it as you wish so long as credits and pointers to www.splint.org are not changed or removed. Splint may be included in commercial distributions, and is included in several Linux and freeware CDs. If you redistribute Splint, please let us know by sending a message to splint@cs.virginia.edu.
+Yes. Splint is licensed under the GNU General Public License. You may redistribute it as you wish so long as credits and pointers to www.splint.org are not changed or removed. Splint may be included in commercial distributions, and is included in several Linux and freeware CDs. If you redistribute Splint, please let us know by sending a message to splint@cs.virginia.edu.
 
 Can we use your software in our company?  (We are not a GNU organization.)
 
@@ -21,7 +21,7 @@ Does Splint handle C++?
 
 No. Splint handles ISO C99 (and some gcc extensions if +gnuextensions is used). We don't have the resources (or the research justification) to build a C++ front end, but if you are interested in building a C++ front end the source code is available, and I will certainly be willing to help.
 
-I downloaded the Splint tgz file but can't figure out how to extract it.  There is no 'z' option on the tar on my system.
+I downloaded the Splint .tgz file but can't figure out how to extract it.  There is no 'z' option on the tar on my system.
 
 Check to see if there is GNU tar on your system, it is usually invoked by the command gtar or gnutar.  GNU tar supports the -z option.
 
@@ -64,9 +64,9 @@ scanf to be more likely to reveal a problem with the code than ignoring
 the result of a printf, even though strict programmers will want to check
 printf also.
 
-If you want stricter checking use the flags  +ansistrictlib, +posixstrictlib, +unixstrictlib to select the strict versions of these libraries.
+If you want stricter checking, use the flags  +ansistrictlib, +posixstrictlib, +unixstrictlib to select the strict versions of these libraries.
 
-I develop code on an embedded system with a compiler that uses nonstandard key words and data types.  I would like run Splint on my code but these nonstandard keywords cause parse errors.  What should I do?
+I develop code on an embedded system with a compiler that uses nonstandard key words and data types.  I would like to run Splint on my code but these nonstandard keywords cause parse errors.  What should I do?
 
 You can often use -D to solve this problem.
 
@@ -119,25 +119,24 @@ running is on the system path (hence, splint won't report errors if
 -sysdirerrors is set, as it is by default).  Try adding +sysdirerrors to
 the command line for the test suite to see if that is the problem, or installing Splint in a different directory not in the system path.
 
-
 I get parse errors when I try to run Splint on code like #define MACROdebug(...) blahblah .  Can I use variadic macros in Splint?
 
 Sorry, Splint doesn't yet support variadic macros. We hope to fix this in a future release.
 
 I use realloc in my code.  How can I get Splint in check this code more effectively?
 
-realloc has complicated semantics that make it difficult to use correctly.  Make sure that you understand realloc and that you need to use it.
+realloc has complicated semantics that make it difficult to use correctly.  Make sure that you understand realloc and that you really need to use it.
 
 If you decide to use realloc, we recommend that you wrapper it.  The document Using Wrapper Functions explains how to do this.  That document is included in the Splint documentation and is also available at:
-HTTP://INSERT_A_VALID_URL_WHEN_THE_document_is_ready.
+http://www.splint.org/documentation/realloc.htm
 
-I think I've found a bug in Splint what should I do?
+I think I've found a bug in Splint.  What should I do?
 
 See http://www.splint.org/bugs.html for a list of known bugs and instructions on reporting bugs.
 
 Splint tells me that there is a bug and I should report it.  What information should I send?
 
-Ideally we would like enough code to reproduce the problem.  Small snipits of code which trigger the bug are the best but more code is also acceptable.
+Ideally we would like enough code to reproduce the problem.  Small snippets of code which trigger the bug are the best but more code is also acceptable.
 
 If we're not able to reproduce the problem, then we are unlikely to be able to patch Splint.  However, we would still appreciate hearing about the bug and may be able to at least to offer you advice on working around the problem.
 
