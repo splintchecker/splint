@@ -1,9 +1,8 @@
-.PHONY: boolt testalt booltest boolbad hoof testalt uconstants ull baz
+.PHONY: boolt testalt booltest boolbad hoof testalt uconstants
 
 LCLINT = lclint
 
-# ull and baz added after 2.5q
-all: testalt boolt uconstants badcomment hoof boolbad booltest ull baz
+all: testalt boolt uconstants badcomment hoof boolbad booltest
 
 testalt:
 	${LCLINT} -dump newlint.lcd testalt.c
@@ -31,10 +30,3 @@ booltest:
 
 boolbad:
 	${LCLINT} -weak -booltype BOOLEAN boolbad.c
-
-
-ull:
-	${LCLINT} ull.c
-
-baz:
-	${LCLINT} baz.h bimbim.h -I.
