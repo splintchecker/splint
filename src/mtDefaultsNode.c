@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtDefaultsNode mtDefaultsNode_create (mttok t, mtDefaultsDeclList decls)
 {

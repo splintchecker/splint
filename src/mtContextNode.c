@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 static bool mtContextNode_matchesType (mtContextNode, ctype) /*@*/ ;
 
@@ -36,10 +35,12 @@ static /*@observer@*/ cstring mtContextKind_unparse (mtContextKind ck)
   switch (ck)
     {
     case MTC_ANY: return cstring_makeLiteralTemp ("any");
-    case MTC_PARAM: return cstring_makeLiteralTemp ("param"); 
+    case MTC_PARAM: return cstring_makeLiteralTemp ("parameter"); 
     case MTC_RESULT: return cstring_makeLiteralTemp ("result"); 
     case MTC_REFERENCE: return cstring_makeLiteralTemp ("reference");
     case MTC_CLAUSE: return cstring_makeLiteralTemp ("clause");
+    case MTC_LITERAL: return cstring_makeLiteralTemp ("literal");
+    case MTC_NULL: return cstring_makeLiteralTemp ("null");
     }
 
   BADBRANCH;
@@ -79,6 +80,16 @@ extern mtContextNode mtContextNode_createClause (ctype ct)
   return mtContextNode_create (MTC_CLAUSE, ct);
 }
 
+extern mtContextNode mtContextNode_createLiteral (ctype ct) 
+{
+  return mtContextNode_create (MTC_LITERAL, ct);
+}
+
+extern mtContextNode mtContextNode_createNull (ctype ct) 
+{
+  return mtContextNode_create (MTC_NULL, ct);
+}
+
 extern void mtContextNode_free (/*@only@*/ mtContextNode node) 
 {
   sfree (node);
@@ -108,6 +119,9 @@ bool mtContextNode_matchesEntry (mtContextNode context, uentry ue)
 	  return FALSE;
 	}
       break;
+    case MTC_LITERAL:
+    case MTC_NULL:
+      return FALSE;
     case MTC_REFERENCE:
       break;
     case MTC_CLAUSE:
@@ -149,6 +163,14 @@ bool mtContextNode_matchesRef (mtContextNode context, sRef sr)
 	  return FALSE;
 	}
       break;
+    case MTC_LITERAL:
+      DPRINTF (("Literal: %s", sRef_unparse (sr)));
+      if (!sRef_isConst (sr))
+	{
+	  return FALSE;
+	}
+      break;
+    case MTC_NULL:
     case MTC_REFERENCE:
       break;
     case MTC_CLAUSE:
@@ -234,6 +256,18 @@ bool mtContextNode_isResult (mtContextNode n)
 {
   llassert (mtContextNode_isDefined (n));
   return (n->context == MTC_RESULT);
+}
+
+bool mtContextNode_isLiteral (mtContextNode n)
+{
+  llassert (mtContextNode_isDefined (n));
+  return (n->context == MTC_LITERAL);
+}
+
+bool mtContextNode_isNull (mtContextNode n)
+{
+  llassert (mtContextNode_isDefined (n));
+  return (n->context == MTC_NULL);
 }
 
 

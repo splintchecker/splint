@@ -14,6 +14,15 @@ struct s_metaStateExpression {
   /*@null@*/ metaStateExpression rest;
 } ;
 
+/*@constant null metaStateExpression metaStateExpression_undefined; @*/
+# define metaStateExpression_undefined    ((metaStateExpression) NULL)
+
+extern /*@falsenull@*/ bool metaStateExpression_isDefined (metaStateExpression) /*@*/ ;
+# define metaStateExpression_isDefined(p_info) ((p_info) != NULL)
+
+extern /*@truenull@*/ bool metaStateExpression_isUndefined (metaStateExpression) /*@*/ ;
+# define metaStateExpression_isUndefined(p_info) ((p_info) == NULL)
+
 extern /*@notnull@*/ metaStateExpression
 metaStateExpression_create (/*@only@*/ metaStateSpecifier) ;
 
@@ -22,6 +31,9 @@ metaStateExpression_createMerge (/*@only@*/ metaStateSpecifier, /*@only@*/ metaS
 
 extern /*@observer@*/ metaStateSpecifier
 metaStateExpression_getSpecifier (metaStateExpression) /*@*/ ;
+
+extern bool metaStateExpression_isMerge (metaStateExpression) /*@*/ ;
+extern /*@observer@*/ metaStateExpression metaStateExpression_getRest (metaStateExpression) /*@*/ ;
 
 extern metaStateExpression metaStateExpression_copy (metaStateExpression) ;
 

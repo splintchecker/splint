@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 metaStateSpecifier 
 metaStateSpecifier_create (/*@only@*/ sRef sr, /*@observer@*/ metaStateInfo msinfo)

@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtDeclarationNode mtDeclarationNode_create (mttok name, mtDeclarationPieces pieces) /*@*/ 
 {
@@ -61,6 +60,9 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
   cstringList mvals;
   metaStateInfo msinfo;
   int nvalues;
+
+  cstring defaultMergeMessage = 
+    cstring_makeLiteralTemp ("Incompatible state merge (default behavior)");
 
   pieces = node->pieces;
 
@@ -391,8 +393,7 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 	  if (i != j) 
 	    {
 	      stateCombinationTable_set 
-		(tmerge, i, j, metaState_error,
-		 cstring_makeLiteral ("Incompatible state merge (default behavior)"));
+		(tmerge, i, j, metaState_error, cstring_copy (defaultMergeMessage));
 	    }
 	}
     }
@@ -515,6 +516,42 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 		    }
 		}
 	    }
+
+	  /*
+	  ** Unless otherwise indicated, merging is symmetric:
+	  */
+
+	  for (i = low1index; i <= high1index; i++)
+	    {
+	      for (j = low2index; j <= high2index; j++)
+		{
+		  cstring msg;
+
+		  if (stateCombinationTable_lookup (tmerge, j, i, &msg) == metaState_error)
+		    {
+		      if (cstring_equal (msg, defaultMergeMessage))
+			{
+			  /* Override the default action */
+			  if (mtTransferAction_isError (taction))
+			    {
+			      stateCombinationTable_update
+				(tmerge, 
+				 j, i,
+				 vindex,
+				 cstring_copy (mtTransferAction_getMessage (taction)));
+			    }
+			  else
+			    {
+			      stateCombinationTable_update
+				(tmerge, 
+				 j, i, 
+				 vindex,
+				 cstring_undefined);
+			    }
+			}
+		    }
+		}
+	    }
 	} end_mtMergeClauseList_elements ;  
     }
 
@@ -580,58 +617,46 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 	  if (cstringList_contains (mvals, mvalue)) 
 	    {
 	      int vindex = cstringList_getIndex (mvals, mvalue);
+	      mtContextKind mkind;
 
 	      if (mtContextNode_isReference (mcontext))
 		{
-		  if (metaStateInfo_getDefaultRefValue (msinfo) != stateValue_error)
-		    {
-		      voptgenerror
-			(FLG_SYNTAX,
-			 message ("Duplicate defaults declaration for context %q: %q",
-				  mtContextNode_unparse (mcontext), 
-				  mtDefaultsDecl_unparse (mdecl)),
-			 mtDefaultsDecl_getLoc (mdecl));
-		    }
-		  else
-		    {
-		      metaStateInfo_setDefaultRefValue (msinfo, vindex);
-		    }
+		  mkind = MTC_REFERENCE;
 		}
 	      else if (mtContextNode_isParameter (mcontext))
 		{
-		  if (metaStateInfo_getDefaultParamValue (msinfo) != stateValue_error)
-		    {
-		      voptgenerror
-			(FLG_SYNTAX,
-			 message ("Duplicate defaults declaration for context %q: %q",
-				  mtContextNode_unparse (mcontext), 
-				  mtDefaultsDecl_unparse (mdecl)),
-			 mtDefaultsDecl_getLoc (mdecl));
-		    }
-		  else
-		    {
-		      metaStateInfo_setDefaultParamValue (msinfo, vindex);
-		    }
+		  mkind = MTC_PARAM;
 		}
 	      else if (mtContextNode_isResult (mcontext))
 		{
-		  if (metaStateInfo_getDefaultResultValue (msinfo) != stateValue_error)
-		    {
-		      voptgenerror
-			(FLG_SYNTAX,
-			 message ("Duplicate defaults declaration for context %q: %q",
-				  mtContextNode_unparse (mcontext), 
-				  mtDefaultsDecl_unparse (mdecl)),
-			 mtDefaultsDecl_getLoc (mdecl));
-		    }
-		  else
-		    {
-		      metaStateInfo_setDefaultResultValue (msinfo, vindex);
-		    }
+		  mkind = MTC_RESULT;
+		}
+	      else if (mtContextNode_isLiteral (mcontext))
+		{
+		  mkind = MTC_LITERAL;
+		}
+	      else if (mtContextNode_isNull (mcontext))
+		{
+		  mkind = MTC_NULL;
 		}
 	      else
 		{
+		  DPRINTF (("Bad: %s", mtContextNode_unparse (mcontext)));
 		  BADBRANCH;
+		}
+
+	      if (metaStateInfo_getDefaultValueContext (msinfo, mkind) != stateValue_error)
+		{
+		  voptgenerror
+		    (FLG_SYNTAX,
+		     message ("Duplicate defaults declaration for context %q: %q",
+			      mtContextNode_unparse (mcontext), 
+			      mtDefaultsDecl_unparse (mdecl)),
+		     mtDefaultsDecl_getLoc (mdecl));
+		}
+	      else
+		{
+		  metaStateInfo_setDefaultValueContext (msinfo, mkind, vindex);
 		}
 	    }
 	  else

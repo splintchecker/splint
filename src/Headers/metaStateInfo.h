@@ -30,9 +30,7 @@ struct s_metaStateInfo {
   stateCombinationTable mergetable;
 
   /* Default values */
-  int default_ref;
-  int default_parameter;
-  int default_result;
+  int defaultValue [MTC_NUMCONTEXTS];
 
   /* context */
   mtContextNode context;
@@ -59,6 +57,9 @@ metaStateInfo_create (/*@only@*/ cstring p_name,
 
 extern bool metaStateInfo_equal (metaStateInfo p_m1, metaStateInfo p_m2) /*@*/ ;
 # define metaStateInfo_equal(m1,m2) ((m1) == (m2))
+
+extern int metaStateInfo_getDefaultValueContext (metaStateInfo p_info, mtContextKind p_context) /*@*/ ;
+extern void metaStateInfo_setDefaultValueContext (metaStateInfo p_info, mtContextKind p_context, int p_val) /*@modifies p_info@*/ ;
 
 extern void metaStateInfo_setDefaultRefValue (metaStateInfo p_info, int p_val) 
      /*@modifies p_info@*/ ;

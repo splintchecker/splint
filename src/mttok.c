@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-
 # include "mtgrammar.h"
 
 cstring
@@ -50,6 +49,8 @@ mttok_unparse (mttok tok)
     case MT_PARAMETER:      lit = "parameter"; break;
     case MT_RESULT:         lit = "result"; break;
     case MT_CLAUSE:         lit = "clause"; break;
+    case MT_LITERAL:        lit = "literal"; break;
+    case MT_NULL:           lit = "null"; break;
     case MT_ANNOTATIONS:    lit = "annotations"; break;
     case MT_ARROW:          lit = "==>"; break;
     case MT_MERGE:          lit = "merge"; break;

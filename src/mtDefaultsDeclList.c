@@ -31,7 +31,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 mtDefaultsDeclList
 mtDefaultsDeclList_new ()

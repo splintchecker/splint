@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 metaStateConstraint 
 metaStateConstraint_create (/*@only@*/ metaStateSpecifier lspec, /*@only@*/ metaStateExpression rspec)

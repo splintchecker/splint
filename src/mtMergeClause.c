@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtMergeClause 
 mtMergeClause_create (mtMergeItem item1, mtMergeItem item2, mtTransferAction action)

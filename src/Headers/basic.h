@@ -96,10 +96,7 @@
 # include "messageLog.h"
 # include "clauseStack.h"
 # include "stateCombinationTable.h"
-# include "metaStateInfo.h"
-# include "metaStateTable.h"
-# include "annotationInfo.h"
-# include "annotationTable.h"
+# include "mtincludes.h"
 # include "functionConstraint.h"
 
 # include "context.h"

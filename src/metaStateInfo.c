@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 /*@notnull@*/ metaStateInfo 
 metaStateInfo_create (cstring name, 
@@ -38,6 +37,7 @@ metaStateInfo_create (cstring name,
 		      fileloc loc) 
 {
   metaStateInfo res = (metaStateInfo) dmalloc (sizeof (*res));
+  int i;
 
   res->name = name;
   res->valueNames = valueNames;
@@ -46,12 +46,15 @@ metaStateInfo_create (cstring name,
   res->sctable = sctable;
   res->mergetable = mergetable;
   res->loc = loc;
-  res->default_ref = stateValue_error;
-  res->default_parameter = stateValue_error;
-  res->default_result = stateValue_error;
+
+  for (i = 0; i < MTC_NUMCONTEXTS; i++)
+    {
+      res->defaultValue[i] = stateValue_error;
+    }
 
   llassert (stateCombinationTable_size (res->sctable) 
 	    == cstringList_size (res->valueNames));
+
   return res;
 }
 
@@ -125,66 +128,81 @@ metaStateInfo_getMergeTable (metaStateInfo info) /*@*/
   return info->mergetable;
 }
 
+/*@+enumindex@*/ /* allow context kinds to reference array */
+extern int metaStateInfo_getDefaultValueContext (metaStateInfo info, mtContextKind context)
+{
+  llassert (metaStateInfo_isDefined (info));
+  return info->defaultValue [context];
+}
+
 extern int metaStateInfo_getDefaultValue (metaStateInfo info, sRef s)
 {
   llassert (metaStateInfo_isDefined (info));
 
-  if (sRef_isParam (s))
+  if (sRef_isParam (s)
+      && (info->defaultValue [MTC_PARAM] != stateValue_error))
     {
-      return info->default_parameter;
+      return info->defaultValue [MTC_PARAM];
     }
-  else if (sRef_isResult (s))
+  else if (sRef_isResult (s)
+	   && (info->defaultValue [MTC_RESULT] != stateValue_error))
     {
-      return info->default_result;
+      return info->defaultValue [MTC_RESULT];
+    }
+  else if (sRef_isConst (s)
+	   && (info->defaultValue [MTC_LITERAL] != stateValue_error))
+    {
+      return info->defaultValue [MTC_LITERAL];
     }
   else 
     {
       llassert (mtContextNode_matchesRef (metaStateInfo_getContext (info), s));
-      return info->default_ref;
+      return info->defaultValue [MTC_REFERENCE];
     }
 }
 
 extern int metaStateInfo_getDefaultGlobalValue (metaStateInfo info)
 {
   llassert (metaStateInfo_isDefined (info));
-  return info->default_ref;
+  return info->defaultValue [MTC_REFERENCE];
 }
 
-void metaStateInfo_setDefaultRefValue (metaStateInfo info, int val)
+void metaStateInfo_setDefaultValueContext (metaStateInfo info, mtContextKind context, int val)
 {
   llassert (metaStateInfo_isDefined (info));
-  llassert (info->default_ref == stateValue_error);
-  info->default_ref = val;
+  /*@-type@*/ llassert (context >= 0 && context < MTC_NUMCONTEXTS); /*@=type@*/
+  llassert (metaStateInfo_getDefaultValueContext (info, context) == stateValue_error);
+  info->defaultValue [context] = val;
+}
+/*@=enumindex@*/ 
+\
+void metaStateInfo_setDefaultRefValue (metaStateInfo info, int val)
+{
+  metaStateInfo_setDefaultValueContext (info, MTC_REFERENCE, val);
 }
 
 void metaStateInfo_setDefaultResultValue (metaStateInfo info, int val)
 {
-  llassert (metaStateInfo_isDefined (info));
-  llassert (info->default_result == stateValue_error);
-  info->default_result = val;
+  metaStateInfo_setDefaultValueContext (info, MTC_RESULT, val);
 }
 
 void metaStateInfo_setDefaultParamValue (metaStateInfo info, int val)
 {
-  llassert (metaStateInfo_isDefined (info));
-  llassert (info->default_parameter == stateValue_error);
-  info->default_parameter = val;
+  metaStateInfo_setDefaultValueContext (info, MTC_PARAM, val);
 }
 
 int metaStateInfo_getDefaultRefValue (metaStateInfo info)
 {
-  llassert (metaStateInfo_isDefined (info));
-  return info->default_ref;
+  return metaStateInfo_getDefaultValueContext (info, MTC_REFERENCE);
 }
 
 int metaStateInfo_getDefaultResultValue (metaStateInfo info)
 {
-  llassert (metaStateInfo_isDefined (info));
-  return info->default_result;
+  return metaStateInfo_getDefaultValueContext (info, MTC_RESULT);
 }
 
 int metaStateInfo_getDefaultParamValue (metaStateInfo info)
 {
-  llassert (metaStateInfo_isDefined (info));
-  return info->default_parameter;
+  return metaStateInfo_getDefaultValueContext (info, MTC_PARAM);
 }
+

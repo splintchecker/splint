@@ -27,7 +27,6 @@
 # include "bison.reset"
 # include "lclintMacros.nf"
 # include "llbasic.h"
-# include "mtincludes.h"
 
 static /*@exits@*/ void mterror (char *);
 
@@ -83,7 +82,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 %token <tok> MT_ONEOF
 
 %token <tok> MT_DEFAULTS MT_DEFAULT
-%token <tok> MT_REFERENCE MT_PARAMETER MT_RESULT MT_CLAUSE
+%token <tok> MT_REFERENCE MT_PARAMETER MT_RESULT MT_CLAUSE MT_LITERAL MT_NULL
 
 %token <tok> MT_ANNOTATIONS
 %token <tok> MT_ARROW
@@ -184,6 +183,8 @@ contextSelection
 | MT_REFERENCE optType { $$ = mtContextNode_createReference ($2); }
 | MT_RESULT optType    { $$ = mtContextNode_createResult ($2); } 
 | MT_CLAUSE optType    { $$ = mtContextNode_createClause ($2); } 
+| MT_LITERAL optType   { $$ = mtContextNode_createLiteral ($2); }
+| MT_NULL optType      { $$ = mtContextNode_createNull ($2); }
 
 /*
 ** Wish I could share the C grammar here...cut-and-paste instead.

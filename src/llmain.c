@@ -1,3 +1,4 @@
+
 /*
 ** LCLint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
@@ -28,7 +29,7 @@
 */
 
 # include <signal.h>
-
+# include <time.h>
 /*
 ** Ensure that WIN32 and _WIN32 are both defined or both undefined.
 */
@@ -76,8 +77,7 @@
 # include "cgrammar.h"
 # include "llmain.h"
 # include "portab.h"
-# include "mtreader.h"
-# include <time.h>
+
 
 extern /*@external@*/ int yydebug;
 

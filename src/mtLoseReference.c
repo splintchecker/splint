@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtLoseReference mtLoseReference_create (mttok fromname, mtTransferAction action)
 {

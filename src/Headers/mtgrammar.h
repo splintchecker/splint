@@ -11,7 +11,6 @@
 # define MTGRAMMAR_H
 
 # include "mtgrammar_tokens.h"
-# include "mtincludes.h"
 
 extern int mtparse (void);
 

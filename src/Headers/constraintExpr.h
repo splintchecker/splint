@@ -110,9 +110,9 @@ extern void  constraintExpr_dump (/*@observer@*/ /*@temp@*/ constraintExpr p_exp
 
 extern /*@only@*/ constraintExpr  constraintExpr_undump (FILE *p_f);
 
+extern /*@only@*/ constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode p_e) ;
+
+
 #else
-
-
 # error "Multiple include"
-
 #endif

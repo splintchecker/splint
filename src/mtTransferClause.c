@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtTransferClause mtTransferClause_create (mttok fromname, mttok toname, mtTransferAction action)
 {

@@ -30,7 +30,7 @@
 */
 
 # include "lclintMacros.nf"
-# include "llbasic.h"
+# include "basic.h"
 # include "mtgrammar.h"
 # include "mtscanner.h"
 
@@ -55,6 +55,8 @@ static void mtscanner_initMod (void)
   cstringTable_insert (tokenTable, cstring_makeLiteral ("default"), MT_DEFAULT);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("parameter"), MT_PARAMETER);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("result"), MT_RESULT);
+  cstringTable_insert (tokenTable, cstring_makeLiteral ("literal"), MT_LITERAL);
+  cstringTable_insert (tokenTable, cstring_makeLiteral ("null"), MT_NULL);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("reference"), MT_REFERENCE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("clause"), MT_CLAUSE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("annotations"), MT_ANNOTATIONS);

@@ -12,8 +12,13 @@
 
 typedef enum
 {
-  MTC_ANY, MTC_PARAM, MTC_RESULT, MTC_REFERENCE, MTC_CLAUSE
+  MTC_ANY = 0, MTC_PARAM, MTC_RESULT, MTC_REFERENCE, MTC_CLAUSE, MTC_LITERAL, MTC_NULL,
 } mtContextKind ;
+
+/*@constant int MTC_NUMCONTEXTS@*/
+/*@+enumint@*/
+# define MTC_NUMCONTEXTS (MTC_NULL + 1)
+/*@=enumint@*/
 
 struct s_mtContextNode {
   mtContextKind context;
@@ -33,6 +38,8 @@ extern mtContextNode mtContextNode_createParameter (ctype) /*@*/ ;
 extern mtContextNode mtContextNode_createReference (ctype) /*@*/ ;
 extern mtContextNode mtContextNode_createResult (ctype) /*@*/ ;
 extern mtContextNode mtContextNode_createClause (ctype) /*@*/ ;
+extern mtContextNode mtContextNode_createNull (ctype) /*@*/ ;
+extern mtContextNode mtContextNode_createLiteral (ctype) /*@*/ ;
 
 extern void mtContextNode_free (/*@only@*/ mtContextNode) ;
 
@@ -40,6 +47,8 @@ extern bool mtContextNode_isReference (mtContextNode) /*@*/;
 extern bool mtContextNode_isResult (mtContextNode) /*@*/;
 extern bool mtContextNode_isParameter (mtContextNode) /*@*/;
 extern bool mtContextNode_isClause (mtContextNode) /*@*/;
+extern bool mtContextNode_isLiteral (mtContextNode) /*@*/;
+extern bool mtContextNode_isNull (mtContextNode) /*@*/;
 
 extern bool mtContextNode_matchesEntry (mtContextNode, uentry) /*@*/ ;
 extern bool mtContextNode_matchesRef (mtContextNode, sRef) /*@*/ ;

@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 static warnClause warnClause_createAux (/*@only@*/ fileloc loc, 
 					/*@only@*/ flagSpec flag, 

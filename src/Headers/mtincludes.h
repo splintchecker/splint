@@ -1,3 +1,6 @@
+# ifndef MTINCLUDES_H
+# define MTINCLUDES_H
+
 # include "mttok.h"
 # include "mtreader.h"
 # include "mtDeclarationNode.h"
@@ -23,3 +26,11 @@
 # include "metaStateConstraint.h"
 # include "metaStateSpecifier.h"
 # include "metaStateExpression.h"
+# include "metaStateInfo.h"
+# include "metaStateTable.h"
+# include "annotationInfo.h"
+# include "annotationTable.h"
+
+# else
+# error "Multiple include"
+# endif

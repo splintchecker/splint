@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtAnnotationDecl mtAnnotationDecl_create (mttok id, mtContextNode c, mttok value) 
 {

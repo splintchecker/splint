@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 extern mtAnnotationsNode mtAnnotationsNode_create (mtAnnotationList annots)
 {

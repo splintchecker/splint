@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtincludes.h"
 
 metaStateExpression 
 metaStateExpression_create (/*@only@*/ metaStateSpecifier spec)
@@ -84,6 +83,18 @@ metaStateSpecifier metaStateExpression_getSpecifier (metaStateExpression m)
 {
   llassert (m != NULL);
   return m->spec;
+}
+
+bool metaStateExpression_isMerge (metaStateExpression m)
+{
+  return (metaStateExpression_isDefined (m) 
+	  && metaStateExpression_isDefined (m->rest));
+}
+
+/*@observer@*/ metaStateExpression metaStateExpression_getRest (metaStateExpression m)
+{
+  llassert (m != NULL);
+  return m->rest;
 }
 
 void metaStateExpression_free (/*@only@*/ metaStateExpression m) 

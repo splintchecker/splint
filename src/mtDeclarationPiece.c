@@ -27,7 +27,6 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "mtgrammar.h"
 
 static mtDeclarationPiece 
 mtDeclarationPiece_create (mtPieceKind kind, /*@null@*/ /*@only@*/ void *node)
