@@ -197,9 +197,9 @@ static void exprNode_stmt ( /*@dependent@*/ /*@temp@*/ exprNode e)
   //  e = makeDataTypeConstraints(e);
   
  
-  DPRINTF(( "STMT:") );
+  DPRINTF(( "expNode_stmt: STMT:") );
   s =  exprNode_unparse(e);
-  // DPRINTF ( ( message("STMT: %s ") ) );
+  DPRINTF ( ( message("exprNode_stmt: STMT: %s ", s) ) );
   
   if (e->kind == XPR_INIT)
     {
@@ -297,13 +297,13 @@ static void exprNode_stmtList  (/*@dependent@*/ exprNode e)
       return;
     }
   llassert (e->kind == XPR_STMTLIST);
-  DPRINTF(( "STMTLIST:") );
+  DPRINTF(( "exprNode_stmtList STMTLIST:") );
   DPRINTF ((cstring_toCharsSafe (exprNode_unparse(e)) ) );
   stmt1 = exprData_getPairA (e->edata);
   stmt2 = exprData_getPairB (e->edata);
 
 
-  DPRINTF(("        stmtlist       ") );
+  DPRINTF(("exprNode_stmtlist       ") );
   DPRINTF ((message("XW%s    |        %s", exprNode_unparse(stmt1), exprNode_unparse(stmt2) ) ) );
    
   exprNode_stmt (stmt1);
@@ -784,6 +784,8 @@ static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
   body = exprData_getPairB(switchStmt->edata);
 
   /*@i22*/
+  DPRINTF((message("") ));
+  
   if ( body->kind == XPR_BLOCK)
     body = exprData_getSingle(body->edata);
 
@@ -839,7 +841,7 @@ static exprNode doSwitch (/*@returned@*/ exprNode e)
 
   body = exprData_getPairB (data);
 
-  exprNode_generateConstraints(body);
+  //  exprNode_generateConstraints(body);
 
   exprNode_generateConstraintSwitch (e);
 

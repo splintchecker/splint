@@ -42,7 +42,6 @@
 */
 
 # ifndef USEDMALLOC
-# include <stdlib.h> 
 
 /*@-mustdefine@*/
 
@@ -118,10 +117,17 @@ static long unsigned size_toLongUnsigned (size_t x)
 	}
       else
 	{
+	  /* drl
+	     fix this so message doesn't run out of
+	     memory*/
+	  
+	  llbuglit("Out of memory");
+	  
 	  llfatalerrorLoc
 	    (message ("Out of memory.  Allocating %w bytes at %s:%d.", 
 		      size_toLongUnsigned (size),
 		      cstring_fromChars (name), line));
+	  
 	}
     }
       

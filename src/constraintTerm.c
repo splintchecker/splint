@@ -89,6 +89,17 @@ bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@
 }
 
 
+bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
+{
+  llassert (c != NULL);
+  if (c->kind == EXPRNODE)
+    {
+      return TRUE;
+    }
+  return FALSE;
+}
+
+
 int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/
 {
 
@@ -307,15 +318,15 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
     {
     case EXPRNODE:
       /*@i334*/  //wtf
-      s = message ("%s @ %q ", exprNode_unparse (term->value.expr),
+      s = message ("%s @ %q", exprNode_unparse (term->value.expr),
 		   fileloc_unparse (term->loc) );
       break;
     case INTLITERAL:
-      s = message (" %d ", (int)term->value.intlit);
+      s = message ("%d", (int)term->value.intlit);
       break;
       
     case SREF:
-      s = message ("%q ", sRef_unparseDebug (term->value.sref) );
+      s = message ("%q", sRef_unparseDebug (term->value.sref) );
 
       break;
     default:

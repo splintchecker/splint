@@ -2810,6 +2810,16 @@ static flaglist flags =
     "LCLint has determined that the following statement is true after the function,  ",
     0, 0
   },
+  
+  {
+    FK_NT, FK_MEMORY, modeFlag,
+    "parenconstraint",
+    FLG_PARENCONSTRAINT,
+    "parenthesize constraint term",
+    "This flag is for debuging.  This flag causes LCLint to fully parentheses constraints,  ",
+    0, 0
+  },
+
   {
     FK_NT, FK_MEMORY, modeFlag,
     "debugfcnconstraint",

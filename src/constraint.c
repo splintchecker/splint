@@ -664,25 +664,25 @@ cstring arithType_print (arithType ar) /*@*/
   switch (ar)
     {
     case LT:
-      st = cstring_makeLiteral (" < ");
+      st = cstring_makeLiteral ("<");
       break;
     case	LTE:
-      st = cstring_makeLiteral (" <= ");
+      st = cstring_makeLiteral ("<=");
       break;
     case 	GT:
-      st = cstring_makeLiteral (" > ");
+      st = cstring_makeLiteral (">");
       break;
     case 	GTE:
-      st = cstring_makeLiteral (" >= ");
+      st = cstring_makeLiteral (">=");
       break;
     case	EQ:
-      st = cstring_makeLiteral (" == ");
+      st = cstring_makeLiteral ("==");
       break;
     case	NONNEGATIVE:
-      st = cstring_makeLiteral (" NONNEGATIVE ");
+      st = cstring_makeLiteral ("NONNEGATIVE");
       break;
     case	POSITIVE:
-      st = cstring_makeLiteral (" POSITIVE ");
+      st = cstring_makeLiteral ("POSITIVE");
       break;
     default:
       llassert(FALSE);
@@ -867,18 +867,45 @@ cstring  constraint_printDetailed (constraint c)
   llassert (c !=NULL);
   if (c->post)
     {
-      type = cstring_makeLiteral ("ensures: ");
+      if (context_getFlag (FLG_PARENCONSTRAINT) )
+	{
+	  type = cstring_makeLiteral ("ensures: ");
+	}
+      else
+	{
+	   type = cstring_makeLiteral ("ensures");
+	}
     }
   else
     {
-      type = cstring_makeLiteral ("requires: ");
+      if (context_getFlag (FLG_PARENCONSTRAINT) )
+	{
+	  type = cstring_makeLiteral ("requires: ");
+	}
+      else
+	{
+	  type = cstring_makeLiteral ("requires");
+	}
+	
     }
-  st = message ("%q: %q %q %q",
-		type,
-		constraintExpr_print (c->lexpr),
-		arithType_print(c->ar),
-		constraintExpr_print(c->expr)
+      if (context_getFlag (FLG_PARENCONSTRAINT) )
+	{
+	  st = message ("%q: %q %q %q",
+			type,
+			constraintExpr_print (c->lexpr),
+			arithType_print(c->ar),
+			constraintExpr_print(c->expr)
+			);
+	}
+      else
+	{
+	  st = message ("%q %q %q %q",
+			type,
+			constraintExpr_print (c->lexpr),
+			arithType_print(c->ar),
+			constraintExpr_print(c->expr)
 		);
+	}
   return st;
 }
 
@@ -1138,4 +1165,40 @@ bool constraint_isPost  (/*@observer@*/ /*@temp@*/ constraint c)
     return FALSE;
   
   return (c->post);
+}
+
+
+static int constraint_getDepth(/*@observer@*/ /*@temp@*/ constraint c)
+{
+  int l , r;
+
+  l = constraintExpr_getDepth(c->lexpr);
+  r = constraintExpr_getDepth(c->expr);
+
+  if (l > r)
+    {
+      DPRINTF(( message("constraint depth returning %d for %s", l, constraint_print(c) ) ));
+      return l;
+    }
+  else
+    {
+      DPRINTF(( message("constraint depth returning %d for %s", r, constraint_print(c) ) ));
+      return r;
+    }
+}
+
+
+bool constraint_tooDeep (/*@observer@*/ /*@temp@*/ constraint c)
+{
+  int temp;
+
+  temp = constraint_getDepth(c);
+
+  if (temp >= 20 )
+    {
+      return TRUE;
+    }
+
+  return FALSE;
+  
 }

@@ -316,6 +316,7 @@ static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@
     {
       c = c->or;
     }
+  
   c->or = constraint_copy(orConstr);
 
   DPRINTF((message("constraint_addor: returning %s",constraint_printOr(orig) ) ));
@@ -328,6 +329,9 @@ static bool resolveOr ( /*@temp@*/ constraint c, /*@observer@*/ /*@temp@*/ const
 {
   constraint temp;
 
+  int numberOr;
+
+  numberOr = 0;
   DPRINTF(( message("resolveOr: constraint %s and list %s", constraint_printOr(c), constraintList_print(list) ) ));
   temp = c;
 
@@ -336,6 +340,8 @@ static bool resolveOr ( /*@temp@*/ constraint c, /*@observer@*/ /*@temp@*/ const
       if (constraintList_resolve (temp, list) )
 	return TRUE;
       temp = temp->or;
+      numberOr++;
+      llassert(numberOr <= 10);
     }
   while (constraint_isDefined(temp));
 
@@ -347,17 +353,19 @@ static bool resolveOr ( /*@temp@*/ constraint c, /*@observer@*/ /*@temp@*/ const
 static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList post1, bool * resolved)
 {
   constraint temp;
-  
- if (!resolveOr (c, post1) )
-	{
 
-	  temp = constraint_substitute (c, post1);
+  llassert(constraint_isUndefined (c->or ) );
+  
+  if (!resolveOr (c, post1) )
+    {
+      
+      temp = constraint_substitute (c, post1);
+      
+      if (!resolveOr (temp, post1) )
+	{
+	  // try inequality substitution
+	  constraint temp2;
 	  
-	  if (!resolveOr (temp, post1) )
-	    {
-	      // try inequality substitution
-	      constraint temp2;
-	      
 	      // the inequality substitution may cause us to lose information
 	      //so we don't want to store the result but we do  anyway
 	      temp2 = constraint_copy (c);
@@ -412,14 +420,27 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
 
 }
 
-static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * resolved)
+static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c, constraintList post1, /*@out@*/bool * resolved)
 {
   constraint ret;
   constraint next;
   constraint curr;
+
+  
+  DPRINTF(( message("doResolveOr: constraint %s and list %s", constraint_printOr(c), constraintList_print(post1) ) ));
+
+
   
   *resolved = FALSE;
+
+
   ret = constraint_copy(c);
+
+  if (constraintList_isEmpty(post1) )
+    {
+      return ret;
+    }
+  
   next = ret->or;
   ret->or = NULL;
 
@@ -429,13 +450,13 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
     {
       if (next != NULL)
 	constraint_free(next);
-
+      
       /*we don't need to free ret when resolved is false because ret is null*/
       llassert(ret == NULL);
       
-       return NULL;
+      return NULL;
     }
-
+  
   while (next != NULL)
     {
       curr = next;
@@ -443,6 +464,7 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
       curr->or = NULL;
 
       curr = doResolve (curr, post1, resolved);
+      
       if (*resolved)
 	{
 	  /* curr is null so we don't try to free it*/
@@ -457,13 +479,8 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
       ret = constraint_addOr (ret, curr);
       constraint_free(curr);
     }
-
   return ret;
 }
-
-
-
-
 
 /* tries to resolve constraints in list pr2 using post1 */
 /*@only@*/ constraintList constraintList_reflectChangesOr (constraintList pre2, constraintList post1)
@@ -484,15 +501,17 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
 	}
       else
 	{
-     /*we don't need to free ret when resolved is false because ret is null*/
+     /* we don't need to free temp when
+	resolved is false because temp is null */
 	  llassert(temp == NULL);
 	}
       
     } end_constraintList_elements;
 
-    DPRINTF((message ("constraintList_reflectChangesOr: returning %s", constraintList_print(ret) ) ) );
+  DPRINTF((message ("constraintList_reflectChangesOr: returning %s", constraintList_print(ret) ) ) );
     return ret;
 }
+
 static /*@only@*/ constraintList reflectChangesEnsures (/*@observer@*/ constraintList pre2, constraintList post1)
 {  
   constraintList ret;
@@ -545,6 +564,35 @@ static bool constraint_conflict (constraint c1, constraint c2)
 	  }
     }  
 
+  // This is a slight kludg to prevent circular constraints like
+  // strlen(str) == maxRead(s) + strlen(str);
+
+  /*@i324234*/ //clean this up
+  
+  if (c1->ar == EQ)
+    if (c1->ar == c2->ar)
+      {
+	if (constraintExpr_search (c1->lexpr, c2->expr) )
+	  if (constraintExpr_isTerm(c1->lexpr) )
+	    {
+	      constraintTerm term;
+	      
+	      term = constraintExpr_getTerm(c1->lexpr);
+
+	      if (constraintTerm_isExprNode(term) )
+		{
+		  DPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+		  return TRUE;
+		}
+	    }
+      }
+
+  if (constraint_tooDeep(c1) || constraint_tooDeep(c2) )
+    	{
+	  DPRINTF ( (message ("%s conflicts with %s (constraint is too deep", constraint_print (c1), constraint_print(c2) ) ) );
+	  return TRUE;
+	}
+  
   DPRINTF ( (message ("%s doesn't conflict with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 
   return FALSE; 
@@ -1202,6 +1250,16 @@ static constraint  constraint_swapLeftRight (/*@returned@*/ constraint c)
 
 constraint constraint_simplify ( /*@returned@*/ constraint c)
 {
+
+  DPRINTF(( message("constraint_simplify on %q ", constraint_print(c) ) ));
+
+  if (constraint_tooDeep(c))
+    {
+        DPRINTF(( message("constraint_simplify: constraint to complex aborting %q ", constraint_print(c) ) ));
+      return c;
+
+    }
+  
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
 
@@ -1219,6 +1277,9 @@ constraint constraint_simplify ( /*@returned@*/ constraint c)
       /*I don't think this will be an infinate loop*/
       c = constraint_simplify(c);
     }
+
+  DPRINTF(( message("constraint_simplify returning  %q ", constraint_print(c) ) ));
+
   return c;
 }
 

@@ -49,7 +49,7 @@ CHECK = 1 ### set to 1
 #LCLINT = //tmp/lclint-2.5q/bin/lclint
 #LCLINTNEW = //afs/cert.org/usr/dlaroche/evLCLintDev/bin/lclint
 #LCLINTNEW = /home/drl7x/evLCLintDev/evLCLintDev/bin/lclint
-LCLINTNEW = lclint
+LCLINTNEW = /home/drl7x/stabletest/LCLintDev/bin/lclint
 LCLINT = ../bin/lclint
 
 ###
