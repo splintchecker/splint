@@ -1,0 +1,35 @@
+.PHONY: tainted file
+
+LCLINT = lclint
+
+all: file sockets struct nullbranch tainted osd
+
+tainted:
+	${LCLINT} tainted.mts tainted.xh tainted.c -mustfree -exportlocal -expect 2
+	${LCLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 7
+	${LCLINT} tainted.mts tainted.xh tainted2.c -mustfree -exportlocal -expect 1
+	${LCLINT} tainted.mts tainted.xh tainted3.c -mustfree -exportlocal -expect 1
+	${LCLINT} tainted.mts tainted.xh tainted4.c -mustfree -exportlocal -expect 1
+	${LCLINT} tainted.mts tainted.xh tainted5.c -mustfree -exportlocal -expect 2
+
+file:
+	${LCLINT} -mts file file1.c -expect 4
+	${LCLINT} -mts file file2.c -varuse -fcnuse -expect 2
+	${LCLINT} -mts file file3.c -varuse -fcnuse -expect 2
+	${LCLINT} -mts file file4.c -varuse -fcnuse -exportlocal -expect 1 
+	${LCLINT} -mts file file5.c -varuse -fcnuse -exportlocal -expect 5
+	${LCLINT} -mts file file6.c -varuse -fcnuse -exportlocal -expect 2
+	${LCLINT} -mts file filebad.c -expect 3
+
+sockets:
+	${LCLINT} sockets.mts sockets.c -expect 3
+	${LCLINT} sockets.mts sockets2.c -expect 2
+
+struct:
+	${LCLINT} -mts file struct.c -expect 1
+
+nullbranch:
+	${LCLINT} -mts file nullbranch.c -expect 2
+
+osd:
+	${LCLINT} -mts file osd.c -expect 2
