@@ -16,16 +16,16 @@
 #define GCC_INCLUDE_DIR2 "C:/local/include"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using Microsoft Visual C++ by evans"
+#define LCL_COMPILE "Compiled using Microsoft Visual C++ 6.0"
 
 /* Splint's version number */
-#define LCL_PARSE_VERSION "Splint 3.0.1"
+#define LCL_PARSE_VERSION "Splint 3.0.1.1"
 
 /* Define to disable support LCL files */
 /* #undef NOLCL */
 
 /* Splint's version number and configure/build date */
-#define SPLINT_VERSION "Splint 3.0.1 --- 07 Jan 2002"
+#define SPLINT_VERSION "Splint 3.0.1.1 --- 08 Jan 2002"
 
 /* The system's main include directory */
 #define SYSTEM_LIBDIR "C:/include"

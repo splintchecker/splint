@@ -1,0 +1,15 @@
+			  Spint Version 3.0.1
+			     7 January 2002
+				    
+			     www.splint.org
+
+The win32 project file is not supported (that is, we don't test it other
+than using it to build a Windows executable).  We recommend using the
+pre-compiled Win32 binary (available from http://www.splint.org) instead
+of building a Win32 binary from the source code, and using a Unix
+platform if you want to modify the Splint sources.
+
+This project file has been used to compile Splint using Microsoft Visual
+C++ 6.0.
+
+

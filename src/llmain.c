@@ -547,7 +547,7 @@ static cstring findLarchPathFile (/*@temp@*/ cstring s)
   else if (status == OSD_FILENOTFOUND)
     {
       showHerald ();
-      lldiagmsg	(message ("Cannot find file on LARCHPATH: %s", s));
+      lldiagmsg	(message ("Cannot find file on LARCH_PATH: %s", s));
     }
   else if (status == OSD_PATHTOOLONG)
     {
@@ -798,7 +798,7 @@ int main (int argc, char *argv[])
 	      {
 		nof = TRUE;
 	      }
-	    else if (opt == FLG_SHOWSCAN || opt == FLG_WARNRC)
+	    else if (opt == FLG_SHOWSCAN || opt == FLG_WARNRC || opt == FLG_PARENFILEFORMAT)
 	      {
 		/*
 		** Need to set it immediately, so rc file scan is displayed
@@ -1008,7 +1008,7 @@ int main (int argc, char *argv[])
 	      opt = flags_identifyFlag (flagname);
 	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
 
-	      if (flagcode_isSkip (opt) || opt == FLG_SHOWSCAN || opt == FLG_WARNRC)
+	      if (flagcode_isSkip (opt) || opt == FLG_SHOWSCAN || opt == FLG_WARNRC || opt == FLG_PARENFILEFORMAT)
 		{
 		  /* showscan already processed */
 		  DPRINTF (("Skipping!"));

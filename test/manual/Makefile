@@ -15,7 +15,7 @@ CTOHTML = /u/evs/bin/ctohtmlplain
 BASEDIR = /u/evs/perl/basedir
 MAKERUNNER = /u/evs/lclint/scripts/makerunner
 
-SHELL = /bin/csh 
+### SHELL = /bin/csh 
 
 DIFF = diff
 
