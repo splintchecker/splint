@@ -505,7 +505,8 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 	    {
 	      ; /* no error (will be a definition error) */
 	    }
-	  else if (transferType == TT_DOASSIGN)
+	  else if (transferType == TT_DOASSIGN || transferType == TT_FIELDASSIGN)
+	    /* evans 2002-02-05 - added TT_FIELDASSIGN */
 	    {
 	      ; /* no error */
 	    }
@@ -775,6 +776,7 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
       else
 	{
 	  llassert (transferType == TT_DOASSIGN
+		    || transferType == TT_FIELDASSIGN /* evans 2002-02-05 */
 		    || transferType == TT_GLOBINIT
 		    || transferType == TT_LEAVETRANS);
 	}

@@ -1380,6 +1380,7 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
     }
 
   (void) fflush (g_msgstream);
+
   printError (stderr, message ("%q: *** Internal Bug at %q: %q [errno: %d]",
 			       fileloc_unparse (g_currentloc),
 			       fileloc_unparseRaw (file, line),

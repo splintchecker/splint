@@ -1023,6 +1023,8 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 ** is longer, then the full absolute filename is returned.
 **
 ** KNOWN BUG:   subpart of the original filename is actually a symbolic link.  
+**
+** this is really horrible code...surely someone has written a less buggy version of this!
 */
 
 cstring osd_outputPath (cstring filename)
@@ -1038,6 +1040,7 @@ cstring osd_outputPath (cstring filename)
   /*@access cstring@*/
   path_p = filename;
   rel_buf_p = rel_buffer = (char *) dmalloc (filename_len);
+  *rel_buf_p = '\0';
 
   llassert (cwd_p != NULL);
   llassert (path_p != NULL);
@@ -1060,6 +1063,11 @@ cstring osd_outputPath (cstring filename)
     }
   else
     {
+      /* evans 2002-02-05 This is horrible code, which I've removed.  I couldn't find any
+      ** test cases that need it, so I hope I'm not breaking anything.
+      */
+
+# if 0      
       if (*path_p != '\0')
         {
           --cwd_p;
@@ -1073,7 +1081,7 @@ cstring osd_outputPath (cstring filename)
           path_p++;
           unmatched_slash_count++;
         }
-      
+
       /* Find out how many directory levels in cwd were *not* matched.  */
       while (*cwd_p != '\0')
 	{
@@ -1087,14 +1095,8 @@ cstring osd_outputPath (cstring filename)
 	{
 	  return cstring_copy (filename);
 	}
+# endif
       
-      /*
-      ** evans 2001-10-15
-      ** I'm trusting the code on this one...don't see how this is guaranteed though.
-      */
-
-      assertSet (rel_buffer);
-
       /* For each of them, put a `../' at the beginning of the short name.  */
       while (unmatched_slash_count-- > 0)
         {
@@ -1121,9 +1123,10 @@ cstring osd_outputPath (cstring filename)
 	    }
         } /*@-usereleased@*/
       while ((*rel_buf_p++ = *path_p++) != '\0') ;
-      /*@=usereleased@*/ /*@i523! shouldn't need these */
 
+      /*@=usereleased@*/ /*@i523! shouldn't need these */
       --rel_buf_p;
+
       if (*(rel_buf_p-1) == '/')
         *--rel_buf_p = '\0';
 
