@@ -1,4 +1,4 @@
-/af9/drl7x/re3/LCLintDev/bin/lclint noeffect.c +allmacros +checks -expect 3
+/af10/evans/LCLintDev/src/lclint noeffect.c +allmacros +checks -expect 3
 
 noeffect.c: (in macro exprNode_swap)
 noeffect.c:3:59: Assignment to macro parameter: e1

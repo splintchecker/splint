@@ -3,7 +3,7 @@
 void func () {
   char *c;
   c = strchr("dfdfedfd", 'e');
-  *c = 'd';
+  *c = 'd'; /* modification of observer, possibly null */
 }
 
 void fixline (char * line)

@@ -680,7 +680,7 @@ globalbufferannotation:
 
 strchr:
 	@cd strchr; \
-	$(LCLINTR)  +arraybounds +arrayboundsread  strchr.c
+	$(LCLINTR) +arraybounds +arrayboundsread  strchr.c -expect 2
 
 for:
 	@cd for; \
