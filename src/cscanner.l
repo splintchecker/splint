@@ -3226,6 +3226,9 @@ processSpec (int tok)
   
   if (s_inSpecPart)
     {
+      
+#if 0
+
       if (s_whichSpecPart == QMODIFIES
 	  || s_whichSpecPart == QDEFINES
 	  || s_whichSpecPart == QUSES 
@@ -3238,7 +3241,10 @@ processSpec (int tok)
 	{
 	  ; /* Allow specificiation keywords to be used as identifiers in these contexts. */
 	}
-      else 
+      else
+
+#endif
+
 	{
 	  setTokLengthT (length);
 	  RETURN_TOK (tok);
