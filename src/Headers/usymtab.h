@@ -38,7 +38,7 @@ struct _usymtab
              /*@only@*/ guardSet  guards;   /* guarded references (not null) */
   aliasTable aliases;
   /*@owned@*/ usymtab env;
-  environmentTable environment;
+  //  environmentTable environment;
 } ; 
 
 /*
@@ -404,8 +404,8 @@ extern void usymtab_checkDistinctName (uentry p_e, int p_scope)
 
 
   /*DRL add 9/4/00 */
-extern void usymtab_testInRange (sRef p_s, int p_index)  /*@modifies internalState;@*/;
-extern void usymtab_postopVar (sRef p_sr) /*@modifies internalState;@*/ ;
+  //extern void usymtab_testInRange (sRef p_s, int p_index)  /*@modifies internalState;@*/;
+  //extern void usymtab_postopVar (sRef p_sr) /*@modifies internalState;@*/ ;
 
 
 # else

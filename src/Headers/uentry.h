@@ -592,7 +592,7 @@ extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fil
 /* functions for making modification to null-term info */
 extern void uentry_setNullTerminatedState (uentry p_e);
 extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
-extern void uentry_setNotNullTerminated (uentry p_e);
+//extern void uentry_setNotNullTerminated (uentry p_e);
 extern void uentry_setSize(uentry p_e, int p_size);
 extern void uentry_setLen(uentry p_e, int p_len);
 
@@ -602,17 +602,17 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 # define uentry_hasBufStateInfo(p_ue) \
   (((p_ue)->info->var->bufinfo != NULL) ? TRUE : FALSE)
 
-extern bool uentry_isNullTerminated(/*@sef@*/uentry p_ue);
+/*@unused@*/ extern bool uentry_isNullTerminated(/*@sef@*/uentry p_ue);
 # define uentry_isNullTerminated(p_ue) \
    ( uentry_hasBufStateInfo( (p_ue ) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_NULLTERMINATED) : FALSE)
 
-extern bool uentry_isPossiblyNullTerminated( /*@sef@*/ uentry p_ue);
+/*@unused@*/ extern bool uentry_isPossiblyNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isPossiblyNullTerminated(p_ue) \
    ( uentry_hasBufStateInfo((p_ue)) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
-extern bool uentry_isNotNullTerminated( /*@sef@*/ uentry p_ue);
+/*@unused@*/ extern bool uentry_isNotNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isNotNullTerminated(p_ue) \
    ( uentry_hasBufStateInfo( (p_ue) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)

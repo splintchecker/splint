@@ -24,7 +24,7 @@ struct _constraint {
 
 extern /*@falsenull@*/ bool constraint_isDefined (constraint p_e) /*@*/ ;
 extern /*@unused@*/ /*@truenull@*/ bool constraint_isUndefined (constraint p_e) /*@*/ ;
-extern /*@truenull@*/ bool constraint_isError (constraint p_e) /*@*/ ;
+extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*/ ;
 
 # define constraint_isDefined(e)        ((e) != constraint_undefined)
 # define constraint_isUndefined(e)      ((e) == constraint_undefined)
@@ -32,9 +32,9 @@ extern /*@truenull@*/ bool constraint_isError (constraint p_e) /*@*/ ;
 
 constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
 
-constraint constraint_createReadSafe (exprNode p_e1, exprNode p_e2);
+//constraint constraint_createReadSafe (exprNode p_e1, exprNode p_e2);
 
-constraint constraint_makeInc_Op (exprNode p_e1);
+//constraint constraint_makeInc_Op (exprNode p_e1);
 
 /*@i22*/
 /*@-czechfcns*/
@@ -46,7 +46,7 @@ bool constraint_resolve (/*@unused@*/ constraint c);
 //     /*@post:notnull result->t1@*/
 //     /*@defines result->expr, result->t1, result->c1@, result->op*/;
      
-constraintExpr makeConstraintExprIntlit (int p_i);
+//constraintExpr makeConstraintExprIntlit (int p_i);
 
 /*@relnull@*/ constraint constraint_makeReadSafeExprNode ( exprNode p_po, exprNode p_ind);
 
@@ -56,13 +56,13 @@ constraint constraint_makeReadSafeInt (exprNode p_t1, int p_index);
 
 constraint constraint_makeEnsureMaxReadAtLeast (exprNode p_t1, exprNode p_t2, fileloc p_sequencePoint);
 
-constraint constraint_makeEnsureMinReadAtMost (exprNode po, exprNode ind, fileloc sequencePoint);
+//constraint constraint_makeEnsureMinReadAtMost (exprNode po, exprNode ind, fileloc sequencePoint);
 
-constraint constraint_makeSideEffectPostIncrement (exprNode t1,  fileloc p_sequencePoint);
+//constraint constraint_makeSideEffectPostIncrement (exprNode t1,  fileloc p_sequencePoint);
 void constraint_overWrite (constraint c1, constraint c2);
 constraint constraint_copy (constraint c);
 
-constraintExpr makePostOpInc (exprNode t1);
+//constraintExpr makePostOpInc (exprNode t1);
 
 
 bool fileloc_closer (fileloc  loc1, fileloc  loc2, fileloc  loc3);
@@ -101,7 +101,7 @@ void constraint_printError (constraint c, fileloc loc);
 constraint constraint_doSRefFixConstraintParam (constraint precondition,
 						exprNodeList arglist);
 
-constraint constraint_makeSRefSetBufferSize (sRef s, int size);
+constraint constraint_makeSRefSetBufferSize (sRef s, long int size);
 
 constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall);
 
@@ -117,13 +117,14 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
 bool constraint_hasMaxSet(constraint c);
 
 /*from constraintGenreation.c*/
-bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint);
+void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint);
 
 constraintList exprNode_traversRequiresConstraints (exprNode e);
 constraintList exprNode_traversEnsuresConstraints (exprNode e);
 
 /*@notnull@*/ constraint constraint_makeNew (void) /*@*/;
 
+constraint constraint_togglePost (/*@returned@*/ constraint c);
 
 /*@=czechfcns*/
 //#warning take this out

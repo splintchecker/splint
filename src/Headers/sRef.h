@@ -602,6 +602,9 @@ extern void sRef_setSize(sRef p_s, int p_size);
 extern void sRef_setLen(sRef p_s, int p_len);
 
 extern int sRef_getSize(sRef p_s);
+
+/*@-nullderef@*/
+
 #define sRef_getSize(p_s) \
    ((p_s)->bufinfo.size)
 
@@ -613,20 +616,23 @@ extern void sRef_hasBufStateInfo(sRef p_s);
 # define sRef_hasBufStateInfo(p_s) \
     (sRef_isValid(p_s)) 
  
-extern bool sRef_isNullTerminated(sRef p_s);
+extern bool sRef_isNullTerminated(/*@sef@*/sRef p_s);
 # define sRef_isNullTerminated(p_s) \
-   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+   ( sRef_hasBufStateInfo((p_s)) ? ((p_s)->bufinfo.bufstate \
                == BB_NULLTERMINATED) : FALSE)
 
-extern bool sRef_isPossiblyNullTerminated(sRef p_s);
+extern bool sRef_isPossiblyNullTerminated(/*@sef@*/sRef p_s);
 # define sRef_isPossiblyNullTerminated(p_s) \
    ( sRef_hasBufStateInfo((p_s)) ? ( (p_s)->bufinfo.bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
-extern bool sRef_isNotNullTerminated(sRef p_s);
+extern bool sRef_isNotNullTerminated(/*@sef@*/sRef p_s);
 # define sRef_isNotNullTerminated(p_s) \
-   ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
+   ( sRef_hasBufStateInfo((p_s)) ? ((p_s)->bufinfo.bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)
+
+/*@=nullderef@*/
+
 
      /*drl7x 11/28/00*/
 extern  bool sRef_isFixedArray (sRef p_s) /*@*/;

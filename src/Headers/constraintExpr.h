@@ -21,7 +21,7 @@ struct _constraintExpr {
 
 extern /*@falsenull@*/ bool constraintExpr_isDefined (constraintExpr p_e) /*@*/ ;
 extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isUndefined (constraintExpr p_e) /*@*/ ;
-extern /*@truenull@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
 
 # define constraintExpr_isDefined(e)        ((e) != constraintExpr_undefined)
 # define constraintExpr_isUndefined(e)      ((e) == constraintExpr_undefined)

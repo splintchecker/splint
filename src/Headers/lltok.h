@@ -67,6 +67,8 @@ bool  lltok_isMinus_Op (lltok tok);
 */
 bool lltok_isDec_Op  (lltok tok);
 
+bool  lltok_isAmpersand_Op (lltok tok);
+
 # else
 # error "Multiple include"
 # endif

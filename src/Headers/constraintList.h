@@ -5,7 +5,7 @@
 # ifndef constraintLIST_H
 # define constraintLIST_H
 
-typedef /*@only@*/ constraint o_constraint;
+typedef /*@only@*/ /*@notnull@*/ constraint o_constraint;
 
 struct _constraintList
 {
@@ -15,7 +15,18 @@ struct _constraintList
 } ;
 
 /*@constant null constraintList constraintList_undefined;@*/
-# define constraintList_undefined ((constraintList) 0)
+
+# define constraintList_undefined ((constraintList)NULL)
+
+extern /*@falsenull@*/ bool constraintList_isDefined (constraintList p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraintList_isUndefined (constraintList p_e) /*@*/ ;
+extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p_e) /*@*/ ;
+
+# define constraintList_isDefined(e)    ((e) != constraintList_undefined)
+# define constraintList_isUndefined(e)  ((e) == constraintList_undefined)
+# define constraintList_isError(e)      ((e) == constraintList_undefined)
+
+
 
 /*@iter constraintList_elements (sef constraintList x, yield exposed constraint el); @*/
 # define constraintList_elements(x, m_el) \
@@ -31,39 +42,41 @@ extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@
 extern constraintList constraintList_addList (/*@returned@*/ constraintList p_s, /*@only@*/constraintList new) /*@modifies p_s@*/  ;
 
 
-extern constraintList constraintList_copy (constraintList p_s) /*@*/ ;
+extern constraintList constraintList_copy ( /*@observer@*/ constraintList p_s) /*@*/ ;
 
-//extern /*@only@*/ cstring constraintList_unparse (constraintList p_s) ;
+//extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList p_s) ;
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
 
 
 
-extern cstring constraintList_print (constraintList s) /*@*/;
+extern cstring constraintList_print ( /*@observer@*/ constraintList s) /*@*/;
 
 extern cstring
-constraintList_printDetailed (constraintList s) /*@*/;
+constraintList_printDetailed ( /*@observer@*/ constraintList s) /*@*/;
 
 
-extern constraintList
-constraintList_logicalOr (constraintList l1, constraintList l2);
+extern /*@only@*/ constraintList
+constraintList_logicalOr ( /*@observer@*/ constraintList l1, /*@observer@*/  constraintList l2);
 
 extern constraintList constraintList_preserveOrig (/*@returned@*/ constraintList c);
 
 /*@constant int constraintListBASESIZE;@*/
 
-extern constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
+# define constraintListBASESIZE SMALLBASESIZE
+
+
+extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
 
 extern constraintList constraintList_togglePost (/*@returned@*/ constraintList c) /*@modifies c@*/;
 
-extern constraintList constraintList_doSRefFixConstraintParam (/*@returned@*/ constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
+extern  /*@only@*/ constraintList constraintList_doSRefFixConstraintParam ( /*@only@*/ constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
 
 extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall) /*@*/;
 
-constraintList constraintList_doFixResult (/*@returned@*/ constraintList postconditions, exprNode fcnCall) /*@modifies postconditions@*/;
+/*@only@*/ constraintList constraintList_doFixResult ( /*@only@*/ constraintList postconditions, exprNode fcnCall) /*@modifies postconditions@*/;
 
 constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
-# define constraintListBASESIZE SMALLBASESIZE
 
 # else
 # error "Multiple include"

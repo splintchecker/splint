@@ -43,9 +43,6 @@ struct _environmentTable
 /* extern void setMinium (key, min); */
 /* extern void setMaximum (key, min); */
 
-environmentTable
-environmentTable_addExactValue (/*@returned@*/ environmentTable p_s, /*@exposed@*/ sRef p_sr, int p_val);
-
 extern /*@unused@*/ /*@truenull@*/ bool environmentTable_isUndefined (environmentTable p_s);
 extern /*@unused@*/ /*@truenull@*/ bool 
   environmentTable_isEmpty (/*@sef@*/ environmentTable p_s);
@@ -70,44 +67,44 @@ extern int environmentTable_size (/*@sef@*/ environmentTable p_s);
 
 # define end_environmentTable_elements }}}
 
-extern environmentTable environmentTable_new (void) /*@*/ ;
+//extern environmentTable environmentTable_new (void) /*@*/ ;
 
-extern void environmentTable_clearEnvironmentes (environmentTable p_s, sRef p_sr) 
-   /*@modifies p_s, p_sr@*/ ;
+//extern void environmentTable_clearEnvironmentes (environmentTable p_s, sRef p_sr) 
+//   /*@modifies p_s, p_sr@*/ ;
 
-extern /*@only@*/ sRefSet environmentTable_canEnvironment (environmentTable p_s, sRef p_sr) /*@*/ ;
-extern environmentTable environmentTable_copy (environmentTable p_s) /*@*/ ;
+//extern /*@only@*/ sRefSet environmentTable_canEnvironment (environmentTable p_s, sRef p_sr) /*@*/ ;
+//extern environmentTable environmentTable_copy (environmentTable p_s) /*@*/ ;
  
-extern /*@only@*/ cstring environmentTable_unparse (environmentTable p_s) /*@*/ ;
-extern void environmentTable_free (/*@only@*/ environmentTable p_s) ;
+//extern /*@only@*/ cstring environmentTable_unparse (environmentTable p_s) /*@*/ ;
+//extern void environmentTable_free (/*@only@*/ environmentTable p_s) ;
 
-extern environmentTable 
-  environmentTable_addMustEnvironment (/*@returned@*/ environmentTable p_s, /*@exposed@*/ sRef p_sr, sRef p_al)
-  /*@modifies p_s@*/ ;
+//extern environmentTable 
+//  environmentTable_addMustEnvironment (/*@returned@*/ environmentTable p_s, /*@exposed@*/ sRef p_sr, sRef p_al)
+//  /*@modifies p_s@*/ ;
 
-extern environmentTable
-  environmentTable_levelUnion (/*@returned@*/ environmentTable p_t1, environmentTable p_t2, int p_level) 
-  /*@modifies p_t1@*/ ;
+//  extern environmentTable
+//    environmentTable_levelUnion (/*@returned@*/ environmentTable p_t1, environmentTable p_t2, int p_level) 
+//    /*@modifies p_t1@*/ ;
 
-extern environmentTable 
-  environmentTable_levelUnionNew (environmentTable p_t1, environmentTable p_t2, int p_level) 
-  /*@modifies nothing*/ ;
+//  extern environmentTable 
+//    environmentTable_levelUnionNew (environmentTable p_t1, environmentTable p_t2, int p_level) 
+//    /*@modifies nothing*/ ;
 
-extern void environmentTable_checkGlobs (environmentTable p_t) /*@modifies g_msgstream@*/ ;
-extern /*@only@*/ sRefSet environmentTable_environmentedBy (environmentTable p_s, sRef p_sr) /*@*/ ;
-extern void environmentTable_fixSrefs (environmentTable p_s);
-extern environmentTable environmentTable_levelUnionSeq (/*@returned@*/ environmentTable p_t1, 
-					    /*@only@*/ environmentTable p_t2, int p_level);
+//  extern void environmentTable_checkGlobs (environmentTable p_t) /*@modifies g_msgstream@*/ ;
+//  extern /*@only@*/ sRefSet environmentTable_environmentedBy (environmentTable p_s, sRef p_sr) /*@*/ ;
+//  extern void environmentTable_fixSrefs (environmentTable p_s);
+//  extern environmentTable environmentTable_levelUnionSeq (/*@returned@*/ environmentTable p_t1, 
+//  					    /*@only@*/ environmentTable p_t2, int p_level);
 
 
-extern environmentTable
-environmentTable_addRelativeRange (/*@returned@*/ environmentTable p_s,
-			 /*@exposed@*/ sRef p_sr);
-exprNode exprNode_mergeEnvironments (exprNode p_ret, exprNode p_e1, exprNode p_e2);
+//  extern environmentTable
+//  environmentTable_addRelativeRange (/*@returned@*/ environmentTable p_s,
+//  			 /*@exposed@*/ sRef p_sr);
+//  exprNode exprNode_mergeEnvironments (exprNode p_ret, exprNode p_e1, exprNode p_e2);
 
 		     
-extern void 
-environmentTable_testInRange ( environmentTable p_s,  /*@exposed@*/ sRef p_sr, int p_index);
+//  extern void 
+//  environmentTable_testInRange ( environmentTable p_s,  /*@exposed@*/ sRef p_sr, int p_index);
 
 
 /*@constant int environmentTableBASESIZE; @*/
