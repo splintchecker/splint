@@ -12,19 +12,27 @@
 
 typedef /*@integraltype@*/ blkcnt_t;
 typedef /*@integraltype@*/ blksize_t;
+
+/*@-redef@*/ /* These are also defined by ansi.h: */
 typedef /*@integraltype@*/ clock_t;
-typedef /*@integraltype@*/ clockid_t;
 typedef /*@integraltype@*/ dev_t;
-typedef /*@unsignedintegraltype@*/ fsblkcnt_t;
-typedef /*@unsignedintegraltype@*/ fsfilcnt_t;
 typedef /*@integraltype@*/ gid_t;
-typedef /*@integraltype@*/ id_t;
 typedef /*@unsignedintegraltype@*/ ino_t;
-typedef /*@integraltype@*/ key_t;
 typedef /*@integraltype@*/ mode_t;
 typedef /*@integraltype@*/ nlink_t;
 typedef /*@integraltype@*/ off_t;
 typedef /*@integraltype@*/ pid_t;
+typedef /*@integraltype@*/ time_t;
+typedef /*@integraltype@*/ uid_t;
+
+/*@=redef@*/
+
+typedef /*@integraltype@*/ clockid_t;
+typedef /*@unsignedintegraltype@*/ fsblkcnt_t;
+typedef /*@unsignedintegraltype@*/ fsfilcnt_t;
+typedef /*@integraltype@*/ id_t;
+
+typedef /*@integraltype@*/ key_t;
 typedef /*@integraltype@*/ pthread_attr_t;
 typedef /*@integraltype@*/ pthread_cond_t;
 typedef /*@integraltype@*/ pthread_condattr_t;
@@ -36,9 +44,7 @@ typedef /*@integraltype@*/ pthread_rwlock_t;
 typedef /*@integraltype@*/ pthread_rwlockattr_t;
 typedef /*@integraltype@*/ pthread_t;
 typedef /*@signedintegraltype@*/ suseconds_t;
-typedef /*@integraltype@*/ time_t;
 typedef /*@integraltype@*/ timer_t;
-typedef /*@integraltype@*/ uid_t;
 typedef /*@unsignedintegraltype@*/ useconds_t;
 
    /*-------------------------------------------------------------
@@ -50,9 +56,11 @@ typedef /*@unsignedintegraltype@*/ useconds_t;
 ** Extra stuff in some unixen, not in posix.
 */
 
-/*@unchecked@*/ int signgam;
+extern /*@unchecked@*/ int signgam;
 
+/*@-redef@*/ /* Defined by ansi: */
 typedef /*@integraltype@*/ clockid_t;
+/*@=redef@*/
 
 extern void bcopy (char *b1, /*@out@*/ char *b2, int length) 
    /*@modifies *b2@*/ ;  /* Yes, the second parameter is the out param! */
@@ -231,6 +239,11 @@ extern /*@unchecked@*/ char *tzname[];
 extern void tzset(void) /*@modifies daylight, timezone, tzname@*/ ;
 /*@=incondefs@*/
 
+/*@-redef@*/ /* Defined by ansi: */
+typedef /*@integraltype@*/ key_t;
+/*@-incondefs@*/ typedef long timer_t; /*@=incondefs@*/
+/*@=redef@*/
+
 typedef	unsigned char uchar_t;
 typedef	unsigned short ushort_t;
 typedef	unsigned int uint_t;
@@ -250,13 +263,11 @@ typedef short cnt_t;
 typedef	int chan_t;	
 typedef unsigned long rlim_t;
 typedef	int paddr_t;
-typedef /*@integraltype@*/ key_t;
 typedef	void *mid_t;
 typedef char slab_t[12];	
 typedef ulong_t	shmatt_t;	
 typedef ulong_t	msgqnum_t;	
 typedef ulong_t	msglen_t;
-typedef long timer_t;
 typedef	uchar_t uchar;
 typedef	ushort_t ushort;
 typedef	uint_t uint;
@@ -484,7 +495,7 @@ int getpeername (int s, /*@out@*/ struct sockaddr *name, size_t *namelen)
 	/*@modifies *name, *namelen, errno@*/;
 
 int getsockname (int s, struct sockaddr *address, size_t *address_len)
-  //   /*@requires maxSet(address) >= ( *address_len) @*/ 
+  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
   /*@modifies *address, *address_len, errno@*/;
 
 int getsockopt (int s, int level, int optname, /*@out@*/ void *optval, size_t *optlen)
@@ -1220,6 +1231,7 @@ setgroupent (int stayopen)
 ** struct stat replaces POSIX version - more required fields in Unix
 */
 
+/*@-redef@*/ /*@-matchfields@*/
 struct stat {
   dev_t     st_dev; /* ID of device containing file */
   ino_t     st_ino; /* file serial number */
@@ -1236,7 +1248,8 @@ struct stat {
 			   this object.  In some filesystem types, this may
 			   vary from file to file */
   blkcnt_t  st_blocks; /*  number of blocks allocated for this object */
-};
+} ;
+/*@=redef@*/ /*@=matchfields@*/
 
 /*@constant mode_t S_IFMT@*/
 /*@constant mode_t S_IFBLK@*/
@@ -1248,6 +1261,8 @@ struct stat {
 
 /*@constant mode_t S_IRWXU@*/
 /*@constant mode_t S_IRUSR@*/
+
+/*@-incondefs@*/ /*: probably wrong in posix.h? */
 /*@constant mode_t S_IWUSR@*/
 /*@constant mode_t S_IXUSR@*/
 /*@constant mode_t S_IRWXG@*/
@@ -1261,6 +1276,8 @@ struct stat {
 /*@constant mode_t S_ISUID@*/
 /*@constant mode_t S_ISGID@*/
 /*@constant mode_t S_ISVTX@*/
+
+/*@=incondefs@*/
 
 # if 0
 /*These are the old definitions - they don't appear to be in the Single UNIX Specification */
@@ -1475,9 +1492,7 @@ struct servent *getservbyport_r (int port, /*@null@*/ const char *proto, /*@out@
 /*@null@*/ struct servent *getservent_r (struct servent *result, char *buffer, int buflen);
 
 int setservent (int stayopen);
-
 int endservent (void);
-
 
 extern int h_errno;
 
@@ -1489,15 +1504,15 @@ struct hostent *gethostbyname_r (/*@nullterminated@*/ const char *name, /*@notnu
      /*@requires maxSet(buffer) >= bufsize@*/ ;
 
 /*@null@*/ /*@observer@*/ struct hostent *gethostbyaddr (/*@notnull@*/ const void *addr, size_t addrlen, int type) 
-     /*@requires maxRead(addr) == addrlen@*/ /*@i534 ??? is this right? */
+     /*@requires maxRead(addr) == addrlen@*/ /*:i534 ??? is this right? */
      /*@warn multithreaded "Unsafe in multithreaded applications, use gethostbyaddr_r instead"@*/ 
      /*@modifies h_errno@*/ ;
 
 struct hostent *gethostbyaddr_r (/*@notnull@*/ const void *addr, size_t addrlen, int type, 
 				 /*@returned@*/ /*@out@*/ struct hostent *hent, 
 				 /*@exposed@*/ /*@out@*/ char *buffer, int bufsize, /*@out@*/ int *h_errnop)
-     /*@requires maxRead(addr) == addrlen 
-          /\ maxSet(buffer) >= bufsize@*/ /*@i534 ??? is this right? */ ;
+     /*@requires maxRead(addr) == addrlen /\ maxSet(buffer) >= bufsize@*/
+     /*:i534 ??? is this right? */ ;
 
 /*@observer@*/ /*@null@*/ struct hostent *gethostent (void)
     /*@warn multithreaded "Unsafe in multithreaded applications, use gethostent_r instead"@*/ ;
@@ -1505,17 +1520,13 @@ struct hostent *gethostbyaddr_r (/*@notnull@*/ const void *addr, size_t addrlen,
 struct hostent *gethostent_r (/*@out@*/ /*@returned@*/ struct hostent *hent, /*@exposed@*/ /*@out@*/ char *buffer, int bufsize)
      /*@requires maxSet(buffer) >= bufsize@*/ ;
 
-     /*@i534 need to annotate these: */
+/*:i534 need to annotate these: */
+
 struct hostent *fgethostent(FILE *f);
-
 struct hostent *fgethostent_r(FILE*f, struct hostent *hent, char buffer, int bufsize);
-
 void sethostent(int stayopen);
-
 void endhostent(void);
-
 void herror(const char *string);
-
 char *hstrerror(int err);
 
 struct hostent {
@@ -1526,24 +1537,6 @@ struct hostent {
   /*@observer@*/ /*@nullterminated@*/ char * /*:observer@*/ /*:nullterminated@*/ *h_addr_list; /* list of addressesfrom name server */
   /*@observer@*/ /*@nullterminated@*/ char *h_addr; /* first address in list (backward compatibility) */
 } ;
-
-/*
-** arpa/inet.h
-*/
-
-typedef uint32_t in_addr_t;
-
-struct in_addr
-{
-  in_addr_t s_addr;
-};
-
-typedef uint16_t in_port_t;
-
-in_addr_t htonl (in_addr_t hostlong) /*@*/ ;
-in_port_t htons (in_port_t hostshort) /*@*/ ;
-in_addr_t ntohl (in_addr_t netlong) /*@*/ ;
-in_port_t ntohs (in_port_t netshort) /*@*/ ;
 
 /*
 ** unistd.h
@@ -1585,7 +1578,9 @@ char /*@alt int@*/ _tolower(/*@sef@*/ int /*@alt unsigned char@*/);
 */
 
 double drand48 (void) /*@modifies internalState@*/ ; 
-double erand48 (unsigned short int xsubi[3]) /*@modifies internalState@*/ ; 
+double erand48 (unsigned short int /*@-fixedformalarray@*/ xsubi[3] /*@=fixedformalarray@*/ ) 
+   /*@modifies internalState@*/ ; 
+
 void srand48 (long int seedval) /*@modifies internalState@*/ ; 
 
 /*
@@ -1627,20 +1622,34 @@ struct sockaddr_in {
 /*@constant in_addr_t INADDR_BROADCAST@*/
 
 /*
+** arpa/inet.h
+*/
+
+in_addr_t htonl (in_addr_t hostlong) /*@*/ ;
+in_port_t htons (in_port_t hostshort) /*@*/ ;
+in_addr_t ntohl (in_addr_t netlong) /*@*/ ;
+in_port_t ntohs (in_port_t netshort) /*@*/ ;
+
+/*
 ** dirent.h
 **
 ** evans 2001-08-27 - added from http://www.opengroup.org/onlinepubs/007908799/xsh/dirent.h.html
 */
 
+/*@-redef@*/ /*@-matchfields@*/ /* Has d_ino field, not in posix (?) */
+
 struct dirent
 {
   ino_t  d_ino;
   char   d_name[];    
-};
+} ;
+
+/*@=redef@*/ /*@=matchfields@*/
 
 typedef /*@abstract@*/ DIR;
 
-/*@i32  need to check annotations on these */
+/*:i32 need to check annotations on these */
+
 int closedir (DIR *) /*:errorcode -1*/ ; 
 /*@null@*/ DIR *opendir(const char *) ;
 struct dirent *readdir(DIR *);

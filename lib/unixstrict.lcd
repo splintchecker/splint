@@ -1,5 +1,5 @@
 ;;LCLint Dump: unixstrict.lcd
-;;LCLint 3.0.0.16 --- 10 September 2001
+;;LCLint 3.0.0.19 --- 5 October 2001
 ;;lib:167
 ;;ctTable
 0 u-2 19 38
@@ -662,7 +662,7 @@
 3 f652 (23|$#,)!
 3 f0 (652|$#,)!
 3 f19 (652|$#,)!
-1 t651|651 1492 -1
+1 t651|651 1491 -1
 3 f660 (652|$#,)!
 3 f0 (652|$#,)!
 3 f1 (652|$#,)!
@@ -1447,18 +1447,6 @@
 3 f19 (5|$#,)!
 3 f23 (5|$#,)!
 3 Shostent{23|@1|0@0@18@3@0#h_name,291|@1|0@0@18@3@0#h_aliases,5|@1|^#h_addrtype,5|@1|^#h_length,291|@1|0@0@18@3@0#h_addr_list,23|@1|0@0@18@3@0#h_addr,}!
-0 s1529|&
-3 Sin_addr{1445|@1|^#s_addr,}!
-0 s1530|&
-0 s1531|&
-3 f0 (1445|$#,)!
-3 f1445 (1445|$#,)!
-3 f0 (1448|$#,)!
-3 f1448 (1448|$#,)!
-3 f0 (1445|$#,)!
-3 f1445 (1445|$#,)!
-3 f0 (1448|$#,)!
-3 f1448 (1448|$#,)!
 3 f0 (23|0@2@7&#,)!
 3 f5 (23|0@2@7&#,)!
 3 f0 (5|$#,)!
@@ -1475,16 +1463,27 @@
 3 f17 ()!
 2 F0/3|0&
 2 F8/3|8&
-3 f0 (1472|$#,)!
-3 f17 (1472|$#,)!
+3 f0 (1460|$#,)!
+3 f17 (1460|$#,)!
 3 f0 (9|$#,)!
 3 f1 (9|$#,)!
-0 s1545|&
-3 Sin_addr{1445|@1|^#s_addr,}!
+0 s1538|&
+0 s1539|&
+0 s1540|&
+3 Sin_addr{1466|@1|^#s_addr,}!
+0 s1541|&
 2 F0/8|0&
 2 F3/8|3&
-3 Ssockaddr_in{1477|@1|^#sin_family,1448|@1|^#sin_port,1447|@1|^#sin_addr,1480|@1|^#sin_zero,}!
-0 s1546|&
+3 Ssockaddr_in{1467|@1|^#sin_family,1465|@1|^#sin_port,1469|@1|^#sin_addr,1471|@1|^#sin_zero,}!
+0 s1542|&
+3 f0 (1466|$#,)!
+3 f1466 (1466|$#,)!
+3 f0 (1465|$#,)!
+3 f1465 (1465|$#,)!
+3 f0 (1466|$#,)!
+3 f1466 (1466|$#,)!
+3 f0 (1465|$#,)!
+3 f1465 (1465|$#,)!
 3 Sdirent{643|@1|^#d_ino,42|@1|^#d_name,}!
 3 f0 (652|$#,)!
 3 f5 (652|$#,)!
@@ -1495,8 +1494,8 @@
 3 f19 (652|$#,)!
 3 f660 (652|$#,)!
 1 t660|660&
-3 f0 (652|$#,660|$#,1492|$#,)!
-3 f5 (652|$#,660|$#,1492|$#,)!
+3 f0 (652|$#,660|$#,1491|$#,)!
+3 f5 (652|$#,660|$#,1491|$#,)!
 3 f0 (652|$#,)!
 3 f1 (652|$#,)!
 3 f0 (652|$#,9|$#,)!
@@ -1940,7 +1939,7 @@
 *0 (Datatype)
 ^409 13@-@-@0@0@0@0@641#dev_t
 ^410 13@-@-@0@0@0@0@642#gid_t
-^411 13@-@-@0@0@0@0@643#ino_t
+^411 14@-@-@0@0@0@0@643#ino_t
 ^412 13@-@-@0@0@0@0@644#mode_t
 ^413 13@-@-@0@0@0@0@645#nlink_t
 ^414 13@-@-@0@0@0@0@646#off_t
@@ -1948,12 +1947,12 @@
 ^416 13@-@-@0@0@0@0@648#uid_t
 ^417 20@+@+@0@0@0@0@649#DIR
 *7 (Struct tag)
-^418 1483@651#@dirent
+^418 1482@651#@dirent
 *4 (Function)
-^419 1485$@0@g22@6@0@1@g22$@0#closedir
-^420 1488@6@5@1@0@0@0@g22@6@0@1@g22@3@0@0#opendir
-^421 1491@6@5@1@0@0@0@g22@6@0@1@g22@3@0@0#readdir
-^422 1496$^$@0#rewinddir
+^419 1484$@0@g22@6@0@1@g22$@0#closedir
+^420 1487@6@5@1@0@0@0@g22@6@0@1@g22@3@0@0#opendir
+^421 1490@6@5@1@0@0@0@g22@6@0@1@g22@3@0@0#readdir
+^422 1495$^$@0#rewinddir
 *1 (Constant)
 ^423 5$#E2BIG#EACCES#EAGAIN#EBADF#EBUSY#ECHILD#EDEADLK#EEXIST#EFAULT#EFBIG#EINTR#EINVAL#EIO#EISDIR#EMFILE#EMLINK#ENAMETOOLONG#ENFILE#ENODEV#ENOENT#ENOEXEC#ENOLCK#ENOMEM#ENOSPC#ENOSYS#ENOTDIR#ENOTEMPTY#ENOTTY#ENXIO#EPERM#EPIPE#EROFS#ESPIPE#ESRCH#EXDEV#FD_CLOEXEC#F_DUPFD#F_GETFD#F_GETFL#F_GETLK#F_RDLCK#F_SETFD#F_SETFL#F_SETLK#F_SETLKW#F_UNLCK#F_WRLCK#O_ACCMODE#O_APPEND#O_CREAT#O_EXCL#O_NOCTTY#O_NONBLOCK#O_RDONLY#O_RDWR#O_TRUNC#O_WRONLY#S_IRGRP#S_IROTH#S_IUSR#S_IWXG#S_IWXO#S_IWXU#S_ISGID#S_ISUID#S_IWGRP#S_IWOTH#S_IWUSR#S_IXGRP#S_IXOTH#S_IXUSR
 *7 (Struct tag)
@@ -2460,53 +2459,49 @@
 ^1526 1438$$$@0#endhostent
 ^1527 1440$$$@0#herror
 ^1528 1443$$@3@0@0#hstrerror
+^1529 1446$$$@0@W:superuser#Only super-user processes may call chroot.##chroot
+^1530 1448$$$@0@W:superuser#Only super-user processes may call fchroot.##fchroot
+^1531 1450$^$@0#isascii
+^1532 1452$^$@0#toascii
+^1533 1454$^$@0#_toupper
+^1534 1456$^$@0#_tolower
+^1535 1458$@0@s1@1@s1$@0#drand48
+^1536 1462$@0@s1@1@s1$@0#erand48
+^1537 1464$@0@s1@1@s1$@0#srand48
 *0 (Datatype)
-^1529 619@-@-@0@0@0@0@1445#in_addr_t
+^1538 14@-@-@0@0@0@0@1465#in_port_t
+^1539 14@-@-@0@0@0@0@1466#in_addr_t
+^1540 14@-@-@0@0@0@0@1467#sa_family_t
 *7 (Struct tag)
-^1530 1446@1447#@in_addr
-*0 (Datatype)
-^1531 618@-@-@0@0@0@0@1448#in_port_t
-*4 (Function)
-^1532 1450$^$@0#htonl
-^1533 1452$^$@0#htons
-^1534 1454$^$@0#ntohl
-^1535 1456$^$@0#ntohs
-^1536 1458$$$@0@W:superuser#Only super-user processes may call chroot.##chroot
-^1537 1460$$$@0@W:superuser#Only super-user processes may call fchroot.##fchroot
-^1538 1462$^$@0#isascii
-^1539 1464$^$@0#toascii
-^1540 1466$^$@0#_toupper
-^1541 1468$^$@0#_tolower
-^1542 1470$@0@s1@1@s1$@0#drand48
-^1543 1474$@0@s1@1@s1$@0#erand48
-^1544 1476$@0@s1@1@s1$@0#srand48
-*0 (Datatype)
-^1545 14@-@-@0@0@0@0@1477#sa_family_t
-*7 (Struct tag)
-^1546 1481@1482#@sockaddr_in
+^1541 1468@1469#@in_addr
+^1542 1472@1473#@sockaddr_in
 *1 (Constant)
-^1547 5$#IPPROTO_IP#IPPROTO_ICMP#IPPROTO_TCP#IPPROTO_UDP
-^1551 1445$#INADDR_ANY#INADDR_BROADCAST
+^1543 5$#IPPROTO_IP#IPPROTO_ICMP#IPPROTO_TCP#IPPROTO_UDP
+^1547 1466$#INADDR_ANY#INADDR_BROADCAST
 *4 (Function)
-^1553 1494$$$@0#readdir_r
-^1554 1498$$$@0#seekdir
-^1555 1500$$$@0#telldir
-^1556 1503$@0@@1@tp0$@0#stpcpy
-^1557 1506$@0@@1@tp0$@0#stpncpy
-^1558 1508$@0@s3,g22@6@0@1@s3,g22$@0#usleep
-^1559 1510$@0@g22@6@0@1@g22$@0#hypot
-^1560 1512$@0@g22@6@0@1@g22$@0#j0
-^1561 1514$@0@g22@6@0@1@g22$@0#j1
-^1562 1516$@0@g22@6@0@1@g22$@0#jn
-^1563 1518$@0@g22@6@0@1@g22$@0#y0
-^1564 1520$@0@g22@6@0@1@g22$@0#y1
-^1565 1522$@0@g22@6@0@1@g22$@0#yn
-^1566 1524$@0@g22@6@0@1@g22$@0#acosh
-^1567 1526$@0@g22@6@0@1@g22$@0#asinh
-^1568 1528$@0@g22@6@0@1@g22$@0#atanh
-^1569 1530$@0@g22@6@0@1@g22$@0#lgamma
-^1570 1532$@0@g22@6@0@1@g22$@0#erf
-^1571 1534$@0@g22@6@0@1@g22$@0#erfc
+^1549 1475$^$@0#htonl
+^1550 1477$^$@0#htons
+^1551 1479$^$@0#ntohl
+^1552 1481$^$@0#ntohs
+^1553 1493$$$@0#readdir_r
+^1554 1497$$$@0#seekdir
+^1555 1499$$$@0#telldir
+^1556 1502$@0@@1@tp0$@0#stpcpy
+^1557 1505$@0@@1@tp0$@0#stpncpy
+^1558 1507$@0@s3,g22@6@0@1@s3,g22$@0#usleep
+^1559 1509$@0@g22@6@0@1@g22$@0#hypot
+^1560 1511$@0@g22@6@0@1@g22$@0#j0
+^1561 1513$@0@g22@6@0@1@g22$@0#j1
+^1562 1515$@0@g22@6@0@1@g22$@0#jn
+^1563 1517$@0@g22@6@0@1@g22$@0#y0
+^1564 1519$@0@g22@6@0@1@g22$@0#y1
+^1565 1521$@0@g22@6@0@1@g22$@0#yn
+^1566 1523$@0@g22@6@0@1@g22$@0#acosh
+^1567 1525$@0@g22@6@0@1@g22$@0#asinh
+^1568 1527$@0@g22@6@0@1@g22$@0#atanh
+^1569 1529$@0@g22@6@0@1@g22$@0#lgamma
+^1570 1531$@0@g22@6@0@1@g22$@0#erf
+^1571 1533$@0@g22@6@0@1@g22$@0#erfc
 ;; Library constraints
 vsnprintf
 pre:

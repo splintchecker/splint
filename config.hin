@@ -1,0 +1,39 @@
+/* config.hin.  Generated automatically from configure.ac by autoheader.  */
+
+/*@-constmacros@*/
+
+/* The directory where LCLint's library files live */
+#undef DEFAULT_LARCHPATH
+
+/* LCLint's imports directory */
+#undef DEFAULT_LCLIMPORTDIR
+
+/* gcc's private include directory */
+#undef GCC_INCLUDE_DIR
+
+/* the system's main include directory */
+#undef GCC_INCLUDE_DIR2
+
+/* String describing who compiled this binary and how */
+#undef LCL_COMPILE
+
+/* LCLint's version number */
+#undef LCL_PARSE_VERSION
+
+/* LCLint's version number and release date */
+#undef LCL_VERSION
+
+/* Define to disable support LCL files */
+#undef NOLCL
+
+/* The system's main include directory */
+#undef SYSTEM_LIBDIR
+
+/* Define if you're on a Unixy system */
+#undef UNIX
+
+/* Define if `lex' declares `yytext' as a `char *' by default, not a `char[]'.
+   */
+#undef YYTEXT_POINTER
+
+/*@=constmacros@*/

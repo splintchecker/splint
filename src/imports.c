@@ -42,7 +42,6 @@
 # include "lh.h"
 # include "llmain.h"
 # include "portab.h"
-# include "herald.h"
 
 void
 outputLCSFile (char *path, char *msg, char *specname)

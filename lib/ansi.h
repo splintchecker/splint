@@ -1037,7 +1037,9 @@ typedef unsigned int *uintptr_t
 typedef /*@signedintegraltype@*/ intmax_t;
 typedef /*@unsignedintegraltype@*/ uintmax_t;
 
-/*@i534 types here? */
+/*
+** What should the types be here? 
+*/ /*#*/
 
 /*@constant int INT8_MIN@*/
 /*@constant int INT16_MIN@*/

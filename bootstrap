@@ -1,0 +1,6 @@
+#! /bin/sh
+set -x
+aclocal
+autoheader
+autoconf
+automake -a -c

@@ -1,257 +1,409 @@
-###
-### Makefile for building and installing LCLint 2.5
-###
-### Updated for LCLint 2.5:  23 May 2000
-### Updated for LCLint 2.4:  12 April 1998
-### Updated for LCLint 2.2:  25 August 1996
-### Updated for LCLint 2.1a: 17 April 1996
-### Updated for LCLint 2.0:  24 February 1996
-### Updated for LCLint 1.4:  29 January 1995
-### Original for LCLint 1.0: 20 February 1994
-###
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
 
-###
-### This makefile assumes the gnu version of make is available.
-###
-### Run: make 		to build LCLint.
-###      make install   to install.
-###
-###
-### These constants will be compiled into the lclint binary.  
-###
-### They may be overridden by environment variables, but these
-### constants set the default values when no environment variables
-### are set.
-###
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+# Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-### Command to run C preprocessor:
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-DEFAULT_CPPCMD  = @CPP@
+@SET_MAKE@
 
-### Directory containing system include files:
+SHELL = @SHELL@
 
-SYSTEM_LIBDIR   = "/usr/include"
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-###
-### Select installation directories:
-###
-### The LIBDIR and IMPORTSDIR are compiled into the binary to 
-### select the default LARCH_PATH and LCLIMPORTDIR, which can 
-### also be overridden by environment variables.
-### 
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+top_builddir = .
 
-### directory for lclint libraries
-LIBDIR     = @installdir@/lib
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-### directory for lclint standard imports
-IMPORTSDIR = @installdir@/imports
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
+transform = @program_transform_name@
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AMTAR = @AMTAR@
+AWK = @AWK@
+BISON = @BISON@
+CAT = @CAT@
+CC = @CC@
+CP = @CP@
+CPP = @CPP@
+CXX = @CXX@
+DEPDIR = @DEPDIR@
+DIFF = @DIFF@
+EXEEXT = @EXEEXT@
+GREP = @GREP@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LCLOBJ = @LCLOBJ@
+LEX = @LEX@
+LN_S = @LN_S@
+MV = @MV@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+RM = @RM@
+VERSION = @VERSION@
+am__include = @am__include@
+am__quote = @am__quote@
+install_sh = @install_sh@
 
-### directory for lclint binary
-INSTALLDIR = @installdir@/bin
+AUTOMAKE_OPTIONS = 1.5 foreign
 
-### this should be the complete path for the directory where this
-### Makefile is, with no trailing / or spaces.
+SUBDIRS = src lib imports test
+subdir = .
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES =
+DIST_SOURCES =
 
-BASEDIR = @cwdir@
+RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
+	uninstall-info-recursive all-recursive install-data-recursive \
+	install-exec-recursive installdirs-recursive install-recursive \
+	uninstall-recursive check-recursive installcheck-recursive
+DIST_COMMON = README ./stamp-h.in Makefile.am Makefile.in acinclude.m4 \
+	aclocal.m4 config.hin config/config.guess config/config.sub \
+	config/depcomp config/install-sh config/missing \
+	config/mkinstalldirs configure configure.ac
+DIST_SUBDIRS = $(SUBDIRS)
+all: config.h
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
-###
-### Then, run:
-###
-###	make
-###
-### I recommend doing this in an emacs shell (or buffered terminal) so
-### you can scroll through the output.
-###
-### This should (hopefully) work on most systems without further changes.
-###
-### If you do not have gcc, set CC = cc (or some other compiler)
-### later in this file. 
-###
-### It should:
-###     o build lclint
-###     o put lclint in BASEDIR/bin/lclint
-###
-### If you have installed the test suite, then do:
-###
-###	make test
-###
-### to verify lclint.
-###
+.SUFFIXES:
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
+	cd $(top_srcdir) && \
+	  $(AUTOMAKE) --foreign  Makefile
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS= CONFIG_LINKS= \
+	  CONFIG_FILES=$@ $(SHELL) ./config.status
 
-###
-### shell --- should work with /bin/sh or similar shells too.
-###
+$(top_builddir)/config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure:  $(srcdir)/configure.ac $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
 
-SHELL  = /bin/csh
+$(ACLOCAL_M4):  configure.ac acinclude.m4
+	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+config.h: stamp-h
+	@if test ! -f $@; then \
+		rm -f stamp-h; \
+		$(MAKE) stamp-h; \
+	else :; fi
+stamp-h: $(srcdir)/config.hin $(top_builddir)/config.status
+	@rm -f stamp-h stamp-hT
+	@echo timestamp > stamp-hT 2> /dev/null
+	cd $(top_builddir) \
+	  && CONFIG_FILES= CONFIG_HEADERS=config.h:config.hin \
+	     $(SHELL) ./config.status
+	@mv stamp-hT stamp-h
+$(srcdir)/config.hin:  $(srcdir)/./stamp-h.in
+	@if test ! -f $@; then \
+		rm -f $(srcdir)/./stamp-h.in; \
+		$(MAKE) $(srcdir)/./stamp-h.in; \
+	else :; fi
+$(srcdir)/./stamp-h.in: $(top_srcdir)/configure.ac $(ACLOCAL_M4) 
+	@rm -f $(srcdir)/./stamp-h.in $(srcdir)/./stamp-h.inT
+	@echo timestamp > $(srcdir)/./stamp-h.inT 2> /dev/null
+	cd $(top_srcdir) && $(AUTOHEADER)
+	@mv $(srcdir)/./stamp-h.inT $(srcdir)/./stamp-h.in
 
-###
-### If you wish to install lclint in some other directory, set these 
-### variables, and do 
-###
-###	make install
-###
+distclean-hdr:
+	-rm -f config.h
+uninstall-info-am:
 
-### installation command
-INSTALL      = @INSTALL@
-INSTALLFLAGS =           
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
 
-### this works with nfs, change to whatever is needed to make
-### a file executable on your system
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
 
-MAKEEXE = chmod 755
+tags: TAGS
 
-###
-### end of installation variables
-###
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	mkid -fID $$unique $(LISP)
 
-###
-### compiler --- gcc is recommended, but lclint has been compiled
-###              without changes using cc on several platforms.
-###
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.hin $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)config.hin$$unique$(LISP)$$tags" \
+	  || etags $(ETAGS_ARGS) $$tags config.hin $$unique $(LISP)
 
-CC = @CC@ @DEFS@
+GTAGS:
+	here=`CDPATH=: && cd $(top_builddir) && pwd` \
+	  && cd $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) $$here
 
-###
-### optimizing compiler --- add optimization flags here
-### 
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
 
-CCOPT = $(CC) @OPT@
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
-###
-### link flags --- this links the lex or flex library
-###
+top_distdir = .
+# Avoid unsightly `./'.
+distdir = $(PACKAGE)-$(VERSION)
 
-LINKFLAGS = @LINKLEX@
+GZIP_ENV = --best
 
-###
-### do you have bison and/or flex?
-### (Note: yacc will probably not work; lex might work but is not recommended.)
-###
+distdir: $(DISTFILES)
+	-chmod -R a+w $(distdir) >/dev/null 2>&1; rm -rf $(distdir)
+	mkdir $(distdir)
+	$(mkinstalldirs) $(distdir)/config
+	@for file in $(DISTFILES); do \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    $(mkinstalldirs) "$(distdir)/$$dir"; \
+	  fi; \
+	  if test -d $$d/$$file; then \
+	    cp -pR $$d/$$file $(distdir) \
+	    || exit 1; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$(top_distdir)" \
+	        distdir=../$(distdir)/$$subdir \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
+	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -444 -exec $(SHELL) $(install_sh) -c -m a+r {} {} \; \
+	|| chmod -R a+r $(distdir)
+dist: distdir
+	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	-chmod -R a+w $(distdir) >/dev/null 2>&1; rm -rf $(distdir)
 
-BISON     = @BISON@
-FLEX      = @FLEX@
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	GZIP=$(GZIP_ENV) gunzip -c $(distdir).tar.gz | $(AMTAR) xf -
+	chmod -R a-w $(distdir); chmod a+w $(distdir)
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	chmod a-w $(distdir)
+	dc_install_base=`CDPATH=: && cd $(distdir)/=inst && pwd` \
+	  && cd $(distdir)/=build \
+	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	  && (test `find $$dc_install_base -type f -print | wc -l` -le 1 \
+	     || (echo "Error: files left after uninstall" 1>&2; \
+	         exit 1) ) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist \
+	  && $(MAKE) $(AM_MAKEFLAGS) distclean \
+	  && rm -f $(distdir).tar.gz \
+	  && (test `find . -type f -print | wc -l` -eq 0 \
+	     || (echo "Error: files left after distclean" 1>&2; \
+	         exit 1) )
+	-chmod -R a+w $(distdir) > /dev/null 2>&1; rm -rf $(distdir)
+	@echo "$(distdir).tar.gz is ready for distribution" | \
+	  sed 'h;s/./=/g;p;x;p;x'
+check-am: all-am
+check: check-recursive
+all-am: Makefile config.h
+installdirs: installdirs-recursive
+installdirs-am:
 
-###
-### is the test suite available? (must be full path here)
-###
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
-TESTDIR   = $(BASEDIR)/test
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-### 
-### if this Makefile is used with one of the
-### standard installation packages, no changes should be 
-### necessary below this line.
-###
+installcheck: installcheck-recursive
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
+mostlyclean-generic:
 
-.PHONY: install dobinaries dolibraries doimports test 
+clean-generic:
 
-###
-### set this to a different directory
-### to install binaries elsewhere
-###
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
 
-RELEASEDIR      = $(BASEDIR)/bin
+maintainer-clean-generic:
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+clean: clean-recursive
 
-all: bin/lclint 
-lclint: bin/lclint
+clean-am: clean-generic mostlyclean-am
 
-bin/lclint: 
-	@echo 'Building lclint from source'
-ifeq ($(SHELL), /bin/csh)
-	cd src ; setenv CC '$(CC)' ; setenv CCOPT '$(CCOPT)'; \
-        setenv BISON '$(BISON)' ; setenv FLEX '$(FLEX)' ; \
-        setenv DEFAULT_CPPCMD '"$(DEFAULT_CPPCMD)"' ; \
-	setenv SYSTEM_LIBDIR '$(SYSTEM_LIBDIR)' ; \
-	setenv LINKFLAGS '$(LINKFLAGS)' ; \
-	setenv DEFAULT_LARCHPATH '".:$(LIBDIR)"' ; \
-	setenv DEFAULT_LCLIMPORTDIR '"$(IMPORTSDIR)"' ; \
-	$(MAKE) -e
-else
-	cd src ; CC='$(CC)'; export CC; CCOPT='$(CCOPT)'; \
-	BISON='$(BISON)' ; export BISON; FLEX='$(FLEX)'; export FLEX; \
-        DEFAULT_CPPCMD='$(DEFAULT_CPPCMD)' ; export DEFAULT_CPPCMD ;\
-	SYSTEM_LIBDIR='$(SYSTEM_LIBDIR)' ; export SYSTEM_LIBDIR ;\
-	DEFAULT_LARCHPATH='".:$(LIBDIR)/"' ; export DEFAULT_LARCHPATH ;\
-	LINKFLAGS='$(LINKFLAGS)'; export LINKFLAGS; \
-	DEFAULT_LCLIMPORTDIR='"$(IMPORTSDIR)"' ; export DEFAULT_LCLIMPORTDIR ;\
-	$(MAKE) -e 
-endif
-	@echo '// '
-	@echo '//  Run: '$(MAKE)' test to check'
-	@echo '// '
-	-mkdir bin
-	mv src/lclint bin/lclint
+dist-all: distdir
+	$(AMTAR) chof - $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	-chmod -R a+w $(distdir) >/dev/null 2>&1; rm -rf $(distdir)
+distclean: distclean-recursive
+	-rm -f config.status config.cache config.log
+distclean-am: clean-am distclean-generic distclean-hdr distclean-tags
 
-test:
-ifeq ($(SHELL), /bin/csh)
-	cd $(TESTDIR) ; setenv LCLINT $(RELEASEDIR)/lclint ; $(MAKE) -e
-else
-	cd $(TESTDIR) ; LCLINT=$(RELEASEDIR)/lclint ; export LCLINT ; $(MAKE) -e
-endif
+dvi: dvi-recursive
 
-clean:
-	cd src; $(MAKE) clean
-	rm bin/lclint	
+dvi-am:
 
-###
-### locations of standard LCLint files
-###
-### this should NOT have to be edited if you use the standard
-###    installation package
+info: info-recursive
 
-CP  = cp
+info-am:
 
-LCLINTBINDIR = $(BASEDIR)/bin
-LCLINTBIN  = lclint
+install-data-am:
 
-LCLINTLIB = $(BASEDIR)/lib
-LCLINTIMPORTS = $(BASEDIR)/imports
+install-exec-am:
 
-###
-### uses recursive make calls directly, so installation
-### will continue even if there are errors!
-###
+install-info: install-info-recursive
 
-install: 
-	@echo '// '
-	@echo '// Doing lclint installation'
-	@echo '// '
-	@echo ' '
-	-@$(MAKE) dobinaries 
-	@echo ' '
-	-@$(MAKE) dolibraries 
-	@echo ' '
-	-@$(MAKE) doimports 
-	@echo ' '
-	@echo '// Installation complete.'
+install-man:
 
-dobinaries:
-	@echo '//  Installing binaries in '$(INSTALLDIR)
-	cd $(LCLINTBINDIR); $(INSTALL) $(INSTALLFLAGS) lclint $(INSTALLDIR)
-	@echo '//  Installed: lclint in '$(INSTALLDIR) 
+installcheck-am:
 
-dolibraries:
-	@echo '//  Installing libraries in '$(LIBDIR)
-	@echo "    (This will complain if the directory already exists, don't worry about it.)"
-	-mkdir $(LIBDIR)
-	$(CP) $(LCLINTLIB)/* $(LIBDIR)
-	@echo '//  Installed libraries.'
+maintainer-clean: maintainer-clean-recursive
 
-doimports:
-	@echo '//  Installing imports in '$(IMPORTSDIR)
-	@echo "    (This will complain if the directory already exists, don't worry about it.)"
-	-mkdir $(IMPORTSDIR)
-	$(CP) $(LCLINTIMPORTS)/* $(IMPORTSDIR)
-	@echo '//  Installed imports.'
+maintainer-clean-am: distclean-am maintainer-clean-generic
 
+mostlyclean: mostlyclean-recursive
 
+mostlyclean-am: mostlyclean-generic
 
+uninstall-am: uninstall-info-am
 
+uninstall-info: uninstall-info-recursive
 
+.PHONY: $(RECURSIVE_TARGETS) GTAGS all all-am check check-am clean \
+	clean-generic clean-recursive dist dist-all distcheck distclean \
+	distclean-generic distclean-hdr distclean-recursive \
+	distclean-tags distdir dvi dvi-am dvi-recursive info info-am \
+	info-recursive install install-am install-data install-data-am \
+	install-data-recursive install-exec install-exec-am \
+	install-exec-recursive install-info install-info-am \
+	install-info-recursive install-man install-recursive \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am installdirs-recursive maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive mostlyclean \
+	mostlyclean-generic mostlyclean-recursive tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am \
+	uninstall-info-recursive uninstall-recursive
 
-
-
-
-
-
-
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

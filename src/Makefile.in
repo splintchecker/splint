@@ -1,0 +1,884 @@
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
+
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+# Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+@SET_MAKE@
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
+transform = @program_transform_name@
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AMTAR = @AMTAR@
+AWK = @AWK@
+BISON = @BISON@
+CAT = @CAT@
+CC = @CC@
+CP = @CP@
+CPP = @CPP@
+CXX = @CXX@
+DEPDIR = @DEPDIR@
+DIFF = @DIFF@
+EXEEXT = @EXEEXT@
+GREP = @GREP@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LCLOBJ = @LCLOBJ@
+LEX = @LEX@
+LN_S = @LN_S@
+MV = @MV@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+RM = @RM@
+VERSION = @VERSION@
+am__include = @am__include@
+am__quote = @am__quote@
+install_sh = @install_sh@
+
+AUTOMAKE_OPTIONS = 1.5 foreign
+
+SUFFIXES = .h .c .o .l .check
+
+# Check files before compiling; requires lclint!
+CHECK = 1
+
+# Some preferences
+YFLAGS = -v -t -d --debug
+
+EXTRA_DIST = DATE
+
+bin_PROGRAMS = lclint
+
+EXTRA_PROGRAMS = lcl
+
+AM_CPPFLAGS = -IHeaders
+
+SETSRC = globSet.c intSet.c typeIdSet.c guardSet.c usymIdSet.c sRefSet.c
+
+LISTSRC = clauseStack.c filelocStack.c \
+          cstringList.c cstringSList.c sRefSetList.c ctypeList.c \
+          enumNameList.c enumNameSList.c exprNodeList.c exprNodeSList.c \
+          uentryList.c fileIdList.c filelocList.c qualList.c sRefList.c \
+          flagMarkerList.c idDeclList.c flagSpec.c
+
+
+CPPSRC = cppmain.c cpplib.c cppexp.c cpphash.c cpperror.c
+
+CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
+       stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
+       globalsClause.c modifiesClause.c warnClause.c functionClause.c \
+       functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
+       metaStateExpression.c metaStateSpecifier.c functionConstraint.c
+
+
+LCLINTSRC = exprNode.c exprChecks.c llmain.c
+CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
+
+GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c
+
+GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtreader.c mtgrammar.c
+
+OVERFLOWCHSRC = constraintGeneration.c constraintTerm.c \
+                constraintExprData.c constraintExpr.c constraint.c \
+                constraintList.c constraintResolve.c \
+                constraintOutput.c loopHeuristics.c 
+
+
+GENERALSRC = exprData.c cstring.c fileloc.c message.c inputStream.c \
+             fileTable.c cstringTable.c valueTable.c stateValue.c \
+             llerror.c messageLog.c flagMarker.c aliasTable.c ynm.c \
+             sRefTable.c genericTable.c ekind.c usymtab.c multiVal.c \
+             lltok.c sRef.c lcllib.c randomNumbers.c fileLib.c
+
+
+METASTATESRC = stateInfo.c stateCombinationTable.c metaStateTable.c \
+               metaStateInfo.c annotationTable.c annotationInfo.c mttok.c \
+               mtDeclarationNode.c mtDeclarationPieces.c mtDeclarationPiece.c \
+               mtContextNode.c mtValuesNode.c mtDefaultsNode.c \
+               mtAnnotationsNode.c mtMergeNode.c mtAnnotationList.c \
+               mtAnnotationDecl.c mtTransferClauseList.c mtTransferClause.c \
+               mtTransferAction.c mtLoseReferenceList.c mtLoseReference.c \
+               mtDefaultsDeclList.c mtDefaultsDecl.c mtMergeItem.c \
+               mtMergeClause.c mtMergeClauseList.c
+
+
+LCLONLYSRC = usymtab_interface.c abstract.c ltoken.c lclscanline.c \
+             lclsyntable.c lcltokentable.c sort.c symtable.c lclinit.c \
+             shift.c lclscan.c lsymbol.c mapping.c
+
+
+LSLSRC = tokentable.c scan.c scanline.c lslparse.c \
+         lh.c checking.c lclctypes.c imports.c lslinit.c syntable.c 
+
+
+LCLGRAMSRC = llgrammar.c signature.c
+
+LCLSETSRC = lsymbolSet.c sigNodeSet.c lslOpSet.c sortSet.c
+
+LCLLISTSRC = initDeclNodeList.c sortList.c declaratorInvNodeList.c \
+             interfaceNodeList.c sortSetList.c declaratorNodeList.c \
+             letDeclNodeList.c stDeclNodeList.c storeRefNodeList.c \
+             lslOpList.c lsymbolList.c termNodeList.c ltokenList.c \
+             traitRefNodeList.c pairNodeList.c typeNameNodeList.c \
+             fcnNodeList.c paramNodeList.c programNodeList.c \
+             varDeclarationNodeList.c varNodeList.c quantifierNodeList.c \
+             replaceNodeList.c importNodeList.c
+
+
+COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
+            $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
+
+
+ALLSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC)
+
+LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) \
+         $(LCLGRAMSRC)
+
+
+lcl_SOURCES = $(LCLSRC)
+
+lclint_SOURCES = $(ALLSRC)
+lclint_LDADD = $(LCLOBJ) @LEXLIB@
+
+# Ensure the LCL objects get built if needed
+lclint_DEPENDENCIES = $(LCLOBJ)
+
+BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
+                Headers/llgrammar_gen.h Headers/llgrammar_gen2.h \
+                Headers/mtgrammar_tokens.h signature.c cgrammar.c \
+                llgrammar.c mtgrammar.c Headers/flag_codes.gen
+
+
+CHECKS = $(subst .c,.check,$(lclint_SOURCES))
+
+CLEANFILES = $(top_builddir)/bin/lclint$(EXEEXT)
+subdir = src
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
+CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_CLEAN_FILES =
+EXTRA_PROGRAMS = lcl$(EXEEXT)
+bin_PROGRAMS = lclint$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
+
+am_lcl_OBJECTS = lsymbolSet.$(OBJEXT) sigNodeSet.$(OBJEXT) \
+	lslOpSet.$(OBJEXT) sortSet.$(OBJEXT) initDeclNodeList.$(OBJEXT) \
+	sortList.$(OBJEXT) declaratorInvNodeList.$(OBJEXT) \
+	interfaceNodeList.$(OBJEXT) sortSetList.$(OBJEXT) \
+	declaratorNodeList.$(OBJEXT) letDeclNodeList.$(OBJEXT) \
+	stDeclNodeList.$(OBJEXT) storeRefNodeList.$(OBJEXT) \
+	lslOpList.$(OBJEXT) lsymbolList.$(OBJEXT) \
+	termNodeList.$(OBJEXT) ltokenList.$(OBJEXT) \
+	traitRefNodeList.$(OBJEXT) pairNodeList.$(OBJEXT) \
+	typeNameNodeList.$(OBJEXT) fcnNodeList.$(OBJEXT) \
+	paramNodeList.$(OBJEXT) programNodeList.$(OBJEXT) \
+	varDeclarationNodeList.$(OBJEXT) varNodeList.$(OBJEXT) \
+	quantifierNodeList.$(OBJEXT) replaceNodeList.$(OBJEXT) \
+	importNodeList.$(OBJEXT) tokentable.$(OBJEXT) scan.$(OBJEXT) \
+	scanline.$(OBJEXT) lslparse.$(OBJEXT) lh.$(OBJEXT) \
+	checking.$(OBJEXT) lclctypes.$(OBJEXT) imports.$(OBJEXT) \
+	lslinit.$(OBJEXT) syntable.$(OBJEXT) \
+	usymtab_interface.$(OBJEXT) abstract.$(OBJEXT) ltoken.$(OBJEXT) \
+	lclscanline.$(OBJEXT) lclsyntable.$(OBJEXT) \
+	lcltokentable.$(OBJEXT) sort.$(OBJEXT) symtable.$(OBJEXT) \
+	lclinit.$(OBJEXT) shift.$(OBJEXT) lclscan.$(OBJEXT) \
+	lsymbol.$(OBJEXT) mapping.$(OBJEXT) llgrammar.$(OBJEXT) \
+	signature.$(OBJEXT)
+lcl_OBJECTS = $(am_lcl_OBJECTS)
+lcl_LDADD = $(LDADD)
+lcl_DEPENDENCIES =
+lcl_LDFLAGS =
+am_lclint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
+	mtscanner.$(OBJEXT) mtreader.$(OBJEXT) mtgrammar.$(OBJEXT) \
+	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
+	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
+	constraint.$(OBJEXT) constraintList.$(OBJEXT) \
+	constraintResolve.$(OBJEXT) constraintOutput.$(OBJEXT) \
+	loopHeuristics.$(OBJEXT) cppmain.$(OBJEXT) cpplib.$(OBJEXT) \
+	cppexp.$(OBJEXT) cpphash.$(OBJEXT) cpperror.$(OBJEXT) \
+	uentry.$(OBJEXT) cprim.$(OBJEXT) macrocache.$(OBJEXT) \
+	qual.$(OBJEXT) qtype.$(OBJEXT) stateClause.$(OBJEXT) \
+	stateClauseList.$(OBJEXT) ctype.$(OBJEXT) cvar.$(OBJEXT) \
+	clabstract.$(OBJEXT) idDecl.$(OBJEXT) clause.$(OBJEXT) \
+	globalsClause.$(OBJEXT) modifiesClause.$(OBJEXT) \
+	warnClause.$(OBJEXT) functionClause.$(OBJEXT) \
+	functionClauseList.$(OBJEXT) metaStateConstraint.$(OBJEXT) \
+	metaStateConstraintList.$(OBJEXT) metaStateExpression.$(OBJEXT) \
+	metaStateSpecifier.$(OBJEXT) functionConstraint.$(OBJEXT) \
+	structNames.$(OBJEXT) transferChecks.$(OBJEXT) \
+	varKinds.$(OBJEXT) nameChecks.$(OBJEXT) exprData.$(OBJEXT) \
+	cstring.$(OBJEXT) fileloc.$(OBJEXT) message.$(OBJEXT) \
+	inputStream.$(OBJEXT) fileTable.$(OBJEXT) \
+	cstringTable.$(OBJEXT) valueTable.$(OBJEXT) \
+	stateValue.$(OBJEXT) llerror.$(OBJEXT) messageLog.$(OBJEXT) \
+	flagMarker.$(OBJEXT) aliasTable.$(OBJEXT) ynm.$(OBJEXT) \
+	sRefTable.$(OBJEXT) genericTable.$(OBJEXT) ekind.$(OBJEXT) \
+	usymtab.$(OBJEXT) multiVal.$(OBJEXT) lltok.$(OBJEXT) \
+	sRef.$(OBJEXT) lcllib.$(OBJEXT) randomNumbers.$(OBJEXT) \
+	fileLib.$(OBJEXT) context.$(OBJEXT) globals.$(OBJEXT) \
+	flags.$(OBJEXT) general.$(OBJEXT) osd.$(OBJEXT) \
+	reader.$(OBJEXT) clauseStack.$(OBJEXT) filelocStack.$(OBJEXT) \
+	cstringList.$(OBJEXT) cstringSList.$(OBJEXT) \
+	sRefSetList.$(OBJEXT) ctypeList.$(OBJEXT) \
+	enumNameList.$(OBJEXT) enumNameSList.$(OBJEXT) \
+	exprNodeList.$(OBJEXT) exprNodeSList.$(OBJEXT) \
+	uentryList.$(OBJEXT) fileIdList.$(OBJEXT) filelocList.$(OBJEXT) \
+	qualList.$(OBJEXT) sRefList.$(OBJEXT) flagMarkerList.$(OBJEXT) \
+	idDeclList.$(OBJEXT) flagSpec.$(OBJEXT) globSet.$(OBJEXT) \
+	intSet.$(OBJEXT) typeIdSet.$(OBJEXT) guardSet.$(OBJEXT) \
+	usymIdSet.$(OBJEXT) sRefSet.$(OBJEXT) stateInfo.$(OBJEXT) \
+	stateCombinationTable.$(OBJEXT) metaStateTable.$(OBJEXT) \
+	metaStateInfo.$(OBJEXT) annotationTable.$(OBJEXT) \
+	annotationInfo.$(OBJEXT) mttok.$(OBJEXT) \
+	mtDeclarationNode.$(OBJEXT) mtDeclarationPieces.$(OBJEXT) \
+	mtDeclarationPiece.$(OBJEXT) mtContextNode.$(OBJEXT) \
+	mtValuesNode.$(OBJEXT) mtDefaultsNode.$(OBJEXT) \
+	mtAnnotationsNode.$(OBJEXT) mtMergeNode.$(OBJEXT) \
+	mtAnnotationList.$(OBJEXT) mtAnnotationDecl.$(OBJEXT) \
+	mtTransferClauseList.$(OBJEXT) mtTransferClause.$(OBJEXT) \
+	mtTransferAction.$(OBJEXT) mtLoseReferenceList.$(OBJEXT) \
+	mtLoseReference.$(OBJEXT) mtDefaultsDeclList.$(OBJEXT) \
+	mtDefaultsDecl.$(OBJEXT) mtMergeItem.$(OBJEXT) \
+	mtMergeClause.$(OBJEXT) mtMergeClauseList.$(OBJEXT) \
+	exprNode.$(OBJEXT) exprChecks.$(OBJEXT) llmain.$(OBJEXT)
+lclint_OBJECTS = $(am_lclint_OBJECTS)
+lclint_LDFLAGS =
+
+DEFS = @DEFS@
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+depcomp = $(SHELL) $(top_srcdir)/config/depcomp
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/abstract.Po $(DEPDIR)/aliasTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/annotationInfo.Po \
+@AMDEP_TRUE@	$(DEPDIR)/annotationTable.Po $(DEPDIR)/cgrammar.Po \
+@AMDEP_TRUE@	$(DEPDIR)/checking.Po $(DEPDIR)/clabstract.Po \
+@AMDEP_TRUE@	$(DEPDIR)/clause.Po $(DEPDIR)/clauseStack.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraint.Po $(DEPDIR)/constraintExpr.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintExprData.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintGeneration.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintOutput.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintResolve.Po \
+@AMDEP_TRUE@	$(DEPDIR)/constraintTerm.Po $(DEPDIR)/context.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cpperror.Po $(DEPDIR)/cppexp.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cpphash.Po $(DEPDIR)/cpplib.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cppmain.Po $(DEPDIR)/cprim.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cscanner.Po $(DEPDIR)/cstring.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cstringList.Po $(DEPDIR)/cstringSList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/cstringTable.Po $(DEPDIR)/ctype.Po \
+@AMDEP_TRUE@	$(DEPDIR)/ctypeList.Po $(DEPDIR)/cvar.Po \
+@AMDEP_TRUE@	$(DEPDIR)/declaratorInvNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/declaratorNodeList.Po $(DEPDIR)/ekind.Po \
+@AMDEP_TRUE@	$(DEPDIR)/enumNameList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/enumNameSList.Po $(DEPDIR)/exprChecks.Po \
+@AMDEP_TRUE@	$(DEPDIR)/exprData.Po $(DEPDIR)/exprNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/exprNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/exprNodeSList.Po $(DEPDIR)/fcnNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/fileIdList.Po $(DEPDIR)/fileLib.Po \
+@AMDEP_TRUE@	$(DEPDIR)/fileTable.Po $(DEPDIR)/fileloc.Po \
+@AMDEP_TRUE@	$(DEPDIR)/filelocList.Po $(DEPDIR)/filelocStack.Po \
+@AMDEP_TRUE@	$(DEPDIR)/flagMarker.Po $(DEPDIR)/flagMarkerList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/flagSpec.Po $(DEPDIR)/flags.Po \
+@AMDEP_TRUE@	$(DEPDIR)/functionClause.Po \
+@AMDEP_TRUE@	$(DEPDIR)/functionClauseList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/functionConstraint.Po \
+@AMDEP_TRUE@	$(DEPDIR)/general.Po $(DEPDIR)/genericTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/globSet.Po $(DEPDIR)/globals.Po \
+@AMDEP_TRUE@	$(DEPDIR)/globalsClause.Po $(DEPDIR)/guardSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/idDecl.Po $(DEPDIR)/idDeclList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/importNodeList.Po $(DEPDIR)/imports.Po \
+@AMDEP_TRUE@	$(DEPDIR)/initDeclNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/inputStream.Po $(DEPDIR)/intSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/interfaceNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lclctypes.Po $(DEPDIR)/lclinit.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lcllib.Po $(DEPDIR)/lclscan.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lclscanline.Po $(DEPDIR)/lclsyntable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lcltokentable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/letDeclNodeList.Po $(DEPDIR)/lh.Po \
+@AMDEP_TRUE@	$(DEPDIR)/llerror.Po $(DEPDIR)/llgrammar.Po \
+@AMDEP_TRUE@	$(DEPDIR)/llmain.Po $(DEPDIR)/lltok.Po \
+@AMDEP_TRUE@	$(DEPDIR)/loopHeuristics.Po $(DEPDIR)/lslOpList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lslOpSet.Po $(DEPDIR)/lslinit.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lslparse.Po $(DEPDIR)/lsymbol.Po \
+@AMDEP_TRUE@	$(DEPDIR)/lsymbolList.Po $(DEPDIR)/lsymbolSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/ltoken.Po $(DEPDIR)/ltokenList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/macrocache.Po $(DEPDIR)/mapping.Po \
+@AMDEP_TRUE@	$(DEPDIR)/message.Po $(DEPDIR)/messageLog.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateConstraint.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateConstraintList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateExpression.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateInfo.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateSpecifier.Po \
+@AMDEP_TRUE@	$(DEPDIR)/metaStateTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/modifiesClause.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtAnnotationDecl.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtAnnotationList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtAnnotationsNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtContextNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDeclarationNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDeclarationPiece.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDeclarationPieces.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDefaultsDecl.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDefaultsDeclList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtDefaultsNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtLoseReference.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtLoseReferenceList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtMergeClause.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtMergeClauseList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtMergeItem.Po $(DEPDIR)/mtMergeNode.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtTransferAction.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtTransferClause.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtTransferClauseList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtValuesNode.Po $(DEPDIR)/mtgrammar.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mtreader.Po $(DEPDIR)/mtscanner.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mttok.Po $(DEPDIR)/multiVal.Po \
+@AMDEP_TRUE@	$(DEPDIR)/nameChecks.Po $(DEPDIR)/osd.Po \
+@AMDEP_TRUE@	$(DEPDIR)/pairNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/paramNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/programNodeList.Po $(DEPDIR)/qtype.Po \
+@AMDEP_TRUE@	$(DEPDIR)/qual.Po $(DEPDIR)/qualList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/quantifierNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/randomNumbers.Po $(DEPDIR)/reader.Po \
+@AMDEP_TRUE@	$(DEPDIR)/replaceNodeList.Po $(DEPDIR)/sRef.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sRefList.Po $(DEPDIR)/sRefSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sRefSetList.Po $(DEPDIR)/sRefTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/scan.Po $(DEPDIR)/scanline.Po \
+@AMDEP_TRUE@	$(DEPDIR)/shift.Po $(DEPDIR)/sigNodeSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/signature.Po $(DEPDIR)/sort.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sortList.Po $(DEPDIR)/sortSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/sortSetList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stDeclNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stateClause.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stateClauseList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stateCombinationTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/stateInfo.Po $(DEPDIR)/stateValue.Po \
+@AMDEP_TRUE@	$(DEPDIR)/storeRefNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/structNames.Po $(DEPDIR)/symtable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/syntable.Po $(DEPDIR)/termNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/tokentable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/traitRefNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/transferChecks.Po $(DEPDIR)/typeIdSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/typeNameNodeList.Po $(DEPDIR)/uentry.Po \
+@AMDEP_TRUE@	$(DEPDIR)/uentryList.Po $(DEPDIR)/usymIdSet.Po \
+@AMDEP_TRUE@	$(DEPDIR)/usymtab.Po $(DEPDIR)/usymtab_interface.Po \
+@AMDEP_TRUE@	$(DEPDIR)/valueTable.Po \
+@AMDEP_TRUE@	$(DEPDIR)/varDeclarationNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/varKinds.Po $(DEPDIR)/varNodeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/warnClause.Po $(DEPDIR)/ynm.Po
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+CFLAGS = @CFLAGS@
+DIST_SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
+DIST_COMMON = Makefile.am Makefile.in
+SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
+
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
+
+.SUFFIXES:
+.SUFFIXES: .h .c .o .l .check .obj
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
+	cd $(top_srcdir) && \
+	  $(AUTOMAKE) --foreign  src/Makefile
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS= CONFIG_LINKS= \
+	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	  ; then \
+	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	done
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+lclint$(EXEEXT): $(lclint_OBJECTS) $(lclint_DEPENDENCIES) 
+	@rm -f lclint$(EXEEXT)
+	$(LINK) $(lclint_LDFLAGS) $(lclint_OBJECTS) $(lclint_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT) core *.core
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/abstract.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/aliasTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/annotationInfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/annotationTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cgrammar.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/checking.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/clabstract.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/clause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/clauseStack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintExpr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintExprData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintGeneration.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintOutput.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintResolve.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/constraintTerm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/context.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cpperror.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cppexp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cpphash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cpplib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cppmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cprim.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cscanner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cstring.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cstringList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cstringSList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cstringTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ctype.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ctypeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/cvar.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/declaratorInvNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/declaratorNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ekind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/enumNameList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/enumNameSList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/exprChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/exprData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/exprNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/exprNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/exprNodeSList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fcnNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fileIdList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fileLib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fileTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fileloc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/filelocList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/filelocStack.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/flagMarker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/flagMarkerList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/flagSpec.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/flags.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/functionClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/functionClauseList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/functionConstraint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/general.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/genericTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/globSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/globals.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/globalsClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/guardSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/idDecl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/idDeclList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/importNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/imports.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/initDeclNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/inputStream.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/intSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/interfaceNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lclctypes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lclinit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lcllib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lclscan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lclscanline.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lclsyntable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lcltokentable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/letDeclNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lh.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/llerror.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/llgrammar.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/llmain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lltok.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/loopHeuristics.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lslOpList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lslOpSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lslinit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lslparse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lsymbol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lsymbolList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/lsymbolSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ltoken.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ltokenList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/macrocache.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mapping.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/message.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/messageLog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateConstraint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateConstraintList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateExpression.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateInfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateSpecifier.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/metaStateTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/modifiesClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtAnnotationDecl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtAnnotationList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtAnnotationsNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtContextNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDeclarationNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDeclarationPiece.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDeclarationPieces.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDefaultsDecl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDefaultsDeclList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtDefaultsNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtLoseReference.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtLoseReferenceList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtMergeClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtMergeClauseList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtMergeItem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtMergeNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtTransferAction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtTransferClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtTransferClauseList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtValuesNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtgrammar.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtreader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mtscanner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mttok.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/multiVal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/nameChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/osd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pairNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/paramNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/programNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qtype.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qual.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/qualList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/quantifierNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/randomNumbers.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/reader.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/replaceNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRef.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRefList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRefSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRefSetList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sRefTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/scan.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/scanline.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/shift.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sigNodeSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/signature.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sortList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sortSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/sortSetList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stDeclNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stateClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stateClauseList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stateCombinationTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stateInfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stateValue.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/storeRefNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/structNames.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/symtable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/syntable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/termNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/tokentable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/traitRefNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/transferChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/typeIdSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/typeNameNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/uentry.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/uentryList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/usymIdSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/usymtab.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/usymtab_interface.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/valueTable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/varDeclarationNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/varKinds.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/varNodeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/warnClause.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ynm.Po@am__quote@
+
+distclean-depend:
+	-rm -rf $(DEPDIR)
+
+.c.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `test -f $< || echo '$(srcdir)/'`$<
+
+.c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(COMPILE) -c `cygpath -w $<`
+CCDEPMODE = @CCDEPMODE@
+uninstall-info-am:
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	mkid -fID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+		$(TAGS_FILES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS) $(TAGS_FILES)'; \
+	unique=`for i in $$list; do \
+	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+	  done | \
+	  $(AWK) '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || etags $(ETAGS_ARGS) $$tags  $$unique $(LISP)
+
+GTAGS:
+	here=`CDPATH=: && cd $(top_builddir) && pwd` \
+	  && cd $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) $$here
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
+
+DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+
+top_distdir = ..
+distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    $(mkinstalldirs) "$(distdir)/$$dir"; \
+	  fi; \
+	  if test -d $$d/$$file; then \
+	    cp -pR $$d/$$file $(distdir) \
+	    || exit 1; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
+	  fi; \
+	done
+check-am: all-am
+check: check-am
+all-am: Makefile $(PROGRAMS)
+
+installdirs:
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+
+installcheck: installcheck-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
+mostlyclean-generic:
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+clean: clean-am
+
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+
+distclean: distclean-am
+
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-tags
+
+dvi: dvi-am
+
+dvi-am:
+
+info: info-am
+
+info-am:
+
+install-data-am:
+
+install-exec-am: install-binPROGRAMS
+
+install-info: install-info-am
+
+install-man:
+
+installcheck-am:
+
+maintainer-clean: maintainer-clean-am
+
+maintainer-clean-am: distclean-am maintainer-clean-generic
+
+mostlyclean: mostlyclean-am
+
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
+
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+
+.PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic distclean distclean-compile distclean-depend \
+	distclean-generic distclean-tags distdir dvi dvi-am info \
+	info-am install install-am install-binPROGRAMS install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am
+
+
+# Keep it fake
+.PHONY: lcl$(EXEEXT)
+lcl$(EXEEXT):
+	@echo "This is a fake target"; \
+	 echo "Use configure's --with-lcl option to enable lcl"
+
+Headers/signature_gen.h signature.c: signature.c.der signature.y
+	if test x$(BISON) = xno; then \
+	  $(CP) signature.c.der signature.c; \
+	else \
+	  $(BISON) $(YFLAGS) -p lsl signature.y; \
+	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
+	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
+	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
+	  $(RM) signature.tab.c signature.tab.h; \
+	fi
+
+Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
+	if test x$(BISON) = xno; then \
+	  $(CP) cgrammar.c.der cgrammar.c; \
+	else \
+	  echo '* Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
+	  echo '* (see cgrammar.y for explanation)'; \
+	  $(BISON) $(YFLAGS) cgrammar.y; \
+	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
+	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
+	  $(CAT) bison.head cgrammar.tab.h bison.reset >Headers/cgrammar_tokens.h; \
+	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
+	fi
+
+Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.c.der mtgrammar.y
+	if test x$(BISON) = xno; then \
+	  $(CP) mtgrammar.c.der mtgrammar.c; \
+	else \
+	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
+	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
+	  $(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
+	  $(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h; \
+	  $(RM) mtgrammar.tab.c mtgrammar.tab.h; \
+	fi
+
+Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der llgrammar.y
+	if test x$(BISON) = xno; then \
+	  $(CP) llgrammar.c.der llgrammar.c; \
+	else \
+	  echo '* Expect 2 shift/reduce conflicts'; \
+	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
+	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
+	  $(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
+	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h; \
+	  $(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
+	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h; \
+	  $(RM) llgrammar.tab.c llgrammar.tab.h; \
+	fi
+
+cscanner.c: cscanner.l
+	$(LEX) $(LFLAGS) cscanner.l 
+	$(CAT) flex.head @LEX_OUTPUT_ROOT@.c flex.reset > cscanner.c
+
+Headers/flag_codes.gen: flags.def
+	grep "FLG_" flags.def > Headers/flag_codes.gen
+
+.PHONY: nocheck
+nocheck:
+	$(MAKE) CHECK=0
+
+lintnew: 
+	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(ALLSRC) $(LCLSRC) -dump lclint \
+                    +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
+                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
+
+.PHONY: purify
+purify: $(lclint_OBJECTS)
+	purify $(LINK) -o lclint$(EXEEXT) $^ $(lclint_LDADD)
+
+all: $(top_builddir)/bin/lclint$(EXEEXT)
+$(top_builddir)/bin/lclint$(EXEEXT): lclint$(EXEEXT)
+	$(CP) $< $@
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

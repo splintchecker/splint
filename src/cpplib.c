@@ -504,7 +504,7 @@ static struct directive directive_table[] = {
   {  4, do_line, "line", T_LINE, TRUE, FALSE, FALSE },
   {  5, do_ident, "ident", T_IDENT, TRUE, FALSE, TRUE },
   /* {  8, do_unassert, "unassert", T_UNASSERT, TRUE, FALSE, FALSE }, */
-  {  -1, 0, "", T_UNUSED, FALSE, FALSE, FALSE },
+  {  -1, NULL, "", T_UNUSED, FALSE, FALSE, FALSE },
 };
 /*@noaccess cstring@*/
 

@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.8 2001/08/27 05:07:32 evans Exp $
+ * $Id: posix.h,v 1.9 2001/10/14 01:16:03 evans1629 Exp $
  */
 
 /*
@@ -72,7 +72,7 @@
 
 typedef /*@integraltype@*/ dev_t;
 typedef /*@integraltype@*/ gid_t;
-typedef /*@integraltype@*/ ino_t;
+typedef /*@unsignedintegraltype@*/ ino_t; /*: is this definitely unsigned? */
 typedef /*@integraltype@*/ mode_t;
 typedef /*@integraltype@*/ nlink_t;
 typedef /*@integraltype@*/ off_t;
@@ -89,21 +89,17 @@ struct dirent {
   char	d_name[];
 };
 
-	extern int
-closedir (DIR *dirp)
-	/*@modifies errno@*/;
+extern int closedir (DIR *dirp)
+   /*@modifies errno@*/;
 
-	extern /*@null@*/ DIR *
-opendir (const char *dirname)
-	/*@modifies errno@*/;
+extern /*@null@*/ DIR *opendir (const char *dirname)
+   /*@modifies errno@*/;
 
-	extern /*@null@*/ struct dirent *
-readdir (DIR *dirp)
-	/*@modifies errno@*/;
+extern /*@null@*/ struct dirent *readdir (DIR *dirp)
+   /*@modifies errno@*/;
 
-	extern void
-rewinddir (DIR *dirp)
-	/*@*/;
+extern void rewinddir (DIR *dirp)
+   /*@*/;
 
 /*
 ** errno.h

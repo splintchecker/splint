@@ -84,24 +84,23 @@ install_sh = /net/af10/evans/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-lclintlibdir = $(pkgdatadir)/lib
+importsdir = $(pkgdatadir)/imports
 
-lclintlib_DATA = \
-  ansi.h ansi.lcd ansistrict.lcd posix.h posix.lcd posixstrict.lcd \
-  unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
-  file.mts file.xh filerw.mts filerw.xh \
-  lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh
+imports_DATA = \
+  assert.lcl  assert.lcs  ctype.lcl  ctype.lcs  errno.lcl  errno.lcs  \
+  limits.lcl  limits.lcs  locale.lcl locale.lcs math.lcl   math.lcs   \
+  setjmp.lcl  setjmp.lcs  signal.lcl signal.lcs stdarg.lcl stdarg.lcs \
+  stdio.lcl   stdio.lcs   stdlib.lcl stdlib.lcs string.lcl string.lcs \
+  strings.lcl strings.lcs time.lcl   time.lcs
 
 
-EXTRA_DIST = $(lclintlib_DATA)
-
-LCLINT = $(top_builddir)/bin/lclint$(EXEEXT)
-subdir = lib
+EXTRA_DIST = $(imports_DATA)
+subdir = imports
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 DIST_SOURCES =
-DATA = $(lclintlib_DATA)
+DATA = $(imports_DATA)
 
 DIST_COMMON = Makefile.am Makefile.in
 all: all-am
@@ -109,28 +108,28 @@ all: all-am
 .SUFFIXES:
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  lib/Makefile
+	  $(AUTOMAKE) --foreign  imports/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  CONFIG_HEADERS= CONFIG_LINKS= \
 	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
 uninstall-info-am:
-install-lclintlibDATA: $(lclintlib_DATA)
+install-importsDATA: $(imports_DATA)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(lclintlibdir)
-	@list='$(lclintlib_DATA)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(importsdir)
+	@list='$(imports_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lclintlibdir)/$$f"; \
-	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lclintlibdir)/$$f; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(importsdir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(importsdir)/$$f; \
 	done
 
-uninstall-lclintlibDATA:
+uninstall-importsDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lclintlib_DATA)'; for p in $$list; do \
+	@list='$(imports_DATA)'; for p in $$list; do \
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(lclintlibdir)/$$f"; \
-	  rm -f $(DESTDIR)$(lclintlibdir)/$$f; \
+	  echo " rm -f $(DESTDIR)$(importsdir)/$$f"; \
+	  rm -f $(DESTDIR)$(importsdir)/$$f; \
 	done
 tags: TAGS
 TAGS:
@@ -162,7 +161,7 @@ check: check-am
 all-am: Makefile $(DATA)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(lclintlibdir)
+	$(mkinstalldirs) $(DESTDIR)$(importsdir)
 
 install: install-am
 install-exec: install-exec-am
@@ -203,7 +202,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-lclintlibDATA
+install-data-am: install-importsDATA
 
 install-exec-am:
 
@@ -221,45 +220,17 @@ mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-generic
 
-uninstall-am: uninstall-info-am uninstall-lclintlibDATA
+uninstall-am: uninstall-importsDATA uninstall-info-am
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am info info-am install \
 	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-lclintlibDATA install-man install-strip installcheck \
+	install-exec-am install-importsDATA install-info \
+	install-info-am install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	uninstall uninstall-am uninstall-info-am \
-	uninstall-lclintlibDATA
+	uninstall uninstall-am uninstall-importsDATA uninstall-info-am
 
-
-$(LCLINT):
-	cd $(top_builddir)/src; $(MAKE)
-
-ansi.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h -dump ansi
-	@touch $@
-
-ansistrict.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
-	@touch $@
-
-posix.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h -dump posix
-	@touch $@
-
-posixstrict.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
-	@touch $@
-
-unix.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h unix.h -dump unix
-	@touch $@
-
-unixstrict.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h -dump unixstrict
-	@touch $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

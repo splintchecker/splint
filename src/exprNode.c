@@ -5222,6 +5222,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 
   tret = ctype_unknown;
   te1 = exprNode_getType (e1);
+
   DPRINTF (("te1 = %s / %s", exprNode_unparse (e1), ctype_unparse (te1)));
 
   te2 = exprNode_getType (e2);
@@ -5569,6 +5570,10 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	case NE_OP:
 	case TLT:		/* comparisons                           */
 	case TGT:		/*    numeric, numeric -> bool           */
+
+	  DPRINTF (("Here we go: %s / %s",
+		    ctype_unparse (tr1), ctype_unparse (tr2)));
+
 	  if ((ctype_isReal (tr1) && !ctype_isInt (tr1))
 	      || (ctype_isReal (tr2) && !ctype_isInt (tr2)))
 	    {
@@ -5636,6 +5641,9 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	  /*
 	  ** Types should match.
 	  */
+
+	  DPRINTF (("Match types: %s / %s", exprNode_unparse (e1),
+		    exprNode_unparse (e2)));
 
 	  if (!exprNode_matchTypes (e1, e2))
 	    {
@@ -9370,7 +9378,22 @@ exprNode_matchLiteral (ctype expected, exprNode e)
 		}
 	      else if (ctype_isArrayPtr (expected))
 		{
-		  return (val == 0);
+		  /* 
+		  ** evans 2001-10-14: We allow 0 to match any pointer, but only if the type matches or is void *.
+		  */
+
+		  if (val == 0)
+		    {
+		      if (ctype_match (exprNode_getType (e), expected)
+			  || ctype_isVoidPointer (exprNode_getType (e)))
+			{
+			  return TRUE;
+			}
+		    }
+		  else
+		    {
+		      return FALSE;
+		    }
 		}
 	      else if (ctype_isAnyFloat (expected))
 		{
@@ -9452,6 +9475,10 @@ exprNode_matchTypes (exprNode e1, exprNode e2)
     {
       return TRUE;
     }
+
+  DPRINTF (("Matching literal! %s %s %s %s",
+	    ctype_unparse (t1), exprNode_unparse (e2),
+	    ctype_unparse (t2), exprNode_unparse (e1)));
 
   return (exprNode_matchLiteral (t1, e2) || exprNode_matchLiteral (t2, e1));
 }
@@ -10166,7 +10193,9 @@ static ctype
       if ((ctype_isRealInt (tr1) || ctype_isReal (tr1)) &&
 	  (ctype_isRealInt (tr2) || ctype_isReal (tr2)))
 	{
-	  ;
+	  DPRINTF (("No error: [%s] %s / [%s]  %s",
+		    exprNode_unparse (e1), ctype_unparse (tr1),
+		    exprNode_unparse (e2), ctype_unparse (tr2)));
 	}
       else
 	{
