@@ -85,6 +85,7 @@ extern void constraintList_printError (constraintList p_s, /*@observer@*/ filelo
 void constraintList_dump (/*@observer@*/ constraintList p_c,  FILE * p_f);
 
 /*@only@*/ constraintList constraintList_undump (FILE * p_f);
+constraintList constraintList_sort (/*@returned@*/ constraintList p_ret);
 
 
 # else

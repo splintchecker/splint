@@ -376,6 +376,11 @@ extern /*@only@*/ fileloc exprNode_getNextSequencePoint (exprNode p_e) ;
 /*drl 01-20-2001*/
 exprNode exprNode_createNew(ctype p_c);
 
+
+/* drl 07-25-01 */
+
+bool exprNode_isInitBlock (exprNode p_e);
+
 # else
 # error "Multiple include"
 # endif

@@ -70,6 +70,10 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
 
 /*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
 
+bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
+
+int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
+
 /*@=namechecks@*/
 
 #else
