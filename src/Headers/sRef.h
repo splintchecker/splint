@@ -697,10 +697,6 @@ sRef_aliasSetCompleteAlkParam (void (p_predf) (sRef, alkind, fileloc), sRef p_s,
 			       alkind p_kind, fileloc p_loc)
      /*@modifies p_s@*/ ;
 
-
-
-
-
 # else
 # error "Multiple include"
 # endif

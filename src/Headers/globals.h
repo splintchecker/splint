@@ -110,9 +110,6 @@ extern void setFileLine (fileId p_s, int p_line)
 # define setFileLine(s, line) \
   (context_setFilename(s, line))
 
-/*@constant int PRINTBREADTH;@*/ /* For printing lists.  Should be parameter... */ /*@i32@*/
-# define PRINTBREADTH 3
-
 # else
 # error "Multiple include"
 # endif

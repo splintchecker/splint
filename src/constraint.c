@@ -314,7 +314,7 @@ bool constraint_hasMaxSet (constraint c)
   return FALSE;
 }
 
-constraint constraint_makeReadSafeExprNode (  exprNode po, exprNode ind)
+constraint constraint_makeReadSafeExprNode (exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew ();
 

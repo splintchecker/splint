@@ -168,7 +168,7 @@ lcllib_isSkipHeader (cstring sname)
       return TRUE;
     }
 
-  if (context_getFlag (FLG_SKIPANSIHEADERS)
+  if (context_getFlag (FLG_SKIPISOHEADERS)
       && context_usingAnsiLibrary ())
     {
       
@@ -226,7 +226,7 @@ lcllib_isSkipHeader (cstring sname)
 	  if (context_getFlag (FLG_SKIPPOSIXHEADERS))
 	    {
 	      cstring_free (xname);
-	      return TRUE;
+	      return TRUE; /* evans 2002-03-02: investigate this warning */
 	    }
 	}
       else

@@ -45,7 +45,7 @@ extern /*@only@*/ cstring cstringSList_unparseAbbrev (cstringSList p_s) /*@*/ ;
 extern /*@unused@*/ /*@only@*/ cstring cstringSList_unparse (cstringSList p_s) ;
 extern void cstringSList_free (/*@only@*/ cstringSList p_s) ;
 
-extern void cstringSList_printSpaced (cstringSList p_s, int p_indent, int p_gap, int p_linelen);
+extern void cstringSList_printSpaced (cstringSList p_s, size_t p_indent, size_t p_gap, int p_linelen);
 
 /*@constant int cstringSListBASESIZE;@*/
 # define cstringSListBASESIZE MIDBASESIZE

@@ -38,7 +38,7 @@ UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
-  compoundliterals constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
@@ -49,7 +49,7 @@ UNITTESTS = \
   specclauses \
   special stack staticarray strings \
   stringliteral \
-  structassign typequals ud ulstypes union unioninit unreachable unsignedcompare \
+  structassign typequals typeof ud ulstypes union unioninit unreachable unsignedcompare \
   unused ullint utypes void widestrings
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
@@ -284,6 +284,10 @@ compdestroy:
 .PHONY: compoundliterals
 compoundliterals:
 	${SPLINTRN} compoundliterals.c 
+
+.PHONY: compoundstmt
+compoundstmt:
+	${SPLINTRN} compoundstmt.c -expect 3
 
 .PHONY: constannot
 constannot:
@@ -756,6 +760,10 @@ strings:
 structassign:
 	-$(SPLINTR) structassign.c -expect 4
 
+.PHONY: typeof
+typeof:
+	-$(SPLINTR) typeof.c -expect 2
+
 .PHONY: typequals
 typequals:
 	-$(SPLINTR) typequals.c tq.lcl -expect 5
@@ -1017,6 +1025,8 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./commentchar.c \
               ./commentcmd.c \
               ./compdestroy.c \
+              ./compoundliterals.c ./compoundliterals.expect \
+              ./compoundstmt.c ./compoundstmt.expect \
               ./csyntax.c \
               ./constannot.c \
               ./controldepth.c \

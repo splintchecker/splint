@@ -8,7 +8,7 @@
    of a hash node.  Actually, this may be useless now. */
 typedef union u_hashvalue {
   int ival;
-  /*@owned@*/ char *cpval;
+  /*@null@*/ /*@owned@*/ char *cpval;
   /*@owned@*/ DEFINITION *defn;
 } hashValue;
 
@@ -26,7 +26,7 @@ struct s_hashNode {
   /*@null@*/ /*@dependent@*/ hashNode *bucket_hdr;
 
   enum node_type type;		/* type of special token */
-  int length;			/* length of token, for quick comparison */
+  size_t length;		/* length of token, for quick comparison */
   cstring name;			/* the actual name */
   hashValue value;		/* pointer to expansion, or whatever */
 } ;
@@ -47,14 +47,15 @@ extern /*@exposed@*/ hashNode cpphash_install (char *, int,
 
 extern void cppReader_hashCleanup (void);
 extern /*@null@*/ /*@exposed@*/ hashNode cpphash_lookup (char *, int, int); 
-extern /*@null@*/ /*@exposed@*/ hashNode cpphash_lookupExpand (char *, int, int, bool p_forceExpand); 
+extern /*@null@*/ /*@exposed@*/ hashNode cpphash_lookupExpand (char *, int, int,
+							       bool p_forceExpand); 
 
-extern int cpphash_hashCode (const char *p_name, int p_len, int p_hashsize) /*@*/ ;
+extern int cpphash_hashCode (const char *p_name, size_t p_len, int p_hashsize) /*@*/ ;
 extern void cppReader_saveHashtab (void);
 extern void cppReader_restoreHashtab (void);
 
 extern /*@exposed@*/ hashNode 
-cpphash_installMacro (char *p_name, int p_len, 
+cpphash_installMacro (char *p_name, size_t p_len, 
 		      /*@only@*/ struct definition *p_defn, int p_hash);
 
 # else

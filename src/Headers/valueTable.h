@@ -57,11 +57,11 @@ extern /*@only@*/ valueTable valueTable_copy (valueTable p_s) ;
 
 # define valueTable_elements(p_g, m_key, m_el) \
    { if (valueTable_isDefined (p_g)) {  int m_ind; \
-     { /*@i32@*/ for (m_ind = 0 ; m_ind < (p_g)->size; m_ind++) \
+     { for (m_ind = 0 ; m_ind < (p_g)->size; m_ind++) \
        { ghbucket m_hb; m_hb = (p_g)->buckets[m_ind]; \
          if (m_hb != NULL) { \
            int m_j; \
-      for (m_j = 0; m_j < (m_hb)->size; m_j++) { \
+           for (m_j = 0; m_j < (m_hb)->size; m_j++) { \
              cstring m_key; stateValue m_el; m_key = (m_hb)->entries[m_j]->key; \
    /*@access stateValue@*/ m_el = (stateValue) (m_hb)->entries[m_j]->val; /*@noaccess stateValue@*/
 

@@ -141,7 +141,7 @@ void setTagNo (unsigned int n)
 
 bool isFakeTag (cstring s)
 {
-  int length = cstring_length (s);
+  size_t length = cstring_length (s);
 
   return ((length >= 1 && cstring_firstChar (s) == '!')
 	  || (length >= 2 && cstring_getChar (s, 2) == '!'));

@@ -64,6 +64,8 @@ fileloc_decColumn (fileloc f, int x)
 {
   fileloc ret = fileloc_copy (f);
 
+  llassert (x >= 0);
+
   if (x > 0 && fileloc_isDefined (ret))
     {
       llassertprint (ret->column > x, ("decColumn: %d", x));

@@ -92,6 +92,9 @@ extern bool uentryList_matchParams (uentryList p_p1, uentryList p_p2, bool p_for
 /*@constant int uentryListBASESIZE;@*/
 # define uentryListBASESIZE MIDBASESIZE
 
+/*@constant int uentryList_abbrevBreadth@*/
+# define uentryList_abbrevBreadth 3
+
 # else
 # error "Multiple include"
 # endif

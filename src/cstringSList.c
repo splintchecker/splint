@@ -140,7 +140,7 @@ cstringSList_unparseSep (cstringSList s, cstring sep)
 }
 
 void
-cstringSList_printSpaced (cstringSList s, int indent, int gap, int linelen)
+cstringSList_printSpaced (cstringSList s, size_t indent, size_t gap, int linelen)
 {
   if (cstringSList_isDefined (s))
     {
@@ -148,7 +148,7 @@ cstringSList_printSpaced (cstringSList s, int indent, int gap, int linelen)
       cstring istring = cstring_fill (cstring_undefined, indent);
       cstring gstring = cstring_fill (cstring_undefined, gap);
       int numcol;
-      int longest = 0;
+      size_t longest = 0;
       int i;
  
       /*
@@ -157,7 +157,7 @@ cstringSList_printSpaced (cstringSList s, int indent, int gap, int linelen)
 
       for (i = 0; i < s->nelements; i++)
 	{
-	  int len = cstring_length (s->elements[i]);
+	  size_t len = cstring_length (s->elements[i]);
 
 	  if (len > longest)
 	    {

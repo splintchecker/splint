@@ -4512,13 +4512,7 @@ uentry_directParamNo (uentry ue)
 
       if (sRef_lexLevel (sr) == functionScope)
 	{
-	  int index;
-
-	  /*@access sRef@*/ 
-	  llassert (sr->info != NULL);
-	  llassert (sr->info->cvar != NULL);
-	  index = sr->info->cvar->index;
-	  /*@noaccess sRef@*/
+	  int index = sRef_getScopeIndex (sr);
 
 	  if (index < uentryList_size (context_getParams ()))
 	    {
@@ -4949,6 +4943,7 @@ usymtab_lookupQuietAux (usymtab s, cstring k, bool noalt)
 	}
       else
 	{
+	  llassert (s != NULL); /*@i523 should not need this? */
 	  s = s->env;
 	}
     }
@@ -5979,7 +5974,7 @@ static bool checkDistinctExternalName (uentry e)
   /*@globals globtab@*/
   /*@modifies *g_msgstream@*/
 {
-  int checklen = context_getValue (FLG_EXTERNALNAMELEN);
+  size_t checklen = size_fromInt (context_getValue (FLG_EXTERNALNAMELEN));
   bool ignorecase = context_getFlag (FLG_EXTERNALNAMECASEINSENSITIVE);
   bool gotone = FALSE;
   bool extras = FALSE;
@@ -6054,7 +6049,7 @@ static bool checkDistinctExternalName (uentry e)
 			    "in the first %d characters (%q)",
 			    uentry_getName (e),
 			    uentry_getName (oe),
-			    checklen,
+			    size_toInt (checklen),
 			    cstring_clip (uentry_getName (e), checklen)),
 			   /*@=sefparams@*/
 			   uentry_whereLast (e)))
@@ -6080,7 +6075,7 @@ static bool checkDistinctExternalName (uentry e)
 			    "is ignored",
 			    uentry_getName (e),
 			    uentry_getName (oe),
-			    checklen),
+			    size_toInt (checklen)),
 			   uentry_whereLast (e)))
 			{
 			  uentry_showWhereAny (oe);
@@ -6106,7 +6101,7 @@ static bool checkDistinctExternalName (uentry e)
 		    "in the first %d characters (%q)",
 		    uentry_getName (e),
 		    uentry_getName (oe),
-		    checklen,
+		    size_toInt (checklen),
 		    cstring_clip (uentry_getName (e), checklen)),
 		   /*@=sefparams@*/
 		   uentry_whereLast (e)))
@@ -6142,7 +6137,7 @@ static bool checkDistinctInternalName (uentry e)
 {
   usymtab ttab = utab;
   cstring name = uentry_rawName (e);
-  int numchars = context_getValue (FLG_INTERNALNAMELEN);
+  size_t numchars = size_fromInt (context_getValue (FLG_INTERNALNAMELEN));
   bool caseinsensitive = context_getFlag (FLG_INTERNALNAMECASEINSENSITIVE);
   bool lookalike = context_getFlag (FLG_INTERNALNAMELOOKALIKE);
 
@@ -6182,7 +6177,7 @@ static bool checkDistinctInternalName (uentry e)
 			"in the first %d characters (%q)",
 			uentry_getName (e),
 			uentry_getName (oe),
-			numchars,
+			size_toInt (numchars),
 			cstring_clip (uentry_getName (e), numchars)),
 		       /*@=sefparams@*/
 		       uentry_whereLast (e)))
@@ -6195,8 +6190,7 @@ static bool checkDistinctInternalName (uentry e)
 	      /*@switchbreak@*/
 	      break;
 	    case CGE_CASE:
-	      if (numchars == 0 
-		  || (cstring_length (name) <= numchars))
+	      if (numchars == 0 || (cstring_length (name) <= numchars))
 		{
 		  if (optgenerror 
 		      (FLG_DISTINCTINTERNALNAMES,
@@ -6221,7 +6215,7 @@ static bool checkDistinctInternalName (uentry e)
 			"in the first %d characters without case sensitivity",
 			uentry_getName (e),
 			uentry_getName (oe),
-			numchars),
+			size_toInt (numchars)),
 		       uentry_whereLast (e)))
 		    {
 		      uentry_showWhereAny (oe);
@@ -6258,7 +6252,7 @@ static bool checkDistinctInternalName (uentry e)
 			"in the first %d characters except by lookalike characters",
 			uentry_getName (e),
 			uentry_getName (oe),
-			numchars),
+			size_toInt (numchars)),
 		       uentry_whereLast (e)))
 		    {
 		      uentry_showWhereAny (oe);

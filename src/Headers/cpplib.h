@@ -56,7 +56,7 @@ struct parse_marker {
 struct arglist {
   /*@null@*/ struct arglist *next;
   /*@dependent@*/ char *name;
-  int length;
+  size_t length;
   int argno;
   int rest_args;
 };
@@ -460,7 +460,7 @@ struct s_macrodef
 {
   /*@null@*/ struct definition *defn;
   /*@exposed@*/ /*@relnull@*/ char *symnam; /* null if defn is null */
-  int symlen;
+  size_t symlen;
 };
 
 /* Structure allocated for every #define.  For a simple replacement
@@ -633,8 +633,8 @@ extern bool isIdentifierChar (char) /*@*/ ;
 #define INCLUDE_LEN_FUDGE 0
 #endif
 
-extern int cppReader_checkMacroName (cppReader *p_pfile, char *p_symname, 
-				     cstring p_usage);
+extern size_t cppReader_checkMacroName (cppReader *p_pfile, char *p_symname, 
+					cstring p_usage);
 
 extern struct operation cppReader_parseNumber (cppReader * p_pfile, char * p_start, int p_olen)  /*@requires maxRead(p_start) >= (p_olen - 1) @*/;
 

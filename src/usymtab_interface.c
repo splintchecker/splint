@@ -586,11 +586,11 @@ static /*@only@*/ multiVal
   
   if /*@-usedef@*/ (first == '\"') /*@=usedef@*/
     {
-      int len = cstring_length (text) - 2;
+      size_t len = cstring_length (text) - 2;
       char *val = mstring_create (len);
       
       llassert (cstring_lastChar (text) == '\"');
-      strncpy (val, cstring_toCharsSafe (text) + 1, size_fromInt (len));
+      strncpy (val, cstring_toCharsSafe (text) + 1, len);
       return (multiVal_makeString (cstring_fromCharsO (val)));
     }
 

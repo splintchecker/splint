@@ -274,21 +274,23 @@ extern exprNode
   exprNode_vaArg (/*@only@*/ lltok p_tok, /*@only@*/ exprNode p_arg, /*@only@*/ qtype p_qt) 
   /*@globals internalState@*/ ;
 
+extern bool exprNode_isMultiStatement (exprNode p_e) /*@*/ ;
+
 /*
 ** Has surrounding quotes.
 */
 
-extern exprNode 
+extern /*@only@*/ /*@notnull@*/ exprNode 
   exprNode_stringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
 
-extern /*@only@*/ exprNode
+extern /*@only@*/ /*@notnull@*/ exprNode
   exprNode_wideStringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
 
 /*
 ** No surrounding quotes.
 */
 
-extern exprNode 
+extern /*@notnull@*/ exprNode 
   exprNode_rawStringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
 
 extern exprNode exprNode_comma (/*@only@*/ exprNode p_e1, /*@only@*/ exprNode p_e2)  /*@*/ ;
@@ -300,9 +302,10 @@ extern
 exprNode exprNode_caseMarker (/*@only@*/ exprNode p_test, bool p_fallThrough) /*@*/ ;
 
 extern exprNode exprNode_concat (/*@only@*/ exprNode p_e1, /*@only@*/ exprNode p_e2);
-extern exprNode exprNode_createTok (/*@only@*/ lltok p_t) /*@*/ ;
+extern /*@notnull@*/ exprNode exprNode_createTok (/*@only@*/ lltok p_t) /*@*/ ;
 extern exprNode exprNode_statement (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 extern exprNode exprNode_makeBlock (/*@only@*/ exprNode p_e);
+extern exprNode exprNode_compoundStatementExpression (/*@only@*/ lltok p_tlparen, /*@only@*/ exprNode p_e) ;
 
 extern void exprNode_checkIfPred (exprNode p_pred) /*@modifies g_msgstream@*/ ;
 
@@ -321,8 +324,9 @@ extern exprNode exprNode_return (/*@only@*/ exprNode p_e);
 extern /*@dependent@*/ /*@observer@*/ cstring 
 exprNode_unparse (/*@temp@*/ exprNode p_e) /*@*/ ; 
 
-extern bool exprNode_isCharLit (exprNode p_e) /*@*/ ;
-extern bool exprNode_isNumLit (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isBlock (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isCharLit (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isNumLit (exprNode p_e) /*@*/ ;
 
 extern exprNode 
   exprNode_makeInitialization (/*@only@*/ idDecl p_t, /*@only@*/ exprNode p_e);
@@ -371,7 +375,7 @@ extern exprNode
   exprNode_updateLocation (/*@returned@*/ exprNode p_e, /*@temp@*/ fileloc p_loc);
 extern void exprNode_freeShallow (/*@only@*/ exprNode p_e);
 extern void exprNode_destroyMod (void) /*@modifies internalState@*/ ;
-extern bool exprNode_isAssign (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isAssign (exprNode p_e) /*@*/ ;
 
 /* added 8-15-00
    by DRL */

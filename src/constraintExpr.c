@@ -356,7 +356,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 }
 
 /*@special@*/
-static constraintExpr constraintExpr_alloc (void) /*@post:isnull result->data@*/
+static /*@notnull@*/ constraintExpr constraintExpr_alloc (void) /*@post:isnull result->data@*/
 {
   constraintExpr ret;
   ret = dmalloc (sizeof (*ret) );
@@ -392,7 +392,7 @@ static constraintExpr constraintExpr_alloc (void) /*@post:isnull result->data@*/
 constraintExpr constraintExpr_copy (constraintExpr expr)
 {
   constraintExpr ret;
-  ret = constraintExpr_alloc();
+  ret = constraintExpr_alloc ();
   ret->kind = expr->kind;
   
   ret->data = copyExprData (expr->data, expr->kind);

@@ -13,7 +13,7 @@
 typedef /*@only@*/ sRefSet o_sRefSet;
 typedef /*@exposed@*/ sRef e_sRef;
 
-struct s_aliasTable /*@i32 reserved works for struct identifiers@*/ 
+struct s_aliasTable 
 {
   int nelements;
   int nspace;

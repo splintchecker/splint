@@ -597,7 +597,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 }
 
 
-/*@only@*/ constraintTerm constraintTerm_undump ( FILE *f)
+/*@only@*/ constraintTerm constraintTerm_undump (FILE *f)
 {
   constraintTermType kind;
   constraintTerm ret;
@@ -611,8 +611,12 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 
   str = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
+  llassert (str != NULL);
+
   kind = (constraintTermType) reader_getInt(&str);
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  llassert (str != NULL);
 
   switch (kind)
     {

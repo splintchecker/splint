@@ -369,6 +369,8 @@ static /*@dependent@*/ /*@notnull@*/ /*@special@*/ sRef
 
   /* start modifications */
   s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
+  s->bufinfo.size = -1; /*@i24 unknown@*/
+  s->bufinfo.len = -1; /*@i24 unknown@*/
   /* end modifications */
 
   s->aliaskind = AK_UNKNOWN;
@@ -2239,9 +2241,6 @@ sRef_closeEnough (sRef s1, sRef s2)
       return ce;
       }
     }
-
-  
-
 }
 
 /*@exposed@*/ sRef
@@ -2286,9 +2285,14 @@ sRef_fixBaseParam (/*@returned@*/ sRef s, exprNodeList args)
 		  (sRef_fixBaseParam (s->info->arrayfetch->arr, args)));
 	}
     case SK_FIELD:
-      return (sRef_makeField (sRef_fixBaseParam (s->info->field->rec, args),
-			      s->info->field->field));
-
+      {
+	sRef res;
+	DPRINTF (("Fix field: %s", sRef_unparseFull (s)));
+	res = sRef_makeField (sRef_fixBaseParam (s->info->field->rec, args),
+			      s->info->field->field);
+	DPRINTF (("Returns: %s", sRef_unparseFull (res)));
+	return res;
+      }
     case SK_PTR:
       return (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
 
@@ -4338,7 +4342,7 @@ sRef_makeUnknown ()
   return s;
 }
 
-static /*@owned@*/ sRef
+static /*@owned@*/ /*@notnull@*/ sRef
 sRef_makeSpecial (speckind sk) /*@*/
 {
   sRef s = sRef_new ();
@@ -5146,6 +5150,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
       /* evans 2001-07-12: need to define the derived references */
       sRefSet_elements (s->deriv, el)
 	{
+	  llassert (sRef_isValid (el));
 	  el->defstate = SS_DEFINED;
 	} end_sRefSet_elements ;
     }
@@ -5414,9 +5419,12 @@ void sRef_setNotNull (sRef s, fileloc loc)
 
 void sRef_setNullStateN (sRef s, nstate n)
 {
-  sRef_checkMutable (s);
-  s->nullstate = n;
-  sRef_resetAliasKind (s);
+  if (sRef_isValid (s))
+    {
+      sRef_checkMutable (s);
+      s->nullstate = n;
+      sRef_resetAliasKind (s);
+    }
 }
 
 void sRef_setNullState (sRef s, nstate n, fileloc loc)
@@ -5430,19 +5438,20 @@ void sRef_setNullState (sRef s, nstate n, fileloc loc)
 void sRef_setNullTerminatedStateInnerComplete (sRef s, struct s_bbufinfo b, /*@unused@*/ fileloc loc) 
 {
   switch (b.bufstate) {
-     case BB_NULLTERMINATED:
-	  sRef_setNullTerminatedState (s);
-          sRef_setLen (s, b.len);
-          break;
-     case BB_POSSIBLYNULLTERMINATED:
-          sRef_setPossiblyNullTerminatedState(s);
-          break;
-     case BB_NOTNULLTERMINATED:
-          sRef_setNotNullTerminatedState (s);
-          break;
+  case BB_NULLTERMINATED:
+    sRef_setNullTerminatedState (s);
+    sRef_setLen (s, b.len);
+    break;
+  case BB_POSSIBLYNULLTERMINATED:
+    sRef_setPossiblyNullTerminatedState(s);
+    break;
+  case BB_NOTNULLTERMINATED:
+    sRef_setNotNullTerminatedState (s);
+    break;
   }
-  sRef_setSize (s, b.size);
 
+  sRef_setSize (s, b.size);
+  
   /* PL: TO BE DONE : Aliases are not modified right now, have to be similar to
    * setNullStateInnerComplete.
    */
@@ -9399,7 +9408,7 @@ static speckind speckind_fromInt (int i)
 }
 
 
-static void sRef_updateNullState (sRef res, sRef other)
+static void sRef_updateNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other)
      /*@modifies res@*/
 {
   res->nullstate = other->nullstate;

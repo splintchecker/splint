@@ -34,7 +34,7 @@ typedef enum { FILE_NORMAL, FILE_LSLTEMP, FILE_NODELETE,
 typedef /*@only@*/ ftentry o_ftentry;
 
 typedef /*@only@*/ struct {
-  /*@dependent@*/ /*@exposed@*/ FILE *f;
+  /*@null@*/ /*@dependent@*/ /*@exposed@*/ FILE *f;
   /*@only@*/ cstring fname;
 } *foentry;
 

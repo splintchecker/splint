@@ -1051,7 +1051,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	}
       else if (cstring_equalLit (cflag, "ansireservedlocal"))
 	{
-	  res = FLG_ANSIRESERVEDLOCAL;
+	  res = FLG_ISORESERVEDLOCAL;
 	}
       else if (cstring_equalLit (cflag, "warnposix"))
 	{
@@ -1095,15 +1095,15 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	}
       else if (cstring_equalLit (cflag, "skipansiheaders"))
 	{
-	  res = FLG_SKIPANSIHEADERS;
+	  res = FLG_SKIPISOHEADERS;
 	}
       else if (cstring_equalLit (cflag, "ansireserved"))
 	{
-	  res = FLG_ANSIRESERVED;
+	  res = FLG_ISORESERVED;
 	}
       else if (cstring_equalLit (cflag, "ansireservedinternal"))
 	{
-	  res = FLG_ANSIRESERVEDLOCAL;
+	  res = FLG_ISORESERVEDLOCAL;
 	}
       
       /*

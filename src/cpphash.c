@@ -244,7 +244,7 @@ static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node)
    computed a step at a time, elsewhere  */
 
 int
-cpphash_hashCode (const char *name, int len, int hashsize)
+cpphash_hashCode (const char *name, size_t len, int hashsize)
 {
   unsigned int r = 0;
 
@@ -260,10 +260,10 @@ cpphash_hashCode (const char *name, int len, int hashsize)
 ** Find the most recent hash node for name name (ending with first
 ** non-identifier char) cpphash_installed by install
 **
-** If LEN is >= 0, it is the length of the name.
+** If len is >= 0, it is the length of the name.
 ** Otherwise, compute the length by scanning the entire name.
 **
-** If HASH is >= 0, it is the precomputed hash code.
+** If hash is >= 0, it is the precomputed hash code.
 ** Otherwise, compute the hash code.  
 */
 
@@ -284,15 +284,15 @@ cpphash_hashCode (const char *name, int len, int hashsize)
 
   if (hash < 0)
     {
-      hash = cpphash_hashCode (name, len, CPP_HASHSIZE);
+      hash = cpphash_hashCode (name, size_fromInt (len), CPP_HASHSIZE);
     }
 
   bucket = hashtab[hash];
 
   while (bucket != NULL) 
     {
-      if (bucket->length == len && 
-	  cstring_equalLen (bucket->name, cstring_fromChars (name), len)) 
+      if (bucket->length == size_fromInt (len) && 
+	  cstring_equalLen (bucket->name, cstring_fromChars (name), size_fromInt (len))) 
 	{
 	  return bucket;
 	}
@@ -359,6 +359,10 @@ cppReader_deleteMacro (hashNode hp)
   
   /* make sure that the bucket chain header that
      the deleted guy was on points to the right thing afterwards.  */
+
+  llassert (hp != NULL);
+  llassert (hp->bucket_hdr != NULL);
+
   if (hp == *hp->bucket_hdr) {
     *hp->bucket_hdr = hp->next;
   }
@@ -420,7 +424,7 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
 
   if (hash < 0) 
     {
-      hash = cpphash_hashCode (name, len, CPP_HASHSIZE);
+      hash = cpphash_hashCode (name, size_fromInt (len), CPP_HASHSIZE);
     }
 
   i = sizeof (*hp) + len + 1;
@@ -440,7 +444,7 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
   hashtab[bucket] = hp;
 
   hp->type = type;
-  hp->length = len;
+  hp->length = size_fromInt (len);
 
   if (hp->type == T_CONST)
     {
@@ -452,7 +456,7 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
       hp->value.cpval = value;
     }
   
-  hp->name = cstring_clip (cstring_fromCharsNew (name), len);
+  hp->name = cstring_clip (cstring_fromCharsNew (name), size_fromInt (len));
 
   DPRINTF (("Name: *%s*", hp->name));
   /*@-mustfree@*/ /*@-uniondef@*/ /*@-compdef@*/ /*@-compmempass@*/
@@ -460,11 +464,11 @@ hashNode cpphash_install (char *name, int len, enum node_type type,
   /*@=mustfree@*/ /*@=uniondef@*/ /*@=compdef@*/ /*@=compmempass@*/
 }
 
-hashNode cpphash_installMacro (char *name, int len, 
+hashNode cpphash_installMacro (char *name, size_t len, 
 				 struct definition *defn, int hash)
 {
   DPRINTF (("install macro: %s", name));
-  return cpphash_install (name, len, T_MACRO, 0, (char  *) defn, hash);
+  return cpphash_install (name, size_toInt (len), T_MACRO, 0, (char  *) defn, hash);
 }
 
 void

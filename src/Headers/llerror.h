@@ -32,6 +32,16 @@ extern /*@noreturnwhenfalse@*/ void llassertretnull (/*@sef@*/ bool p_test);
 	   llbuglit ("llassert failed: " #tst); \
        }} while (FALSE)
 
+extern /*@noreturnwhenfalse@*/ void llassertretval (/*@sef@*/ bool p_test, /*@sef@*/ void *p_val);
+# define llassertretval(tst,val) \
+    do { if (!(tst)) { \
+           if (context_getFlag (FLG_TRYTORECOVER)) checkParseError (); \
+	   lldiagmsg (message ("%s:%d: at source point", \
+			       cstring_makeLiteralTemp (__FILE__), __LINE__)); \
+	   llbuglit ("llassert failed: " #tst); \
+           /*@-type@*/ return (val); /*@=type@*/ \
+       }} while (FALSE)
+
 /*
 ** Use this for assertions in error-generation code (that
 ** might lead to infinite loops of failed assertions if

@@ -107,6 +107,35 @@ int flagMarker_getCount (flagMarker f)
   return f->info.nerrors;
 }
 
+bool flagMarker_equal (flagMarker f1, flagMarker f2)
+{
+  if (f1->kind != f2->kind)
+    {
+      return FALSE;
+    }
+
+  if (!fileloc_equal (f1->loc, f2->loc))
+    {
+      return FALSE;
+    }
+
+  switch (f1->kind)
+    {
+    case FMK_LOCALSET:
+      return (f1->info.set == f2->info.set
+	      && flagcode_equal (f1->code, f2->code));
+    case FMK_IGNORECOUNT:
+      return (f1->info.nerrors == f2->info.nerrors);
+    case FMK_IGNOREON:
+    case FMK_IGNOREOFF:
+      return TRUE;
+    case FMK_SUPPRESS:
+      return (flagcode_equal (f1->code, f2->code));
+    }
+
+  BADBRANCH;
+}
+
 cstring flagMarker_unparse (flagMarker c)
 {
   switch (c->kind)

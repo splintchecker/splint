@@ -2199,7 +2199,7 @@ void checkModifiesId (uentry ue)
 	}
       else
 	{
-	  fileloc loc = fileloc_decColumn (g_currentloc, cstring_length (s));
+	  fileloc loc = fileloc_decColumn (g_currentloc, size_toInt (cstring_length (s)));
 	  ret = sRef_undefined;
 
 	  voptgenerror 
@@ -2275,7 +2275,7 @@ sRef fixStateClausesId (cstring s)
 	  /*@unused@*/ uentry ue2;
 	  /*@unused@*/ ctype ct;
 # endif
-	  fileloc loc = fileloc_decColumn (g_currentloc, cstring_length (s));
+	  fileloc loc = fileloc_decColumn (g_currentloc, size_toInt (cstring_length (s)));
 	  ret = sRef_undefined; 
 # if 0
 	  /*drl commenting this out for now 

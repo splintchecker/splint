@@ -171,14 +171,16 @@ static void context_exitClauseSimp (void)  /*@modifies gc@*/ ;
 static void context_exitClausePlain (void) /*@modifies gc@*/ ;
 static void context_setJustPopped (void) /*@modifies gc.justpopped@*/ ;
 static void context_setValue (flagcode p_flag, int p_val) /*@modifies gc.flags@*/ ;
-static void context_setFlag (flagcode p_f, bool p_b)
+static void context_setFlag (flagcode p_f, bool p_b, fileloc p_loc)
   /*@modifies gc.flags@*/ ;
 
 static void
-  context_setFlagAux (flagcode p_f, bool p_b, bool p_inFile, bool p_isRestore)
+  context_setFlagAux (flagcode p_f, bool p_b, bool p_inFile, 
+		      bool p_isRestore, fileloc p_loc)
   /*@modifies gc.flags@*/ ;
 
-static void context_restoreFlag (flagcode p_f) /*@modifies gc.flags@*/ ;
+static void context_restoreFlag (flagcode p_f, fileloc p_loc)
+  /*@modifies gc.flags@*/ ;
 
 /*@+enumindex@*/ 
 
@@ -270,10 +272,9 @@ context_addMacroCache (/*@only@*/ cstring def)
 }
 
 void
-context_addComment (/*@only@*/ cstring def)
+context_addComment (/*@only@*/ cstring def, fileloc loc)
 {
-  DPRINTF (("macro comment: %s", def));
-  macrocache_addComment (gc.mc, fileloc_copy (g_currentloc), def);
+  macrocache_addComment (gc.mc, fileloc_copy (loc), def);
 }
 
 /*
@@ -391,39 +392,47 @@ context_inSuppressRegion (void)
 }
 
 void
-context_enterSuppressRegion (void)
+context_enterSuppressRegion (fileloc loc)
 {
   if (gc.insuppressregion)
     {
       gc.insuppressregion = FALSE;	/* get this msg! */
       llmsg (message
 	     ("%q: New ignore errors region entered while in ignore errors region",
-	      fileloc_unparse (g_currentloc)));
+	      fileloc_unparse (loc)));
     }
   
   gc.insuppressregion = TRUE;
-  flagMarkerList_add (gc.markers, flagMarker_createIgnoreOn (g_currentloc));
+  (void) flagMarkerList_add (gc.markers, flagMarker_createIgnoreOn (loc));
 }
 
 static void
-context_addFlagMarker (flagcode code, ynm set)
+context_addFlagMarker (flagcode code, ynm set, fileloc loc)
 {
-  flagMarkerList_add (gc.markers,
-		      flagMarker_createLocalSet (code, set, g_currentloc));
+  (void) flagMarkerList_add (gc.markers,
+			     flagMarker_createLocalSet (code, set, loc));
 }
 
 void
-context_enterSuppressLine (int count)
+context_enterSuppressLine (int count, fileloc loc)
 {
-  fileloc nextline = fileloc_copy (g_currentloc);
+  if (context_processingMacros ())
+    {
+      return;
+    }
 
-  flagMarkerList_add (gc.markers,
-		      flagMarker_createIgnoreCount (count, g_currentloc));
+  if (flagMarkerList_add 
+      (gc.markers,
+       flagMarker_createIgnoreCount (count, loc)))
+    {
+      fileloc nextline = fileloc_copy (loc);
+      fileloc_nextLine (nextline);
+      fileloc_setColumn (nextline, 0);
 
-  fileloc_nextLine (nextline);
-  flagMarkerList_add (gc.markers,
-		      flagMarker_createIgnoreOff (nextline));
-  fileloc_free (nextline);
+      check (flagMarkerList_add (gc.markers,
+				 flagMarker_createIgnoreOff (nextline)));
+      fileloc_free (nextline);
+    }
 }
 
 void context_checkSuppressCounts (void)
@@ -441,16 +450,18 @@ void context_incLineno (void)
 }
 
 void
-context_exitSuppressRegion (void)
+context_exitSuppressRegion (fileloc loc)
 {
   if (!gc.insuppressregion)
     {
-      llerrorlit (FLG_SYNTAX, 
-		  "End ignore errors in region while not ignoring errors");
+      voptgenerror 
+	(FLG_SYNTAX, 
+	 message ("End ignore errors in region while not ignoring errors"),
+	 loc);
     }
-
-    gc.insuppressregion = FALSE;
-  flagMarkerList_add (gc.markers, flagMarker_createIgnoreOff (g_currentloc));
+  
+  gc.insuppressregion = FALSE;
+  (void) flagMarkerList_add (gc.markers, flagMarker_createIgnoreOff (loc));
 }
 
 void
@@ -668,13 +679,12 @@ typeIdSet context_fileAccessTypes (void)
 
 void
 context_resetModeFlags (void)
-{
-  
+{  
   allFlagCodes (code)
     {
       if (flagcode_isModeFlag (code))
 	{
-	  context_setFlag (code, FALSE);
+	  context_setFlag (code, FALSE, g_currentloc);
 	}
     } end_allFlagCodes;  
 }
@@ -843,7 +853,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_ZEROPTR] = TRUE;
   gc.flags[FLG_NUMLITERAL] = TRUE;
   gc.flags[FLG_DUPLICATEQUALS] = TRUE;
-  gc.flags[FLG_SKIPANSIHEADERS] = TRUE;
+  gc.flags[FLG_SKIPISOHEADERS] = TRUE;
   gc.flags[FLG_SKIPPOSIXHEADERS] = TRUE;
   gc.flags[FLG_SYSTEMDIREXPAND] = TRUE;
   gc.flags[FLG_UNRECOGCOMMENTS] = TRUE;
@@ -943,7 +953,7 @@ context_resetAllFlags (void)
       if (!flagcode_isModeFlag (modeflags[i])) \
 	{ llbug (message ("not a mode flag: %s", \
 			  flagcode_unparse (modeflags[i]))); } \
-      else { context_setFlag (modeflags[i], TRUE); }  i++; }}
+      else { context_setFlag (modeflags[i], TRUE, g_currentloc); }  i++; }}
 
 static void context_setModeAux (cstring p_s, bool p_warn) ;
 
@@ -1214,7 +1224,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_LOOPLOOPBREAK, FLG_SWITCHLOOPBREAK, FLG_MODGLOBS,
 	  FLG_CHECKSTRICTGLOBALS, FLG_IMPCHECKEDSPECGLOBALS,
           FLG_MACROMATCHNAME, FLG_WARNLINTCOMMENTS,
-	  FLG_INCLUDENEST, FLG_ANSIRESERVED, FLG_CPPNAMES, 
+	  FLG_INCLUDENEST, FLG_ISORESERVED, FLG_CPPNAMES, 
 	  FLG_NOPARAMS, FLG_IFEMPTY, FLG_WHILEEMPTY, FLG_REALCOMPARE,
 	  FLG_BOOLOPS, FLG_SHIFTNEGATIVE,
 	  FLG_SHIFTIMPLEMENTATION,
@@ -1263,7 +1273,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_PTRNUMCOMPARE, 
 	  FLG_BOOLCOMPARE, FLG_UNSIGNEDCOMPARE,
 	  FLG_NOEFFECT, FLG_RETVALINT, FLG_RETVALBOOL, FLG_RETVALOTHER, 
-	  FLG_ANSIRESERVED, FLG_ANSIRESERVEDLOCAL, FLG_CPPNAMES,
+	  FLG_ISORESERVED, FLG_ISORESERVEDLOCAL, FLG_CPPNAMES,
 	  FLG_RETVALBOOL, FLG_RETVALINT, FLG_SPECUNDEF, 
 	  FLG_DECLUNDEF, FLG_STRICTOPS, FLG_INCONDEFS, 
 	  FLG_MISPLACEDSHAREQUAL, FLG_REDUNDANTSHAREQUAL,
@@ -1335,7 +1345,7 @@ context_setModeAux (cstring s, bool warn)
 	  FLG_IMPCHECKEDSTRICTSPECGLOBALS,
 	  FLG_IMPCHECKMODINTERNALS,
 	  FLG_WARNMISSINGGLOBALS, FLG_WARNMISSINGGLOBALSNOGLOBS,
-	  FLG_WARNLINTCOMMENTS, FLG_ANSIRESERVEDLOCAL,
+	  FLG_WARNLINTCOMMENTS, FLG_ISORESERVEDLOCAL,
 	  FLG_INCLUDENEST, FLG_STRINGLITERALLEN,
 	  FLG_NUMSTRUCTFIELDS, FLG_NUMENUMMEMBERS,
 	  FLG_CONTROLNESTDEPTH,
@@ -2785,15 +2795,15 @@ context_setValue (flagcode flag, int val)
 	{
 	  
 	  llerror_flagWarning (message ("Value for %s must be a positive "
-				    "number (given %d)",
-				    flagcode_unparse (flag), val));
+					"number (given %d)",
+					flagcode_unparse (flag), val));
 	  return;
 	}
       if (flag == FLG_LINELEN && val < MINLINELEN)
 	{
 	  llerror_flagWarning (message ("Value for %s must be at least %d (given %d)",
-				    flagcode_unparse (flag), 
-				    MINLINELEN, val));
+					flagcode_unparse (flag), 
+					MINLINELEN, val));
 	  val = MINLINELEN;
 	}
       break;
@@ -2891,19 +2901,19 @@ context_setString (flagcode flag, cstring val)
 	    {
 	      int n = cstring_length (tval) - 1;
 
-	      while (isspace ((int) cstring_getChar (tval, n)))
+	      while (isspace ((int) cstring_getChar (tval, size_fromInt (n))))
 		{
 		  n--;
 		}
 
-	      if (cstring_getChar (tval, n) != '\"')
+	      if (cstring_getChar (tval, size_fromInt (n)) != '\"')
 		{
 		  llerror_flagWarning (message ("Setting -systemdirs to string with unmatching quotes: %s", val));
 		}
 	      else
 		{
 		  cstring otval = tval;
-		  tval = cstring_prefix (tval, n);
+		  tval = cstring_prefix (tval, size_fromInt (n));
 		  cstring_free (otval);
 		}
 	    }
@@ -3625,10 +3635,11 @@ context_userSetFlag (flagcode f, bool b)
     {
       if (gc.flags[FLG_EXPORTHEADER])
 	{
-	  llerror_flagWarning (cstring_makeLiteral
-			   ("setting +neverinclude after +exportheader.  "
-			    "Turning off exportheader, since headers are not checked "
-			    "when +neverinclude is used."));
+	  llerror_flagWarning 
+	    (cstring_makeLiteral
+	     ("setting +neverinclude after +exportheader.  "
+	      "Turning off exportheader, since headers are not checked "
+	      "when +neverinclude is used."));
 
 	  gc.flags[FLG_EXPORTHEADER] = FALSE;
 	}
@@ -3639,10 +3650,11 @@ context_userSetFlag (flagcode f, bool b)
 	{
 	  if (gc.flags[FLG_NEVERINCLUDE])
 	    {
-	      llerror_flagWarning (cstring_makeLiteral
-			       ("setting +exportheader after +neverinclude.  "
-				"Not setting exportheader, since headers are not checked "
-				"when +neverinclude is used."));
+	      llerror_flagWarning
+		(cstring_makeLiteral
+		 ("setting +exportheader after +neverinclude.  "
+		  "Not setting exportheader, since headers are not checked "
+		  "when +neverinclude is used."));
 	      gc.flags[FLG_EXPORTHEADER] = FALSE;
 	      return;
 	    }
@@ -3658,9 +3670,10 @@ context_userSetFlag (flagcode f, bool b)
 	  && !flagcode_isIdemFlag (f)
 	  && !flagcode_hasArgument (f))
 	{
-	  llerror_flagWarning (message ("setting %s%s redundant with current value", 
-				    cstring_makeLiteralTemp (b ? "+" : "-"),
-				    flagcode_unparse (f)));
+	  llerror_flagWarning 
+	    (message ("setting %s%s redundant with current value", 
+		      cstring_makeLiteralTemp (b ? "+" : "-"),
+		      flagcode_unparse (f)));
 	}
     }
 
@@ -3668,9 +3681,9 @@ context_userSetFlag (flagcode f, bool b)
     {
       if (!context_getFlag (FLG_WARNUSE))
 	{
-	  llerror_flagWarning (message ("flag +%s is canceled by -warnuse",
-				    flagcode_unparse (f)));
-	  
+	  llerror_flagWarning
+	    (message ("flag +%s is canceled by -warnuse",
+		      flagcode_unparse (f)));
 	}
     }
 
@@ -3680,40 +3693,44 @@ context_userSetFlag (flagcode f, bool b)
       if (gc.library != FLG_ANSILIB
 	  && gc.library != f)
 	{
-	  llerror_flagWarning (message ("selecting library %s after library %s was "
-					"selected (only one library may be used)",
-					flagcode_unparse (f),
-					flagcode_unparse (gc.library)));
+	  llerror_flagWarning 
+	    (message ("selecting library %s after library %s was "
+		      "selected (only one library may be used)",
+		      flagcode_unparse (f),
+		      flagcode_unparse (gc.library)));
 	}
-
+      
       if (f == FLG_UNIXLIB)
 	{
 	  if (context_getFlag (FLG_WARNUNIXLIB))
 	    {
-	      llerror_flagWarning (cstring_makeLiteral
-				   ("selecting unix library.  Unix library is "
-				    "ad hoc addition to POSIX library.  Recommend "
-				    "use +posixlib to select POSIX library instead. "
-				    "Use -warnunixlib to suppress this message."));
+	      llerror_flagWarning
+		(cstring_makeLiteral
+		 ("selecting unix library.  Unix library is "
+		  "ad hoc addition to POSIX library.  Recommend "
+		  "use +posixlib to select POSIX library instead. "
+		  "Use -warnunixlib to suppress this message."));
 	    }
 	}
       
       gc.library = f;
     }
-
+  
   if (flagcode_isNameChecksFlag (f) && b && !context_maybeSet (FLG_NAMECHECKS))
     {
-      llerror_flagWarning (message
-			   ("setting +%s will not produce warnings with -namechecks. Must set +namechecks also.",
-			    flagcode_unparse (f)));
+      llerror_flagWarning
+	(message
+	 ("setting +%s will not produce warnings with -namechecks. "
+	  "Must set +namechecks also.",
+	  flagcode_unparse (f)));
     }
-
+  
   gc.setGlobally[f] = TRUE;
-  context_setFlag (f, b);
+  context_setFlag (f, b, g_currentloc);
 }
 
 void
-context_fileSetFlag (flagcode f, ynm set)
+context_fileSetFlag (flagcode f, ynm set, fileloc loc)
 {
   if (!gc.savedFlags)
     {
@@ -3722,23 +3739,22 @@ context_fileSetFlag (flagcode f, ynm set)
 
   if (ynm_isOff (set))
     {
-      context_setFlagAux (f, FALSE, TRUE, FALSE);
+      context_setFlagAux (f, FALSE, TRUE, FALSE, loc);
     }
   else if (ynm_isOn (set))
     {
-      context_setFlagAux (f, TRUE, TRUE, FALSE);
+      context_setFlagAux (f, TRUE, TRUE, FALSE, loc);
       gc.setLocally[f] = TRUE;
     }
   else
     {
-      context_restoreFlag (f);
+      context_restoreFlag (f, loc);
     }
 }
 
 static void
-context_restoreFlag (flagcode f)
+context_restoreFlag (flagcode f, fileloc loc)
 {
-  
   if (!gc.savedFlags)
     {
       voptgenerror 
@@ -3746,20 +3762,20 @@ context_restoreFlag (flagcode f)
 	 message ("Attempt to restore flag %s when no file scope flags "
 		  "have been set.",
 		  flagcode_unparse (f)),
-	 g_currentloc);
+	 loc);
     }
   else
     {
-      context_addFlagMarker (f, MAYBE);
-      context_setFlagAux (f, gc.saveflags[f], FALSE, TRUE);
+      context_addFlagMarker (f, MAYBE, loc);
+      context_setFlagAux (f, gc.saveflags[f], FALSE, TRUE, loc);
     }
 
   }
 
 static void
-context_setFlag (flagcode f, bool b)
+context_setFlag (flagcode f, bool b, fileloc loc)
 {
-  context_setFlagAux (f, b, FALSE, FALSE);
+  context_setFlagAux (f, b, FALSE, FALSE, loc);
 }
 
 void
@@ -3772,13 +3788,13 @@ context_setFlagTemp (flagcode f, bool b)
 /*@notfunction@*/
 # define DOSET(ff,b) \
    do { if (inFile) { gc.setLocally[ff] = TRUE; \
-		      context_addFlagMarker (ff, ynm_fromBool (b)); } \
+		      context_addFlagMarker (ff, ynm_fromBool (b), loc); } \
         DPRINTF (("set flag: %s / %s", flagcode_unparse (ff), bool_unparse (b))); \
         gc.flags[ff] = b; } while (FALSE)
 
 static void
 context_setFlagAux (flagcode f, bool b, bool inFile, 
-		    /*@unused@*/ bool isRestore)
+		    /*@unused@*/ bool isRestore, fileloc loc)
 {
   DPRINTF (("Set flag: %s / %s", flagcode_unparse (f), bool_unparse (b)));
 

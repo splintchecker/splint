@@ -113,8 +113,15 @@ static long unsigned size_toLongUnsigned (size_t x)
     {
       if (size == 0)
 	{
-	  llbug (message ("Zero allocation at %q.",
-			  fileloc_unparseRaw (cstring_fromChars (name), line)));
+	  llcontbug (message ("Zero allocation at %q.",
+			      fileloc_unparseRaw (cstring_fromChars (name), line)));
+	  
+	  /* 
+	  ** evans 2002-03-01
+	  ** Return some allocated storage...hope we get lucky.
+	  */
+
+	  return dimalloc (16, name, line);
 	}
       else
 	{
@@ -335,7 +342,7 @@ char *mstring_safePrint (char *s)
 }
 
 extern
-char *mstring_create (int n)
+char *mstring_create (size_t n)
 {
   char *s;
 

@@ -1995,7 +1995,7 @@ static int handleLlSpecial ()
 	      (FLG_SYNTAX, 
 	       message ("Likely parse error: syntactic comment token spans multiple lines: %s",
 			cstring_fromChars (s)),
-	       g_currentloc);
+	       loc);
 	  }
 
 	  s = mstring_append (s, c);
@@ -2073,7 +2073,7 @@ static int handleLlSpecial ()
 			(FLG_UNRECOGFLAGCOMMENTS,
 			 message ("Unrecognized option in semantic comment: %s", 
 				  flagname),
-			 g_currentloc);
+			 loc);
 		    }
 		}
 	      else if (flagcode_isGlobalFlag (fflag))
@@ -2084,11 +2084,11 @@ static int handleLlSpecial ()
 		     ("Semantic comment attempts to set global flag %s.  "
 		      "A global flag cannot be set locally.",
 		      flagname),
-		     g_currentloc);
+		     loc);
 		}
 	      else
 		{
-		  context_fileSetFlag (fflag, set);
+		  context_fileSetFlag (fflag, set, loc);
 		  
 		  if (flagcode_hasArgument (fflag))
 		    {
@@ -2100,7 +2100,7 @@ static int handleLlSpecial ()
 			     ("Semantic comment attempts to restore flag %s.  "
 			      "A flag for setting a value cannot be restored.",
 			      flagname),
-			     g_currentloc);
+			     loc);
 			}
 		      else
 			{ /* cut-and-pastied from llmain...blecch */
@@ -2179,7 +2179,7 @@ static int handleLlSpecial ()
       if (context_inHeader () && !isArtificial (cstring_fromChars (os)))
 	{
 	  DPRINTF (("Here adding comment: %s", os));
-	  context_addComment (cstring_fromCharsNew (os));
+	  context_addComment (cstring_fromCharsNew (os), loc);
 	}
       else
 	{
@@ -2247,8 +2247,14 @@ static int handleLlSpecial ()
 	      && macrocode != SKIPTOK
 	      && !isArtificial (cstring_fromChars (os))) 
 	    {
-	      DPRINTF (("Add comment: %s", os));
-	      context_addComment (cstring_fromCharsNew (os));
+	      if (context_processingMacros ())
+		{
+		  /* evans 2002-02-24: don't add comments when procssing macros */
+		}
+	      else
+		{
+		  context_addComment (cstring_fromCharsNew (os), loc);
+		}
 	    }
 	  else
 	    {
@@ -2265,7 +2271,7 @@ static int handleLlSpecial ()
 	{
 	  if (!context_getFlag (FLG_NOCOMMENTS))
 	    {
-	      context_enterSuppressRegion ();
+	      context_enterSuppressRegion (loc);
 	    }
 	}
       else if ((*t == 'i' || *t == 't')
@@ -2274,7 +2280,7 @@ static int handleLlSpecial ()
 	  if (!context_getFlag (FLG_NOCOMMENTS)
 	      && (*t == 'i' || context_getFlag (FLG_TMPCOMMENTS)))
 	    {
-	      context_enterSuppressLine (-1); /* infinite suppression */
+	      context_enterSuppressLine (-1, loc); /* infinite suppression */
 	    }
 	}
       else if (((*t == 'i') || (*t == 't'))
@@ -2297,19 +2303,19 @@ static int handleLlSpecial ()
 		  lc = *(++tt);
 		}
 	    }
-
 	  
 	  if (!context_getFlag (FLG_NOCOMMENTS)
 	      && (!tmpcomment || context_getFlag (FLG_TMPCOMMENTS)))
 	    {
-	      context_enterSuppressLine (val);
+	      DPRINTF (("Here: enter suppress: %s", fileloc_unparse (loc)));
+	      context_enterSuppressLine (val, loc);
 	    }
 	}
       else if (mstring_equal (t, "end"))
 	{
 	  if (!context_getFlag (FLG_NOCOMMENTS))
 	    {
-	      context_exitSuppressRegion ();
+	      context_exitSuppressRegion (loc);
 	    }
 	}
       else if (mstring_equal (t, "notfunction"))
@@ -2364,20 +2370,20 @@ static int handleLlSpecial ()
 			     message
 			     ("Non-abstract type %s used in access comment",
 			      tname),
-			     g_currentloc);
+			     loc);
 			}
 		    }
 		  else
 		    {
 		      if (!(context_inSuppressRegion ()
-			    || context_inSuppressZone (g_currentloc)))
+			    || context_inSuppressZone (loc)))
 			{
 			  voptgenerror
 			    (FLG_COMMENTERROR,
 			     message
 			     ("Unrecognized type %s used in access comment",
 			      tname),
-			     g_currentloc);
+			     loc);
 			}
 		    }
 		}
@@ -2435,7 +2441,7 @@ static int handleLlSpecial ()
 		      else
 			{
 			  if (!(context_inSuppressRegion () 
-				|| context_inSuppressZone (g_currentloc)))
+				|| context_inSuppressZone (loc)))
 			    {
 			      uentry ue = usymtab_getTypeEntry (tuid);
 			      
@@ -2446,7 +2452,7 @@ static int handleLlSpecial ()
 				     message
 				     ("Non-accessible abstract type %s used in noaccess comment",
 				      tname),
-				     g_currentloc);
+				     loc);
 				}
 			      else
 				{
@@ -2455,7 +2461,7 @@ static int handleLlSpecial ()
 				     message
 				     ("Non-abstract type %s used in noaccess comment",
 				      tname),
-				     g_currentloc);
+				     loc);
 				}
 			    }
 			}
@@ -2463,14 +2469,14 @@ static int handleLlSpecial ()
 		  else
 		    {
 		      if (!(context_inSuppressRegion () 
-			    || context_inSuppressZone (g_currentloc)))
+			    || context_inSuppressZone (loc)))
 			{
 			  voptgenerror
 			    (FLG_COMMENTERROR,
 			     message
 			     ("Unrecognized type %s used in noaccess comment",
 			      tname),
-			     g_currentloc);
+			     loc);
 			}
 		    }
 		}
@@ -2490,9 +2496,10 @@ static int handleLlSpecial ()
 	{
 	  voptgenerror (FLG_UNRECOGCOMMENTS, 
 			message ("Semantic comment unrecognized: %s", 
-				 cstring_fromChars (os)), loc);
+				 cstring_fromChars (os)),
+			loc);
 	}
-
+      
       sfree (t);
     }
   
@@ -2656,6 +2663,14 @@ static int processIdentifier (cstring id)
       else if (cstring_equalLit (id, "__alignof__")) 
 	{
 	  tok = CALIGNOF; /* alignof is parsed like sizeof */
+	}
+      else if (cstring_equalLit (id, "__typeof__")) 
+	{
+	  tok = CTYPEOF;
+	}
+      else if (cstring_equalLit (id, "typeof")) 
+	{
+	  tok = CTYPEOF;
 	}
       else if (cstring_equalLit (id, "__FUNCTION__")
 	       || cstring_equalLit (id, "__PRETTY_FUNCTION__")) 

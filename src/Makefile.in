@@ -117,17 +117,17 @@ LISTSRC = clauseStack.c filelocStack.c \
 
 CPPSRC = cppmain.c cpplib.c cppexp.c cpphash.c cpperror.c
 
-CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
+CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c
 
 
-SPLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c $(OVERFLOWCHSRC)
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
-GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c mtreader.c
+GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
 
 GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 
@@ -329,7 +329,7 @@ DER_BISON_FILES = signature.c.der  cgrammar.c.der  mtgrammar.c.der \
 
 DER_FILES = $(DER_BISON_FILES)
 
-COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
+COMMONSRC = $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
             $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
 
 
@@ -397,17 +397,13 @@ lcl_DEPENDENCIES =
 lcl_LDFLAGS =
 am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	mtscanner.$(OBJEXT) mtgrammar.$(OBJEXT) llgrammar.$(OBJEXT) \
-	signature.$(OBJEXT) constraintGeneration.$(OBJEXT) \
-	constraintTerm.$(OBJEXT) constraintExprData.$(OBJEXT) \
-	constraintExpr.$(OBJEXT) constraint.$(OBJEXT) \
-	constraintList.$(OBJEXT) constraintResolve.$(OBJEXT) \
-	constraintOutput.$(OBJEXT) loopHeuristics.$(OBJEXT) \
-	cppmain.$(OBJEXT) cpplib.$(OBJEXT) cppexp.$(OBJEXT) \
-	cpphash.$(OBJEXT) cpperror.$(OBJEXT) uentry.$(OBJEXT) \
-	cprim.$(OBJEXT) macrocache.$(OBJEXT) qual.$(OBJEXT) \
-	qtype.$(OBJEXT) stateClause.$(OBJEXT) stateClauseList.$(OBJEXT) \
-	ctype.$(OBJEXT) cvar.$(OBJEXT) clabstract.$(OBJEXT) \
-	idDecl.$(OBJEXT) clause.$(OBJEXT) globalsClause.$(OBJEXT) \
+	signature.$(OBJEXT) cppmain.$(OBJEXT) cpplib.$(OBJEXT) \
+	cppexp.$(OBJEXT) cpphash.$(OBJEXT) cpperror.$(OBJEXT) \
+	context.$(OBJEXT) uentry.$(OBJEXT) cprim.$(OBJEXT) \
+	macrocache.$(OBJEXT) qual.$(OBJEXT) qtype.$(OBJEXT) \
+	stateClause.$(OBJEXT) stateClauseList.$(OBJEXT) ctype.$(OBJEXT) \
+	cvar.$(OBJEXT) clabstract.$(OBJEXT) idDecl.$(OBJEXT) \
+	clause.$(OBJEXT) globalsClause.$(OBJEXT) \
 	modifiesClause.$(OBJEXT) warnClause.$(OBJEXT) \
 	functionClause.$(OBJEXT) functionClauseList.$(OBJEXT) \
 	metaStateConstraint.$(OBJEXT) metaStateConstraintList.$(OBJEXT) \
@@ -422,16 +418,15 @@ am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	sRefTable.$(OBJEXT) genericTable.$(OBJEXT) ekind.$(OBJEXT) \
 	usymtab.$(OBJEXT) multiVal.$(OBJEXT) lltok.$(OBJEXT) \
 	sRef.$(OBJEXT) lcllib.$(OBJEXT) randomNumbers.$(OBJEXT) \
-	fileLib.$(OBJEXT) context.$(OBJEXT) globals.$(OBJEXT) \
-	flags.$(OBJEXT) general.$(OBJEXT) osd.$(OBJEXT) \
-	reader.$(OBJEXT) mtreader.$(OBJEXT) clauseStack.$(OBJEXT) \
-	filelocStack.$(OBJEXT) cstringList.$(OBJEXT) \
-	cstringSList.$(OBJEXT) sRefSetList.$(OBJEXT) \
-	ctypeList.$(OBJEXT) enumNameList.$(OBJEXT) \
-	enumNameSList.$(OBJEXT) exprNodeList.$(OBJEXT) \
-	exprNodeSList.$(OBJEXT) uentryList.$(OBJEXT) \
-	fileIdList.$(OBJEXT) filelocList.$(OBJEXT) qualList.$(OBJEXT) \
-	sRefList.$(OBJEXT) flagMarkerList.$(OBJEXT) \
+	fileLib.$(OBJEXT) globals.$(OBJEXT) flags.$(OBJEXT) \
+	general.$(OBJEXT) osd.$(OBJEXT) reader.$(OBJEXT) \
+	mtreader.$(OBJEXT) clauseStack.$(OBJEXT) filelocStack.$(OBJEXT) \
+	cstringList.$(OBJEXT) cstringSList.$(OBJEXT) \
+	sRefSetList.$(OBJEXT) ctypeList.$(OBJEXT) \
+	enumNameList.$(OBJEXT) enumNameSList.$(OBJEXT) \
+	exprNodeList.$(OBJEXT) exprNodeSList.$(OBJEXT) \
+	uentryList.$(OBJEXT) fileIdList.$(OBJEXT) filelocList.$(OBJEXT) \
+	qualList.$(OBJEXT) sRefList.$(OBJEXT) flagMarkerList.$(OBJEXT) \
 	idDeclList.$(OBJEXT) flagSpec.$(OBJEXT) globSet.$(OBJEXT) \
 	intSet.$(OBJEXT) typeIdSet.$(OBJEXT) guardSet.$(OBJEXT) \
 	usymIdSet.$(OBJEXT) sRefSet.$(OBJEXT) stateInfo.$(OBJEXT) \
@@ -448,7 +443,12 @@ am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	mtLoseReference.$(OBJEXT) mtDefaultsDeclList.$(OBJEXT) \
 	mtDefaultsDecl.$(OBJEXT) mtMergeItem.$(OBJEXT) \
 	mtMergeClause.$(OBJEXT) mtMergeClauseList.$(OBJEXT) \
-	exprNode.$(OBJEXT) exprChecks.$(OBJEXT) llmain.$(OBJEXT)
+	exprNode.$(OBJEXT) exprChecks.$(OBJEXT) llmain.$(OBJEXT) \
+	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
+	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
+	constraint.$(OBJEXT) constraintList.$(OBJEXT) \
+	constraintResolve.$(OBJEXT) constraintOutput.$(OBJEXT) \
+	loopHeuristics.$(OBJEXT)
 splint_OBJECTS = $(am_splint_OBJECTS)
 splint_LDFLAGS =
 
@@ -986,7 +986,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
-	  echo '* Expect 142 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
+	  echo '* Expect 145 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
@@ -1051,9 +1051,10 @@ etags:
 lintnew: splintme
 
 splintme: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
-                    +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw
+
+splinttest: 
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude cpplib.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +keep +supcounts +partial -null
 
 lintbuffercheck: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \

@@ -50,9 +50,9 @@ char cstring_firstChar (cstring s)
   return (s[0]);
 }
 
-char cstring_getChar (cstring s, int n) 
+char cstring_getChar (cstring s, size_t n) 
 {
-  int length = cstring_length (s);
+  size_t length = cstring_length (s);
 
   llassert (cstring_isDefined (s));
   llassert (n >= 1 && n <= length);
@@ -60,7 +60,7 @@ char cstring_getChar (cstring s, int n)
   return (s[n - 1]);
 }
 
-cstring cstring_suffix (cstring s, int n) 
+cstring cstring_suffix (cstring s, size_t n) 
 {
   llassert (cstring_isDefined (s));
   llassert (n <= cstring_length (s));
@@ -68,7 +68,9 @@ cstring cstring_suffix (cstring s, int n)
   return (s + n);
 }
 
-cstring cstring_prefix (cstring s, int n) /*@requires maxRead(s) >= n /\ maxSet(s) >= n @*/ /*@ensures maxRead(result) == n /\ maxSet(result) == n @*/
+cstring cstring_prefix (cstring s, size_t n) 
+   /*@requires maxRead(s) >= n /\ maxSet(s) >= n @*/
+   /*@ensures maxRead(result) == n /\ maxSet(result) == n @*/
 {
   cstring t;
   char c;
@@ -137,7 +139,7 @@ cstring cstring_beforeChar (cstring s, char c)
   return cstring_undefined;
 }
 
-void cstring_setChar (cstring s, int n, char c) /*@requires maxRead(s) >= (n - 1) /\ maxSet(s) >= (n - 1) @*/
+void cstring_setChar (cstring s, size_t n, char c) /*@requires maxRead(s) >= (n - 1) /\ maxSet(s) >= (n - 1) @*/
 {
   llassert (cstring_isDefined (s));
   llassert (n > 0 && n <= cstring_length (s));
@@ -147,7 +149,7 @@ void cstring_setChar (cstring s, int n, char c) /*@requires maxRead(s) >= (n - 1
 
 char cstring_lastChar (cstring s) 
 {
-  int length;
+  size_t length;
 
   llassert (cstring_isDefined (s));
 
@@ -169,11 +171,11 @@ char cstring_lastChar (cstring s)
     }
 }
 
-/*@only@*/ cstring cstring_copyLength (char *s, int len) /*@requires maxSet(s) >= (len - 1) @*/
+/*@only@*/ cstring cstring_copyLength (char *s, size_t len) /*@requires maxSet(s) >= (len - 1) @*/
 {
   char *res = mstring_create (len + 1);
 
-  strncpy (res, s, size_fromInt (len));
+  strncpy (res, s, len);
   res[len] = '\0';
   return res;
 }
@@ -259,11 +261,12 @@ void cstring_stripChars (cstring s, const char *clist)
   if (cstring_isDefined (s))
     {
       int i;
-      int size = cstring_length (s);
+      size_t size = cstring_length (s);
 
-      for (i = 0; i < size; i++)
+      for (i = 0; i < size_toInt (size); i++)
 	{
-/*drl bee: is*/ 	  char c = s[i];
+	  /*drl bee: is*/ 	
+	  char c = s[i];
 	  
 	  if (strchr (clist, c) != NULL)
 	    {
@@ -271,13 +274,13 @@ void cstring_stripChars (cstring s, const char *clist)
 	      int j;
 	      
 	      size--;
-
-	      for (j = i; j < size; j++)
+	      
+	      for (j = i; j < size_toInt (size); j++)
 		{
-	/*drl bee: is*/ 	/*drl bee: is*/   s[j] = s[j+1];
+		  /*drl bee: is*/ /*drl bee: is*/ s[j] = s[j+1];
 		}
-
-	  /*drl bee: is*/     s[size] = '\0'; 
+	      
+	      /*drl bee: is*/ s[size] = '\0'; 
 	      i--;
 	    }
 	}
@@ -323,9 +326,10 @@ static char lookLike (char c) /*@*/
 }
 
 cmpcode cstring_genericEqual (cstring s, cstring t,
-			      int nchars,
+			      size_t nchars,
 			      bool caseinsensitive,
-			      bool lookalike)  /*@requires maxRead(s) >= nchars /\ maxRead(t) >= nchars @*/
+			      bool lookalike) 
+  /*@requires maxRead(s) >= nchars /\ maxRead(t) >= nchars @*/
 {
   if (s == t) return CGE_SAME;
   else if (cstring_isUndefined (s))
@@ -344,7 +348,7 @@ cmpcode cstring_genericEqual (cstring s, cstring t,
 
       while (*s != '\0')
 	{
-	  if (nchars > 0 && i >= nchars)
+	  if (nchars > 0 && i >= size_toInt (nchars))
 	    {
 	      break;
 	    }
@@ -411,12 +415,12 @@ bool cstring_equal (cstring c1, cstring c2)
   else return (strcmp (c1, c2) == 0);
 }
 
-bool cstring_equalLen (cstring c1, cstring c2, int len)
+bool cstring_equalLen (cstring c1, cstring c2, size_t len)
 {
   if (c1 == c2) return TRUE;
   else if (cstring_isUndefined (c1)) return cstring_isEmpty (c2);
   else if (cstring_isUndefined (c2)) return cstring_isEmpty (c1);
-  else return (strncmp (c1, c2, size_fromInt (len)) == 0);
+  else return (strncmp (c1, c2, len) == 0);
 }
 
 bool cstring_equalCaseInsensitive (cstring c1, cstring c2)
@@ -427,10 +431,8 @@ bool cstring_equalCaseInsensitive (cstring c1, cstring c2)
   else return (cstring_genericEqual (c1, c2, 0, TRUE, FALSE) != CGE_DISTINCT);
 }
 
-bool cstring_equalLenCaseInsensitive (cstring c1, cstring c2, int len)
+bool cstring_equalLenCaseInsensitive (cstring c1, cstring c2, size_t len)
 {
-  llassert (len >= 0);
-
   if (c1 == c2) return TRUE;
   else if (cstring_isUndefined (c1)) return cstring_isEmpty (c2);
   else if (cstring_isUndefined (c2)) return cstring_isEmpty (c1);
@@ -544,12 +546,13 @@ cstring cstring_fromChars (/*@exposed@*/ const char *cp)
     }
 }
 
-int cstring_length (cstring s)
+size_t cstring_length (cstring s)
 {
   if (cstring_isDefined (s))
     {
-      return size_toInt (strlen (s));
+      return strlen (s);
     }
+
   return 0;
 }
 
@@ -580,7 +583,7 @@ cstring_capitalizeFree (cstring s) /*@requires maxSet(s) >= 0 /\ maxRead(s) >= 0
 }
 
 cstring
-cstring_clip (cstring s, int len)
+cstring_clip (cstring s, size_t len)
 {
   if (cstring_isUndefined (s) || cstring_length (s) <= len)
     {
@@ -589,14 +592,15 @@ cstring_clip (cstring s, int len)
   else
     {
       llassert (s != NULL);
-    /*drl bee: mrms*/   *(s + len) = '\0';
+      /*drl bee: mrms*/ 
+      *(s + len) = '\0';
     }
-
+  
   return s;
 }
 
 /*@only@*/ cstring
-cstring_elide (cstring s, int len)
+cstring_elide (cstring s, size_t len)
 {
   if (cstring_isUndefined (s) || cstring_length (s) <= len)
     {
@@ -605,23 +609,25 @@ cstring_elide (cstring s, int len)
   else
     {
       cstring sc = cstring_create (len);
-     
-      strncpy (sc, s, size_fromInt (len));
-     /*drl bee: mrms*/  *(sc + len - 1) = '\0';
+      
+      strncpy (sc, s, len);
+      /*drl bee: mrms*/ 
+      *(sc + len - 1) = '\0';
       *(sc + len - 2) = '.';      
       *(sc + len - 3) = '.';      
       *(sc + len - 4) = '.';      
+      
       return sc;
     }
 }
 
 /*@only@*/ cstring
-cstring_fill (cstring s, int n) /*@requires n >= 0 @*/
+cstring_fill (cstring s, size_t n) /*@requires n >= 0 @*/
 {
   cstring t = cstring_create (n + 1);
   cstring ot = t;
-  int len = cstring_length (s);
-  int i;
+  size_t len = cstring_length (s);
+  size_t i;
   
   if (len > n)
     {
@@ -683,7 +689,7 @@ cstring_downcase (cstring s)
 /*@notnull@*/ cstring 
 cstring_appendChar (/*@only@*/ cstring s1, char c)
 {
-  int l = cstring_length (s1);
+  size_t l = cstring_length (s1);
   char *s;
 
   s = (char *) dmalloc (sizeof (*s) * (l + 2));
@@ -732,7 +738,7 @@ cstring_concatChars (cstring s, char *t)
 # endif
 
 /*@only@*/ cstring 
-cstring_concatLength (cstring s1, char *s2, int len) /*@requires maxSet(s2) >= (len - 1) @*/
+cstring_concatLength (cstring s1, char *s2, size_t len) /*@requires maxSet(s2) >= (len - 1) @*/
 {
   cstring tmp = cstring_copyLength (s2, len);
   cstring res = cstring_concat (s1, tmp);
@@ -771,7 +777,7 @@ cstring_prependCharO (char c, /*@only@*/ cstring s1)
 /*@notnull@*/ /*@only@*/ cstring 
 cstring_prependChar (char c, /*@temp@*/ cstring s1)
 {
-  int l = cstring_length (s1);
+  size_t l = cstring_length (s1);
   char *s = (char *) dmalloc (sizeof (*s) * (l + 2));
   
 /*drl bee: dm*/   *(s) = c;
@@ -810,16 +816,16 @@ cstring_hasNonAlphaNumBar (cstring s)
 # endif
 
 /*@only@*/ /*@notnull@*/ cstring 
-cstring_create (int n)
+cstring_create (size_t n)
 {
   char *s = dmalloc (sizeof (*s) * (n + 1));
-
- /*drl bee: dm*/ *s = '\0';
+  
+  /*drl bee: dm*/ *s = '\0';
   return s;
 }
 
 /*@only@*/ /*@notnull@*/ cstring
-cstring_copySegment (cstring s, int findex, int tindex)
+cstring_copySegment (cstring s, size_t findex, size_t tindex)
 {
   cstring res = cstring_create (tindex - findex + 1);
 
@@ -985,7 +991,7 @@ static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
   
   llassert(cstring_isDefined (s));
   
-  ret = mstring_create (cstring_length(s) );
+  ret = mstring_create (cstring_length(s));
 
   ptr = s;
 

@@ -186,7 +186,7 @@ message (/*@temp@*/ char *fmt, ...)
 		if (modcode != 0)
 		  {
 		    ret = mstring_concatFree (ret, cstring_toCharsSafe 
-					  (cstring_fill (s, modcode)));
+					      (cstring_fill (s, size_fromInt (modcode))));
 		  }
 		else
 		  {
@@ -205,7 +205,7 @@ message (/*@temp@*/ char *fmt, ...)
 		if (modcode != 0)
 		  {
 		    ret = mstring_concatFree (ret, cstring_toCharsSafe 
-					      (cstring_fill (s, modcode)));
+					      (cstring_fill (s, size_fromInt (modcode))));
 		  }
 		else
 		  {

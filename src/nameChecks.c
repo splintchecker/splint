@@ -42,7 +42,7 @@ static cstring czechPrefix (cstring name)
 
 static cstring slovakPrefix (cstring name)
 {
-  int i = 0;
+  size_t i = 0;
 
   cstring_chars (name, c)
     {
@@ -119,9 +119,9 @@ static bool matchPrefix (cstring name, cstring prefix)
     }
   else
     {
-      int namelen = cstring_length (name);
+      size_t namelen = cstring_length (name);
       int last = (int) '\0';
-      int n = 1;
+      size_t n = 1;
 
       cstring_chars (prefix, pc)
 	{
@@ -1181,7 +1181,7 @@ checkAnsiName (uentry ue)
 {
   bool hasError = FALSE;
   cstring name = uentry_observeRealName (ue);
-  int length = cstring_length (name);
+  size_t length = cstring_length (name);
   char fchar = (length >= 1) ? cstring_firstChar (name) : '\0';
   char schar = (length >= 2) ? cstring_secondChar (name) : '\0';
   char tchar = (length >= 3) ? cstring_getChar (name, 3) : '\0';
@@ -1231,19 +1231,19 @@ checkAnsiName (uentry ue)
 					  NRESERVEDNAMES)))
     {
       hasError |= optgenerror2
-	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	(FLG_ISORESERVED, FLG_NAMECHECKS,
 	 message ("Name %s is reserved for the standard library",
 		  name),
 	 uentry_whereLast (ue));
     }
 
   if (uentry_isFileStatic (ue) || uentry_isVisibleExternally (ue) || uentry_isAnyTag (ue)
-      || context_getFlag (FLG_ANSIRESERVEDLOCAL))
+      || context_getFlag (FLG_ISORESERVEDLOCAL))
     {
       if (fchar == '_')
 	{
 	  hasError |= optgenerror2
-	    (FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	    (FLG_ISORESERVED, FLG_NAMECHECKS,
 	     message 
 	     ("Name %s is in the implementation name space (any identifier "
 	      "beginning with underscore)", 
@@ -1263,7 +1263,7 @@ checkAnsiName (uentry ue)
 	  && (schar == '_' || isupper ((int) schar)))
 	{
 	  hasError |= optgenerror2
-	    (FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	    (FLG_ISORESERVED, FLG_NAMECHECKS,
 	     message 
 	     ("Name %s is in the implementation name space (any identifier "
 	      "beginning with underscore and either an uppercase letter or "
@@ -1283,7 +1283,7 @@ checkAnsiName (uentry ue)
 		       || isupper ((int) schar)))
     {
       hasError |= optgenerror2
-	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	(FLG_ISORESERVED, FLG_NAMECHECKS,
 	 message 
 	 ("Name %s is reserved for future library extensions. "
 	  "Macros beginning with E and a digit or uppercase letter "
@@ -1305,7 +1305,7 @@ checkAnsiName (uentry ue)
       && (isupper ((int) rchar)))
     {
       hasError |= optgenerror2
-	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	(FLG_ISORESERVED, FLG_NAMECHECKS,
 	 message
 	 ("Name %s is reserved for future library extensions.  "
 	  "Macros beginning with \"LC_\" and an uppercase letter may "
@@ -1326,7 +1326,7 @@ checkAnsiName (uentry ue)
 	       || (isupper ((int) rchar))))
     {
       hasError |= optgenerror2
-	(FLG_ANSIRESERVED, FLG_NAMECHECKS,
+	(FLG_ISORESERVED, FLG_NAMECHECKS,
 	 message
 	 ("Name %s is reserved for future library extensions.  "
 	  "Macros that begin with SIG and an uppercase letter or SIG_ "
@@ -1339,7 +1339,7 @@ checkAnsiName (uentry ue)
   DPRINTF (("Here..."));
 
   if ((uentry_isVisibleExternally (ue) && !uentry_isAnyTag (ue))
-      || context_getFlag (FLG_ANSIRESERVEDLOCAL))
+      || context_getFlag (FLG_ISORESERVEDLOCAL))
     {
       flagcode flg;
 
@@ -1347,11 +1347,11 @@ checkAnsiName (uentry ue)
 
       if (uentry_isVisibleExternally (ue) && !uentry_isAnyTag (ue))
 	{
-	  flg = FLG_ANSIRESERVED;
+	  flg = FLG_ISORESERVED;
 	}
       else
 	{
-	  flg = FLG_ANSIRESERVEDLOCAL;
+	  flg = FLG_ISORESERVEDLOCAL;
 	}
 
       DPRINTF (("ue: %s", uentry_unparseFull (ue)));

@@ -2550,7 +2550,7 @@ static flaglist flags =
   {
     FK_NAMES, FK_ANSI, modeFlag,
     "isoreserved",
-    FLG_ANSIRESERVED,
+    FLG_ISORESERVED,
     "external name conflicts with name reserved for system or standard library",
     "External name is reserved for system use by ISO C99 standard.",
     0, 0
@@ -2568,7 +2568,7 @@ static flaglist flags =
   {
     FK_NAMES, FK_ANSI, modeFlag,
     "isoreservedinternal",
-    FLG_ANSIRESERVEDLOCAL,
+    FLG_ISORESERVEDLOCAL,
     "internal name conflicts with name reserved for system or standard library",
     "Internal name is reserved for system in ISO C99 standard (this should not be necessary unless you are worried about C library implementations that violate the standard and use macros).",
     0, 0
@@ -3140,8 +3140,8 @@ static flaglist flags =
   },
   {
     FK_DIRECT, FK_FILES, plainFlag,
-    "skipansiheaders",
-    FLG_SKIPANSIHEADERS,
+    "skipisoheaders",
+    FLG_SKIPISOHEADERS,
     "prevent inclusion of header files in a system directory with "
     "names that match standard ANSI headers. The symbolic information "
     "in the standard library is used instead.  Flag in effect only "

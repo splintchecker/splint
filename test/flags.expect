@@ -18,15 +18,15 @@ flags.c:11:5:
    flags.c:10:5:
    Declaration of
    xx1
-flags.c:13:18:
+flags.c:13:4:
     Semantic comment
     attempts to restore
     flag linelen.  A
     flag for setting a
     value cannot be
     restored.
-flags.c:15:17: Semantic comment attempts to set global flag dump.  A
-                  global flag cannot be set locally.
+flags.c:15:4: Semantic comment attempts to set global flag dump.  A
+                 global flag cannot be set locally.
 flags.c:16:22: Flag macrovarprefix (in semantic comment) must be
                   followed by an argument
 flags.c:17:26: Flag macrovarprefix (in semantic comment) must be

@@ -1078,7 +1078,7 @@ importNode_makeBracketed (/*@only@*/ ltoken t)
 
 static cstring extractQuote (/*@only@*/ cstring s)
 {
-  int len = cstring_length (s);
+  size_t len = cstring_length (s);
   char *sc = cstring_toCharsSafe (s);
   cstring t;
 

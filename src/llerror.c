@@ -46,7 +46,7 @@ static void printIndentMessage (FILE *p_stream, /*@only@*/ cstring p_sc, int p_i
 static int lclerrors = 0;
 # endif
 
-static int lastfileloclen = 10;
+static size_t lastfileloclen = 10;
 static /*@only@*/ cstring lastmsg = cstring_undefined;
 static int mcount = 0;
 static /*@only@*/ cstring saveOneMessage = cstring_undefined;
@@ -1175,9 +1175,9 @@ static
 void printError (FILE *stream, /*@only@*/ cstring sc)
 {
   int maxlen = context_getLineLen ();
-  int nspaces = lastfileloclen + 5;
+  size_t nspaces = lastfileloclen + 5;
   int nextlen = maxlen - nspaces;
-  int len = cstring_length (sc);
+  size_t len = cstring_length (sc);
   int indent = 0;
   char *s = cstring_toCharsSafe (sc);
   char *os = s;
@@ -1185,7 +1185,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 
   DPRINTF (("Print error: [%s]", sc));
 
-  if (len < (maxlen + nextlen) && (strchr (s, '\n') == NULL))
+  if (size_toInt (len) < (maxlen + nextlen) && (strchr (s, '\n') == NULL))
     {
       mstring_split (&s, &t, maxlen, &indent);
 
@@ -1195,8 +1195,8 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	{
 	  len = mstring_length (t);
 
-	  if (len < (maxlen - 3) && (strchr (t, '\n') == NULL)
-	      && len > (nextlen - 1))
+	  if (size_toInt (len) < (maxlen - 3) && (strchr (t, '\n') == NULL)
+	      && size_toInt (len) > (nextlen - 1))
 	    {
 	      fprintf (stream, "    %s\n", t);
 	    }
@@ -1205,7 +1205,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	      char *spaces = (char *) dmalloc ((nspaces + 1) * sizeof (*spaces));
 	      int i;
 
-	      for (i = 0; i < nspaces; i++)
+	      for (i = 0; i < size_toInt (nspaces); i++)
 		{
 		  spaces[i] = ' ';
 		}
@@ -1227,7 +1227,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
     {
       DPRINTF (("Here 1: [%s]", sc));
 
-      if (len < (maxlen + maxlen - 1) && (strchr (s, '\n') != NULL))
+      if (size_toInt (len) < (maxlen + maxlen - 1) && (strchr (s, '\n') != NULL))
 	{
 	  nspaces = ((maxlen + maxlen - 1) - len) / 2;
 
@@ -1244,7 +1244,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	      char *spaces = (char *) dmalloc ((nspaces + 1) * sizeof (*spaces));
 	      int i;
 
-	      for (i = 0; i < nspaces; i++)
+	      for (i = 0; i < size_toInt (nspaces); i++)
 		{
 		  spaces[i] = ' ';
 		}
@@ -1276,7 +1276,7 @@ void printError (FILE *stream, /*@only@*/ cstring sc)
 	  if (t != NULL)
 	    {
   	      char *spaces = (char *) dmalloc ((nspaces + 1) * sizeof (*spaces));
-	      int i;
+	      size_t i;
 
 	      for (i = 0; i < nspaces; i++)
 		{
@@ -1385,13 +1385,16 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
 			       fileloc_unparse (g_currentloc),
 			       fileloc_unparseRaw (file, line),
 			       s, errno));
-  printCodePoint ();
+
+  /* printCodePoint (); no longer useful */
 
   (void) fflush (stderr);
+
   if (errno != 0)
     {
       perror ("Possible system error diagnostic: ");
     }
+
   (void) fflush (stderr);
 
   printBugReport ();

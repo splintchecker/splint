@@ -211,14 +211,14 @@ void cppDoDefine (cstring str)
 
 void cppDoUndefine (cstring str)
 {
-  int sym_length;
+  size_t sym_length;
   hashNode hp;
   char *buf = cstring_toCharsSafe (str);
 
   sym_length = cppReader_checkMacroName (&g_cppState, buf,
-				 cstring_makeLiteralTemp ("macro"));
+					 cstring_makeLiteralTemp ("macro"));
   
-  while ((hp = cpphash_lookup (buf, sym_length, -1)) != NULL)
+  while ((hp = cpphash_lookup (buf, size_toInt (sym_length), -1)) != NULL)
     {
       /*@-exposetrans@*/ /*@-dependenttrans@*/
       cppReader_deleteMacro (hp);

@@ -62,15 +62,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # endif
 
 # include <string.h>
-
 # if !(defined (WIN32) || defined (OS2) && defined (__IBMC__))
 # include <unistd.h>
 # endif
-
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 # include <io.h>
 # include <sys/utime.h>		/* for __DATE__ and __TIME__ */
@@ -149,12 +146,10 @@ static void cpp_setLocation (cppReader *p_pfile)
 static enum cpp_token cpp_handleComment (cppReader *p_pfile,
 					 struct parse_marker *p_smark)
      /*@modifies p_pfile, p_smark@*/;
-
+  
 static bool cpp_shouldCheckMacro (cppReader *p_pfile, char *p_p) /*@modifies p_p@*/ ;
 
-static int cppReader_checkMacroNameLoc (fileloc p_loc,
-					char *p_symname,
-					cstring p_usage) ;
+static size_t cppReader_checkMacroNameLoc (fileloc p_loc, char *p_symname, cstring p_usage) ;
 
 static bool cpp_skipIncludeFile (cstring p_fname) /*@*/ ;
 
@@ -163,7 +158,7 @@ static bool cpp_skipIncludeFile (cstring p_fname) /*@*/ ;
 #endif
 
 /* Symbols to predefine.  */
-
+  
 #ifdef CPP_PREDEFINES
 static /*@observer@*/ char *predefs = CPP_PREDEFINES;
 #else
@@ -196,7 +191,7 @@ static /*@observer@*/ char *predefs = "";
 /*@constant observer char *WCHAR_TYPE@*/
 #define WCHAR_TYPE "int"
 #endif
-
+  
 /* The string value for __USER_LABEL_PREFIX__ */
 
 #ifndef USER_LABEL_PREFIX
@@ -219,7 +214,7 @@ static bool is_idstart[256];
 static bool is_hor_space[256];
 /* table to tell if c is horizontal or vertical space.  */
 static bool is_space[256];
-
+  
 static /*@exposed@*/ /*@null@*/ cppBuffer *
 cppReader_getBuffer (/*@special@*/ cppReader *p_pfile)
      /*@uses p_pfile->buffer@*/
@@ -242,7 +237,7 @@ static int cpp_peekN (cppReader *p_pfile, int p_n) /*@*/ ;
                      modifies *p_file; @*/
 # define cppReader_puts(PFILE, STR, N) \
   cpplib_reserve(PFILE, N), cppReader_putStrN (PFILE, STR,N)
-
+  
 /* Append character CH to PFILE's output buffer.  Assume sufficient space. */
 
 /*@function static void cppReader_putCharQ (cppReader *p_file, char p_ch)
@@ -378,7 +373,7 @@ static int /*@alt void@*/ finclude (cppReader *p_pfile, int p_f,
 				    /*@dependent@*/ /*@null@*/ struct file_name_list *p_dirptr);
 
 static void validate_else (cppReader *p_pfile, cstring p_directive);
-
+  
 static void conditional_skip (cppReader *p_pfile, int p_skip,
 			      enum node_type p_type,
 			      /*@dependent@*/ /*@null@*/ char *p_control_macro);
@@ -462,7 +457,7 @@ static int do_warning (cppReader *, struct directive *, char *, char *);
 /* -I directories are added to the end, then the defaults are added.  */
 
 /*@access cstring@*/
-
+  
 static struct default_include {
   /*@dependent@*/ /*@observer@*/ cstring fname;	/* The name of the directory.  */
   int cplusplus;		/* Only look here if we're compiling C++.  */
@@ -581,7 +576,7 @@ static void
 quote_string (cppReader *pfile, char *src)
 {
   char c;
-
+  
   cppReader_putCharQ (pfile, '\"');
   for (;;)
     {
@@ -722,7 +717,7 @@ cppReader_define (cppReader *pfile, char *str)
   (void) do_define (pfile, NULL, buf, buf + strlen (buf));
   sfree (buf);
 }
-
+  
 /* Append a chain of `struct file_name_list's
    to the end of the main include chain.
    FIRST is gthe beginning of the chain to append, and LAST is the end.  */
@@ -767,7 +762,7 @@ cppReader_appendIncludeChain (cppReader *pfile,
   /* last->next = NULL; */
   opts->last_include = last;
 }
-
+  
 # if 0
 static /*@unused@*/ void 
 cppReader_showIncludeChain (cppReader *pfile)
@@ -790,7 +785,7 @@ cppReader_showIncludeChain (cppReader *pfile)
     }
 }
 # endif
-
+  
 cstring 
 cppReader_getIncludePath ()
 {
@@ -856,7 +851,7 @@ static void
 path_include (cppReader *pfile, char *path)
 {
   char *p;
-
+  
 #ifdef __CYGWIN32__
   char *win32temp;
 
@@ -912,7 +907,7 @@ path_include (cppReader *pfile, char *path)
       p++;
     }
 }
-
+  
 void
 cppOptions_init (cppOptions *opts)
 {
@@ -1667,7 +1662,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
     /* Handle the start of a symbol.  */
     if (is_idchar[(int) c] && nargs > 0) {
       char *id_beg = p - 1;
-      int id_len;
+      size_t id_len;
 
       --exp_p;
       while (p != limit && is_idchar[(int) *p])
@@ -1675,7 +1670,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
 	  p++;
 	}
 
-      id_len = p - id_beg;
+      id_len = size_fromInt (p - id_beg);
 
       if (is_idstart[(int) c]
 	  && ! (id_len == 1 && c == 'L' && (*p == '\'' || *p == '\"'))) {
@@ -1686,7 +1681,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
 
 	  if (arg->name[0] == c
 	      && arg->length == id_len
-	      && strncmp (arg->name, id_beg, size_fromInt (id_len)) == 0) {
+	      && strncmp (arg->name, id_beg, id_len) == 0) {
 	    char *p1;
 
 	    if (expected_delimiter && CPPOPTIONS (pfile)->warn_stringify) {
@@ -1984,7 +1979,7 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
 	  continue;
 	}
 	/*@switchbreak@*/ break;
-
+  
       case '/':
 	if (expected_delimiter != '\0') /* No comments inside strings.  */
 	  /*@switchbreak@*/ break;
@@ -2006,7 +2001,7 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
     /* Handle the start of a symbol.  */
     if (is_idchar[(int) c] && nargs > 0) {
       char *id_beg = p - 1;
-      int id_len;
+      size_t id_len;
 
       --exp_p;
       while (p != limit && is_idchar[(int) *p])
@@ -2014,7 +2009,7 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
 	  p++;
 	}
 
-      id_len = p - id_beg;
+      id_len = size_fromInt (p - id_beg);
 
       if (is_idstart[(int) c]
 	  && ! (id_len == 1 && c == 'L' && (*p == '\'' || *p == '\"'))) {
@@ -2025,7 +2020,7 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
 
 	  if (arg->name[0] == c
 	      && arg->length == id_len
-	      && strncmp (arg->name, id_beg, size_fromInt (id_len)) == 0) {
+	      && strncmp (arg->name, id_beg, id_len) == 0) {
 	    char *p1;
 
 	    if (expected_delimiter) { /* && CPPOPTIONS (pfile)->warn_stringify) { */
@@ -2155,7 +2150,7 @@ static char rest_extension[] = "...";
 /* Create a DEFINITION node from a #define directive.  Arguments are
    as for do_define.  */
 
-
+  
 static /*@null@*/ macroDef
 create_definition (/*@exposed@*/ char *buf, char *limit,
 		   cppReader *pfile, bool predefinition,
@@ -2163,7 +2158,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 {
   char *bp;			/* temp ptr into input buffer */
   char *symname;		/* remember where symbol name starts */
-  int sym_length;		/* and how long it is */
+  size_t sym_length;		/* and how long it is */
   int rest_args = 0;   /* really int! */
   int line;
   int col;
@@ -2242,7 +2237,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	      }
 	  }
 
-	temp->length = bp - temp->name;
+	temp->length = size_fromInt (bp - temp->name);
 
 	if (rest_args != 0)
 	  {
@@ -2273,7 +2268,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	  for (otemp = temp->next; otemp != NULL; otemp = otemp->next)
 	    {
 	      if (temp->length == otemp->length &&
-		  strncmp (temp->name, otemp->name, size_fromInt (temp->length)) == 0) {
+		  strncmp (temp->name, otemp->name, temp->length) == 0) {
 		cstring name = cstring_copyLength (temp->name, temp->length);
 		cppReader_error (pfile,
 			   message ("duplicate argument name `%x' in `#define'", name));
@@ -2282,7 +2277,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	    }
 	}
       }
-
+  
     ++bp;			/* skip paren */
     SKIP_WHITE_SPACE (bp);
     /* now everything from bp before limit is the definition.  */
@@ -2293,19 +2288,21 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
        the argument names in reverse order
        with comma-space between them.  */
     defn->args.argnames = (char *) dmalloc (size_fromInt (arglengths + 1));
-
+  
     {
       struct arglist *temp;
       int i = 0;
-      for (temp = arg_ptrs; temp != NULL; temp = temp->next) {
-	memcpy (&defn->args.argnames[i], temp->name, size_fromInt (temp->length));
-	i += temp->length;
-	if (temp->next != 0) {
-	  defn->args.argnames[i++] = ',';
-	  defn->args.argnames[i++] = ' ';
+      for (temp = arg_ptrs; temp != NULL; temp = temp->next) 
+	{
+	  memcpy (&defn->args.argnames[i], temp->name, temp->length);
+	  i += temp->length;
+	  if (temp->next != 0)
+	    {
+	      defn->args.argnames[i++] = ',';
+	      defn->args.argnames[i++] = ' ';
+	    }
 	}
-      }
-
+      
       defn->args.argnames[i] = '\0';
     }
 
@@ -2377,7 +2374,7 @@ cpplib_createDefinition (cstring def,
   char *limit = buf + cstring_length (def);
   char *bp;			/* temp ptr into input buffer */
   char *symname;		/* remember where symbol name starts */
-  int sym_length;		/* and how long it is */
+  size_t sym_length;		/* and how long it is */
   int rest_args = 0;   /* really int! */
   int line = fileloc_lineno (loc);
   cstring file = fileloc_filename (loc);
@@ -2412,7 +2409,7 @@ cpplib_createDefinition (cstring def,
   if (*bp == '(') {
     struct arglist *arg_ptrs = NULL;
     int argno = 0;
-
+  
     bp++;			/* skip '(' */
     SKIP_WHITE_SPACE (bp);
 
@@ -2456,7 +2453,7 @@ cpplib_createDefinition (cstring def,
 	      }
 	  }
 
-	temp->length = bp - temp->name;
+	temp->length = size_fromInt (bp - temp->name);
 	
 	if (rest_args != 0)
 	  {
@@ -2489,7 +2486,7 @@ cpplib_createDefinition (cstring def,
 	  for (otemp = temp->next; otemp != NULL; otemp = otemp->next)
 	    {
 	      if (temp->length == otemp->length &&
-		  strncmp (temp->name, otemp->name, size_fromInt (temp->length)) == 0) {
+		  strncmp (temp->name, otemp->name, temp->length) == 0) {
 		cstring name = cstring_copyLength (temp->name, temp->length);
 
 		voptgenerror (FLG_PREPROC,
@@ -2516,7 +2513,7 @@ cpplib_createDefinition (cstring def,
       struct arglist *temp;
       int i = 0;
       for (temp = arg_ptrs; temp != NULL; temp = temp->next) {
-	memcpy (&defn->args.argnames[i], temp->name, size_fromInt (temp->length));
+	memcpy (&defn->args.argnames[i], temp->name, temp->length);
 	i += temp->length;
 	if (temp->next != 0) {
 	  defn->args.argnames[i++] = ',';
@@ -2593,9 +2590,7 @@ nope:
 /* Check a purported macro name SYMNAME, and yield its length.
    USAGE is the kind of name this is intended for.  */
 
-int cppReader_checkMacroName (cppReader *pfile,
-			      char *symname,
-			      cstring usage)
+size_t cppReader_checkMacroName (cppReader *pfile, char *symname, cstring usage)
 {
   char *p;
   size_t sym_length;
@@ -2629,17 +2624,15 @@ int cppReader_checkMacroName (cppReader *pfile,
 	}
     }
 
-  return size_toInt (sym_length);
+  return sym_length;
 }
-
+  
 /*
 ** evans 2001-12-31
 ** Gasp...cut-and-pasted from above to deal with pfile (should replace throughout with this...)
 */
 
-int cppReader_checkMacroNameLoc (fileloc loc,
-				 char *symname,
-				 cstring usage)
+size_t cppReader_checkMacroNameLoc (fileloc loc, char *symname, cstring usage)
 {
   char *p;
   size_t sym_length;
@@ -2675,9 +2668,9 @@ int cppReader_checkMacroNameLoc (fileloc loc,
 	}
     }
 
-  return size_toInt (sym_length);
+  return sym_length;
 }
-
+  
 /* Return zero if two DEFINITIONs are isomorphic.  */
 
 static bool
@@ -2734,7 +2727,7 @@ compare_defs (DEFINITION *d1, DEFINITION *d2)
    so ignore leading whitespace entirely.
    LAST means these parts are the last of a macro definition;
    so ignore trailing whitespace entirely.  */
-
+  /*@i2@*/
 static bool
 comp_def_part (bool first, char *beg1, int len1, char *beg2, int len2, bool last)
 {
@@ -2765,7 +2758,7 @@ comp_def_part (bool first, char *beg1, int len1, char *beg2, int len2, bool last
    LIMIT points to the first character past the end of the definition.
    KEYWORD is the keyword-table entry for #define,
    or NULL for a "predefined" macro.  */
-
+  /*@i2@*/
 static int
 do_defineAux (cppReader *pfile, struct directive *keyword,
 	      /*@exposed@*/ char *buf, char *limit, bool noExpand)
@@ -2773,21 +2766,21 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
   int hashcode;
   macroDef mdef;
   hashNode hp;
-  
+    /*@i2@*/
   DPRINTF (("Define aux: %d", noExpand));
-
+  /*@i2@*/
   mdef = create_definition (buf, limit, pfile, keyword == NULL, noExpand);
 
   if (mdef.defn == 0)
     goto nope;
-
+  /*@i2@*/
   hashcode = cpphash_hashCode (mdef.symnam, mdef.symlen, CPP_HASHSIZE);
-
+  /*@i2@*/
   DPRINTF (("Macro: %s / %s", 
 	    cstring_copyLength (mdef.symnam, mdef.symlen),
 	    bool_unparse (noExpand)));
-
-  if ((hp = cpphash_lookup (mdef.symnam, mdef.symlen, hashcode)) != NULL)
+  /*@i2@*/
+  if ((hp = cpphash_lookup (mdef.symnam, size_toInt (mdef.symlen), hashcode)) != NULL)
     {
       bool ok = FALSE;
 
@@ -2803,7 +2796,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       else {
 	BADBRANCH;
       }
-
+  /*@i2@*/
       /* Print the warning if it's not ok.  */
       if (!ok)
 	{
@@ -2819,7 +2812,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
 	    }
 
 	  cpp_setLocation (pfile);
-
+  /*@i2@*/
 	  if (hp->type == T_MACRO)
 	    {
 	      if (hp->value.defn->noExpand)
@@ -2844,7 +2837,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
 			    message ("Macro %q already defined",
 				     cstring_copyLength (mdef.symnam,
 							 mdef.symlen)));
-
+  /*@i2@*/
 	    }
 	}
 
@@ -2860,7 +2853,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       */
 
       hashNode hn;
-
+  /*@i2@*/
       if (CPPOPTIONS (pfile)->debug_output && (keyword != NULL))
 	{
 	  pass_thru_directive (buf, limit, pfile, keyword);
@@ -2874,9 +2867,9 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
     } /*@=branchstate@*/
 
   return 0;
-
+  /*@i2@*/
 nope:
-
+  /*@i2@*/
   return 1;
 }
 
@@ -2887,7 +2880,7 @@ do_define (cppReader *pfile, struct directive *keyword,
   DPRINTF (("Regular do define"));
   return do_defineAux (pfile, keyword, buf, limit, FALSE);
 }
-
+  /*@i2@*/
 /* This structure represents one parsed argument in a macro call.
    `raw' points to the argument text as written (`raw_length' is its length).
    `expanded' points to the argument's macro-expansion
@@ -2897,11 +2890,11 @@ do_define (cppReader *pfile, struct directive *keyword,
    `use_count' is the number of times this macro arg is substituted
    into the macro.  If the actual use count exceeds 10,
    the value stored is 10.  */
-
+  /*@i2@*/
 /* raw and expanded are relative to ARG_BASE */
 /*@notfunction@*/
 #define ARG_BASE ((pfile)->token_buffer)
-
+  /*@i2@*/
 struct argdata {
   /* Strings relative to pfile->token_buffer */
   long raw;
@@ -2918,11 +2911,11 @@ struct argdata {
    If BUFFER != NULL, then use the LENGTH characters in BUFFER
    as the new input buffer.
    Return the new buffer, or NULL on failure.  */
-
+  /*@i2@*/
 /*@null@*/ /*@exposed@*/ cppBuffer *
 cppReader_pushBuffer (cppReader *pfile, char *buffer, size_t length)
 {
-  cppBuffer *buf = cppReader_getBuffer (pfile);
+  cppBuffer *buf = cppReader_getBufferSafe (pfile);
 
   if (buf == pfile->buffer_stack)
     {
@@ -2959,7 +2952,7 @@ cppReader_pushBuffer (cppReader *pfile, char *buffer, size_t length)
 
   return buf;
 }
-
+  /*@i2@*/
 cppBuffer *
 cppReader_popBuffer (cppReader *pfile)
 {
@@ -2973,7 +2966,7 @@ cppReader_popBuffer (cppReader *pfile)
 
 /* Scan until CPPBUFFER (PFILE) is exhausted into PFILE->token_buffer.
    Pop the buffer when done.  */
-
+  /*@i2@*/
 void
 cppReader_scanBuffer (cppReader *pfile)
 {
@@ -2996,6 +2989,7 @@ cppReader_scanBuffer (cppReader *pfile)
 	}
     }
 }
+  /*@i2@*/
 
 /*
  * Rescan a string (which may have escape marks) into pfile's buffer.
@@ -3519,7 +3513,7 @@ special_symbol (hashNode hp, cppReader *pfile)
     case T_SPEC_DEFINED:
       buf = cstring_makeLiteral (" 0 ");     /* Assume symbol is not defined */
       ip = cppReader_getBuffer (pfile);
-
+      llassert (ip != NULL);
       llassert (ip->cur != NULL);
       SKIP_WHITE_SPACE (ip->cur);
 
@@ -3567,7 +3561,7 @@ special_symbol (hashNode hp, cppReader *pfile)
       llfatalerror (message ("Pre-processing error: invalid special hash type"));
     }
 
-  len = size_fromInt (cstring_length (buf));
+  len = cstring_length (buf);
 
   cpplib_reserve (pfile, len + 1);
   cppReader_putStrN (pfile, cstring_toCharsSafe (buf), len);
@@ -3895,6 +3889,8 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   char *oxbuf = NULL;
   int start_line;
   int start_column;
+  int end_line;
+  int end_column;
   size_t xbuf_len;
   size_t old_written = cpplib_getWritten (pfile);
   int rest_args;
@@ -3903,8 +3899,8 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
   struct argdata *args = NULL;
 
   pfile->output_escapes++;
-
   cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile), &start_line, &start_column);
+  DPRINTF (("Expand macro: %d:%d", start_line, start_column));
 
   nargs = defn->nargs;
 
@@ -4037,6 +4033,14 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 	  ;
 	}
     }
+
+  /*
+  ** If the agrument list was multiple lines, need to insert new lines to keep line
+  ** numbers accurate.
+  */
+
+  cppBuffer_lineAndColumn (cppReader_fileBuffer (pfile), &end_line, &end_column);
+  DPRINTF (("Expand macro: %d:%d", end_line, end_column));
 
   /* If macro wants zero args, we parsed the arglist for checking only.
      Read directly from the macro definition.  */
@@ -4383,8 +4387,47 @@ cpplib_macroExpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 
   /* Now put the expansion on the input stack
      so our caller will commence reading from it.  */
+  DPRINTF (("Pushing expansion: %s", cstring_copyLength (xbuf, xbuf_len)));
+
+  if (end_line != start_line)
+    {
+      /* xbuf must have enough newlines */
+      int newlines = end_line - start_line;
+      int foundnewlines = 0;
+      char *xbufptr = xbuf;
+
+      while ((xbufptr = strchr (xbufptr, '\n')) != NULL && foundnewlines <= newlines)
+	{
+	  foundnewlines++;
+	  xbufptr++;
+
+	  if (*xbufptr == '\0') 
+	    {
+	      break;
+	    }
+	}
+	  
+      if (foundnewlines < newlines)
+	{
+	  cstring newbuf = cstring_copyLength (xbuf, xbuf_len);
+	  
+	  while (foundnewlines < newlines)
+	    {
+	      newbuf = cstring_appendChar (newbuf, '\n');
+	      foundnewlines++;
+	    }
+
+	  sfree (oxbuf);
+	  xbuf = cstring_toCharsSafe (newbuf);
+	  xbuf_len = cstring_length (newbuf);
+	  /*@-branchstate@*/ 
+	} /*@=branchstate@*/ 
+    }
+  
+  DPRINTF (("Pushing expansion: %s", cstring_copyLength (xbuf, xbuf_len)));
+
   push_macro_expansion (pfile, xbuf, xbuf_len, hp);
-  cppReader_getBuffer (pfile)->has_escapes = 1;
+  cppReader_getBufferSafe (pfile)->has_escapes = 1;
 
   /* Pop the space we've used in the token_buffer for argument expansion.  */
   cppReader_setWritten (pfile, old_written);
@@ -4500,8 +4543,7 @@ do_include (cppReader *pfile, struct directive *keyword,
   struct file_name_list dsp[1];	/* First in chain, if #include "..." */
   struct file_name_list *searchptr = NULL;
   size_t old_written = cpplib_getWritten (pfile);
-
-  int flen;
+  size_t flen;
 
   int f;			/* file number */
   int angle_brackets = 0;	/* 0 for "...", 1 for <...> */
@@ -4664,10 +4706,10 @@ do_include (cppReader *pfile, struct directive *keyword,
 	    }
 	}
     }
-
+  
   cppReader_setWritten (pfile, old_written);
 
-  flen = fend - fbeg;
+  flen = size_fromInt (fend - fbeg);
 
   DPRINTF (("fbeg: %s", fbeg));
 
@@ -4921,21 +4963,22 @@ is_system_include (cppReader *pfile, cstring filename)
        searchptr != NULL;
        searchptr = searchptr->next)
     {
-      if (!cstring_isEmpty (searchptr->fname)) {
-	cstring sys_dir = searchptr->fname;
-	int length = cstring_length (sys_dir);
-
-	if (cstring_equalLen (sys_dir, filename, length)
-	    && osd_isConnectChar (cstring_getChar (filename, length)))
-	  {
-	    if (searchptr->c_system_include_path)
-	      return 2;
-	    else
-	      return 1;
-	  }
-      }
+      if (!cstring_isEmpty (searchptr->fname)) 
+	{
+	  cstring sys_dir = searchptr->fname;
+	  size_t length = cstring_length (sys_dir);
+	  
+	  if (cstring_equalLen (sys_dir, filename, length)
+	      && osd_isConnectChar (cstring_getChar (filename, length)))
+	    {
+	      if (searchptr->c_system_include_path)
+		return 2;
+	      else
+		return 1;
+	    }
+	}
     }
-
+  
   return 0;
 }
 
@@ -5006,6 +5049,7 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
   enum file_change_code file_change = same_file;
   enum cpp_token token;
 
+  llassert (ip != NULL);
   token = get_directive_token (pfile);
 
   if (token != CPP_NUMBER
@@ -5038,7 +5082,7 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
     hashNode *hash_bucket;
     char *p;
     size_t num_start;
-    int fname_length;
+    size_t fname_length;
 
     /* Turn the file name, which is a character string literal,
        into a null-terminated string.  Do this in place.  */
@@ -5050,7 +5094,7 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
 	goto bad_line_directive;
       }
 
-    fname_length = end_name - fname;
+    fname_length = size_fromInt (end_name - fname);
     num_start = cpplib_getWritten (pfile);
 
     token = get_directive_token (pfile);
@@ -5092,15 +5136,21 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
 
     hash_bucket =
       &fname_table[cpphash_hashCode (fname, fname_length, FNAME_HASHSIZE)];
+
     for (hp = *hash_bucket; hp != NULL; hp = hp->next)
       {
-	if (hp->length == fname_length &&
-	    strncmp (hp->value.cpval, fname, size_fromInt (fname_length)) == 0) {
-	  ip->nominal_fname = cstring_fromChars (hp->value.cpval);
-	  break;
-	}
+	if (hp->length == fname_length)
+	  {
+	    llassert (hp->value.cpval != NULL);
+	    
+	    if (strncmp (hp->value.cpval, fname, fname_length) == 0) 
+	      {
+		ip->nominal_fname = cstring_fromChars (hp->value.cpval);
+		break;
+	      }
+	  }
       }
-
+    
     if (hp == 0) {
       /* Didn't find it; cons up a new one.  */
       hp = (hashNode) dmalloc (sizeof (*hp));
@@ -5115,7 +5165,7 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
 
       hp->length = fname_length;
       hp->value.cpval = dmalloc (sizeof (*hp->value.cpval) * (fname_length + 1));
-      memcpy (hp->value.cpval, fname, size_fromInt (fname_length));
+      memcpy (hp->value.cpval, fname, fname_length);
       hp->value.cpval[fname_length] = '\0';
       ip->nominal_fname = cstring_fromChars (hp->value.cpval);
     }
@@ -5149,7 +5199,7 @@ static int
 do_undef (cppReader *pfile, struct directive *keyword, char *buf, char *limit)
 {
 
-  int sym_length;
+  size_t sym_length;
   hashNode hp;
   char *orig_buf = buf;
 
@@ -5157,7 +5207,7 @@ do_undef (cppReader *pfile, struct directive *keyword, char *buf, char *limit)
 
   sym_length = cppReader_checkMacroName (pfile, buf, cstring_makeLiteralTemp ("macro"));
 
-  while ((hp = cpphash_lookup (buf, sym_length, -1)) != NULL)
+  while ((hp = cpphash_lookup (buf, size_toInt (sym_length), -1)) != NULL)
     {
       /* If we are generating additional info for debugging (with -g) we
 	 need to pass through all effective #undef commands.  */
@@ -5200,7 +5250,7 @@ static int
 do_error (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 	  char *buf, char *limit)
 {
-  int length = limit - buf;
+  size_t length = size_fromInt (limit - buf);
   cstring copy = cstring_copyLength (buf, length);
   cstring adv = cstring_advanceWhiteSpace (copy);
 
@@ -5219,7 +5269,7 @@ static int
 do_warning (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 	    char *buf, char *limit)
 {
-  int length = limit - buf;
+  size_t length = size_fromInt (limit - buf);
   cstring copy = cstring_copyLength (buf, length);
   cstring adv = cstring_advanceWhiteSpace (copy);
   cppReader_warning (pfile, message ("#warning %s", adv));
@@ -5235,7 +5285,8 @@ do_ident (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 	  /*@unused@*/ char *buf, /*@unused@*/ char *limit)
 {
   /* Allow #ident in system headers, since that's not user's fault.  */
-  if (cppReader_isPedantic (pfile) && !cppReader_getBuffer (pfile)->system_header_p)
+  if (cppReader_isPedantic (pfile) 
+      && !cppReader_getBufferSafe (pfile)->system_header_p)
     cppReader_pedwarnLit (pfile,
 		    cstring_makeLiteralTemp ("ANSI C does not allow `#ident'"));
 
@@ -5261,14 +5312,14 @@ do_pragma (cppReader *pfile, /*@unused@*/ struct directive *keyword,
        been included yet.  */
     struct file_name_list *ptr;
     char *p = buf + 14, *fname, *inc_fname;
-    int fname_len;
+    size_t fname_len;
     SKIP_WHITE_SPACE (p);
     if (*p == '\n' || *p != '\"')
       return 0;
 
     fname = p + 1;
     p = (char *) strchr (fname, '\"');
-    fname_len = p != NULL ? p - fname : mstring_length (fname);
+    fname_len = p != NULL ? size_fromInt (p - fname) : mstring_length (fname);
 
     for (ptr = pfile->all_include_files; ptr != NULL; ptr = ptr->next)
       {
@@ -5277,7 +5328,7 @@ do_pragma (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 	  ? inc_fname + 1 : cstring_toCharsSafe (ptr->fname);
 
 	if ((inc_fname != NULL)
-	    && (strncmp (inc_fname, fname, size_fromInt (fname_len)) == 0))
+	    && (strncmp (inc_fname, fname, fname_len) == 0))
 	  {
 	    cpp_setLocation (pfile);
 
@@ -5323,7 +5374,7 @@ do_if (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 static int do_elif (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 		    char *buf, char *limit)
 {
-  if (pfile->if_stack == cppReader_getBuffer (pfile)->if_stack)
+  if (pfile->if_stack == cppReader_getBufferSafe (pfile)->if_stack)
     {
       cppReader_errorLit (pfile,
 		    cstring_makeLiteralTemp ("Preprocessor command #elif is not within a conditional"));
@@ -5339,9 +5390,9 @@ static int do_elif (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 			cstring_makeLiteralTemp ("`#elif' after `#else'"));
 
 	  if (pfile->if_stack->fname != NULL
-	      && cppReader_getBuffer (pfile)->fname != NULL
+	      && cppReader_getBufferSafe (pfile)->fname != NULL
 	      && !cstring_equal (pfile->if_stack->fname,
-				 cppReader_getBuffer (pfile)->nominal_fname))
+				 cppReader_getBufferSafe (pfile)->nominal_fname))
 	    fprintf (stderr, ", file %s", cstring_toCharsSafe (pfile->if_stack->fname));
 	  fprintf (stderr, ")\n");
 	}
@@ -5407,9 +5458,9 @@ do_xifdef (cppReader *pfile, struct directive *keyword,
 	   /*@unused@*/ char *unused1, /*@unused@*/ char *unused2)
 {
   int skip;
-  cppBuffer *ip = cppReader_getBuffer (pfile);
+  cppBuffer *ip = cppReader_getBufferSafe (pfile);
   char *ident;
-  int ident_length;
+  size_t ident_length;
   enum cpp_token token;
   int start_of_file = 0;
   char *control_macro = 0;
@@ -5431,7 +5482,7 @@ do_xifdef (cppReader *pfile, struct directive *keyword,
   ident = pfile->token_buffer + old_written;
   DPRINTF (("Ident: %s", ident));
 
-  ident_length = size_toInt (cpplib_getWritten (pfile) - old_written);
+  ident_length = cpplib_getWritten (pfile) - old_written;
   cppReader_setWritten (pfile, old_written); /* Pop */
 
   if (token == CPP_VSPACE || token == CPP_POP || token == CPP_EOF)
@@ -5445,17 +5496,11 @@ do_xifdef (cppReader *pfile, struct directive *keyword,
     }
   else if (token == CPP_NAME)
     {
-      hashNode hp = cpphash_lookup (ident, ident_length, -1);
+      hashNode hp = cpphash_lookup (ident, size_toInt (ident_length), -1);
 
-      DPRINTF (("Lookup: %s %d", ident, ident_length));
-
-      skip = (keyword->type == T_IFDEF) 
-	? (hp == NULL) : (hp != NULL);
+      skip = (keyword->type == T_IFDEF) ? (hp == NULL) : (hp != NULL);
       
-      DPRINTF (("hp null: %d / %d / %d",
-		(hp == NULL),
-		(keyword->type == T_IFNDEF),
-		skip));
+      DPRINTF (("hp null: %d / %d / %d", hp == NULL, keyword->type == T_IFNDEF, skip));
       
       if (start_of_file && !skip)
 	{
@@ -5505,7 +5550,7 @@ conditional_skip (cppReader *pfile, int skip,
 {
   cppIfStackFrame *temp = (cppIfStackFrame *) dmalloc (sizeof (*temp));
 
-  temp->fname = cppReader_getBuffer (pfile)->nominal_fname;
+  temp->fname = cppReader_getBufferSafe (pfile)->nominal_fname;
   temp->next = pfile->if_stack;
   temp->control_macro = control_macro;
   temp->lineno = 0;
@@ -5554,7 +5599,7 @@ skip_if_group (cppReader *pfile, int any)
 beg_of_line:
   if (CPPOPTIONS (pfile)->output_conditionals)
     {
-      cppBuffer *pbuf = cppReader_getBuffer (pfile);
+      cppBuffer *pbuf = cppReader_getBufferSafe (pfile);
       char *start_line;
 
       llassert (pbuf->buf != NULL);
@@ -5600,7 +5645,7 @@ beg_of_line:
 		case T_IFNDEF:
 		  temp = (cppIfStackFrame *) dmalloc (sizeof (*temp));
 		  temp->next = pfile->if_stack;
-		  temp->fname = cppReader_getBuffer (pfile)->nominal_fname;
+		  temp->fname = cppReader_getBufferSafe (pfile)->nominal_fname;
 		  temp->type = kt->type;
 		  temp->lineno = 0;
 		  temp->if_succeeded = 0;
@@ -5615,7 +5660,7 @@ beg_of_line:
 				   cstring_makeLiteralTemp (kt->type == T_ELSE ? "#else" : "#endif"));
 		  /*@fallthrough@*/
 		case T_ELIF:
-		  if (pfile->if_stack == cppReader_getBuffer (pfile)->if_stack)
+		  if (pfile->if_stack == cppReader_getBufferSafe (pfile)->if_stack)
 		    {
 		      cppReader_error (pfile,
 				 message ("Preprocessor command #%s is not within a conditional", kt->name));
@@ -5736,7 +5781,7 @@ do_else (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 
   cppReader_skipRestOfLine (pfile);
 
-  if (pfile->if_stack == cppReader_getBuffer (pfile)->if_stack) {
+  if (pfile->if_stack == cppReader_getBufferSafe (pfile)->if_stack) {
     cppReader_errorLit (pfile,
 		  cstring_makeLiteralTemp ("Preprocessor command #else is not within a conditional"));
     return 0;
@@ -5786,7 +5831,7 @@ do_endif (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 
   cppReader_skipRestOfLine (pfile);
 
-  if (pfile->if_stack == cppReader_getBuffer (pfile)->if_stack)
+  if (pfile->if_stack == cppReader_getBufferSafe (pfile)->if_stack)
     {
       cppReader_errorLit (pfile, cstring_makeLiteralTemp ("Unbalanced #endif"));
     }
@@ -5831,7 +5876,7 @@ do_endif (cppReader *pfile, /*@unused@*/ struct directive *keyword,
 
 	      for ( ; ifile != NULL; ifile = ifile->next)
 		{
-		  if (cstring_equal (ifile->fname, cppReader_getBuffer (pfile)->fname))
+		  if (cstring_equal (ifile->fname, cppReader_getBufferSafe (pfile)->fname))
 		    {
 		      ifile->control_macro = temp->control_macro;
 		      break;
@@ -5888,7 +5933,7 @@ cpplib_getTokenAux (cppReader *pfile, bool forceExpand)
   int start_line, start_column;
   enum cpp_token token;
   struct cppOptions *opts = CPPOPTIONS (pfile);
-  cppReader_getBuffer (pfile)->prev = cppReader_getBuffer (pfile)->cur;
+  cppReader_getBufferSafe (pfile)->prev = cppReader_getBufferSafe (pfile)->cur;
 
 get_next:
   c = cppReader_getC (pfile);
@@ -5897,7 +5942,7 @@ get_next:
   if (c == EOF)
     {
     handle_eof:
-      if (cppReader_getBuffer (pfile)->seen_eof)
+      if (cppReader_getBufferSafe (pfile)->seen_eof)
 	{
 	  cppBuffer *buf = cppReader_popBuffer (pfile);
 
@@ -5912,10 +5957,10 @@ get_next:
 	}
       else
 	{
-	  cppBuffer *next_buf = cppBuffer_prevBuffer (cppReader_getBuffer (pfile));
-	  cppReader_getBuffer (pfile)->seen_eof = 1;
+	  cppBuffer *next_buf = cppBuffer_prevBuffer (cppReader_getBufferSafe (pfile));
+	  cppReader_getBufferSafe (pfile)->seen_eof = 1;
 
-	  if (cstring_isDefined (cppReader_getBuffer (pfile)->nominal_fname)
+	  if (cstring_isDefined (cppReader_getBufferSafe (pfile)->nominal_fname)
 	      && next_buf != cppReader_nullBuffer (pfile))
 	    {
 	      /* We're about to return from an #include file.
@@ -6027,9 +6072,9 @@ get_next:
 			 Otherwise, only -D can make a macro with an unmatched
 			 quote.  */
 		      cppBuffer *next_buf
-			= cppBuffer_prevBuffer (cppReader_getBuffer (pfile));
-		      (*cppReader_getBuffer (pfile)->cleanup)
-			(cppReader_getBuffer (pfile), pfile);
+			= cppBuffer_prevBuffer (cppReader_getBufferSafe (pfile));
+		      (*cppReader_getBufferSafe (pfile)->cleanup)
+			(cppReader_getBufferSafe (pfile), pfile);
 		      CPPBUFFER (pfile) = next_buf;
 		      continue;
 		    }
@@ -6220,7 +6265,7 @@ get_next:
 	  return CPP_OTHER;
 
 	case '@':
-	  if (cppReader_getBuffer (pfile)->has_escapes)
+	  if (cppReader_getBufferSafe (pfile)->has_escapes)
 	    {
 	      c = cppReader_getC (pfile);
 	      if (c == '-')
@@ -6375,7 +6420,7 @@ get_next:
 	    hashNode hp;
 	    char *ident;
 	    size_t before_name_written = cpplib_getWritten (pfile);
-	    int ident_len;
+	    size_t ident_len;
 	    parse_name (pfile, c);
 	    pfile->only_seen_white = 0;
 
@@ -6388,9 +6433,9 @@ get_next:
 	    ident = pfile->token_buffer + before_name_written;
 	    DPRINTF (("Ident: %s", ident));
 
-	    ident_len = (cpplib_getPWritten (pfile)) - ident;
+	    ident_len = size_fromInt ((cpplib_getPWritten (pfile)) - ident);
 
-	    hp = cpphash_lookupExpand (ident, ident_len, -1, forceExpand);
+	    hp = cpphash_lookupExpand (ident, size_toInt (ident_len), -1, forceExpand);
 
 	    if (hp == NULL)
 	      {
@@ -6409,7 +6454,7 @@ get_next:
 		    ident = pfile->token_buffer + before_name_written;
 		    cppReader_adjustWritten (pfile, 2);
 
-		    for (i = ident_len; i >= 0; i--)
+		    for (i = size_toInt (ident_len); i >= 0; i--)
 		      {
 			ident[i+2] = ident[i];
 		      }
@@ -6441,8 +6486,8 @@ get_next:
 			/*@loopbreak@*/ break;
 		      }
 
-		  next_buf = cppBuffer_prevBuffer (cppReader_getBuffer (pfile));
-		  (*cppReader_getBuffer (pfile)->cleanup) (cppReader_getBuffer (pfile), pfile);
+		  next_buf = cppBuffer_prevBuffer (cppReader_getBufferSafe (pfile));
+		  (*cppReader_getBufferSafe (pfile)->cleanup) (cppReader_getBufferSafe (pfile), pfile);
 		  CPPBUFFER (pfile) = next_buf;
 		  }
 
@@ -6657,7 +6702,7 @@ struct file_name_map_list
 {
   struct file_name_map_list *map_list_next;
   cstring map_list_name;
-  struct file_name_map *map_list_map;
+  /*@null@*/ struct file_name_map *map_list_map;
 };
 
 /* Read the file name map file for DIRNAME.  */
@@ -6845,7 +6890,7 @@ open_include_file (cppReader *pfile,
 
   if ((searchptr != NULL)
       && (cstring_isDefined (searchptr->fname))
-      && (cstring_length (searchptr->fname) == p - filename)
+      && (size_toInt (cstring_length (searchptr->fname)) == p - filename)
       && !strncmp (cstring_toCharsSafe (searchptr->fname),
 		   filename,
 		   size_fromInt (p - filename)))
@@ -6939,7 +6984,7 @@ finclude (cppReader *pfile, int f,
       /*@=mustfree@*/
     }
 
-  fp = cppReader_getBuffer (pfile);
+  fp = cppReader_getBufferSafe (pfile);
 
   /*@-temptrans@*/ /* fname shouldn't really be temp */
   fp->nominal_fname = fp->fname = fname;
@@ -7170,7 +7215,7 @@ static int safe_read (int desc, char *ptr, int len)
 void
 parseSetMark (struct parse_marker *pmark, cppReader *pfile)
 {
-  cppBuffer *pbuf = cppReader_getBuffer (pfile);
+  cppBuffer *pbuf = cppReader_getBufferSafe (pfile);
 
   pmark->next = pbuf->marks;
   /*@-temptrans@*/
@@ -7201,7 +7246,7 @@ void parseClearMark (struct parse_marker *pmark)
 void
 parseGotoMark (struct parse_marker *pmark, cppReader *pfile)
 {
-  cppBuffer *pbuf = cppReader_getBuffer (pfile);
+  cppBuffer *pbuf = cppReader_getBufferSafe (pfile);
 
   if (pbuf != pmark->buf)
     {
@@ -7219,7 +7264,7 @@ parseGotoMark (struct parse_marker *pmark, cppReader *pfile)
 void
 parseMoveMark (struct parse_marker *pmark, cppReader *pfile)
 {
-  cppBuffer *pbuf = cppReader_getBuffer (pfile);
+  cppBuffer *pbuf = cppReader_getBufferSafe (pfile);
 
   if (pbuf != pmark->buf)
     {
@@ -7414,20 +7459,21 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 
   /* Unless -fnostdinc,
      tack on the standard include file dirs to the specified list */
+
   if (!opts->no_standard_includes) {
     struct default_include *p = include_defaults;
     char *specd_prefix = opts->include_prefix;
     char *default_prefix = mstring_copy (GCC_INCLUDE_DIR);
     int default_len = 0;
-
-	/* Remove the `include' from /usr/local/lib/gcc.../include.  */
-	if (default_prefix != NULL) {
-    if (!strcmp (default_prefix + strlen (default_prefix) - 8, "/include")) {
-      default_len = strlen (default_prefix) - 7;
-      default_prefix[default_len] = 0;
+    
+    /* Remove the `include' from /usr/local/lib/gcc.../include.  */
+    if (default_prefix != NULL) {
+      if (!strcmp (default_prefix + strlen (default_prefix) - 8, "/include")) {
+	default_len = strlen (default_prefix) - 7;
+	default_prefix[default_len] = 0;
+      }
     }
-	}
-
+    
     /* Search "translated" versions of GNU directories.
        These have /usr/local/lib/gcc... replaced by specd_prefix.  */
     if (specd_prefix != 0 && default_len != 0)
@@ -7436,6 +7482,8 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 	if (!p->cplusplus
 	    || (opts->cplusplus && !opts->no_standard_cplusplus_includes)) {
 	  /* Does this dir start with the prefix?  */
+	  llassert (default_prefix != NULL);
+
 	  if (!strncmp (cstring_toCharsSafe (p->fname), default_prefix,
 			size_fromInt (default_len)))
 	    {
@@ -7624,9 +7672,9 @@ static void cpp_setLocation (cppReader *pfile)
 
   if (pfile->buffer != NULL)
     {
-      if (cstring_isDefined (cppReader_getBuffer (pfile)->nominal_fname))
+      if (cstring_isDefined (cppReader_getBufferSafe (pfile)->nominal_fname))
 	{
-	  cstring fname = cppReader_getBuffer (pfile)->nominal_fname;
+	  cstring fname = cppReader_getBufferSafe (pfile)->nominal_fname;
 	  
 	  DPRINTF (("Looking up: %s", fname));
 	  
@@ -7639,16 +7687,16 @@ static void cpp_setLocation (cppReader *pfile)
 	      DPRINTF (("Trying %s", cppReader_getBuffer (pfile)->fname));
 
 	      fid = fileTable_lookup (context_fileTable (),
-				      cppReader_getBuffer (pfile)->fname);
+				      cppReader_getBufferSafe (pfile)->fname);
 	    }
 	}
       else
 	{
 	  fid = fileTable_lookup (context_fileTable (),
-				  cppReader_getBuffer (pfile)->fname);
+				  cppReader_getBufferSafe (pfile)->fname);
 	}
       
-      line = cppReader_getBuffer (pfile)->lineno;
+      line = cppReader_getBufferSafe (pfile)->lineno;
       fileloc_free (g_currentloc);
 
       if (fileId_isValid (fid))
@@ -7946,9 +7994,10 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
 static enum cpp_token
 cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 {
-  cppBuffer *pbuf = cppReader_getBuffer (pfile);
+  cppBuffer *pbuf = cppReader_getBufferSafe (pfile);
   char *start;
   int len;
+  fileloc loc;
   bool eliminateComment = FALSE;
 
   llassert (pbuf->buf != NULL);
@@ -7965,6 +8014,9 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
       char c = ' ';
       char *scomment = start + 2;
       char savec = start[len];
+      
+      cpp_setLocation (pfile);
+      loc = fileloc_copy (g_currentloc);
 
       start[0] = BEFORE_COMMENT_MARKER[0];
       start[1] = BEFORE_COMMENT_MARKER[1];
@@ -7997,14 +8049,14 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 	{
 	  if (!context_getFlag (FLG_NOCOMMENTS))
 	    {
-	      context_enterSuppressRegion ();
+	      context_enterSuppressRegion (loc);
 	    }
 	}
       else if (mstring_equalPrefix (scomment, "end"))
 	{
 	  if (!context_getFlag (FLG_NOCOMMENTS))
 	    {
-	      context_exitSuppressRegion ();
+	      context_exitSuppressRegion (loc);
 	    }
 	}
       else if (mstring_equalPrefix (scomment, "notparseable"))
@@ -8084,27 +8136,32 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 		{
 		  /* fix from Mike Miller <MikeM@xata.com> */
 		  context_fileSetFlag (FLG_NESTCOMMENT,
-				       ynm_fromCodeChar (sChar));
+				       ynm_fromCodeChar (sChar),
+				       loc);
 		}
 	      else if (mstring_equalPrefix (rest, "namechecks"))
 		{
 		  context_fileSetFlag (FLG_NAMECHECKS,
-				       ynm_fromCodeChar (sChar));
+				       ynm_fromCodeChar (sChar),
+				       loc);
 		}
 	      else if (mstring_equalPrefix (rest, "macroredef"))
 		{
 		  context_fileSetFlag (FLG_MACROREDEF,
-				       ynm_fromCodeChar (sChar));
+				       ynm_fromCodeChar (sChar),
+				       loc);
 		}
 	      else if (mstring_equalPrefix (rest, "usevarargs"))
 		{
 		  context_fileSetFlag (FLG_USEVARARGS,
-				       ynm_fromCodeChar (sChar));
+				       ynm_fromCodeChar (sChar),
+				       loc);
 		}
 	      else if (mstring_equalPrefix (rest, "nextlinemacros"))
 		{
 		  context_fileSetFlag (FLG_MACRONEXTLINE,
-				       ynm_fromCodeChar (sChar));
+				       ynm_fromCodeChar (sChar),
+				       loc);
 		}
 	      else if (mstring_equalPrefix (rest, "allmacros")
 		       || mstring_equalPrefix (rest, "fcnmacros")
@@ -8126,8 +8183,7 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 		      fl = FLG_CONSTMACROS;
 		    }
 
-
-		  context_fileSetFlag (fl, ynm_fromCodeChar (sChar));
+		  context_fileSetFlag (fl, ynm_fromCodeChar (sChar), loc);
 		  notfunction = FALSE;
 		}
 	      else
@@ -8213,11 +8269,11 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 	    c = BEFORE_COMMENT_MARKER[0];
 	    start[0] = BEFORE_COMMENT_MARKER[1];
 
-	    llassert (cstring_length (lintcomment) == len - 3);
+	    llassert (size_toLong (cstring_length (lintcomment)) == len - 3);
 
 	    for (i = 1; i < len - 2; i++)
 	      {
-		start[i] = cstring_getChar (lintcomment, i);
+		start[i] = cstring_getChar (lintcomment, size_fromInt (i));
 	      }
 	    
 	    start[len - 2] = AFTER_COMMENT_MARKER[0];
@@ -8231,9 +8287,10 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
 		if (start[i] == '/'
 		    && i < len - 1
 		    && start[i + 1] == '*') {
-		  (void) cppoptgenerror (FLG_NESTCOMMENT,
-					 message ("Comment starts inside comment"),
-					 pfile);
+		  (void) cppoptgenerror 
+		    (FLG_NESTCOMMENT,
+		     message ("Comment starts inside comment"),
+		     pfile);
 		}
 		
 		if (start[i] != '\n')
@@ -8326,7 +8383,7 @@ static bool cpp_skipIncludeFile (cstring fname)
 
 static int cpp_peekN (cppReader *pfile, int n)
 {
-  cppBuffer *buf = cppReader_getBuffer (pfile);
+  cppBuffer *buf = cppReader_getBufferSafe (pfile);
 
   llassert (buf->cur != NULL);
 

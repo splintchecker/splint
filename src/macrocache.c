@@ -179,7 +179,7 @@ macrocache_addEntry (macrocache s, /*@only@*/ fileloc fl, /*@only@*/ cstring def
 void
 macrocache_addComment (macrocache s, /*@only@*/ fileloc fl, /*@only@*/ cstring def)
 {
-  DPRINTF (("Add comment: %s / %s", fileloc_unparse (fl), def));
+  DPRINTF (("Macrocache add comment: %s / %s", fileloc_unparse (fl), def));
   macrocache_addGenEntry (s, fl, def, TRUE);
 }
 

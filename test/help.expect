@@ -423,7 +423,7 @@ Finished checking --- no code processed
    singleinclude               
    sizeofformalarray           
    sizeoftype                  
-   skipansiheaders             
+   skipisoheaders              
    skipposixheaders            
    skipsysheaders              
    slashslashcomment           

@@ -1039,8 +1039,10 @@ cstring osd_outputPath (cstring filename)
   cstring cwd_p = osd_cwd;
   char *path_p;
   int unmatched_slash_count = 0;
-  size_t filename_len = size_fromInt (cstring_length (filename));
+  size_t filename_len = cstring_length (filename);
   
+  llassertretval (filename_len > 0, /*@-type@*/ filename /*@=type@*/);
+
   /*@access cstring@*/
   path_p = filename;
   rel_buf_p = rel_buffer = (char *) dmalloc (filename_len);

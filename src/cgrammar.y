@@ -136,7 +136,7 @@ extern void yyerror (char *);
 %token <tok> TSEMI TLBRACE TRBRACE TCOMMA TCOLON TASSIGN TLPAREN 
 %token <tok> TRPAREN TLSQBR TRSQBR TDOT TAMPERSAND TEXCL TTILDE
 %token <tok> TMINUS TPLUS TMULT TDIV TPERCENT TLT TGT TCIRC TBAR TQUEST
-%token <tok> CSIZEOF CALIGNOF ARROW_OP CTYPEDEF COFFSETOF
+%token <tok> CSIZEOF CALIGNOF CTYPEOF ARROW_OP CTYPEDEF COFFSETOF
 %token <tok> INC_OP DEC_OP LEFT_OP RIGHT_OP
 %token <tok> LE_OP GE_OP EQ_OP NE_OP AND_OP OR_OP
 %token <tok> MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN SUB_ASSIGN
@@ -307,7 +307,8 @@ extern void yyerror (char *);
 %type <expr> compoundStmt compoundStmtAux compoundStmtRest compoundStmtAuxErr
 %type <expr> expressionStmt selectionStmt iterationStmt jumpStmt iterDefIterationStmt 
 %type <expr> stmtErr stmtListErr compoundStmtErr expressionStmtErr 
-%type <expr> iterationStmtErr initializerList initializer ifPred whilePred forPred iterWhilePred
+%type <expr> iterationStmtErr initializerList typeInitializerList initializer
+%type <expr> ifPred whilePred forPred iterWhilePred typeInitializer
 
 %type <expr> designator designatorList designation
 
@@ -794,6 +795,9 @@ primaryExpr
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  | TYPE_NAME_OR_ID { $$ = exprNode_fromIdentifier (coerceId ($1)); } 
  | QEXTENSION { $$ = exprNode_makeError (); }
+ | TLPAREN { exprChecks_inCompoundStatementExpression (); } 
+   compoundStmt TRPAREN 
+   { exprChecks_leaveCompoundStatementExpression (); $$ = exprNode_compoundStatementExpression ($1, $3); }
  
 postfixExpr
  : primaryExpr 
@@ -805,7 +809,9 @@ postfixExpr
  | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $3, $4); }
  | postfixExpr INC_OP { $$ = exprNode_postOp ($1, $2); }
  | postfixExpr DEC_OP { $$ = exprNode_postOp ($1, $2); }
- 
+ | TLPAREN typeExpression TRPAREN TLBRACE typeInitializerList optComma TRBRACE 
+   { /* added for C99 */ $$ = exprNode_undefined; /*@i87 no checking */ }
+
 argumentExprList
  : assignExpr { $$ = exprNodeList_singleton ($1); }
  | argumentExprList TCOMMA assignExpr { $$ = exprNodeList_push ($1, $3); }
@@ -1643,6 +1649,14 @@ initializerList
  : initializer { $$ = $1; }
  | initializerList initializer { $$ = exprNode_concat ($1, $2); }
 
+typeInitializerList
+ : typeInitializer { $$ = $1; }
+ | typeInitializerList TCOMMA typeInitializer { $$ = exprNode_concat ($1, $3); }
+
+typeInitializer
+ : assignExpr { $$ = $1; }
+ | TLBRACE typeInitializerList optComma TRBRACE { $$ = $2; } 
+
 stmtList
  : stmt { $$ = $1; }
  | stmtList stmt { $$ = exprNode_concat ($1, $2); }
@@ -1871,6 +1885,10 @@ optSemi
  : 
  | TSEMI { ; } 
 
+optComma
+ : 
+ | TCOMMA { ; } 
+
 id
  : IDENTIFIER 
 
@@ -1884,6 +1902,8 @@ newId
 typeName
  : TYPE_NAME
  | TYPE_NAME_OR_ID { $$ = ctype_unknown; }
+ | CTYPEOF TLPAREN expr TRPAREN { $$ = exprNode_getType ($3); exprNode_free ($3); }
+ | CTYPEOF TLPAREN typeExpression TRPAREN { $$ = qtype_getType ($3); } 
 
 %%
 

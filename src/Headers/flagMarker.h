@@ -70,6 +70,8 @@ extern /*@only@*/ cstring flagMarker_unparse (flagMarker p_c) /*@*/ ;
 
 extern bool flagMarker_beforeMarker (flagMarker p_c, fileloc p_loc) /*@*/ ;
 
+extern bool flagMarker_equal (flagMarker p_f1, flagMarker p_f2) /*@*/ ;
+
 extern ynm flagMarker_getSet (flagMarker p_f) /*@*/ ; 
 extern flagcode flagMarker_getCode (flagMarker p_f) /*@*/ ; 
 extern int flagMarker_getCount (flagMarker p_f) /*@*/ ; 

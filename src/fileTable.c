@@ -99,6 +99,8 @@ static cstring ftentry_unparse (fileTable ft, ftentry fte)
 {
   if (fileId_isValid (fte->fder))
     {
+      llassert (fileTable_isDefined (ft));
+
       return message ("%s %q %d (%s)", 
 		      fte->fname, 
 		      fileType_unparse (fte->ftype),
@@ -1015,13 +1017,19 @@ void fileTable_closeAll (fileTable ft)
 {
   int i = 0;
 
+  llassert (fileTable_isDefined (ft));
+
   for (i = 0; i < ft->nopen; i++) 
     {
       /* 
 	 lldiagmsg (message ("Unclosed file at exit: %s", ft->openelements[i]->fname)); 
       */
+      
+      if (ft->openelements[i]->f != NULL)
+	{
+	  (void) fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
+	}
 
-      (void) fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
       ft->openelements[i]->f = NULL;
       foentry_free (ft->openelements[i]);
       ft->openelements[i] = NULL;

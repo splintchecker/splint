@@ -343,11 +343,12 @@ void va_end (va_list va) /*@modifies va;@*/ ;
 typedef /*@abstract@*/ /*@mutable@*/ void *FILE;
 typedef /*@abstract@*/ /*@mutable@*/ void *fpos_t;
 
-/*@constant int _IOFBF; @*/
-/*@constant int _IOLBF; @*/
-/*@constant int _IONBF; @*/
+/*@constant size_t _IOFBF; @*/
+/*@constant size_t _IOLBF; @*/
+/*@constant size_t _IONBF; @*/
 
-/*@constant int BUFSIZ; @*/
+/*@constant size_t BUFSIZ; @*/ /* evans 2002-02-27 change suggested by Walter Briscoe */
+
 /*@constant int EOF; @*/
 
 /*@constant int FOPEN_MAX; @*/

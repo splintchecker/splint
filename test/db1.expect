@@ -132,7 +132,7 @@ eref.c:40: Undocumented use of global eref_Pool
 eref.c:41: Undocumented use of global eref_Pool
 eref.c:41: Undocumented modification of eref_Pool.status[]:
               eref_Pool.status[i] = avail
-eref.c:41: Body of for statement is not a block: eref_Pool.status[i] = avail
+eref.c:41: Body of for statement is not a block: eref_Pool.status[i] = avail;
 eref.c:41: Undocumented use of global eref_Pool (in post loop test)
 eref.c:44: Undocumented use of global eref_Pool
 eref.c:44: Undocumented modification of eref_Pool.status[]:
@@ -194,8 +194,8 @@ empset.c:5: Name _empset_get is in the implementation name space (any
 empset.c: (in function _empset_get)
 empset.c:11: Undocumented modification of s possible from call to
                 erc_iterStart: erc_iterStart(s)
-empset.c:15: Body of if statement is not a block:
-                do { { erc_iterFinal(it) } } while (FALSE)
+empset.c:15: Body of if statement is not a block: do { { erc_iterFinal(it);
+                return er } } while (FALSE);
 empset.c: (in function empset_insert)
 empset.c:30: Undetected modification possible from call to unconstrained
                 function _empset_get: _empset_get
@@ -214,29 +214,29 @@ empset.c:85: Undocumented modification of s1 possible from call to
 empset.c:85: Undocumented modification of s2 possible from call to
                 erc_iterStart: erc_iterStart(s2)
 empset.c:86: Body of for statement is not a block:
-                empset_insertUnique(result, eref_get(er))
+                empset_insertUnique(result, eref_get(er));
 empset.c: (in function empset_union)
 empset.c:108: Undocumented modification of s2 possible from call to
                  erc_iterStart (through alias s1): erc_iterStart(s1)
 empset.c:108: Undocumented modification of s1 possible from call to
                  erc_iterStart: erc_iterStart(s1)
-empset.c:110: Body of if statement is not a block: erc_insert(result, er)
+empset.c:110: Body of if statement is not a block: erc_insert(result, er);
 empset.c:109: Body of for statement is not a block:
-                 if (!empset_member(eref_get(er), s2)) erc_insert(result, er)
+                 if (!empset_member(eref_get(er), s2)) erc_insert(result, er);
 empset.c: (in function empset_intersect)
-empset.c:125: Body of if statement is not a block: erc_insert(toDelete, er)
+empset.c:125: Body of if statement is not a block: erc_insert(toDelete, er);
 empset.c:124: Body of for statement is not a block:
-                 if (!empset_member(eref_get(er), s2)) erc_insert(toDelete, er)
+    if (!empset_member(eref_get(er), s2)) erc_insert(toDelete, er);
 empset.c:128: Return value (type bool) ignored: erc_delete(s1, er)
-empset.c:128: Body of for statement is not a block: erc_delete(s1, er)
+empset.c:128: Body of for statement is not a block: erc_delete(s1, er);
 empset.c: (in function empset_subset)
 empset.c:139: Undocumented modification of s1 possible from call to
                  erc_iterStart: erc_iterStart(s1)
-empset.c:141: Body of if statement is not a block:
-                 do { { erc_iterFinal(it) } } while (FALSE)
+empset.c:141: Body of if statement is not a block: do { { erc_iterFinal(it);
+                 return FALSE } } while (FALSE);
 empset.c:140: Body of for statement is not a block:
-                 if (!empset_member(eref_get(er), s2)) do { { erc_iterFinal(it)
-                 } } while (FALSE)
+    if (!empset_member(eref_get(er), s2)) do { { erc_iterFinal(it);
+    return FALSE } } while (FALSE);
 empset.c:135: Variable e declared but not used
 empset.c: (in function empset_initMod)
 empset.c:148: Undocumented use of file static initDone
@@ -302,7 +302,7 @@ erc.c:118: Variable it is released in true branch, but live in continuation.
    erc.c:117: Storage it is released
 erc.c:121: Only storage *it->next assigned to unqualified: *(it) = (*it)->next
 erc.c: (in function erc_join)
-erc.c:130: Body of for statement is not a block: erc_insert(c1, tmpc->val)
+erc.c:130: Body of for statement is not a block: erc_insert(c1, tmpc->val);
 erc.c: (in function erc_sprint)
 erc.c:141: Function malloc expects arg 1 to be size_t gets int:
               erc_size(c) * (employeePrintSize + 1) + 1
@@ -380,9 +380,9 @@ dbase.c:123: Array fetch using non-integer, enum { mMGRS, fMGRS, mNON, fNON }:
 dbase.c:123: Undocumented modification of db[] possible from call to
                 erc_insert: erc_insert(db[mNON], er)
 dbase.c:121: Body of if clause of if statement is not a block:
-                erc_insert(db[mMGRS], er)
+                erc_insert(db[mMGRS], er);
 dbase.c:123: Body of else clause of if statement is not a block:
-                erc_insert(db[mNON], er)
+                erc_insert(db[mNON], er);
 dbase.c:126: Undocumented use of global db
 dbase.c:126: Array fetch using non-integer, enum { mMGRS, fMGRS, mNON, fNON }:
                 db[fMGRS]
@@ -394,11 +394,11 @@ dbase.c:128: Array fetch using non-integer, enum { mMGRS, fMGRS, mNON, fNON }:
 dbase.c:128: Undocumented modification of db[] possible from call to
                 erc_insert: erc_insert(db[fNON], er)
 dbase.c:126: Body of if clause of if statement is not a block:
-                erc_insert(db[fMGRS], er)
+                erc_insert(db[fMGRS], er);
 dbase.c:128: Body of else clause of if statement is not a block:
-                erc_insert(db[fNON], er)
+                erc_insert(db[fNON], er);
 dbase.c:123: Body of if clause of if statement is not a block:
-    if (e.j == MGR) erc_insert(db[mMGRS], er) else erc_insert(db[mNON], er)
+    if (e.j == MGR) erc_insert(db[mMGRS], er); else erc_insert(db[mNON], er);
 dbase.c: (in function fire)
 dbase.c:137: Assignment of enum { mMGRS, fMGRS, mNON, fNON } to int: i = mMGRS
 dbase.c:137: Operands of <= have incompatible types (int, enum { mMGRS, fMGRS,
@@ -411,10 +411,12 @@ dbase.c:142: Undocumented modification of db[] possible from call to
                 erc_delete: erc_delete(db[i], er)
 dbase.c:142: Return value (type bool) ignored: erc_delete(db[i]...
 dbase.c:139: Body of for statement is not a block:
-                if (eref_get(er).ssNum == ssNum) { erc_iterFinal(it) }
+                if (eref_get(er).ssNum == ssNum) { erc_iterFinal(it);
+                erc_delete(db[i], er);; return TRUE }
 dbase.c:139: Body of for statement is not a block:
     for (er = erc_yield(it = erc_iterStart(db[i])); !eref_equal(er, erefNIL);
-    er = erc_yield(it)) if (eref_get(er).ssNum == ssNum) { erc_iterFinal(it) }
+    er = erc_yield(it)) if (eref_get(er).ssNum == ssNum) { erc_iterFinal(it);
+    erc_delete(db[i], er);; return TRUE }
 dbase.c:137: Incompatible types for <= (int, enum { mMGRS, fMGRS, mNON, fNON })
                 (in post loop test): i <= fNON
 dbase.c: (in function promote)
@@ -462,7 +464,7 @@ dbase.c:227: Undocumented use of global db
 dbase.c:227: Undetected modification possible from call to unconstrained
                 function _db_addEmpls: _db_addEmpls
 dbase.c:227: Body of for statement is not a block:
-                numAdded += _db_addEmpls(db[i], l, h, s)
+                numAdded += _db_addEmpls(db[i], l, h, s);
 dbase.c:226: Incompatible types for <= (int, enum { mMGRS, fMGRS, mNON, fNON })
                 (in post loop test): i <= fNON
 dbase.c:230: Undocumented use of global db
@@ -546,10 +548,11 @@ drive.c:65: Return value (type bool) ignored: empset_delete(em...
 drive.c:82: Return value (type bool) ignored: employee_setName...
 drive.c:83: Return value (type bool) ignored: empset_insert(em...
 drive.c:107: Return value (type bool) ignored: empset_delete(em...
-drive.c:116: Body of if clause of if statement is not a block: e.gen = MALE
-drive.c:116: Body of else clause of if statement is not a block: e.gen = FEMALE
-drive.c:117: Body of if clause of if statement is not a block: e.j = NONMGR
-drive.c:117: Body of else clause of if statement is not a block: e.j = MGR
+drive.c:116: Body of if clause of if statement is not a block: e.gen = MALE;
+drive.c:116: Body of else clause of if statement is not a block:
+                e.gen = FEMALE;
+drive.c:117: Body of if clause of if statement is not a block: e.j = NONMGR;
+drive.c:117: Body of else clause of if statement is not a block: e.j = MGR;
 drive.c:119: Return value (type bool) ignored: employee_setName...
 drive.c:123: Return value (type db_status) ignored: hire(e)
 drive.c:127: Assignment of db_status to int: j = hire(e)

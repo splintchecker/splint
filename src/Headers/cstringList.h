@@ -49,7 +49,7 @@ extern /*@unused@*/ /*@only@*/ cstring cstringList_unparseAbbrev (cstringList p_
 extern /*@unused@*/ /*@only@*/ cstring cstringList_unparse (cstringList p_s) ;
 extern void cstringList_free (/*@only@*/ cstringList p_s) ;
 
-extern /*@unused@*/ void cstringList_printSpaced (cstringList p_s, int p_indent, int p_gap, int p_linelen);
+extern /*@unused@*/ void cstringList_printSpaced (cstringList p_s, size_t p_indent, size_t p_gap, int p_linelen);
 
 extern /*@only@*/ cstringList cstringList_copy (cstringList p_s) /*@*/ ;
 

@@ -52,10 +52,35 @@ static void checkSafeReturnExpr (/*@notnull@*/ exprNode p_e);
 **
 */
 
+static int inCompoundStatementExpression = 0;
+
 void
-exprNode_checkStatement (exprNode e)
+exprChecks_inCompoundStatementExpression (void)
+{
+  inCompoundStatementExpression++;
+}
+
+void
+exprChecks_leaveCompoundStatementExpression (void)
+{
+  inCompoundStatementExpression--;
+  llassert (inCompoundStatementExpression >= 0);
+}
+
+void
+exprChecks_checkStatementEffect (exprNode e)
 {
   bool hasError = FALSE;
+
+  if (inCompoundStatementExpression > 0)
+    {
+      /*
+      ** Okay to have effectless statments in compound statement expression (should check
+      ** it is the last statement, but we don't for now).
+      */
+
+      return;
+    }
 
   if (!exprNode_isError (e))
     {
@@ -913,17 +938,14 @@ void exprNode_checkFunctionBody (exprNode body)
 /*drl modified */
 
 
-void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody)
+void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
   constraintList c, t, post;
   constraintList c2, fix;
   constraintList implicitFcnConstraints;
-
-  /*@owned@*/ exprNode body;
-
   context_enterInnerContext ();
 
-  body = fcnBody;
+  llassert (exprNode_isDefined (body));
 
   /*
     if we're not going to be printing any errors for buffer overflows
@@ -948,7 +970,8 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
 	}
     }
   
-  exprNode_generateConstraints (body);
+  exprNode_generateConstraints (body); /* evans 2002-03-02: this should not be declared to take a
+					  dependent... fix it! */
   
   c =   uentry_getFcnPreconditions (ue);
   DPRINTF(("function constraints\n"));

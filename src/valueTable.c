@@ -67,12 +67,13 @@ cstring valueTable_unparse (valueTable h)
 
 void valueTable_insert (valueTable h, cstring key, stateValue value)
 {
+  llassert (stateValue_isDefined (value));
   genericTable_insert ((genericTable) (h), key, (void *) (value));
 }
 
 void valueTable_update (valueTable h, cstring key, stateValue newval) 
 {
   DPRINTF (("Update: %s -> %s", key, stateValue_unparse (newval)));
-
+  llassert (stateValue_isDefined (newval));
   genericTable_update ((genericTable) (h), key, (void *) (newval));
 }

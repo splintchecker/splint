@@ -1445,13 +1445,14 @@ uentry_fixupSref (uentry ue)
   
   if (uentry_isVariable (ue))
     {
-      /*@i634 	  ue->sref = sRef_saveCopyShallow (ue->info->var->origsref); */
+      
+           /*@i634 	  ue->sref = sRef_saveCopyShallow (ue->info->var->origsref); */
       sRef_setDefState (sr, ue->info->var->defstate, fileloc_undefined);
       sRef_setNullState (sr, ue->info->var->nullstate, fileloc_undefined);
     }
 }
 
-static void uentry_addStateClause (uentry ue, stateClause sc)
+static void uentry_addStateClause (/*@notnull@*/ uentry ue, stateClause sc)
 {
   /*
   ** Okay to allow multiple clauses of the same kind.
@@ -1596,6 +1597,7 @@ bool uentry_hasWarning (uentry ue)
 
 void uentry_addWarning (uentry ue, /*@only@*/ warnClause warn)
 {
+  llassert (uentry_isValid (ue));
   llassert (warnClause_isUndefined (ue->warn));
   ue->warn = warn;
 }
@@ -3262,14 +3264,14 @@ void uentry_setCheckedStrict (uentry ue)
 }
 
 static /*@only@*/ /*@notnull@*/ 
-  uentry uentry_makeVariableAux (cstring n, ctype t, 
-				 fileloc f,
-				 /*@exposed@*/ sRef s,
-				 bool priv, vkind kind)
+uentry uentry_makeVariableAux (cstring n, ctype t, 
+			       fileloc f,
+			       /*@exposed@*/ sRef s,
+			       bool priv, vkind kind)
 {
   uentry e = uentry_alloc ();
   ctype rt = t;
-
+  
   DPRINTF (("Make variable: %s %s %s", n, ctype_unparse (t), sRef_unparse (s)));
 
   e->ukind = KVAR;
@@ -3320,19 +3322,17 @@ static /*@only@*/ /*@notnull@*/
      it allocates memory and sets the fields. We check if the type of the variable
      is a pointer or array and allocate a `bbufinfo' struct accordingly */
   
-  if( ctype_isArray (t) || ctype_isPointer(t)) {
-    /*@i222@*/e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
-     e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
-     /*@access sRef@*/ /*i@222*/
-     /* It probably isn't necessary to violate the abstraction here
-      I'll fix this later
-     */
-     s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
-     /*@noaccess sRef@*/
-  } else {
-     e->info->var->bufinfo = NULL;
-  }/* end else */
-/* end modification */
+  if (ctype_isArray (t) || ctype_isPointer(t))
+    {
+      /*@i222@*/ e->info->var->bufinfo = dmalloc (sizeof (*e->info->var->bufinfo));
+      e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
+      sRef_setNotNullTerminatedState (s);
+    } 
+  else 
+    {
+      e->info->var->bufinfo = NULL;
+    }/* end else */
+  /* end modification */
 
   return (e);
 }
@@ -9818,12 +9818,12 @@ uentry_sameKind (uentry u1, uentry u2)
    
 static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
 {
-  ekind okind = unew->ukind;
+  ekind okind;
   llassert (uentry_isValid (unew));
   llassert (uentry_isValid (old));
 
   DPRINTF (("Update into: %s / %s", uentry_unparseFull (unew), uentry_unparseFull (old)));
-
+  okind = unew->ukind;
   unew->ukind = old->ukind;
   llassert (cstring_equal (unew->uname, old->uname));
   unew->utype = old->utype;
@@ -10070,8 +10070,8 @@ static bool uentry_relevantReference (sRef sr, bool flip)
 }
 
 static void
-uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
-			 bool mustReturn, bool flip, bool opt,
+uentry_mergeAliasStates (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other, 
+			 fileloc loc, bool mustReturn, bool flip, bool opt,
 			 clause cl)    
 {
   sRef rs = res->sref;
@@ -10227,7 +10227,8 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 }
 
 static void
-uentry_mergeValueStates (uentry res, uentry other, fileloc loc, bool mustReturn, /*@unused@*/ bool flip)
+uentry_mergeValueStates (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other,
+			 fileloc loc, bool mustReturn, /*@unused@*/ bool flip)
 {
   valueTable rvalues;
   valueTable ovalues;
@@ -10406,7 +10407,8 @@ uentry_mergeValueStates (uentry res, uentry other, fileloc loc, bool mustReturn,
 
 
 static void
-uentry_mergeSetStates (uentry res, uentry other, /*@unused@*/ fileloc loc,
+uentry_mergeSetStates (/*@notnull@*/ uentry res,
+		       /*@notnull@*/ uentry other, /*@unused@*/ fileloc loc,
 		       bool flip, clause cl)
 {
   if (cl == DOWHILECLAUSE)
@@ -11116,20 +11118,19 @@ effects: sets the state of the variable
 */
 
 
-void uentry_setPossiblyNullTerminatedState (uentry p_e)  {
-  /*@access sRef@*/ /*i523 shouldn't do this! */
-  if( uentry_isValid(p_e) ) {
-    if( p_e->info != NULL) {
-      if( p_e->info->var != NULL) {
-         p_e->info->var->bufinfo->bufstate = BB_POSSIBLYNULLTERMINATED;
-         p_e->sref->bufinfo.bufstate = BB_POSSIBLYNULLTERMINATED;
-         return;
-      }
-    }
-  }
-  /*@noaccess sRef@*/
+void uentry_setPossiblyNullTerminatedState (uentry p_e)  
+{
+  llassert (uentry_isValid (p_e));
 
-  fprintf(stderr, "uentry:Error in setPossiblyNullTerminatedState\n");
+  if (p_e->info != NULL)
+    {
+      if (p_e->info->var != NULL) 
+	{
+	  llassert (p_e->info->var->bufinfo != NULL);
+	  p_e->info->var->bufinfo->bufstate = BB_POSSIBLYNULLTERMINATED;
+	  sRef_setPossiblyNullTerminatedState (p_e->sref);
+	}
+    }
 }
 
 /*
@@ -11139,19 +11140,17 @@ effects: sets the size of the buffer
 */
 
 void uentry_setNullTerminatedState (uentry p_e)  {
-  if( uentry_isValid(p_e) ) {
-    if( p_e->info != NULL) {
-      if( p_e->info->var != NULL) {
-        p_e->info->var->bufinfo->bufstate = BB_NULLTERMINATED;
-	/*@access sRef@*/ /*@i523 bad!*/
-        p_e->sref->bufinfo.bufstate = BB_NULLTERMINATED;
-	/*@noaccess sRef@*/ 
-        return;
-      }
-    }
-  }
+  llassert (uentry_isValid (p_e));
 
-  fprintf(stderr, "uentry:Error in setNullTerminatedState\n");
+  if (p_e->info != NULL)
+    {
+      if (p_e->info->var != NULL)
+	{
+	  llassert (p_e->info->var->bufinfo != NULL);
+	  p_e->info->var->bufinfo->bufstate = BB_NULLTERMINATED;
+	  sRef_setNullTerminatedState (p_e->sref);
+	}
+    }
 }
 
 /*
@@ -11160,22 +11159,21 @@ modifies: p_e
 effects: sets the size of the buffer
 */
 
-void uentry_setSize (uentry p_e, int size)  {
-  if( uentry_isValid(p_e) ) {
-    if( p_e->info != NULL) {
-      if( p_e->info->var != NULL) {
-        p_e->info->var->bufinfo->size = size;
-	/*@access sRef@*/ /*@i523 bad!*/
-        p_e->sref->bufinfo.size = size;
-	/*@noaccess sRef@*/
-        return;
-      }
+void uentry_setSize (uentry p_e, int size)  
+{
+  if (uentry_isValid (p_e))
+    {
+      if (p_e->info != NULL) 
+	{
+	  if (p_e->info->var != NULL) 
+	    {
+	      llassert (p_e->info->var->bufinfo != NULL);
+	      p_e->info->var->bufinfo->size = size;
+	      sRef_setSize (p_e->sref, size);
+	    }
+	}
     }
-  }
-
-  fprintf(stderr, "uentry:Error in setSize\n");
 }
-
 
 /*
 requires: p_e is defined, is a ptr/array variable 
@@ -11183,20 +11181,18 @@ modifies: p_e
 effects: sets the length of the buffer
 */
 
-void uentry_setLen (uentry p_e, int len)  {
-  if( uentry_isValid(p_e) ) {
-    if( p_e->info != NULL) {
-      if( p_e->info->var != NULL) {
-        p_e->info->var->bufinfo->len = len;
-	/*@access sRef@*/ /*@i523 bad!*/
-        p_e->sref->bufinfo.len = len;
-	/*@noaccess sRef@*/
-        return;
-      }
+void uentry_setLen (uentry p_e, int len)  
+{
+  if (uentry_isValid (p_e)) 
+    {
+      if (p_e->info != NULL
+	  && p_e->info->var != NULL) 
+	{
+	  llassert (p_e->info->var->bufinfo != NULL);
+	  p_e->info->var->bufinfo->len = len;
+	  sRef_setLen (p_e->sref, len);
+	}
     }
-  }
-  
-  fprintf(stderr, "uentry:Error in setLen\n");
 }
 
 /*@=type*/

@@ -161,6 +161,7 @@ extern int inputStream_nextChar (inputStream s)
 extern int inputStream_peekNChar (inputStream s, int n)
      /* Doesn't work across lines! */
 {
+  llassert (inputStream_isDefined (s));
   llassert (s->curLine != NULL);
   llassert (s->charNo + n < strlen (s->curLine));
   return ((int) s->curLine [s->charNo + n]);
@@ -168,6 +169,8 @@ extern int inputStream_peekNChar (inputStream s, int n)
 
 extern int inputStream_peekChar (inputStream s)
 {  
+  llassert (inputStream_isDefined (s));
+
   if (s->curLine == NULL)
     {
       char *cur;
@@ -198,6 +201,7 @@ char *inputStream_nextLine (inputStream s)
   char *currentLine;
   int len;
 
+  llassert (inputStream_isDefined (s));
   llassert (s->curLine == NULL);
   s->charNo = 0;
 
@@ -267,6 +271,7 @@ char *inputStream_nextLine (inputStream s)
 extern bool
 inputStream_open (inputStream s)
 {
+  llassert (inputStream_isDefined (s));
   if (s->fromString)
     {
       /* not an error: tail is dependent */
@@ -335,6 +340,7 @@ extern bool inputStream_getPath (cstring path, inputStream s)
 /*:open:*/ FILE *inputStream_getFile (inputStream s)
 {
   llassert (inputStream_isDefined (s));
+  llassert (s->file != NULL);
   return s->file;
 }
 

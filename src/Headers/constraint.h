@@ -16,7 +16,7 @@ struct s_constraint {
   arithType       ar;
   constraintExpr  expr;
   bool post;
-  /*@observer@*/ /*@exposed@*/ /*@dependent@*/ exprNode generatingExpr;
+  /*@exposed@*/ /*@dependent@*/ exprNode generatingExpr;
 } ;
 
 /*@constant null constraint constraint_undefined; @*/
@@ -38,19 +38,27 @@ extern void constraint_free (/*@only@*/  constraint p_c);
 /*@i22*/
 /*@-czechfcns*/
 
-extern constraint constraint_makeReadSafeExprNode ( /*@dependent@*/ /*@observer@*/ exprNode p_po, /*@dependent@*/ /*@observer@*/ exprNode p_ind);
+extern constraint 
+constraint_makeReadSafeExprNode (/*@observer@*/ exprNode p_po,
+				 /*@observer@*/ exprNode p_ind);
 
-extern /*@only@*/ constraint constraint_makeWriteSafeExprNode (/*@dependent@*/ /*@observer@*/ exprNode p_po, /*@dependent@*/ /*@observer@*/ exprNode p_ind);
+extern /*@only@*/ constraint constraint_makeWriteSafeExprNode (/*@observer@*/ exprNode p_po, 
+							       /*@observer@*/ exprNode p_ind);
 
-extern /*@only@*/ constraint constraint_makeReadSafeInt (/*@dependent@*/ /*@observer@*/ exprNode p_t1, int p_index);
+extern /*@only@*/ constraint constraint_makeReadSafeInt (/*@observer@*/ exprNode p_t1, int p_index);
 
-extern /*@only@*/ constraint constraint_makeEnsureMaxReadAtLeast (/*@dependent@*/ /*@observer@*/ exprNode p_t1, /*@dependent@*/ /*@observer@*/ exprNode p_t2, fileloc p_sequencePoint);
+extern /*@only@*/ constraint
+constraint_makeEnsureMaxReadAtLeast (/*@observer@*/ exprNode p_t1, 
+				     /*@observer@*/ exprNode p_t2, fileloc p_sequencePoint);
 
-extern void constraint_overWrite (constraint p_c1, /*@observer@*/ constraint p_c2) /*@modifies p_c1 @*/;
+extern void constraint_overWrite (constraint p_c1, /*@observer@*/ constraint p_c2)
+     /*@modifies p_c1 @*/;
 
-extern /*@only@*/ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint p_c);
+extern /*@only@*/ constraint constraint_copy (/*@temp@*/ constraint p_c);
 
-extern bool fileloc_closer (/*@observer@*/ fileloc  p_loc1, /*@observer@*/ fileloc  p_loc2, /*@observer@*/ fileloc  p_loc3) /*@*/;
+extern bool fileloc_closer (/*@observer@*/ fileloc  p_loc1,
+			    /*@observer@*/ fileloc  p_loc2,
+			    /*@observer@*/ fileloc  p_loc3) /*@*/;
 
 extern /*@only@*/ cstring arithType_print (arithType p_ar) /*@*/;
 
@@ -106,10 +114,13 @@ extern constraint constraint_addGeneratingExpr (/*@returned@*/ constraint p_c, /
 extern bool constraint_hasMaxSet(constraint p_c);
 
 /*from constraintGenreation.c*/
-extern void exprNode_exprTraverse (/*@dependent@*/  exprNode p_e, bool p_definatelv, bool p_definaterv, /*@temp@*/ /*@observer@*/ fileloc p_sequencePoint);
+extern void exprNode_exprTraverse (exprNode p_e, bool p_definatelv, bool p_definaterv, /*@temp@*/ /*@observer@*/ fileloc p_sequencePoint);
 
-extern /*@only@*/ constraintList exprNode_traversRequiresConstraints (/*@dependent@*/ exprNode p_e);
-extern /*@only@*/ constraintList exprNode_traversEnsuresConstraints (/*@dependent@*/ exprNode p_e);
+extern /*@only@*/ constraintList 
+exprNode_traversRequiresConstraints (exprNode p_e);
+
+extern /*@only@*/ constraintList 
+exprNode_traversEnsuresConstraints (exprNode p_e);
 
 extern constraint constraint_togglePost (/*@returned@*/ constraint p_c);
 extern bool constraint_same (constraint p_c1, constraint p_c2) ;

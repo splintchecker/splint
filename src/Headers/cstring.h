@@ -20,17 +20,19 @@
 
 /* typedefs in forwardTypes */
 
-extern /*@notnull@*/ cstring cstring_create (int p_n) /*@*/ /*@ensures maxSet(result) == p_n @*/ ;
+extern /*@notnull@*/ cstring cstring_create (size_t p_n) /*@*/ /*@ensures maxSet(result) == p_n @*/ ;
 extern /*@only@*/ /*@notnull@*/  cstring cstring_newEmpty (void) ;
 extern /*@notnull@*/ cstring cstring_appendChar (/*@only@*/ cstring p_s1, char p_c);
 
-extern cstring cstring_concatLength (/*@only@*/ cstring p_s1, char *p_s2, int p_len) /*@*/  /*@requires maxSet(p_s2) >= (p_len - 1) @*/;
+extern cstring cstring_concatLength (/*@only@*/ cstring p_s1, char *p_s2, size_t p_len) 
+  /*@*/ 
+  /*@requires maxSet(p_s2) >= (p_len - 1) @*/ ;
 
 extern /*@notnull@*/ cstring cstring_prependChar (char p_c, /*@temp@*/ cstring p_s1);
 extern /*@notnull@*/ cstring cstring_prependCharO (char p_c, /*@only@*/ cstring p_s1);
 extern cstring cstring_downcase (cstring p_s) /*@*/ ;
 extern cstring cstring_copy (cstring p_s) /*@*/  /*@ensures maxSet(result) == maxRead(p_s) /\ maxRead(result) == maxRead(p_s) @*/ ;
-extern cstring cstring_copyLength (char *p_s, int p_len) /*@*/  /*@requires maxSet(p_s) >= (p_len - 1) @*/;
+extern cstring cstring_copyLength (char *p_s, size_t p_len) /*@*/  /*@requires maxSet(p_s) >= (p_len - 1) @*/;
 
 extern int cstring_toPosInt (cstring p_s) /*@*/ ;
 
@@ -42,9 +44,10 @@ typedef enum {
 } cmpcode;
 
 extern cmpcode cstring_genericEqual (cstring p_s, cstring p_t,
-				     int p_nchars,
+				     size_t p_nchars,
 				     bool p_caseinsensitive,
-				     bool p_lookalike) /*@*/   /*@requires maxRead(p_s) >= p_nchars /\ maxRead(p_t) >= p_nchars @*/ ;
+				     bool p_lookalike) /*@*/ 
+  /*@requires maxRead(p_s) >= p_nchars /\ maxRead(p_t) >= p_nchars @*/ ;
 
 /* evans 2001-09-09 - removed conditional compilation on this (for WIN32, OS2) */
 extern void cstring_replaceAll (cstring p_s, char p_old, char p_snew) /*@modifies p_s@*/ ;
@@ -56,8 +59,10 @@ extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_s
 extern char cstring_firstChar (cstring p_s) /*@*/ ;
 extern char cstring_secondChar (cstring p_s) /*@*/ ;
 extern char cstring_lastChar (cstring p_s) /*@*/ ;
-extern char cstring_getChar (cstring p_s, int p_n);
-extern void cstring_setChar (cstring p_s, int p_n, char p_c) /*@requires maxRead(p_s) >= (p_n - 1) /\ maxSet(p_s) >= (p_n - 1) @*/ ;
+extern char cstring_getChar (cstring p_s, size_t p_n);
+
+extern void cstring_setChar (cstring p_s, size_t p_n, char p_c)
+   /*@requires maxRead(p_s) >= (p_n - 1) /\ maxSet(p_s) >= (p_n - 1) @*/ ;
 
 # define cstring_secondChar(s) cstring_getChar (s, 2)
 
@@ -65,13 +70,14 @@ extern /*@exposed@*/ /*@notnull@*/ /*@untainted@*/ char *
   cstring_toCharsSafe (/*@temp@*/ /*@exposed@*/ /*@returned@*/ cstring p_s)
      /*@*/ ;
 
-     extern int cstring_length (cstring p_s) /*@*/ /*@ensures result == maxRead(p_s) @*/;
+extern size_t cstring_length (cstring p_s) /*@*/ /*@ensures result == maxRead(p_s) @*/;
+
 extern bool cstring_contains (/*@unique@*/ cstring p_c, cstring p_sub) /*@*/ ;
 extern bool cstring_containsChar (cstring p_c, char p_ch) /*@*/ ;
 extern bool cstring_equal (cstring p_c1, cstring p_c2) /*@*/ ;
 extern bool cstring_equalCaseInsensitive (cstring p_c1, cstring p_c2) /*@*/ ;
-extern bool cstring_equalLen (cstring p_c1, cstring p_c2, int p_len) /*@*/ ;
-extern bool cstring_equalLenCaseInsensitive (cstring p_c1, cstring p_c2, int p_len) /*@*/ ;
+extern bool cstring_equalLen (cstring p_c1, cstring p_c2, size_t p_len) /*@*/ ;
+extern bool cstring_equalLenCaseInsensitive (cstring p_c1, cstring p_c2, size_t p_len) /*@*/ ;
 extern bool cstring_equalPrefix (cstring p_c1, cstring p_c2) /*@*/ ;
 extern bool cstring_equalPrefixLit (cstring p_c1, /*@observer@*/ const char *p_c2) /*@*/ ;
 extern bool cstring_equalLit (cstring p_c1, char *p_c2) /*@*/ ;
@@ -82,9 +88,11 @@ extern int cstring_xcompare (cstring *p_c1, cstring *p_c2) /*@*/ ;
 extern bool cstring_hasNonAlphaNumBar (cstring p_s) /*@*/ ;
 # endif
 
-extern cstring cstring_elide (cstring p_s, int p_len) /*@*/ ;
-extern cstring cstring_clip (/*@returned@*/ cstring p_s, int p_len) 
+extern cstring cstring_elide (cstring p_s, size_t p_len) /*@*/ ;
+
+extern cstring cstring_clip (/*@returned@*/ cstring p_s, size_t p_len) 
    /*@modifies p_s@*/ ;
+
 extern void cstring_stripChars (cstring p_s, const char *p_clist) /*@modifies p_s@*/ ;
 
 extern /*@dependent@*/ cstring 
@@ -153,9 +161,15 @@ extern /*@observer@*/ /*@dependent@*/ cstring
 
 extern cstring cstring_capitalize (cstring p_s) /*@*/  /*@requires maxSet(p_s) >= 0 @*/ ;
 extern cstring cstring_capitalizeFree (/*@only@*/ cstring p_s) /*@modifies p_s@*/  /*@requires maxSet(p_s) >= 0 /\ maxRead(p_s) >= 0 @*/ ;
-extern cstring cstring_fill (cstring p_s, int p_n) /*@*/ /*@requires p_n >= 0 @*/;
-extern cstring cstring_prefix (cstring p_s, int p_n) /*@*/ /*@requires maxRead(p_s) >= p_n /\ maxSet(p_s) >= p_n @*/ /*@ensures maxRead(result) == p_n /\ maxSet(result) == p_n @*/;
-extern /*@observer@*/ cstring cstring_suffix (cstring p_s, int p_n) /*@*/ ;
+
+extern cstring cstring_fill (cstring p_s, size_t p_n) /*@*/ /*@requires p_n >= 0 @*/;
+
+extern cstring cstring_prefix (cstring p_s, size_t p_n)
+   /*@*/
+   /*@requires maxRead(p_s) >= p_n /\ maxSet(p_s) >= p_n @*/
+   /*@ensures maxRead(result) == p_n /\ maxSet(result) == p_n @*/ ;
+
+extern /*@observer@*/ cstring cstring_suffix (cstring p_s, size_t p_n) /*@*/ ;
 extern cstring cstring_concat (cstring p_s, cstring p_t) /*@*/ /*@requires maxSet(p_s) >= 0 @*/;
 
 extern cstring 
@@ -190,11 +204,11 @@ extern /*@exposed@*/ cstring cstring_afterChar (cstring p_s, char p_c) /*@*/ ;
 extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring) /*@*/ ;
 
 extern /*@only@*/ /*@notnull@*/ cstring
-cstring_copySegment (cstring p_s, int p_findex, int p_tindex) /*@*/ ;
+cstring_copySegment (cstring p_s, size_t p_findex, size_t p_tindex) /*@*/ ;
 
 /*drl added 01/22/2001  Expands the escape squences i.e "\\n\\t\\000"
  becomes "\n\t0"  */
-extern cstring  cstring_expandEscapes (cstring p_s);
+extern /*@notnull@*/ cstring  cstring_expandEscapes (cstring p_s);
 
 /*drl added 01/23/2001  Gives you the number of characters in an
   expanded escape squences.  This can be different from strlen bc/ of

@@ -118,8 +118,8 @@ extern void context_resetSpecLines (void) /*@modifies internalState@*/ ;
 # endif
 
 extern void context_exitMacroCache (void);
-extern void context_enterSuppressRegion (void);
-extern void context_exitSuppressRegion (void);
+extern void context_enterSuppressRegion (fileloc);
+extern void context_exitSuppressRegion (fileloc);
 extern void context_enterMacroFile (void);
 extern typeIdSet context_fileAccessTypes (void);
 extern void context_addFileAccessType (typeId p_t);
@@ -201,7 +201,7 @@ extern void context_setFilename(fileId p_fid, int p_lineno)
    /*@globals fileloc g_currentloc; @*/  
    /*@modifies g_currentloc@*/ ;
 
-extern void context_fileSetFlag (flagcode p_f, ynm p_set);
+extern void context_fileSetFlag (flagcode p_f, ynm p_set, fileloc p_loc);
 
 extern /*@unused@*/ /*@only@*/ cstring context_unparseAccess (void) /*@*/ ;
 extern bool context_inFunction(void) /*@*/ ;
@@ -221,8 +221,8 @@ extern void context_exitTrueClause (exprNode p_pred, exprNode p_tbranch);
 extern void context_destroyMod (void) /*@modifies internalState@*/ ;
 extern void context_addMacroCache (/*@only@*/ cstring p_def);
 extern void context_processAllMacros (void);
-extern void context_addComment (/*@only@*/ cstring p_def);
-extern void context_enterSuppressLine (int p_count);
+extern void context_addComment (/*@only@*/ cstring p_def, fileloc p_loc);
+extern void context_enterSuppressLine (int p_count, fileloc p_loc);
 extern bool context_inSuppressZone (fileloc p_fl) /*@*/ ;
 extern void context_dumpModuleAccess (FILE *p_fout);
 extern void context_loadModuleAccess (FILE *p_in);

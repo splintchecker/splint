@@ -184,7 +184,8 @@ bool mtContextNode_matchesRef (mtContextNode context, sRef sr)
 
 bool mtContextNode_matchesRefStrict (mtContextNode context, sRef s)
 {
-  if (mtContextNode_matchesRef (context, s))
+  if (mtContextNode_isDefined (context)
+      && mtContextNode_matchesRef (context, s))
     {
       if (ctype_isKnown (context->type) 
 	  && (ctype_isUnknown (sRef_getType (s))
@@ -204,6 +205,7 @@ bool mtContextNode_matchesRefStrict (mtContextNode context, sRef s)
 bool mtContextNode_matchesType (mtContextNode context, ctype ct)
 {
   DPRINTF (("Context type..."));
+  llassert (mtContextNode_isDefined (context));
   
   if (!ctype_match (context->type, ct))
     {
@@ -230,6 +232,8 @@ bool mtContextNode_matchesType (mtContextNode context, ctype ct)
 
 cstring mtContextNode_unparse (mtContextNode node)
 {
+  llassert (mtContextNode_isDefined (node));
+
   if (ctype_isKnown (node->type))
     {
       return message ("%s %s", mtContextKind_unparse (node->context),

@@ -174,7 +174,7 @@ cstringList_unparseSep (cstringList s, cstring sep)
 }
 
 void
-cstringList_printSpaced (cstringList s, int indent, int gap, int linelen)
+cstringList_printSpaced (cstringList s, size_t indent, size_t gap, int linelen)
 {
   if (cstringList_isDefined (s))
     {
@@ -182,7 +182,7 @@ cstringList_printSpaced (cstringList s, int indent, int gap, int linelen)
       cstring istring = cstring_fill (cstring_undefined, indent);
       cstring gstring = cstring_fill (cstring_undefined, gap);
       int numcol;
-      int longest = 0;
+      size_t longest = 0;
       int i;
  
       /*
@@ -191,7 +191,7 @@ cstringList_printSpaced (cstringList s, int indent, int gap, int linelen)
 
       for (i = 0; i < s->nelements; i++)
 	{
-	  int len = cstring_length (s->elements[i]);
+	  size_t len = cstring_length (s->elements[i]);
 
 	  if (len > longest)
 	    {

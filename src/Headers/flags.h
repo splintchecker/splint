@@ -49,6 +49,9 @@ extern /*@observer@*/ cstring flagcode_unparse (flagcode p_code) /*@*/ ;
 extern int flagcode_valueIndex (flagcode p_f) /*@*/ ;
 extern int flagcode_stringIndex (flagcode p_f) /*@*/ ;
 
+extern bool flagcode_equal (flagcode p_code1, flagcode p_code2) /*@*/ ;
+# define flagcode_equal(c1, c2) ((c1) == (c2))
+
 extern /*@observer@*/ cstring flagcodeHint (flagcode p_f);
 
 extern flagkind identifyCategory (cstring p_s) /*@*/ ;

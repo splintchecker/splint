@@ -39,7 +39,7 @@ static bool exprNode_sameStorage (exprNode p_e1, exprNode p_e2) /*@*/ ;
 static bool exprNode_isEmptyStatement (exprNode p_e);
 static /*@exposed@*/ exprNode exprNode_firstStatement (/*@returned@*/ exprNode p_e);
 static bool exprNode_isFalseConstant (exprNode p_e) /*@*/ ;
-static bool exprNode_isBlock (exprNode p_e);
+static bool exprNode_isStatement (exprNode p_e);
 static void checkGlobUse (uentry p_glob, bool p_isCall, /*@notnull@*/ exprNode p_e);
 static void exprNode_addUse (exprNode p_e, /*@exposed@*/ sRef p_s);
 static bool exprNode_matchArgType (ctype p_ct, exprNode p_e);
@@ -815,17 +815,17 @@ exprNode_combineLiterals (exprNode e, exprNode rest)
 exprNode_rawStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
   exprNode e = exprNode_createLoc (ctype_string, loc);
-  int len = cstring_length (t);
+  size_t len = cstring_length (t);
 
   if (context_getFlag (FLG_STRINGLITERALLEN))
     {
-      if (len > context_getValue (FLG_STRINGLITERALLEN))
+      if (len > size_fromInt (context_getValue (FLG_STRINGLITERALLEN)))
 	{
 	  voptgenerror (FLG_STRINGLITERALLEN,
 			message
 			("String literal length (%d) exceeds maximum "
 			 "length (%d): \"%s\"",
-			 len,
+			 size_toInt (len),
 			 context_getValue (FLG_STRINGLITERALLEN),
 			 t),
 			e->loc);
@@ -855,19 +855,18 @@ exprNode_wideStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
   exprNode res = exprNode_stringLiteral (t, loc);
   res->typ = ctype_makeWideString ();
-
   return res;
 }
 
 /*@only@*/ exprNode
 exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
-  int len = cstring_length (t) - 2;
+  size_t len = size_fromInt (cstring_length (t) - 2);
   char *ts = cstring_toCharsSafe (t);
   char *s = cstring_toCharsSafe (cstring_create (len + 1));
 
   llassert (*ts == '\"' && *(ts + len + 1) == '\"');
-  strncpy (s, ts+1, size_fromInt (len));
+  strncpy (s, ts+1, len);
   *(s + len) = '\0';
   cstring_free (t);
   return exprNode_rawStringLiteral (cstring_fromCharsO (s), loc);
@@ -1063,7 +1062,6 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 
   if (ctype_isFixedArray (t1))
     {
-
       int nelements = long_toInt (ctype_getArraySize (t1));
       
       llassert (multiVal_isString (mval));
@@ -1071,12 +1069,13 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
       
       len = cstring_lengthExpandEscapes (slit);
       
-      
+      llassert (exprNode_isDefined (e2));
+
       if (len == nelements)
 	{
 	  mstring temp;
 
-	  temp = cstring_expandEscapes(slit);
+	  temp = cstring_expandEscapes (slit);
 
 	  if (temp[len-1] == '\0')
 	    {
@@ -1091,16 +1090,14 @@ static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 	    }
 	  else
 	    {
-	  
-	  
-	  voptgenerror 
-	    (FLG_STRINGLITNOROOM,
-	     message ("String literal with %d character%& "
-		      "is assigned to %s (no room for null terminator): %s",
-		      len + 1,
-		      ctype_unparse (t1),
-		      exprNode_unparse (e2)),
-	     e2->loc);
+	      voptgenerror 
+		(FLG_STRINGLITNOROOM,
+		 message ("String literal with %d character%& "
+			  "is assigned to %s (no room for null terminator): %s",
+			  len + 1,
+			  ctype_unparse (t1),
+			  exprNode_unparse (e2)),
+		 e2->loc);
 	    }
 	}
       else if (len > nelements) 
@@ -3299,7 +3296,9 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 		      sRefSet srs = stateClause_getRefs (cl);
 		      sRefModVal modf = stateClause_getEnsuresFunction (cl);
 		      int eparam = stateClause_getStateParameter (cl);
-		      
+
+		      llassert (modf != NULL);
+
 		      DPRINTF (("Reflect after clause: %s / %s", 
 				stateClause_unparse (cl),
 				sRefSet_unparse (srs)));
@@ -3673,6 +3672,8 @@ checkRequiresClause (uentry le, exprNode f, exprNodeList args)
 				stateClause_unparse (cl),
 				sRefSet_unparse (srs)));
 		      
+		      llassert (modf != NULL);
+
 		      sRefSet_elements (srs, sel)
 			{
 			  sRef s;
@@ -5999,8 +6000,7 @@ void exprNode_checkAssignMod (exprNode e1, exprNode ret)
 }
 
 exprNode
-exprNode_assign (/*@only@*/ exprNode e1,
-		 /*@only@*/ exprNode e2, /*@only@*/ lltok op)
+exprNode_assign (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2, /*@only@*/ lltok op)
 {
   bool isalloc = FALSE;
   bool isjustalloc = FALSE;
@@ -6021,13 +6021,17 @@ exprNode_assign (/*@only@*/ exprNode e1,
 		ctype_unparse (e1->typ),
 		ctype_unparse (e2->typ)));
 
-      if (ctype_isNumeric (e2->typ)
-	  || ctype_isNumeric (e1->typ))
+      if (exprNode_isDefined (e1)
+	  && exprNode_isDefined (e2))
 	{
-	  /* Its a pointer arithmetic expression like ptr += i */
-	  noalias = TRUE;
-	}
-    } 
+	  if (ctype_isNumeric (e2->typ)
+	      || ctype_isNumeric (e1->typ))
+	    {
+	      /* Its a pointer arithmetic expression like ptr += i */
+	      noalias = TRUE;
+	    }
+	} 
+    }
   else 
     {
       ret = exprNode_createPartialCopy (e1);
@@ -6127,7 +6131,17 @@ exprNode_assign (/*@only@*/ exprNode e1,
 	      ctype te1 = exprNode_getType (e1);
 	      ctype te2 = exprNode_getType (e2);
 	      
-	      if (!ctype_forceMatch (te1, te2))
+	      if (ctype_isVoid (te2))
+		{
+		  (void) gentypeerror 
+		    (te2, e2, te1, e1,
+		     message ("Assignment of void value to %t: %s %s %s", 
+			      te1, exprNode_unparse (e1),
+			      lltok_unparse (op), 
+			      exprNode_unparse (e2)),
+		     e1->loc);
+		}
+	      else if (!ctype_forceMatch (te1, te2))
 		{
 		  if (exprNode_matchLiteral (te1, e2))
 		    {
@@ -6143,6 +6157,10 @@ exprNode_assign (/*@only@*/ exprNode e1,
 				  exprNode_unparse (e2)),
 			 e1->loc);
 		    }
+		}
+	      else
+		{
+		  /* Type checks okay */
 		}
 	    }
 	 
@@ -6692,6 +6710,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
       usymtab_setMustBreak ();
     }
 
+  DPRINTF (("==> %s", exprNode_unparse (ret)));
   return ret;
 }
 
@@ -6708,7 +6727,7 @@ exprNode exprNode_statement (/*@only@*/ exprNode e, /*@only@*/ lltok t)
 {
   if (!exprNode_isError (e))
     {
-      exprNode_checkStatement(e);
+      exprChecks_checkStatementEffect(e);
     }
 
   return (exprNode_statementError (e, t));
@@ -6763,6 +6782,36 @@ void exprNode_produceGuards (exprNode pred)
     }
 }
 
+exprNode exprNode_compoundStatementExpression (/*@only@*/ lltok tlparen, /*@only@*/ exprNode e)
+{
+  exprNode laststmt;
+
+  DPRINTF (("Compound: %s", exprNode_unparse (e)));
+
+  if (!context_flagOn (FLG_GNUEXTENSIONS, exprNode_loc (e)))
+    {
+      (void) llgenhinterror 
+	(FLG_SYNTAX,
+	 message ("Compound statement expressions is not supported by ISO C99"),
+	 message ("Use +gnuextensions to allow compound statement expressions (and other GNU language extensions) "
+		  "without this warning"),
+	 exprNode_loc (e));
+    }
+
+  /*
+  ** The type of a compoundStatementExpression is the type of the last statement 
+  */
+  
+  llassert (exprNode_isBlock (e));
+  laststmt = exprNode_lastStatement (e);
+
+  DPRINTF (("Last statement: %s / %s", exprNode_unparse (laststmt), ctype_unparse (exprNode_getType (laststmt))));
+  DPRINTF (("e: %s", exprNode_unparse (e)));
+  e->typ = exprNode_getType (laststmt);
+  return exprNode_addParens (tlparen, e);
+}
+
+
 exprNode exprNode_makeBlock (/*@only@*/ exprNode e)
 {
   exprNode ret = exprNode_createPartialCopy (e);
@@ -6774,8 +6823,10 @@ exprNode exprNode_makeBlock (/*@only@*/ exprNode e)
       ret->mustBreak = e->mustBreak;
     }
   
+  DPRINTF (("Block e: %s", exprNode_unparse (e)));
   ret->edata = exprData_makeSingle (e);
   ret->kind = XPR_BLOCK;
+  DPRINTF (("Block: %s", exprNode_unparse (ret)));
   return ret;
 }
 
@@ -6783,6 +6834,12 @@ bool exprNode_isBlock (exprNode e)
 {
   return (exprNode_isDefined (e) 
 	  && ((e)->kind == XPR_BLOCK));
+}
+
+bool exprNode_isStatement (exprNode e)
+{
+  return (exprNode_isDefined (e) 
+	  && ((e)->kind == XPR_STMT));
 }
  
 bool exprNode_isAssign (exprNode e)
@@ -6800,6 +6857,22 @@ bool exprNode_isEmptyStatement (exprNode e)
   return (exprNode_isDefined (e) 
 	  && (e->kind == XPR_TOK)
 	  && (lltok_isSemi (exprData_getTok (e->edata))));
+}
+
+bool exprNode_isMultiStatement (exprNode e)
+{
+  return (exprNode_isDefined (e)
+	  && ((e->kind == XPR_FOR)
+	      || (e->kind == XPR_FORPRED)
+	      || (e->kind == XPR_IF)
+	      || (e->kind == XPR_IFELSE)
+	      || (e->kind == XPR_WHILE)
+	      || (e->kind == XPR_WHILEPRED)
+	      || (e->kind == XPR_DOWHILE)
+	      || (e->kind == XPR_BLOCK)
+	      || (e->kind == XPR_STMT)
+	      || (e->kind == XPR_STMTLIST)
+	      || (e->kind == XPR_SWITCH)));
 }
 
 void exprNode_checkIfPred (exprNode pred)
@@ -8350,7 +8423,7 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
   return hasError;
 }
 
-static exprNode 
+static /*@notnull@*/ exprNode 
 exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
 {
   exprNode ret;
@@ -9462,17 +9535,31 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
       break;
       
     case XPR_BLOCK:
-      ret = message ("{ %s }", exprNode_unparseFirst (exprData_getSingle (data)));
+      ret = message ("{ %s }", exprNode_unparse (exprData_getSingle (data)));
+      /* evans 2002-02-20 was unparseFirst! */
       break;
 
     case XPR_STMT:
-      ret = cstring_copy (exprNode_unparse (exprData_getUopNode (data)));
+      ret = message ("%s;", exprNode_unparse (exprData_getUopNode (data)));
       break;
 
     case XPR_STMTLIST:
-      ret = message ("%s; %s", 
-		     exprNode_unparse (exprData_getPairA (data)),
-		     exprNode_unparse (exprData_getPairB (data)));
+      if (exprNode_isStatement (exprData_getPairA (data)))
+	{
+	  /*
+	  ** statement expressions already print the ;
+	  */
+
+	  ret = message ("%s %s", 
+			 exprNode_unparse (exprData_getPairA (data)),
+			 exprNode_unparse (exprData_getPairB (data)));
+	}
+      else
+	{
+	  ret = message ("%s; %s", 
+			 exprNode_unparse (exprData_getPairA (data)),
+			 exprNode_unparse (exprData_getPairB (data)));
+	}
       break;
       
     case XPR_FTDEFAULT:

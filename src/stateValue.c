@@ -110,8 +110,11 @@ void stateValue_updateValueLoc (stateValue s, int value, fileloc loc)
 void stateValue_update (stateValue res, stateValue val)
 {
   llassert (stateValue_isDefined (res));
+  llassert (stateValue_isDefined (val));
+
   res->value = val->value;
   res->info = stateInfo_update (res->info, val->info);
+
   DPRINTF (("update state: %s", stateValue_unparse (res)));
 }
 		  

@@ -229,7 +229,7 @@ uentryList_unparseAbbrev (uentryList p)
   if (uentryList_size (p) == 0)
     return cstring_makeLiteral ("void");
 
-  for (i = 0; i < p->nelements && i < PRINTBREADTH; i++)
+  for (i = 0; i < p->nelements && i < uentryList_abbrevBreadth; i++)
     {
       if (first)
 	{

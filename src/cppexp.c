@@ -434,7 +434,14 @@ struct operation cppexp_lex (cppReader *pfile)
   ic = cpplib_bufPeek (cppReader_getBufferSafe (pfile));
 
   c = (char) ic;
-  llassert (c != '#');
+
+  if  (c == '#') 
+    {
+      /* was: llassert (c != '#'); - Solaris uses this, attempt to continue anyway... */
+      cppReader_pedwarn (pfile, 
+			 message ("non-standard pre-processor directive: %c", c));
+    }
+
   DPRINTF (("Read: %c", c));
 
   if (c == '\n')

@@ -36,6 +36,9 @@
 
 static int flagMarkerList_lastBeforeLoc (flagMarkerList p_s, fileloc p_loc) /*@*/ ;
 
+static bool
+flagMarkerList_contains (flagMarkerList p_s, flagMarker p_fm) /*@*/ ;
+
 flagMarkerList
   flagMarkerList_new ()
 {
@@ -69,12 +72,19 @@ flagMarkerList_grow (flagMarkerList s)
   s->elements = newelements;
 }
 
-void flagMarkerList_add (flagMarkerList s, flagMarker fm)
+bool flagMarkerList_add (flagMarkerList s, flagMarker fm)
 {
   int i = s->nelements - 1;
   int lastloc;
 
-  DPRINTF (("Flag marker: %s", flagMarker_unparse (fm)));
+  DPRINTF (("Add: %s", flagMarker_unparse (fm)));
+
+  if (flagMarkerList_contains (s, fm))
+    {
+      flagMarker_free (fm);
+      DPRINTF (("List contains: %s", flagMarkerList_unparse (s)));
+      return FALSE;
+    }
 
   if (i > 0)
     {
@@ -114,7 +124,7 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 		}
 
 	      flagMarker_free (fm);
-	      return;
+	      return FALSE;
 	    }
 	}
       else 
@@ -132,12 +142,14 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 			{
 			  if (llforceerror 
 			      (FLG_WARNFLAGS,
-			       cstring_makeLiteral ("Cannot set flag inside ignore "
-						    "count region."),
+			       cstring_makeLiteral
+			       ("Cannot set flag inside ignore "
+				"count region."),
 			       flagMarker_getLoc (fm))) 
 			    {
 			      llgenindentmsg 
-				(cstring_makeLiteral ("Ignore count region starts"),
+				(cstring_makeLiteral 
+				 ("Ignore count region starts"),
 				 flagMarker_getLoc (nlast));
 			      DPRINTF (("Last: %s / %s",
 					fileloc_unparse (flagMarker_getLoc (last)),
@@ -162,7 +174,7 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 			}
 		      
 		      flagMarker_free (fm);
-		      return;
+		      return FALSE;
 		    }
 		}
 	    }
@@ -205,7 +217,7 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
     }
 
   s->nelements++;
-  DPRINTF (("Add flag ==> %s", flagMarkerList_unparse (s)));
+  return TRUE;
 }
 
 void flagMarkerList_checkSuppressCounts (flagMarkerList s)
@@ -222,7 +234,7 @@ void flagMarkerList_checkSuppressCounts (flagMarkerList s)
       DPRINTF (("flagMarker: %s / %s",
 		flagMarker_unparse (current),
 		bool_unparse (inCount)));
-
+      
       if (flagMarker_isIgnoreCount (current))
 	{
 	  llassert (!inCount);
@@ -328,23 +340,6 @@ flagMarkerList_free (flagMarkerList s)
   sfree (s);
 }
 
-/*
-** returns YES iff
-**    > in ignore region (there is an ignore ON marker not followed by OFF)
-**    > code is OFF (-)
-**
-** returns NO iff
-**    > not in ignore region
-**    > code is ON (+)
-**
-** returns MAYBE iff
-**    > not in ignore region
-**    > code is unset or =
-**
-** requires: invariant for flagMarkerList:
-**    flagMarker's are sorted by line and col
-*/
-
 static int
 flagMarkerList_lastBeforeLoc (flagMarkerList s, fileloc loc)
 {
@@ -363,6 +358,41 @@ flagMarkerList_lastBeforeLoc (flagMarkerList s, fileloc loc)
 
   return -1;
 }
+
+static bool
+flagMarkerList_contains (flagMarkerList s, flagMarker fm)
+{
+  int i;
+
+  for (i = s->nelements - 1; i >= 0; i--) 
+    {
+      flagMarker current = s->elements[i];
+      
+      if (flagMarker_equal (current, fm))
+	{
+	  return TRUE;
+	}
+    }
+
+  return FALSE;
+}
+
+/*
+** returns YES iff
+**    > in ignore region (there is an ignore ON marker not followed by OFF)
+**    > code is OFF (-)
+**
+** returns NO iff
+**    > not in ignore region
+**    > code is ON (+)
+**
+** returns MAYBE iff
+**    > not in ignore region
+**    > code is unset or =
+**
+** requires: invariant for flagMarkerList:
+**    flagMarker's are sorted by line and col
+*/
 	  
 ynm
 flagMarkerList_suppressError (flagMarkerList s, flagcode code, fileloc loc)

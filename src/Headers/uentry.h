@@ -53,7 +53,7 @@ typedef enum  {
   BB_NOTNULLTERMINATED /* buffer is known to be not nullterm */
 } bbufstate;
 
-typedef  struct s_bbufinfo {
+typedef /*@null@*/ struct s_bbufinfo {
   bbufstate bufstate; /* state of the buffer */
   int size;	      /* size of the buffer allocated */
   int len;	      /* len of the buffer VALID ONLY IF state is NULLTERM */
