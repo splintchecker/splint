@@ -3810,7 +3810,8 @@ void usymtab_checkFinalScope (bool isReturn)
 		minfo = context_lookupMetaStateInfo (fkey);
 		llassert (metaStateInfo_isDefined (minfo));
 		
-		if (stateValue_isError (fval))
+		if (stateValue_isError (fval)
+		    || sRef_isStateUndefined (sr)) /* No errors for undefined state */
 		  {
 		    ;
 		  }
@@ -5859,6 +5860,7 @@ usymtab_unparseLocalAux (/*@notnull@*/ usymtab s)
   return (c);
 }
 
+# if 0
 static cstring /*@unused@*/ /*@only@*/ 
 usymtab_unparseLocalList (/*@notnull@*/ usymtab s)
 {
@@ -5886,6 +5888,7 @@ usymtab_unparseLocalList (/*@notnull@*/ usymtab s)
 
   return (c);
 }
+# endif
 
 void
 usymtab_printLocal (void)

@@ -14,7 +14,7 @@
 
 struct s_inputStream {
   cstring name;
-  /*@open@*/ /*@dependent@*/ /*@null@*/ FILE *file;
+  /*:open:*/ /*@dependent@*/ /*@null@*/ FILE *file;
   char buffer[STUBMAXRECORDSIZE+1];
   int lineNo;
   size_t charNo;
@@ -59,7 +59,7 @@ extern bool inputStream_getPath (cstring p_path, inputStream p_s)
 extern /*@observer@*/ cstring inputStream_fileName (inputStream p_s) /*@*/ ;
 extern bool inputStream_isOpen (/*@sef@*/ inputStream p_s) /*@*/ ;
 extern int inputStream_thisLineNumber(inputStream p_s) /*@*/ ;
-extern /*@open@*/ /*@exposed@*/ FILE *inputStream_getFile (inputStream p_s) /*@*/ ;
+extern /*:open:*/ /*@exposed@*/ FILE *inputStream_getFile (inputStream p_s) /*@*/ ;
 
 # else
 # error "Multiple include"

@@ -9,7 +9,7 @@
 extern /*@owned@*/ fileloc g_currentloc;
 
 /* stream for error messages */
-extern /*@open@*/ FILE *g_msgstream; 
+extern /*:open:*/ FILE *g_msgstream; 
 
 /*@-ansireserved@*/
 /* This macro is defined by flex. */
@@ -19,8 +19,8 @@ extern /*@open@*/ FILE *g_msgstream;
 /*@-redecl@*/
 /*@-incondefs@*/ 
 /*@-namechecks@*/
-extern /*@dependent@*/ /*@open@*/ FILE *yyin;
-extern /*@dependent@*/ /*@open@*/ FILE *yyout;
+extern /*@dependent@*/ /*:open:*/ FILE *yyin;
+extern /*@dependent@*/ /*:open:*/ FILE *yyout;
 extern int yyleng;
 /*@=incondefs@*/ 
 

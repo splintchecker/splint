@@ -1,4 +1,3 @@
-
 /*
 ** LCLint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
@@ -93,7 +92,7 @@ static void cleanupFiles (void);
 static void showHelp (void);
 static void interrupt (int p_i);
 
-static void loadrc (/*@open@*/ FILE *p_rcfile, cstringSList *p_passThroughArgs)
+static void loadrc (FILE *p_rcfile, cstringSList *p_passThroughArgs)
      /*@ensures closed p_rcfile@*/ ;
 
 static void describeVars (void);
@@ -2145,7 +2144,7 @@ llexit (int status)
 }
 
 void
-loadrc (/*@open@*/ FILE *rcfile, cstringSList *passThroughArgs)
+loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
    /*@ensures closed rcfile@*/
 {
   char *s = mstring_create (MAX_LINE_LENGTH);

@@ -43,7 +43,7 @@
 ** Temporary file used for processing macros.
 */
 
-static /*@open@*/ /*@null@*/ FILE *s_macFile = NULL;
+static /*:open:*/ /*@null@*/ FILE *s_macFile = NULL;
 
 /*
 ** mcDisable is set to TRUE when a macro is being processed, so

@@ -42,7 +42,7 @@ extern int ylparse (void);
 extern int lslparse (void);
 # endif
 
-extern /*@open@*/ /*@dependent@*/ FILE *yyin;
+extern /*:open:*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
 

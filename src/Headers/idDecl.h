@@ -25,7 +25,7 @@ extern /*@falsenull@*/ bool idDecl_isDefined (idDecl p_t) /*@*/ ;
 
 extern void idDecl_free (/*@only@*/ idDecl p_t);
 extern /*@only@*/ idDecl 
-  idDecl_create (/*@only@*/ cstring p_s, /*@only@*/ qtype p_t);
+   idDecl_create (/*@only@*/ cstring p_s, /*@only@*/ qtype p_t);
 
 extern /*@only@*/ idDecl 
   idDecl_createClauses (/*@only@*/ cstring p_s, /*@only@*/ qtype p_t,

@@ -49,7 +49,7 @@
 # include "portab.h"
 
 /*@-incondefs@*/ /*@-redecl@*/
-extern /*@open@*/ /*@dependent@*/ FILE *yyin;
+extern /*:open:*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
 /*@constant int NUMLIBS; @*/

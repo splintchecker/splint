@@ -36,7 +36,8 @@ static qual qual_createPlainAux (int i)
   res->kind = (quenum) i;
   res->info = annotationInfo_undefined;
 
-  /*@i23@*/ return res;
+  sfreeEventually (res); /* stored in qtable */
+  return res;
 }
 
 extern qual qual_createPlain (quenum q)
@@ -65,9 +66,10 @@ extern qual qual_createMetaState (annotationInfo info)
 
   res = (qual) dmalloc (sizeof (*res));
   res->kind = QU_USERANNOT;
-  /*@i423@*/ res->info = info;
+  res->info = info;
 
-  /*@i2583@*/ return res;
+  sfreeEventually (res); /* Memory leak */
+  return res;
 }
   
 static bool quenum_isValid (int q)
@@ -182,11 +184,13 @@ extern annotationInfo qual_getAnnotationInfo (qual q)
 
 /* Cannot call qual_create after this... */
 
-/*@i23@*/ static void qual_free (qual q)
+# if 0
+static void qual_free (qual q)
 {
   llassert (FALSE);
   sfree (q);
 }
+# endif
 
 extern cstring qual_dump (qual q)
 {

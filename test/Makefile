@@ -21,7 +21,7 @@
 .PHONY: tainted typequals ud ulstypes union unreachable unused ullint void
 .PHONY: db1 db2 db3 tests2.2 tests2.2a tests2.4 tests2.5
 .PHONY: all test fulltest expects quicktest
-.PHONY: metastate warnuse
+.PHONY: warnuse metastate
 .PHONY: linked freearray
 .PHONY: sizeoftest
 .PHONY: bufferTest
@@ -47,9 +47,8 @@ LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 
 UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTests globalbufferannotation maxset strchr for abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
    charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-   decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
-   init inparam internal iter keep libs linked lintcomments list macros macrosef merge \
-metastate modifies \
+   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
+   init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
    modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
    outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
@@ -57,9 +56,12 @@ metastate modifies \
 typequals ud ulstypes union unreachable unused ullint void \
    tests2.2 tests2.2a tests2.4 tests2.5 
 
-#drl removed the following tests
-#tainted mergestate nullret nullassign warnuse \
+###
+### Attribute checking is not ready for the 3.0.0.9 alpha release:
+###
 
+#drl removed the following tests
+#fileio tainted mergestate nullret nullassign warnuse metastate \
 
 UNITEXPECTS  = $(addsuffix .expect, $(UNITTESTS))
 

@@ -5,10 +5,10 @@ void f (/*@out@*/ int *x)
 {
   if (3 > 4)
     {
-      unknown (x);
+      unknown (x); /* x not completely defined */
     }
   else
     {
-      inparam (x);
+      inparam (x); /* x not completely defined */
     }
 }

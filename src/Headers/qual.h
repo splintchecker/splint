@@ -224,7 +224,7 @@ extern /*@observer@*/ annotationInfo qual_getAnnotationInfo (qual) /*@*/ ;
 # define qual_isNullTerminated(q) ((q)->kind == QU_NULLTERMINATED)
 
 extern qual qual_createPlain (quenum) /*@*/ ;
-extern qual qual_createMetaState (annotationInfo) /*@*/ ;
+extern qual qual_createMetaState (/*@observer@*/ annotationInfo) /*@*/ ;
 extern qual qual_createTrueNull (void) /*@*/ ;   
 extern qual qual_createFalseNull (void) /*@*/ ;  
 extern qual qual_createRefCounted (void) /*@*/ ; 

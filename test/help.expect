@@ -52,7 +52,9 @@ Topics:
    version (information on compilation, maintainer)
 
 
-Unrecognized option: asdf
+Command Line: Unrecognized option: asdf
+  A flag is not recognized or used in an incorrect way (-badflag will suppress
+  message)
 
 
 Finished LCLint checking --- no code processed
@@ -78,10 +80,13 @@ Finished LCLint checking --- no code processed
    allglobs                    
    allimponly                  
    allmacros                   
+   annotationerror             
    ansilib                     
    ansilimits                  
    ansireserved                
    ansireservedinternal        
+   arraybounds                 
+   arrayboundsread             
    arrayread                   
    arraywrite                  
    assignexpose                
@@ -95,6 +100,8 @@ Finished LCLint checking --- no code processed
    booltype                    
    branchstate                 
    bufferoverflow              
+   bufferoverflowhigh          
+   bugslimit                   
    casebreak                   
    castexpose                  
    castfcnptr                  
@@ -104,16 +111,19 @@ Finished LCLint checking --- no code processed
    charunsignedchar            
    checkedglobalias            
    checkmodglobalias           
+   checkpost                   
    checkstrictglobalias        
    checkstrictglobs            
    codeimponly                 
    commentchar                 
+   commenterror                
    compdef                     
    compdestroy                 
    compmempass                 
    constmacros                 
    constprefix                 
    constprefixexclude          
+   constraintlocation          
    constuse                    
    continuecomment             
    controlnestdepth            
@@ -130,6 +140,7 @@ Finished LCLint checking --- no code processed
    czechoslovakvars            
    czechtypes                  
    czechvars                   
+   debugfcnconstraint          
    declundef                   
    deepbreak                   
    deparrays                   
@@ -171,6 +182,7 @@ Finished LCLint checking --- no code processed
    fcnpost                     
    fcnuse                      
    fielduse                    
+   fileextensions              
    filestaticprefix            
    filestaticprefixexclude     
    firstcase                   
@@ -181,6 +193,7 @@ Finished LCLint checking --- no code processed
    forempty                    
    formalarray                 
    formatcode                  
+   formatconst                 
    formattype                  
    forwarddecl                 
    freshtrans                  
@@ -216,12 +229,15 @@ Finished LCLint checking --- no code processed
    impcheckmodspecglobs        
    impcheckmodstatics          
    impconj                     
+   implementationoptional      
+   implictconstraint           
    impouts                     
    imptype                     
    includenest                 
    incompletetype              
    incondefs                   
    incondefslib                
+   indentspaces                
    infloops                    
    infloopsuncon               
    internalglobs               
@@ -231,6 +247,11 @@ Finished LCLint checking --- no code processed
    internalnamelookalike       
    iterprefix                  
    iterprefixexclude           
+   its4low                     
+   its4moderate                
+   its4mostrisky               
+   its4risky                   
+   its4veryrisky               
    keeptrans                   
    kepttrans                   
    larchpath                   
@@ -274,6 +295,7 @@ Finished LCLint checking --- no code processed
    memchecks                   
    memimp                      
    memtrans                    
+   misplacedsharequal          
    misscase                    
    modfilesys                  
    modglobs                    
@@ -289,6 +311,8 @@ Finished LCLint checking --- no code processed
    moduncon                    
    modunconnomods              
    modunspec                   
+   mts                         
+   multithreaded               
    mustdefine                  
    mustfree                    
    mustmod                     
@@ -326,10 +350,12 @@ Finished LCLint checking --- no code processed
    oldstyle                    
    onlytrans                   
    onlyunqglobaltrans          
+   orconstraint                
    overload                    
    ownedtrans                  
    paramimptemp                
    paramuse                    
+   parenconstraint             
    parenfileformat             
    partial                     
    passunknown                 
@@ -353,6 +379,7 @@ Finished LCLint checking --- no code processed
    realcompare                 
    redecl                      
    redef                       
+   redundantsharequal          
    refcounttrans               
    relaxquals                  
    relaxtypes                  
@@ -396,6 +423,8 @@ Finished LCLint checking --- no code processed
    specundecl                  
    specundef                   
    stackref                    
+   statemerge                  
+   statetransfer               
    staticinittrans             
    statictrans                 
    stats                       
@@ -407,6 +436,7 @@ Finished LCLint checking --- no code processed
    stringliterallen            
    structimponly               
    supcounts                   
+   superuser                   
    switchloopbreak             
    switchswitchbreak           
    syntax                      
@@ -420,6 +450,7 @@ Finished LCLint checking --- no code processed
    timedist                    
    tmpcomments                 
    tmpdir                      
+   toctou                      
    topuse                      
    trytorecover                
    type                        
@@ -437,6 +468,7 @@ Finished LCLint checking --- no code processed
    unreachable                 
    unrecog                     
    unrecogcomments             
+   unrecogflagcomments         
    unusedspecial               
    usedef                      
    usereleased                 
@@ -450,6 +482,7 @@ Finished LCLint checking --- no code processed
    warnmissingglobsnoglobs     
    warnposixheaders            
    warnunixlib                 
+   warnuse                     
    whichlib                    
    whileblock                  
    whileempty                  
@@ -501,6 +534,7 @@ booltrue --- set name of boolean true (default TRUE)
 noaccess --- ignore access comments
 nocomments --- ignore all stylized comments
 unrecogcomments --- stylized comment is unrecognized
+unrecogflagcomments --- stylized flag comment uses an unrecognized flag
 continuecomment --- line continuation marker (\) in comment before */ on same
 line
 nestcomment --- comment begins inside comment
@@ -560,9 +594,9 @@ environment variable)
 lclimportdir --- set directory to search for LCL import files (overrides
 LCLIMPORTDIR)
 sysdirs --- set directories for system files (default /usr/include). Separate
-directories with colons (e.g., "/usr/include:/usr/local/lib"). Flag settings
-propagate to files in a system directory. If -sysdirerrors is set, no errors
-are reported for files in system directories.
+directories with path separator (colons in Unix, semi-colons in Windows). Flag
+settings propagate to files in a system directory. If -sysdirerrors is set, no
+errors are reported for files in system directories.
 skipansiheaders --- prevent inclusion of header files in a system directory
 with names that match standard ANSI headers. The symbolic information in the
 standard library is used instead.  Flag in effect only if a library including
@@ -602,6 +636,7 @@ retexpose --- abstract representation is exposed (return values only)
 assignexpose --- abstract representation is exposed (assignments only)
 castexpose --- abstract representation is exposed through a cast
 linelen --- set length of messages (number of chars)
+indentspaces --- set number of spaces to indent sub-messages
 showcolumn --- show column number where error is found
 parenfileformat --- show column number where error is found
 showfunc --- show name of function containing error
@@ -662,7 +697,7 @@ skipsysheaders --- do not include header files in system directories (set by
 -sysdirs)
 warnflags --- warn when command line sets flag to default value in mode
 warnunixlib --- warn when the unix library is used
-badflag --- a flag is not recognized or used in an incorrect way
+badflag --- warn about bad command line flags
 forcehints --- provide hints for all errors reported
 help --- -help <flags> will describe flags
 hints --- provide hints on using lclint (hint only reported for first related
@@ -688,6 +723,7 @@ unixstrictlib --- use strict version of UNIX (sort-of) library
 posixlib --- use POSIX standard library
 posixstrictlib --- use strict POSIX standard library
 whichlib --- show standard library filename
+mts --- load meta state declaration and corresponding xh file
 commentchar --- set marker character for syntactic comments (default is '@')
 allmacros --- sets fcnmacros and constmacros
 libmacros --- check all macros with declarations in library as functions
@@ -893,11 +929,18 @@ ansilimits --- check for violations of standard limits (controlnestdepth,
 stringliterallen, includenest, numstructfields, numenummembers)
 null --- misuses of null pointer
 nullterminated --- misuse of nullterminated allocation
-bufferoverflow --- possible buffer overflow
 arrayread --- possible out of bounds read
 arraywrite --- possible buffer overflow from an out of bounds write
 fcnpost --- Function has the post condition
+parenconstraint --- parenthesize constraint term
+debugfcnconstraint --- debuging constraint flas
+arraybounds --- Possible out-of-bounds store.  Unable to resolve constraint:
+arrayboundsread --- Possible out-of-bounds read.  Unable to resolve constraint:
 fcnconstraint --- unresolved constraint
+checkpost --- unable to verify ensures annotation
+constraintlocation --- display full c expression for every constraint generated
+implictconstraint --- Try to generate implicit constraints for functions
+orconstraint --- Use limited OR expressions to resolve constraints
 nullterminated --- misuse of nullterminated allocation
 nullderef --- possible dereferencce of null pointer
 fcnderef --- dereferencce of a function type
@@ -944,6 +987,8 @@ enummembers --- enum members must be int values
 maintype --- type of main does not match expected type
 formattype --- type-mismatch in parameter corresponding to format code in a
 printf or scanf-like function
+formatconst --- format parameter is not a string constant (hence variable
+arguments cannot be typechecked)
 formatcode --- invalid format code in format string for printf or scanf-like
 function
 forwarddecl --- forward declarations of pointers to abstract representation
@@ -996,4 +1041,27 @@ typeuse --- type declared but not used
 varuse --- variable declared but not used
 unusedspecial --- unused declaration in special file (corresponding to .l or .y
 file)
+redundantsharequal --- declaration uses observer qualifier that is always true
+misplacedsharequal --- declaration of unsharable storage uses sharing
+annotation
+annotationerror --- annotation is used in inconsistent location
+commenterror --- inconsistent syntactic comment
+bugslimit --- set maximum number of bugs detected before giving up
+fileextensions --- warn when command line file does not have a recognized
+extension
+warnuse --- warn when declaration marked with warn is used
+statetransfer --- storage has been transfered with invalid state
+statemerge --- control paths merge with storage in incompatible states
+its4mostrisky --- most risky security vulnerabilities (from its4 database)
+its4veryrisky --- very risky security vulnerabilities (from its4 database)
+its4risky --- risky security vulnerabilities (from its4 database)
+its4moderate --- moderately risky security vulnerabilities (from its4 database)
+its4low --- risky security vulnerabilities (from its4 database)
+bufferoverflowhigh --- likely buffer overflow vulnerability
+bufferoverflow --- possible buffer overflow vulnerability
+toctou --- possible time of check, time of use vulnerability
+multithreaded --- function is not reentrant
+superuser --- function is restricted to superusers
+implementationoptional --- declarator is implementation optional (ISO99 does
+not require an implementation to provide it)
 

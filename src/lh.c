@@ -63,7 +63,7 @@
 
 /*@private@*/ typedef struct
 {
-  /*@open@*/ /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
+  /*:open:*/ /*@dependent@*/ /*@null@*/ /*@reldef@*/ FILE *f;
   /*@reldef@*/ cstring name;
 } outFile;
 
@@ -83,7 +83,7 @@ static cstring lhTypeSpecNode (lclTypeSpecNode p_typespec);
 static /*@only@*/ cstring lhTypeExpr (/*@null@*/ typeExpr p_x);
 static /*@only@*/ cstring lhDeclaratorNode (declaratorNode p_x);
 
-static /*@open@*/ /*@dependent@*/ /*@null@*/ FILE *out_open (cstring name, cstring suffix)
+static /*:open:*/ /*@dependent@*/ /*@null@*/ FILE *out_open (cstring name, cstring suffix)
      /*@modifies fileSystem@*/
 {
   cstring fullname = cstring_concat (name, suffix);
