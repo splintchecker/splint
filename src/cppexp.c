@@ -809,13 +809,14 @@ left_shift (cppReader *pfile, long a, bool unsignedp, unsigned long b)
     }
   else
     {
-      long l = int_toNonNegative (a) << b;
+      /*@-shiftimplementation@*/
+      long l = a << b; /* int_toNonNegative removed (allow shifts of negative values) */ 
 
 # ifdef WIN32
 # pragma warning( disable : 4018 )
 # endif
 
-      if (int_toNonNegative (l) >> b != a)
+      if (l >> b != a) /* int_toNonNegative removed (allow shifts of negative values) */ 
 	{
 	  integer_overflow (pfile);
 	}
@@ -832,7 +833,8 @@ right_shift (long a, bool unsignedp, unsigned long b)
   else if (unsignedp)
     return (unsigned long) a >> b;
   else
-    return int_toNonNegative (a) >> b;
+    return a >> b; /* int_toNonNegative removed (allow shifts of negative values) */ 
+  /*@=shiftimplementation@*/
 }
 
 /* These priorities are all even, so we can handle associatively.  */

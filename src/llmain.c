@@ -1221,7 +1221,7 @@ llinterrupt (int i)
 		 cstring_toCharsSafe (loc));
 	cstring_free (loc);
 	printCodePoint ();
-	fprintf (g_errorstream, "*** Please report bug to %s\n", SPLINT_MAINTAINER);
+	fprintf (g_errorstream, "*** Please report bug to %s\n*** A useful bug report should include everything we need to reproduce the bug.\n", SPLINT_MAINTAINER);
 	exit (LLGIVEUP);
       }
     default:
@@ -1231,7 +1231,7 @@ llinterrupt (int i)
 	       cstring_toCharsSafe (fileloc_unparse (g_currentloc)));
       /*@=mustfree@*/
       printCodePoint ();
-      fprintf (g_errorstream, "*** Please report bug to %s ***\n", SPLINT_MAINTAINER);
+      fprintf (g_errorstream, "*** Please report bug to %s\n*** A useful bug report should include everything we need to reproduce the bug.", SPLINT_MAINTAINER);
       exit (LLGIVEUP);
     }
 }

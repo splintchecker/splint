@@ -394,7 +394,8 @@ loadStandardState ()
 		    *tt = '\0';
 
 		  lldiagmsg (message ("Standard library: %s", fpath));
-		  lldiagmsg (message ("   (created using %s)", cstring_fromChars (t)));
+		  /* evans 2004-01-13: removed this (it is the libversion which is confusing) */
+		  /*   lldiagmsg (message ("   (created using %s)", cstring_fromChars (t)));		    */
 		}
 
 	      sfree (ot);

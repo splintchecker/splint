@@ -725,12 +725,12 @@ bool cscannerHelp_handleSpecial (char *yyt)
 	  cstring_free (exname);
 	}
 
-      cscannerHelp_handleNewLine (); // evans 2003-10-27: pragment increments line
+      (void) cscannerHelp_handleNewLine (); /* evans 2003-10-27: pragment increments line */
     }
   else if (cstring_equalPrefixLit (olc, "ident"))
     {
       /* Some pre-processors will leave these in the code.  Ignore rest of line */
-      cscannerHelp_handleNewLine (); // evans 2003-10-27: ident increments line
+      (void) cscannerHelp_handleNewLine (); /* evans 2003-10-27: ident increments line */
     }
 
   /*
@@ -839,7 +839,7 @@ bool cscannerHelp_handleSpecial (char *yyt)
 	** We handle a plain # in the input file, by echoing it, and ignoring it in the post-pp-file.
 	*/
 	mstring_free (ol);
-	cscannerHelp_handleNewLine (); // evans 2003-10-27: increments line
+	(void) cscannerHelp_handleNewLine (); /* evans 2003-10-27: increments line */
 	return FALSE;
       } else {
 	voptgenerror
@@ -847,7 +847,7 @@ bool cscannerHelp_handleSpecial (char *yyt)
 	   message ("Unrecognized pre-processor directive: #%s", 
 		    cstring_fromChars (ol)),
 	   g_currentloc);
-	cscannerHelp_handleNewLine (); // evans 2003-10-27: increments line
+	(void) cscannerHelp_handleNewLine (); /* evans 2003-10-27: increments line */
       }
       
       sfree (ol);

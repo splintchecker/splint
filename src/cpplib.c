@@ -3757,7 +3757,9 @@ initialize_builtins (cppReader *pfile)
   /*drl 1/9/2001/ try to define the right symbol for the architecture
     We use autoconf to determine the target cpu 
    */
+# ifndef S_SPLINT_S
   cpplib_installBuiltin ("__" TARGET_CPU, ctype_int, -1, T_CONST, 2, NULL, -1);
+# endif
 
   /*drl 1/2/2002  set some flags based on uname
     I'd like to be able to do this with autoconf macro instead...
