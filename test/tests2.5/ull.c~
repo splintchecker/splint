@@ -1,8 +1,0 @@
-typedef unsigned long long pan_unit64_t;
-
-void f () 
-{
-  unsigned long long put = 0xFFFFFULL;
-  pan_unit64_t pt = 0xFFFFFFFFFFFFFULL;
-  pt++;
-}
