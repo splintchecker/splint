@@ -927,6 +927,26 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
   context_enterInnerContext ();
 
   body = fcnBody;
+
+  // if we're not going to printing any errors for buffer buffer flows
+  //we can skip the checking to improve performance
+  //
+  //FLG_DEBUGFUNCTIONCONSTRAINT controls wheather we perform the check anyway
+  // in order to find potential problems like asserts and seg faults...
+
+  if  (!context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT)  )
+    // check if errors will printed
+    if (! (context_getFlag(FLG_DEBUGFUNCTIONCONSTRAINT) ||
+	   context_getFlag(FLG_FUNCTIONCONSTRAINT) ||
+	   context_getFlag(FLG_CHECKPOST) 
+	   )
+	)
+      {
+	exprNode_free (body);
+	context_exitInnerPlain();
+
+	return;
+      }
   
   exprNode_generateConstraints (body);
 

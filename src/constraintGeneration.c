@@ -111,12 +111,6 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@dependent@*/ exprNode e)
 {
   if (exprNode_isError (e) )
     return FALSE;
-  /*
-  e->requiresConstraints = constraintList_makeNew();
-  e->ensuresConstraints = constraintList_makeNew();
-  e->trueEnsuresConstraints = constraintList_makeNew();
-  e->falseEnsuresConstraints = constraintList_makeNew();
-  */
 
   if (exprNode_isUnhandled (e) )
     {

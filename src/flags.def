@@ -2811,6 +2811,14 @@ static flaglist flags =
   },
   {
     FK_NT, FK_MEMORY, modeFlag,
+    "debugfcnconstraint",
+    FLG_DEBUGFUNCTIONCONSTRAINT,
+    "debuging constraint flas",
+    "This flag is for debuging.  It causes lclint to perform buffer overflow checking even if the error will be surpressed.  Normal buffer overflow checking will only be performed if errors would be printed. ",
+    0, 0
+  },
+  {
+    FK_NT, FK_MEMORY, modeFlag,
     "fcnconstraint",
     FLG_FUNCTIONCONSTRAINT,
     "unresolved constraint",
