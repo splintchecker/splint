@@ -256,6 +256,14 @@ idDecl_addClauses (idDecl d, functionClauseList clauses)
     llassert (functionClauseList_isUndefined (d->clauses));
 
   */
-  
-  d->clauses = clauses;
+
+  if (functionClauseList_isUndefined (d->clauses) )
+    {
+      d->clauses = clauses;
+    }
+  else
+    {
+      functionClauseList_free(d->clauses);
+      d->clauses = clauses;
+    }
 }

@@ -237,7 +237,7 @@ void functionConstraint_addBufferConstraints (functionConstraint node, constrain
 	{
 	  if (node->kind == FCT_BUFFER)
 	    {
-	      node->constraint.buffer = constraintList_addList(node->constraint.buffer, temp);
+	      node->constraint.buffer = constraintList_addListFree(node->constraint.buffer, temp);
 	    }
 	  else
 	    {
