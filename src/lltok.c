@@ -111,6 +111,13 @@ bool  lltok_isMinus_Op (lltok tok)
   return (tok.tok ==  TMINUS);
 }
 
+/*drl7x added 6 6 2001 */
+
+bool  lltok_isAmpersand_Op (lltok tok)
+{
+  return (tok.tok == TAMPERSAND);
+}
+
 /*end drl added */
 
 cstring

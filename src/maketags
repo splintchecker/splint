@@ -1,3 +1,3 @@
 #!/bin/sh
 
-etags *.y Headers/* *.c *.h *.l  *.i
+etags --langmap=c:+.i.h *.y Headers/* *.c *.h *.l  *.i
