@@ -228,7 +228,8 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbol.h                Headers/version.h \
           Headers/lsymbolList.h            Headers/warnClause.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
-          Headers/ltoken.h   Headers/splintMacros.nf  
+          Headers/ltoken.h   Headers/splintMacros.nf  \
+          Headers/pointers.h   Headers/mstring.h   Headers/help.h
 
 
 IFILES =  ctbase.i  cttable.i  exprDataQuite.i
@@ -236,7 +237,8 @@ IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 ## Non-built files we need to distribute
 EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             flags.def cscanner.l flex.head flex.reset $(IFILES) \
- Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf Makefile.binary.am   Makefile.binary.in
+ Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
+#Makefile.binary.am   Makefile.binary.in
 
 
 #Files that are used on systems that do not have bison or yacc

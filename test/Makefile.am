@@ -126,13 +126,17 @@ $(SPLINT):
 
 CLEANOUTPUT = $(GREP) -v "Splint 3." | $(GREP) -v "$(SPLINT)" | $(GREP) -v "^make.*\[[1-9]*\]:" | $(GREP) -v "^gmake.*\[[1-9]*\]:" |   $(GREP) -v "^gmake -e" |  $(GREP) -v "^make -e" |$(GREP) -v "config.status: creating test/Makefile" | $(GREP) -v "cd .. && " | $(GREP) -v "CONFIG_HEADERS=" | $(GREP) -v "CONFIG_FILES="
 
+#drl 12/07/2002 These rules for .c and .expect files don't make sense
+# and they are confusing make dist so I'm taking them out.
+
 ## Not real C code
 
-.c.expect:
-	$(MAKE) $* |& $(CLEANOUTPUT) >$*.expect && cat $*.expect
+#.c.expect:
+#	$(MAKE) $* |& $(CLEANOUTPUT) >$*.expect && cat $*.expect
+#
+#.c.diff:
+#	$(MAKE) $* |& $(CLEANOUTPUT) >$*.out && diff $*.expect $*.out
 
-.c.diff:
-	$(MAKE) $* |& $(CLEANOUTPUT) >$*.out && diff $*.expect $*.out
 
 #drl temporally take this out.
 #.PHONY: expects
@@ -726,12 +730,14 @@ shifts:
 	-$(SPLINTR) shifts.c -shiftimplementation -expect 3
 	-$(SPLINTR) shifts.c -shiftnegative -expect 1
 
+#drl comment this out until sizesigns is added to cvs
+
 ### evans - added 2002-08-17: check warnings with arbitrary integral types
-sizesigns:
-	-$(SPLINTR) +strict sizesigns.c
-	-$(SPLINTR) +strict +ignoresigns sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
-	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
+#sizesigns:
+#	-$(SPLINTR) +strict sizesigns.c
+#	-$(SPLINTR) +strict +ignoresigns sizesigns.c
+#	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
+#	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
 
 .PHONY: slovaknames
 slovaknames:
@@ -1229,7 +1235,6 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./simplebufferConstraintTests/test3.c \
               ./simplebufferConstraintTests/test7.c \
               ./sizeoftest/sizeof.c \
-              ./sizeoftest/Makefile.c \
               ./sizeoftest/sizeofConst.c \
               ./strchr/strchr.c \
               ./suppressfile/test.c \
@@ -1503,7 +1508,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./tests2.5/immutable.h \
               ./tests2.5/impabsmodule.h \
               ./tests2.5/socket.h \
-              ./Makefile-test.os2 \
+              ./Makefile.os2 \
               ./db1/Makefile \
               ./db2/Makefile \
               ./db3/Makefile \
@@ -1535,7 +1540,6 @@ EXTRA_DIST =  ./abst_t.lcl \
                 utypes.expect widestrings.expect  widestrings.c  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
                 loopexec.c looptesteffect.c mergenull.c shifts.c \
-		sizesigns.c sizesigns.expect \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
@@ -1543,3 +1547,5 @@ EXTRA_DIST =  ./abst_t.lcl \
                   divzero.expect parentype.expect \
                   divzero.c parentype.c \
 stringliteral.expect  stringliteral.c
+
+#		sizesigns.c sizesigns.expect \
