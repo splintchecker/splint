@@ -361,7 +361,7 @@ multiVal multiVal_divide (multiVal m1, multiVal m2)
 	  return multiVal_undefined;
 	}
     case MVCHAR:   
-      if (m2->value.cval != 0)
+      if (m2->value.cval != (char) 0)
 	{
 	  return (multiVal_makeChar ((char) (m1->value.cval / m2->value.cval)));
 	}
@@ -370,14 +370,7 @@ multiVal multiVal_divide (multiVal m1, multiVal m2)
 	  return multiVal_undefined;
 	}
     case MVDOUBLE:
-      if (m2->value.fval != 0.0)
-	{
-	  return (multiVal_makeDouble (m1->value.fval / m2->value.fval));
-	}
-      else
-	{
-	  return multiVal_undefined;
-	}
+      return multiVal_undefined; /* Don't attempt to divide floats */
     case MVSTRING: return multiVal_undefined;
     }
 

@@ -285,8 +285,6 @@ extern void yyerror (char *);
 /*drl 1/6/2002 either /\ or && */
 %type <tok> constraintSeperator
 
-
-
 %type <enumnamelist> enumeratorList 
 %type <cstringlist> fieldDesignator
 
@@ -335,6 +333,7 @@ externalDef
  | iterDecl       { uentry_clearDecl (); } 
  | macroDef       { uentry_clearDecl (); } 
  | initializer    { uentry_checkDecl (); exprNode_free ($1); }
+ | TSEMI          { uentry_clearDecl (); /* evans 2002-02-08: okay to have a null statement */ }  
  | error          { uentry_clearDecl (); } 
 
 constantDecl

@@ -581,7 +581,7 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in
+DIST_COMMON = ChangeLog Makefile.am Makefile.in
 SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 
 all: $(BUILT_SOURCES)
@@ -986,7 +986,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
-	  echo '* Expect 141 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
+	  echo '* Expect 142 shift/reduce conflicts and 111 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset >cgrammar.c; \
