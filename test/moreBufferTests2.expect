@@ -1,6 +1,7 @@
 
 unknownsize.c: (in function uknSize1)
 unknownsize.c:9:3: Possible out-of-bounds store:
+    c[9]
     Unable to resolve constraint:
     requires maxSet(c @ unknownsize.c:9:3) >= 9
      needed to satisfy precondition:
@@ -10,6 +11,7 @@ Finished checking --- 1 code warning, as expected
 
 fixedArrayType.c: (in function fixedArrayTouch)
 fixedArrayType.c:9:3: Possible out-of-bounds store:
+    buffer[sizeof(Array) - 1]
     Unable to resolve constraint:
     requires sizeof(Array) @ fixedArrayType.c:9:23 <= 10
      needed to satisfy precondition:

@@ -666,6 +666,12 @@ void constraint_printErrorPostCondition (constraint c, fileloc loc)
 
   temp = constraint_getFileloc (c);
 
+    
+  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES ) )
+    {
+      string = cstring_replaceChar(string, '\n', ' ');
+    }
+  
   if (fileloc_isDefined (temp))
     {
       errorLoc = temp;
@@ -727,7 +733,14 @@ void constraint_printError (constraint c, fileloc loc)
       fileloc_free (temp);
       errorLoc = fileloc_copy (errorLoc);
     }
-      
+
+  
+  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES ) )
+    {
+      string = cstring_replaceChar(string, '\n', ' ');
+    }
+
+
   if (c->post)
     {
       voptgenerror (FLG_FUNCTIONPOST, string, errorLoc);
@@ -814,7 +827,7 @@ cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
   cstring temp = cstring_undefined;
-    cstring genExpr;
+  cstring genExpr;
   
   if (!c->post)
     {

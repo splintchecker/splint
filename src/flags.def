@@ -1854,7 +1854,7 @@ static flaglist flags =
     "Memory read or write may be out of bounds of allocated storage.", 0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
+    FK_BOUNDS, FK_MEMORY, plainFlag,
     "boundsread",
     FLG_BOUNDSREAD,
     "possible out of bounds read",
@@ -1862,7 +1862,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
+    FK_BOUNDS, FK_MEMORY, plainFlag,
     "boundswrite",
     FLG_BOUNDSWRITE,
     "possible buffer overflow from an out of bounds write",
@@ -1871,7 +1871,7 @@ static flaglist flags =
   },
   
   {
-    FK_BOUNDS, FK_DISPLAY, modeFlag,
+    FK_BOUNDS, FK_DISPLAY, plainFlag,
     "fcnpost",
     FLG_FUNCTIONPOST,
     "display function post conditions",
@@ -1879,7 +1879,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_BOUNDS, FK_DISPLAY, modeFlag,
+    FK_BOUNDS, FK_DISPLAY, plainFlag,
     "redundantconstraints",
     FLG_REDUNDANTCONSTRAINTS,
     "display seemingly redundant constraints",
@@ -1897,7 +1897,7 @@ static flaglist flags =
   },
 
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
+    FK_BOUNDS, FK_MEMORY, plainFlag,
     "implictconstraint",
     FLG_IMPLICTCONSTRAINT,
     "generate implicit constraints for functions",
@@ -1906,7 +1906,7 @@ static flaglist flags =
   },
   /*drl7x added 4/29/01 */    
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
+    FK_BOUNDS, FK_MEMORY, plainFlag,
     "orconstraint",
     FLG_ORCONSTRAINT,
     "use limited OR expressions to resolve constraints",
@@ -1915,7 +1915,7 @@ static flaglist flags =
   },
   
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
+    FK_BOUNDS, FK_MEMORY, plainFlag,
     "nullterminated",
     FLG_NULLTERMINATEDWARNING,
     "misuse of nullterminated allocation",
@@ -1924,15 +1924,24 @@ static flaglist flags =
   },
   
   {
-    FK_BOUNDS, FK_DISPLAY, modeFlag,
+    FK_BOUNDS, FK_DISPLAY, plainFlag,
     "showconstraintparens",
     FLG_PARENCONSTRAINT,
     "display parentheses around constraint terms",
     NULL,
     0, 0
   },  
+  /*drl added 2/4/2002*/
   {
-    FK_BOUNDS, FK_DISPLAY, modeFlag,
+    FK_BOUNDS, FK_DISPLAY, plainFlag,
+    "boundscompacterrormessages",
+    FLG_BOUNDSCOMPACTERRORMESSAGES,
+    "Display fewer new lines in bounds checking error messages",
+    NULL,
+    0, 0
+  },  
+  {
+    FK_BOUNDS, FK_DISPLAY, plainFlag,
     "showconstraintlocation",
     FLG_CONSTRAINTLOCATION,
     "display location for every constraint generated",
@@ -4154,7 +4163,7 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
-    FK_DEBUG, FK_BOUNDS, modeFlag,
+    FK_DEBUG, FK_BOUNDS, plainFlag,
     "debugfcnconstraint",
     FLG_DEBUGFUNCTIONCONSTRAINT,
     "debug function constraints",

@@ -914,7 +914,10 @@ context_resetAllFlags (void)
   /*
     Changed for 3.0.0.19
    */
-  gc.flags[FLG_ORCONSTRAINT] = TRUE;
+
+  /* commenting ou until some output issues are fixed */
+  /*  gc.flags[FLG_ORCONSTRAINT] = TRUE;*/
+  
   gc.flags[FLG_CONSTRAINTLOCATION] = TRUE;
 
   /*drl 1/18/2002*/

@@ -1074,3 +1074,23 @@ int  cstring_lengthExpandEscapes (cstring s)
 
 
 
+cstring cstring_replaceChar(/*@returned@*/ cstring c, char oldChar, char newChar)
+{
+  char *ptr;
+  llassert(oldChar != '\0');
+  if (cstring_isUndefined(c) )
+    {
+      llcontbug(cstring_makeLiteral("cstring_replaceChar called with undefined string"));
+      return c;
+    }
+  
+  ptr = c;
+  while (*ptr != '\0')
+    {
+      if (*ptr == oldChar)
+	*ptr = newChar;
+      ptr++;
+    }
+
+  return c;
+}

@@ -1,6 +1,7 @@
 
 for.c: (in function f)
 for.c:13:5: Possible out-of-bounds store:
+    t[i]
     Unable to resolve constraint:
     requires i @ for.c:13:7 <= 10
      needed to satisfy precondition:

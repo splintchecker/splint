@@ -211,6 +211,12 @@ extern int cstring_compareLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;
 # define cstring_compareLit(c,sub) \
   (cstring_compare (c, cstring_fromChars (sub)))
 
+/*drl added 2/4/2002*/
+/*replaces every instance of the character old with the character new
+  old can not be '\0'
+*/
+cstring cstring_replaceChar(/*@returned@*/ cstring p_c, char p_oldChar, char p_newChar);
+
 # else
 # error "Multiple include"
 # endif
