@@ -347,7 +347,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
       {
 	parent->requiresConstraints = constraintList_copy (child2->requiresConstraints);
 	parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
-	DPRINTF((message ("Copied child constraints: pre: %s and post: %s ",
+	DPRINTF((message ("Copied child constraints: pre: %s and post: %s",
 			  constraintList_print( child2->requiresConstraints),
 			  constraintList_print (child2->ensuresConstraints)
 			  )
@@ -357,9 +357,11 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
   llassert(!exprNode_isError(child2) );
   
-  TPRINTF( (message ("Child constraints are %s and %s ",
+  TPRINTF( (message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
-		     constraintList_print (child2->requiresConstraints)
+		     constraintList_print (child1->ensuresConstraints),
+		     constraintList_print (child2->requiresConstraints),
+		     constraintList_print (child2->ensuresConstraints)
 		     ) ) );
  
   parent->requiresConstraints = constraintList_new();
