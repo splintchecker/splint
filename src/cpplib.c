@@ -2837,7 +2837,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       else if (hp->type == T_CONST)
 	ok = !CPPOPTIONS (pfile)->done_initializing;
       else {
-	BADBRANCH;
+	ok = FALSE; /* Redefining anything else is bad. */
       }
 
       /* Print the warning if it's not ok.  */
