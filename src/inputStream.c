@@ -127,6 +127,7 @@ inputStream_fromString (cstring name, cstring str)
   s->lineNo = 0;
   s->charNo = 0;
   s->curLine = NULL;
+  s->buffer[0] = '\0';
 
   return s;
 }

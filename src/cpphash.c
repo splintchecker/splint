@@ -58,7 +58,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "cpplib.h"
 # include "cpphash.h"
 
-typedef /*@only@*/ HASHNODE *o_HASHNODE;
+typedef /*@null@*/ /*@only@*/ HASHNODE *o_HASHNODE;
 
 static o_HASHNODE hashtab[CPP_HASHSIZE]; 
 static o_HASHNODE ohashtab[CPP_HASHSIZE];
@@ -73,9 +73,11 @@ static void HashNode_delete (/*@null@*/ /*@only@*/ HASHNODE *);
 /*@function static unsigned int makePositive (unsigned int) modifies nothing ; @*/
 # define makePositive(v) ((v) & 0x7fffffff) /* make number positive */
 
+typedef /*@null@*/ HASHNODE n_HASHNODE;
+
 static /*@null@*/ HASHNODE *
    HashNode_copy (/*@null@*/ HASHNODE *, 
-		  /*@dependent@*/ HASHNODE **p_hdr, 
+		  /*@null@*/ /*@dependent@*/ n_HASHNODE **p_hdr, 
 		  /*@dependent@*/ /*@null@*/ /*@special@*/ HASHNODE *p_prev) 
      /*@*/ ;
 
@@ -227,7 +229,7 @@ static void HashNode_delete (/*@only@*/ /*@null@*/ HASHNODE *node)
 	  else if (node->type == T_PCSTRING) 
 	    {
 	      res->value.cpval = mstring_copy (node->value.cpval);
-		  llassert (res->value.cpval != NULL);
+	      llassert (res->value.cpval != NULL);
 	    } 
 	  else 
 	    {

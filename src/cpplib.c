@@ -3314,6 +3314,8 @@ macroexpand (cppReader *pfile, /*@dependent@*/ HASHNODE *hp)
       size_t totlen;	/* total amount of exp buffer filled so far */
 
       register struct reflist *ap, *last_ap;
+      
+      assertSet (args); /* args is defined since the nargs > 0 path was taken */
 
       /* Macro really takes args.  Compute the expansion of this call.  */
 
@@ -3426,12 +3428,15 @@ macroexpand (cppReader *pfile, /*@dependent@*/ HASHNODE *hp)
 	    {
 	      /* Add 4 for two newline-space markers to prevent
 		 token concatenation.  */
+	      assertSet (args); /*@i534 shouldn't need this */
 	      xbuf_len += args[ap->argno].raw_length + 4;
 	    }
 	  else
 	    {
 	      /* We have an ordinary (expanded) occurrence of the arg.
 		 So compute its expansion, if we have not already.  */
+
+	      assertSet (args); /*@i534 shouldn't need this */
 
 	      if (args[ap->argno].expand_length < 0)
 		{

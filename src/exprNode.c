@@ -28,6 +28,7 @@
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
+# include "mtincludes.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
 
@@ -3198,10 +3199,49 @@ reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
       if (uentry_hasMetaStateEnsures (le))
 	{
 	  metaStateConstraint msc = uentry_getMetaStateEnsures (le);
+	  metaStateSpecifier msspec = metaStateConstraint_getSpecifier (msc);
+	  metaStateInfo msinfo = metaStateSpecifier_getMetaStateInfo (msspec);
+	  metaStateExpression msexpr = metaStateConstraint_getExpression (msc);
+	  cstring key = metaStateInfo_getName (msinfo);
+	  sRef mlsr = metaStateSpecifier_getSref (msspec);
+	  sRef s;
+	  stateValue sval = stateValue_undefined;
 
-	  TPRINTF (("Meta state constraint for %s: %s", uentry_unparse (le),
+	  DPRINTF (("Meta state constraint for %s: %s", uentry_unparse (le),
 		    metaStateConstraint_unparse (msc)));
+	  DPRINTF (("Matches left: %s", sRef_unparseDebug (mlsr)));
+	  
+	  if (sRef_isResult (sRef_getRootBase (mlsr)))
+	    {
+	      s = sRef_undefined; /*@i423 what about results? */
+	    }
+	  else
+	    {
+	      s = sRef_fixBaseParam (mlsr, args);
+	      DPRINTF (("Setting state: %s", sRef_unparseFull (s)));
+	    }
 
+	  /* while (metaStateExpression_isDefined (msexpr)) */ 
+	    {
+	      metaStateSpecifier ms = metaStateExpression_getSpecifier (msexpr);
+	      sRef msr = metaStateSpecifier_getSref (ms);
+	      metaStateInfo msi = metaStateSpecifier_getMetaStateInfo (ms);
+	      sRef fs;
+
+	      if (metaStateInfo_isDefined (msi))
+		{
+		  /* Must match lhs state */
+		  llassert (metaStateInfo_equal (msinfo, msi));
+		}
+
+	      llassert (sRef_isParam (sRef_getRootBase (msr)));
+	      fs = sRef_fixBaseParam (msr, args);
+
+	      sval = sRef_getMetaStateValue (fs, key);
+	    }
+
+	  DPRINTF (("Setting: %s:%s <- %s", sRef_unparse (s), key, stateValue_unparse (sval)));
+	  sRef_setMetaStateValueComplete (s, key, stateValue_getValue (sval), exprNode_loc (f));
 	}
     }
 }

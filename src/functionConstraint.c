@@ -196,7 +196,8 @@ extern void functionConstraint_free (/*@only@*/ functionConstraint node)
 	case FCT_CONJUNCT:
 	  functionConstraint_free (node->constraint.conjunct.op1);
 	  functionConstraint_free (node->constraint.conjunct.op2);
-	  BADDEFAULT;
+	  break;
+        BADDEFAULT;
 	}
       
       sfree (node);

@@ -700,7 +700,7 @@ conext_resetAllCounters (void)
 }
 
 void
-context_resetAllFlags (void)
+context_resetAllFlags (void) 
 {
   allFlagCodes (code)
     {
@@ -2847,7 +2847,14 @@ void context_initMod (void)
   usymtab_initMod ();
 
   context_resetAllFlags ();
+  assertSet (gc.flags); /* Can't use global in defines */
+  assertSet (gc.saveflags);
+  assertSet (gc.values);
+  assertSet (gc.strings);
+
   conext_resetAllCounters ();
+  assertSet (gc.counters);
+
   context_setMode (DEFAULT_MODE);
 
   gc.stateTable = metaStateTable_create ();
