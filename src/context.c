@@ -865,6 +865,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_FORMATTYPE] = TRUE;
   gc.flags[FLG_BADFLAG] = TRUE;
   gc.flags[FLG_WARNFLAGS] = TRUE;
+  gc.flags[FLG_WARNRC] = TRUE;
   gc.flags[FLG_FILEEXTENSIONS] = TRUE;
   gc.flags[FLG_WARNUNIXLIB] = TRUE;
   gc.flags[FLG_WARNPOSIX] = TRUE;

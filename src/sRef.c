@@ -80,6 +80,18 @@ static bool sRef_isDeepUnionField (sRef p_s);
 static void sRef_addDeriv (/*@notnull@*/ sRef p_s, /*@notnull@*/ /*@exposed@*/ sRef p_t);
 static bool sRef_checkModify (sRef p_s, sRefSet p_sl) /*@*/ ;
 
+/*
+** If s is definitely null, it has no memory state.
+*/
+
+static void sRef_resetAliasKind (/*@notnull@*/ sRef s) /*@modifies s->aliaskind@*/
+{
+  if (s->nullstate == NS_DEFNULL)
+    {
+      /* s->aliaskind = AK_ERROR; */
+    }
+}
+
 static void sRef_checkMutable (/*@unused@*/ sRef s)
 {
   /*@i235@*/
@@ -3714,6 +3726,10 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
   llassertfatal (sRef_isValid (res));
   llassertfatal (sRef_isValid (other));
   
+  DPRINTF (("Merge aux: %s / %s",
+	    bool_unparse (sRef_isDefinitelyNull (res)),
+	    bool_unparse (sRef_isDefinitelyNull (other))));
+
   sRef_checkMutable (res);
   sRef_checkMutable (other);
 
@@ -5354,7 +5370,8 @@ void sRef_setNullStateAux (/*@notnull@*/ sRef s, nstate ns, fileloc loc)
   DPRINTF (("Set null state: %s / %s", sRef_unparse (s), nstate_unparse (ns)));
   sRef_checkMutable (s);
   s->nullstate = ns;
-  
+  sRef_resetAliasKind (s);
+
   if (fileloc_isDefined (loc))
     {
       s->nullinfo = stateInfo_updateLoc (s->nullinfo, loc);
@@ -5373,6 +5390,7 @@ void sRef_setNullStateN (sRef s, nstate n)
 {
   sRef_checkMutable (s);
   s->nullstate = n;
+  sRef_resetAliasKind (s);
 }
 
 void sRef_setNullState (sRef s, nstate n, fileloc loc)
@@ -8782,6 +8800,8 @@ static void
 
   sRef_checkMutable (res);
 
+  DPRINTF (("Combine alias kinds: \n\t%s / \n\t%s",
+	    sRef_unparseFull (res), sRef_unparseFull (other)));
   if (alkind_equal (ares, aother)
       || aother == AK_UNKNOWN
       || aother == AK_ERROR)
@@ -8794,12 +8814,14 @@ static void
       res ->aliaskind = AK_ERROR; 
     }
   else if (ares == AK_UNKNOWN || ares == AK_ERROR
-	   || sRef_isStateUndefined (res))
+	   || sRef_isStateUndefined (res)
+	   || sRef_isDefinitelyNull (res))
     { 
       res->aliasinfo = stateInfo_update (res->aliasinfo, other->aliasinfo);
       res->aliaskind = aother;  
     }
-  else if (sRef_isStateUndefined (other))
+  else if (sRef_isStateUndefined (other)
+	   || sRef_isDefinitelyNull (other))
     {
       ;
     }
@@ -9359,6 +9381,7 @@ static void sRef_updateNullState (sRef res, sRef other)
 {
   res->nullstate = other->nullstate;
   res->nullinfo = stateInfo_update (res->nullinfo, other->nullinfo);
+  sRef_resetAliasKind (res);
 }
 
 void sRef_combineNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other)
@@ -9418,6 +9441,7 @@ void sRef_combineNullState (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other)
     }
 
   res->nullstate = nn;
+  sRef_resetAliasKind (res);
 }
 
 cstring sRef_nullMessage (sRef s)

@@ -275,7 +275,7 @@ dumpState (cstring cfname)
       */
 
       fprintf (f, "%s %s\n", LIBRARY_MARKER, cstring_toCharsSafe (fname));
-      fprintf (f, ";;%s\n", LCL_VERSION);
+      fprintf (f, ";;%s\n", SPLINT_VERSION);
       fprintf (f, ";;lib:%d\n", (int) context_getLibrary ());
       fprintf (f, ";;ctTable\n");
       

@@ -9924,7 +9924,7 @@ static void
     }
 }
 
-static bool incompatibleStates (sRef rs, sRef os)
+static bool uentry_incompatibleMemoryStates (sRef rs, sRef os)
 {
   alkind rk = sRef_getAliasKind (rs);
   alkind ok = sRef_getAliasKind (os);
@@ -10003,29 +10003,32 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 			 bool mustReturn, bool flip, bool opt,
 			 clause cl)    
 {
+  sRef rs = res->sref;
+  sRef os = other->sref;
+
   DPRINTF (("Merge alias states: %s / %s",
 	    uentry_unparseFull (res),
 	    uentry_unparseFull (other)));
 
-  if (sRef_isValid (res->sref))
+  if (sRef_isValid (rs))
     {
       if (!mustReturn)
 	{
-	  DPRINTF (("1"));
-	  if (incompatibleStates (res->sref, other->sref))
+	  if (uentry_incompatibleMemoryStates (rs, os))
 	    {
-	      DPRINTF (("2"));
+	      DPRINTF (("Incompatible: \n\t%s / \n\t%s",
+			sRef_unparseFull (rs), sRef_unparseFull (os)));
 
-	      if (sRef_isThroughArrayFetch (res->sref)
+	      if (sRef_isThroughArrayFetch (rs)
 		  && !context_getFlag (FLG_STRICTBRANCHSTATE))
 		{
-		  if (sRef_isKept (res->sref) || sRef_isKept (other->sref))
+		  if (sRef_isKept (rs) || sRef_isKept (os))
 		    {
-		      sRef_maybeKill (res->sref, loc);
+		      sRef_maybeKill (rs, loc);
 		    }
-		  else if (sRef_isPossiblyDead (other->sref))
+		  else if (sRef_isPossiblyDead (os))
 		    {
-		      sRef_maybeKill (res->sref, loc);
+		      sRef_maybeKill (rs, loc);
 		    }
 		  else
 		    {
@@ -10034,20 +10037,19 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 		}
 	      else
 		{
-		  if (uentry_relevantReference (other->sref, flip))
+		  if (uentry_relevantReference (os, flip))
 		    {
-		      DPRINTF (("4"));
-		      if (sRef_isLocalParamVar (res->sref) 
-			  && (sRef_isLocalState (other->sref) 
-			      || sRef_isDependent (other->sref)))
+		      if (sRef_isLocalParamVar (rs) 
+			  && (sRef_isLocalState (os) 
+			      || sRef_isDependent (os)))
 			{
-			  if (sRef_isDependent (res->sref))
+			  if (sRef_isDependent (rs))
 			    {
-			      sRef_setDependent (other->sref, loc);
+			      sRef_setDependent (os, loc);
 			    }
 			  else
 			    {
-			      sRef_setDefState (res->sref, SS_UNUSEABLE, loc);
+			      sRef_setDefState (rs, SS_UNUSEABLE, loc);
 			    }
 			}
 		      else 
@@ -10057,33 +10059,34 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 		    }
 		}
 	      
-	      if (sRef_isKept (res->sref))
+	      if (sRef_isKept (rs))
 		{
-		  sRef_setKept (other->sref, loc);
+		  DPRINTF (("Setting kept: %s", sRef_unparseFull (os)));
+		  sRef_setKept (os, loc);
 		}
 	    }
 	  else
 	    {
-	      if (incompatibleStates (other->sref, res->sref))
+	      if (uentry_incompatibleMemoryStates (os, rs))
 		{
-		  if (uentry_relevantReference (res->sref, !flip))
+		  if (uentry_relevantReference (rs, !flip))
 		    {
-		      if (sRef_isLocalParamVar (res->sref) 
-			  && (sRef_isDependent (res->sref)
-			      || sRef_isLocalState (res->sref)))
+		      if (sRef_isLocalParamVar (rs) 
+			  && (sRef_isDependent (rs)
+			      || sRef_isLocalState (rs)))
 			{
-			  if (sRef_isDependent (other->sref))
+			  if (sRef_isDependent (os))
 			    {
-			      sRef_setDependent (res->sref, loc);
+			      sRef_setDependent (rs, loc);
 			    }
 			  else
 			    {
-			      sRef_setDefState (res->sref, SS_UNUSEABLE, loc);
+			      sRef_setDefState (rs, SS_UNUSEABLE, loc);
 			    }
 			}
 		      else
 			{
-			  if (sRef_isParam (other->sref))
+			  if (sRef_isParam (os))
 			    {
 			      /* 
 		              ** If the local variable associated
@@ -10095,9 +10098,9 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 			      uentry uvar = usymtab_lookupSafe (other->uname);
 			      
 			      if (uentry_isValid (uvar)
-				  && ((sRef_isDead (other->sref) 
+				  && ((sRef_isDead (os) 
 				       && sRef_isOnly (uvar->sref))
-				      || (sRef_isDependent (other->sref)
+				      || (sRef_isDependent (os)
 					  && sRef_isOwned (uvar->sref))))
 				{
 				  /* no error */
@@ -10121,31 +10124,35 @@ uentry_mergeAliasStates (uentry res, uentry other, fileloc loc,
 		    }
 		}
 	      
-	      if (sRef_isKept (other->sref))
+	      if (sRef_isKept (os))
 		{
-		  sRef_setKept (res->sref, loc);
+		  sRef_setKept (rs, loc);
 		}
 	    }
 	  
 	  if (opt)
 	    {
 	      DPRINTF (("Merge opt..."));
-	      sRef_mergeOptState (res->sref, other->sref, cl, loc);
+	      sRef_mergeOptState (rs, os, cl, loc);
 	      DPRINTF (("Done!"));
 	    }
 	  else
 	    {
-	      sRef_mergeState (res->sref, other->sref, cl, loc);
+	      DPRINTF (("Merging states: \n\t%s / \n\t%s", sRef_unparseFull (rs), sRef_unparseFull (os)));
+	      sRef_mergeState (rs, os, cl, loc);
+	      DPRINTF (("After merging : \n\t%s / \n\t%s", sRef_unparseFull (rs), sRef_unparseFull (os)));
 	    }
 	}
       else
 	{
-	  if (sRef_isModified (other->sref))
+	  if (sRef_isModified (os))
 	    {
-	      sRef_setModified (res->sref);
+	      sRef_setModified (rs);
 	    }
 	}
     }
+
+  DPRINTF (("After merge: %s", sRef_unparseFull (res->sref)));
 }
 
 static void

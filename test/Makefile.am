@@ -51,9 +51,9 @@ UNITTESTS = \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray \
   funcpointer glob globals impabstract init inparam internal iter keep libs \
-  linked lintcomments list macros macrosef merge modifies modtest moduncon \
+  linked lintcomments list macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null observer oldstyle outglob outparam \
-  postnotnull preds prefixes printflike rc refcounts release repexpose \
+  postnotnull preds prefixes printflike rc rcfiles refcounts release repexpose \
   returned sharing slovaknames specclauses special stack staticarray strings \
   structassign typequals ud ulstypes union unreachable unsignedcompare \
   unused ullint void
@@ -474,6 +474,10 @@ macrosef:
 merge:
 	$(SPLINTRN) merge.c +checks -exportlocal -exportheadervar -exportheader -expect 3
 
+.PHONY: mergenull
+mergenull:
+	$(SPLINTRN) mergenull.c 
+
 .PHONY: modifies
 modifies:
 	$(SPLINTR) modifies.c modclient.c +impcheckedstatics +mustmod -expect 7
@@ -600,6 +604,10 @@ rc:
 	$(SPLINTR) -f rc1.splintrc rc.c -expect 1
 	$(SPLINTR) -UMYSTERY -f rc1.splintrc rc.c -expect 1
 	$(SPLINTR) -f rc3.splintrc rc.c -expect 1
+
+.PHONY: rcfiles
+rcfiles:
+	cd rcfiles; ${MAKE} SPLINT="$(SPLINTPNEST)"
 
 .PHONY: refcounts
 refcounts:

@@ -955,6 +955,12 @@ llgenerrorreal (char *srcFile, int srcLine,
       return FALSE;
     }
 
+  /*
+  ** If herald has not been displayed, display it before the first message.
+  */
+
+  showHerald ();
+
   if (iserror) context_hasError ();
 
   if (context_unlimitedMessages ())

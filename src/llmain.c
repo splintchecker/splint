@@ -521,7 +521,7 @@ void showHerald (void)
 
   else
     {
-      fprintf (g_msgstream, "%s\n\n", LCL_VERSION);
+      fprintf (g_msgstream, "%s\n\n", SPLINT_VERSION);
       hasShownHerald = TRUE;
       llflush ();
     }
@@ -766,7 +766,7 @@ int main (int argc, char *argv[])
 
   {
     cstring home = osd_getHomeDir ();
-    char *fname  = NULL;
+    cstring fname  = cstring_undefined;
     FILE *rcfile;
     bool defaultf = TRUE;
     bool nof = FALSE;
@@ -789,8 +789,8 @@ int main (int argc, char *argv[])
 		if (++i < argc)
 		  {
 		    defaultf = FALSE;
-		    fname = argv[i];
-		    rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
+		    fname = cstring_fromChars (argv[i]);
+		    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
 
 		    if (rcfile != NULL)
 		      {
@@ -804,8 +804,7 @@ int main (int argc, char *argv[])
 		    else 
 		      {
 			showHerald ();
-			lldiagmsg (message ("Options file not found: %s", 
-					    cstring_fromChars (fname)));
+			lldiagmsg (message ("Options file not found: %s", fname));
 		      }
 		  }
 		else
@@ -820,12 +819,12 @@ int main (int argc, char *argv[])
 	  }
       }
     
-    if (fname == NULL)
+    if (cstring_isUndefined (fname))
       {
 	if (!cstring_isEmpty (home)) {
-	  fname = cstring_toCharsSafe (message ("%s%h%s", home, CONNECTCHAR,
-						cstring_fromChars (RCFILE)));
-	  mstring_markFree (fname);
+	  fname = message ("%s%h%s", home, CONNECTCHAR,
+			   cstring_fromChars (RCFILE));
+	  cstring_markOwned (fname);
 	}
       }
 
@@ -833,30 +832,69 @@ int main (int argc, char *argv[])
 
     if (!nof && defaultf)
       {
-	if (!mstring_isEmpty (fname)) {
-	  rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
-	  
-	  if (rcfile != NULL)
-	    {
-	      fileloc oloc = g_currentloc;
-	      
-	      g_currentloc = fileloc_createRc (cstring_fromChars (fname));
-	      loadrc (rcfile, &passThroughArgs);
-	      fileloc_reallyFree (g_currentloc);
-	      g_currentloc = oloc;
-	    }
-	}
-
+	if (!cstring_isEmpty (fname)) 
+	  {
+	    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
+	    
+	    if (rcfile != NULL)
+	      {
+		fileloc oloc = g_currentloc;
+		
+		g_currentloc = fileloc_createRc (fname);
+		loadrc (rcfile, &passThroughArgs);
+		fileloc_reallyFree (g_currentloc);
+		g_currentloc = oloc;
+	      }
+	  }
+	
 # if defined(MSDOS) || defined(OS2)
-	fname = cstring_toCharsSafe (message ("%s",
-					      cstring_fromChars (RCFILE)));
+	fname = message ("%s",cstring_fromChars (RCFILE));
 # else
-	fname = cstring_toCharsSafe (message ("./%s", 
-					      cstring_fromChars (RCFILE)));
+	fname = message ("./%s", cstring_fromChars (RCFILE));
 # endif
+	
+	rcfile = fileTable_openFile (context_fileTable (), fname, "r");
 
-	rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
+	/*
+	** If no RCFILE, try ALTRCFILE
+	*/
 
+	if (rcfile == NULL)
+	  {
+	    cstring_free (fname);
+# if defined(MSDOS) || defined(OS2)
+	    fname = message ("%s", cstring_fromChars (ALTRCFILE));
+# else
+	    fname = message ("./%s", cstring_fromChars (ALTRCFILE));
+# endif
+	    rcfile = fileTable_openFile (context_fileTable (), fname, "r");
+	  }
+	else
+	  {
+	    /*
+	    ** Warn if ALTRCFILE also exists
+	    */
+	    cstring afname;
+	    FILE *arcfile;
+	    
+# if defined(MSDOS) || defined(OS2)
+	    afname = message ("%s", cstring_fromChars (ALTRCFILE));
+# else
+	    afname = message ("./%s", cstring_fromChars (ALTRCFILE));
+# endif
+	    arcfile = fileTable_openFile (context_fileTable (), afname, "r");
+	    
+	    if (arcfile != NULL)
+	      {
+		voptgenerror (FLG_WARNRC,
+			      message ("Found both %s and %s files.  Using %s file only.",
+				       fname, afname, fname),
+			      g_currentloc);
+		
+		fileTable_closeFile (context_fileTable (), arcfile);
+	      }
+	  }
+	
 	if (rcfile != NULL)
 	  {
 	    fileloc oloc = g_currentloc;

@@ -1319,15 +1319,25 @@ static flaglist flags =
     FK_HELP, FK_NONE, plainFlag,
     "warnflags",
     FLG_WARNFLAGS,
-    "warn when command line sets flag to default value in mode",
-    NULL, 0, 0
+    "warn when command line sets flag in abnormal way",
+    "Command line sets flag in abnormal way",
+    0, 0
+  },
+  {
+    FK_HELP, FK_NONE, plainFlag,
+    "warnrc",
+    FLG_WARNRC,
+    "warn when there are problems with reading the initialization files",
+    "There was a problem reading an initialization file",
+    0, 0
   },
   {
     FK_HELP, FK_NONE, plainFlag,
     "warnunixlib",
     FLG_WARNUNIXLIB,
     "warn when the unix library is used",
-    NULL, 0, 0
+    "Unix library may not be compatible with all platforms", 
+    0, 0
   },
   {
     FK_HELP, FK_NONE, plainFlag,
@@ -1341,22 +1351,25 @@ static flaglist flags =
     FK_HELP, FK_NONE, plainFlag,
     "forcehints",
     FLG_FORCEHINTS,
-    "provide hints for all errors reported",
-    NULL, 0, 0
+    "provide a hint for every warnings",
+    "Provide a hint for every warning",
+    0, 0
   },
   {
     FK_HELP, FK_NONE, globalExtraArgFlag,
     "help",
     FLG_HELP,
     "-help <flags> will describe flags",
-    NULL, 0, 0
+    "Display help",
+    0, 0
   },
   {
     FK_HELP, FK_FORMAT, plainFlag,
     "hints",
     FLG_HINTS,
-    "provide hints on using lclint (hint only reported for first related error)",
-    NULL, 0, 0
+    "provide a hint the first time a particular warning appears",
+    "Provide a hint the first time a particular warning appears", 
+    0, 0
   },
   {
     FK_IGNORERET, FK_NONE, specialFlag,
@@ -1364,7 +1377,7 @@ static flaglist flags =
     FLG_RETVAL,
     "return value ignored (sets retvalint, retvalbool and retvalother)",
     "Result returned by function call is not used. If this is intended, "
-    "cast result to (void) to eliminate message.",
+       "cast result to (void) to eliminate message.",
     0, 0
   },
   {
@@ -1373,7 +1386,7 @@ static flaglist flags =
     FLG_RETVALOTHER,
     "return value of type other than bool or int ignored",
     "Result returned by function call is not used. If this is intended, "
-    "can cast result to (void) to eliminate message.",
+       "can cast result to (void) to eliminate message.",
     0, 0
   },
   {
@@ -1382,7 +1395,7 @@ static flaglist flags =
     FLG_RETVALBOOL,
     "return value of manifest type bool ignored",
     "Result returned by function call is not used. If this is intended, "
-    "can cast result to (void) to eliminate message.",
+       "can cast result to (void) to eliminate message.",
     0, 0
   },
   {
@@ -1391,15 +1404,16 @@ static flaglist flags =
     FLG_RETVALINT,
     "return value of type int ignored",
     "Result returned by function call is not used. If this is intended, "
-    "can cast result to (void) to eliminate message.",
+       "can cast result to (void) to eliminate message.",
     0, 0
   },
   {
     FK_INIT, FK_FILES, globalExtraArgFlag,
     "f",
     FLG_OPTF,
-    "load options file (default ~/.lclintrc not loaded)",
-    NULL, 0, 0
+    "read an options file (default ~/.splintrc not loaded)",
+    "Read an options file (instead of loading default ~/.splintc)",
+    0, 0
   },
   {
     FK_INIT, FK_FILES, globalExtraArgFlag,
@@ -1413,7 +1427,8 @@ static flaglist flags =
     "nof",
     FLG_NOF,
     "do not read options file",
-    NULL, 0, 0
+    "Do not read the default options file (~/.splintrc)",
+    0, 0
   },
   {
     FK_INIT, FK_SPEC, plainFlag,
