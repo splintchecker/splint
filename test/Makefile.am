@@ -733,11 +733,11 @@ shifts:
 #drl comment this out until sizesigns is added to cvs
 
 ### evans - added 2002-08-17: check warnings with arbitrary integral types
-#sizesigns:
-#	-$(SPLINTR) +strict sizesigns.c
-#	-$(SPLINTR) +strict +ignoresigns sizesigns.c
-#	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
-#	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresignz sizesigns.c
+sizesigns:
+	-$(SPLINTR) +strict sizesigns.c
+	-$(SPLINTR) +strict +ignoresigns sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral sizesigns.c
+	-$(SPLINTR) +strict +matcharbitraryintegral +ignoresigns sizesigns.c
 
 .PHONY: slovaknames
 slovaknames:
