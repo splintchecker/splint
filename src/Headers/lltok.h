@@ -29,6 +29,10 @@ extern int lltok_getTok (lltok p_t) /*@*/ ;
 
 extern bool lltok_isSemi (lltok p_tok);
 
+/* DRL added 10/23/2000 for boolean stuff */
+extern bool lltok_isEq_Op (lltok tok);
+
 # else
 # error "Multiple include"
 # endif
+

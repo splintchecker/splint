@@ -162,6 +162,10 @@ struct _exprNode
   environmentTable environment;
   constraintList requiresConstraints;
   constraintList ensuresConstraints;
+  //these two are used only for boolean expressions
+  //they store the ensures constraints for the true and false cases
+  constraintList trueEnsuresConstraints;
+  constraintList falseEnsuresConstraints;
 } ;
 
 /*@constant null exprNode exprNode_undefined; @*/

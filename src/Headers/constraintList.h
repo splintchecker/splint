@@ -37,7 +37,19 @@ extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 extern constraintList constraintList_copy (constraintList s);
 
 extern cstring constraintList_print (constraintList s);
+
+extern cstring
+constraintList_printDetailed (constraintList s);
+
+
+extern constraintList
+constraintList_logicalOr (constraintList l1, constraintList l2);
+
+extern constraintList constraintList_preserveOrig (constraintList c);
+
 /*@constant int constraintListBASESIZE;@*/
+
+
 # define constraintListBASESIZE SMALLBASESIZE
 
 # else
