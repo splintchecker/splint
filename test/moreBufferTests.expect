@@ -1,8 +1,6 @@
 
 unrecogCall.c: (in function foo)
 unrecogCall.c:8:3: Unrecognized identifier: bar
-strrchr.c: (in function bar)
-strrchr.c:9:9: Variable ot declared but not used
 initialization.c: (in function initialization)
 initialization.c:5:10: Variable g declared but not used
 initialization.c:8:3: Unresolved constraint:
@@ -24,5 +22,13 @@ simplifyTest.c:10:3: Unresolved constraint:
     )  >=  ((i @ simplifyTest.c:10:5 ) ) + (( 2 ) ) needed to satisfy Requires:
     : MAXSET ((s @ simplifyTest.c:10:3 ) )  >=  ((i @ simplifyTest.c:10:5 ) ) +
     (( 2 ) )
+strncatNotReallyGood.c: (in function NotGoodfunc)
+strncatNotReallyGood.c:4:29: Passed storage buffer not completely defined
+                                (*buffer is undefined): strncat (buffer, ...)
+strncatNotReallyGood.c:4:21: Unresolved constraint:
+    Lclint is unable to resolve Requires: :
+    MAXREAD ((buffer @ strncatNotReallyGood.c:4:29 ) )  <=  ( 0 )  needed to
+    satisfy Requires: : MAXSET ((buffer @ strncatNotReallyGood.c:4:29 ) )  >= 
+    (MAXREAD ((buffer @ strncatNotReallyGood.c:4:29 ) )) + (( 255 ) )
 
-Finished LCLint checking --- 7 code errors found
+Finished LCLint checking --- 8 code errors found

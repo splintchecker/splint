@@ -656,7 +656,7 @@ simplebufferConstraintTests:
 
 moreBufferTests:
 	@cd moreBufferTests; \
-	$(LCLINTR) +functionconstraint +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c
+	$(LCLINTR) +functionconstraint +orconstraint unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c
 
 maxset:
 	@cd maxset; \
