@@ -238,13 +238,13 @@ void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew)
 		  *sp = *(sp + lendiff);
 		  sp++;
 		}
-
+	      
 	      *sp = '\0';
 	    }
 
 	  sp = strstr (s, old);
 	}
-          }
+    }
 }
 
 /*

@@ -3241,7 +3241,7 @@ static flaglist flags =
   },
   {
     FK_PREPROC, FK_SYNTAX, plainFlag,
-    "unrecognizeddirective",
+    "unrecogdirective",
     FLG_UNRECOGDIRECTIVE,
     "unrecognized pre-processor directive",
     "Pre-processor directive is not recognized.", 
