@@ -14,7 +14,7 @@
 */
 
 /*@constant float SPLINT_LIBVERSION; @*/
-# define SPLINT_LIBVERSION 3.017
+# define SPLINT_LIBVERSION 3.018
 
 /*@constant observer char *SPLINT_MAINTAINER; @*/
 # define SPLINT_MAINTAINER "splint-bug@splint.org"

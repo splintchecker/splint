@@ -1,10 +1,27 @@
+What is the difference between Splint and LCLint?
+
+Before 2002, Splint was known as LCLint. Splint 3.0 is the successor to LCLint 2.5.
+
+LCLint was originally named for LCL, the Larch C Interface Language and lint, a well-known C program checking tool. Because our tool has diverged from LCL, and our focus now is on secure programming, it was renamed Splint. Splint's name has (at least) three interpretations: specifications lint, secure programming lint, and first aid for programmers. Its also easier to pronounce than LCLint.
+
+What is the Splint logo?
+
+Thomas Jefferson's Serpentine Walls at the University of Virginia. The walls are one brick thick, but because of their design are both strong and aesthetic. Like a secure program, secure walls depend on sturdy bricks, solid construction, and elegant and principled design.
+
+Can I include Splint in my software distribution?
+
+Yes. Splint is licensed under the GNU General Public License. You may redistributed it as you wish so long as credits and pointers to www.splint.org are not changed or removed. Splint may be included in commercial distributions, and is included in several Linux and freeware CDs. If you redistribute Splint, please let us know by sending a message to splint@cs.virginia.edu.
 
 Can we use your software in our company?  (We are not a GNU organization.)
 
 Yes, splint is GPL-licensed.  Anyone may use it.  If you want to
 redistribute it, check the license for details or contact us.
 
-I downloaded the splint tgz file but can't figure out how to extract it.  There is no 'z' option on the tar on my system.
+Does Splint handle C++?
+
+No. Splint handles ISO C99 (and some gcc extensions if +gnuextensions is used). We don't have the resources (or the research justification) to build a C++ front end, but if you are interested in building a C++ front end the source code is available, and I will certainly be willing to help.
+
+I downloaded the Splint tgz file but can't figure out how to extract it.  There is no 'z' option on the tar on my system.
 
 Check to see if there is GNU tar on your system, it is usually invoked by the command gtar or gnutar.  GNU tar supports the -z option.
 
@@ -15,16 +32,15 @@ I want to use Splint in win2000.  How do I do that?
 See www.splint.org for information on Splint.
 http://www.splint.org/win32.html for Windows instructions.
 
- I have installed Splint for Windows 2000.  Where should I put the ".splintrc" file?
+I have installed Splint for Windows 2000.  Where should I put the ".splintrc" file?
 
  For Win32, Splint looks for splint.rc instead of .splintrc due to the DOS
 filename problems.  It will look first in the current directory, then in
 your home directory.  See the Splint manual for more information.
 
-What are all the compilers Splint can support ?
+Which compilers does Splint support?
 
 It is independent from your compiler.
-
 
 How does Splint handle const?
 
@@ -66,9 +82,9 @@ How can I get Splint to recognize directory trees and local source include direc
 
 You can use -I to set the include path like you would with a compiler.
 
-I heard that we will get lot of parse errors when we run this tool first time. Hence we need to modify source code . Is it correct ?
+I heard that we will get lot of parse errors when we run this tool first time. Hence we need to modify source code. Is it correct ?
 
-It depends, splint doesn't support all C99 extensions.
+Usually not, but Splint doesn't support all C99 extensions.
 
 I heard that Splint can generate some spurious errors ( not genuine errors).  Is it correct ?
 
@@ -96,7 +112,7 @@ Should I be worried?
  
 Those diffs look harmless.  It is likely that your make is set up slightly differently than ours.
 
-I just installed Splint on a new machine.  I get a bunch of errors in the test suite.  When I look through the results, it seems like Splint is not reporting any errors in the code it analyzes.  What is going on?
+I just installed Splint on a new machine.  I get a bunch of errors during building when the test suite is run.  When I look through the results, it seems like Splint is not reporting any errors in the code it analyzes.  What is going on?
 
 One possibility is that the installation directory where the test suite is
 running is on the system path (hence, splint won't report errors if
@@ -108,11 +124,11 @@ I get parse errors when I try to run Splint on code like #define MACROdebug(...)
 
 Sorry, Splint doesn't yet support variadic macros. We hope to fix this in a future release.
 
-I use realloc in my code how can I get Splint in check this code more effectively?
+I use realloc in my code.  How can I get Splint in check this code more effectively?
 
 realloc has complicated semantics that make it difficult to use correctly.  Make sure that you understand realloc and that you need to use it.
 
-If you decide to use realloc we recommend that you wrapper it.  The document using wrapper functions explains how to do this.  That doucment is included in the Splint documentation and is also available at:
+If you decide to use realloc, we recommend that you wrapper it.  The document Using Wrapper Functions explains how to do this.  That document is included in the Splint documentation and is also available at:
 HTTP://INSERT_A_VALID_URL_WHEN_THE_document_is_ready.
 
 I think I've found a bug in Splint what should I do?
@@ -121,9 +137,9 @@ See http://www.splint.org/bugs.html for a list of known bugs and instructions on
 
 Splint tells me that there is a bug and I should report it.  What information should I send?
 
-Ideally we would like enough code to reproduce the problem.  Small snipits of code which trigger the bug are the best.
+Ideally we would like enough code to reproduce the problem.  Small snipits of code which trigger the bug are the best but more code is also acceptable.
 
-If we're not able to reproduce the problem than we are unlikely to be able to patch Splint.  However, we would still appreciate hearing about the bug and may be able at least to offer you advice on working around the problem.
+If we're not able to reproduce the problem, then we are unlikely to be able to patch Splint.  However, we would still appreciate hearing about the bug and may be able to at least to offer you advice on working around the problem.
 
 My question isn't answered here.  How can I get more information about Splint?
 
@@ -133,6 +149,6 @@ The Splint manual is available at: http://www.splint.org/manual/
 The mailing list archives are at:
 http://www.mail-archive.com/lclint-interest%40virginia.edu/
 
-If you're still unable to find the information to answer your question, you can try posting your question to the splint-discuss mailing list (see http://www.splint.org/lists.html)
+If you're still unable to find the information to answer your question, you can try posting the question to the splint-discuss mailing list (see http://www.splint.org/lists.html)
 
 You can also email us at splint@splint.org.
