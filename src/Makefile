@@ -302,6 +302,8 @@ endif
 	@$(MAKE) -e updateversion
 	@echo '//  Updating local constants'
 	@$(MAKE) -e localconstants
+	@echo '//  Updating flags'
+	@$(MAKE) -e Headers/flag_codes.gen
 	@echo '// '
 	@echo '//  Compiling:'
 	@echo '// '
