@@ -453,8 +453,8 @@ extern int fgetc (FILE *stream)
 extern /*@null@*/ char *
   fgets (/*@returned@*/ /*@out@*/ char *s, int n, FILE *stream)
   /*@modifies fileSystem, *s, *stream, errno@*/
-     /*@bufferConstraint MaxSet(s) >= (n -1); @*/
-     /*@ensuresConstraint MaxRead(s) <= (n -1); MaxRead(s) >= 0; @*/
+     /*@requires MaxSet(s) >= (n -1); @*/
+     /*@ensures MaxRead(s) <= (n -1) /\ MaxRead(s) >= 0; @*/
      ;
 
 extern int fputc (int /*@alt char@*/ c, FILE *stream)
@@ -539,9 +539,9 @@ extern void srand (unsigned int seed) /*@modifies internalState@*/ ;
 */
 
 extern /*@null@*/ /*@only@*/ void *calloc (size_t nobj, size_t size) /*@*/
-     /*@ensuresConstraint MaxSet(result) == nobj; @*/ ;
+     /*@ensures MaxSet(result) == nobj; @*/ ;
 extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@*/
-     /*@ensuresConstraint MaxSet(result) == size; @*/ ;
+     /*@ensures MaxSet(result) == size; @*/ ;
 
 /*end drl changed */
      
@@ -839,13 +839,13 @@ extern size_t wcstombs (/*@out@*/ char *s, wchar_t *pwcs, size_t n)
 extern void /*@alt void * @*/
   memcpy (/*@unique@*/ /*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n) 
   /*@modifies *s1@*/
-     /*@bufferConstraint MaxRead(s2) >= n; MaxSet(s1) >= n; @*/
+     /*@requires MaxRead(s2) >= n /\ MaxSet(s1) >= n; @*/
      ;
 
 extern void /*@alt void * @*/
   memmove (/*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n)
   /*@modifies *s1@*/
-  /*@bufferConstraint MaxRead(s2) >= n; MaxSet(s1) >= n; @*/
+  /*@requires MaxRead(s2) >= n /\ MaxSet(s1) >= n; @*/
    ;
 
   
@@ -855,19 +855,19 @@ extern void /*@alt void * @*/
   /* removed returned */
 extern void /*@alt char * @*/
   strcpy (/*@unique@*/ /*@out@*/ /*returned*/ char *s1, char *s2) 
-     /*@modifies *s1@*/ /*@bufferConstraint MaxSet(s1) >= MaxRead(s2); @*/ /*@ensuresConstraint MaxRead(s1) == MaxRead (s2); MaxRead(result) == MaxRead(s2); MaxSet(result) == MaxSet(s1); @*/;
+     /*@modifies *s1@*/ /*@requires MaxSet(s1) >= MaxRead(s2) @*/ /*@ensures MaxRead(s1) == MaxRead (s2) /\ MaxRead(result) == MaxRead(s2) /\ MaxSet(result) == MaxSet(s1); @*/;
 
 extern void /*@alt char * @*/
   strncpy (/*@unique@*/ /*@out@*/ /*returned*/ char *s1, char *s2, size_t n) 
-  /*@modifies *s1@*/      /*@bufferConstraint MaxSet(s1) >= ( n - 1 ); @*/ /*@ensuresConstraint MaxRead (s2) >= MaxRead(s1); MaxRead (s1) <= n; @*/; 
+  /*@modifies *s1@*/      /*@requires MaxSet(s1) >= ( n - 1 ); @*/ /*@ensures MaxRead (s2) >= MaxRead(s1) /\ MaxRead (s1) <= n; @*/; 
 
 extern void /*@alt char * @*/
   strcat (/*@unique@*/ /*returned*/ /*@out@*/ char *s1, char *s2) 
-     /*@modifies *s1@*/ /*@bufferConstraint MaxSet(s1) >= (MaxRead(s1) + MaxRead(s2) ); */ /*ensuresConstraint MaxRead(result) = (MaxRead(s1) + MaxRead(s2) );@*/;
+     /*@modifies *s1@*/ /*@requires MaxSet(s1) >= (MaxRead(s1) + MaxRead(s2) ); */ /*ensures MaxRead(result) = (MaxRead(s1) + MaxRead(s2) );@*/;
 
 extern void /*@alt char * @*/
   strncat (/*@unique@*/ /*returned*/ /*@out@*/ char *s1, char *s2, int n)
-     /*@modifies *s1@*/ /*@bufferConstraint MaxSet(s1) >= ( MaxRead(s1) + n); @*/ /*@ensuresConstraint MaxRead(result) >= (MaxRead(s1) + n); @*/;
+     /*@modifies *s1@*/ /*@requires MaxSet(s1) >= ( MaxRead(s1) + n); @*/ /*@ensures MaxRead(result) >= (MaxRead(s1) + n); @*/;
 
      /*drl end*/
      
@@ -882,10 +882,10 @@ extern /*@null@*/ void *memchr (void *s, int c, size_t n) /*@*/ ;
 
 # ifdef STRICT
 extern /*@exposed@*/ /*@null@*/ char *
-strchr (char *s, char c) /*@*//*@ensuresConstraint MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/ ;
+strchr (char *s, char c) /*@*//*@ensures MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/ ;
 # else
 extern /*@exposed@*/ /*@null@*/ char *
-  strchr ( char *s, int /*@alt char@*/ c) /*@*/ /*@ensuresConstraint MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/ ;
+  strchr ( char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxRead(s) /\  MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/ ;
 # endif
 
 extern size_t strcspn (char *s1, char *s2) /*@*/ ;
@@ -894,17 +894,17 @@ extern /*@null@*/ /*@exposed@*/ char *
 
 # ifdef STRICT
 extern /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensuresConstraint MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/;
+  strrchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxRead(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/;
 # else
 extern /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensuresConstraint MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/;
+  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0/\ MaxSet(result) <= MaxRead(s)/\ MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/;
 # endif
 
 extern size_t strspn (char *s, char *t) /*@*/ ;
 
 extern /*@null@*/ /*@exposed@*/  char *
   strstr (/*@returned@*/ /*@unique@*/ char *s, char *t) /*@*/
-/*@ensuresConstraint MaxSet(result) >= 0; MaxSet(result) <= MaxRead(s); MaxRead (result) <= MaxRead(s); MaxRead(result) >= 0; @*/;
+/*@ensures MaxSet(result) >= 0 /\  MaxSet(result) <= MaxRead(s) /\  MaxRead (result) <= MaxRead(s) /\  MaxRead(result) >= 0; @*/;
 
 extern /*@null@*/ /*@exposed@*/ char *
   strtok (/*@returned@*/ /*@null@*/ char *s, char *t)
@@ -917,7 +917,7 @@ extern void /*@alt void *@*/ memset (/*@out@*/ /*@returned@*/ void *s,
 extern /*@observer@*/ char *strerror (int errnum) /*@*/ ;
 
 /*drl */
-extern size_t strlen (char *s) /*@*/ /*@ensuresConstraint result == MaxRead(s); @*/; 
+extern size_t strlen (char *s) /*@*/ /*@ensures result == MaxRead(s); @*/; 
 
 /*
 ** time.h
@@ -949,10 +949,10 @@ extern time_t time (/*@null@*/ /*@out@*/ time_t *tp)
   /*@modifies *tp@*/ ;
 
 extern /*@observer@*/ char *asctime (struct tm *timeptr) 
-  /*@modifies errno*/ /*@ensuresConstraint MaxSet(result) == 25; MaxRead(result) == 25; @*/ ;
+  /*@modifies errno*/ /*@ensures MaxSet(result) == 25 /\  MaxRead(result) == 25; @*/ ;
 
 extern /*@observer@*/ char *ctime (time_t *tp) /*@*/
-     /*@ensuresConstraint MaxSet(result) == 25; MaxRead(result) == 25; @*/;
+     /*@ensures MaxSet(result) == 25 /\  MaxRead(result) == 25; @*/;
 
 extern /*@null@*/ /*@observer@*/ struct tm *gmtime (time_t *tp) /*@*/ ;
 
