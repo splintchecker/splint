@@ -83,15 +83,17 @@ constraintList_add (constraintList s, constraint el)
 
 constraintList constraintList_addList (constraintList s, constraintList new)
 {
-  llassert(s);
-  llassert(new);
+  llassert(constraintList_isDefined(s) );
+  llassert(constraintList_isDefined(new) );
 
   if (new == constraintList_undefined)
     return s;
   
   constraintList_elements(new, elem)
     {
+      /*@-exposetrans@*/
     s = constraintList_add (s, elem);
+    /*@=exposetrans@*/
     }
   end_constraintList_elements
     return s;
@@ -274,7 +276,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
   return c;
 }
 
-constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall)
+/*@only@*/ constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall)
 {
   constraintList ret;
   ret = constraintList_makeNew();
@@ -319,7 +321,7 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
 {
   constraintList_elements (c, el)
     {
-      el->post = !el->post;
+      el = constraint_togglePost(el);
     }
   end_constraintList_elements;
   return c;

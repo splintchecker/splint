@@ -17,9 +17,36 @@
 # include "exprData.i"
 # include "exprDataQuite.i"
 
+/*@access constraint, exprNode @*/
+
+/*@access constraintExpr @*/
+
+static bool isInc (constraintExpr c) /*@*/
+{
+  
+  llassert(constraintExpr_isDefined(c) );
+ if (c->kind == binaryexpr )
+    {
+      constraintExprBinaryOpKind binOP;
+      constraintExpr t1, t2;
+      t1 = constraintExprData_binaryExprGetExpr1 (c->data);
+      t2 = constraintExprData_binaryExprGetExpr2 (c->data);
+
+      binOP = constraintExprData_binaryExprGetOp (c->data);
+      if (binOP == PLUS)
+	if (constraintExpr_isLit (t2) && constraintExpr_getValue (t2) == 1 )
+	  {
+	    return TRUE;
+	  }
+    }
+
+ return FALSE;
+}
+
+
 
 // look for constraints like cexrp = cexrp + 1
-static bool incVar (constraint c)
+static bool incVar (/*@notnull@*/ constraint c) /*@*/
 {
   constraintExpr t1;
   if (c->ar != EQ)
@@ -29,18 +56,28 @@ static bool incVar (constraint c)
   if (! isInc (c->expr ) )
     return FALSE;
 
+  llassert (constraintExpr_isDefined(c->expr) );
   llassert (c->expr->kind == binaryexpr);
+
   t1 = constraintExprData_binaryExprGetExpr1 (c->expr->data);
   if (constraintExpr_similar (c->lexpr, t1) )
     return TRUE;
 
   return FALSE;
 }
+/*@noaccess constraintExpr @*/
 
 
 static bool increments (constraint c,
 			constraintExpr var)
 {
+  llassert(constraint_isDefined(c) );
+
+  if (constraint_isUndefined(c) )
+    {
+      return FALSE;
+    }
+
   llassert (incVar (c));
   if (constraintExpr_similar (c->lexpr, var) )
     return TRUE;
@@ -48,17 +85,33 @@ static bool increments (constraint c,
     return FALSE;
 }
 
-static bool canGetForTimes ( exprNode forPred, exprNode forBody)
+static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
 {
   
   exprNode init, test, inc, t1, t2;
   lltok tok;
   
+  llassert(exprNode_isDefined (forPred) );
+  llassert(exprNode_isDefined (forBody) );
+
   init  =  exprData_getTripleInit (forPred->edata);
   test  =   exprData_getTripleTest (forPred->edata);
   inc   =   exprData_getTripleInc (forPred->edata);
 
-  
+  llassert(exprNode_isDefined(test) );
+
+  if (exprNode_isUndefined(test) )
+    {
+      return FALSE;
+    }
+
+  llassert(exprNode_isDefined(inc) );
+
+  if (exprNode_isUndefined(inc) )
+    {
+      return FALSE;
+    }
+
   if (test->kind != XPR_PREOP)
     return FALSE;
       
@@ -79,6 +132,13 @@ static bool canGetForTimes ( exprNode forPred, exprNode forBody)
       {
 	t1 = exprData_getUopNode (test->edata);
 	t2 = exprData_getUopNode (inc->edata);
+	llassert(exprNode_isDefined(t2) && exprNode_isDefined(t2)  );
+
+	if (exprNode_isUndefined(t1) || exprNode_isUndefined(t2)  )
+	  {
+	    return FALSE;
+	  }
+
 	if (sRef_sameName (t1->sref, t2->sref) )
 	  {
 	    return TRUE;
@@ -94,6 +154,10 @@ static constraintList getLessThanConstraints (constraintList c)
   ret = constraintList_makeNew();
   constraintList_elements (c, el)
     {
+      llassert(constraint_isDefined(el));
+      if ( constraint_isUndefined(el)  )
+      	continue;
+      
       if (el->ar == LT || el->ar == LTE)
 	{
 	  ret = constraintList_add (ret, el);
@@ -121,7 +185,7 @@ static constraintList getIncConstraints (constraintList c)
   return ret;
 }
 
-constraintExpr getForTimes ( exprNode forPred, exprNode forBody)
+constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNode forBody)
 {
   
   exprNode init, test, inc, t1, t2;
@@ -134,8 +198,8 @@ constraintExpr getForTimes ( exprNode forPred, exprNode forBody)
   test  =  exprData_getTripleTest (forPred->edata);
   inc   =  exprData_getTripleInc (forPred->edata);
 
-  llassert(test);
-  llassert(inc);
+  llassert(exprNode_isDefined(test) );
+  llassert(exprNode_isDefined(inc) );
   
   ltCon =  getLessThanConstraints (test->trueEnsuresConstraints);
   incCon = getIncConstraints (inc->ensuresConstraints);
@@ -198,27 +262,7 @@ constraintExpr getForTimes ( exprNode forPred, exprNode forBody)
   BADEXIT;
 }
 
-
-static bool isInc (constraintExpr c)
-{
-  
- if (c->kind == binaryexpr )
-    {
-      constraintExprBinaryOpKind binOP;
-      constraintExpr t1, t2;
-      t1 = constraintExprData_binaryExprGetExpr1 (c->data);
-      t2 = constraintExprData_binaryExprGetExpr2 (c->data);
-
-      binOP = constraintExprData_binaryExprGetOp (c->data);
-      if (binOP == PLUS)
-	if (constraintExpr_isLit (t2) && constraintExpr_getValue (t2) == 1 )
-	  {
-	    return TRUE;
-	  }
-    }
-
- return FALSE;
-}
+/*@access constraintExpr @*/
 
 constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr find, constraintExpr add)
 {
@@ -270,6 +314,8 @@ constraintExpr constraintExpr_searchAndAdd (constraintExpr c, constraintExpr fin
   
 }
 
+/*@noaccess constraintExpr @*/
+
 constraint  constraint_searchAndAdd (constraint c, constraintExpr find, constraintExpr add)
 {
   
@@ -303,8 +349,8 @@ constraintList constraintList_searchAndAdd (constraintList list,
 	  new = constraint_copy (el);
 
 	  new = constraint_searchAndAdd (new, find, add);
+	  	  DPRINTF (( (message ("Adding constraint %s ", constraint_print (new)) )  ));
 	  newConstraints = constraintList_add (newConstraints, new);
-	  DPRINTF (( (message ("Adding constraint %s ", constraint_print (new)) )  ));
 	}
 
     }
@@ -314,12 +360,12 @@ constraintList constraintList_searchAndAdd (constraintList list,
   return ret;
 }
 
-void doAdjust(exprNode e,  exprNode forPred, exprNode forBody, constraintExpr iterations)
+static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, exprNode forBody, constraintExpr iterations)
 {
   
   constraintList_elements (forBody->ensuresConstraints, el)
     {
-      // look fro var = var + 1
+      // look for var = var + 1
       if (incVar(el) )
 	{
 	  DPRINTF((message ("Found inc variable constraint : %s", constraint_print (el) )  ));
@@ -331,8 +377,8 @@ void doAdjust(exprNode e,  exprNode forPred, exprNode forBody, constraintExpr it
 
 void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
 {
-  exprNode init, test, inc, t1, t2, t3 ,t4;
-  constraint con;
+  exprNode init, test, inc;
+
   constraintExpr iterations;
   
   init  =  exprData_getTripleInit (forPred->edata);

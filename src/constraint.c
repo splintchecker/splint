@@ -280,12 +280,12 @@ constraint constraint_makeWriteSafeInt (exprNode po, int ind)
   /*@i1*/return ret;
 }
 
-constraint constraint_makeSRefSetBufferSize (sRef s, int size)
+constraint constraint_makeSRefSetBufferSize (sRef s, long int size)
 {
  constraint ret = constraint_makeNew();
  ret->lexpr = constraintExpr_makeSRefMaxset (s);
  ret->ar = EQ;
- ret->expr =  constraintExpr_makeIntLiteral (size);
+ ret->expr =  constraintExpr_makeIntLiteral ((int)size);
  ret->post = TRUE;
  /*@i1*/return ret;
 }
@@ -720,3 +720,9 @@ constraint constraint_doSRefFixConstraintParam (constraint precondition,
 /*@=fcnuse*/
 /*@=assignexpose*/
 /*@=czechfcns@*/
+
+constraint constraint_togglePost (/*@returned@*/ constraint c)
+{
+  c->post = !c->post;
+  return c;
+}

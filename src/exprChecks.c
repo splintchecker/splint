@@ -915,7 +915,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
   
    if (c)
      {
-       llassert (c);
+
        DPRINTF ( (message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
        
        t = reflectChanges (body->requiresConstraints, constraintList_copy (c) );

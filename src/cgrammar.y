@@ -69,7 +69,7 @@ void yyerror (char *s);
 # undef realloc
 # endif
 
-void checkandsetBufState(idDecl id, exprNode is);
+
 %}
 
 %union

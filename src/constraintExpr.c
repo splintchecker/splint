@@ -30,7 +30,7 @@ doSRefFixConstraintParamTerm (constraintExpr e, exprNodeList arglist) /*@modifie
 static constraintExpr 
 doFixResultTerm (constraintExpr e, exprNode fcnCall) /*@modifies e@*/;
 
-/*@special@*/ static constraintExpr constraintExpr_makeBinaryOp (void) /*@defines result->kind, result->data->binaryOp.binaryOp@*/;
+/*@out@*/ static constraintExpr constraintExpr_makeBinaryOp (void);
 
 //constraintExpr constraintExpr_makeMaxSetConstraintExpr (constraintExpr c);
 
@@ -480,13 +480,13 @@ constraintExpr constraintExpr_makeValueInt (int i)
 }
 */
 
-/*@special@*/ static constraintExpr constraintExpr_makeBinaryOp (void) /*@defines result->kind, result->data->binaryOp.binaryOp@*/
+/*@out@*/ static constraintExpr constraintExpr_makeBinaryOp (void) 
 {
   constraintExpr ret;
   ret = constraintExpr_alloc();
   ret->kind = binaryexpr;
   ret->data = dmalloc ( sizeof *(ret->data) );
-  ret->data = constraintExprData_binaryExprSetOp (ret->data, PLUS);
+  ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_UNDEFINED);
   return ret;
 }
 
@@ -495,10 +495,15 @@ constraintExpr constraintExpr_makeBinaryOpConstraintExpr (constraintExpr expr1,c
      
 {
   constraintExpr ret;
+  /*@-usedef@*/
   ret = constraintExpr_makeBinaryOp();
   ret->data = constraintExprData_binaryExprSetExpr1 (ret->data, expr1);
   ret->data = constraintExprData_binaryExprSetExpr2 (ret->data, expr2);
+  ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_UNDEFINED);
+  /*@=usedef@*/
+  /*@-compdef@*/
   return ret;
+  /*@=compdef@*/
 }
 
 constraintExpr constraintExpr_parseMakeBinaryOp (constraintExpr expr1, lltok op, constraintExpr expr2)
@@ -1368,7 +1373,7 @@ doSRefFixConstraintParamTerm (constraintExpr e, exprNodeList arglist)
   llassert (t != NULL);
 
   ret = e;
-  switch (t->kind)
+  /*@i1*/ switch (t->kind)
     {
     case EXPRNODE:
       /*@i334*/  //wtf
@@ -1380,7 +1385,7 @@ doSRefFixConstraintParamTerm (constraintExpr e, exprNodeList arglist)
        break;
       
     case SREF:
-      ret = sRef_fixConstraintParam (t->value.sref, arglist);
+      /*@i1*/ ret = sRef_fixConstraintParam (t->value.sref, arglist);
       
       //      s = message ("%s ", sRef_unparse (term->value.sref) );
 

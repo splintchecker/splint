@@ -67,7 +67,7 @@ constraintExprData constraintExprData_copyTerm (constraintExprData data)
 //   return ret;
 // }
 
-constraintExprData constraintExprData_termSetTerm (/*@out@*/ constraintExprData data, constraintTerm term)
+constraintExprData constraintExprData_termSetTerm (/*@reldef@*/ constraintExprData data, constraintTerm term)
 {
   /*@-uniondef@*/
   llassert (constraintExprData_isDefined(data));
@@ -100,7 +100,7 @@ constraintExpr  constraintExprData_unaryExprGetExpr (constraintExprData data)
 
 
 
- constraintExprData constraintExprData_unaryExprSetOp (/*@out@*/ /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op)
+ constraintExprData constraintExprData_unaryExprSetOp (/*@reldef@*/ /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op)
 {
   /*@-uniondef@*/
   llassert (constraintExprData_isDefined(data));
@@ -141,14 +141,14 @@ constraintExpr  constraintExprData_binaryExprGetExpr2 (constraintExprData data)
 }
 
 
-/*@special@*/ constraintExprData  constraintExprData_binaryExprSetExpr1 (/*@returned@*/  /*@special@*/constraintExprData data, constraintExpr expr) /*@defines result->binaryOp.expr1 @*/
+ constraintExprData  constraintExprData_binaryExprSetExpr1 ( /*@reldef@*/ /*@returned@*/ constraintExprData data, constraintExpr expr)
 {
   llassert (constraintExprData_isDefined(data));
   data->binaryOp.expr1 = constraintExpr_copy(expr);
   return data;
 }
 
-/*@special@*/ constraintExprData  constraintExprData_binaryExprSetExpr2 (/*@returned@*/  /*@special@*/constraintExprData data, constraintExpr expr) /*@defines result->binaryOp.expr2 @*/
+constraintExprData  constraintExprData_binaryExprSetExpr2 (/*@returned@*/ /*@reldef@*/ constraintExprData data, constraintExpr expr) 
 {
   llassert (constraintExprData_isDefined(data));
   data->binaryOp.expr2 = constraintExpr_copy(expr);
@@ -156,7 +156,7 @@ constraintExpr  constraintExprData_binaryExprGetExpr2 (constraintExprData data)
 }
 
 
-/*@special@*/ constraintExprData  constraintExprData_binaryExprSetOp (/*@returned@*/ /*@out@*/constraintExprData data, constraintExprBinaryOpKind op) /*@defines result->binaryOp.binaryOp@*/
+constraintExprData  constraintExprData_binaryExprSetOp (/*@returned@*/ /*@reldef@*/ constraintExprData data, constraintExprBinaryOpKind op)
 {
   llassert (constraintExprData_isDefined(data));
   data->binaryOp.binaryOp = op;

@@ -17,25 +17,23 @@
 //# include "exprData.i"
 
 
-/*@access constraint @*/
+/*@access constraint, exprNode @*/
 
 
 constraint  inequalitySubstituteUnsound  (constraint c, constraintList p);
 
-constraintList reflectChanges (constraintList pre2, constraintList post1);
-constraint substitute (constraint c, constraintList p);
-constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new);
-bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2);
-bool satifies (constraint pre, constraint post);
-bool resolve (constraint c, constraintList p);
-constraintList reflectChangesEnsures (constraintList pre2, constraintList post1);
-constraint constraint_simplify (constraint c);
+static constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new);
+//bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2);
+//bool satifies (constraint pre, constraint post);
+//bool resolve (constraint c, constraintList p);
+//constraintList reflectChangesEnsures (constraintList pre2, constraintList post1);
+//constraint constraint_simplify (constraint c);
 
-constraintList constraintList_fixConflicts (constraintList list1, constraintList list2);
+//constraintList constraintList_fixConflicts (constraintList list1, constraintList list2);
 
-constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2);
+//constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2);
 
-constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
+//constraintList constraintList_mergeEnsures (constraintList list1, constraintList list2);
 constraint  inequalitySubstitute  (constraint c, constraintList p);
 
 /*********************************************/
@@ -48,8 +46,8 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
 
   //ret = constraintList_makeNew();
 
-  llassert(list1);
-  llassert(list2);
+  llassert(constraintList_isDefined(list1) );
+  llassert(constraintList_isDefined(list1) );
 
   DPRINTF(( message ("constraintList_mergeEnsures: list1 %s list2 %s",
 		     constraintList_print(list1), constraintList_print(list2)
@@ -324,7 +322,7 @@ bool resolveOr (constraint c, constraintList list)
 	return TRUE;
       temp = temp->or;
     }
-  while (temp);
+  while (constraint_isDefined(temp));
 
   return FALSE;
 }
@@ -368,7 +366,7 @@ constraint doResolve (constraint c, constraintList post1, bool * resolved)
 
 }
 
-constraint doResolveOr (constraint c, constraintList post1, bool * resolved)
+constraint doResolveOr (constraint c, constraintList post1, /*@out@*/bool * resolved)
 {
   constraint ret;
   constraint next;
@@ -380,7 +378,7 @@ constraint doResolveOr (constraint c, constraintList post1, bool * resolved)
   ret->or = NULL;
 
   ret = doResolve (ret, post1, resolved);
-  while (next)
+  while (next != NULL)
     {
       curr = next;
       next = curr->or;
@@ -498,11 +496,11 @@ bool conflict (constraint c, constraintList list)
 
 //check if constraint in list1 and conflict with constraints in List2.  If so we
 //remove form list1 and change list2.
-constraintList constraintList_fixConflicts (/*@returned@*/constraintList list1, constraintList list2)
+constraintList constraintList_fixConflicts (constraintList list1, constraintList list2)
 {
   constraintList ret;
   ret = constraintList_makeNew();
-  llassert(list1);
+  llassert(constraintList_isDefined(list1) );
   constraintList_elements (list1, el)
     {
       if (! conflict (el, list2) )
@@ -516,7 +514,7 @@ constraintList constraintList_fixConflicts (/*@returned@*/constraintList list1, 
     
 }
 
-bool resolve (constraint c, constraintList p)
+bool resolve (/*@observer@*/ constraint c, /*@observer@*/ constraintList p)
 {
   constraintList_elements (p, el)
     {
@@ -574,6 +572,7 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
       //      llassert(FALSE); 
       if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
 	return TRUE;
+      break;
     default:
       return FALSE;
     }
@@ -585,8 +584,8 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
 bool constraint_isAlwaysTrue (constraint c)
 {
   constraintExpr l, r;
-  bool lHasConstant, rHasConstant;
-  int lConstant, rConstant;
+  bool /*@unused@*/ lHasConstant, rHasConstant;
+  int /*@unused@*/ lConstant, rConstant;
   
   l = c->lexpr;
   r = c->expr;
@@ -612,6 +611,7 @@ bool constraint_isAlwaysTrue (constraint c)
 
 	default:
 	  BADEXIT;
+	  /*@notreached@*/
 	  break;
 	}
     }
@@ -630,6 +630,7 @@ bool constraint_isAlwaysTrue (constraint c)
 	  break;
 	default:
 	  BADEXIT;
+	  /*@notreached@*/
 	  break;
 	}
     }
@@ -659,6 +660,7 @@ bool constraint_isAlwaysTrue (constraint c)
 	  
 	default:
 	  BADEXIT;
+	  /*@notreached@*/
 	  break;
 	}
     }  
@@ -684,6 +686,7 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
  case GTE:
       if (constraintExpr_similar (expr1, expr2) )
 	 return TRUE;
+      /*@fallthrough@*/
  case GT:
    if (!  (constraintExpr_canGetValue (expr1) &&
 	   constraintExpr_canGetValue (expr2) ) )
@@ -717,6 +720,7 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
  case LTE:
    if (constraintExpr_similar (expr1, expr2) )
 	 return TRUE;
+   /*@fallthrough@*/
  case LT:
     if (!  (constraintExpr_canGetValue (expr1) &&
 	   constraintExpr_canGetValue (expr2) ) )
@@ -747,7 +751,6 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
      llcontbug((message("Unhandled case in switch: %s", arithType_print(ar1) ) ) );
  }
   BADEXIT;
-  return FALSE;
 }
 
 
@@ -760,7 +763,7 @@ constraint constraint_searchandreplace (constraint c, constraintExpr old, constr
   return c;
 }
 
-bool constraint_search (constraint c, constraintExpr old)
+bool constraint_search (constraint c, constraintExpr old) /*@*/
 {
   bool ret;
   ret = FALSE;
@@ -942,7 +945,7 @@ constraintList constraintList_substitute (constraintList target, constraintList 
 
 constraint constraint_solveWithFlag (constraint c, bool *b)
 {
-#warning abstraction
+
   *b = FALSE;
   if (c->lexpr->kind == binaryexpr)
     {
@@ -978,7 +981,7 @@ static arithType flipAr (arithType ar)
     case GTE:
       return LTE;
     default:
-      llcontbug (("unexpected value: case not handled"));
+      llcontbug (message("unexpected value: case not handled"));
     }
   BADEXIT;
 }
@@ -1001,8 +1004,6 @@ constraint constraint_simplify (constraint c)
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
 
-#warning check this 5/11/01
-
   if (c->lexpr->kind == binaryexpr)
     {
       c = constraint_solve (c);
@@ -1015,7 +1016,7 @@ constraint constraint_simplify (constraint c)
     {
       c = constraint_swapLeftRight(c);
       /*I don't think this will be an infinate loop*/
-      constraint_simplify(c);
+      c = constraint_simplify(c);
     }
   return c;
 }

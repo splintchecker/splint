@@ -43,7 +43,7 @@ static bool exprNode_isBlock (exprNode p_e);
 static void checkGlobUse (uentry p_glob, bool p_isCall, /*@notnull@*/ exprNode p_e);
 static void exprNode_addUse (exprNode p_e, sRef p_s);
 static bool exprNode_matchArgType (ctype p_ct, exprNode p_e);
- exprNode exprNode_fakeCopy (exprNode p_e) /*@*/ ;
+
 static exprNode exprNode_statementError (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 static bool exprNode_matchTypes (exprNode p_e1, exprNode p_e2);
 static void checkUniqueParams (exprNode p_fcn,
@@ -105,6 +105,12 @@ static ctype cstringType;
 static ctype ctypeType;
 static ctype filelocType; 
 static bool initMod = FALSE;
+
+# define exprNode_defineConstraints(e)  { (e)->environment=NULL; \
+					  (e)->requiresConstraints = constraintList_makeNew(); \
+					  (e)->ensuresConstraints = constraintList_makeNew(); \
+					  (e)->trueEnsuresConstraints = constraintList_makeNew(); \
+					    (e)->falseEnsuresConstraints = constraintList_makeNew(); }
 
 /*
 ** must occur after library has been read
@@ -742,8 +748,8 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
   DPRINTF("Size is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
   DPRINTF("State is set to: %d\n\n", e->sref->bufinfo.bufstate);
   */
-  sRef_setLen(e->sref, strlen((char *)multiVal_forceString(e->val)));
-  sRef_setSize(e->sref, strlen((char *)multiVal_forceString(e->val)));
+  sRef_setLen(e->sref, (int)  strlen((char *)multiVal_forceString(e->val)));
+  sRef_setSize(e->sref, (int) strlen((char *)multiVal_forceString(e->val)));
 
   if (context_getFlag (FLG_READONLYSTRINGS))
     {
@@ -889,6 +895,8 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
       e->canBreak = FALSE;
       e->mustBreak = FALSE;
       
+      exprNode_defineConstraints(e);
+
       return e;
     }
   else
@@ -3608,7 +3616,12 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
   exprNode_checkModify (e, ret);
 
   /* added 7/11/2000 D.L */
-  
+  /*@i223*/ 
+  /*DRL 6/8/01 I decided to disable all LCLint Warning here since the code 
+    probably needs a rewrite any way */
+
+  /*@ignore@*/
+
   //  updateEnvironmentForPostOp (e);
 
 	/* start modifications */
@@ -3652,7 +3665,7 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 			}
 		}
 	}
-
+	/*@end@*/
 	/* end modifications */
 
   return ret;
@@ -6411,12 +6424,6 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
 {
   exprNode ret;
   bool emptyErr = FALSE;
-  char *s;
-  //  s = exprNode_generateConstraints (t);
-  // printf("pred: %s\n", s);
-  // s = exprNode_generateConstraints (b);
-  //printf ("body: %s\n", s);
-  //constraintList_print(b->constraints);
   
   if (context_maybeSet (FLG_WHILEEMPTY))
     {
@@ -7536,6 +7543,8 @@ exprNode_iterNewId (/*@only@*/ cstring s)
 
 
   cstring_free (s);
+  
+  exprNode_defineConstraints(e);
   return (e);
 }
 
@@ -9962,7 +9971,7 @@ long exprNode_getLongValue (exprNode e) {
 
 fileloc exprNode_getfileloc (exprNode p_e)
 {
-  if (p_e)
+  if (exprNode_isDefined (p_e) )
     return fileloc_copy ( p_e->loc );
   else
     return fileloc_undefined;

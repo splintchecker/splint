@@ -7,6 +7,7 @@
 
 /*@i777*/
 /*@-fcnuse*/
+/*@-shadow*/
 
 static void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind)
 {
@@ -655,9 +656,4 @@ static /*@only@*/ exprData exprData_makeFor (/*@keep@*/ exprNode init,
 
 /*@=fcnuse*/
 
-
-
-
-
-
-
+/*@=shadow*/
