@@ -9360,7 +9360,7 @@ uentry_checkDecl (void)
 void
 uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 {
-  fileloc olddef = uentry_whereDeclared (old);
+  fileloc olddef = uentry_whereDeclared (old); 
   fileloc unewdef = uentry_whereDeclared (unew);
   bool mustConform;
   bool wasForward;
@@ -9445,7 +9445,8 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
     }
   else
     {
-      if (!uentry_isExtern (unew) && !uentry_isForward (old)
+      if (!uentry_isExtern (unew) 
+	  && !uentry_isForward (old)
 	  && !fileloc_equal (olddef, unewdef)
 	  && !fileloc_isUndefined (olddef)
 	  && !fileloc_isUndefined (unewdef)
@@ -9515,7 +9516,7 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 		}
 	      else
 		{
-		  uentry_setDefined (old, unewdef);
+		  uentry_setDeclared (old, unewdef); /* evans 2001-07-23 was setDefined */
 		}
 	    }
 	}
@@ -9526,7 +9527,14 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
 	    uentry_unparseFull (unew)));
 
   uentry_mergeConstraints (old, unew);
+  DPRINTF (("uentry merge: %s / %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
+
   uentry_checkConformance (old, unew, mustConform, FALSE);
+  DPRINTF (("uentry merge: %s / %s",
+	    uentry_unparseFull (old),
+	    uentry_unparseFull (unew)));
 
   old->used = old->used || unew->used;
   old->uses = filelocList_append (old->uses, unew->uses);
@@ -9540,6 +9548,8 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
       old->whereDefined = fileloc_update (old->whereDefined,
 					  fileloc_undefined);
     }
+
+  DPRINTF (("here: %s", uentry_unparseFull (old)));
 
   /*
   ** No redeclaration errors for functions here, since we
@@ -9632,6 +9642,7 @@ uentry_mergeDefinition (uentry old, /*@only@*/ uentry unew)
       uentry_checkName (old);
     }
 
+  DPRINTF (("After: %s", uentry_unparseFull (old)));
   llassert (!ctype_isUndefined (old->utype));
 }
 
@@ -9684,6 +9695,8 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
   llassert (uentry_isValid (unew));
   llassert (uentry_isValid (old));
 
+  DPRINTF (("Update into: %s / %s", uentry_unparseFull (unew), uentry_unparseFull (old)));
+
   unew->ukind = old->ukind;
   llassert (cstring_equal (unew->uname, old->uname));
   unew->utype = old->utype;
@@ -9720,6 +9733,8 @@ static void uentry_updateInto (/*@unique@*/ uentry unew, uentry old)
       fileloc_free (unew->whereDeclared); /*@i523 why no error without this? */
       unew->whereDeclared = fileloc_copy (old->whereDeclared);
     }
+
+  DPRINTF (("Update into: %s / %s", uentry_unparseFull (unew), uentry_unparseFull (old)));
 
   unew->sref = sRef_saveCopy (old->sref); /* Memory leak! */
   unew->used = old->used;

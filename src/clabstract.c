@@ -1236,6 +1236,7 @@ void checkConstant (qtype t, idDecl id)
   reflectStorageClass (e);
   resetStorageClass ();
 
+  DPRINTF (("Constant: %s", uentry_unparseFull (e)));
   usymtab_supGlobalEntry (e);
 }
 
