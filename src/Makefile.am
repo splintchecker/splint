@@ -53,7 +53,7 @@ GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 OVERFLOWCHSRC = constraintList.c constraintResolve.c \
                 constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
-                constraintOutput.c loopHeuristics.c 
+                loopHeuristics.c 
 
 GENERALSRC = exprData.c cstring.c fileloc.c message.c inputStream.c \
              fileTable.c cstringTable.c valueTable.c stateValue.c \
@@ -334,7 +334,7 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
 	  echo '* Making mtgrammar.c'; \
-	  echo '*      Note: Expect 11 shift/reduce conflicts.'; \
+	  echo '*       Note: Expect 11 shift/reduce conflicts.'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -350,7 +350,7 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 	  $(CP) llgrammar.c.der llgrammar.c; \
 	else \
 	  echo '* Making llgrammar.c'; \
-	  echo '*      Note: Expect 2 shift/reduce conflicts'; \
+	  echo '*       Note: Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
 	  $(CP) llgrammar.c llgrammar.c.der; \

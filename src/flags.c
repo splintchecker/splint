@@ -28,7 +28,6 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
-# include "portab.h"
 # include "rcfiles.h"
 # include "lslinit.h"
 # include "llmain.h"

@@ -42,7 +42,6 @@
 # include "llmain.h"
 # include "intSet.h"
 # include "osd.h"
-# include "portab.h"
 
 extern /*@external@*/ int yydebug;
 extern /*@external@*/ int mtdebug;

@@ -27,7 +27,7 @@
 
 # include "splintMacros.nf"
 # include "basic.h"
-# include "portab.h"
+# include "osd.h"
 
 bool
 fileLib_isCExtension (cstring ext)

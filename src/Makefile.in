@@ -145,7 +145,7 @@ GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
 OVERFLOWCHSRC = constraintList.c constraintResolve.c \
                 constraintGeneration.c constraintTerm.c \
                 constraintExprData.c constraintExpr.c constraint.c \
-                constraintOutput.c loopHeuristics.c 
+                loopHeuristics.c 
 
 
 GENERALSRC = exprData.c cstring.c fileloc.c message.c inputStream.c \
@@ -476,8 +476,7 @@ am__objects_17 = exprNode.$(OBJEXT) exprChecks.$(OBJEXT) \
 am__objects_18 = constraintList.$(OBJEXT) constraintResolve.$(OBJEXT) \
 	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
 	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
-	constraint.$(OBJEXT) constraintOutput.$(OBJEXT) \
-	loopHeuristics.$(OBJEXT)
+	constraint.$(OBJEXT) loopHeuristics.$(OBJEXT)
 am__objects_19 =
 am__objects_20 = $(am__objects_19)
 am__objects_21 = $(am__objects_7) $(am__objects_16) $(am__objects_17) \
@@ -505,7 +504,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/constraintExprData.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/constraintGeneration.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/constraintList.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/constraintOutput.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/constraintResolve.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/constraintTerm.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/context.Po ./$(DEPDIR)/cpperror.Po \
@@ -694,7 +692,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintExprData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintGeneration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintList.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintOutput.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintResolve.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constraintTerm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/context.Po@am__quote@
@@ -1073,7 +1070,7 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
 	  echo '* Making mtgrammar.c'; \
-	  echo '*      Note: Expect 11 shift/reduce conflicts.'; \
+	  echo '*       Note: Expect 11 shift/reduce conflicts.'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -1087,7 +1084,7 @@ Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der ll
 	  $(CP) llgrammar.c.der llgrammar.c; \
 	else \
 	  echo '* Making llgrammar.c'; \
-	  echo '*      Note: Expect 2 shift/reduce conflicts'; \
+	  echo '*       Note: Expect 2 shift/reduce conflicts'; \
 	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
 	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
 	  $(CP) llgrammar.c llgrammar.c.der; \

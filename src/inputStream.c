@@ -47,7 +47,6 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
-# include "portab.h"
 
 extern bool
 inputStream_close (inputStream s)

@@ -34,7 +34,6 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
-# include "portab.h"
 
 /*@only@*/ /*@notnull@*/ 
 cstring cstring_newEmpty (void)

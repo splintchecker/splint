@@ -51,7 +51,6 @@
 # include "basic.h"
 # include "osd.h"
 # include "llmain.h"
-# include "portab.h"
 
 # ifdef WIN32
 # include <io.h>
