@@ -6390,10 +6390,20 @@ get_next:
 	op2:
 	  token = CPP_OTHER;
 	  pfile->only_seen_white = 0;
-        op2any:
+        op2any: /* jumped to for \ continuations */
 	  cpplib_reserve(pfile, 3);
 	  cppReader_putCharQ (pfile, c);
-	  cppReader_putCharQ (pfile, cppReader_getC (pfile));
+
+	  /* evans 2003-08-24: This is a hack to fix line output for \
+	     continuations.  Someday I really should get a decent pre-processor! 
+	  */
+
+	  if (c == '\\') {
+	    (void) cppReader_getC (pfile); /* skip the newline to avoid extra lines */
+	  } else {
+	    cppReader_putCharQ (pfile, cppReader_getC (pfile)); 
+	  }
+
 	  cppReader_nullTerminateQ (pfile);
 	  return token;
 
@@ -6659,6 +6669,8 @@ get_next:
 
         case '\\':
 	  c2 = cppReader_peekC (pfile);
+	  //! allow other stuff here if a flag is set?
+	  DPRINTF (("Got continuation!"));
 	  if (c2 != '\n')
 	    goto randomchar;
 	  token = CPP_HSPACE;
