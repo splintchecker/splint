@@ -1,3 +1,5 @@
+gmake[2]: Entering directory `/a/apollo/af9/drl7x/re/LCLintDev/test'
+LCLint 2.5q --- 20 May 2000
 
 ****************************NULLTERMINATED ERROR2
 test1.c: (in function main)
@@ -13,9 +15,8 @@ test1.c:13:6: Possibly non-nullterminated storage d passed as nullterminated
 SYMBOL REFERENCED IS NOT NULLTERMINATED!
 *******************************=
 
+LCLint 2.5q --- 20 May 2000
 
-Finished LCLint checking --- 3 code errors found
-
-Cannot open file: test2.c
 
 Finished LCLint checking --- no code processed
+gmake[2]: Leaving directory `/a/apollo/af9/drl7x/re/LCLintDev/test'

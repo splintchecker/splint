@@ -6,9 +6,11 @@ usedef                       0           1
 exporttype                   0           3
 compdef                      0           1
 modfilesys                   0          25
+fcnpost                      0          53
+fcnconstraint                0           4
 formalarray                  0          17
                           ========  =========
-Total                        0          47
+Total                        0         104
 
 Finished LCLint checking --- no code errors found
 
@@ -134,8 +136,10 @@ retvalint                   25           0
 compdef                      0           1
 mods                        26           0
 modfilesys                   0          25
+fcnpost                      0          53
+fcnconstraint                0           4
 formalarray                  0          17
                           ========  =========
-Total                       77          47
+Total                       77         104
 
 Finished LCLint checking --- 77 code errors found, as expected

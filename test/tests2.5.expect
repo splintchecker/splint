@@ -33,7 +33,3 @@ booltest.c: (in function f)
 booltest.c:9:12: Return value type int does not match declared type bool: i
 
 Finished LCLint checking --- 1 code error found, as expected
-
-Finished LCLint checking --- no code errors found
-
-Finished LCLint checking --- no code errors found

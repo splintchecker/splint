@@ -1,0 +1,74 @@
+LCLint 2.5q --- 20 May 2000
+
+bufferTest/test4.c: (in function t)
+bufferTest/test4.c:6:3: Variable g used before definition
+  An rvalue is used that may not be initialized to a value on some execution
+  path. (-usedef will suppress message)
+ Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  1  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:10:5  )   >=   VALUE  (  0  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  68  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:11:5  )   >=   VALUE  (  67  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  71  )  needed to satisy Requires: :  MAXREAD  ( g @ bufferTest/test4.c:11:13  )   >=   VALUE  (  70  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  99  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:12:5  )   >=   VALUE  (  98  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  100  )  needed to satisy Requires: :  MAXREAD  ( g @ bufferTest/test4.c:12:13  )   >=   VALUE  (  99  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  91  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:13:5  )   >=   VALUE  (  90  ) 
+ Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  90  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  90  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  3  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  3  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  98  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  98  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  99  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  99  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  VALUE  ( g @ bufferTest/test4.c:8:7  )   ==   VALUE  ( g @ bufferTest/test4.c:8:5  )   +   VALUE  (  1  )  this function appears to have the post condition Ensures: :  VALUE  ( g @ bufferTest/test4.c:8:7  )   ==   VALUE  ( g @ bufferTest/test4.c:8:5  )   +   VALUE  (  1  ) 
+ Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:6:3  )   >=   VALUE  (  100  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:6:3  )   >=   VALUE  (  100  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  1  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:10:5  )   >=   VALUE  (  0  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  68  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:11:5  )   >=   VALUE  (  67  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  71  )  needed to satisy Requires: :  MAXREAD  ( g @ bufferTest/test4.c:11:13  )   >=   VALUE  (  70  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  99  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:12:5  )   >=   VALUE  (  98  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  100  )  needed to satisy Requires: :  MAXREAD  ( g @ bufferTest/test4.c:12:13  )   >=   VALUE  (  99  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test4.c:8:5  )   >=   VALUE  (  91  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test4.c:13:5  )   >=   VALUE  (  90  ) 
+ Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  90  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  90  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  3  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:13:19  )   >=   VALUE  (  3  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  98  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  98  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  99  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:12:19  )   >=   VALUE  (  99  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  VALUE  ( g @ bufferTest/test4.c:8:7  )   ==   VALUE  ( g @ bufferTest/test4.c:8:5  )   +   VALUE  (  1  )  this function appears to have the post condition Ensures: :  VALUE  ( g @ bufferTest/test4.c:8:7  )   ==   VALUE  ( g @ bufferTest/test4.c:8:5  )   +   VALUE  (  1  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:6:16  )   >=   VALUE  (  100  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test4.c:6:16  )   >=   VALUE  (  100  ) 
+
+Finished LCLint checking --- 1 code error found
+LCLint 2.5q --- 20 May 2000
+
+bufferTest/test6.c: (in function t)
+bufferTest/test6.c:6:3: Variable g used before definition
+  An rvalue is used that may not be initialized to a value on some execution
+  path. (-usedef will suppress message)
+ Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test6.c:6:3  )   >=   VALUE  (  1  )  needed to satisy Requires: :  MAXSET  ( g @ bufferTest/test6.c:7:3  )   >=   VALUE  (  0  ) 
+  Unresolved constraint:
+Lclint is unable to resolve Requires: :  MAXSET  ( g @ bufferTest/test6.c:6:3  )   >=   VALUE  (  2  )  needed to satisy Requires: :  MAXREAD  ( g @ bufferTest/test6.c:7:10  )   >=   VALUE  (  1  ) 
+ Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test6.c:7:15  )   >=   VALUE  (  0  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test6.c:7:15  )   >=   VALUE  (  0  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  MAXREAD  ( g @ bufferTest/test6.c:7:15  )   >=   VALUE  (  1  )  this function appears to have the post condition Ensures: :  MAXREAD  ( g @ bufferTest/test6.c:7:15  )   >=   VALUE  (  1  ) 
+  Function Post condition:
+Based on the constraint Ensures: :  VALUE  ( g @ bufferTest/test6.c:6:5  )   ==   VALUE  ( g @ bufferTest/test6.c:6:3  )   +   VALUE  (  1  )  this function appears to have the post condition Ensures: :  VALUE  ( g @ bufferTest/test6.c:6:5  )   ==   VALUE  ( g @ bufferTest/test6.c:6:3  )   +   VALUE  (  1  ) 
+
+Finished LCLint checking --- 1 code error found
