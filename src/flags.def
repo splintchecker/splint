@@ -3179,6 +3179,14 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
+    FK_PREPROC, FK_SYNTAX, plainFlag,
+    "unrecognizeddirective",
+    FLG_UNRECOGDIRECTIVE,
+    "unrecognized pre-processor directive",
+    "Pre-processor directive is not recognized.", 
+    0, 0
+  },
+  {
     FK_GLOBALS, FK_NONE, modeFlag,
     "globstate",
     FLG_GLOBSTATE,
@@ -3213,7 +3221,7 @@ static flaglist flags =
     "trytorecover",
     FLG_TRYTORECOVER,
     "try to recover from parse error",
-    "Try to recover from parse error.  It really means try --- this doesn't usually work.", 0, 0
+    "Try to recover from parse error.  It really means try - this doesn't usually work.", 0, 0
   },
   {
     FK_SYNTAX, FK_PREPROC, plainFlag,

@@ -1695,7 +1695,6 @@ static bool processMacro (void)
 static bool handleSpecial (char *yyt)
 {
   char *l = mstring_create (MAX_NAME_LENGTH);
-  static bool reportcpp = FALSE;
   int lineno = 0;
   char c;
   char *ol;
@@ -1889,18 +1888,15 @@ static bool handleSpecial (char *yyt)
 	mstring_free (ol);
 	return FALSE;
       } else {
-	if (!reportcpp)
-	  {
-	    
-	  } else {
-	    llbug (message ("File contains preprocessor command: #%s", 
-			    cstring_fromChars (ol)));
-	    reportcpp = TRUE;
-	  }
+	voptgenerror
+	  (FLG_UNRECOGDIRECTIVE,
+	   message ("Unrecognized pre-processor directive: #%s", 
+		    cstring_fromChars (ol)),
+	   g_currentloc);
       }
       
       sfree (ol);
-      return TRUE;
+      return FALSE; /* evans 2001-12-30: was: TRUE; */
     }
 
   sfree (ol);
@@ -2855,6 +2851,10 @@ static bool processHashIdentifier (/*@only@*/ cstring id)
     }
   else
     {
+      /*
+      ** Will be handled by handleLlSpecial
+      */
+
       cstring_free (id);
       return FALSE;
     }

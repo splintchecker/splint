@@ -849,6 +849,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_SIZEOFFORMALARRAY] = TRUE;
   gc.flags[FLG_FIXEDFORMALARRAY] = TRUE;
 
+  gc.flags[FLG_UNRECOGDIRECTIVE] = TRUE;
   gc.flags[FLG_WARNUSE] = TRUE;
   gc.flags[FLG_PREDASSIGN] = TRUE;
   gc.flags[FLG_MODOBSERVER] = TRUE;
