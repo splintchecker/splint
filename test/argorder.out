@@ -41,13 +41,46 @@ argorder3.c:12:14: Expression has undefined behavior (left operand uses i,
 argorder3.c:12:14: Expression has undefined behavior (left operand modifies i,
                       used by right operand): --i * ++i
 argorder3.c:13:2: Path with no return in function declared to return int
-constraintExpr.c:307: at source point
-argorder3.c:13:2: *** Internal Bug at constraintExpr.c:307: llassert failed:
-                     constraintExprData_isDefined(data) [errno: 25]
-*** Last code point: exprNode.c:8881
-*** Previous code point: aliasChecks.c:3664
-Possible system error diagnostic: : Inappropriate ioctl for device
-     *** Please report bug to lclint-bug@cs.virginia.edu ***
-       (attempting to continue, results may be incorrect)
-lclint: llerror.c:1204: llbugaux: Assertion `0' failed.
-Abort (core dumped)
+
+Finished LCLint checking --- 8 code errors found, as expected
+
+argorder4.c: (in function h)
+argorder4.c:19:21: Expression has undefined behavior (left operand uses glob,
+                      modified by right operand): f() + g()
+argorder4.c:25:18: Expression has undefined behavior (left operand uses glob,
+                      modified by right operand): f() + (++glob)
+argorder4.c:29:18: Expression has undefined behavior (left operand uses glob,
+                      modified by right operand): g() + h()
+argorder4.c:29:18: Expression has undefined behavior (left operand modifies
+                      glob, used by right operand): g() + h()
+argorder4.c:35:16: Argument 1 modifies file system state, used by argument 2
+    (order of evaluation of actual parameters is undefined):
+    add((printf("hullo"), 3), (printf("goodbye"), 4))
+argorder4.c:35:16: Argument 1 modifies *stdout, set by argument 2 (order of
+    evaluation of actual parameters is undefined):
+    add((printf("hullo"), 3), (printf("goodbye"), 4))
+argorder4.c:35:38: Argument 2 modifies file system state, used by argument 1
+    (order of evaluation of actual parameters is undefined):
+    add((printf("hullo"), 3), (printf("goodbye"), 4))
+argorder4.c:35:38: Argument 2 modifies *stdout, set by argument 1 (order of
+    evaluation of actual parameters is undefined):
+    add((printf("hullo"), 3), (printf("goodbye"), 4))
+argorder4.c:35:10: Unreachable code: return (add((pri...
+
+Finished LCLint checking --- 9 code errors found, as expected
+
+argorder4.c: (in function h)
+argorder4.c:35:10: Unreachable code: return (add((pri...
+
+Finished LCLint checking --- 1 code error found, as expected
+
+argorder5.c: (in function f)
+argorder5.c:8:9: Variable name used after being released
+   argorder5.c:8:17: Storage name released
+argorder5.c:9:19: Variable name used after being released
+   argorder5.c:9:12: Storage name released
+argorder5.c:10:28: Argument 2 modifies *name, used by argument 1 (order of
+    evaluation of actual parameters is undefined):
+    test2(copystring(name), f(name))
+
+Finished LCLint checking --- 3 code errors found, as expected
