@@ -2816,7 +2816,7 @@ static flaglist flags =
     "parenconstraint",
     FLG_PARENCONSTRAINT,
     "parenthesize constraint term",
-    "This flag is for debuging.  This flag causes LCLint to fully parentheses constraints,  ",
+    "This flag is for debugging.  This flag causes LCLint to fully parentheses constraints,  ",
     0, 0
   },
 
@@ -2825,7 +2825,7 @@ static flaglist flags =
     "debugfcnconstraint",
     FLG_DEBUGFUNCTIONCONSTRAINT,
     "debuging constraint flas",
-    "This flag is for debuging.  It causes lclint to perform buffer overflow checking even if the error will be surpressed.  Normal buffer overflow checking will only be performed if errors would be printed. ",
+    "This flag is for debuging.  It causes lclint to perform buffer overflow checking even if the errors would be surpressed.  Normally buffer overflow checking will only be performed if the errors would be printed. ",
     0, 0
   },
   

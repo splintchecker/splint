@@ -141,14 +141,14 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
   tempOp = constraintExprData_binaryExprGetOp (expr2->data);
 
-  if (op == PLUS)
+  if (op == BINARYOP_PLUS)
     op = tempOp;
   else if (op == MINUS)
     {
-      if (tempOp == PLUS)
+      if (tempOp == BINARYOP_PLUS)
 	op = MINUS;
       else if (tempOp == MINUS)
-	op = PLUS;
+	op = BINARYOP_PLUS;
       else
 	BADEXIT;
     }
@@ -209,7 +209,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
   
   *propagate = propagate1 || propagate2;
 
-  if (op == PLUS)
+  if (op == BINARYOP_PLUS)
     *literal    = literal1 +  literal2;
   else   if (op == MINUS)
     *literal    = literal1 -  literal2;
@@ -228,7 +228,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
       constraintExpr_free (expr1);
       constraintExpr_free (expr2);
 
-      if (op == PLUS )
+      if (op == BINARYOP_PLUS )
 	return (constraintExpr_makeIntLiteral ( (t1+t2) ));
       else if (op ==  MINUS)
 	return (constraintExpr_makeIntLiteral ( (t1-t2) ));
@@ -243,7 +243,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
 
       *literal += constraintExpr_getValue (expr1);
 
-      if (op == PLUS)
+      if (op == BINARYOP_PLUS)
 	{
 	  constraintExpr_free(expr1);
 	  constraintExpr_free(expr);
@@ -275,7 +275,7 @@ static bool isZeroBinaryOp (constraintExpr expr)
     {
       *propagate = TRUE;
           
-      if ( op == PLUS )
+      if ( op == BINARYOP_PLUS )
 	*literal += constraintExpr_getValue (expr2);
       else if (op ==  MINUS)
 	*literal -= constraintExpr_getValue (expr2);
@@ -728,7 +728,7 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   constraintExpr ret;
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr1, expr2);
   if (op.tok == TPLUS)
-    ret->data = constraintExprData_binaryExprSetOp(ret->data, PLUS);
+    ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
   else if (op.tok == TMINUS)
     ret->data = constraintExprData_binaryExprSetOp(ret->data, MINUS);
     else
@@ -759,7 +759,7 @@ constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/ c
 
   constExpr = constraintExpr_makeIntLiteral (literal);
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, constExpr);
-  ret->data = constraintExprData_binaryExprSetOp(ret->data, PLUS);
+  ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
   return ret;
 }
 
@@ -797,7 +797,7 @@ constraintExpr addent)
   DPRINTF ( (message ("Doing addTerm simplification") ) );
 
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, addent);
-  ret->data = constraintExprData_binaryExprSetOp (ret->data, PLUS);
+  ret->data = constraintExprData_binaryExprSetOp (ret->data, BINARYOP_PLUS);
   return ret;
 }
 
@@ -810,7 +810,7 @@ constraintExpr constraintExpr_makeIncConstraintExpr (/*@only@*/ constraintExpr e
 
   inc = constraintExpr_makeIntLiteral (1);
   ret = constraintExpr_makeBinaryOpConstraintExpr (expr, inc);
-  ret->data = constraintExprData_binaryExprSetOp(ret->data, PLUS);
+  ret->data = constraintExprData_binaryExprSetOp(ret->data, BINARYOP_PLUS);
   return ret;
 }
 
@@ -840,7 +840,7 @@ static cstring constraintExprBinaryOpKind_print (constraintExprBinaryOpKind op)
   
   switch (op)
     {
-    case PLUS:
+    case BINARYOP_PLUS:
       return message("+");
     case MINUS:
       return message("-");
@@ -1179,7 +1179,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
   lexpr->data = copyExprData (expr1->data, expr1->kind);
   constraintExpr_free(expr1);
   
-  if (op == PLUS)
+  if (op == BINARYOP_PLUS)
     expr = constraintExpr_makeSubtractExpr (expr, expr2);
   else if (op == MINUS)
     expr = constraintExpr_makeAddExpr (expr, expr2);
@@ -1283,7 +1283,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
       return c;
     }
   
-  if (constraintExprData_binaryExprGetOp (exp->data) == PLUS  )
+  if (constraintExprData_binaryExprGetOp (exp->data) == BINARYOP_PLUS  )
     {
  
       /* if (constraintExpr_canGetValue (constraintExprData_binaryExprGetExpr2 (exp->data) ) ) */

@@ -1058,12 +1058,11 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
      }
    
    body->ensuresConstraints = constraintList_sort(body->ensuresConstraints);
-   
+
    if ( context_getFlag (FLG_FUNCTIONPOST) )
      {
        constraintList_printError(body->ensuresConstraints, g_currentloc);
      }
-   
    
    /*   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
 

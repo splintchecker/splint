@@ -31,7 +31,7 @@ static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
       t2 = constraintExprData_binaryExprGetExpr2 (c->data);
 
       binOP = constraintExprData_binaryExprGetOp (c->data);
-      if (binOP == PLUS)
+      if (binOP == BINARYOP_PLUS)
 	if (constraintExpr_isLit (t2) && constraintExpr_getValue (t2) == 1 )
 	  {
 	    return TRUE;
