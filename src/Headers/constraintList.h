@@ -91,6 +91,7 @@ extern constraintList constraintList_sort (/*@returned@*/ constraintList p_ret) 
 void constraintList_dump (/*@observer@*/ constraintList p_c,  FILE * p_f);
 
 /*@only@*/ constraintList constraintList_undump (FILE * p_f);
+/*@only@*/ constraintList constraintList_removeSurpressed (/*@only@*/ constraintList p_s);
 
 # else
 # error "Multiple include"
