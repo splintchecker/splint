@@ -1073,6 +1073,7 @@ constraint constraint_undump (FILE *f)
   c->expr =  expr;
 
   free(os);
+  c = constraint_preserveOrig(c);
   return c;
 }
 

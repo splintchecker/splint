@@ -389,7 +389,7 @@ linttest:
 	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude cpphash.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +partial
 
 lint: 
-	../bin/lclint -f lclint.lclintrc llmain.c $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -supcounts -fcnuse -exportlocal -constuse  -mts file
+	../bin/lclint -f lclint.lclintrc llmain.c $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -supcounts -fcnuse -exportlocal -unrecogcomments -constuse  -mts file
 
 # -mts file
 

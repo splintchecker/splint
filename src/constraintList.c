@@ -386,7 +386,7 @@ constraintList constraintList_preserveOrig (constraintList c)
 
 constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,/*@observer@*/ /*@dependent@*/ /*@observer@*/  exprNode fcn)
 {
-  DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_print (c) ) ));
+  DPRINTF((message("constraintList_preserveCallInfo %s ", constraintList_print (c) ) ));
 
   constraintList_elements_private (c, el)
   {

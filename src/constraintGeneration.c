@@ -369,6 +369,8 @@ static exprNode doIf (/*@returned@*/  exprNode e, /*@dependent@*/ exprNode test,
   DPRINTF ((message ("doIf: test true ensures %s ", constraintList_print(test->trueEnsuresConstraints) ) ) );
   
   constraintList_free(e->requiresConstraints);
+
+  
   e->requiresConstraints = constraintList_reflectChanges(body->requiresConstraints, test->trueEnsuresConstraints);
 
   e->requiresConstraints = constraintList_reflectChangesFreePre (e->requiresConstraints,
@@ -593,8 +595,7 @@ static void exprNode_doGenerateConstraintSwitch (/*@dependent@*/ exprNode switch
 
   if (body->kind != XPR_STMTLIST )
     {
-      DPRINTF((message("exprNode_doGenerateConstraintSwitch: non
-stmtlist: %s",
+      DPRINTF((message("exprNode_doGenerateConstraintSwitch: non stmtlist: %s",
 		       exprNode_unparse(body) )
 	       ));
       //      llassert(body->kind == XPR_STMT );
@@ -611,8 +612,7 @@ stmtlist: %s",
       stmtList = exprNode_makeDependent(stmtList);
     }
 
-  DPRINTF((message("exprNode_doGenerateConstraintSwitch: stmtlist: %s
-stmt: %s",
+  DPRINTF((message("exprNode_doGenerateConstraintSwitch: stmtlist: %s stmt: %s",
 		   exprNode_unparse(stmtList), exprNode_unparse(stmt) )
 	   ));
 

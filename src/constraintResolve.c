@@ -25,6 +25,8 @@ static bool rangeCheck (arithType p_ar1, /*@observer@*/ constraintExpr p_expr1, 
 
 static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint p_c, constraintList p_p);
 
+static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint p_c, constraintList p_p);
+
 static constraint constraint_searchandreplace (/*@returned@*/ constraint p_c, constraintExpr p_old, constraintExpr p_newExpr);
 
 
@@ -238,13 +240,17 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 }
 
 
+
 /* tries to resolve constraints in list pre2 using post1 */
-/*@only@*/ constraintList constraintList_reflectChanges(/*@observer@*/ constraintList pre2, /*@observer@*/ constraintList post1)
+
+static /*@only@*/ constraintList reflectChangesNoOr (/*@observer@*/ /*@temp@*/ constraintList pre2, /*@observer@*/ /*@temp@*/ constraintList post1)
 {
   
   constraintList ret;
   constraint temp;
   constraint temp2;
+
+  llassert  (! context_getFlag (FLG_ORCONSTRAINT) );
 
   ret = constraintList_makeNew();
   DPRINTF((message ("reflectChanges: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
@@ -285,6 +291,19 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
     return ret;
 }
 
+/* tries to resolve constraints in list pre2 using post1 */
+/*@only@*/ constraintList constraintList_reflectChanges(/*@observer@*/ constraintList pre2, /*@observer@*/ constraintList post1)
+{
+  constraintList temp;
+  
+  if ( context_getFlag (FLG_ORCONSTRAINT) )
+    
+    temp = constraintList_reflectChangesOr (pre2, post1);
+  else
+    temp = reflectChangesNoOr(pre2, post1);
+
+  return temp;				 
+}
 
 static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@*/ constraint orConstr)
 {
@@ -340,37 +359,56 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
 	      constraint temp2;
 	      
 	      // the inequality substitution may cause us to lose information
-	      //so we don't want to store the result but we do it anyway
+	      //so we don't want to store the result but we do  anyway
 	      temp2 = constraint_copy (c);
 	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
-	      temp2 = inequalitySubstitute (temp2, post1); 
+	      temp2 = inequalitySubstitute (temp2, post1);
 	      if (!resolveOr (temp2, post1) )
 		{
-		  temp2 = inequalitySubstituteUnsound (temp2, post1); 
-		  if (!resolveOr (temp2, post1) )
+		  constraint temp3;
+		  temp3 = constraint_copy(temp2);
+		  
+		  temp3 = inequalitySubstituteStrong (temp3, post1);
+		  if (!resolveOr (temp3, post1) )
 		    {
-		      if (!constraint_same (temp, temp2) )
-			temp = constraint_addOr (temp, temp2);
-		      *resolved = FALSE;
+		      temp2 = inequalitySubstituteUnsound (temp2, post1); 
+		      if (!resolveOr (temp2, post1) )
+			{
+			  if (!constraint_same (temp, temp2) )
+			    temp = constraint_addOr (temp, temp2);
 
+			  if (!constraint_same (temp, temp3) && !constraint_same (temp3, temp2) )
+			    temp = constraint_addOr (temp, temp3);
+			  
+			  *resolved = FALSE;
+			  
+			  constraint_free(temp2);
+			  constraint_free(temp3);
+			  constraint_free(c);
+			  
+			  return temp;
+			}
 		      constraint_free(temp2);
-		      constraint_free(c);
-	  
-		      return temp;
+		      constraint_free(temp3);
+		    }
+		  else
+		    {
+		      constraint_free(temp2);
+		      constraint_free(temp3);
 		    }
 		}
-	      
-	      constraint_free(temp2);
+	      else
+		{
+		  constraint_free(temp2);
+		}		  
+
 	    }
 	  constraint_free(temp);
 	}
- 
  constraint_free(c);
  
  *resolved = TRUE;
  return NULL;
-
-
 
 }
 
@@ -901,6 +939,7 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
 
    Warning this is sound but throws out information
  */
+
 constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p)
 {
   if (c->ar != GTE)
@@ -908,7 +947,7 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
   
   constraintList_elements (p, el)
     {
-       if ( el->ar == LT)
+      if ( (el->ar == LT )  )
 	 //	 if (!constraint_conflict (c, el) )
 	   {
 	     //constraint temp;
@@ -922,7 +961,7 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
 
 	     if (constraintExpr_same (el->expr, c->expr) )
 	       {
-		 DPRINTF((message ("inequalitySubstitute Replacing %s in %s with  %s",
+		 DPRINTF((message ("inequalitySubstitute Replacing %q in %q with  %q",
 				   constraintExpr_print (c->expr),
 				   constraint_print (c),
 				   constraintExpr_print (el->expr) )
@@ -930,6 +969,7 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
 		 temp2   = constraintExpr_copy (el->lexpr);
 		 constraintExpr_free(c->expr);
 		 c->expr =  constraintExpr_makeIncConstraintExpr (temp2);
+
 	       }
 	     
 	   }
@@ -939,6 +979,70 @@ constraint  inequalitySubstitute  (/*@returned@*/ constraint c, constraintList p
   c = constraint_simplify(c);
   return c;
 }
+
+
+/* drl7x 7/26/001
+
+   THis function is like inequalitySubstitute but it adds the rule
+   added the rules x >= y &&  y <= b  ===> x >= b
+    x >= y &&  y < b  ===> x >= b + 1
+
+   This is sound but sonce it throws out additional information it should only one used
+   if we're oring constraints.
+ */
+
+static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint c, constraintList p)
+{
+  DPRINTF (( message ("inequalitySubstituteStrong examining substituting for %q", constraint_print(c) ) ));      
+
+  if (c->ar != GTE)
+    return c;
+  
+  DPRINTF (( message ("inequalitySubstituteStrong examining substituting for %q with %q",
+		      constraint_print(c), constraintList_print(p) ) ));      
+  constraintList_elements (p, el)
+    {
+      DPRINTF (( message ("inequalitySubstituteStrong examining substituting %s on %s", constraint_print(el), constraint_print(c) ) ));      
+
+      if ( (el->ar == LT ) ||  (el->ar == LTE )  )
+	 //	 if (!constraint_conflict (c, el) )
+	   {
+	     //constraint temp;
+	     constraintExpr  temp2;
+	     
+	     /*@i22*/
+
+	     //temp = constraint_copy(el);
+	     
+	     //	     temp = constraint_adjust(temp, c);
+
+	     if (constraintExpr_same (el->lexpr, c->expr) )
+	       {
+		 DPRINTF((message ("inequalitySubstitute Replacing %s in %s with  %s",
+				   constraintExpr_print (c->expr),
+				   constraint_print (c),
+				   constraintExpr_print (el->expr) )
+			  ));
+		 temp2   = constraintExpr_copy (el->expr);
+		 constraintExpr_free(c->expr);
+		 if ( (el->ar == LTE ) )
+		   {
+		     c->expr = temp2;
+		   }
+		 else
+		   {
+		     c->expr =  constraintExpr_makeIncConstraintExpr (temp2);
+		   }
+	       }
+	     
+	   }
+    }
+  end_constraintList_elements;
+
+  c = constraint_simplify(c);
+  return c;
+}
+
 
 /* This function performs substitutions based on the rule:
    for a constraint of the form expr1 >= expr2;   a < b =>
