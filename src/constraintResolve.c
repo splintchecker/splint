@@ -760,7 +760,8 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
   /*@i223@*/ /*this may be the wronge thing to test for */
   if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
     {
-      if (ctype_isFixedArray (sRef_getType (s2) ) )
+      /*@i22*/ /* get rid of this test of now */
+      /* if (ctype_isFixedArray (sRef_getType (s2) ) ) */
 	return TRUE;
     }
   return FALSE;

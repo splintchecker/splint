@@ -416,7 +416,7 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-CFLAGS = -g -O2
+CFLAGS = -g
 DIST_SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
 SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
@@ -884,7 +884,7 @@ lintnew:
 lintbuffercheck: 
 	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(ALLSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds
+                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread
 
 .PHONY: purify
 purify: $(lclint_OBJECTS)

@@ -41,3 +41,8 @@
 /*@=dependenttrans@*/
 /*@=unqualifiedtrans@*/
 /*@=declundef@*/
+
+
+/*drl added 11/27/2001*/
+/*@=arraybounds@*/
+/*@=arrayboundsread@*/
