@@ -5872,7 +5872,14 @@ void sRef_free (/*@only@*/ sRef s)
       /*@i43@*/ /* valueTable_free (s->state); */
       sinfo_free (s);
       
-      /*@i32@*/ sfree (s); 
+      
+      /* drl added to help locate use after release*/
+      s->expinfo = stateInfo_undefined;
+      s->aliasinfo = stateInfo_undefined;
+      s->definfo = stateInfo_undefined;
+      s->nullinfo = stateInfo_undefined;
+
+      /*@i32@*/ sfree (s);
     }
 }
 

@@ -6406,8 +6406,8 @@ uvinfo_free (/*@only@*/ uvinfo u)
 {
   /*drl7x added 6/29/01 */
   /*free null terminated stuff */
-
-  free(u->bufinfo);
+  /*@i22*/
+  //  free(u->bufinfo);
   sfree (u);
 }
 
