@@ -68,8 +68,7 @@ advanceField (char **s)
   reader_checkChar (s, '@');
 }
 
-
-
+# if 0
 static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)    
 {
   char *t;
@@ -101,18 +100,27 @@ static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode 
   DPRINTF( (message ("%s", constraint_print(ret) ) ) );
   return ret;
 }
+# endif
 
 bool constraint_same (constraint c1, constraint c2)
 {
-  
-  if (c1->ar != c2->ar)
-    return FALSE;
+  llassert (c1 != NULL);
+  llassert (c2 != NULL);
 
+  if (c1->ar != c2->ar)
+    {
+      return FALSE;
+    }
+  
   if (!constraintExpr_similar (c1->lexpr, c2->lexpr) )
-    return FALSE;
+    {
+      return FALSE;
+    }
 
   if (!constraintExpr_similar (c1->expr, c2->expr) )
-    return FALSE;
+    {
+      return FALSE;
+    }
 
   return TRUE;
 }
@@ -753,7 +761,7 @@ void constraint_printError (constraint c, fileloc loc)
   else
     {
       llassert(FALSE);
-      TPRINTF(( message("constraint %s had undefined fileloc %s", constraint_print(c), fileloc_unparse(temp) ) ));
+      DPRINTF (("constraint %s had undefined fileloc %s", constraint_print(c), fileloc_unparse(temp)));
       fileloc_free(temp);
       errorLoc = fileloc_copy(errorLoc);
     }

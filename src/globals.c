@@ -40,7 +40,7 @@ int g_codeLine = 0;
 
 cstring g_prevCodeFile = cstring_undefined;
 int g_prevCodeLine = 0;
-/*@open@*/ FILE *g_msgstream;
+/*:open:*/ FILE *g_msgstream;
 
 /*
 ** These were in llmain.c.  Most should not be globals...

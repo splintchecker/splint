@@ -210,7 +210,7 @@ bool firstWord (char *s, char *w)
 
 void mstring_markFree (char *s)
 {
-    sfreeEventually (s);
+  sfreeEventually (s);
 }
 
 char *mstring_spaces (int n)

@@ -650,6 +650,7 @@ constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr)
   return ret; 
 }
 
+# if 0
 /*@only@*/
 /*@unused@*/ static constraintExpr  constraintExpr_makeMinSetExpr (/*@exposed@*/ exprNode expr)
 {
@@ -667,7 +668,7 @@ constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr)
   ret->data      = constraintExprData_unaryExprSetOp (ret->data, MINREAD);
   return ret;
 }
-
+# endif
 
 /*@only@*/
 constraintExpr constraintExpr_makeValueExpr (/*@exposed@*/ exprNode expr)
@@ -742,6 +743,7 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   return ret;
 }
 
+# if 0
 /*@only@*/
 /*@unused@*/ static constraintExpr constraintExpr_makeBinaryOpExprNode (/*@exposed@*/ exprNode expr1, /*@exposed@*/ exprNode expr2)
 {
@@ -752,6 +754,7 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   ret = constraintExpr_makeBinaryOpConstraintExpr(sub1, sub2);
   return ret;
 }
+# endif
 
 static /*@only@*/
 constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/ constraintExpr expr, int literal)

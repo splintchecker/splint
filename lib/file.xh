@@ -3,7 +3,9 @@ extern int fclose (/*@open@*/ FILE *stream)
 			   stream was successfully closed or EOF if any errors were detected. */
    /*@ensures closed stream@*/ ;
 
-extern /*@open@*/ FILE *fopen (const char *filename, const char *mode) 
+/*@open@*/ FILE *fopen (const char *filename, const char *mode);
+/*@open@*/ FILE *fdopen (int fildes, const char *mode);
+
    /*
    ** File modes:
    **       "rb"	read
@@ -13,10 +15,8 @@ extern /*@open@*/ FILE *fopen (const char *filename, const char *mode)
    **       "wb+"	create, truncate, read, write
    **       "ab+"	create, read, write, append
    */
-   ;
 
-extern /*@open@*/ FILE *freopen (char *filename, char *mode, /*@closed@*/ FILE
-*stream) /*@ensures open stream@*/ ;
+extern /*@open@*/ FILE *freopen (char *filename, char *mode, /*@anyopen@*/ FILE *stream) /*@ensures open stream@*/ ;
 
 extern /*@null@*/ char *
   fgets (/*@returned@*/ /*@out@*/ char *s, int n, /*@open@*/ FILE *stream)

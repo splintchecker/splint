@@ -24,8 +24,6 @@ bool constraintTerm_isDefined (constraintTerm t)
   return t != NULL;
 }
 
-/*@unused@*/ static bool constraintTerm_same (constraintTerm p_term1, constraintTerm p_term2) ;
-
 void constraintTerm_free (/*@only@*/ constraintTerm term)
 {
   llassert (constraintTerm_isDefined (term));
@@ -406,35 +404,6 @@ long constraintTerm_getValue (constraintTerm term)
     }
 
   BADEXIT;
-}
-
-/* same and similar are similar but not the same*/
-static bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
-{
-  llassert (term1 !=NULL && term2 !=NULL);
-
-  if ( (term1->kind != term2->kind) || (term1->kind != EXPRNODE) )
-    {
-      return FALSE;
-    }
-      
- DPRINTF ( (message
-	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
-	     )
-	    )
-	   );
- 
- if (sRef_same (term1->value.expr->sref, term2->value.expr->sref) )
-   {
-     DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
-     return TRUE;
-   }
- else
-   {
-     DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
-     return FALSE;
-   }     
-    
 }
 
 static /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)

@@ -241,10 +241,6 @@ typedef u_long fixpt_t;
 typedef long segsz_t;
 typedef /*@abstract@*/ fd_set;
 
-/* Check ISO C99 inttypes.h ... */
-typedef unsigned int uint32_t;
-typedef unsigned short int uint16_t;
-
 int ttyname_r (int fg, /*@out@*/ char *buffer, int len) /*@modifies buffer@*/ ;
 int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg) 
    /*@modifies *arg, errno@*/ ;  /* depends on request! */
@@ -252,9 +248,9 @@ int ioctl (int d, int /*@alt long@*/ request, /*@out@*/ void *arg)
 pid_t vfork (void) /*@modifies fileSystem@*/ ;
 
 
- struct iovec {
-	void    *iov_base;
-	size_t   iov_len;
+struct iovec {
+  void    *iov_base;
+  size_t   iov_len;
 };
 
 /*@constant int UIO_MAXIOV@*/   /* BSD */

@@ -207,8 +207,7 @@ extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList
   return (constraintList_print(s));
 }
 
-
-
+# if 0
 static /*@only@*/ cstring
 constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
 {
@@ -252,7 +251,7 @@ constraintList_printLocation (/*@temp@*/ constraintList s) /*@*/
 
   return st;
 }
-     
+# endif
 
 /*@only@*/ cstring
 constraintList_print (/*@temp@*/ constraintList s) /*@*/
@@ -617,15 +616,11 @@ void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
 
 constraintList constraintList_sort (/*@returned@*/ constraintList ret)
 {
-  
-  DPRINTF(( message("Before constraint_sort %q",  constraintList_printLocation(ret) ) ));
-  
   qsort (ret->elements, (size_t) ret->nelements,
-	 (sizeof (*ret->elements) ), constraint_compare);
-
-    DPRINTF((message("After constraint_sort %q",  constraintList_printLocation(ret) ) ));
-
-    DPRINTF((message("onstraint_sort returning") ));
+	 (sizeof (*ret->elements)), 
+	 (int (*)(const void *, const void *)) constraint_compare);
+  
+  DPRINTF((message("onstraint_sort returning") ));
   return ret;
 }
 

@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.6 2001/08/15 03:18:03 drl7x Exp $
+ * $Id: posix.h,v 1.7 2001/08/19 18:04:29 evans Exp $
  */
 
 /*
@@ -369,13 +369,10 @@ sigsuspend (const sigset_t *sigmask)
 /*@constant int L_cuserid@*/
 /*@constant int STREAM_MAX@*/
 
-	extern /*@null@*/ /*@dependent@*/ FILE *
-fdopen (int fd, const char *type)
-	/*@modifies errno, fileSystem@*/;
+extern /*@null@*/ /*@dependent@*/ FILE *fdopen (int fd, const char *type)
+   /*@modifies errno, fileSystem@*/;
 
-	extern int
-fileno (FILE *fp)
-	/*@modifies errno@*/;
+extern int fileno (FILE *fp) /*@modifies errno@*/;
 
 /*
 ** sys/stat.h
@@ -820,58 +817,44 @@ pause (void)
 pipe (/*@out@*/ int fd[]) /* Out parameter noticed by Marc Espie. */
 	/*@modifies errno@*/;
 
-	extern ssize_t
-read (int fd, /*@out@*/ void *buf, size_t nbyte)
-     /*@modifies errno, *buf@*/ /*@requires maxSet(buf) >= (nbyte - 1) @*/
-     /*@ensures maxRead(buf) >= nbyte @*/;
-     /*@i33*/
-     
-	extern int
-rmdir (const char *path)
-	/*@modifies fileSystem, errno@*/;
+extern ssize_t read (int fd, /*@out@*/ void *buf, size_t nbyte)
+   /*@modifies errno, *buf@*/ /*@requires maxSet(buf) >= (nbyte - 1) @*/
+   /*@ensures maxRead(buf) >= nbyte @*/ ;
 
-	extern int
-setgid (gid_t gid)
-	/*@modifies errno, systemState@*/;
+extern int rmdir (const char *path)
+   /*@modifies fileSystem, errno@*/;
 
-	extern int
-setpgid (pid_t pid, pid_t pgid)
-	/*@modifies errno, systemState@*/;
+extern int setgid (gid_t gid)
+   /*@modifies errno, systemState@*/;
 
-	extern pid_t
-setsid (void)
-	/*@*/;
+extern int setpgid (pid_t pid, pid_t pgid)
+   /*@modifies errno, systemState@*/;
 
-	extern int
-setuid (uid_t uid)
-	/*@modifies errno, systemState@*/;
+extern pid_t setsid (void) /*@modifies systemState@*/;
+
+extern int setuid (uid_t uid)
+   /*@modifies errno, systemState@*/;
 
 unsigned int sleep (unsigned int sec) /*@modifies systemState@*/ ;
 
-	extern long
-sysconf (int name)
-	/*@modifies errno@*/;
+extern long sysconf (int name)
+   /*@modifies errno@*/;
 
-	extern pid_t
-tcgetpgrp (int fd)
-	/*@modifies errno@*/;
+extern pid_t tcgetpgrp (int fd)
+   /*@modifies errno@*/;
 
-	extern int
-tcsetpgrp (int fd, pid_t pgrpid)
-	/*@modifies errno, systemState@*/;
+extern int tcsetpgrp (int fd, pid_t pgrpid)
+   /*@modifies errno, systemState@*/;
 
-	/* Q: observer ok? */
-	extern /*@null@*/ /*@observer@*/ char *
-ttyname (int fd)
-	/*@modifies errno@*/;
+/* Q: observer ok? */
+extern /*@null@*/ /*@observer@*/ char *ttyname (int fd)
+   /*@modifies errno@*/;
 
-	extern int
-unlink (const char *path)
-	/*@modifies fileSystem, errno@*/;
+extern int unlink (const char *path)
+   /*@modifies fileSystem, errno@*/;
 
-	extern ssize_t
-write (int fd, const void *buf, size_t nbyte)
-	/*@modifies errno@*/;
+extern ssize_t write (int fd, const void *buf, size_t nbyte)
+   /*@modifies errno@*/;
 
 /*
 ** utime.h

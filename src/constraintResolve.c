@@ -716,8 +716,8 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
 bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
 {
   constraintExpr l, r;
-  bool /*@unused@*/ lHasConstant, rHasConstant;
-  int /*@unused@*/ lConstant, rConstant;
+  bool rHasConstant;
+  int rConstant;
   
   l = c->lexpr;
   r = c->expr;

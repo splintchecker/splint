@@ -878,7 +878,9 @@ extern void /*@alt char * @*/
 
 extern void /*@alt char * @*/
   strncat (/*@unique@*/ /*@returned@*/ char *s1, char *s2, size_t n)
-     /*@modifies *s1@*/ /*@requires MaxSet(s1) >= ( MaxRead(s1) + n); @*/ /*@ensures MaxRead(result) >= (MaxRead(s1) + n); @*/;
+     /*@modifies *s1@*/ 
+     /*@requires MaxSet(s1) >= ( MaxRead(s1) + n); @*/
+      /*@ensures MaxRead(s1) >= (MaxRead(s1) + n); @*/;
 
      /*drl end*/
      

@@ -1266,7 +1266,7 @@ void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClaus
 	  ** Need to lookup again to make sure we have the right one...
 	  */
 
-	  ue = usymtab_lookupGlob (uname);
+	  ue = usymtab_lookupExposeGlob (uname);
 
 	  llassert (uentry_isValid (ue));
 	  llassert (uentry_isDatatype (ue));
@@ -1275,6 +1275,7 @@ void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClaus
 		    uentry_unparse (ue), warnClause_unparse (warn)));
 
 	  uentry_addWarning (ue, warnClause_copy (warn));
+	  cstring_free (uname);
 	} end_exprNodeList_elements;
     }
 

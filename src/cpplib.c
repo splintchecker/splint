@@ -433,7 +433,7 @@ static bool is_system_include (cppReader *p_pfile, cstring p_filename);
 static /*@observer@*/ /*@null@*/ struct file_name_map *
 read_name_map (cppReader *p_pfile, cstring p_dirname);
 
-static cstring read_filename_string (int p_ch, /*@open@*/ FILE *p_f);
+static cstring read_filename_string (int p_ch, /*:open:*/ FILE *p_f);
 
 static int open_include_file (cppReader *p_pfile,
 			      /*@owned@*/ cstring p_fname,
@@ -5879,7 +5879,7 @@ struct file_name_map
 /* Read a space delimited string of unlimited length from a stdio
    file.  */
 
-static cstring read_filename_string (int ch, /*@open@*/ FILE *f)
+static cstring read_filename_string (int ch, /*:open:*/ FILE *f)
 {
   char *alloc, *set;
   size_t len;

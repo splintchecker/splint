@@ -332,7 +332,7 @@ extern bool inputStream_getPath (cstring path, inputStream s)
   return rVal;
 }
 
-/*@open@*/ FILE *inputStream_getFile (inputStream s)
+/*:open:*/ FILE *inputStream_getFile (inputStream s)
 {
   llassert (inputStream_isDefined (s));
   return s->file;
