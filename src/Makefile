@@ -47,6 +47,7 @@ include Makefile.sys
 CHECK = 0 ### set to 1
 
 LCLINT = //tmp/lclint-2.5q/bin/lclint
+#LCLINT = ../bin/lclint
 
 ###
 ### source files
@@ -312,10 +313,15 @@ $(CHECKS): lclint.lcd
 ### other flags are in .lclintrc file
 ### 
 
+#lint: 
+#	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -allimponly -modglobsnomods -uniondef -exportlocal -exportheader -abstract -namechecks -protoparammatch -boolops $(ALLSRC) -dump  lclint
+
 lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -uniondef -exportlocal -exportheader -abstract -namechecks -protoparammatch -boolops $(ALLSRC) -dump  lclint
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -uniondef +allimponly -branchstate -exportlocal -exportheader -abstract -namechecks -protoparammatch -temptrans -boolops $(ALLSRC) -dump  lclint
 
 
-
+myall:
+	-$(RM) -f ../bin/lclint; \
+	gmake -C ..
 
 
