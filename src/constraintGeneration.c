@@ -560,6 +560,231 @@ static void doFor (/*@dependent@*/ exprNode e, /*@dependent@*/ exprNode forPred,
       
 }
 
+static void exprNode_doGenerateConstraintSwitch ( exprNode switchExpr,
+						  exprNode body, constraintList * currentRequires, constraintList *
+						  currentEnsures,  constraintList * savedRequires, constraintList *
+						  savedEnsures)
+{
+  exprNode stmt, stmtList;
+
+  DPRINTF(( message("exprNode_doGenerateConstraintSwitch: (switch %s) %s",
+		    exprNode_unparse(switchExpr), exprNode_unparse(body)
+		    ) ));
+
+  if (exprNode_isError(body) )
+    {
+      return;
+    }
+
+  if (body->kind != XPR_STMTLIST )
+    {
+      DPRINTF((message("exprNode_doGenerateConstraintSwitch: non
+stmtlist: %s",
+		       exprNode_unparse(body) )
+	       ));
+      //      llassert(body->kind == XPR_STMT );
+      stmt = body;
+      stmtList = exprNode_undefined;
+    }
+    else
+      {
+	stmt     = exprData_getPairB(body->edata);
+	stmtList = exprData_getPairA(body->edata);
+      }
+
+  DPRINTF((message("exprNode_doGenerateConstraintSwitch: stmtlist: %s
+stmt: %s",
+		   exprNode_unparse(stmtList), exprNode_unparse(stmt) )
+	   ));
+
+
+  exprNode_doGenerateConstraintSwitch (switchExpr, stmtList, currentRequires, currentEnsures,
+				       savedRequires, savedEnsures );
+
+  if (exprNode_isError(stmt) )
+    return;
+
+  exprNode_stmt(stmt);
+  //, FALSE, FALSE, exprNode_getfileloc(stmt) );
+
+  if (! exprNode_isCaseMarker(stmt) )
+    {
+
+      constraintList temp;
+
+      DPRINTF (( message("Got normal statement %s (requires %s ensures %s)", exprNode_unparse(stmt),
+			 constraintList_unparse(stmt->requiresConstraints), constraintList_unparse(stmt->ensuresConstraints) ) ));
+
+      temp = constraintList_reflectChanges (stmt->requiresConstraints,
+					    *currentEnsures);
+
+            *currentRequires = constraintList_mergeRequiresFreeFirst
+	      (*currentRequires,
+	       temp);
+
+	    constraintList_free(temp);
+
+	          *currentEnsures = constraintList_mergeEnsuresFreeFirst
+		    (*currentEnsures,
+		     stmt->ensuresConstraints);
+		  DPRINTF(( message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
+				    "%s currentEnsures:%s",
+				    exprNode_unparse(switchExpr), exprNode_unparse(body),
+				    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
+				    ) ));
+		  return;
+    }
+
+  if (exprNode_isCaseMarker(stmt) && exprNode_mustEscape(stmtList) )
+    {
+      // merge current and saved constraint with Logical Or...
+      // make a constraint for ensures
+
+      constraintList temp;
+      constraint con;
+
+      DPRINTF (( message("Got case marker") ));
+
+      if (constraintList_isUndefined(*savedEnsures) &&
+	  constraintList_isUndefined(*savedRequires) )
+	{
+	  *savedEnsures  = constraintList_copy(*currentEnsures);
+	  *savedRequires = constraintList_copy(*currentRequires);
+	}
+             else
+	       {
+		 DPRINTF (( message("Doing logical or") ));
+		 temp = constraintList_logicalOr (*savedEnsures, *currentEnsures);
+		 constraintList_free (*savedEnsures);
+		 *savedEnsures = temp;
+
+		 *savedRequires = constraintList_mergeRequiresFreeFirst (*savedRequires, *currentRequires);
+	       }
+
+      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle
+					(stmt->edata), exprNode_getfileloc(stmt) );
+
+
+      constraintList_free(*currentEnsures);
+      *currentEnsures = constraintList_makeNew();
+      *currentEnsures = constraintList_add(*currentEnsures, con);
+
+      constraintList_free(*currentRequires);
+      *currentRequires = constraintList_makeNew();
+      DPRINTF(( message("exprNode_doGenerateConstraintSwitch: (switch %s) %s savedRequires:"
+			"%s savedEnsures:%s",
+			exprNode_unparse(switchExpr), exprNode_unparse(body),
+			constraintList_print(*savedRequires), constraintList_print(*savedEnsures)
+			) ));
+
+    }
+
+  else if (exprNode_isCaseMarker(stmt) )
+    //prior case has no break.
+    {
+      // We don't do anything to the sved constraints because the case hasn't ended
+      //The new ensures constraints for the case will be:
+      // the constraint for the case statement (CASE_LABEL == SWITCH_EXPR) logicalOr currentEnsures
+
+      constraintList temp;
+      constraint con;
+
+      constraintList ensuresTemp;
+
+      DPRINTF (( message("Got case marker with no prior break") ));
+
+      con = constraint_makeEnsureEqual (switchExpr, exprData_getSingle
+					(stmt->edata), exprNode_getfileloc(stmt) );
+
+      ensuresTemp = constraintList_makeNew();
+
+      ensuresTemp = constraintList_add (ensuresTemp, con);
+
+      if (exprNode_isError(stmtList) )
+	{
+	  constraintList_free(*currentEnsures);
+	  *currentEnsures = constraintList_copy(ensuresTemp);
+	}
+            else
+	      {
+
+		temp = constraintList_logicalOr (*currentEnsures, ensuresTemp);
+
+		constraintList_free(*currentEnsures);
+		constraintList_free(ensuresTemp);
+
+		*currentEnsures = temp;
+	      }
+      constraintList_free(*currentRequires);
+
+      *currentRequires = constraintList_makeNew();
+    }
+
+  DPRINTF(( message("returning from exprNode_doGenerateConstraintSwitch: (switch %s) %s currentRequires:"
+		    "%s currentEnsures:%s",
+		    exprNode_unparse(switchExpr), exprNode_unparse(body),
+		    constraintList_print(*currentRequires), constraintList_print(*currentEnsures)
+		    ) ));
+  return;
+
+}
+
+
+static void exprNode_generateConstraintSwitch ( exprNode switchStmt)
+{
+  constraintList constraintsRequires;
+  constraintList constraintsEnsures;
+  constraintList lastRequires;
+  constraintList lastEnsures;
+
+  exprNode body;
+  exprNode switchExpr;
+
+  switchExpr = exprData_getPairA(switchStmt->edata);
+  body = exprData_getPairB(switchStmt->edata);
+
+  //*@i22*/
+  if ( body->kind == XPR_BLOCK)
+    body = exprData_getSingle(body->edata);
+
+  constraintsRequires = constraintList_undefined;
+  constraintsEnsures = constraintList_undefined;
+
+  lastRequires = constraintList_makeNew();
+  lastEnsures = constraintList_makeNew();
+
+
+  exprNode_doGenerateConstraintSwitch (switchExpr, body, &lastRequires, &lastEnsures, &constraintsRequires, &constraintsEnsures);
+
+  // merge current and saved constraint with Logical Or...
+  // make a constraint for ensures
+
+  constraintList_free(switchStmt->requiresConstraints);
+  constraintList_free(switchStmt->ensuresConstraints);
+
+  if (constraintList_isDefined(constraintsEnsures) && constraintList_isDefined(constraintsRequires) )
+    {
+      switchStmt->ensuresConstraints = constraintList_logicalOr(constraintsEnsures, lastEnsures);
+      switchStmt->requiresConstraints =   constraintList_mergeRequires(constraintsRequires, lastRequires);
+      constraintList_free (constraintsRequires);
+      constraintList_free (constraintsEnsures);
+    }
+    else
+      {
+	switchStmt->ensuresConstraints =    constraintList_copy(lastEnsures);
+	switchStmt->requiresConstraints =   constraintList_copy(lastRequires);
+      }
+
+  constraintList_free (lastRequires);
+  constraintList_free (lastEnsures);
+
+  DPRINTF(( (message(" exprNode_generateConstraintSwitch returning requires: %s and ensures %s",
+		     constraintList_print( switchStmt->requiresConstraints),
+		     constraintList_print( switchStmt->ensuresConstraints)
+		     )
+	     ) ));
+}
+
 static exprNode doSwitch (/*@returned@*/ exprNode e)
 {
   exprNode body;
@@ -567,25 +792,23 @@ static exprNode doSwitch (/*@returned@*/ exprNode e)
 
   data = e->edata;
   //  llassert(FALSE);
-  DPRINTF (( message ("doSwitch for: switch (%s) %s", 
+  DPRINTF (( message ("doSwitch for: switch (%s) %s",
 		      exprNode_unparse (exprData_getPairA (data)),
 		      exprNode_unparse (exprData_getPairB (data))) ));
-  
-  body = exprData_getPairB (data);
-  
-  exprNode_generateConstraints(body);
-  
-  constraintList_free(e->requiresConstraints);
-  constraintList_free(e->ensuresConstraints);
-  
-  e->requiresConstraints = NULL;
-  e->ensuresConstraints  = NULL;
 
-  e->requiresConstraints = constraintList_copy ( body->requiresConstraints );
-  e->ensuresConstraints = constraintList_copy ( body->ensuresConstraints );
-  
+  body = exprData_getPairB (data);
+
+  exprNode_generateConstraints(body);
+
+  exprNode_generateConstraintSwitch (e);
+
+  //  e->requiresConstraints = constraintList_copy (body->requiresConstraints );
+  // e->ensuresConstraints = constraintList_copy (body->ensuresConstraints );
+
   return e;
 }
+
+
 
 
 void exprNode_multiStatement (/*@dependent@*/ exprNode e)

@@ -81,6 +81,89 @@ bool constraintExpr_isLit (constraintExpr expr)
   return FALSE;
 }
 
+static bool isZeroBinaryOp (constraintExpr expr)
+{
+  constraintExpr e2;
+  
+  if (!constraintExpr_isBinaryExpr (expr) )
+    {
+      return FALSE;
+    }
+
+  
+  e2 = constraintExprData_binaryExprGetExpr2(expr->data);
+
+  if (constraintExpr_isBinaryExpr (e2) )
+    {
+      constraintExpr e1;
+      constraintExprBinaryOpKind  op;
+
+      op = constraintExprData_binaryExprGetOp (e2->data);
+
+      e1 = constraintExprData_binaryExprGetExpr1(e2->data);
+
+	if (constraintExpr_isLit(e1) )
+	  {
+	    if (constraintExpr_getValue(e1) == 0 )
+	      {
+		return TRUE;
+	      }
+	  }
+    }
+  return FALSE;
+}
+
+/* change expr + (o - expr) to (expr -expr) */
+
+/*@only@*/ static constraintExpr removeZero (/*@only@*/ /*@returned@*/ constraintExpr expr)
+{
+  constraintExpr expr1, expr2;
+  
+  constraintExpr temp;
+
+  constraintExprBinaryOpKind  op;
+  
+  constraintExprBinaryOpKind  tempOp;
+
+  if (!isZeroBinaryOp(expr) )
+    return expr;
+
+  
+  expr1 = constraintExprData_binaryExprGetExpr1(expr->data);
+  expr2 = constraintExprData_binaryExprGetExpr2(expr->data);
+  op = constraintExprData_binaryExprGetOp(expr->data);
+
+  llassert( constraintExpr_isBinaryExpr(expr2) );
+	    
+  temp = constraintExprData_binaryExprGetExpr2 (expr2->data);
+  temp = constraintExpr_copy (temp);
+
+  tempOp = constraintExprData_binaryExprGetOp (expr2->data);
+
+  if (op == PLUS)
+    op = tempOp;
+  else if (op == MINUS)
+    {
+      if (tempOp == PLUS)
+	op = MINUS;
+      else if (tempOp == MINUS)
+	op = PLUS;
+      else
+	BADEXIT;
+    }
+  else
+    BADEXIT;
+
+  constraintExpr_free(expr2);
+
+  
+  
+  expr->data = constraintExprData_binaryExprSetExpr2(expr->data, temp);
+  expr->data = constraintExprData_binaryExprSetOp(expr->data, op);
+
+  return expr;
+}
+
 
 /*@only@*/ constraintExpr constraintExpr_propagateConstants (/*@only@*/ constraintExpr expr,
 						/*@out@*/ bool * propagate,
@@ -110,6 +193,8 @@ bool constraintExpr_isLit (constraintExpr expr)
   op = constraintExprData_binaryExprGetOp (expr->data);
 
   DPRINTF( (message("constraintExpr_propagateConstants: binaryexpr: %s", constraintExpr_unparse(expr) ) ) );
+
+  expr = removeZero(expr);
   
   expr1 = constraintExprData_binaryExprGetExpr1(expr->data);
   expr2 = constraintExprData_binaryExprGetExpr2(expr->data);
@@ -121,13 +206,20 @@ bool constraintExpr_isLit (constraintExpr expr)
   expr2 = constraintExpr_propagateConstants (expr2, &propagate2, &literal2);
 
   *propagate = propagate1 || propagate2;
-  *literal    = literal1 +  literal2;
-  
+
+  if (op == PLUS)
+    *literal    = literal1 +  literal2;
+  else   if (op == MINUS)
+    *literal    = literal1 -  literal2;
+  else
+    BADEXIT;
+    
   if ( constraintExpr_isLit (expr1) && constraintExpr_isLit (expr2) )
     {
       int t1, t2;
       t1 = constraintExpr_getValue (expr1);
       t2 = constraintExpr_getValue (expr2);
+      llassert(*propagate == FALSE);
       *propagate = FALSE;
 
       constraintExpr_free (expr);
@@ -143,20 +235,33 @@ bool constraintExpr_isLit (constraintExpr expr)
     }
 
   
-
-  
   if (constraintExpr_isLit (expr1) )
     {
       *propagate = TRUE;
 
-      if (op == PLUS )
-	*literal += constraintExpr_getValue (expr1);
-      else
-	*literal -= constraintExpr_getValue (expr1);
+      *literal += constraintExpr_getValue (expr1);
 
-      constraintExpr_free(expr1);
-      constraintExpr_free(expr);
-      return expr2;
+      if (op == PLUS)
+	{
+	  constraintExpr_free(expr1);
+	  constraintExpr_free(expr);
+	  return expr2;
+	}
+      else if (op == MINUS)
+	{
+	  constraintExpr temp;
+
+	  /* this is an ugly kludge to deal with not
+	     having a unary minus operation...*/
+	  
+	  temp = constraintExpr_makeIntLiteral (0);
+	  temp = constraintExpr_makeSubtractExpr (temp, expr2);
+	  
+	  constraintExpr_free(expr1);
+	  constraintExpr_free(expr);
+	  
+	  return temp;
+	}
     }
   
   if (constraintExpr_isLit (expr2) )
@@ -165,8 +270,11 @@ bool constraintExpr_isLit (constraintExpr expr)
           
       if ( op == PLUS )
 	*literal += constraintExpr_getValue (expr2);
-      else
+      else if (op ==  MINUS)
 	*literal -= constraintExpr_getValue (expr2);
+      else
+	BADEXIT;
+
 
       constraintExpr_free(expr2);
       constraintExpr_free(expr);
@@ -178,6 +286,7 @@ bool constraintExpr_isLit (constraintExpr expr)
   expr->data = constraintExprData_binaryExprSetExpr1 (expr->data, expr1);
   expr->data = constraintExprData_binaryExprSetExpr2 (expr->data, expr2);
 
+  expr = removeZero(expr);
   return expr;
 }
 
@@ -353,7 +462,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 }
 
 
-/*@only@*/ static constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
+/*@only@*/  constraintExpr constraintExpr_makeTermExprNode (/*@exposed@*/ exprNode e)
 {
   return  oldconstraintExpr_makeTermExprNode(e); //constraintExpr_makeExprNode (e);
 }
@@ -973,7 +1082,8 @@ constraintExpr constraintExpr_setFileloc (/*@returned@*/ constraintExpr c, filel
 static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/constraintExpr c)
 {
   constraintExpr e1, e2;
-
+  constraintExprBinaryOpKind  op;
+  
   e1 = constraintExprData_binaryExprGetExpr1 (c->data);
   e2 = constraintExprData_binaryExprGetExpr2 (c->data);
 
@@ -984,8 +1094,18 @@ static /*@only@*/ constraintExpr constraintExpr_simplifybinaryExpr (/*@only@*/co
       i = constraintExpr_getValue(e1) + constraintExpr_getValue (e2);
       constraintExpr_free(c);
       c = constraintExpr_makeIntLiteral (i);
-
     }
+  else
+    {
+      op = constraintExprData_binaryExprGetOp (c->data);      
+      if (op == MINUS)
+	if (constraintExpr_similar(e1, e2) )
+	  {
+	    constraintExpr_free(c);
+	    c =  constraintExpr_makeIntLiteral (0);
+	  }
+    }
+  
   return c;
 }
 
