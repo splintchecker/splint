@@ -4704,7 +4704,7 @@ case 397:
 { sRef_clearGlobalScopeSafe (); ;
     break;}
 case 398:
-{ ctype ct; ct = declareStruct (yyvsp[-9].cname, yyvsp[-4].flist); setGlobalStructInfo(ct, yyvsp[0].conL); yyval.ctyp = ct; ;
+{ ctype ct; ct = declareStruct (yyvsp[-9].cname, yyvsp[-4].flist); context_setGlobalStructInfo(ct, yyvsp[0].conL); yyval.ctyp = ct; ;
     break;}
 case 399:
 { sRef_setGlobalScopeSafe (); ;
