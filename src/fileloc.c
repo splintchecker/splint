@@ -760,37 +760,51 @@ fileloc_unparse (fileloc f)
 /*@only@*/ cstring
 fileloc_unparseRaw (cstring fname, int lineno)
 {
-  bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
-
-  if (parenFormat)
+  if (!cstring_isEmpty (fname))
     {
-      return (message ("%q(%d)", osd_outputPath (fname), lineno));
+      bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
+      
+      if (parenFormat)
+	{
+	  return (message ("%q(%d)", osd_outputPath (fname), lineno));
+	}
+      else
+	{
+	  return (message ("%q:%d", osd_outputPath (fname), lineno));
+	}
     }
   else
     {
-      return (message ("%q:%d", osd_outputPath (fname), lineno));
+      return cstring_makeLiteral ("Command Line");
     }
 }
 
 /*@only@*/ cstring
 fileloc_unparseRawCol (cstring fname, int lineno, int col)
 {
-  if (context_getFlag (FLG_SHOWCOL)) 
+  if (!cstring_isEmpty (fname))
     {
-      bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
-      
-      if (parenFormat)
+      if (context_getFlag (FLG_SHOWCOL)) 
 	{
-	  return (message ("%q(%d,%d)", osd_outputPath (fname), lineno, col));
+	  bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
+	  
+	  if (parenFormat)
+	    {
+	      return (message ("%q(%d,%d)", osd_outputPath (fname), lineno, col));
+	    }
+	  else
+	    {
+	      return (message ("%q:%d:%d", osd_outputPath (fname), lineno, col));
+	    }
 	}
       else
 	{
-	  return (message ("%q:%d:%d", osd_outputPath (fname), lineno, col));
+	  return fileloc_unparseRaw (fname, lineno);
 	}
     }
   else
     {
-      return fileloc_unparseRaw (fname, lineno);
+      return cstring_makeLiteral ("Command Line");
     }
 }
 

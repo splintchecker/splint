@@ -45,8 +45,8 @@ Finished checking --- 8 code warnings, as expected
 specclauses3.c:7:6: Special clause accesses field of non-struct or union result
                        (int): *(result).name
 specclauses3.c: (in function badResult)
-specclauses3.c:12:10: Undefined storage <const ?>->name corresponds to storage
-                         result->name listed in defines clause: NULL
+specclauses3.c:12:10: Undefined storage <const <any>>->name corresponds to
+                         storage result->name listed in defines clause: NULL
 specclauses3.c:12:10: Null storage returned as non-null: NULL
 specclauses3.c: (in function createName2)
 specclauses3.c:29:10: Undefined storage res->name corresponds to storage
