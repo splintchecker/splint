@@ -39,9 +39,9 @@ posixstrict.lcd: ansi.h posix.h $(LCLINT)
 	@touch $@
 
 unix.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h unix.h -dump unix
+	-$(LCLINT) -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
 	@touch $@
 
 unixstrict.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h -dump unixstrict
+	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
 	@touch $@

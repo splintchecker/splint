@@ -75,12 +75,12 @@ extern ldiv_t ldiv (long num, long denom) /*@*/ ;
 long int lrand48 (void) /*@modifies internalState@*/ ; 
 
 
-extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@modifes errno@*/
+extern /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@modifies errno@*/
      /*drl 09-20-001 added errno*/
      /*@ensures MaxSet(result) == (size - 1); @*/ ;
 
      extern int mblen (char *s, size_t n)
-     /*@modifes errno@*/
+     /*@modifies errno@*/
      /*@requires maxRead(s) >= (n - 1) @*/
      /*drl 09-20-001 added errno*/ ;
 
@@ -179,11 +179,11 @@ extern long strtol (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
   
 
      extern int unlockpt(int fildes)
-     /*@modifes fileSystem, internalState @*/
+     /*@modifies fileSystem, internalState @*/
   /*drl added 09-20-001 */ 
      ;
      
-extern void *valloc(size_t size)/*@modifes errno@*/
+extern void *valloc(size_t size)/*@modifies errno@*/
      /*drl 09-20-001 */
      /*@ensures MaxSet(result) == (size - 1); @*/ 
     /*legacy*/   ;

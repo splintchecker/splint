@@ -4,10 +4,10 @@
 /*@-constmacros@*/
 
 /* The directory where LCLint's library files live */
-#define DEFAULT_LARCHPATH ".:/usr/local/share/lclint/lib:/home/drl7x/LCLintDev/lib:"
+#define DEFAULT_LARCHPATH ".:/usr/local/share/lclint/lib:/af9/drl7x/reQuickFix/LCLintDev/lib:"
 
 /* LCLint's imports directory */
-#define DEFAULT_LCLIMPORTDIR ".:/usr/local/share/lclint/imports:/home/drl7x/LCLintDev/imports"
+#define DEFAULT_LCLIMPORTDIR ".:/usr/local/share/lclint/imports:/af9/drl7x/reQuickFix/LCLintDev/imports"
 
 /* gcc's private include directory */
 #define GCC_INCLUDE_DIR "/usr/lib/gcc-lib/i386-linux/2.7.2.1/include"
@@ -16,7 +16,7 @@
 #define GCC_INCLUDE_DIR2 "/usr/local/include"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux localhost.localdomain 2.4.7-10 #1 Thu Sep 6 17:27:27 EDT 2001 i686 unknown by drl7x"
+#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux paisley 2.4.3-12 #1 Fri Jun 8 13:35:30 EDT 2001 i686 unknown by drl7x"
 
 /* LCLint's version number */
 #define LCL_PARSE_VERSION "LCLint 3.0.0.19"
