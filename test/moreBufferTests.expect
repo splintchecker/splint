@@ -38,5 +38,8 @@ strncatNotReallyGood.c:4:21: Possible out-of-bounds store.  Unable to resolve
      needed to satisfy precondition:
     requires: : maxSet ((buffer @ strncatNotReallyGood.c:4:29 ) )  >=  (maxRead
     ((buffer @ strncatNotReallyGood.c:4:29 ) )) + (( 255 ) )
+     derived from strncat precondition: requires: :
+    maxSet ((<parameter 1> ) )  >=  (maxRead ((<parameter 1> ) )) +
+    ((<parameter 3> ) )
 
 Finished LCLint checking --- 8 code errors found
