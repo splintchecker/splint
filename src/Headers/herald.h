@@ -4,4 +4,4 @@
 /*@constant observer char *LCL_PARSE_VERSION;@*/
 # define LCL_PARSE_VERSION "LCLint 2.5q"
 /*@constant observer char *LCL_COMPILE;@*/
-# define LCL_COMPILE "Compiled using gcc -DSTDC_HEADERS=1 -Wall -g on SunOS mamba.cs.Virginia.EDU 5.6 Generic_105181-09 sun4u sparc SUNW,Ultra-60 by drl7x"
+# define LCL_COMPILE "Compiled using gcc -DSTDC_HEADERS=1 -g -Wall on SunOS mamba.cs.Virginia.EDU 5.6 Generic_105181-09 sun4u sparc SUNW,Ultra-60 by drl7x"
