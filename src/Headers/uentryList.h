@@ -34,10 +34,10 @@ extern /*@only@*/ uentryList uentryList_makeMissingParams (void);
 
 # define uentryList_makeMissingParams() uentryList_missingParams
 
-extern /*@truenull@*/ bool uentryList_isMissingParams (uentryList p_s) /*@*/ ;
-extern /*@truenull@*/ bool uentryList_isUndefined (uentryList p_s) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool uentryList_isEmpty (uentryList p_s) /*@*/ ;
-extern /*@unused@*/ /*@falsenull@*/ bool uentryList_isDefined (uentryList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool uentryList_isMissingParams (uentryList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool uentryList_isUndefined (uentryList p_s) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool uentryList_isEmpty (uentryList p_s) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool uentryList_isDefined (uentryList p_s) /*@*/ ;
 
 # define uentryList_isEmpty(s) (uentryList_size(s) == 0)
 

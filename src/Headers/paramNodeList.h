@@ -33,7 +33,7 @@ extern bool paramNodeList_empty (/*@sef@*/ paramNodeList p_s);
 
 extern /*@only@*/ paramNodeList paramNodeList_single (/*@keep@*/ paramNode p_p);
 
-extern /*@falsenull@*/ bool paramNodeList_isDefined (paramNodeList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool paramNodeList_isDefined (paramNodeList p_s) /*@*/ ;
 # define paramNodeList_isDefined(s) ((s) != (paramNodeList)0)
 extern /*@only@*/ paramNodeList paramNodeList_new (void);
 
@@ -52,7 +52,7 @@ extern /*@only@*/ cstring paramNodeList_unparseComments (paramNodeList p_s);
 /*@constant null paramNodeList paramNodeList_undefined; @*/
 # define paramNodeList_undefined ((paramNodeList) 0)
 
-extern /*@truenull@*/ bool paramNodeList_isNull (/*@null@*/ paramNodeList p_p);
+extern /*@nullwhentrue@*/ bool paramNodeList_isNull (/*@null@*/ paramNodeList p_p);
 
 # define paramNodeList_isNull(p) ((p) == paramNodeList_undefined)
 

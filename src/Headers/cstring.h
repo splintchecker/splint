@@ -129,11 +129,11 @@ extern void cstring_free (/*@only@*/ cstring p_s);
 /*@constant null cstring cstring_undefined;@*/
 # define cstring_undefined     ((cstring)NULL)
 
-extern /*@falsenull@*/ bool cstring_isDefined (cstring p_s) /*@*/ ;
-extern /*@truenull@*/ bool cstring_isUndefined (cstring p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstring_isDefined (cstring p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool cstring_isUndefined (cstring p_s) /*@*/ ;
 
-extern /*@truenull@*/ bool cstring_isEmpty (cstring p_s) /*@*/ ;
-extern /*@falsenull@*/ bool cstring_isNonEmpty (cstring p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool cstring_isEmpty (cstring p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstring_isNonEmpty (cstring p_s) /*@*/ ;
 
 # define cstring_isDefined(s)   ((s) != cstring_undefined)
 # define cstring_isUndefined(s) (!cstring_isDefined(s))

@@ -21,10 +21,10 @@
 /*@constant null annotationTable annotationTable_undefined; @*/
 # define annotationTable_undefined genericTable_undefined
 
-extern /*@falsenull@*/ bool annotationTable_isDefined(annotationTable) /*@*/ ;
+extern /*@falsewhennull@*/ bool annotationTable_isDefined(annotationTable) /*@*/ ;
 # define annotationTable_isDefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
-extern /*@truenull@*/ bool annotationTable_isUndefined(annotationTable) /*@*/ ;
+extern /*@nullwhentrue@*/ bool annotationTable_isUndefined(annotationTable) /*@*/ ;
 # define annotationTable_isUndefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
 /*@constant int DEFAULT_ANNOTTABLE_SIZE@*/

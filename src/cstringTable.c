@@ -44,7 +44,7 @@ static void
 cstringTable_addEntry (/*@notnull@*/ cstringTable p_h, /*@only@*/ hentry p_e) 
      /*@modifies p_h@*/ ;
 
-static /*@truenull@*/ bool hbucket_isNull (/*@null@*/ hbucket h) 
+static /*@nullwhentrue@*/ bool hbucket_isNull (/*@null@*/ hbucket h) 
 { 
   return (h == hbucket_undefined); 
 }

@@ -23,9 +23,9 @@ struct s_constraint {
 
 # define constraint_undefined ((constraint)NULL)
 
-extern /*@falsenull@*/ bool constraint_isDefined (constraint p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraint_isUndefined (constraint p_e) /*@*/ ;
-extern /*@truenull@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool constraint_isDefined (constraint p_e) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool constraint_isUndefined (constraint p_e) /*@*/ ;
+extern /*@nullwhentrue@*/ /*@unused@*/ bool constraint_isError (constraint p_e) /*@*/ ;
 
 # define constraint_isDefined(e)        ((e) != constraint_undefined)
 # define constraint_isUndefined(e)      ((e) == constraint_undefined)

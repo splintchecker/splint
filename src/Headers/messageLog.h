@@ -28,7 +28,7 @@ abst_typedef /*@null@*/ struct
 /*@constant null messageLog messageLog_undefined; @*/
 # define messageLog_undefined ((messageLog)0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool 
+extern /*@unused@*/ /*@falsewhennull@*/ bool 
   messageLog_isDefined (messageLog p_s) /*@*/ ;
 # define messageLog_isDefined(c) ((c) != messageLog_undefined)
 

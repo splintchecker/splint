@@ -15,7 +15,7 @@ abst_typedef /*@null@*/ struct
 /*@constant null filelocStack filelocStack_undefined; @*/
 # define filelocStack_undefined (NULL)
 
-extern /*@falsenull@*/ bool filelocStack_isDefined (filelocStack p_f) /*@*/ ;
+extern /*@falsewhennull@*/ bool filelocStack_isDefined (filelocStack p_f) /*@*/ ;
 # define filelocStack_isDefined(f)   ((f) != filelocStack_undefined)
 
 extern int filelocStack_size (/*@sef@*/ filelocStack p_s) /*@*/ ;

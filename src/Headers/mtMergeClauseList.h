@@ -19,13 +19,13 @@ struct s_mtMergeClauseList
 /*@constant null mtMergeClauseList mtMergeClauseList_undefined;@*/
 # define mtMergeClauseList_undefined ((mtMergeClauseList) NULL)
 
-extern /*@falsenull@*/ bool mtMergeClauseList_isDefined (mtMergeClauseList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtMergeClauseList_isDefined (mtMergeClauseList p_s) /*@*/ ;
 # define mtMergeClauseList_isDefined(s)   ((s) != mtMergeClauseList_undefined)
 
 extern int mtMergeClauseList_size (/*@sef@*/ mtMergeClauseList) /*@*/ ;
 # define mtMergeClauseList_size(s) (mtMergeClauseList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool mtMergeClauseList_empty (/*@sef@*/ mtMergeClauseList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool mtMergeClauseList_empty (/*@sef@*/ mtMergeClauseList) /*@*/ ;
 # define mtMergeClauseList_empty(s) (mtMergeClauseList_size(s) == 0)
 
 extern cstring mtMergeClauseList_unparseSep (mtMergeClauseList p_s, cstring p_sep) /*@*/ ;

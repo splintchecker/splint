@@ -29,7 +29,7 @@ abst_typedef /*@null@*/ struct
 
 /*@constant null sortSet sortSet_undefined; @*/
 # define sortSet_undefined ((sortSet) NULL)
-extern /*@falsenull@*/ bool sortSet_isDefined (sortSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sortSet_isDefined (sortSet p_s) /*@*/ ;
 # define sortSet_isDefined(s) ((s) != sortSet_undefined)
 
 extern int sortSet_size (/*@sef@*/ sortSet p_s);

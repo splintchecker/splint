@@ -17,10 +17,10 @@ struct s_metaStateExpression {
 /*@constant null metaStateExpression metaStateExpression_undefined; @*/
 # define metaStateExpression_undefined    ((metaStateExpression) NULL)
 
-extern /*@falsenull@*/ bool metaStateExpression_isDefined (metaStateExpression) /*@*/ ;
+extern /*@falsewhennull@*/ bool metaStateExpression_isDefined (metaStateExpression) /*@*/ ;
 # define metaStateExpression_isDefined(p_info) ((p_info) != NULL)
 
-extern /*@truenull@*/ bool metaStateExpression_isUndefined (metaStateExpression) /*@*/ ;
+extern /*@nullwhentrue@*/ bool metaStateExpression_isUndefined (metaStateExpression) /*@*/ ;
 # define metaStateExpression_isUndefined(p_info) ((p_info) == NULL)
 
 extern /*@notnull@*/ metaStateExpression

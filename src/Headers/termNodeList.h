@@ -32,7 +32,7 @@ extern int termNodeList_size (/*@sef@*/ termNodeList);
 extern bool termNodeList_empty (/*@sef@*/ termNodeList);
 # define termNodeList_empty(s) (termNodeList_size(s) == 0)
 
-extern /*@falsenull@*/ bool termNodeList_isDefined (termNodeList p_t);
+extern /*@falsewhennull@*/ bool termNodeList_isDefined (termNodeList p_t);
 # define termNodeList_isDefined(s) ((s) != (termNodeList) 0)
 
 extern /*@only@*/ termNodeList termNodeList_new(void);

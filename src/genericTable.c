@@ -35,7 +35,7 @@
 /*@constant null ghbucket ghbucket_undefined; @*/
 # define ghbucket_undefined 0
 
-static /*@truenull@*/ bool ghbucket_isNull (/*@null@*/ ghbucket h) 
+static /*@nullwhentrue@*/ bool ghbucket_isNull (/*@null@*/ ghbucket h) 
 { 
   return (h == ghbucket_undefined); 
 }

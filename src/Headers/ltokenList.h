@@ -32,10 +32,10 @@ abst_typedef /*@null@*/ struct
 /*@constant null ltokenList ltokenList_undefined;@*/
 # define ltokenList_undefined NULL
 
-extern /*@falsenull@*/ bool ltokenList_isDefined (ltokenList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool ltokenList_isDefined (ltokenList p_s) /*@*/ ;
 # define ltokenList_isDefined(s) ((s) != ltokenList_undefined)
 
-extern /*@truenull@*/ bool ltokenList_isUndefined (ltokenList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool ltokenList_isUndefined (ltokenList p_s) /*@*/ ;
 # define ltokenList_isUndefined(s) ((s) == ltokenList_undefined)
 
 extern int ltokenList_size (/*@sef@*/ ltokenList p_s) /*@*/ ;

@@ -19,9 +19,9 @@ typedef /*@null@*/ struct
   } value;
 } *multiVal;
 
-extern /*@falsenull@*/ bool multiVal_isDefined (multiVal p_m) /*@*/ ;
-extern /*@truenull@*/ bool multiVal_isUndefined (multiVal p_m) /*@*/ ;
-extern /*@truenull@*/ bool multiVal_isUnknown (multiVal p_m) /*@*/ ;
+extern /*@falsewhennull@*/ bool multiVal_isDefined (multiVal p_m) /*@*/ ;
+extern /*@nullwhentrue@*/ bool multiVal_isUndefined (multiVal p_m) /*@*/ ;
+extern /*@nullwhentrue@*/ bool multiVal_isUnknown (multiVal p_m) /*@*/ ;
 
 extern multiVal multiVal_add (multiVal p_m1, multiVal p_m2) /*@*/ ;
 extern multiVal multiVal_subtract (multiVal p_m1, multiVal p_m2) /*@*/ ;
@@ -50,10 +50,10 @@ extern void multiVal_free (/*@only@*/ multiVal p_m);
 
 extern multiVal multiVal_invert (multiVal p_m) /*@*/ ;
 
-extern /*@falsenull@*/ bool multiVal_isInt (multiVal p_m) /*@*/ ;
-extern /*@falsenull@*/ bool multiVal_isChar (multiVal p_m) /*@*/ ;
-extern /*@falsenull@*/ bool multiVal_isDouble (multiVal p_m) /*@*/ ;
-extern /*@falsenull@*/ bool multiVal_isString (multiVal p_m) /*@*/ ;
+extern /*@falsewhennull@*/ bool multiVal_isInt (multiVal p_m) /*@*/ ;
+extern /*@falsewhennull@*/ bool multiVal_isChar (multiVal p_m) /*@*/ ;
+extern /*@falsewhennull@*/ bool multiVal_isDouble (multiVal p_m) /*@*/ ;
+extern /*@falsewhennull@*/ bool multiVal_isString (multiVal p_m) /*@*/ ;
 
 extern /*@only@*/ multiVal multiVal_undump (char **p_s) /*@modifies *p_s;@*/ ;
 extern /*@only@*/ cstring multiVal_dump (multiVal p_m) /*@*/ ;

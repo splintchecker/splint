@@ -23,10 +23,10 @@
 /*@constant null metaStateTable metaStateTable_undefined; @*/
 # define metaStateTable_undefined genericTable_undefined
 
-extern /*@falsenull@*/ bool metaStateTable_isDefined(metaStateTable) /*@*/ ;
+extern /*@falsewhennull@*/ bool metaStateTable_isDefined(metaStateTable) /*@*/ ;
 # define metaStateTable_isDefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
-extern /*@truenull@*/ bool metaStateTable_isUndefined(metaStateTable) /*@*/ ;
+extern /*@nullwhentrue@*/ bool metaStateTable_isUndefined(metaStateTable) /*@*/ ;
 # define metaStateTable_isUndefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
 /*@constant int DEFAULT_MSTABLE_SIZE@*/

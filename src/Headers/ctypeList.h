@@ -35,8 +35,8 @@ extern ctypeList ctypeList_add (/*@only@*/ ctypeList p_s, ctype p_el) /*@modifie
 extern /*@unused@*/ /*@only@*/ cstring ctypeList_unparse (ctypeList) /*@*/ ;
 extern void ctypeList_free (/*@only@*/ /*@only@*/ ctypeList p_s) /*@modifies p_s@*/;
 
-extern /*@falsenull@*/ bool ctypeList_isDefined (/*@null@*/ ctypeList p_ct) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool 
+extern /*@falsewhennull@*/ bool ctypeList_isDefined (/*@null@*/ ctypeList p_ct) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool 
   ctypeList_isUndefined (/*@null@*/ ctypeList p_ct) /*@*/ ;
 
 /*@constant null ctypeList ctypeList_undefined; @*/

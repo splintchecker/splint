@@ -61,10 +61,10 @@ the derived grammar files.  This is not recommended however.
 
    LARCH_PATH - path to search for splint libraries and
    initializations files. If you are using the standard directories, this
-   should be .:<base-directory>/splint-3.0.0.9/lib.
+   should be .:<base-directory>/splint-3.0.0.20/lib.
 
    LCLIMPORTDIR - directory containing lcl imports files. If you are using
-   the standard directories, this is <base-directory>/splint-3.0.0.9/imports.
+   the standard directories, this is <base-directory>/splint-3.0.0.20/imports.
 
    Put the commands to set these variables (the actual commands will depend
    on the shell you are using) in one of your initialization dotfiles

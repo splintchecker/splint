@@ -32,7 +32,7 @@ extern int constraintList_size (/*@sef@*/ constraintList);
 extern bool constraintList_empty (/*@sef@*/ constraintList);
 # define constraintList_empty(s) (constraintList_size(s) == 0)
 
-extern /*@falsenull@*/ bool constraintList_isDefined (constraintList p_t);
+extern /*@falsewhennull@*/ bool constraintList_isDefined (constraintList p_t);
 # define constraintList_isDefined(s) ((s) != (constraintList) 0)
 
 extern /*@only@*/ constraintList constraintList_makeNew(void);

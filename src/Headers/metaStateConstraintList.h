@@ -14,9 +14,9 @@ struct s_metaStateConstraintList
   /*@reldef@*/ /*@relnull@*/ b_metaStateConstraint *elements;
 } ;
 
-extern /*@unused@*/ /*@truenull@*/ bool
+extern /*@unused@*/ /*@nullwhentrue@*/ bool
   metaStateConstraintList_isUndefined (metaStateConstraintList p_f) /*@*/ ;
-extern /*@falsenull@*/ bool metaStateConstraintList_isDefined (metaStateConstraintList p_f) /*@*/ ;
+extern /*@falsewhennull@*/ bool metaStateConstraintList_isDefined (metaStateConstraintList p_f) /*@*/ ;
 
 /*@constant null metaStateConstraintList metaStateConstraintList_undefined; @*/
 # define metaStateConstraintList_undefined (NULL)

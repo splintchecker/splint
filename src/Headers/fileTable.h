@@ -57,9 +57,9 @@ abst_typedef /*@null@*/ struct
 /*@constant null fileTable fileTable_undefined; @*/
 # define fileTable_undefined ((fileTable) NULL)
 
-extern /*@unused@*/ /*@truenull@*/ bool 
+extern /*@unused@*/ /*@nullwhentrue@*/ bool 
   fileTable_isUndefined (/*@null@*/ fileTable p_f) /*@*/ ;
-extern /*@unused@*/ /*@falsenull@*/ bool 
+extern /*@unused@*/ /*@falsewhennull@*/ bool 
   fileTable_isDefined (/*@null@*/ fileTable p_f) /*@*/ ;
 
 # define fileTable_isUndefined(ft) ((ft) == fileTable_undefined)

@@ -19,7 +19,7 @@ typedef /*@null@*/ struct
 /*@constant null stateInfo stateInfo_undefined@*/
 # define stateInfo_undefined (NULL)
 
-extern /*@falsenull@*/ bool stateInfo_isDefined (stateInfo p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool stateInfo_isDefined (stateInfo p_s) /*@*/ ;
 # define stateInfo_isDefined(p_s) ((p_s) != stateInfo_undefined)
 
 extern void stateInfo_free (/*@only@*/ stateInfo p_a);

@@ -22,10 +22,10 @@ extern void stateClauseList_checkAll (uentry p_ue)
 /*@constant null stateClauseList stateClauseList_undefined@*/
 # define stateClauseList_undefined ((stateClauseList) 0)
 
-extern /*@falsenull@*/ bool stateClauseList_isDefined (stateClauseList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool stateClauseList_isDefined (stateClauseList p_s) /*@*/ ;
 # define stateClauseList_isDefined(s) ((s) != stateClauseList_undefined)
 
-extern /*@truenull@*/ bool stateClauseList_isUndefined (stateClauseList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool stateClauseList_isUndefined (stateClauseList p_s) /*@*/ ;
 # define stateClauseList_isUndefined(s) ((s) == stateClauseList_undefined)
 
 extern /*@unused@*/ int 

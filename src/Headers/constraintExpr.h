@@ -20,9 +20,9 @@ struct s_constraintExpr {
 /*@constant null constraintExpr constraintExpr_undefined; @*/
 # define constraintExpr_undefined ((constraintExpr)NULL)
 
-extern /*@falsenull@*/ bool constraintExpr_isDefined (constraintExpr p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isUndefined (constraintExpr p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool constraintExpr_isDefined (constraintExpr p_e) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool constraintExpr_isUndefined (constraintExpr p_e) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
 
 # define constraintExpr_isDefined(e)        ((e) != constraintExpr_undefined)
 # define constraintExpr_isUndefined(e)      ((e) == constraintExpr_undefined)
@@ -83,7 +83,7 @@ constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr
 
 /*@only@*/ constraintExpr constraintExpr_doFixResult (/*@only@*/  constraintExpr p_expr, /*@observer@*/ exprNode p_fcnCall);
 
-/*@falsenull@*/ bool constraintExpr_isLit (constraintExpr p_expr) /*@*/ ;
+/*@falsewhennull@*/ bool constraintExpr_isLit (constraintExpr p_expr) /*@*/ ;
 
 /*@only@*/ constraintExpr constraintExpr_makeAddExpr (/*@only@*/ constraintExpr p_expr, /*@only@*/ constraintExpr p_addent);
 
@@ -104,7 +104,7 @@ constraintExpr constraintExpr_propagateConstants (/*@only@*/ constraintExpr p_ex
 						/*@out@*/ bool * p_propagate,
 						  /*@out@*/ int *p_literal);
 
-/*@falsenull@*/ bool constraintExpr_isBinaryExpr (/*@observer@*/ /*@temp@*/ constraintExpr p_c) /*@*/ ;
+/*@falsewhennull@*/ bool constraintExpr_isBinaryExpr (/*@observer@*/ /*@temp@*/ constraintExpr p_c) /*@*/ ;
 
 extern void  constraintExpr_dump (/*@observer@*/ /*@temp@*/ constraintExpr p_expr,  FILE *p_f);
 

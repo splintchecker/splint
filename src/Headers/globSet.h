@@ -50,8 +50,8 @@ extern void globSet_clear (globSet p_g);
 /*@constant null globSet globSet_undefined;@*/
 # define globSet_undefined sRefSet_undefined
 
-extern /*@falsenull@*/ bool globSet_isDefined (/*@null@*/ globSet p_s) /*@*/ ;
-extern /*@truenull@*/ bool globSet_isUndefined (/*@null@*/ globSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool globSet_isDefined (/*@null@*/ globSet p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool globSet_isUndefined (/*@null@*/ globSet p_s) /*@*/ ;
 
 # define globSet_isDefined(s)   (sRefSet_isDefined (s))
 # define globSet_isUndefined(s) (sRefSet_isUndefined (s))

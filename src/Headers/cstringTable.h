@@ -48,10 +48,10 @@ struct s_cstringTable
 /*@constant null cstringTable cstringTable_undefined; @*/
 # define cstringTable_undefined      ((cstringTable) NULL)
 
-extern /*@falsenull@*/ bool cstringTable_isDefined(cstringTable) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstringTable_isDefined(cstringTable) /*@*/ ;
 # define cstringTable_isDefined(p_h) ((p_h) != cstringTable_undefined)
 
-extern /*@truenull@*/ /*@unused@*/ bool cstringTable_isUndefined(cstringTable) /*@*/ ;
+extern /*@nullwhentrue@*/ /*@unused@*/ bool cstringTable_isUndefined(cstringTable) /*@*/ ;
 # define cstringTable_isUndefined(p_h) ((p_h) == cstringTable_undefined)
 
 extern /*@only@*/ cstringTable cstringTable_create(int p_size) /*@*/ ;

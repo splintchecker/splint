@@ -20,7 +20,7 @@ struct s_idDecl
 /*@constant null idDecl idDecl_undefined; @*/
 # define idDecl_undefined ((idDecl) NULL)
 
-extern /*@falsenull@*/ bool idDecl_isDefined (idDecl p_t) /*@*/ ;
+extern /*@falsewhennull@*/ bool idDecl_isDefined (idDecl p_t) /*@*/ ;
 # define idDecl_isDefined(t) ((t) != idDecl_undefined)
 
 extern void idDecl_free (/*@only@*/ idDecl p_t);

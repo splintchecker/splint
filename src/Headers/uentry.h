@@ -169,11 +169,11 @@ struct s_uentry
 ** uentry_isDefined).
 */
 
-extern /*@truenull@*/ bool uentry_isUndefined (/*@special@*/ uentry p_e) 
+extern /*@nullwhentrue@*/ bool uentry_isUndefined (/*@special@*/ uentry p_e) 
    /*@*/ ;
-extern /*@truenull@*/ bool uentry_isInvalid (/*@special@*/ uentry p_e) 
+extern /*@nullwhentrue@*/ bool uentry_isInvalid (/*@special@*/ uentry p_e) 
    /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isValid (/*@special@*/ uentry p_e) 
+extern /*@falsewhennull@*/ bool uentry_isValid (/*@special@*/ uentry p_e) 
    /*@*/ ;
 
 /*@constant null uentry uentry_undefined; @*/
@@ -193,51 +193,51 @@ extern void uentry_setAbstract (uentry p_e) /*@modifies p_e@*/ ;
 extern void uentry_setConcrete (uentry p_e) /*@modifies p_e@*/ ;
 extern void uentry_setHasNameError (uentry p_ue) /*@modifies p_ue@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isLset (/*@sef@*/ uentry p_e);
+extern /*@falsewhennull@*/ bool uentry_isLset (/*@sef@*/ uentry p_e);
 # define uentry_isLset(e) \
   (uentry_isValid(e) && (e)->lset)
 
-extern /*@falsenull@*/ bool uentry_isUsed (/*@sef@*/ uentry p_e);
+extern /*@falsewhennull@*/ bool uentry_isUsed (/*@sef@*/ uentry p_e);
 # define uentry_isUsed(e)         (uentry_isValid(e) && (e)->used)
 
-extern /*@unused@*/ /*@falsenull@*/ bool 
+extern /*@unused@*/ /*@falsewhennull@*/ bool 
   uentry_isAbstractType (uentry p_e) /*@*/ ;
 # define uentry_isAbstractType(e) (uentry_isAbstractDatatype(e))
 
-extern /*@falsenull@*/ bool uentry_isConstant (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isConstant (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isConstant(e) \
   (uentry_isValid(e) && ekind_isConst ((e)->ukind))
 
-extern /*@falsenull@*/ bool uentry_isEitherConstant (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isEitherConstant (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isEitherConstant(e) \
   (uentry_isValid(e) && (ekind_isConst ((e)->ukind) || ekind_isEnumConst ((e)->ukind)))
 
-extern /*@falsenull@*/ bool uentry_isEnumConstant (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isEnumConstant (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isEnumConstant(e) \
   (uentry_isValid(e) && ekind_isEnumConst ((e)->ukind))
 
-extern /*@falsenull@*/ bool uentry_isExternal (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isExternal (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isExternal(c) \
   (uentry_isValid(c) && fileloc_isExternal (uentry_whereDefined (c)))
 
-extern /*@falsenull@*/ bool uentry_isExtern (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isExtern (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isExtern(c) \
   (uentry_isValid(c) && (c)->storageclass == SCEXTERN)
 
 extern bool uentry_isForward (uentry p_e) /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isFunction (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isFunction (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isFunction(e) \
   (uentry_isValid(e) && ekind_isFunction ((e)->ukind))
 
-extern /*@falsenull@*/ bool uentry_isPriv (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isPriv (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isPriv(e) \
   (uentry_isValid(e) && (e)->isPrivate)
 
-extern /*@falsenull@*/ bool uentry_isFileStatic (uentry p_ue) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isExported (uentry p_ue) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isFileStatic (uentry p_ue) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isExported (uentry p_ue) /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isStatic (/*@sef@*/ uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isStatic (/*@sef@*/ uentry p_e) /*@*/ ;
 # define uentry_isStatic(c) \
   (uentry_isValid(c) && (c)->storageclass == SCSTATIC)
 
@@ -284,49 +284,49 @@ extern /*@observer@*/ fileloc uentry_whereEarliest (uentry p_e) /*@*/ ;
 extern /*@observer@*/ cstring uentry_rawName (uentry p_e) /*@*/ ;
 extern /*@observer@*/ fileloc uentry_whereDeclared (uentry p_e) /*@*/ ;
 extern bool uentry_equiv (uentry p_p1, uentry p_p2) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_hasName (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_hasRealName (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isAbstractDatatype (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isAnyTag (/*@special@*/ uentry p_ue)
+extern /*@falsewhennull@*/ bool uentry_hasName (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_hasRealName (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isAbstractDatatype (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isAnyTag (/*@special@*/ uentry p_ue)
    /*@uses p_ue->ukind@*/
    /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isDatatype (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isDatatype (uentry p_e) /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isCodeDefined (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isCodeDefined (uentry p_e) /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isDeclared (/*@special@*/ uentry p_e) 
+extern /*@falsewhennull@*/ bool uentry_isDeclared (/*@special@*/ uentry p_e) 
    /*@uses p_e->whereDeclared@*/ /*@*/ ;
 
 extern /*@observer@*/ cstring uentry_ekindName (uentry p_ue) /*@*/ ;
 extern /*@observer@*/ cstring uentry_ekindNameLC (uentry p_ue) /*@*/ ;
 
 extern void uentry_showWhereDefined (uentry p_spec);
-extern /*@falsenull@*/ bool uentry_isEndIter (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isEnumTag (/*@special@*/ uentry p_ue)
+extern /*@falsewhennull@*/ bool uentry_isEndIter (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isEnumTag (/*@special@*/ uentry p_ue)
    /*@uses p_ue->ukind@*/ /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isFakeTag (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isIter (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isMutableDatatype (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isParam (uentry p_u) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isExpandedMacro (uentry p_u) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isSefParam (uentry p_u) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isAnyParam (/*@special@*/ uentry p_u) 
+extern /*@falsewhennull@*/ bool uentry_isFakeTag (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isIter (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isMutableDatatype (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isParam (uentry p_u) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isExpandedMacro (uentry p_u) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isSefParam (uentry p_u) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isAnyParam (/*@special@*/ uentry p_u) 
    /*@uses p_u->ukind, p_u->info@*/ 
    /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isRealFunction (uentry p_e) /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isSpecified (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isRealFunction (uentry p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool uentry_isSpecified (uentry p_e) /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isStructTag (/*@special@*/ uentry p_ue) 
+extern /*@falsewhennull@*/ bool uentry_isStructTag (/*@special@*/ uentry p_ue) 
    /*@uses p_ue->ukind@*/ /*@*/ ;
-extern /*@falsenull@*/ bool uentry_isUnionTag (/*@special@*/ uentry p_ue)
+extern /*@falsewhennull@*/ bool uentry_isUnionTag (/*@special@*/ uentry p_ue)
    /*@uses p_ue->ukind@*/ /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isVar (/*@special@*/ uentry p_e) 
+extern /*@falsewhennull@*/ bool uentry_isVar (/*@special@*/ uentry p_e) 
    /*@uses p_e->ukind@*/
    /*@*/ ;
 
-extern /*@falsenull@*/ bool uentry_isVariable (/*@special@*/ uentry p_e) 
+extern /*@falsewhennull@*/ bool uentry_isVariable (/*@special@*/ uentry p_e) 
    /*@uses p_e->ukind@*/
    /*@*/ ;
 

@@ -43,10 +43,10 @@ struct _rangeTable
     
 } ; 
 
-extern /*@unused@*/ /*@truenull@*/ bool rangeTable_isUndefined (rangeTable p_s);
-extern /*@unused@*/ /*@truenull@*/ bool 
+extern /*@unused@*/ /*@nullwhentrue@*/ bool rangeTable_isUndefined (rangeTable p_s);
+extern /*@unused@*/ /*@nullwhentrue@*/ bool 
   rangeTable_isEmpty (/*@sef@*/ rangeTable p_s);
-extern /*@falsenull@*/ bool rangeTable_isDefined (rangeTable p_s);
+extern /*@falsewhennull@*/ bool rangeTable_isDefined (rangeTable p_s);
 
 /*@constant null rangeTable rangeTable_undefined; @*/
 # define rangeTable_undefined      ((rangeTable) NULL)

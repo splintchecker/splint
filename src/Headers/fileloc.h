@@ -83,8 +83,8 @@ extern bool fileloc_isExternal (/*@sef@*/ fileloc p_f) /*@*/;
 # define fileloc_isExternal(f) \
      (fileloc_isDefined(f) && ((f)->kind == FL_EXTERNAL))
 
-extern /*@falsenull@*/ bool fileloc_isDefined (/*@null@*/ fileloc p_f) /*@*/ ;
-extern /*@truenull@*/ bool fileloc_isUndefined (/*@null@*/ fileloc p_f) /*@*/ ;
+extern /*@falsewhennull@*/ bool fileloc_isDefined (/*@null@*/ fileloc p_f) /*@*/ ;
+extern /*@nullwhentrue@*/ bool fileloc_isUndefined (/*@null@*/ fileloc p_f) /*@*/ ;
 extern bool fileloc_isInvalid (/*@sef@*/ /*@null@*/ fileloc p_f) /*@*/ ;
 
 /*@constant null fileloc fileloc_undefined; @*/
@@ -120,7 +120,7 @@ extern void fileloc_setColumnUndefined (/*@sef@*/ fileloc p_f) /*@modifies p_f@*
   (fileloc_isDefined(f) ? (f)->column = UNKNOWN_COLUMN : UNKNOWN_COLUMN)
 # endif
 
-extern /*@falsenull@*/ bool fileloc_isValid (/*@sef@*/ fileloc p_f);
+extern /*@falsewhennull@*/ bool fileloc_isValid (/*@sef@*/ fileloc p_f);
 # define fileloc_isValid(f) \
   (fileloc_isDefined(f) && ((f)->lineno >= 0))
 

@@ -28,10 +28,10 @@ struct s_mtDeclarationPiece {
 /*@constant null mtDeclarationPiece mtDeclarationPiece_undefined; @*/
 # define mtDeclarationPiece_undefined NULL
 
-extern /*@falsenull@*/ bool mtDeclarationPiece_isDefined(mtDeclarationPiece) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtDeclarationPiece_isDefined(mtDeclarationPiece) /*@*/ ;
 # define mtDeclarationPiece_isDefined(p_h) ((p_h) != mtDeclarationPiece_undefined)
 
-extern /*@truenull@*/ bool mtDeclarationPiece_isUndefined(mtDeclarationPiece) /*@*/ ;
+extern /*@nullwhentrue@*/ bool mtDeclarationPiece_isUndefined(mtDeclarationPiece) /*@*/ ;
 # define mtDeclarationPiece_isUndefined(p_h) ((p_h) == mtDeclarationPiece_undefined)
 
 extern mtDeclarationPiece mtDeclarationPiece_createContext (/*@only@*/ mtContextNode) /*@*/ ;

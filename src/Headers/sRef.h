@@ -150,8 +150,8 @@ extern void sRef_setNullStateInnerComplete (sRef p_s, nstate p_n, fileloc p_loc)
 extern void sRef_setPosNull (sRef p_s, fileloc p_loc);
 extern void sRef_setDefNull (sRef p_s, fileloc p_loc);
 
-extern /*@truenull@*/ bool sRef_isInvalid (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isValid (sRef p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRef_isInvalid (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isValid (sRef p_s) /*@*/ ;
 
 /*@constant null sRef sRef_undefined; @*/
 # define sRef_undefined    ((sRef) NULL)
@@ -165,11 +165,11 @@ extern bool sRef_isNotNull (sRef p_s) /*@*/ ;
 
 extern bool sRef_isDefinitelyNull (sRef p_s) /*@*/ ;
 						      
-extern /*@falsenull@*/ bool sRef_isLocalVar (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isNSLocalVar (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isRealLocalVar (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isLocalParamVar (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isKnown (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isLocalVar (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isNSLocalVar (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isRealLocalVar (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isLocalParamVar (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isKnown (/*@sef@*/ sRef p_s) /*@*/ ;
 
 extern bool sRef_hasLastReference (sRef p_s) /*@*/ ;
 # define sRef_hasLastReference(s) (sRef_hasAliasInfoRef (s))
@@ -202,7 +202,7 @@ extern alkind sRef_getAliasKind (/*@sef@*/ sRef p_s) /*@*/ ;
 extern alkind sRef_getOrigAliasKind (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_getOrigAliasKind(s) (sRef_isValid(s) ? (s)->oaliaskind : AK_ERROR)
 
-extern /*@falsenull@*/ bool sRef_isConj (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isConj (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isConj(s)           (sRef_isValid(s) && (s)->kind == SK_CONJ)
 
 extern /*@exposed@*/ sRef sRef_buildArrow (sRef p_s, /*@dependent@*/ cstring p_f);
@@ -234,7 +234,7 @@ extern bool sRef_aliasCompleteSimplePred (bool (p_predf) (sRef), sRef p_s);
 
 extern void sRef_clearExKindComplete (sRef p_s, fileloc p_loc);
 
-extern /*@falsenull@*/ bool sRef_isKindSpecial (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isKindSpecial (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isKindSpecial(s) (sRef_isValid (s) && (s)->kind == SK_SPECIAL)
 
 extern /*@observer@*/ cstring sRef_nullMessage (sRef p_s) /*@*/ ;
@@ -255,13 +255,13 @@ extern ctype sRef_getType (sRef p_s) /*@*/ ;
 
 extern void sRef_markImmutable (sRef p_s) /*@modifies p_s@*/ ;
 
-extern /*@falsenull@*/ bool sRef_isAddress (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isArrayFetch (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isConst (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isCvar (sRef p_s) /*@*/ ; 
-extern /*@falsenull@*/ bool sRef_isField (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isParam (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isPointer (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isAddress (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isArrayFetch (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isConst (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isCvar (sRef p_s) /*@*/ ; 
+extern /*@falsewhennull@*/ bool sRef_isField (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isParam (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isPointer (sRef p_s) /*@*/ ;
 
 extern void sRef_setType (sRef p_s, ctype p_t);
 extern void sRef_setTypeFull (sRef p_s, ctype p_t);
@@ -323,7 +323,7 @@ extern /*@exposed@*/ sRef sRef_buildPointer (/*@exposed@*/ sRef p_t)
 extern /*@exposed@*/ sRef sRef_makeAddress (/*@exposed@*/ sRef p_t);
 extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeUnconstrained (/*@exposed@*/ cstring) /*@*/ ;
 
-extern /*@falsenull@*/ bool sRef_isUnconstrained (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isUnconstrained (sRef p_s) /*@*/ ;
 
 extern /*@observer@*/ cstring sRef_unconstrainedName (sRef p_s) /*@*/ ;
 
@@ -428,18 +428,18 @@ extern void sRef_setAllocated (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setAllocatedShallowComplete (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setAllocatedComplete (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern /*@only@*/ cstring sRef_unparseKindNamePlain (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isRealGlobal(sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isFileStatic (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isRealGlobal(sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isFileStatic (sRef p_s) /*@*/ ;
 
 extern int sRef_getScope (sRef p_s) /*@*/ ;
 extern /*@observer@*/ cstring sRef_getScopeName (sRef p_s) /*@*/ ;
 
 /* must be real function (passed as function param) */
-extern /*@falsenull@*/ bool sRef_isDead (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isDeadStorage (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isDead (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isDeadStorage (sRef p_s) /*@*/ ;
 extern bool sRef_isStateLive (sRef p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRef_isPossiblyDead (sRef p_s) /*@*/ ;
-extern /*@truenull@*/ bool sRef_isStateUndefined (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isPossiblyDead (sRef p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRef_isStateUndefined (sRef p_s) /*@*/ ;
 extern bool sRef_isUnuseable (sRef p_s) /*@*/ ;
 
 extern /*@exposed@*/ sRef sRef_constructDeref (sRef p_t) 
@@ -450,7 +450,7 @@ extern /*@exposed@*/ sRef sRef_constructDeadDeref (sRef p_t)
 
 extern bool sRef_isJustAllocated (sRef p_s) /*@*/ ;
 
-extern /*@falsenull@*/ bool sRef_isAllocated (sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isAllocated (sRef p_s) /*@*/ ;
 
 extern bool sRef_isUndefGlob (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isUndefGlob(s) \
@@ -489,7 +489,7 @@ extern bool sRef_isAnyDefined (/*@sef@*/ sRef p_s) /*@*/ ;
 				  || ((s)->defstate == SS_RELDEF) \
 				  || ((s)->defstate == SS_PARTIAL)))
 
-extern /*@falsenull@*/ bool sRef_isPdefined (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isPdefined (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isPdefined(s) \
   ((sRef_isValid(s)) && ((s)->defstate == SS_PDEFINED))
 
@@ -499,15 +499,15 @@ extern bool sRef_isStateUnknown (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isStateUnknown(s) \
   ((sRef_isValid(s)) && ((s)->defstate == SS_UNKNOWN))
 
-extern /*@falsenull@*/ bool sRef_isRefCounted (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isRefCounted (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isRefCounted(s) \
   ((sRef_isValid(s)) && ((s)->aliaskind == AK_REFCOUNTED))
 
-extern /*@falsenull@*/ bool sRef_isNewRef (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isNewRef (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isNewRef(s) \
   ((sRef_isValid(s)) && ((s)->aliaskind == AK_NEWREF))
 
-extern /*@falsenull@*/ bool sRef_isKillRef (/*@sef@*/ sRef p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_isKillRef (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isKillRef(s) \
   ((sRef_isValid(s)) && ((s)->aliaskind == AK_KILLREF))
 

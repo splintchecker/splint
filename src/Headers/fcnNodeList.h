@@ -28,10 +28,10 @@ abst_typedef /*@null@*/ struct
 /*@constant null fcnNodeList fcnNodeList_undefined; @*/
 # define fcnNodeList_undefined ((fcnNodeList)0)
 
-extern /*@falsenull@*/ bool fcnNodeList_isDefined (fcnNodeList p_f);
+extern /*@falsewhennull@*/ bool fcnNodeList_isDefined (fcnNodeList p_f);
 # define fcnNodeList_isDefined(f) ((f) != fcnNodeList_undefined)
 
-extern /*@unused@*/ /*@truenull@*/ bool 
+extern /*@unused@*/ /*@nullwhentrue@*/ bool 
   fcnNodeList_isUndefined (fcnNodeList p_f);
 # define fcnNodeList_isUndefined(f) ((f) == fcnNodeList_undefined)
 

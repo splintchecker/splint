@@ -24,7 +24,7 @@ abst_typedef /*@null@*/ struct
 
 # define end_pairNodeList_elements }}
 
-extern /*@falsenull@*/ bool pairNodeList_isDefined (pairNodeList p_p) /*@*/ ;
+extern /*@falsewhennull@*/ bool pairNodeList_isDefined (pairNodeList p_p) /*@*/ ;
 
 /*@constant null pairNodeList pairNodeList_undefined; @*/
 # define pairNodeList_undefined    ((pairNodeList)0)

@@ -588,14 +588,14 @@ static bool
 	  && (fileloc_isDefined (s->aliasinfo->loc)));
 }
 
-static /*@falsenull@*/ bool
+static /*@falsewhennull@*/ bool
 sRef_hasStateInfoLoc (sRef s)
 {
   return (sRef_isValid (s) && (s->definfo != NULL) 
 	  && (fileloc_isDefined (s->definfo->loc)));
 }
 
-static /*@falsenull@*/ bool
+static /*@falsewhennull@*/ bool
 sRef_hasExpInfoLoc (sRef s)
 {
   return (sRef_isValid (s) 

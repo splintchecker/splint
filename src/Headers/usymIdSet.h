@@ -43,10 +43,10 @@ extern /*@only@*/ usymIdSet
 /*@constant null usymIdSet usymIdSet_undefined; @*/
 # define usymIdSet_undefined    ((usymIdSet) NULL)
 
-extern /*@falsenull@*/ bool usymIdSet_isDefined (usymIdSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool usymIdSet_isDefined (usymIdSet p_s) /*@*/ ;
 # define usymIdSet_isDefined(s) ((s) != usymIdSet_undefined)
 
-extern /*@truenull@*/ bool usymIdSet_isUndefined (usymIdSet p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool usymIdSet_isUndefined (usymIdSet p_s) /*@*/ ;
 # define usymIdSet_isUndefined(s) ((s) == usymIdSet_undefined)
 
 /*@iter usymIdSet_elements (sef usymIdSet u, yield usymId el); @*/ 

@@ -29,9 +29,9 @@ struct s_sRefList
 
 extern int sRefList_size (sRefList p_s) /*@*/ ;
 
-extern /*@truenull@*/ bool sRefList_isUndefined (sRefList p_s) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool sRefList_isEmpty (sRefList p_s) /*@*/ ;
-extern /*@unused@*/ /*@falsenull@*/ bool sRefList_isDefined (sRefList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRefList_isUndefined (sRefList p_s) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool sRefList_isEmpty (sRefList p_s) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool sRefList_isDefined (sRefList p_s) /*@*/ ;
 
 # define sRefList_isEmpty(s) (sRefList_size(s) == 0)
 

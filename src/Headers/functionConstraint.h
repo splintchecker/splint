@@ -26,10 +26,10 @@ struct s_functionConstraint {
 /*@constant null functionConstraint functionConstraint_undefined; @*/
 # define functionConstraint_undefined    ((functionConstraint) NULL)
 
-extern /*@falsenull@*/ bool functionConstraint_isDefined (functionConstraint) /*@*/ ;
+extern /*@falsewhennull@*/ bool functionConstraint_isDefined (functionConstraint) /*@*/ ;
 # define functionConstraint_isDefined(p_info) ((p_info) != NULL)
 
-extern /*@truenull@*/ bool functionConstraint_isUndefined (functionConstraint) /*@*/ ;
+extern /*@nullwhentrue@*/ bool functionConstraint_isUndefined (functionConstraint) /*@*/ ;
 # define functionConstraint_isUndefined(p_info) ((p_info) == NULL)
 
 extern functionConstraint functionConstraint_copy (functionConstraint) /*@*/ ;

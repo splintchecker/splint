@@ -16,13 +16,13 @@ abst_typedef /*@null@*/ struct s_cstringList
 /*@constant null cstringList cstringList_undefined;@*/
 # define cstringList_undefined ((cstringList) NULL)
 
-extern /*@falsenull@*/ bool cstringList_isDefined (cstringList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstringList_isDefined (cstringList p_s) /*@*/ ;
 # define cstringList_isDefined(s)   ((s) != cstringList_undefined)
 
 extern int cstringList_size (/*@sef@*/ cstringList) /*@*/ ;
 # define cstringList_size(s) (cstringList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool cstringList_empty (/*@sef@*/ cstringList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool cstringList_empty (/*@sef@*/ cstringList) /*@*/ ;
 # define cstringList_empty(s) (cstringList_size(s) == 0)
 
 extern cstring cstringList_unparseSep (cstringList p_s, cstring p_sep) /*@*/ ;

@@ -26,8 +26,8 @@ struct s_inputStream {
 
 /* in forwardTypes.h: abst_typedef null struct _inputStream *inputStream; */
 
-extern /*@falsenull@*/ bool inputStream_isDefined (/*@null@*/ inputStream p_f) /*@*/ ;
-extern /*@truenull@*/ bool inputStream_isUndefined (/*@null@*/ inputStream p_f) /*@*/ ;
+extern /*@falsewhennull@*/ bool inputStream_isDefined (/*@null@*/ inputStream p_f) /*@*/ ;
+extern /*@nullwhentrue@*/ bool inputStream_isUndefined (/*@null@*/ inputStream p_f) /*@*/ ;
 
 /*@constant null inputStream inputStream_undefined; @*/
 # define inputStream_undefined      ((inputStream) NULL)

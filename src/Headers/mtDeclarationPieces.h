@@ -20,10 +20,10 @@ struct s_mtDeclarationPieces {
 /*@constant null mtDeclarationPieces mtDeclarationPieces_undefined; @*/
 # define mtDeclarationPieces_undefined NULL
 
-extern /*@falsenull@*/ bool mtDeclarationPieces_isDefined(mtDeclarationPieces) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtDeclarationPieces_isDefined(mtDeclarationPieces) /*@*/ ;
 # define mtDeclarationPieces_isDefined(p_h) ((p_h) != mtDeclarationPieces_undefined)
 
-extern /*@truenull@*/ bool mtDeclarationPieces_isUndefined(mtDeclarationPieces) /*@*/ ;
+extern /*@nullwhentrue@*/ bool mtDeclarationPieces_isUndefined(mtDeclarationPieces) /*@*/ ;
 # define mtDeclarationPieces_isUndefined(p_h) ((p_h) == mtDeclarationPieces_undefined)
 
 extern mtDeclarationPieces mtDeclarationPieces_create (void) /*@*/ ;

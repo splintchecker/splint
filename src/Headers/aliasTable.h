@@ -21,10 +21,10 @@ struct s_aliasTable /*@i32 reserved works for struct identifiers@*/
   /*@reldef@*/ /*@only@*/ o_sRefSet *values;
 } ; 
 
-extern /*@unused@*/ /*@truenull@*/ bool aliasTable_isUndefined (aliasTable p_s);
-extern /*@unused@*/ /*@truenull@*/ bool 
+extern /*@unused@*/ /*@nullwhentrue@*/ bool aliasTable_isUndefined (aliasTable p_s);
+extern /*@unused@*/ /*@nullwhentrue@*/ bool 
   aliasTable_isEmpty (/*@sef@*/ aliasTable p_s);
-extern /*@falsenull@*/ bool aliasTable_isDefined (aliasTable p_s);
+extern /*@falsewhennull@*/ bool aliasTable_isDefined (aliasTable p_s);
 
 /*@constant null aliasTable aliasTable_undefined; @*/
 # define aliasTable_undefined      ((aliasTable) NULL)

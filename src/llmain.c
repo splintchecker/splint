@@ -1928,12 +1928,12 @@ printAnnotations (void)
   llmsglit ("");
   llmsglit ("Null State:");
   llmsglit ("   /*@null@*/ - possibly null pointer");
-  llmsglit ("   /*@notnull@*/ - non-null pointer");
+  llmsglit ("   /*@notnull@*/ - definitely non-null pointer");
   llmsglit ("   /*@relnull@*/ - relax null checking");
   llmsglit ("");
   llmsglit ("Null Predicates:");
-  llmsglit ("   /*@truenull@*/ - if result is TRUE, first parameter is NULL");
-  llmsglit ("   /*@falsenull@*/ - if result is TRUE, first parameter is not NULL");
+  llmsglit ("   /*@nullwhentrue@*/ - if result is TRUE, first parameter is NULL");
+  llmsglit ("   /*@falsewhennull@*/ - if result is TRUE, first parameter is not NULL");
   llmsglit ("");
   llmsglit ("Execution:");
   llmsglit ("   /*@noreturn@*/ - function never returns");

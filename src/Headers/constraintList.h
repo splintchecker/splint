@@ -18,9 +18,9 @@ struct s_constraintList
 
 # define constraintList_undefined ((constraintList)NULL)
 
-extern /*@falsenull@*/ bool constraintList_isDefined (constraintList p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintList_isUndefined (constraintList p_e) /*@*/ ;
-extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool constraintList_isDefined (constraintList p_e) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool constraintList_isUndefined (constraintList p_e) /*@*/ ;
+extern /*@nullwhentrue@*/ /*@unused@*/ bool constraintList_isError (constraintList p_e) /*@*/ ;
 
 # define constraintList_isDefined(e)    ((e) != constraintList_undefined)
 # define constraintList_isUndefined(e)  ((e) == constraintList_undefined)

@@ -21,10 +21,10 @@ abst_typedef /*@null@*/ struct
 /*@constant null qtype qtype_undefined;@*/
 # define qtype_undefined ((qtype) NULL)
 
-extern /*@truenull@*/ bool qtype_isUndefined (qtype p_q);
+extern /*@nullwhentrue@*/ bool qtype_isUndefined (qtype p_q);
 # define qtype_isUndefined(q) ((q) == qtype_undefined)
 
-extern /*@falsenull@*/ bool qtype_isDefined (qtype p_q);
+extern /*@falsewhennull@*/ bool qtype_isDefined (qtype p_q);
 # define qtype_isDefined(q)   ((q) != qtype_undefined)
 
 extern ctype qtype_getType (/*@sef@*/ qtype p_q);

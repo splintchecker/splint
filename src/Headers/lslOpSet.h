@@ -30,7 +30,7 @@ abst_typedef /*@null@*/ struct
 /*@constant null lslOpSet lslOpSet_undefined;@*/
 # define lslOpSet_undefined ((lslOpSet) NULL)
 
-extern /*@falsenull@*/ bool lslOpSet_isDefined (lslOpSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool lslOpSet_isDefined (lslOpSet p_s) /*@*/ ;
 # define lslOpSet_isDefined(s) ((s) != lslOpSet_undefined)
 
 extern /*@unused@*/ int 

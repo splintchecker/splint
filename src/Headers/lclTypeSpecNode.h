@@ -33,7 +33,7 @@ struct s_lclTypeSpecNode {
 /*@constant null lclTypeSpecNode lclTypeSpecNode_undefined; @*/
 # define lclTypeSpecNode_undefined ((lclTypeSpecNode) 0)
 
-extern /*@falsenull@*/ bool lclTypeSpecNode_isDefined (lclTypeSpecNode p_x) /*@*/ ;
+extern /*@falsewhennull@*/ bool lclTypeSpecNode_isDefined (lclTypeSpecNode p_x) /*@*/ ;
 # define lclTypeSpecNode_isDefined(x) ((x) != lclTypeSpecNode_undefined)
 
 extern /*@null@*/ /*@only@*/ lclTypeSpecNode

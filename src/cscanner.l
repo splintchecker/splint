@@ -288,6 +288,8 @@ L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { RETURN_EXPR (processWideString 
 "isnull"                { return (processSpec (QISNULL)); } 
 "truenull"              { return (processSpec (QTRUENULL)); } 
 "falsenull"             { return (processSpec (QFALSENULL)); } 
+"nullwhentrue"          { return (processSpec (QTRUENULL)); } 
+"nullwhenfalse"             { return (processSpec (QFALSENULL)); } 
 "relnull"               { return (processSpec (QRELNULL)); }
 "reldef"                { return (processSpec (QRELDEF)); }
 "exposed"               { return (processSpec (QEXPOSED)); }
@@ -632,6 +634,8 @@ struct skeyword s_keytable[] = {
   { "special", QSPECIAL } ,
   { "truenull", QTRUENULL } ,
   { "falsenull", QFALSENULL } ,
+  { "nullwhentrue", QTRUENULL } ,
+  { "falsewhennull", QFALSENULL } ,
   { "keep", QKEEP } ,
   { "kept", QKEPT } ,
   { "notnull", QNOTNULL } ,

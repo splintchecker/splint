@@ -133,16 +133,16 @@ typedef struct {
 
 typedef struct s_symtableStruct *symtable;
 
-extern /*@falsenull@*/ bool typeInfo_exists(/*@null@*/ typeInfo p_ti);
+extern /*@falsewhennull@*/ bool typeInfo_exists(/*@null@*/ typeInfo p_ti);
 # define typeInfo_exists(ti)  ((ti) != NULL)
 
-extern /*@falsenull@*/ bool varInfo_exists(/*@null@*/ varInfo p_vi);
+extern /*@falsewhennull@*/ bool varInfo_exists(/*@null@*/ varInfo p_vi);
 # define varInfo_exists(vi)   ((vi) != NULL)
 
-extern /*@falsenull@*/ bool tagInfo_exists(/*@null@*/ tagInfo p_oi);
+extern /*@falsewhennull@*/ bool tagInfo_exists(/*@null@*/ tagInfo p_oi);
 # define tagInfo_exists(ti)   ((ti) != NULL)
 
-extern /*@falsenull@*/ bool opInfo_exists(/*@null@*/ opInfo p_oi);
+extern /*@falsewhennull@*/ bool opInfo_exists(/*@null@*/ opInfo p_oi);
 # define opInfo_exists(oi)    ((oi) != NULL)
 
 extern /*@only@*/ symtable symtable_new (void) /*@*/ ;

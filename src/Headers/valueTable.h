@@ -17,10 +17,10 @@
 /*@constant null valueTable valueTable_undefined; @*/
 # define valueTable_undefined genericTable_undefined
 
-extern /*@falsenull@*/ bool valueTable_isDefined(valueTable) /*@*/ ;
+extern /*@falsewhennull@*/ bool valueTable_isDefined(valueTable) /*@*/ ;
 # define valueTable_isDefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
-extern /*@truenull@*/ bool valueTable_isUndefined(valueTable) /*@*/ ;
+extern /*@nullwhentrue@*/ bool valueTable_isUndefined(valueTable) /*@*/ ;
 # define valueTable_isUndefined(p_h) (genericTable_isUndefined ((genericTable) (p_h)))
 
 extern /*@only@*/ valueTable valueTable_create(int p_size);

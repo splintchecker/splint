@@ -22,7 +22,7 @@ abst_typedef /*@null@*/ struct
 /*@constant null lsymbolSet lsymbolSet_undefined; @*/
 # define lsymbolSet_undefined (NULL)
 
-extern /*@falsenull@*/ bool lsymbolSet_isDefined (lsymbolSet p_l) /*@*/ ;
+extern /*@falsewhennull@*/ bool lsymbolSet_isDefined (lsymbolSet p_l) /*@*/ ;
 # define lsymbolSet_isDefined(l) ((l) != lsymbolSet_undefined)
  
 /*@iter lsymbolSet_elements (sef lsymbolSet s, yield lsymbol el); @*/

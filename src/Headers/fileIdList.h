@@ -15,7 +15,7 @@
 
 abst_typedef /*@null@*/ ctypeList fileIdList;
 
-extern /*@falsenull@*/ bool fileIdList_isDefined (fileIdList p_f);
+extern /*@falsewhennull@*/ bool fileIdList_isDefined (fileIdList p_f);
 # define fileIdList_isDefined(f)  (ctypeList_isDefined (f))
 
 /*@iter fileIdList_elements (sef fileIdList x, yield fileId el); @*/

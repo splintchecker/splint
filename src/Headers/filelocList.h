@@ -12,9 +12,9 @@ abst_typedef /*@null@*/ struct
   /*@reldef@*/ /*@relnull@*/ o_fileloc *elements;
 } *filelocList ;
 
-extern /*@unused@*/ /*@truenull@*/ bool
+extern /*@unused@*/ /*@nullwhentrue@*/ bool
   filelocList_isUndefined (filelocList p_f) /*@*/ ;
-extern /*@falsenull@*/ bool filelocList_isDefined (filelocList p_f);
+extern /*@falsewhennull@*/ bool filelocList_isDefined (filelocList p_f);
 
 /*@constant null filelocList filelocList_undefined; @*/
 # define filelocList_undefined (NULL)

@@ -18,13 +18,13 @@ abst_typedef /*@null@*/ struct s_cstringSList
 /*@constant null cstringSList cstringSList_undefined;@*/
 # define cstringSList_undefined ((cstringSList) NULL)
 
-extern /*@falsenull@*/ bool cstringSList_isDefined (cstringSList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstringSList_isDefined (cstringSList p_s) /*@*/ ;
 # define cstringSList_isDefined(s)   ((s) != cstringSList_undefined)
 
 extern int cstringSList_size (/*@sef@*/ cstringSList) /*@*/ ;
 # define cstringSList_size(s) (cstringSList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@falsenull@*/ bool cstringSList_empty (/*@sef@*/ cstringSList) /*@*/ ;
+extern /*@falsewhennull@*/ bool cstringSList_empty (/*@sef@*/ cstringSList) /*@*/ ;
 # define cstringSList_empty(s) (cstringSList_size(s) == 0)
 
 extern /*@unused@*/ cstring cstringSList_unparseSep (cstringSList p_s, cstring p_sep) /*@*/ ;

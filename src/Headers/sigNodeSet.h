@@ -33,11 +33,11 @@ abst_typedef /*@null@*/ struct
 /*@constant null sigNodeSet sigNodeSet_undefined; @*/
 # define sigNodeSet_undefined ((sigNodeSet) 0)
 
-extern /*@falsenull@*/ bool sigNodeSet_isDefined (sigNodeSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sigNodeSet_isDefined (sigNodeSet p_s) /*@*/ ;
 # define sigNodeSet_isDefined(s) \
   ((s) != sigNodeSet_undefined)
 
-extern /*@truenull@*/ bool sigNodeSet_isUndefined (sigNodeSet p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sigNodeSet_isUndefined (sigNodeSet p_s) /*@*/ ;
 # define sigNodeSet_isUndefined(s) \
   ((s) == sigNodeSet_undefined)
 

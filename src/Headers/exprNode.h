@@ -174,9 +174,9 @@ struct s_exprNode
 /*@constant null exprNode exprNode_undefined; @*/
 # define exprNode_undefined ((exprNode)NULL)
 
-extern /*@falsenull@*/ bool exprNode_isDefined (exprNode p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool exprNode_isUndefined (exprNode p_e) /*@*/ ;
-extern /*@truenull@*/ bool exprNode_isError (exprNode p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool exprNode_isDefined (exprNode p_e) /*@*/ ;
+extern /*@unused@*/ /*@nullwhentrue@*/ bool exprNode_isUndefined (exprNode p_e) /*@*/ ;
+extern /*@nullwhentrue@*/ bool exprNode_isError (exprNode p_e) /*@*/ ;
 
 # define exprNode_isDefined(e)        ((e) != exprNode_undefined)
 # define exprNode_isUndefined(e)      ((e) == exprNode_undefined)
@@ -191,7 +191,7 @@ extern ctype exprNode_getType (/*@sef@*/ exprNode p_e) /*@*/ ;
 # define exprNode_getType(e) \
   (exprNode_isDefined(e) ? (e)->typ : ctype_unknown)
 
-extern /*@unused@*/ /*@falsenull@*/ bool exprNode_isInParens (/*@sef@*/ exprNode p_e) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool exprNode_isInParens (/*@sef@*/ exprNode p_e) /*@*/ ;
 # define exprNode_isInParens(e) \
   (exprNode_isDefined(e) && (e)->kind == XPR_PARENS)
 

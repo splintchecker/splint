@@ -41,10 +41,10 @@ struct s_metaStateInfo {
 /*@constant null metaStateInfo metaStateInfo_undefined; @*/
 # define metaStateInfo_undefined    ((metaStateInfo) NULL)
 
-extern /*@falsenull@*/ bool metaStateInfo_isDefined (metaStateInfo) /*@*/ ;
+extern /*@falsewhennull@*/ bool metaStateInfo_isDefined (metaStateInfo) /*@*/ ;
 # define metaStateInfo_isDefined(p_info) ((p_info) != NULL)
 
-extern /*@truenull@*/ bool metaStateInfo_isUndefined (metaStateInfo) /*@*/ ;
+extern /*@nullwhentrue@*/ bool metaStateInfo_isUndefined (metaStateInfo) /*@*/ ;
 # define metaStateInfo_isUndefined(p_info) ((p_info) == NULL)
 
 extern /*@notnull@*/ metaStateInfo 

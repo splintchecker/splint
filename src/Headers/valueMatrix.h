@@ -21,10 +21,10 @@ abst_typedef genericTable valueMatrix;
 /*@constant null valueMatrix valueMatrix_undefined; @*/
 # define valueMatrix_undefined genericTable_undefined
 
-extern /*@falsenull@*/ bool valueMatrix_isDefined(valueMatrix) /*@*/ ;
+extern /*@falsewhennull@*/ bool valueMatrix_isDefined(valueMatrix) /*@*/ ;
 # define valueMatrix_isDefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
-extern /*@truenull@*/ bool valueMatrix_isUndefined(valueMatrix) /*@*/ ;
+extern /*@nullwhentrue@*/ bool valueMatrix_isUndefined(valueMatrix) /*@*/ ;
 # define valueMatrix_isUndefined(p_h) (genericTable_isDefined ((genericTable) (p_h)))
 
 extern /*@only@*/ valueMatrix valueMatrix_create(int p_size);

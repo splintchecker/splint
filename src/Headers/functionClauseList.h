@@ -19,16 +19,16 @@ struct s_functionClauseList
 /*@constant null functionClauseList functionClauseList_undefined;@*/
 # define functionClauseList_undefined ((functionClauseList) NULL)
 
-extern /*@falsenull@*/ bool functionClauseList_isDefined (functionClauseList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool functionClauseList_isDefined (functionClauseList p_s) /*@*/ ;
 # define functionClauseList_isDefined(s)   ((s) != functionClauseList_undefined)
 
-extern /*@truenull@*/ bool functionClauseList_isUndefined (functionClauseList p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool functionClauseList_isUndefined (functionClauseList p_s) /*@*/ ;
 # define functionClauseList_isUndefined(s)   ((s) == functionClauseList_undefined)
 
 extern int functionClauseList_size (/*@sef@*/ functionClauseList) /*@*/ ;
 # define functionClauseList_size(s) (functionClauseList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool functionClauseList_empty (/*@sef@*/ functionClauseList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool functionClauseList_empty (/*@sef@*/ functionClauseList) /*@*/ ;
 # define functionClauseList_empty(s) (functionClauseList_size(s) == 0)
 
 extern cstring functionClauseList_unparseSep (functionClauseList p_s, cstring p_sep) /*@*/ ;

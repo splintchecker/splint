@@ -41,7 +41,7 @@ typedef union constraintExprData
   constraintTerm term;
 } *constraintExprData;
 
-extern /*@falsenull@*/ bool constraintExprData_isDefined (/*@temp@*/ /*@observer@*/ /*@reldef@*/ constraintExprData p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool constraintExprData_isDefined (/*@temp@*/ /*@observer@*/ /*@reldef@*/ constraintExprData p_e) /*@*/ ;
 # define constraintExprData_isDefined(e)      ((e) != NULL)
 
 extern void constraintExprData_freeBinaryExpr (/*@only@*/ constraintExprData) ;

@@ -28,7 +28,7 @@ struct s_mtContextNode {
 /*@constant null mtContextNode mtContextNode_undefined@*/
 # define mtContextNode_undefined ((mtContextNode) 0)
 
-extern /*@falsenull@*/ bool mtContextNode_isDefined (mtContextNode p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtContextNode_isDefined (mtContextNode p_s) /*@*/ ;
 # define mtContextNode_isDefined(s) ((s) != mtContextNode_undefined)
 
 extern cstring mtContextNode_unparse (mtContextNode) /*@*/ ;

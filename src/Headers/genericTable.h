@@ -44,10 +44,10 @@ struct s_genericTable
 /*@constant null genericTable genericTable_undefined; @*/
 # define genericTable_undefined      ((genericTable) NULL)
 
-extern /*@falsenull@*/ bool genericTable_isDefined(genericTable) /*@*/ ;
+extern /*@falsewhennull@*/ bool genericTable_isDefined(genericTable) /*@*/ ;
 # define genericTable_isDefined(p_h) ((p_h) != genericTable_undefined)
 
-extern /*@truenull@*/ /*@unused@*/ bool genericTable_isUndefined(genericTable) /*@*/ ;
+extern /*@nullwhentrue@*/ /*@unused@*/ bool genericTable_isUndefined(genericTable) /*@*/ ;
 # define genericTable_isUndefined(p_h) ((p_h) == genericTable_undefined)
 
 extern /*@only@*/ genericTable genericTable_create (int p_size);

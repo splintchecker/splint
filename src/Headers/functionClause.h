@@ -36,7 +36,7 @@ struct s_functionClause {
 /*@constant null functionClause functionClause_undefined; @*/
 # define functionClause_undefined NULL
 
-extern /*@falsenull@*/ bool functionClause_isDefined(functionClause) /*@*/ ;
+extern /*@falsewhennull@*/ bool functionClause_isDefined(functionClause) /*@*/ ;
 # define functionClause_isDefined(p_h) ((p_h) != functionClause_undefined)
 
 extern bool functionClause_isGlobals (functionClause) /*@*/ ;
@@ -59,7 +59,7 @@ extern bool functionClause_isEnsures (functionClause) /*@*/ ;
 extern bool functionClause_isRequires (functionClause) /*@*/ ;
 # define functionClause_isRequires(p_h) (functionClause_matchKind(p_h, FCK_REQUIRES))
 
-extern /*@truenull@*/ bool functionClause_isUndefined(functionClause) /*@*/ ;
+extern /*@nullwhentrue@*/ bool functionClause_isUndefined(functionClause) /*@*/ ;
 # define functionClause_isUndefined(p_h) ((p_h) == functionClause_undefined)
 
 extern functionClause functionClause_createGlobals (/*@only@*/ globalsClause) /*@*/ ;

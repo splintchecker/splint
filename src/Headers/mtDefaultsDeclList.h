@@ -19,13 +19,13 @@ struct s_mtDefaultsDeclList
 /*@constant null mtDefaultsDeclList mtDefaultsDeclList_undefined;@*/
 # define mtDefaultsDeclList_undefined ((mtDefaultsDeclList) NULL)
 
-extern /*@falsenull@*/ bool mtDefaultsDeclList_isDefined (mtDefaultsDeclList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtDefaultsDeclList_isDefined (mtDefaultsDeclList p_s) /*@*/ ;
 # define mtDefaultsDeclList_isDefined(s)   ((s) != mtDefaultsDeclList_undefined)
 
 extern int mtDefaultsDeclList_size (/*@sef@*/ mtDefaultsDeclList) /*@*/ ;
 # define mtDefaultsDeclList_size(s) (mtDefaultsDeclList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool mtDefaultsDeclList_empty (/*@sef@*/ mtDefaultsDeclList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool mtDefaultsDeclList_empty (/*@sef@*/ mtDefaultsDeclList) /*@*/ ;
 # define mtDefaultsDeclList_empty(s) (mtDefaultsDeclList_size(s) == 0)
 
 extern cstring mtDefaultsDeclList_unparseSep (mtDefaultsDeclList p_s, cstring p_sep) /*@*/ ;

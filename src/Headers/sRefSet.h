@@ -52,9 +52,9 @@ struct s_sRefSet
 /*@constant null sRefSet sRefSet_undefined;@*/
 # define sRefSet_undefined ((sRefSet) 0)
 
-extern /*@truenull@*/ bool sRefSet_isUndefined (sRefSet p_s) /*@*/ ;
-extern /*@truenull@*/ bool sRefSet_isEmpty (/*@sef@*/ sRefSet p_s) /*@*/ ;
-extern /*@falsenull@*/ bool sRefSet_isDefined (sRefSet p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRefSet_isUndefined (sRefSet p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRefSet_isEmpty (/*@sef@*/ sRefSet p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRefSet_isDefined (sRefSet p_s) /*@*/ ;
 
 # define sRefSet_isUndefined(s) ((s) == sRefSet_undefined)
 # define sRefSet_isDefined(s)   ((s) != sRefSet_undefined)

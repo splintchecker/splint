@@ -26,10 +26,10 @@ struct s_annotationInfo {
 /*@constant null annotationInfo annotationInfo_undefined; @*/
 # define annotationInfo_undefined    ((annotationInfo) NULL)
 
-extern /*@falsenull@*/ bool annotationInfo_isDefined (annotationInfo) /*@*/ ;
+extern /*@falsewhennull@*/ bool annotationInfo_isDefined (annotationInfo) /*@*/ ;
 # define annotationInfo_isDefined(p_info) ((p_info) != annotationInfo_undefined)
 
-extern /*@truenull@*/ bool annotationInfo_isUndefined (annotationInfo) /*@*/ ;
+extern /*@nullwhentrue@*/ bool annotationInfo_isUndefined (annotationInfo) /*@*/ ;
 # define annotationInfo_isUndefined(p_info) ((p_info) == annotationInfo_undefined)
 
 extern bool annotationInfo_equal (annotationInfo, annotationInfo) /*@*/ ;

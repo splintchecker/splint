@@ -16,13 +16,13 @@ struct s_mtAnnotationList
 /*@constant null mtAnnotationList mtAnnotationList_undefined;@*/
 # define mtAnnotationList_undefined ((mtAnnotationList) NULL)
 
-extern /*@falsenull@*/ bool mtAnnotationList_isDefined (mtAnnotationList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtAnnotationList_isDefined (mtAnnotationList p_s) /*@*/ ;
 # define mtAnnotationList_isDefined(s)   ((s) != mtAnnotationList_undefined)
 
 extern int mtAnnotationList_size (/*@sef@*/ mtAnnotationList) /*@*/ ;
 # define mtAnnotationList_size(s) (mtAnnotationList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool mtAnnotationList_empty (/*@sef@*/ mtAnnotationList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool mtAnnotationList_empty (/*@sef@*/ mtAnnotationList) /*@*/ ;
 # define mtAnnotationList_empty(s) (mtAnnotationList_size(s) == 0)
 
 extern cstring mtAnnotationList_unparseSep (mtAnnotationList p_s, cstring p_sep) /*@*/ ;

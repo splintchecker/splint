@@ -12,8 +12,8 @@ abst_typedef /*@null@*/ struct
   /*@reldef@*/ /*@relnull@*/ qual *elements;
 } *qualList ;
 
-extern /*@falsenull@*/ bool qualList_isDefined (qualList p_s);
-extern /*@unused@*/ /*@truenull@*/ bool qualList_isUndefined (qualList p_s);
+extern /*@falsewhennull@*/ bool qualList_isDefined (qualList p_s);
+extern /*@unused@*/ /*@nullwhentrue@*/ bool qualList_isUndefined (qualList p_s);
 
 /*@constant null qualList qualList_undefined; @*/
 # define qualList_undefined ((qualList) NULL)

@@ -20,11 +20,11 @@
 /*@constant null guardSet guardSet_undefined;@*/
 # define guardSet_undefined     ((guardSet)NULL)
 
-extern /*@falsenull@*/ /*@unused@*/ bool 
+extern /*@falsewhennull@*/ /*@unused@*/ bool 
   guardSet_isDefined (guardSet p_g) /*@*/ ;
 # define guardSet_isDefined(g)  ((g) != guardSet_undefined)
 
-extern /*@falsenull@*/ bool guardSet_isEmpty (guardSet p_g);
+extern /*@falsewhennull@*/ bool guardSet_isEmpty (guardSet p_g);
 
 extern /*@only@*/ guardSet guardSet_new (void);
 extern guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet p_g, /*@exposed@*/ sRef p_s);

@@ -27,9 +27,9 @@ abst_typedef /*@null@*/ struct
 /*@constant null sRefTable sRefTable_undefined; @*/
 # define sRefTable_undefined ((sRefTable) NULL)
 
-extern /*@truenull@*/ bool sRefTable_isNull (sRefTable p_s) /*@*/ ;
-extern /*@truenull@*/ bool sRefTable_isEmpty (/*@sef@*/ sRefTable p_s) /*@*/ ;
-extern /*@unused@*/ /*@falsenull@*/ bool 
+extern /*@nullwhentrue@*/ bool sRefTable_isNull (sRefTable p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool sRefTable_isEmpty (/*@sef@*/ sRefTable p_s) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool 
   sRefTable_isDefined (sRefTable p_s) /*@*/ ;
 
 # define sRefTable_isNull(s) ((s) == sRefTable_undefined)

@@ -28,7 +28,7 @@ struct s_flagSpec
 /*@constant null flagSpec flagSpec_undefined; @*/
 # define flagSpec_undefined  ((flagSpec) NULL)
 
-extern /*@falsenull@*/ bool flagSpec_isDefined (flagSpec p_e) /*@*/ ;
+extern /*@falsewhennull@*/ bool flagSpec_isDefined (flagSpec p_e) /*@*/ ;
 # define flagSpec_isDefined(e)        ((e) != flagSpec_undefined)
 
 extern /*@only@*/ flagSpec flagSpec_createPlain (/*@only@*/ cstring) ;

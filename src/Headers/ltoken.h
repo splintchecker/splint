@@ -46,10 +46,10 @@ typedef /*@only@*/ ltoken o_ltoken;
 /*@constant null ltoken ltoken_undefined; @*/
 # define ltoken_undefined  ((ltoken)NULL)
 
-extern /*@falsenull@*/ bool ltoken_isValid (ltoken p_tok);
+extern /*@falsewhennull@*/ bool ltoken_isValid (ltoken p_tok);
 # define ltoken_isValid(t) ((t) != ltoken_undefined)
 
-extern /*@truenull@*/ bool ltoken_isUndefined (ltoken p_tok);
+extern /*@nullwhentrue@*/ bool ltoken_isUndefined (ltoken p_tok);
 # define ltoken_isUndefined(t) ((t) == ltoken_undefined)
 
 extern bool ltoken_isStateDefined (/*@sef@*/ ltoken p_tok) /*@*/ ;

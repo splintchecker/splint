@@ -19,13 +19,13 @@ struct s_mtTransferClauseList
 /*@constant null mtTransferClauseList mtTransferClauseList_undefined;@*/
 # define mtTransferClauseList_undefined ((mtTransferClauseList) NULL)
 
-extern /*@falsenull@*/ bool mtTransferClauseList_isDefined (mtTransferClauseList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtTransferClauseList_isDefined (mtTransferClauseList p_s) /*@*/ ;
 # define mtTransferClauseList_isDefined(s)   ((s) != mtTransferClauseList_undefined)
 
 extern int mtTransferClauseList_size (/*@sef@*/ mtTransferClauseList) /*@*/ ;
 # define mtTransferClauseList_size(s) (mtTransferClauseList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool mtTransferClauseList_empty (/*@sef@*/ mtTransferClauseList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool mtTransferClauseList_empty (/*@sef@*/ mtTransferClauseList) /*@*/ ;
 # define mtTransferClauseList_empty(s) (mtTransferClauseList_size(s) == 0)
 
 extern cstring mtTransferClauseList_unparseSep (mtTransferClauseList p_s, cstring p_sep) /*@*/ ;

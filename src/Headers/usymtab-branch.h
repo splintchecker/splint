@@ -414,7 +414,7 @@ extern void usymtab_popCaseBranch (void)
 /*@constant int functionScope;@*/
 # define functionScope 3
 
-extern /*@falsenull@*/ bool usymtab_isDefined (usymtab p_u) /*@*/ ;
+extern /*@falsewhennull@*/ bool usymtab_isDefined (usymtab p_u) /*@*/ ;
 
 /*@constant null usymtab usymtab_undefined; @*/
 # define usymtab_undefined ((usymtab)NULL)

@@ -27,10 +27,10 @@ extern /*@notnull@*/ stateValue stateValue_createImplicit (int p_value, /*@only@
 /*@constant null stateValue stateValue_undefined@*/
 # define stateValue_undefined (NULL)
 
-extern /*@truenull@*/ bool stateValue_isUndefined (stateValue) /*@*/ ;
+extern /*@nullwhentrue@*/ bool stateValue_isUndefined (stateValue) /*@*/ ;
 # define stateValue_isUndefined(p_s) ((p_s) == stateValue_undefined)
 
-extern /*@falsenull@*/ bool stateValue_isDefined (stateValue) /*@*/ ;
+extern /*@falsewhennull@*/ bool stateValue_isDefined (stateValue) /*@*/ ;
 # define stateValue_isDefined(p_s) ((p_s) != NULL)
 
 extern bool stateValue_isImplicit (stateValue) /*@*/ ;

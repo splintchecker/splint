@@ -20,8 +20,8 @@ struct s_warnClause
 /*@constant null warnClause warnClause_undefined; @*/
 # define warnClause_undefined    ((warnClause) NULL)
 
-extern /*@falsenull@*/ bool warnClause_isDefined (/*@null@*/ warnClause p_f) /*@*/ ;
-extern /*@truenull@*/ bool warnClause_isUndefined (/*@null@*/ warnClause p_f) /*@*/ ;
+extern /*@falsewhennull@*/ bool warnClause_isDefined (/*@null@*/ warnClause p_f) /*@*/ ;
+extern /*@nullwhentrue@*/ bool warnClause_isUndefined (/*@null@*/ warnClause p_f) /*@*/ ;
 
 # define warnClause_isDefined(f)   ((f) != warnClause_undefined)
 # define warnClause_isUndefined(f) ((f) == warnClause_undefined)
@@ -37,7 +37,7 @@ extern /*@observer@*/ flagSpec warnClause_getFlag (warnClause p_w) /*@*/ ;
 extern /*@only@*/ cstring warnClause_dump (warnClause p_wc) /*@*/ ;
 extern /*@only@*/ warnClause warnClause_undump (char **p_s) /*@modifies p_s@*/ ;
 
-extern /*@falsenull@*/ bool warnClause_hasMessage (warnClause p_w) /*@*/ ;
+extern /*@falsewhennull@*/ bool warnClause_hasMessage (warnClause p_w) /*@*/ ;
 
 extern /*@observer@*/ cstring warnClause_getMessage (warnClause p_w) /*@*/ ;
 extern /*@only@*/ cstring warnClause_unparse (warnClause p_w) /*@*/ ;

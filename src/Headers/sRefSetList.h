@@ -27,10 +27,10 @@ abst_typedef /*@null@*/ struct
 /*@constant null sRefSetList sRefSetList_undefined; @*/
 # define sRefSetList_undefined  ((sRefSetList) NULL)
 
-extern /*@falsenull@*/ bool sRefSetList_isDefined (sRefSetList p_s);
+extern /*@falsewhennull@*/ bool sRefSetList_isDefined (sRefSetList p_s);
 # define sRefSetList_isDefined(s) ((s) != sRefSetList_undefined)
 
-extern /*@unused@*/ /*@truenull@*/ bool sRefSetList_isUndefined (sRefSetList p_s);
+extern /*@unused@*/ /*@nullwhentrue@*/ bool sRefSetList_isUndefined (sRefSetList p_s);
 # define sRefSetList_isUndefined(s) ((s) == sRefSetList_undefined)
 
 extern sRefSetList 

@@ -19,13 +19,13 @@ struct s_mtLoseReferenceList
 /*@constant null mtLoseReferenceList mtLoseReferenceList_undefined;@*/
 # define mtLoseReferenceList_undefined ((mtLoseReferenceList) NULL)
 
-extern /*@falsenull@*/ bool mtLoseReferenceList_isDefined (mtLoseReferenceList p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mtLoseReferenceList_isDefined (mtLoseReferenceList p_s) /*@*/ ;
 # define mtLoseReferenceList_isDefined(s)   ((s) != mtLoseReferenceList_undefined)
 
 extern int mtLoseReferenceList_size (/*@sef@*/ mtLoseReferenceList) /*@*/ ;
 # define mtLoseReferenceList_size(s) (mtLoseReferenceList_isDefined (s) ? (s)->nelements : 0)
 
-extern /*@unused@*/ /*@falsenull@*/ bool mtLoseReferenceList_empty (/*@sef@*/ mtLoseReferenceList) /*@*/ ;
+extern /*@unused@*/ /*@falsewhennull@*/ bool mtLoseReferenceList_empty (/*@sef@*/ mtLoseReferenceList) /*@*/ ;
 # define mtLoseReferenceList_empty(s) (mtLoseReferenceList_size(s) == 0)
 
 extern cstring mtLoseReferenceList_unparseSep (mtLoseReferenceList p_s, cstring p_sep) /*@*/ ;

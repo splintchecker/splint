@@ -23,7 +23,7 @@ struct s_termNode
   /*@reldef@*/ lclTypeSpecNode sizeofField; /* only for TRM_SIZEOF */
 } ;
 
-extern /*@falsenull@*/ bool termNode_isDefined (/*@null@*/ termNode p_t) /*@*/ ;
+extern /*@falsewhennull@*/ bool termNode_isDefined (/*@null@*/ termNode p_t) /*@*/ ;
 # define termNode_isDefined(t) ((t) != NULL)
 
 extern termNode termNode_copySafe (termNode p_t) /*@*/ ;

@@ -57,10 +57,10 @@ extern int mstring_length (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define mstring_length(s) \
   (((s) != NULL) ? size_toInt (strlen (s)) : 0)
 
-extern /*@falsenull@*/ bool mstring_isDefined (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
+extern /*@falsewhennull@*/ bool mstring_isDefined (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define mstring_isDefined(s) ((s) != NULL)
 
-extern /*@truenull@*/ bool mstring_isEmpty (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
+extern /*@nullwhentrue@*/ bool mstring_isEmpty (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define mstring_isEmpty(s) (mstring_length(s) == 0)
 
 extern void mstring_markFree (/*@owned@*/ char *p_s) /*@modifies *p_s;@*/ ;

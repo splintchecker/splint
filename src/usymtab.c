@@ -193,7 +193,7 @@ static void clearFunctionTypes (void)
   uentryList_clear (functypes);
 }
 
-static /*@falsenull@*/ bool usymtab_isBranch (usymtab u)
+static /*@falsewhennull@*/ bool usymtab_isBranch (usymtab u)
 {
   return (usymtab_isDefined (u) && 
 	  (u->kind == US_TBRANCH || u->kind == US_FBRANCH
