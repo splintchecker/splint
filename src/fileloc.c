@@ -646,6 +646,8 @@ fileloc_column (fileloc f)
 fileloc_unparse (fileloc f)
 {
   bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
+  bool htmlFormat = context_getFlag (FLG_HTMLFILEFORMAT);
+  cstring res = cstring_undefined;
 
   if (fileloc_isDefined (f))
     {
@@ -656,23 +658,29 @@ fileloc_unparse (fileloc f)
 	case FL_IMPORT:
 	  if (parenFormat)
 	    {
-	      return (message ("import file %q(%d)", fileloc_outputFilename (f), f->lineno));
+	      res = message ("import file %q(%d)", fileloc_outputFilename (f), f->lineno);
 	    }
 	  else
 	    {
-	      return (message ("import file %q:%d", fileloc_outputFilename (f), f->lineno));
+	      res = message ("import file %q:%d", fileloc_outputFilename (f), f->lineno);
 	    }
+	  break;
 	case FL_PREPROC:
-	  if (parenFormat)
-	    {
-	      return (message ("%q(%d)", fileloc_outputFilename (f), f->lineno));
-	    }
-	  else
-	    {
-	      return (message ("%q:%d", fileloc_outputFilename (f), f->lineno));
-	    }
+	  {
+	    if (parenFormat)
+	      {
+		res = message ("%q(%d)", fileloc_outputFilename (f), f->lineno);
+	      }
+	    else
+	      {
+		res = message ("%q:%d", fileloc_outputFilename (f), f->lineno);
+	      }
+	    
+	    break;
+	  }
 	case FL_EXTERNAL:
-	  return (cstring_makeLiteral ("<external>"));
+	  res = cstring_makeLiteral ("<external>");
+	  break;
 	default:
 	  {
 	    cstring fname;
@@ -694,48 +702,59 @@ fileloc_unparse (fileloc f)
 		      {
 			if (parenFormat)
 			  {
-			    return (message ("%q(%d,%d)", fname, f->lineno, f->column));
+			    res = message ("%q(%d,%d)", fname, f->lineno, f->column);
 			  }
 			else
 			  {
-			    return (message ("%q:%d:%d", fname, f->lineno, f->column));
+			    res = message ("%q:%d:%d", fname, f->lineno, f->column);
 			  }
 		      }
 		    else
 		      {
 			if (parenFormat)
 			  {
-			    return (message ("%q(%d)", fname, f->lineno));
+			    res = message ("%q(%d)", fname, f->lineno);
 			  }
 			else
 			  {
-			    return (message ("%q:%d", fname, f->lineno));
+			    res = message ("%q:%d", fname, f->lineno);
 			  }
 		      }
 		  }
-		
-		return fname;
+		else
+		  {
+		    res = fname;
+		  }
 	      }
 	    else if (fileloc_linenoDefined (f))
 	      {
 		if (parenFormat)
 		  {
-		    return (message ("%q(%d)", fname, f->lineno));
+		    res = message ("%q(%d)", fname, f->lineno);
 		  }
 		else
 		  {
-		    return (message ("%q:%d", fname, f->lineno));
+		    res = message ("%q:%d", fname, f->lineno);
 		  }
 	      }
 	    else
 	      {
-		return fname;
+		res = fname;
 	      }
 	  }
 	}
-    }
 
-  return (cstring_makeLiteral ("< Location unknown >"));
+       if (htmlFormat && fileloc_linenoDefined (f))
+	 {
+	   res = message ("<a href=\"#line%d\">%s</a>", f->lineno, res);
+	 }
+    }
+  else
+    {
+      res = cstring_makeLiteral ("< Location unknown >");
+    }
+  
+  return res;
 }
 
 /*@only@*/ cstring

@@ -163,7 +163,9 @@ qtype qtype_resolve (/*@returned@*/ qtype q)
 {
   if (qtype_isDefined (q))
     {
+      DPRINTF (("Resolving: %s", qtype_unparse (q)));
       q->type = ctype_resolve (q->type);
+      DPRINTF (("Resolving: %s", qtype_unparse (q)));
     }
 
   return q;

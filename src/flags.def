@@ -3271,6 +3271,13 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
+    FK_FORMAT, FK_DISPLAY, plainFlag,
+    "htmlfileformat",
+    FLG_HTMLFILEFORMAT,
+    "show file locations as links",
+    NULL, 0, 0
+  },
+  {
     FK_FORMAT, FK_NONE, plainFlag,
     "showfunc",
     FLG_SHOWFUNC,

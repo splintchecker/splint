@@ -80,7 +80,7 @@ ctkind
 ctkind_fromInt (int i)
 {
   /*@+enumint@*/
-  if (i < CTK_UNKNOWN || i > CTK_COMPLEX)
+  if (i < CTK_ANYTYPE || i > CTK_COMPLEX)
     {
       llcontbug (message ("ctkind_fromInt: out of range: %d", i));
       return CTK_INVALID;
@@ -2669,7 +2669,9 @@ static /*@observer@*/ ctbase ctype_getCtbase (ctype c)
 	llbuglit ("ctype_getCtbase: ctype dne");
       if (c == ctype_elipsMarker)
 	llbuglit ("ctype_getCtbase: elips marker");
-      
+      if (c == ctype_anytype)
+	llbuglit ("ctype_getCtbase: ctype anytype");
+
       llfatalbug (message ("ctype_getCtbase: ctype out of range: %d", c));
       BADEXIT;
     }
@@ -2711,6 +2713,8 @@ ctype_getCtentry (ctype c)
       return (cttab.entries[c]);
     }
   else if (c == CTK_UNKNOWN) 
+    llcontbuglit ("ctype_getCtentry: ctype unknown");
+  else if (c == CTK_ANYTYPE) 
     llcontbuglit ("ctype_getCtentry: ctype unknown");
   else if (c == CTK_INVALID)
     llcontbuglit ("ctype_getCtentry: ctype invalid (ctype_undefined)");

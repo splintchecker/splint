@@ -90,7 +90,6 @@ LCLLISTSRC = initDeclNodeList.c sortList.c declaratorInvNodeList.c \
              varDeclarationNodeList.c varNodeList.c quantifierNodeList.c \
              replaceNodeList.c importNodeList.c
 
-
 HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/abstract.h               Headers/macrocache.h \
           Headers/abstractNode.h           Headers/mapping.h \

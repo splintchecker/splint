@@ -697,7 +697,8 @@ conditionTag
 fcnDefHdrAux
  : namedDecl                               
    { 
-     qtype qint = qtype_create (ctype_int);
+     /**!!! deal with fred; fred (int); declarations! **/
+     qtype qint = qtype_create (ctype_int); 
      $$ = idDecl_fixBase ($1, qint);
      qtype_free (qint);
    }

@@ -56,11 +56,13 @@ static /*@only@*/ constraintList implicitFcnConstraints = NULL;
 
 static void clabstract_prepareFunction (uentry p_e) /*@modifies p_e@*/ ;
 static bool fcnNoGlobals = FALSE;
-static bool ProcessingVars = FALSE;
-static bool ProcessingParams = FALSE;
-static bool ProcessingGlobals = FALSE;
-static bool ProcessingTypedef = FALSE;
-static bool ProcessingIterVars = FALSE;
+static void processVariable (/*@temp@*/ idDecl p_t) /*@modifies internalState@*/ ;
+
+static bool s_processingVars = FALSE;
+static bool s_processingParams = FALSE;
+static bool s_processingGlobals = FALSE;
+static bool s_processingTypedef = FALSE;
+static bool s_processingIterVars = FALSE;
 static /*@only@*/ qtype processingType = qtype_undefined;
 static uentry currentIter = uentry_undefined;
 static /*@dependent@*/ uentryList saveParamList;  /* for old style functions */
@@ -296,13 +298,13 @@ extern void declareCIter (cstring name, /*@owned@*/ uentryList params)
 
 extern void nextIterParam (void)
 {
-  llassert (ProcessingIterVars);
+  llassert (s_processingIterVars);
   saveIterParamNo++;
 }
 
 extern int iterParamNo (void)
 {
-  llassert (ProcessingIterVars);
+  llassert (s_processingIterVars);
   return saveIterParamNo;
 }
 
@@ -609,32 +611,28 @@ static /*@exposed@*/ uentry clabstract_globalDeclareFunction (idDecl tid)
       ue = uentry_makeIdFunction (tid);
       reflectSpecialCode (ue);
       reflectArgsUsed (ue);
+      reflectStorageClass (ue);
+      uentry_checkParams (ue);
+      
+      DPRINTF (("Supercede function: %s", uentry_unparseFull (ue)));
+      
+      ue = usymtab_supGlobalEntryReturn (ue);
+      DPRINTF (("After supercede function: %s", uentry_unparseFull (ue)));
+      
+      DPRINTF (("Enter function: %s", uentry_unparseFull (ue)));
+      context_enterFunction (ue);
+      enterFunctionParams (uentry_getParams (ue));
+      
+      resetStorageClass ();
+      DPRINTF (("Function: %s", uentry_unparseFull (ue)));
+      return (ue);
     }
   else
     {    
-      llparseerror (message ("Inconsistent function declaration: %q",
+      llparseerror (message ("Non-function declaration: %q",
 			     idDecl_unparse (tid)));
-
-      tid = idDecl_replaceCtype 
-	(tid, ctype_makeFunction (ctype_unknown, uentryList_undefined));
-      ue = uentry_makeIdFunction (tid);
+      return (uentry_undefined);
     }
-
-  reflectStorageClass (ue);
-  uentry_checkParams (ue);
-
-  DPRINTF (("Supercede function: %s", uentry_unparseFull (ue)));
-
-  ue = usymtab_supGlobalEntryReturn (ue);
-  DPRINTF (("After supercede function: %s", uentry_unparseFull (ue)));
-
-  DPRINTF (("Enter function: %s", uentry_unparseFull (ue)));
-  context_enterFunction (ue);
-  enterFunctionParams (uentry_getParams (ue));
-
-  resetStorageClass ();
-  DPRINTF (("Function: %s", uentry_unparseFull (ue)));
-  return (ue);
 }
 
 /*
@@ -718,50 +716,67 @@ void clabstract_declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
 
   DPRINTF (("Declare function: %s", idDecl_unparse (tid)));
   
-  if (ProcessingParams)
+  if (ctype_isUnknown (idDecl_getCtype (tid)))
     {
-      ue = globalDeclareOldStyleFunction (tid);
-      saveFunction = ue;
-      DPRINTF (("Set save function: %s", uentry_unparseFull (ue)));
+      /*
+      ** No type, its really a plain name (int) declaration
+      */
+
+      voptgenerror (FLG_IMPTYPE,
+		    message ("No type before declaration name (implicit int type): %q",
+			     idDecl_unparse (tid)),
+		    g_currentloc);
+      tid = idDecl_replaceCtype (tid, ctype_int);
+      processVariable (tid);
+      saveFunction = uentry_undefined;
     }
   else
     {
-      saveFunction = uentry_undefined;
-
-      if (context_inRealFunction ())
+      if (s_processingParams)
 	{
-	  ue = uentry_makeVariableLoc (idDecl_observeId (tid), ctype_unknown);
-
-	  llparseerror (message ("Function declared inside function: %q",
-				 idDecl_unparse (tid)));
-	  
-	  context_quietExitFunction ();
-	  ue = usymtab_supEntryReturn (ue);
+	  ue = globalDeclareOldStyleFunction (tid);
+	  saveFunction = ue;
+	  DPRINTF (("Set save function: %s", uentry_unparseFull (ue)));
 	}
       else
 	{
-	  if (context_inInnerScope ())
+	  saveFunction = uentry_undefined;
+	  
+	  if (context_inRealFunction ())
 	    {
-	      llparseerror (message ("Declaration in inner context: %q",
+	      ue = uentry_makeVariableLoc (idDecl_observeId (tid), ctype_unknown);
+	      
+	      llparseerror (message ("Function declared inside function: %q",
 				     idDecl_unparse (tid)));
 	      
-	      sRef_setGlobalScope ();
-	      ue = uentry_makeVariableLoc (idDecl_observeId (tid), 
-					   ctype_unknown);
-	      ue = usymtab_supGlobalEntryReturn (ue);
-	      sRef_clearGlobalScope ();
+	      context_quietExitFunction ();
+	      ue = usymtab_supEntryReturn (ue);
 	    }
 	  else
 	    {
-	      ue = clabstract_globalDeclareFunction (tid);
+	      if (context_inInnerScope ())
+		{
+		  llparseerror (message ("Declaration in inner context: %q",
+					 idDecl_unparse (tid)));
+		  
+		  sRef_setGlobalScope ();
+		  ue = uentry_makeVariableLoc (idDecl_observeId (tid), 
+					       ctype_unknown);
+		  ue = usymtab_supGlobalEntryReturn (ue);
+		  sRef_clearGlobalScope ();
+		}
+	      else
+		{
+		  ue = clabstract_globalDeclareFunction (tid);
+		}
 	    }
+	  
+	  resetGlobals ();
 	}
       
-      resetGlobals ();
+      resetStorageClass ();
+      idDecl_free (tid);
     }
-
-  resetStorageClass ();
-  idDecl_free (tid);
 }
 
 void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
@@ -770,7 +785,7 @@ void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
 
   DPRINTF (("Declare static funciton: %s", idDecl_unparse (tid)));
 
-  if (ProcessingParams)
+  if (s_processingParams)
     {
       ue = globalDeclareOldStyleFunction (tid);
       saveFunction = ue;
@@ -828,6 +843,7 @@ void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
 		}
 	      else
 		{    
+		  DPRINTF (("Here we are!"));
 		  llparseerror (message ("Inconsistent function declaration: %q",
 					 idDecl_unparse (tid)));
 		  
@@ -1114,7 +1130,7 @@ void setStorageClass (storageClassCode sc)
 void
 setProcessingIterVars (uentry iter)
 {
-  ProcessingIterVars = TRUE;
+  s_processingIterVars = TRUE;
   currentIter = iter;
   saveIterParamNo = 0;
 }
@@ -1122,7 +1138,7 @@ setProcessingIterVars (uentry iter)
 void
 setProcessingGlobalsList ()
 {
-  ProcessingGlobals = TRUE;
+  s_processingGlobals = TRUE;
   fcnNoGlobals = FALSE;
 }
 
@@ -1148,20 +1164,20 @@ isProcessingGlobMods ()
 
 static void resetGlobals (void)
 {
-  ProcessingGlobals = FALSE;
+  s_processingGlobals = FALSE;
   fcnNoGlobals = FALSE;
 }
 
 void
 unsetProcessingGlobals ()
 {
-  ProcessingGlobals = FALSE;
+  s_processingGlobals = FALSE;
 }
 
 void
 setProcessingVars (/*@only@*/ qtype q)
 {
-  ProcessingVars = TRUE;
+  s_processingVars = TRUE;
   qtype_free (processingType);
   processingType = q;
 }
@@ -1169,14 +1185,14 @@ setProcessingVars (/*@only@*/ qtype q)
 static void
 setGenericParamList (/*@dependent@*/ uentryList pm)
 {
-  ProcessingParams = TRUE;
+  s_processingParams = TRUE;
   saveParamList = pm;
 }
 
 void
 setProcessingTypedef (qtype q)
 {
-  ProcessingTypedef = TRUE;
+  s_processingTypedef = TRUE;
 
   qtype_free (processingType);
   processingType = q;
@@ -1186,13 +1202,13 @@ void
 unsetProcessingVars ()
 {
   resetStorageClass ();
-  ProcessingVars = FALSE;
+  s_processingVars = FALSE;
 }
 
 void 
 oldStyleDoneParams ()
 {  
-  if (ProcessingParams)
+  if (s_processingParams)
     {
       if (uentry_isInvalid (saveFunction))
 	{
@@ -1205,7 +1221,7 @@ oldStyleDoneParams ()
 	  ctype ct2 = ctype_makeFunction (ct, params);
 
 	  uentry_setType (saveFunction, ct2);
-	  ProcessingParams = FALSE;
+	  s_processingParams = FALSE;
 
 	  oldStyleCompleteFunction (saveFunction);
 	  saveFunction = uentry_undefined;
@@ -1245,7 +1261,7 @@ checkDoneParams ()
       ct2 = ctype_makeParamsFunction (ct, uentryList_copy (saveParamList));
       
       uentry_setType (saveFunction, ct2);
-      ProcessingParams = FALSE;
+      s_processingParams = FALSE;
       
       oldStyleDeclareFunction (saveFunction);
       saveFunction = uentry_undefined;
@@ -1254,7 +1270,7 @@ checkDoneParams ()
 
 void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClause warn)
 {
-  llassert (ProcessingTypedef);
+  llassert (s_processingTypedef);
 
   DPRINTF (("Declare type: %s", exprNodeList_unparse (decls)));
 
@@ -1296,7 +1312,7 @@ void clabstract_declareType (/*@only@*/ exprNodeList decls, /*@only@*/ warnClaus
 void
 unsetProcessingTypedef ()
 {
-  ProcessingTypedef = FALSE;
+  s_processingTypedef = FALSE;
 }
 
 void checkConstant (qtype t, idDecl id) 
@@ -1353,20 +1369,184 @@ void checkValueConstant (qtype t, idDecl id, exprNode e)
   usymtab_supGlobalEntry (ue);
 }
 
+static void processVariable (idDecl t)
+{
+  uentry e;
+  ctype ct;
+  
+  ct = ctype_realType (idDecl_getCtype (t));
+  
+  if (s_processingParams)
+    {
+      cstring id = idDecl_getName (t);
+      int paramno = uentryList_lookupRealName (saveParamList, id);
+      
+      if (paramno >= 0)
+	{
+	  uentry cparam = uentryList_getN (saveParamList, paramno);
+	  
+	  DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
+	  uentry_setType (cparam, idDecl_getCtype (t));
+	  uentry_reflectQualifiers (cparam, idDecl_getQuals (t));
+	  uentry_setDeclaredOnly (cparam, context_getSaveLocation ());
+	  DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
+	}
+      else
+	{
+	  llfatalerrorLoc
+	    (message ("Old style declaration uses unlisted parameter: %s", 
+		      id));
+	}
+    }
+  else
+    {
+      fileloc loc;
+      
+      if (context_inIterDef ())
+	{
+	  cstring pname = makeParam (idDecl_observeId (t));
+	  uentry p = usymtab_lookupSafe (pname);
+	  
+	  cstring_free (pname);
+	  
+	  if (uentry_isYield (p))
+	    {
+	      e = uentry_makeParam (t, sRef_getParam (uentry_getSref (p)));
+	      uentry_checkYieldParam (p, e);
+	      usymtab_supEntrySref (e);
+	      return;
+	    }
+	}
+      
+      if ((hasSpecialCode () || argsUsed)
+	  && ctype_isFunction (idDecl_getCtype (t)))
+	{
+	  e = uentry_makeIdFunction (t);
+	  reflectSpecialCode (e);
+	  reflectArgsUsed (e);
+	}
+      else
+	{
+	  e = uentry_makeIdVariable (t);
+	}
+      
+      loc = uentry_whereDeclared (e);
+      
+      /*
+	if (context_inGlobalScope ())
+	{
+	uentry_checkParams was here!
+	}
+      */
+      
+      if (ctype_isFunction (uentry_getType (e)))
+	{
+	  clabstract_prepareFunction (e);
+	}
+      
+      DPRINTF (("Superceding... %s", uentry_unparseFull (e)));
+      e = usymtab_supEntrySrefReturn (e);
+      DPRINTF (("After superceding... %s", uentry_unparseFull (e)));	  
+      
+      if (uentry_isExtern (e) && !context_inGlobalScope ())
+	{
+	  voptgenerror 
+	    (FLG_NESTEDEXTERN,
+	     message ("Declaration using extern inside function scope: %q",
+		      uentry_unparse (e)),
+	     g_currentloc);
+	  
+	  uentry_setDefined (e, fileloc_getExternal ());
+	  sRef_setDefined (uentry_getSref (e), fileloc_getExternal ());
+	}
+      
+      if (uentry_isFunction (e))
+	{
+	  if (!context_inXHFile ())
+	    {
+	      checkParamNames (e);
+	    }
+	}
+      
+      if (uentry_isVar (e) && uentry_isCheckedUnknown (e))
+	{
+	  sRef sr = uentry_getSref (e);
+	  
+	  if (sRef_isLocalVar (sr))
+	    {
+	      if (context_getFlag (FLG_IMPCHECKMODINTERNALS))
+		{
+		  uentry_setCheckMod (e);
+		}
+	      else
+		{
+		  uentry_setUnchecked (e);
+		}
+	    }
+	  else if (sRef_isFileStatic (sr))
+	    {
+	      if (context_getFlag (FLG_IMPCHECKEDSTRICTSTATICS))
+		{
+		  uentry_setCheckedStrict (e);
+		}
+	      else if (context_getFlag (FLG_IMPCHECKEDSTATICS))
+		{
+		  uentry_setChecked (e);
+		}
+	      else if (context_getFlag (FLG_IMPCHECKMODSTATICS))
+		{
+		  uentry_setCheckMod (e);
+		}
+	      else
+		{
+		  ;
+		}
+	    }
+	  else /* real global */
+	    {
+	      llassert (sRef_isRealGlobal (sr));
+	      
+	      if (context_getFlag (FLG_IMPCHECKEDSTRICTGLOBALS))
+		{
+		  uentry_setCheckedStrict (e);
+		}
+	      else if (context_getFlag (FLG_IMPCHECKEDGLOBALS))
+		{
+		  uentry_setChecked (e);
+		}
+	      else if (context_getFlag (FLG_IMPCHECKMODGLOBALS))
+		{
+		  uentry_setCheckMod (e);
+		}
+	      else
+		{
+		  ;
+		}
+	    }
+	}
+    }
+}
+
 void processNamedDecl (idDecl t)
 {
   if (qtype_isUndefined (processingType))
     {
-      llparseerror (message ("No type before declaration name: %q", idDecl_unparse (t)));
+      processingType = qtype_create (ctype_int);
+      t = idDecl_fixBase (t, processingType);
 
-      processingType = qtype_create (ctype_unknown);
+      voptgenerror (FLG_IMPTYPE,
+		    message ("No type before declaration name (implicit int type): %q",
+			     idDecl_unparse (t)),
+		    g_currentloc);
     }
-
-  t = idDecl_fixBase (t, processingType);
+  else
+    {
+      t = idDecl_fixBase (t, processingType);
+    }
 
   DPRINTF (("Declare: %s", idDecl_unparse (t)));
   
-  if (ProcessingGlobals)
+  if (s_processingGlobals)
     {
       cstring id = idDecl_getName (t);
       uentry ue = usymtab_lookupSafe (id);
@@ -1395,164 +1575,11 @@ void processNamedDecl (idDecl t)
 	    }
 	}
     }
-  else if (ProcessingVars)
+  else if (s_processingVars)
     {
-      uentry e;
-      ctype ct;
-      
-      ct = ctype_realType (idDecl_getCtype (t));
-
-      if (ProcessingParams)
-	{
-	  cstring id = idDecl_getName (t);
-	  int paramno = uentryList_lookupRealName (saveParamList, id);
-
-	  if (paramno >= 0)
-	    {
-	      uentry cparam = uentryList_getN (saveParamList, paramno);
-
-	      DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
-	      uentry_setType (cparam, idDecl_getCtype (t));
-	      uentry_reflectQualifiers (cparam, idDecl_getQuals (t));
-	      uentry_setDeclaredOnly (cparam, context_getSaveLocation ());
-	      DPRINTF (("Processing param: %s", uentry_unparseFull (cparam)));
-	    }
-	  else
-	    {
-	      llfatalerrorLoc
-		(message ("Old style declaration uses unlisted parameter: %s", 
-			  id));
-	    }
-	}
-      else
-	{
-	  fileloc loc;
-
-	  if (context_inIterDef ())
-	    {
-	      cstring pname = makeParam (idDecl_observeId (t));
-	      uentry p = usymtab_lookupSafe (pname);
-
-	      cstring_free (pname);
-
-	      if (uentry_isYield (p))
-		  {
-		      e = uentry_makeParam (t, sRef_getParam (uentry_getSref (p)));
-		      uentry_checkYieldParam (p, e);
-		      usymtab_supEntrySref (e);
-		      return;
-		  }
-	    }
-	  
-	  if ((hasSpecialCode () || argsUsed)
-	      && ctype_isFunction (idDecl_getCtype (t)))
-	      {
-	      e = uentry_makeIdFunction (t);
-	      reflectSpecialCode (e);
-	      reflectArgsUsed (e);
-	      }
-	  else
-	      {
-		  e = uentry_makeIdVariable (t);
-	      }
-	  
-	  loc = uentry_whereDeclared (e);
-	  
-	  /*
-	    if (context_inGlobalScope ())
-	    {
-	    uentry_checkParams was here!
-	    }
-	  */
-	  
-	  if (ctype_isFunction (uentry_getType (e)))
-	    {
-	      clabstract_prepareFunction (e);
-	    }
-	  
-	  DPRINTF (("Superceding... %s", uentry_unparseFull (e)));
-	  e = usymtab_supEntrySrefReturn (e);
-	  DPRINTF (("After superceding... %s", uentry_unparseFull (e)));	  
-	  
-	  if (uentry_isExtern (e) && !context_inGlobalScope ())
-	    {
-	      voptgenerror 
-		(FLG_NESTEDEXTERN,
-		 message ("Declaration using extern inside function scope: %q",
-			  uentry_unparse (e)),
-		 g_currentloc);
-	      
-	      uentry_setDefined (e, fileloc_getExternal ());
-	      sRef_setDefined (uentry_getSref (e), fileloc_getExternal ());
-	    }
-	  
-	  if (uentry_isFunction (e))
-	    {
-	      if (!context_inXHFile ())
-		{
-		  checkParamNames (e);
-		}
-	    }
-	  
-	  if (uentry_isVar (e) && uentry_isCheckedUnknown (e))
-	    {
-	      sRef sr = uentry_getSref (e);
-	      
-	      if (sRef_isLocalVar (sr))
-		{
-		  if (context_getFlag (FLG_IMPCHECKMODINTERNALS))
-		    {
-		      uentry_setCheckMod (e);
-		    }
-		  else
-		    {
-		      uentry_setUnchecked (e);
-		    }
-		}
-	      else if (sRef_isFileStatic (sr))
-		{
-		  if (context_getFlag (FLG_IMPCHECKEDSTRICTSTATICS))
-		    {
-		      uentry_setCheckedStrict (e);
-		    }
-		  else if (context_getFlag (FLG_IMPCHECKEDSTATICS))
-		    {
-		      uentry_setChecked (e);
-		    }
-		  else if (context_getFlag (FLG_IMPCHECKMODSTATICS))
-		    {
-		      uentry_setCheckMod (e);
-		    }
-		  else
-		    {
-		      ;
-		    }
-		}
-	      else /* real global */
-		{
-		  llassert (sRef_isRealGlobal (sr));
-		  
-		  if (context_getFlag (FLG_IMPCHECKEDSTRICTGLOBALS))
-		    {
-		      uentry_setCheckedStrict (e);
-		    }
-		  else if (context_getFlag (FLG_IMPCHECKEDGLOBALS))
-		    {
-		      uentry_setChecked (e);
-		    }
-		  else if (context_getFlag (FLG_IMPCHECKMODGLOBALS))
-		    {
-		      uentry_setCheckMod (e);
-		    }
-		  else
-		    {
-		      ;
-		    }
-		}
-	    }
-	}
+      processVariable (t);
     }
-  else if (ProcessingTypedef)
+  else if (s_processingTypedef)
     {
       ctype ct = idDecl_getCtype (t);
       uentry e;
@@ -1777,7 +1804,7 @@ handleEnum (cstring id)
 
 bool processingIterVars (void) 
 { 
-  return ProcessingIterVars; 
+  return s_processingIterVars; 
 }
 
 uentry getCurrentIter (void) 
@@ -1846,7 +1873,7 @@ doVaDcl ()
   cstring id = cstring_makeLiteral ("va_alist");
   uentry e;
 
-  if (ProcessingParams)
+  if (s_processingParams)
     {
       int i = uentryList_lookupRealName (saveParamList, id);
       

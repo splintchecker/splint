@@ -1449,21 +1449,23 @@ lclbug (/*@only@*/ cstring s)
 # endif
 
 void
-llfatalerror (cstring s)
+xllfatalerror (char *srcFile, int srcLine, cstring s)
 {
   prepareMessage ();
   printError (g_errorstream, s);
   printError (g_errorstream, cstring_makeLiteral ("*** Cannot continue."));
+  showSourceLoc (srcFile, srcLine);
   llexit (LLFAILURE);
 }
 
 void
-llfatalerrorLoc (/*@only@*/ cstring s)
+xllfatalerrorLoc (char *srcFile, int srcLine, /*@only@*/ cstring s)
 {
   prepareMessage ();
   (void) fflush (g_warningstream);
   printError (g_errorstream, message ("%q: %q", fileloc_unparse (g_currentloc), s));
   printError (g_errorstream, cstring_makeLiteral ("*** Cannot continue."));
+  showSourceLoc (srcFile, srcLine);
   (void) fflush (g_warningstream);
   llexit (LLFAILURE);
 }
@@ -1802,7 +1804,7 @@ bool xllnoptgenerror (char *srcFile, int srcLine,
   return FALSE;
 }
 
-void llparseerror (cstring s)
+void xllparseerror (char *srcFile, int srcLine, cstring s)
 {
   if (context_getFlag (FLG_TRYTORECOVER))
     {
@@ -1812,14 +1814,16 @@ void llparseerror (cstring s)
 	{
 	  if (cstring_isDefined (s))
 	    {
-	      llfatalerror (message ("%q: Parse Error: %q.  "
-				     "Too many errors, giving up.",
-				     fileloc_unparse (g_currentloc), s));
+	      xllfatalerror (srcFile, srcLine,
+			     message ("%q: Parse Error: %q.  "
+				      "Too many errors, giving up.",
+				      fileloc_unparse (g_currentloc), s));
 	    }
 	  else
 	    {
-	      llfatalerror (message ("%q: Parse Error.  Too many errors, giving up.",
-				     fileloc_unparse (g_currentloc)));
+	      xllfatalerror (srcFile, srcLine,
+			     message ("%q: Parse Error.  Too many errors, giving up.",
+				      fileloc_unparse (g_currentloc)));
 	    }
 	}
       else
@@ -1828,10 +1832,12 @@ void llparseerror (cstring s)
 	    {
 	      llreportparseerror (message ("Parse Error: %q. Attempting to continue.",
 					   s));
+	      showSourceLoc (srcFile, srcLine);
 	    }
 	  else
 	    {
 	      llreportparseerror (message ("Parse Error. Attempting to continue."));
+	      showSourceLoc (srcFile, srcLine);
 	    }
 	}
     }
@@ -1848,8 +1854,9 @@ void llparseerror (cstring s)
 	  msg = message ("Parse Error.");
 	}
 
-      llfatalerror
-	(message ("%q: %s (For help on parse errors, "
+      xllfatalerror
+	(srcFile, srcLine,
+	 message ("%q: %s (For help on parse errors, "
 		  "see splint -help parseerrors.)",
 		  fileloc_unparse (g_currentloc), msg));
     }
