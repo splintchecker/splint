@@ -71,8 +71,6 @@ lclint : $(OBJ)
 
 object: $(OBJ)
 
-mylint:
-	CC="$(LCLINT)" ; export CC ; $(MAKE) -e object
 ###
 ### grammars
 ###
@@ -86,7 +84,7 @@ signature.c : signature.c.der signature.y
 ifdef BISON
 	@$(BISON) $(YFLAGS) -p lsl signature.y
 	@$(CAT) bison.head signature.tab.c > signature.c
-	@$(MV) Headers/signature_gen.h Headers/signature_gen.bak
+	-@$(MV) Headers/signature_gen.h Headers/signature_gen.bak
 	@$(CAT) bison.head signature.tab.h > Headers/signature_gen.h
 else
 	$(CP) signature.c.der signature.c
@@ -98,7 +96,7 @@ ifdef BISON
 	@echo '//           Expect 119 shift/reduce conflicts and 114 reduce/reduce conflicts.'
 	@echo '//           (see cgrammar.y for explanation)'
 	@$(CAT) bison.head cgrammar.tab.c > cgrammar.c
-	@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
+	-@$(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak
 	@$(CAT) bison.head cgrammar.tab.h > Headers/cgrammar_tokens.h
 else
 	$(CP) cgrammar.c.der cgrammar.c
@@ -111,9 +109,9 @@ ifdef BISON
 	$(BISON) $(YFLAGS) -p yl llgrammar.y
 	@echo '//            Expect 2 shift/reduce conflicts.'
 	@$(CAT) bison.head llgrammar.tab.c > llgrammar.c
-	@$(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak
+	-@$(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak
 	@$(CAT) bison.head llgrammar.tab.h > Headers/llgrammar_gen2.h
-	@$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak
+	-@$(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak
 	@$(CAT) bison.head llgrammar.tab.h > Headers/llgrammar_gen.h
 else
 	$(CP) llgrammar.c.der llgrammar.c
@@ -149,6 +147,7 @@ cscanner.o : cscanner.c
 
 Headers/signature2.h : signature.c
 Headers/cgrammar2.h : cgrammar.c
+Headers/cgrammar_tokens.h : cgrammar.c
 Headers/llgrammar.h : llgrammar.c
 
 ###
@@ -160,6 +159,10 @@ SINGLEFLAGS = +neverinclude -supcounts +partial -showsummary -load lclint.lcd
 
 .c.check: lclint.lcd lclint
 	$(LCLINT) $(LINTFLAGS) $(SINGLEFLAGS) $*.c
+
+lcllib.c: Headers/llgrammar.h
+clabstract.c: Headers/cgrammar_tokens.h 
+scan.c: Headers/signature2.h 
 
 .c.o:
 ifeq ($(CHECK), 1)
@@ -253,6 +256,8 @@ endif
 	@echo '//  Done Release '`cat $(VERSION_NUMBER)`
 
 
+Headers/flag_codes.h: flags
+
 flags: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
 
@@ -270,6 +275,12 @@ flags: flags.def
 
 pristine: clean
 	-$(RM) -f *.lcs *.lslo
+	-$(RM)  signature.c signature.tab.c  signature.tab.h
+	-$(RM)  llgrammar.c llgrammar.tab.c llgrammar.tab.h
+	-$(RM)  Headers/cgrammar_tokens.h
+	-$(RM)  lex.yy.c
+	-$(RM)  cgrammar.tab.h
+	-$(RM)  Headers/*_gen.h* Headers/*_gen2.h*
 
 clean: tidy
 	-$(RM) core lclint 
