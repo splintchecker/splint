@@ -412,6 +412,7 @@ Finished LCLint checking --- no code processed
    skipansiheaders             
    skipposixheaders            
    skipsysheaders              
+   slashslashcomment           
    slovak                      
    slovakconsts                
    slovakfcns                  
@@ -545,6 +546,7 @@ unrecogcomments --- stylized comment is unrecognized
 unrecogflagcomments --- stylized flag comment uses an unrecognized flag
 continuecomment --- line continuation marker (\) in comment before */ on same
 line
+slashslashcomment --- C++ style // comment
 nestcomment --- comment begins inside comment
 tmpcomments --- interpret t comments (ignore errors in lines marked with
 /*@t<n>@*/

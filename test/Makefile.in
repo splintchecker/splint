@@ -113,7 +113,7 @@ LCLINTRNEST = $(LCLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   fileio tainted mergestate metastate sizeof buffertest \
-  tests2.2 tests2.2a tests2.4 tests2.5  \
+  tests2.2 tests2.4 tests2.5  \
   simplebufferConstraintTests moreBufferTests globalbufferannotation \
   maxset strchr for \
   abstptr abstract alias alttypes ansireserved argorder \
