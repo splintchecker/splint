@@ -6693,7 +6693,6 @@ uvinfo_copy (uvinfo u)
   ret->defstate = u->defstate;
   ret->checked = u->checked;
 
-  /*@i523 ret->origsref = sRef_copy (u->origsref); */
 
   /* drl added 07-02-001 */
   /* copy null terminated information */

@@ -276,11 +276,6 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen) /*@requires maxR
     }
   else if (*p == '0')
     {
-      /*@i3434*/
-      /* drl: see if there is a reason that we shouldn't do
-       p++;
-       len--; */
-      
       base = 8;
     }
   else

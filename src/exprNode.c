@@ -4416,10 +4416,6 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
   exprNode_checkModify (e, ret);
 
   /* added 7/11/2000 D.L */
-  /*@i223*/ 
-  /*DRL 6/8/01 I decided to disable all Splint warnings here since the code 
-    probably needs a rewrite any way */
-
 
   /* updateEnvironmentForPostOp (e); */
   

@@ -123,7 +123,6 @@ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
   ret->generatingExpr = c->generatingExpr;
   /*@=assignexpose@*/
   
-  /*@i33 fix this*/
   if (c->orig != NULL)
     ret->orig = constraint_copy (c->orig);
   else
@@ -139,7 +138,7 @@ constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
   return ret;
 }
 
-/*like copy expect it doesn't allocate memory for the constraint*/
+/*like copy except it doesn't allocate memory for the constraint*/
 
 void constraint_overWrite (constraint c1, constraint c2) 
 {
@@ -166,7 +165,6 @@ void constraint_overWrite (constraint c1, constraint c2)
   else
     c1->orig = NULL;
 
-  /*@i33 make sure that the or is freed correctly*/
   if (c1->or != NULL)
     constraint_free (c1->or);
 
@@ -327,7 +325,6 @@ constraint constraint_makeSRefSetBufferSize (sRef s, long int size)
  ret->ar = EQ;
  ret->expr =  constraintExpr_makeIntLiteral ((int)size);
  ret->post = TRUE;
- /*@i1*/
  return ret;
 }
 
@@ -340,7 +337,6 @@ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
-  /*@i1*/
   return ret;
 }
 

@@ -2256,7 +2256,6 @@ sRef_closeEnough (sRef s1, sRef s2)
     {
     case SK_RESULT:
       {
-	/* s = sRef_saveCopy(s); */ /*@i523@*/
 	ce = constraintExpr_makeTermsRef (s);
 	return ce;
       }
@@ -2273,7 +2272,6 @@ sRef_closeEnough (sRef s1, sRef s2)
       {
 	sRef temp;
 	temp = (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
-	/* temp = sRef_saveCopy(temp); */ /*@i523@*/
 	ce = constraintExpr_makeTermsRef (temp);
 	return ce;
       }
@@ -3360,7 +3358,7 @@ static bool sRef_isZerothArrayFetch (/*@notnull@*/ sRef s)
       s->kind = SK_ADR;
       s->type = ctype_makePointer (t->type);
       s->info = (sinfo) dmalloc (sizeof (*s->info));
-      s->info->ref = t; /* sRef_copy (t);  */ /*@i32@*/
+      s->info->ref = t; 
       
       if (t->defstate == SS_UNDEFINED) 
 	/* no! it is allocated even still: && !ctype_isPointer (t->type)) */

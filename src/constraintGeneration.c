@@ -2331,7 +2331,6 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
   I'm a bit nervous about modifying the exprNode
   but this is the easy way to do this
   If I have time I'd like to cause the exprNode to get created correctly in the first place */
-/*@i223*/
 void exprNode_findValue(exprNode e)
 {
   exprData data;

@@ -2228,7 +2228,9 @@ sRef checkbufferConstraintClausesId (uentry ue)
     {
       llfatalerrorLoc (cstring_makeLiteral("Macro defined constants can not be used in function constraints unless they are specifed with the constant annotation.  To use a macro defined constant include an annotation of the form /*@constant <type> <name>=<value>@*/ somewhere before the function constraint.  This restriction may be removed in future releases if it is determined to be excessively burdensome." ));
     }
-  return sRef_saveCopy (sr); /*@i523 why the saveCopy? */
+
+  /*@ savedCopy to used to mitigate danger of accessing freed memory*/
+  return sRef_saveCopy (sr); 
 }
 
 void checkModifiesId (uentry ue)
@@ -2362,20 +2364,22 @@ sRef fixStateClausesId (cstring s)
 	}
       else
 	{
-	  /*@i222@*/
-	  /*drl handle structure invariant */
 
-	  /*@i222@*/
+	  /* drl This is the code for structure invariants
+
+	  It is no yet stable enough to be included in a Splint release.
+	  */
+
 	  /*check that we're in a structure */
-# if 0
+#if 0
 		  /*@unused@*/	  uentryList ueL;
 	  /*@unused@*/ uentry ue2;
 	  /*@unused@*/ ctype ct;
-# endif
+#endif
 	  fileloc loc = fileloc_decColumn (g_currentloc, size_toInt (cstring_length (s)));
 	  ret = sRef_undefined; 
 # if 0
-	  /*drl commenting this out for now 
+	  
 	  ct = context_getLastStruct ( ct );
 
 	  llassert( ctype_isStruct(ct) );
@@ -2394,8 +2398,8 @@ sRef fixStateClausesId (cstring s)
 	      
 	      return ret;
 	    }
-	  */
-# endif
+	  
+#endif
 
 	  voptgenerror 
 	    (FLG_UNRECOG, 
