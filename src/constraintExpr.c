@@ -54,11 +54,13 @@ static /*@only@*/ constraintExpr
 doFixResultTerm (/*@only@*/ constraintExpr p_e, /*@exposed@*/ exprNode p_fcnCall)
      /*@modifies p_e@*/;
 
-static   bool  constraintExpr_canGetCType (constraintExpr p_e) /*@*/;
+static bool constraintExpr_canGetCType (constraintExpr p_e) /*@*/;
 
 static ctype constraintExpr_getCType (constraintExpr p_e);
 
-static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast(/*@only@*/ constraintExpr p_e, ctype p_ct);
+static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast (/*@only@*/ constraintExpr p_e,
+								     ctype p_tfrom, ctype p_tto,
+								     fileloc loc);
 
 /*@special@*/ /*@notnull@*/ static constraintExpr constraintExpr_makeBinaryOp (void) 
      /* @allocates result->data @ @sets result->kind @ */ ;
@@ -609,7 +611,7 @@ constraintExpr constraintExpr_makeTermsRef (/*@temp@*/ sRef s)
   constraintExpr ret;
   ret = constraintExpr_alloc();
   ret->kind = unaryExpr;
-  ret->data = dmalloc ( sizeof *(ret->data) );
+  ret->data = dmalloc (sizeof *(ret->data));
   ret->data->unaryOp.expr = constraintExpr_undefined;
   return ret;
 }
@@ -631,7 +633,8 @@ constraintExpr constraintExpr_makeTermsRef (/*@temp@*/ sRef s)
 }
 
 
-/*@only@*/ /*@notnull@*/static constraintExpr constraintExpr_makeUnaryOp (/*@only@*/ constraintExpr cexpr,   constraintExprUnaryOpKind Op )
+/*@only@*/ /*@notnull@*/ static constraintExpr 
+constraintExpr_makeUnaryOp (/*@only@*/ constraintExpr cexpr, constraintExprUnaryOpKind Op)
 {
   constraintExpr ret;
   ret = makeUnaryOpGeneric();
@@ -1098,64 +1101,79 @@ constraintExpr_search (/*@observer@*/ constraintExpr c,
 }
 
 
-/*@only@*/ constraintExpr constraintExpr_searchandreplace (/*@only@*/ /*@unique@*/ constraintExpr c, /*@temp@*/ constraintExpr old, /*@temp@*/ constraintExpr newExpr )
+/*@only@*/ constraintExpr 
+constraintExpr_searchandreplace (/*@only@*/ /*@unique@*/ constraintExpr c, /*@temp@*/ constraintExpr old, 
+				 /*@temp@*/ constraintExpr newExpr )
 {
   constraintExprKind kind;
   constraintExpr temp;
   constraintExpr ret;
 
-  llassert(constraintExpr_isDefined (newExpr) && (constraintExpr_isDefined (old) && constraintExpr_isDefined(c) ) );
+  llassert (constraintExpr_isDefined (newExpr) && (constraintExpr_isDefined (old) && constraintExpr_isDefined(c) ) );
   
-  if ( constraintExpr_similar (c, old) )
+  if (constraintExpr_similar (c, old))
     {
-      
-      ctype newType, cType;
-
-
-      
+      ctype newType = ctype_unknown;
+      ctype cType = ctype_unknown;
       
       ret = constraintExpr_copy (newExpr);
       llassert(constraintExpr_isDefined(ret) );
       /*drl if newExpr != NULL then ret will != NULL*/
       
-      DPRINTF((message ("Replacing %s with %s",
-			constraintExpr_unparse(old), constraintExpr_unparse(newExpr)
-			)));
+      DPRINTF (("Replacing %s with %s in %s", 
+		constraintExpr_unparse (old), constraintExpr_unparse (newExpr),
+		constraintExpr_unparse (c)));
 
-      if (constraintExpr_canGetCType(c) && constraintExpr_canGetCType(newExpr) )
+      if (constraintExpr_canGetCType (c) && constraintExpr_canGetCType (newExpr))
 	{
 	  cType = constraintExpr_getCType(c);
-	  newType =  constraintExpr_getCType(newExpr);
+	  newType =  constraintExpr_getCType (newExpr);
 	  
-	  if (ctype_match(cType,newType) )
+	  if (ctype_match (cType,newType))
 	    {
-	      DPRINTF(( message("constraintExpr_searchandreplace: replacing "
-				" %s with type %s with %s with type %s",
-				constraintExpr_print(c), ctype_unparse(cType),
-				constraintExpr_print(newExpr), ctype_unparse(newType)
-				)
-			));
+	      DPRINTF (("constraintExpr_searchandreplace: replacing "
+			" %s with type %s with %s with type %s",
+			constraintExpr_unparse (c), ctype_unparse(cType),
+			constraintExpr_unparse (newExpr), ctype_unparse(newType)));
 	      
 	      ret->ct = TRUE;
 	      ret->origType = cType;
+	      DPRINTF (("Type: %s", ctype_unparse (constraintExpr_getCType (ret))));
+	    }
+	}
+      
+      if (constraintExpr_hasMaxSet (c))
+	{
+	  if (constraintExpr_hasTypeChange (c))
+	    {
+	      fileloc loc = constraintExpr_loc (c);
+	      DPRINTF (("constraintExpr_searchandreplace: encountered "
+			"MaxSet with changed type %s ",
+			constraintExpr_unparse (c)));
+	      
+	      if (c->kind == unaryExpr) 
+		{
+		  constraintExpr ce = constraintExprData_unaryExprGetExpr (c->data);
+		  DPRINTF (("Its a unary! %s / %s",
+			    ctype_unparse (constraintExpr_getCType (ce)),
+			    ctype_unparse (constraintExpr_getOrigType (ce))));
+		  ret = constraintExpr_adjustMaxSetForCast (ret, constraintExpr_getCType (ce),
+							    constraintExpr_getOrigType (ce),
+							    loc);
+		}
+	      else
+		{
+		  /* fix this with a conversation */
+		  DPRINTF (("Types: %s / %s", ctype_unparse (newType), ctype_unparse (cType)));
+		  ret = constraintExpr_adjustMaxSetForCast (ret, constraintExpr_getCType (c), 
+							    constraintExpr_getOrigType(c),
+							    loc);
+		}
 	    }
 	}
 
-      if (constraintExpr_hasMaxSet(c) )
-	{
-	  if (constraintExpr_hasTypeChange(c))
-	  {
-	  DPRINTF(( message("constraintExpr_searchandreplace: encountered "
-			    "MaxSet with changed type %s ",
-			    constraintExpr_print(c) )
-		    ));
-	  
-	  /*fix this with a conversation */
-	  ret = constraintExpr_adjustMaxSetForCast(ret, constraintExpr_getOrigType(c));
-	  }
-	}
-      constraintExpr_free(c);
-      
+      constraintExpr_free (c);
+      DPRINTF (("ret: %s", constraintExpr_unparse (ret)));
       return ret;
     }
 
@@ -1166,26 +1184,29 @@ constraintExpr_search (/*@observer@*/ constraintExpr c,
     case term:
       break;      
     case unaryExpr:
+      DPRINTF (("Making unary expression!"));
       temp = constraintExprData_unaryExprGetExpr (c->data);
-      temp = constraintExpr_copy(temp);
+      temp = constraintExpr_copy (temp);
       temp = constraintExpr_searchandreplace (temp, old, newExpr);
       c->data = constraintExprData_unaryExprSetExpr (c->data, temp);
       break;           
     case binaryexpr:
-      
+      DPRINTF (("Making binary expression!"));
       temp = constraintExprData_binaryExprGetExpr1 (c->data);
-      temp = constraintExpr_copy(temp);
+      temp = constraintExpr_copy (temp);
       temp = constraintExpr_searchandreplace (temp, old, newExpr);
       c->data = constraintExprData_binaryExprSetExpr1 (c->data, temp);
        
       temp = constraintExprData_binaryExprGetExpr2 (c->data);
-      temp = constraintExpr_copy(temp);
+      temp = constraintExpr_copy (temp);
       temp = constraintExpr_searchandreplace (temp, old, newExpr);
       c->data = constraintExprData_binaryExprSetExpr2 (c->data, temp);
       break;
     default:
-      llassert(FALSE);
+      llassert (FALSE);
     }
+  
+  DPRINTF (("ret: %s", constraintExpr_unparse (c)));
   return c;
 }
 
@@ -1526,7 +1547,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 }
 
 /*@only@*/
-cstring constraintExpr_unparse (/*@temp@*/ /*@observer@*/ constraintExpr ex) /*@*/
+cstring constraintExpr_unparse (/*@temp@*/ constraintExpr ex) /*@*/
 {
   cstring st;
   constraintExprKind kind;
@@ -1538,15 +1559,14 @@ cstring constraintExpr_unparse (/*@temp@*/ /*@observer@*/ constraintExpr ex) /*@
   switch (kind)
     {
     case term:
-
-            if (context_getFlag (FLG_PARENCONSTRAINT) )
-	      {
-		st = message ("(%q) ", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
-	      }
-	    else
-	      {
-		st = message ("%q", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
-	      }
+      if (context_getFlag (FLG_PARENCONSTRAINT) )
+	{
+	  st = message ("(%q) ", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
+	}
+      else
+	{
+	  st = message ("%q", constraintTerm_unparse (constraintExprData_termGetTerm (ex->data)));
+	}
       break;
     case unaryExpr:
       st = message ("%q(%q)",
@@ -1558,19 +1578,17 @@ cstring constraintExpr_unparse (/*@temp@*/ /*@observer@*/ constraintExpr ex) /*@
       if (context_getFlag (FLG_PARENCONSTRAINT) )
 	{
 	  st = message ("(%q) %q (%q)",
-		    constraintExpr_unparse (constraintExprData_binaryExprGetExpr1 (ex->data) ),
-		    constraintExprBinaryOpKind_print (constraintExprData_binaryExprGetOp (ex->data)
-						     ),
-		    constraintExpr_unparse (constraintExprData_binaryExprGetExpr2 (ex->data) )
-		    );
+			constraintExpr_unparse (constraintExprData_binaryExprGetExpr1 (ex->data) ),
+			constraintExprBinaryOpKind_print (constraintExprData_binaryExprGetOp (ex->data)),
+			constraintExpr_unparse (constraintExprData_binaryExprGetExpr2 (ex->data) )
+			);
 	}
       else
 	{
 	  st = message ("%q %q %q",
-			constraintExpr_unparse (constraintExprData_binaryExprGetExpr1 (ex->data) ),
-			constraintExprBinaryOpKind_print (constraintExprData_binaryExprGetOp (ex->data)
-							  ),
-			constraintExpr_unparse (constraintExprData_binaryExprGetExpr2 (ex->data) )
+			constraintExpr_unparse (constraintExprData_binaryExprGetExpr1 (ex->data)),
+			constraintExprBinaryOpKind_print (constraintExprData_binaryExprGetOp (ex->data)),
+			constraintExpr_unparse (constraintExprData_binaryExprGetExpr2 (ex->data))
 			);
 	}
       
@@ -1843,7 +1861,7 @@ bool constraintExpr_canGetValue (constraintExpr expr)
   BADEXIT;
 }
 
-fileloc constraintExpr_getFileloc (constraintExpr expr)
+fileloc constraintExpr_loc (constraintExpr expr)
 {
   constraintExpr e;
 constraintTerm t;
@@ -1867,12 +1885,12 @@ constraintTerm t;
       break;      
     case unaryExpr:
       e = constraintExprData_unaryExprGetExpr (expr->data);
-      return (constraintExpr_getFileloc (e) );
+      return (constraintExpr_loc (e) );
       /*@notreached@*/
       break;           
     case binaryexpr:
       e = constraintExprData_binaryExprGetExpr1 (expr->data);
-      return (constraintExpr_getFileloc (e) );
+      return (constraintExpr_loc (e) );
       /*@notreached@*/
       break;
     }
@@ -2343,9 +2361,9 @@ int constraintExpr_getDepth (constraintExpr ex)
 }
 
 
-bool  constraintExpr_canGetCType (constraintExpr e) /*@*/
+bool constraintExpr_canGetCType (constraintExpr e) /*@*/
 {
-  if (constraintExpr_isUndefined(e) )
+  if (constraintExpr_isUndefined(e))
     return FALSE;
   
   if (e->kind == term)
@@ -2354,8 +2372,7 @@ bool  constraintExpr_canGetCType (constraintExpr e) /*@*/
     }
   else
     {
-      DPRINTF(( message("constraintExpr_canGetCType: can't get type for %s ",
-			constraintExpr_print(e) ) ));
+      DPRINTF (("constraintExpr_canGetCType: can't get type for %s", constraintExpr_unparse (e)));
       return FALSE;
     }
 }
@@ -2364,9 +2381,8 @@ ctype constraintExpr_getCType (constraintExpr e) /*@*/
 {
   constraintTerm t;
 
-  llassert(constraintExpr_isDefined(e) );
-
-  llassert(constraintExpr_canGetCType(e) );
+  llassert (constraintExpr_isDefined (e));
+  llassert (constraintExpr_canGetCType (e));
 
   switch (e->kind)
     {
@@ -2375,14 +2391,10 @@ ctype constraintExpr_getCType (constraintExpr e) /*@*/
       return (constraintTerm_getCType(t) );
       /* assume that a unary expression will be an int ... */
     case unaryExpr:
-      return ctype_signedintegral;
-
+      return ctype_unknown; /* was ctype_signedintegral; */
       /* drl for just return type of first operand */
     case binaryexpr:
-      return (
-	      constraintExpr_getCType
-	      (constraintExprData_binaryExprGetExpr1 (e->data) )
-	      );
+      return (constraintExpr_getCType (constraintExprData_binaryExprGetExpr1 (e->data)));
     default:
       BADEXIT;
     }
@@ -2391,10 +2403,11 @@ ctype constraintExpr_getCType (constraintExpr e) /*@*/
 
 /* drl add 10-5-001 */
 
-static bool constraintExpr_hasTypeChange(constraintExpr e)
+static bool constraintExpr_hasTypeChange (constraintExpr e)
 {
-  llassert(constraintExpr_isDefined(e) );
-  if (constraintExpr_isDefined((e)) && (e->ct == TRUE) )
+  llassert(constraintExpr_isDefined(e));
+
+  if (constraintExpr_isDefined((e)) && (e->ct == TRUE))
     {
       return TRUE;
     }
@@ -2403,14 +2416,14 @@ static bool constraintExpr_hasTypeChange(constraintExpr e)
     {
       if (constraintExprData_unaryExprGetOp (e->data) == MAXSET)
 	{
-	  constraintExpr ce;
-
-	  ce = constraintExprData_unaryExprGetExpr(e->data);
-
-	  return (constraintExpr_hasTypeChange(ce) );
+	  constraintExpr ce = constraintExprData_unaryExprGetExpr(e->data);
+	  DPRINTF (("Unary type change: [%x] %s", ce, constraintExpr_unparse (ce)));
+	  DPRINTF (("Types: %s / %s", ctype_unparse (constraintExpr_getCType (ce)),
+		    ctype_unparse (constraintExpr_getOrigType (ce))));
+	  return (constraintExpr_hasTypeChange(ce));
 	}
-	
     }
+  
   return FALSE;
 }
 
@@ -2418,10 +2431,8 @@ static bool constraintExpr_hasTypeChange(constraintExpr e)
 
 static ctype constraintExpr_getOrigType (constraintExpr e)
 {
-
-  llassert(constraintExpr_isDefined(e) );
-  llassert(constraintExpr_hasTypeChange(e) );
-  
+  llassert (constraintExpr_isDefined (e));
+  llassert (constraintExpr_hasTypeChange (e));
   
   if (e->ct == TRUE) 
     {
@@ -2432,11 +2443,8 @@ static ctype constraintExpr_getOrigType (constraintExpr e)
     {
       if (constraintExprData_unaryExprGetOp (e->data) == MAXSET)
 	{
-	  constraintExpr ce;
-
-	  ce = constraintExprData_unaryExprGetExpr(e->data);
-
-	  return (constraintExpr_getOrigType(ce) );
+	  constraintExpr ce = constraintExprData_unaryExprGetExpr (e->data);
+	  return (constraintExpr_getOrigType(ce));
 	}
 	
     }
@@ -2446,34 +2454,85 @@ static ctype constraintExpr_getOrigType (constraintExpr e)
 
 /*drl added these around 10/18/001*/
 
-static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e, /*@unused@*/ ctype ct)
+static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
 {
+  int sizefrom = ctype_getSize (tfrom);
+  int sizeto = ctype_getSize (tto);
+
+  DPRINTF (("constraintExpr_div: %s", constraintExpr_unparse (e)));
+  DPRINTF (("Types: %s / %s",
+	    ctype_unparse (tfrom),
+	    ctype_unparse (tto)));
+  
+  if (sizefrom == -1) {
+    llbug (message ("constraintExpr_div: type size unknown: %s", ctype_unparse (tfrom)));
+  }
+
+  if (sizeto == -1) {
+    llbug (message ("constraintExpr_div: type size unknown: %s", ctype_unparse (tto)));
+  }
+
+  if (sizeto == sizefrom) 
+    {
+      ; /* Sizes match, a-ok */
+    }
+  else
+    {
+      float scale = (float) sizefrom / (float) sizeto;
+      constraintTerm ct;
+      long val;
+      float fnewval;
+      long newval;
+
+      llassert (e->kind == term);
+      ct = constraintExprData_termGetTerm (e->data);
+      llassert (constraintTerm_canGetValue (ct));
+      val = constraintTerm_getValue (ct);
+
+      DPRINTF (("Scaling constraints by: %ld * %f", val, scale));
+
+      // If scale * val is not an integer, give a warning
+      fnewval = val * scale;
+      newval = (long) fnewval;
+
+      DPRINTF (("Values: %f / %ld", fnewval, newval));
+      if ((fnewval - (float) newval) > FLT_EPSILON) 
+	{
+	  voptgenerror (FLG_ALLOCMISMATCH,
+			message ("Allocated memory is converted to type %s of (size %d), "
+				 "which is not divisible into original allocation of space for %d elements of type %s (size %d)",
+				 ctype_unparse (tto), sizeto,
+				 val, ctype_unparse (tfrom), sizefrom),
+			loc);
+	}  
+
+      constraintTerm_setValue (ct, newval);
+    }
+
+  DPRINTF (("After div: %s", constraintExpr_unparse (e)));
   return e;
 }
 
 
 /*@access exprNode@*/ 
-static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*/ constraintExpr e, ctype ct)
+static /*@only@*/ constraintExpr constraintTerm_simpleDivTypeExprNode (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
 {
   exprData data;
   exprNode t1, t2, expr;
   lltok tok;
   constraintTerm t;
 
-  llassert(constraintExpr_isDefined(e) );
+  llassert (constraintExpr_isDefined(e) );
   
-  DPRINTF((
-	   message("constraintTerm_simpleDivTypeExprNode e=%s, ct=%s",
-		   constraintExpr_print(e), ctype_unparse(ct)
-		   )
-	   ));
+  DPRINTF (("constraintTerm_simpleDivTypeExprNode e=%s [%s => %s]", constraintExpr_print(e), 
+	    ctype_unparse(tfrom), ctype_unparse (tto)));
   
-  t = constraintExprData_termGetTerm(e->data);
+  t = constraintExprData_termGetTerm (e->data);
   
-  expr = constraintTerm_getExprNode(t);
+  expr = constraintTerm_getExprNode (t);
 
-  llassert(constraintExpr_isDefined(e) );
-  llassert(exprNode_isDefined(expr) );
+  llassert (constraintExpr_isDefined(e));
+  llassert (exprNode_isDefined(expr));
   
   if (expr->kind == XPR_OP)
     {
@@ -2482,13 +2541,14 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
       t1 = exprData_getOpA (data);
       t2 = exprData_getOpB (data);
       tok = exprData_getOpTok (data);
-      if (lltok_isMult(tok) )
+
+      if (lltok_isMult (tok))
 	{
-	  llassert(exprNode_isDefined(t1) && exprNode_isDefined(t2) );
+	  llassert (exprNode_isDefined(t1) && exprNode_isDefined(t2) );
 	  /*drl 3/2/2003 we know this from the fact that it's a
 	    multiplication operation...*/
 	  
-	  if  ((t1->kind == XPR_SIZEOF) || (t1->kind == XPR_SIZEOFT) )
+	  if  ((t1->kind == XPR_SIZEOF) || (t1->kind == XPR_SIZEOFT))
 	    {
 	      ctype ct2;
 	      
@@ -2498,22 +2558,23 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 		}
 	      else
 		{
-		  exprNode tempE;
-		
-		  tempE = exprData_getSingle (t1->edata);
-		  
-		  ct2 =  exprNode_getType (tempE); 
+		  exprNode tempE = exprData_getSingle (t1->edata);
+		  ct2 = exprNode_getType (tempE); 
 		}
-	      if (ctype_match (ctype_makePointer(ct2), ct) )
+
+	      if (ctype_match (ctype_makePointer(ct2), tfrom)) //!
 		{
 		  /* this is a bit sloopy but ... */
-		  		  constraintExpr_free(e);
-		  return constraintExpr_makeExprNode(t2);
+		  constraintExpr_free(e);
+		  return constraintExpr_makeExprNode (t2);
+		}
+	      else
+		{
+		  /* nothing was here */
+		  DPRINTF (("MISMATCHING TYPES!"));
 		}
 	    }
-	  
-	  
-	  else   if  ((t2->kind == XPR_SIZEOF) || (t2->kind == XPR_SIZEOFT) )
+	  else if ((t2->kind == XPR_SIZEOF) || (t2->kind == XPR_SIZEOFT))
 	    {
 	      ctype ct2;
 	      
@@ -2528,54 +2589,58 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 		  
 		  exprTemp = exprData_getSingle (t2->edata);
 
-		  llassert(exprNode_isDefined(exprTemp) );
+		  llassert (exprNode_isDefined (exprTemp));
 		  eDTemp = exprTemp->edata;
 		  
-		  ct2 = qtype_getType (exprData_getType(eDTemp ) );
+		  ct2 = qtype_getType (exprData_getType(eDTemp ));
 		  
 		}
-	      if (ctype_match (ctype_makePointer(ct2),ct) )
+
+	      if (ctype_match (ctype_makePointer (ct2), tfrom))
 		{
 		  /*a bit of a sloopy way to do this but... */
-		  		  constraintExpr_free(e);
-		  return constraintExpr_makeExprNode(t1);
+		  constraintExpr_free(e);
+		  return constraintExpr_makeExprNode (t1);
 		}
 	    }
 	  else
 	    {
+	      DPRINTF (("NOT A SIZEOF!"));
 	      /*empty*/
 	    }
 	  
 	}
     }
-  return (constraintExpr_div (e, ct) );
+
+  return (constraintExpr_div (e, tfrom, tto, loc));
 }
 /*@noaccess exprNode@*/ 
 
-static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, ctype ct)
+static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
 {
-  DPRINTF(( (message("simpleDiv got %s ", constraintExpr_unparse(e) ) )
-	    ));
+  DPRINTF (("simpleDiv got %s", constraintExpr_unparse(e)));
+  DPRINTF (("Types: %s / %s",
+	    ctype_unparse (tfrom),
+	    ctype_unparse (tto)));
 
-  llassert(constraintExpr_isDefined(e) );
+  llassert (constraintExpr_isDefined(e));
   
   switch (e->kind)
     {
     case term:
-      
       {
-	constraintTerm t;
+	constraintTerm t = constraintExprData_termGetTerm (e->data);
 
-	t = constraintExprData_termGetTerm(e->data);
-	
+	DPRINTF (("Term: %s", constraintTerm_unparse (t)));
 
-	if (constraintTerm_isExprNode (t) )
-	{
-	  return constraintTerm_simpleDivTypeExprNode(e, ct);
-	  
-	  /* search for * size of ct and remove */
-	}
-	return constraintExpr_div (e, ct);
+	if (constraintTerm_isExprNode (t))
+	  {
+	    return constraintTerm_simpleDivTypeExprNode (e, tfrom, tto, loc);
+	    
+	    /* search for * size of ct and remove */
+	  }
+	DPRINTF (("Here: %s / %s -> %s", constraintExpr_unparse (e), ctype_unparse (tfrom), ctype_unparse (tto)));
+	return constraintExpr_div (e, tfrom, tto, loc);
       }
       
     case binaryexpr:
@@ -2584,70 +2649,57 @@ static /*@only@*/ constraintExpr simpleDivType (/*@only@*/ constraintExpr e, cty
 	
 	temp = constraintExprData_binaryExprGetExpr1 (e->data);
 	temp = constraintExpr_copy(temp);
-	temp = simpleDivType (temp, ct);
+	temp = simpleDivType (temp, tfrom, tto, loc);
 	
 	e->data = constraintExprData_binaryExprSetExpr1 (e->data, temp);
 	
 	temp = constraintExprData_binaryExprGetExpr2 (e->data);
 	temp = constraintExpr_copy(temp);
-	temp = simpleDivType (temp, ct);
+	temp = simpleDivType (temp, tfrom, tto, loc);
 	e->data = constraintExprData_binaryExprSetExpr2 (e->data, temp);
 
-	DPRINTF(( (message("simpleDiv binaryexpr returning %s ", constraintExpr_unparse(e) ) )
-	    ));
-
+	DPRINTF (("simpleDiv binaryexpr returning %s ", constraintExpr_unparse(e)));
 	return e;
       }
     case unaryExpr:
-      return constraintExpr_div (e, ct);
+      {
+	return constraintExpr_div (e, tfrom, tto, loc);
+      }
 
     default:
       BADEXIT;
     }
 }
 
-static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast(/*@only@*/ constraintExpr e, ctype ct)
+static /*@only@*/ constraintExpr constraintExpr_adjustMaxSetForCast (/*@only@*/ constraintExpr e, ctype tfrom, 
+								     ctype tto, fileloc loc)
 {
-
-  DPRINTF(( (message("constraintExpr_adjustMaxSetForCast got %s ", constraintExpr_unparse(e) ) )
-	    ));
+  DPRINTF (("constraintExpr_adjustMaxSetForCast got %s [%s => %s]", constraintExpr_unparse(e), 
+	    ctype_unparse (tfrom), ctype_unparse (tto)));
   
-  e = constraintExpr_makeIncConstraintExpr(e);
+  e = constraintExpr_makeIncConstraintExpr (e);
+  e = constraintExpr_simplify (e);
+  e = simpleDivType (e, tfrom, tto, loc);
+  e = constraintExpr_makeDecConstraintExpr (e);
+  e = constraintExpr_simplify (e);
   
-  e = constraintExpr_simplify(e);
-  
-
-  e = simpleDivType (e, ct);
-
-  e = constraintExpr_makeDecConstraintExpr(e);
-  
-  e = constraintExpr_simplify(e);
-  
-  DPRINTF(( (message("constraintExpr_adjustMaxSetForCast returning %s ", constraintExpr_unparse(e) ) )
-	    ));
-
+  DPRINTF (("constraintExpr_adjustMaxSetForCast returning %s ", constraintExpr_unparse(e)));
   return e;
 }
 
 
-bool  constraintExpr_isConstantOnly ( constraintExpr e )
+bool constraintExpr_isConstantOnly (constraintExpr e)
 {
-  DPRINTF(( (message("constraintExpr_isConstantOnly %s ",
-		     constraintExpr_unparse(e) ) )
-	    ));
-
-  llassert(constraintExpr_isDefined(e) );
+  DPRINTF (("constraintExpr_isConstantOnly %s ", constraintExpr_unparse(e)));
+  llassert (constraintExpr_isDefined(e));
 
   switch (e->kind)
     {
     case term:
       {
-	constraintTerm t;
+	constraintTerm t = constraintExprData_termGetTerm(e->data);
 	
-	t = constraintExprData_termGetTerm(e->data);
-	
-	
-	if (constraintTerm_isConstantOnly (t) )
+	if (constraintTerm_isConstantOnly (t))
 	  {
 	    return TRUE;
 	  }
@@ -2659,11 +2711,8 @@ bool  constraintExpr_isConstantOnly ( constraintExpr e )
       
     case binaryexpr:
       {
-	constraintExpr temp1, temp2;
-	
-	temp1 = constraintExprData_binaryExprGetExpr1 (e->data);
-	
-	temp2 = constraintExprData_binaryExprGetExpr2 (e->data);
+	constraintExpr temp1 = constraintExprData_binaryExprGetExpr1 (e->data);
+	constraintExpr temp2 = constraintExprData_binaryExprGetExpr2 (e->data);
 	
 	if (constraintExpr_isConstantOnly(temp1) &&
 	    constraintExpr_isConstantOnly(temp2) )

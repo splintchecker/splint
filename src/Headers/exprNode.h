@@ -160,7 +160,7 @@ struct s_exprNode
   fileloc loc;
   /*@relnull@*/ exprData edata;
   cstring etext;
-  /*@notnull@*/   constraintList requiresConstraints;
+  /*@notnull@*/ constraintList requiresConstraints;
   /*@notnull@*/ constraintList ensuresConstraints;
   
   /*

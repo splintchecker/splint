@@ -261,7 +261,7 @@ fileloc constraint_getFileloc (constraint c)
   if (exprNode_isDefined (c->generatingExpr))
     return (fileloc_copy (exprNode_loc (c->generatingExpr)));
   
-  return (constraintExpr_getFileloc (c->lexpr));
+  return (constraintExpr_loc (c->lexpr));
 }
 
 static bool checkForMaxSet (constraint c)
@@ -423,7 +423,16 @@ constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@dependent@*/ exprNode 
 
 constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
-  return (constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
+  if (FALSE) /* (!ctype_almostEqual (exprNode_getType (e1), exprNode_getType (e2))) */
+    {
+      /* If the types are not identical, need to be careful the element sizes may be different. */
+      //! return (constraint_makeEnsuresOp (e1, e2, sequencePoint, CASTEQ));
+      BADBRANCH;
+    }
+  else
+    {
+      return (constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ));
+    }
 }
 
 /* make constraint ensures e1 < e2 */
@@ -575,22 +584,25 @@ cstring arithType_print (arithType ar) /*@*/
     case LT:
       st = cstring_makeLiteral ("<");
       break;
-    case	LTE:
+    case LTE:
       st = cstring_makeLiteral ("<=");
       break;
-    case 	GT:
+    case GT:
       st = cstring_makeLiteral (">");
       break;
-    case 	GTE:
+    case GTE:
       st = cstring_makeLiteral (">=");
       break;
-    case	EQ:
+    case EQ:
       st = cstring_makeLiteral ("==");
       break;
-    case	NONNEGATIVE:
+    case CASTEQ:
+      st = cstring_makeLiteral ("(!)==");
+      break;
+    case NONNEGATIVE:
       st = cstring_makeLiteral ("NONNEGATIVE");
       break;
-    case	POSITIVE:
+    case POSITIVE:
       st = cstring_makeLiteral ("POSITIVE");
       break;
     default:
@@ -606,28 +618,25 @@ void constraint_printErrorPostCondition (constraint c, fileloc loc)
   fileloc errorLoc, temp;
   
   string = constraint_unparseDetailedPostCondition (c);
-
   errorLoc = loc;
-
   loc = NULL;
 
   temp = constraint_getFileloc (c);
-
     
-  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES ) )
+  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES))
     {
-      string = cstring_replaceChar(string, '\n', ' ');
+      string = cstring_replaceChar (string, '\n', ' ');
     }
   
   if (fileloc_isDefined (temp))
     {
       errorLoc = temp;
-      voptgenerror (  FLG_CHECKPOST, string, errorLoc);
+      voptgenerror (FLG_CHECKPOST, string, errorLoc);
       fileloc_free (temp);
     }
   else
     {
-      voptgenerror (  FLG_CHECKPOST, string, errorLoc);
+      voptgenerror (FLG_CHECKPOST, string, errorLoc);
     }
 }
 
@@ -642,7 +651,6 @@ cstring constraint_printLocation (/*@observer@*/ /*@temp@*/ constraint c) /*@*/
   errorLoc = constraint_getFileloc (c);
 
   ret = message ("constraint: %q @ %q", string, fileloc_unparse (errorLoc));
-
   fileloc_free (errorLoc);
   return ret;
 
@@ -656,7 +664,6 @@ void constraint_printError (constraint c, fileloc loc)
   fileloc errorLoc, temp;
 
   bool isLikely;
-
     
   llassert (constraint_isDefined (c) );
  
@@ -680,13 +687,14 @@ void constraint_printError (constraint c, fileloc loc)
   else
     {
       llassert (FALSE);
-      DPRINTF (("constraint %s had undefined fileloc %s", constraint_unparse (c), fileloc_unparse (temp)));
+      DPRINTF (("constraint %s had undefined fileloc %s", 
+		constraint_unparse (c), fileloc_unparse (temp)));
       fileloc_free (temp);
       errorLoc = fileloc_copy (errorLoc);
     }
 
   
-  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES ) )
+  if (context_getFlag (FLG_BOUNDSCOMPACTERRORMESSAGES))
     {
       string = cstring_replaceChar(string, '\n', ' ');
     }
@@ -694,7 +702,7 @@ void constraint_printError (constraint c, fileloc loc)
   /*drl added 12/19/2002 print
     a different error fro "likely" bounds-errors*/
   
-  isLikely = constraint_isConstantOnly(c);
+  isLikely = constraint_isConstantOnly (c);
 
   if (isLikely)
     {
@@ -762,7 +770,7 @@ static cstring constraint_unparseDeep (constraint c)
       else
 	{
 	  st = cstring_concatFree (st, message ("derived from: %q",
-					       constraint_unparseDeep (c->orig)));
+						constraint_unparseDeep (c->orig)));
 	}
     }
 
@@ -858,7 +866,7 @@ cstring  constraint_unparseDetailed (constraint c)
   return st;
 }
 
-/*@only@*/ cstring  constraint_unparse (constraint c) /*@*/
+/*@only@*/ cstring constraint_unparse (constraint c) /*@*/
 {
   cstring st = cstring_undefined;
   cstring type = cstring_undefined;

@@ -257,6 +257,12 @@ extern ctype ctype_createUser (typeId p_u) ;
 extern bool ctype_isUnnamedSU (ctype p_c) /*@*/ ;
 extern bool ctype_isUser (ctype p_c) /*@*/ ;
 
+extern int ctype_getSize (ctype p_c) 
+  /* EFFECTS: Returns the expected size of type p_c.  Various flags to control? 
+  **          Returns -1 if the size is unknown (or should not be guessed). 
+  */
+ /*@*/ ;
+
 extern ctype ctype_biggerType (ctype p_c1, ctype p_c2) 
   /* EFFECTS: returns whichever of c1 or c2 is bigger (storage requirements).
         If they are equal, returns c1. */

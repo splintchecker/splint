@@ -2838,7 +2838,7 @@ size_t ctype_getArraySize (ctype c)
 
 ctype ctype_biggerType (ctype c1, ctype c2)
 {
-  if (ctbase_isBigger (ctype_getCtbaseSafe (c2), ctype_getCtbaseSafe (c1)) )
+  if (ctbase_isBigger (ctype_getCtbaseSafe (c2), ctype_getCtbaseSafe (c1)))
     {
       return c2;
     }
@@ -2846,4 +2846,9 @@ ctype ctype_biggerType (ctype c1, ctype c2)
     {
       return c1;
     }
+}
+
+int ctype_getSize (ctype c)
+{
+  return ctbase_getSize (ctype_getCtbaseSafe (ctype_realType (c)));
 }

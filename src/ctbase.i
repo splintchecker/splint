@@ -2627,3 +2627,54 @@ bool ctbase_isBigger (ctbase ct1, ctbase ct2)
       return FALSE;
     }
 }
+
+int ctbase_getSize (ctbase ct)
+{
+  if (ct == NULL) 
+    {
+      return 0;
+    }
+  
+  switch (ct->type) 
+    {
+    case CT_UNKNOWN:
+    case CT_BOOL:
+    case CT_PRIM:
+      {
+	cprim cp = ct->contents.prim;
+	int nbits = cprim_getExpectedBits (cp);
+	return nbits;
+      }
+    case CT_USER:
+    case CT_ABST:
+    case CT_NUMABST:
+    case CT_EXPFCN:
+      {
+	return 0;
+      }
+    case CT_PTR:
+      {
+	/* Malloc returns void *, but they are bytes.  Normal void * is pointer size. */
+	if (ctype_isVoid (ct->contents.base)) 
+	  {
+	    return 8;
+	  }
+	else
+	  {
+	    return ctype_getSize (ct->contents.base);
+	  }
+      }
+    case CT_FIXEDARRAY: //!
+    case CT_ARRAY:
+    case CT_FCN:
+    case CT_STRUCT:
+    case CT_UNION:
+    case CT_ENUM:
+    case CT_CONJ:
+      break;
+      BADDEFAULT;
+    }
+
+  return 0;
+      
+}

@@ -7,8 +7,7 @@ typedef enum
   binaryexpr,
   unaryExpr,
   term
-}
-constraintExprKind;
+} constraintExprKind;
 
 struct s_constraintExpr {
   constraintExprKind kind;
@@ -70,7 +69,7 @@ int constraintExpr_compare (constraintExpr p_expr1, constraintExpr p_expr2) /*@*
 
 bool constraintExpr_search (/*@observer@*/ /*@temp@*/ constraintExpr p_c, /*@observer@*/ /*@temp@*/ constraintExpr p_old);
 
-/*@only@*/ fileloc constraintExpr_getFileloc (constraintExpr p_expr);
+/*@only@*/ fileloc constraintExpr_loc (constraintExpr p_expr);
 
 
 /*@only@*/ constraintExpr constraintExpr_makeSRefMaxset ( /*@temp@*/ /*@observer@*/ sRef p_s);

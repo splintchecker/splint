@@ -1919,7 +1919,7 @@ static flaglist flags =
     "Memory read or write may be out of bounds of allocated storage.", 0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, plainFlag,
+    FK_BOUNDS, FK_MEMORY, modeFlag,
     "likelyboundsread",
     FLG_LIKELYBOUNDSREAD,
     "likely out of bounds read",
@@ -1927,7 +1927,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, plainFlag,
+    FK_BOUNDS, FK_MEMORY, modeFlag,
     "likelyboundswrite",
     FLG_LIKELYBOUNDSWRITE,
     "likely buffer overflow from an out of bounds write",
@@ -1936,7 +1936,7 @@ static flaglist flags =
   },
   
   {
-    FK_BOUNDS, FK_MEMORY, plainFlag,
+    FK_BOUNDS, FK_MEMORY, modeFlag,
     "boundsread",
     FLG_BOUNDSREAD,
     "possible out of bounds read",
@@ -1944,7 +1944,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, plainFlag,
+    FK_BOUNDS, FK_MEMORY, modeFlag,
     "boundswrite",
     FLG_BOUNDSWRITE,
     "possible buffer overflow from an out of bounds write",
@@ -1980,7 +1980,7 @@ static flaglist flags =
 
   {
     FK_BOUNDS, FK_MEMORY, plainFlag,
-    "implictconstraint",
+    "impboundsconstraints",
     FLG_IMPLICTCONSTRAINT,
     "generate implicit constraints for functions",
     NULL,
@@ -2020,6 +2020,14 @@ static flaglist flags =
     NULL,
     0, 0
   }, /*drl added flag 4/26/01*/
+
+  { /* evans added 2003-06-08 */
+    FK_BOUNDS, FK_MEMORY, modeFlag,
+    "allocmismatch",
+    FLG_ALLOCMISMATCH,
+    "type conversion involves storage of non-divisble size",
+    NULL, 0, 0
+  },
 
   /*
   ** 10. Extensible Checking 

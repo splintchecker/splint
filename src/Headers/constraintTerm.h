@@ -41,15 +41,15 @@ constraintTerm constraintTerm_copy (constraintTerm p_term) /*@*/;
 
 bool constraintTerm_similar (constraintTerm p_term1, constraintTerm p_term2) /*@*/;
 
-bool constraintTerm_canGetValue (constraintTerm p_term)/*@*/;
-long constraintTerm_getValue (constraintTerm p_term) /*@*/;
+extern bool constraintTerm_canGetValue (constraintTerm p_term)/*@*/;
+extern long constraintTerm_getValue (constraintTerm p_term) /*@*/;
+extern void constraintTerm_setValue (constraintTerm p_term, long p_value) /*@modifies p_term@*/;
 
-fileloc constraintTerm_getFileloc (constraintTerm p_t) /*@*/;
+extern fileloc constraintTerm_getFileloc (constraintTerm p_t) /*@*/;
 
+extern bool constraintTerm_isIntLiteral (constraintTerm p_term) /*@*/;
 
-bool constraintTerm_isIntLiteral (constraintTerm p_term) /*@*/;
-
-constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef p_s) /*@*/;
+extern constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef p_s) /*@*/;
 
 /*@unused@*/ bool constraintTerm_probSame (constraintTerm p_term1, constraintTerm p_term2) /*@*/;
 

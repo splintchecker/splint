@@ -966,8 +966,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 	    context_getFlag(FLG_CHECKPOST) ))
 	{
 	  exprNode_free (body);
-	  context_exitInnerPlain();
-	  
+	  context_exitInnerPlain();	  
 	  return;
 	}
     }
@@ -975,19 +974,20 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
   exprNode_generateConstraints (body); /* evans 2002-03-02: this should not be declared to take a
 					  dependent... fix it! */
   
-  c =   uentry_getFcnPreconditions (ue);
-  DPRINTF(("function constraints\n"));
-  DPRINTF (("\n\n\n\n\n\n\n"));
+  c = uentry_getFcnPreconditions (ue);
   
-  if (constraintList_isDefined(c) )
+  if (constraintList_isDefined (c))
     {
-      DPRINTF ((message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
+      DPRINTF ((message ("Function preconditions are %s \n\n\n\n\n", 
+			 constraintList_unparseDetailed (c) ) ) );
       
-      body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, c);
+      body->requiresConstraints = 
+	constraintList_reflectChangesFreePre (body->requiresConstraints, c);
       
       c2  =  constraintList_copy (c);
       fix =  constraintList_makeFixedArrayConstraints (body->uses);
       c2  =  constraintList_reflectChangesFreePre (c2, fix);
+
       constraintList_free (fix);
       
       if (context_getFlag (FLG_ORCONSTRAINT))
@@ -1000,7 +1000,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 	}
       
       constraintList_free (body->requiresConstraints);
-      DPRINTF ((message ("The body has the required constraints: %s", constraintList_printDetailed (t) ) ) );
+      DPRINTF ((message ("The body has the required constraints: %s", constraintList_unparseDetailed (t) ) ) );
       
       body->requiresConstraints = t;
       
@@ -1008,15 +1008,15 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
       constraintList_free(body->ensuresConstraints);
       
       body->ensuresConstraints = t;
-      
-      DPRINTF ((message ("The body has the ensures constraints: %s", constraintList_printDetailed (t) ) ) );
+     
+      DPRINTF ((message ("The body has the ensures constraints: %s", constraintList_unparseDetailed (t) ) ) );
       constraintList_free(c2);
     }
   
   if (constraintList_isDefined(c))
     {
       DPRINTF ((message ("The Function %s has the preconditions %s", 
-			 uentry_unparse(ue), constraintList_printDetailed(c))));
+			 uentry_unparse(ue), constraintList_unparseDetailed(c))));
     }
   else
     {
@@ -1047,7 +1047,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 	  constraintList post2;
 	  
 	  DPRINTF ((message ("The declared function postconditions are %s \n\n\n\n\n", 
-			     constraintList_printDetailed (post) ) ) );
+			     constraintList_unparseDetailed (post) ) ) );
 	  
 	  post = constraintList_reflectChangesFreePre (post, body->ensuresConstraints);
 	  
@@ -1090,17 +1090,18 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 	ConPrint (message ("Splint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
   
 	printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
-	printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
+	printf ("The ensures constraints are:\n%s", constraintList_unparseDetailed(body->ensuresConstraints) );
    */
    
    if (constraintList_isDefined(c) )
      constraintList_free(c);
 
    context_exitInnerPlain();
-
-   /*is it okay not to free this?*/
-  exprNode_free (body);
-  }
+   
+   /* is it okay not to free this? */
+   DPRINTF (("Done checking constraints..."));
+   exprNode_free (body);
+}
 
 void exprChecks_checkEmptyMacroBody (void)
 {

@@ -4,17 +4,17 @@
 
 typedef enum
 {
-  LT, LTE, GT, GTE, EQ, NONNEGATIVE, POSITIVE
+  LT, LTE, GT, GTE, EQ, NONNEGATIVE, POSITIVE, CASTEQ
 }
 arithType;
 
 struct s_constraint {
-  constraint     orig;
-  constraint     or;
-  bool           fcnPre;
+  arithType ar;
+  constraint orig;
+  constraint or;
+  bool fcnPre;
   constraintExpr lexpr;
-  arithType       ar;
-  constraintExpr  expr;
+  constraintExpr expr;
   bool post;
   /*@exposed@*/ /*@dependent@*/ exprNode generatingExpr;
 } ;
@@ -114,10 +114,10 @@ extern bool constraint_hasMaxSet(constraint p_c);
 extern void exprNode_exprTraverse (exprNode p_e, bool p_definatelv, bool p_definaterv, /*@temp@*/ /*@observer@*/ fileloc p_sequencePoint);
 
 extern /*@only@*/ constraintList 
-exprNode_traversRequiresConstraints (exprNode p_e);
+exprNode_traverseRequiresConstraints (exprNode p_e);
 
 extern /*@only@*/ constraintList 
-exprNode_traversEnsuresConstraints (exprNode p_e);
+exprNode_traverseEnsuresConstraints (exprNode p_e);
 
 extern constraint constraint_togglePost (/*@returned@*/ constraint p_c);
 extern bool constraint_same (constraint p_c1, constraint p_c2) ;

@@ -5009,9 +5009,12 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
   ret->edata = exprData_makeCast (tok, e, q);
 
   ret->sref = sRef_copy (e->sref);
-  
-  DPRINTF (("Cast 2: -> %s", sRef_unparseFull (ret->sref)));
 
+  DPRINTF (("Cast: -> %s", sRef_unparseFull (ret->sref)));
+
+  constraintList_castConstraints (ret->requiresConstraints, t, c);
+  constraintList_castConstraints (ret->ensuresConstraints, t, c);
+  
   if (!sRef_isConst (e->sref))
     {
       usymtab_addForceMustAlias (ret->sref, e->sref);

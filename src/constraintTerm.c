@@ -386,6 +386,18 @@ bool constraintTerm_canGetValue (constraintTerm term)
     }
 }
 
+void constraintTerm_setValue (constraintTerm term, long value) 
+{
+  if (term->kind == CTT_INTLITERAL)
+    {
+      term->value.intlit = value;
+    }
+  else
+    {
+      BADBRANCH;
+    }
+}
+
 long constraintTerm_getValue (constraintTerm term) 
 {
   llassert (constraintTerm_canGetValue (term));

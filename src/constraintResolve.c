@@ -38,20 +38,15 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-
 /*@access constraint, exprNode @*/ /*!!! NO! Don't do this so recklessly - design your code more carefully so you don't need to! */
 
-static constraint  inequalitySubstitute  (/*@returned@*/ constraint p_c, constraintList p_p);
-
-
+static constraint inequalitySubstitute (/*@returned@*/ constraint p_c, constraintList p_p);
 static bool rangeCheck (arithType p_ar1, /*@observer@*/ constraintExpr p_expr1, arithType p_ar2, /*@observer@*/ constraintExpr p_expr2);
 
-static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint p_c, constraintList p_p);
-
-static constraint  inequalitySubstituteStrong  (/*@returned@*/ constraint p_c, constraintList p_p);
+static constraint inequalitySubstituteUnsound (/*@returned@*/ constraint p_c, constraintList p_p);
+static constraint inequalitySubstituteStrong (/*@returned@*/ constraint p_c, constraintList p_p);
 
 static constraint constraint_searchandreplace (/*@returned@*/ constraint p_c, constraintExpr p_old, constraintExpr p_newExpr);
-
 
 static constraint constraint_addOr (/*@returned@*/ constraint p_orig, /*@observer@*/ constraint p_orConstr);
 
@@ -225,9 +220,6 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 		     ) ) );
  
 }
-
-
-  
   
 /*@only@*/ constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2)
 {
@@ -266,8 +258,6 @@ void exprNode_mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   
   return ret;
 }
-
-
 
 /* tries to resolve constraints in list pre2 using post1 */
 
@@ -514,14 +504,11 @@ static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c
   constraint ret;
   constraint next;
   constraint curr;
-
   
   DPRINTF(( message("doResolveOr: constraint %s and list %s", constraint_printOr(c), constraintList_print(post1) ) ));
 
-
+  *resolved = FALSE;
   
-   *resolved = FALSE;
-
   llassert(constraint_isDefined(c) );
 
   ret = constraint_copy(c);
@@ -649,17 +636,17 @@ static bool constraint_conflict (constraint c1, constraint c2)
   llassert(constraint_isDefined(c1) );
   llassert(constraint_isDefined(c2) );
 
-  if (constraintExpr_similar(c1->lexpr, c2->lexpr) )
+  if (constraintExpr_similar (c1->lexpr, c2->lexpr))
     {
       if (c1->ar == EQ)
 	if (c1->ar == c2->ar)
 	  {
-	    DPRINTF ((message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+	    DPRINTF (("%s conflicts with %s", constraint_unparse (c1), constraint_unparse (c2)));
 	    return TRUE;
 	  }
     }  
 
-  /* This is a slight kludg to prevent circular constraints like
+  /* This is a slight kludge to prevent circular constraints like
      strlen(str) == maxRead(s) + strlen(str);
   */
 
@@ -699,9 +686,10 @@ static void constraint_fixConflict (/*@temp@*/ constraint good, /*@temp@*/ /*@ob
 {
   llassert(constraint_isDefined(conflicting) );
   
-  if (conflicting->ar ==EQ )
+  if (conflicting->ar == EQ)
     {
-      llassert(constraint_isDefined(good) );
+      llassert (constraint_isDefined(good));
+      DPRINTF (("Replacing here!"));
       good->expr = constraintExpr_searchandreplace (good->expr, conflicting->lexpr, conflicting->expr);
       good = constraint_simplify (good);
     }
@@ -748,42 +736,53 @@ constraintList constraintList_fixConflicts (constraintList list1, constraintList
     return ret;
 }
 
-/*returns true if constraint post satifies cosntriant pre */
-static bool satifies (constraint pre, constraint post)
-{
-  llassert(constraint_isDefined(pre) );
-  llassert(constraint_isDefined(post) );
+/*returns true if constraint post satisfies cosntriant pre */
 
-  if (constraint_isAlwaysTrue (pre)  )
+static bool constraintResolve_satisfies (constraint pre, constraint post)
+{
+  llassert (constraint_isDefined(pre));
+  llassert (constraint_isDefined(post));
+
+  if (constraint_isAlwaysTrue (pre))
     return TRUE;
   
   if (!constraintExpr_similar (pre->lexpr, post->lexpr) )
     {
       return FALSE;
     }
+  
   if (constraintExpr_isUndefined(post->expr))
     {
       llassert(FALSE);
       return FALSE;
     }
-
+  
   return rangeCheck (pre->ar, pre->expr, post->ar, post->expr);
 }
 
 
-bool constraintList_resolve (/*@temp@*/ /*@observer@*/ constraint c, /*@temp@*/ /*@observer@*/ constraintList p)
+bool constraintList_resolve (/*@temp@*/ /*@observer@*/ constraint c,
+			     /*@temp@*/ /*@observer@*/ constraintList p)
 {
+  DPRINTF (("[resolve] Trying to resolve constraint: %s using %s",
+	    constraint_unparse (c),
+	    constraintList_unparse (p)));
+
   constraintList_elements (p, el)
     {
-      if ( satifies (c, el) )
+      if (constraintResolve_satisfies (c, el))
 	{
-	  DPRINTF ((message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
+	  DPRINTF (("constraintList_resolve: %s satifies %s", 
+		    constraint_unparse (el), constraint_unparse (c)));
 	  return TRUE;
 	}
-        DPRINTF ((message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
+      
+      DPRINTF (("constraintList_resolve: %s does not satify %s\n ", 
+		constraint_unparse (el), constraint_unparse (c)));
     }
   end_constraintList_elements;
-  DPRINTF ((message ("no constraints satify %s", constraint_print(c) ) ));
+
+  DPRINTF (("No constraints satify: %s", constraint_unparse (c)));
   return FALSE;
 }
 
@@ -793,7 +792,7 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
     {
     case GTE:
     case GT:
-      if ((ar2 == GT) || (ar2 == GTE) || (ar2 == EQ) )
+      if ((ar2 == GT) || (ar2 == GTE) || (ar2 == EQ))
 	{
 	  return TRUE;
 	}
@@ -806,7 +805,7 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
 
     case LT:
     case LTE:
-      if ((ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
+      if ((ar2 == LT) || (ar2 == LTE) || (ar2 == EQ))
 	return TRUE;
       break;
     default:
@@ -816,7 +815,7 @@ static bool arithType_canResolve (arithType ar1, arithType ar2)
 }
 
 /*checks for the case expr2 == sizeof buf1  and buf1 is a fixed array*/
-static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
+static bool sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
 {
   constraintTerm ct;
   exprNode e, t;
@@ -837,9 +836,9 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
 
   e = constraintTerm_getExprNode(ct);
 
-  llassert(exprNode_isDefined(e) );
+  llassert (exprNode_isDefined(e));
 
-  if (! (exprNode_isDefined(e) ) )
+  if (! (exprNode_isDefined(e)))
     return FALSE;
   
   if (e->kind != XPR_SIZEOF)
@@ -992,10 +991,11 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
 	}
     }
 
-  if (constraintExpr_similar (l,r) )
+  if (constraintExpr_similar (l,r))
     {
       switch (c->ar)
 	{
+	case CASTEQ:
 	case EQ:
 	case GTE:
 	case LTE:
@@ -1018,8 +1018,8 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
 
   if (constraintExpr_similar (l,r) && (rHasConstant ) )
     {
-      DPRINTF(( message("constraint_IsAlwaysTrue: after removing constants  %s and %s are similar", constraintExpr_unparse(l), constraintExpr_unparse(r) ) ));
-      DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is  %d", rConstant ) ));
+      DPRINTF(( message("constraint_IsAlwaysTrue: after removing constants %s and %s are similar", constraintExpr_unparse(l), constraintExpr_unparse(r) ) ));
+      DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is %d", rConstant ) ));
       
       constraintExpr_free(l);
       constraintExpr_free(r);
@@ -1057,125 +1057,127 @@ bool constraint_isAlwaysTrue (/*@observer@*/ /*@temp@*/ constraint c)
 static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arithType ar2, /*@observer@*/ constraintExpr expr2)
 
 {
-  DPRINTF ((message ("Doing Range CHECK %s and %s", constraintExpr_unparse(expr1), constraintExpr_unparse(expr2) ) ));
+  DPRINTF (("Doing range check %s and %s",
+	    constraintExpr_unparse (expr1), constraintExpr_unparse (expr2)));
 
-  if (! arithType_canResolve (ar1, ar2) )
+  if (!arithType_canResolve (ar1, ar2))
     return FALSE;
   
   switch (ar1)
- {
- case GTE:
-       if (constraintExpr_similar (expr1, expr2) )
-	  return TRUE;
-       /*@fallthrough@*/
-  case GT:
-    if (!  (constraintExpr_canGetValue (expr1) &&
-	       constraintExpr_canGetValue (expr2) ) )
-           {
-	          constraintExpr e1, e2;
-	          bool p1, p2;
-	          int const1, const2;
-
-	          e1 = constraintExpr_copy(expr1);
-	          e2 = constraintExpr_copy(expr2);
-
-	          e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
-
-	          e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
-
-	          if (p1 || p2)
-		     {
-		      if (!p1)
-			   const1 = 0;
-
-		      if (!p2)
-			   const2 = 0;
-
-		      if (const1 <= const2)
-			   if (constraintExpr_similar (e1, e2) )
-			          {
-				         constraintExpr_free(e1);
-				         constraintExpr_free(e2);
-				         return TRUE;
-				       }
-		      }
-	          DPRINTF(("Can't Get value"));
-
-	          constraintExpr_free(e1);
-	          constraintExpr_free(e2);
-	          return FALSE;
-	        }
-
-    if (constraintExpr_compare (expr2, expr1) >= 0)
-           return TRUE;
-
-   return FALSE;
-  case EQ:
-    if (constraintExpr_similar (expr1, expr2) )
-       return TRUE;
-
-    return FALSE;
-  case LTE:
-    if (constraintExpr_similar (expr1, expr2) )
-       return TRUE;
-    /*@fallthrough@*/
-  case LT:
-     if (!  (constraintExpr_canGetValue (expr1) &&
-	        constraintExpr_canGetValue (expr2) ) )
-            {
-	          constraintExpr e1, e2;
-	           bool p1, p2;
-	           int const1, const2;
-
-	           e1 = constraintExpr_copy(expr1);
-	           e2 = constraintExpr_copy(expr2);
-
-	           e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
-
-	           e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
-
-	           if (p1 || p2)
-		      {
-		       if (!p1)
-			    const1 = 0;
-
-		       if (!p2)
-			    const2 = 0;
-
-		       if (const1 >= const2)
-			    if (constraintExpr_similar (e1, e2) )
-			           {
-				          constraintExpr_free(e1);
-				          constraintExpr_free(e2);
-				          return TRUE;
-				        }
-		       }
-	           constraintExpr_free(e1);
-	           constraintExpr_free(e2);
-
-	           DPRINTF(("Can't Get value"));
-	           return FALSE;
-	         }
-
-    if (constraintExpr_compare (expr2, expr1) <= 0)
-           return TRUE;
-
-    return FALSE;
-
-  default:
+    {
+    case GTE:
+      if (constraintExpr_similar (expr1, expr2) )
+	return TRUE;
+      /*@fallthrough@*/
+    case GT:
+      if (!  (constraintExpr_canGetValue (expr1) &&
+	      constraintExpr_canGetValue (expr2) ) )
+	{
+	  constraintExpr e1, e2;
+	  bool p1, p2;
+	  int const1, const2;
+	  
+	  e1 = constraintExpr_copy(expr1);
+	  e2 = constraintExpr_copy(expr2);
+	  
+	  e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
+	  e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
+	  
+	  if (p1 || p2)
+	    {
+	      if (!p1)
+		const1 = 0;
+	      
+	      if (!p2)
+		const2 = 0;
+	      
+	      if (const1 <= const2)
+		if (constraintExpr_similar (e1, e2) )
+		  {
+		    constraintExpr_free(e1);
+		    constraintExpr_free(e2);
+		    return TRUE;
+		  }
+	    }
+	  DPRINTF(("Can't Get value"));
+	  
+	  constraintExpr_free(e1);
+	  constraintExpr_free(e2);
+	  return FALSE;
+	}
+      
+      if (constraintExpr_compare (expr2, expr1) >= 0)
+	return TRUE;
+      
+      return FALSE;
+    case EQ:
+      if (constraintExpr_similar (expr1, expr2) )
+	return TRUE;
+      
+      return FALSE;
+    case LTE:
+      if (constraintExpr_similar (expr1, expr2) )
+	return TRUE;
+      /*@fallthrough@*/
+    case LT:
+      if (!  (constraintExpr_canGetValue (expr1) &&
+	      constraintExpr_canGetValue (expr2) ) )
+	{
+	  constraintExpr e1, e2;
+	  bool p1, p2;
+	  int const1, const2;
+	  
+	  e1 = constraintExpr_copy(expr1);
+	  e2 = constraintExpr_copy(expr2);
+	  
+	  e1 = constraintExpr_propagateConstants (e1, &p1, &const1);
+	  
+	  e2 = constraintExpr_propagateConstants (e2, &p2, &const2);
+	  
+	  if (p1 || p2)
+	    {
+	      if (!p1)
+		const1 = 0;
+	      
+	      if (!p2)
+		const2 = 0;
+	      
+	      if (const1 >= const2)
+		if (constraintExpr_similar (e1, e2) )
+		  {
+		    constraintExpr_free(e1);
+		    constraintExpr_free(e2);
+		    return TRUE;
+		  }
+	    }
+	  constraintExpr_free(e1);
+	  constraintExpr_free(e2);
+	  
+	  DPRINTF(("Can't Get value"));
+	  return FALSE;
+	}
+      
+      if (constraintExpr_compare (expr2, expr1) <= 0)
+	return TRUE;
+      
+      return FALSE;
+      
+    default:
       llcontbug((message("Unhandled case in switch: %q", arithType_print(ar1) ) ) );
-  }
+    }
   BADEXIT;
 }
 
 static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr newExpr)
 {
-   llassert (constraint_isDefined(c)  );
-
-  DPRINTF (("Doing replace for lexpr") );
+  llassert (constraint_isDefined(c));
   
+  DPRINTF (("Starting replace lexpr [%p]: %s < %s ==> %s > in %s", c, 
+	    constraintExpr_unparse (c->lexpr), 
+	    constraintExpr_unparse (old), constraintExpr_unparse (newExpr),
+	    constraint_unparse (c)));
   c->lexpr = constraintExpr_searchandreplace (c->lexpr, old, newExpr);
-  DPRINTF (("Doing replace for expr") );
+  DPRINTF (("Finished replace lexpr [%p]: %s", c, constraintExpr_unparse (c->lexpr)));
   c->expr = constraintExpr_searchandreplace (c->expr, old, newExpr);
   return c;
 }
@@ -1185,7 +1187,7 @@ bool constraint_search (constraint c, constraintExpr old) /*@*/
   bool ret;
   ret = FALSE;
   
-  llassert (constraint_isDefined(c)  );
+  llassert (constraint_isDefined (c));
   
   ret  = constraintExpr_search (c->lexpr, old);
   ret = ret || constraintExpr_search (c->expr, old);
@@ -1205,8 +1207,8 @@ static constraint constraint_adjust (/*@returned@*/ constraint substitute, /*@ob
   llassert(constraint_isDefined(old));
 	   
   loc1 = constraint_getFileloc (old);
-  loc2 = constraintExpr_getFileloc (substitute->lexpr);
-  loc3 = constraintExpr_getFileloc (substitute->expr);
+  loc2 = constraintExpr_loc (substitute->lexpr);
+  loc3 = constraintExpr_loc (substitute->expr);
   
   /* special case of an equality that "contains itself" */
   if (constraintExpr_search (substitute->expr, substitute->lexpr) )
