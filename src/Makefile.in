@@ -1126,6 +1126,9 @@ lintnew: splintme
 splintme: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
 
+lintbuffercheck: 
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +bounds -DLINTBUFFERCHECK
+
 valsplint:
 	valgrind -v --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=yes ./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
 
@@ -1137,11 +1140,6 @@ splintsome:
 
 splinttest: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude test.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +keep +supcounts +partial -null
-
-lintbuffercheck: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
-                    +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +bounds +boundsread +implictconstraint -dLINTBUFFERCHECK
 
 all: splint$(EXEEXT) ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
 

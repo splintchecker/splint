@@ -2384,7 +2384,11 @@ static /*@only@*/ constraintExpr  constraintTerm_simpleDivTypeExprNode(/*@only@*
 		}
 	      else
 		{
-		  ct2 = qtype_getType (exprData_getType(exprData_getSingle (t1->edata)->edata ) );
+		  exprNode tempE;
+		
+		  tempE = exprData_getSingle (t1->edata);
+		  
+		  ct2 =  exprNode_getType (tempE); 
 		}
 	      if (ctype_match (ctype_makePointer(ct2), ct) )
 		{
