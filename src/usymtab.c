@@ -4566,7 +4566,7 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
   int i;
 
   aliasTable_free (u->aliases);
-  environmentTable_free (u->environment);
+  //  environmentTable_free (u->environment);
   refTable_free (u->reftable, u->nentries);
 
   if (u == filetab || u == globtab)
@@ -4910,23 +4910,23 @@ usymtab_typeName (/*@notnull@*/ usymtab t)
   BADEXIT;
 }
 
-void usymtab_testInRange (sRef s, int index) /*@globals utab;@*/
-{
-  /*@i22*/
-  /*@-globs*/
-  environmentTable_testInRange (utab->environment, s, index);
-  /*@=globs*/
-}
-void usymtab_postopVar (sRef sr) /*@globals utab;@*/
-{
-  environmentTable_postOpvar (utab->environment, sr);
+// oid usymtab_testInRange (sRef s, int index) /*@globals utab;@*/
+// {
+//   /*@i22*/
+//   /*@-globs*/
+//   environmentTable_testInRange (utab->environment, s, index);
+//   /*@=globs*/
+// }
+// void usymtab_postopVar (sRef sr) /*@globals utab;@*/
+// {
+//   environmentTable_postOpvar (utab->environment, sr);
   
-}
-/* doesn't do much check here assumes checking is done before call*/
-void usymtab_addExactValue(sRef s1, int val)
-{
-  /*@i22@*/ utab->environment = environmentTable_addExactValue (utab->environment, s1, val);
-}
+// }
+// /* doesn't do much check here assumes checking is done before call*/
+// void usymtab_addExactValue(sRef s1, int val)
+// {
+//   /*@i22@*/ utab->environment = environmentTable_addExactValue (utab->environment, s1, val);
+// }
   
 void usymtab_addMustAlias (sRef s, sRef al)
   /*@modifies utab@*/
