@@ -5,34 +5,6 @@ static char *
 abspath (cwd, rel_filename)
 
 */
-
-/*!!!!
-*** cpplib.c.old Tue Nov 28 2000 09:04:09 AM
---- cpplib.c Tue Nov 28 2000 08:55:18 AM
-***************
-*** 5715,5722 ****
-     c2 = cppReader_peekC (pfile)
-     if (c2 != '\n'
-       goto randomchar
-!    token = CPP_HSPACE
-!    goto op2any
---- 5714,5723 ----
-          case '\\'
-     c2 = cppReader_peekC (pfile)
-     if (c2 != '\n'
-       goto randomchar
-!    cppReader_forward (pfile, 1)
-!    pfile->lineno++
-!    return CPP_HSPACE
-  
- 
-   case '\n'
-     cppReader_putChar (pfile, c)
-
-
-Carl J. Appellof ( mailto:cappello@legato.com <mailto:cappello@legato.com> )
-*/ /*@i8@*/
-
 /*
 ** LCLint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
