@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/splint
 pkgincludedir = $(includedir)/splint
 top_builddir = ..
 
-ACLOCAL = aclocal
-AUTOCONF = autoconf
-AUTOMAKE = automake
-AUTOHEADER = autoheader
+ACLOCAL = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run aclocal
+AUTOCONF = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoconf
+AUTOMAKE = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run automake
+AUTOHEADER = ${SHELL} /net/af9/drl7x/reTmp/LCLintDev/config/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
