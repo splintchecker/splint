@@ -118,7 +118,7 @@ SPLINTRNEST = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args arraydims arrayinit arraylit blocks break cases cast charlit clauses commentchar compdestroy \
+  args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
@@ -299,6 +299,7 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               ./cases2.c \
               ./cast.c \
               ./cast2.c \
+              ./chararraylit.c \
               ./charlit.c \
               ./clauses.c \
               ./clauses2.c \
@@ -618,6 +619,7 @@ EXTRA_DIST = ./abst_t.lcl ./abst_t.lcs  \
               buffertest.expect \
               cases.expect \
               cast.expect \
+              chararraylit.expect \
               charlit.expect \
               clauses.expect \
               commentchar.expect \
@@ -1087,6 +1089,10 @@ cases:
 cast:
 	-$(SPLINTR) cast -accessmodule -expect 20
 	-$(SPLINTRN) cast2.c +checks -exportlocal -exportheader -expect 3
+
+.PHONY: chararraylit
+chararraylit:
+	-$(SPLINTR) chararraylit.c -expect 2
 
 ### Two addition errors detected with 2.5 with -numliteral.
 
