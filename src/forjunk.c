@@ -11,7 +11,6 @@
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
-# include "aliasChecks.h"
 # include "exprNodeSList.h"
 
 # include "exprDataQuite.i"
@@ -286,19 +285,19 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
   if ( constraintExpr_similar (c, find) )
     {
 
-      constraintExpr new;
+      constraintExpr newExpr;
       
       cstring cPrint;
       
       cPrint = constraintExpr_unparse(c);
       
       
-      new = constraintExpr_makeAddExpr (c, constraintExpr_copy(add) );
+      newExpr = constraintExpr_makeAddExpr (c, constraintExpr_copy(add) );
 
       DPRINTF((message ("Replacing %q with %q",
-			cPrint, constraintExpr_unparse(new)
+			cPrint, constraintExpr_unparse(newExpr)
 			)));
-      return new;
+      return newExpr;
     }
 
   kind = c->kind;
@@ -348,7 +347,7 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
   
 }
 
-/*@only@*/ static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList list,
+ static constraintList constraintList_searchAndAdd (/*@returned@*/ constraintList list,
 						   /*@observer@*/ constraintExpr find, /*@observer@*/ constraintExpr add)
 {
   constraintList newConstraints;
@@ -360,12 +359,12 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
     {
       if (constraint_search (el, find) )
 	{
-	  constraint new;
-	  new = constraint_copy (el);
+	  constraint newExpr;
+	  newExpr = constraint_copy (el);
 
-	  new = constraint_searchAndAdd (new, find, add);
-	  	  DPRINTF (( (message ("Adding constraint %s ", constraint_print (new)) )  ));
-	  newConstraints = constraintList_add (newConstraints, new);
+	  newExpr = constraint_searchAndAdd (newExpr, find, add);
+	  	  DPRINTF (( (message ("Adding constraint %s ", constraint_print (newExpr)) )  ));
+	  newConstraints = constraintList_add (newConstraints, newExpr);
 	}
 
     }
@@ -390,7 +389,7 @@ static void doAdjust(/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*@
   end_constraintList_elements;
 }
 
-void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
+void exprNode_forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
 {
   exprNode init, test, inc;
 
@@ -405,7 +404,7 @@ void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody)
   
   iterations = getForTimes (forPred, forBody );
 
-  if (iterations != NULL)
+  if (constraintExpr_isDefined (iterations) )
     {
       doAdjust ( e, forPred, forBody, iterations);
       constraintExpr_free(iterations);

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -49,6 +49,7 @@
 # include "portab.h"
 
 extern /*@external@*/ int yydebug;
+extern /*@external@*/ int mtdebug;
 
 typedef struct
 { 
@@ -57,14 +58,16 @@ typedef struct
 } maccesst;
 
 typedef enum { 
+  CX_ERROR,
+
   CX_GLOBAL, CX_INNER, 
-  CX_FUNCTION, CX_FCNDECL,
+  CX_FUNCTION, CX_FCNHEADER, CX_FCNDECLARATION,
   CX_MACROFCN, CX_MACROCONST, CX_UNKNOWNMACRO, 
   CX_ITERDEF, CX_ITEREND,
-  CX_LCL, CX_LCLLIB
+  CX_LCL, CX_LCLLIB, CX_MT
 } kcontext;
 
-static struct _context
+static struct
 {
   int linesprocessed;
   int speclinesprocessed;
@@ -130,6 +133,7 @@ static struct _context
   /*@reldef@*/ maccesst *moduleaccess; /* Not defined is nmods == 0. */
   
   kcontext kind;
+  kcontext savekind;
 
   ctype boolType;
 
@@ -142,8 +146,10 @@ static struct _context
   int counters[NUMVALUEFLAGS];
 
   o_cstring strings[NUMSTRINGFLAGS];
-  sRefSetList modrecs;
+  sRefSetList modrecs; /*@i32 ???? what is this for? */
 
+  metaStateTable stateTable; /* User-defined state information. */
+  annotationTable annotTable; /* User-defined annotations table. */
   union 
     {
       bool glob;
@@ -192,6 +198,11 @@ void context_clearPreprocessing (void)
 bool context_isPreprocessing (void)
 {
   return gc.preprocessing;
+}
+
+bool context_inXHFile (void)
+{
+  return (fileloc_isXHFile (g_currentloc));
 }
 
 void context_setInCommandLine (void)
@@ -245,13 +256,15 @@ clause topClause (clauseStack s) /*@*/
 void
 context_addMacroCache (/*@only@*/ cstring def)
 {
-    macrocache_addEntry (gc.mc, fileloc_copy (g_currentloc), def);
+  DPRINTF (("macro cache: %s", def));
+  macrocache_addEntry (gc.mc, fileloc_copy (g_currentloc), def);
 }
 
 void
 context_addComment (/*@only@*/ cstring def)
 {
-    macrocache_addComment (gc.mc, fileloc_copy (g_currentloc), def);
+  DPRINTF (("macro comment: %s", def));
+  macrocache_addComment (gc.mc, fileloc_copy (g_currentloc), def);
 }
 
 /*
@@ -321,7 +334,7 @@ context_suppressFlagMsg (flagcode flag, fileloc fl)
     }
   else
     {
-            return (context_inSuppressFlagZone (fl, flag));
+      return (context_inSuppressFlagZone (fl, flag));
     }
 }
 
@@ -427,6 +440,19 @@ context_exitSuppressRegion (void)
   flagMarkerList_add (gc.markers, flagMarker_createIgnoreOff (g_currentloc));
 }
 
+void
+context_enterMTfile (void)
+{
+  gc.kind = CX_MT;
+}
+
+void
+context_exitMTfile (void)
+{
+  llassert (gc.kind == CX_MT);
+  gc.kind = CX_GLOBAL;
+}
+
 # ifndef NOLCL
 void
 context_enterLCLfile (void)
@@ -497,13 +523,11 @@ context_exitLCLfile (void)
 {
   if (gc.kind != CX_LCLLIB)
     {
-      char *lclname =  
-	removeExtension (cstring_toCharsSafe 
-			 (fileName (currentFile ())), ".lcl"); 
+      cstring lclname =  
+	fileLib_withoutExtension (fileName (currentFile ()), LCL_EXTENSION);
       
-      addModuleAccess (cstring_fromCharsO (removePath (lclname)), gc.facct);
-      
-      mstring_free (lclname);
+      addModuleAccess (fileLib_removePath (lclname), gc.facct);
+      cstring_free (lclname);
     }
   
   gc.kind = CX_LCL;
@@ -552,22 +576,22 @@ void context_setLibrary (flagcode code)
   gc.library = code;
 }
 
-/*@observer@*/ char *context_selectedLibrary ()
+/*@observer@*/ cstring context_selectedLibrary ()
 {
   switch (gc.library)
     {
     case FLG_STRICTLIB:
-      return LLSTRICTLIBS_NAME;
+      return cstring_makeLiteralTemp (LLSTRICTLIBS_NAME);
     case FLG_POSIXLIB:
-      return LLPOSIXLIBS_NAME;
+      return cstring_makeLiteralTemp (LLPOSIXLIBS_NAME);
     case FLG_POSIXSTRICTLIB:
-      return LLPOSIXSTRICTLIBS_NAME;
+      return cstring_makeLiteralTemp (LLPOSIXSTRICTLIBS_NAME);
     case FLG_UNIXLIB:
-      return LLUNIXLIBS_NAME;    
+      return cstring_makeLiteralTemp (LLUNIXLIBS_NAME);    
     case FLG_UNIXSTRICTLIB:
-      return LLUNIXSTRICTLIBS_NAME;
+      return cstring_makeLiteralTemp (LLUNIXSTRICTLIBS_NAME);
     case FLG_ANSILIB:
-      return LLSTDLIBS_NAME;
+      return cstring_makeLiteralTemp (LLSTDLIBS_NAME);
     BADDEFAULT;
     }
 }
@@ -584,7 +608,7 @@ context_loadModuleAccess (FILE *in)
   char *os = s;
 # endif
 
-  while (fgets (s, MAX_DUMP_LINE_LENGTH, in) != NULL 
+  while ((reader_readLine (in, s, MAX_DUMP_LINE_LENGTH) != NULL )
 	 && *s == ';')
     {
       ;
@@ -613,7 +637,7 @@ context_loadModuleAccess (FILE *in)
       addModuleAccess (cstring_copy (cstring_fromChars (oname)), 
 		       typeIdSet_undump (&s)); 
 
-      (void) fgets (s, MAX_DUMP_LINE_LENGTH, in);
+      (void) reader_readLine (in, s, MAX_DUMP_LINE_LENGTH);
       llassert (s != lasts);
       lasts = s;
     }
@@ -680,8 +704,12 @@ context_resetAllFlags (void)
 	    {
 	    case FLG_LIMIT: 
 	      val = DEFAULT_LIMIT; break;
+	    case FLG_BUGSLIMIT:
+	      val = DEFAULT_BUGSLIMIT; break;
 	    case FLG_LINELEN: 
 	      val = DEFAULT_LINELEN; break;
+	    case FLG_INDENTSPACES: 
+	      val = DEFAULT_INDENTSPACES; break;
 	    case FLG_EXTERNALNAMELEN:
 	      val = DEFAULT_EXTERNALNAMELEN; break;
 	    case FLG_INTERNALNAMELEN:
@@ -716,11 +744,11 @@ context_resetAllFlags (void)
 	    { /*@-loopswitchbreak@*/
 	    case FLG_LARCHPATH:
 	      {
-		char *larchpath = osd_getEnvironmentVariable (LARCH_PATH);
+		cstring larchpath = osd_getEnvironmentVariable (LARCH_PATH);
 		
-		if (larchpath != NULL)
+		if (cstring_isDefined (larchpath))
 		  {
-		    val = cstring_fromCharsNew (larchpath);
+		    val = cstring_copy (larchpath);
 		  }
 		else
 		  {
@@ -731,7 +759,7 @@ context_resetAllFlags (void)
 	      }
 	    case FLG_LCLIMPORTDIR:
 	      {
-		val = cstring_fromCharsNew (osd_getEnvironment (LCLIMPORTDIR, DEFAULT_LCLIMPORTDIR));
+		val = cstring_copy (osd_getEnvironment (cstring_makeLiteralTemp (LCLIMPORTDIR), cstring_makeLiteralTemp (DEFAULT_LCLIMPORTDIR)));
 		break;
 	      }
 	    case FLG_TMPDIR: 
@@ -777,6 +805,8 @@ context_resetAllFlags (void)
   ** These flags are true by default.
   */
 
+  /*@i34 move this into flags.def */
+    
   gc.flags[FLG_MODIFIES] = TRUE;
   gc.flags[FLG_NESTCOMMENT] = TRUE;
   gc.flags[FLG_GLOBALS] = TRUE;
@@ -800,6 +830,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_SIZEOFFORMALARRAY] = TRUE;
   gc.flags[FLG_FIXEDFORMALARRAY] = TRUE;
 
+  gc.flags[FLG_WARNUSE] = TRUE;
   gc.flags[FLG_PREDASSIGN] = TRUE;
   gc.flags[FLG_MODOBSERVER] = TRUE;
   gc.flags[FLG_MACROVARPREFIXEXCLUDE] = TRUE;
@@ -815,6 +846,7 @@ context_resetAllFlags (void)
   gc.flags[FLG_FORMATTYPE] = TRUE;
   gc.flags[FLG_BADFLAG] = TRUE;
   gc.flags[FLG_WARNFLAGS] = TRUE;
+  gc.flags[FLG_FILEEXTENSIONS] = TRUE;
   gc.flags[FLG_WARNUNIXLIB] = TRUE;
   gc.flags[FLG_WARNPOSIX] = TRUE;
   gc.flags[FLG_SHOWCOL] = TRUE;
@@ -834,6 +866,9 @@ context_resetAllFlags (void)
   gc.flags[FLG_ACCESSMODULE] = TRUE;
   gc.flags[FLG_ACCESSFILE] = TRUE;
   gc.flags[FLG_MACROVARPREFIX] = TRUE;
+
+  gc.flags[FLG_ANNOTATIONERROR] = TRUE;
+  gc.flags[FLG_COMMENTERROR] = TRUE;
 
   /*
   ** Changed for version 2.4.
@@ -935,8 +970,9 @@ context_setMode (cstring s)
 	  FLG_PTRNUMCOMPARE, FLG_BOOLCOMPARE, FLG_MUTREP, 
 	  FLG_NOEFFECT, FLG_IMPTYPE,
 	  FLG_RETVALOTHER, FLG_RETVALBOOL, FLG_RETVALINT,
-	  FLG_SPECUNDEF, FLG_INCONDEFS, FLG_INCONDEFSLIB, 
+	  FLG_SPECUNDEF, FLG_INCONDEFS, FLG_INCONDEFSLIB, FLG_MISPLACEDSHAREQUAL,
 	  FLG_MATCHFIELDS,
+	  FLG_FORMATCONST,
 	  FLG_MACROPARAMS, FLG_MACROASSIGN, FLG_SEFPARAMS, 
 	  FLG_MACROSTMT, FLG_MACROPARENS, 
 	  FLG_MACROFCNDECL,
@@ -979,7 +1015,7 @@ context_setMode (cstring s)
 	  FLG_COMPDESTROY, FLG_MUSTNOTALIAS,
 	  FLG_MEMIMPLICIT,
 	  FLG_BRANCHSTATE, 
-
+	  FLG_STATETRANSFER, FLG_STATEMERGE,
 	  FLG_EVALORDER, FLG_SHADOW, FLG_READONLYSTRINGS,
 	  FLG_EXITARG,
 	  FLG_IMPCHECKEDSPECGLOBALS,
@@ -987,7 +1023,10 @@ context_setMode (cstring s)
 	  FLG_IFEMPTY, FLG_REALCOMPARE,
 	  FLG_BOOLOPS, FLG_PTRNEGATE,
 	  FLG_SHIFTSIGNED,
-	  INVALID_FLAG } ;
+	  FLG_BUFFEROVERFLOWHIGH,
+	  FLG_BUFFEROVERFLOW,
+	  INVALID_FLAG 
+	} ;
 
       SETFLAGS ();
     }
@@ -1006,11 +1045,13 @@ context_setMode (cstring s)
 	  FLG_RETVALOTHER,
 	  FLG_IFEMPTY, 
 	  FLG_RETSTACK, FLG_PTRNEGATE,
+	  FLG_STATETRANSFER, FLG_STATEMERGE,
 	  FLG_LONGUNSIGNEDINTEGRAL,
 	  FLG_LONGUNSIGNEDUNSIGNEDINTEGRAL,
 	  FLG_NUMLITERAL,
 	  FLG_CHARINTLITERAL,
 	  FLG_ZEROBOOL,
+	  FLG_BUFFEROVERFLOWHIGH,
 	  INVALID_FLAG 
 	  } ;
 
@@ -1021,10 +1062,12 @@ context_setMode (cstring s)
       flagcode modeflags[] = 
 	{ 
 	  FLG_EXPORTLOCAL, FLG_IMPTYPE,
+	  FLG_STATETRANSFER, FLG_STATEMERGE,
 	  FLG_CHECKSTRICTGLOBALIAS,
 	  FLG_CHECKEDGLOBALIAS,
 	  FLG_CHECKMODGLOBALIAS,
 	  FLG_UNCHECKEDGLOBALIAS,
+	  FLG_FORMATCONST,
           FLG_EXITARG, FLG_PTRNUMCOMPARE, 
 	  FLG_BOOLCOMPARE, FLG_MACROUNDEF, 
 	  FLG_MUSTMOD, FLG_ALLGLOBALS,
@@ -1038,6 +1081,7 @@ context_setMode (cstring s)
 	  FLG_RETVALOTHER, FLG_RETVALBOOL, FLG_RETVALINT,
 	  FLG_SPECUNDEF, FLG_IMPCHECKMODINTERNALS,
 	  FLG_DECLUNDEF, FLG_INCONDEFS, FLG_INCONDEFSLIB, 
+	  FLG_MISPLACEDSHAREQUAL, FLG_REDUNDANTSHAREQUAL,
 	  FLG_MATCHFIELDS, 
 	  FLG_MACROPARAMS,
 	  FLG_MACROASSIGN,
@@ -1095,6 +1139,7 @@ context_setMode (cstring s)
 	  FLG_INCLUDENEST, FLG_ANSIRESERVED, FLG_CPPNAMES, 
 	  FLG_NOPARAMS, FLG_IFEMPTY, FLG_WHILEEMPTY, FLG_REALCOMPARE,
 	  FLG_BOOLOPS, FLG_SHIFTSIGNED,
+	  FLG_BUFFEROVERFLOWHIGH, FLG_BUFFEROVERFLOW,
 	  INVALID_FLAG } ;
 
       SETFLAGS ();
@@ -1109,6 +1154,8 @@ context_setMode (cstring s)
 	  FLG_UNCHECKEDGLOBALIAS,
 	  FLG_MODFILESYSTEM,
 	  FLG_MACROMATCHNAME,
+	  FLG_FORMATCONST,
+	  FLG_STATETRANSFER, FLG_STATEMERGE,
           FLG_MACROUNDEF, FLG_MUTREP, FLG_MUSTMOD,
 	  FLG_ALLGLOBALS, FLG_IMPTYPE,
 	  FLG_MODNOMODS, FLG_MODGLOBSUNSPEC, FLG_MODSTRICTGLOBSUNSPEC,
@@ -1137,6 +1184,7 @@ context_setMode (cstring s)
 	  FLG_ANSIRESERVED, FLG_ANSIRESERVEDLOCAL, FLG_CPPNAMES,
 	  FLG_RETVALBOOL, FLG_RETVALINT, FLG_SPECUNDEF, 
 	  FLG_DECLUNDEF, FLG_STRICTOPS, FLG_INCONDEFS, 
+	  FLG_MISPLACEDSHAREQUAL, FLG_REDUNDANTSHAREQUAL,
 	  FLG_INCONDEFSLIB, FLG_MATCHFIELDS, FLG_EXPORTMACRO, FLG_EXPORTVAR, 
 	  FLG_EXPORTFCN, FLG_EXPORTTYPE, FLG_EXPORTLOCAL, FLG_MACROPARAMS, 
 	  FLG_MACROASSIGN,
@@ -1210,7 +1258,9 @@ context_setMode (cstring s)
 	  FLG_SYSTEMDIRERRORS, FLG_UNUSEDSPECIAL,
 
 	  FLG_SHIFTSIGNED, FLG_BITWISEOPS,
-	  INVALID_FLAG } ;
+	  FLG_BUFFEROVERFLOWHIGH, FLG_BUFFEROVERFLOW,
+	  INVALID_FLAG
+	} ;
 
       SETFLAGS ();
     }
@@ -1223,10 +1273,10 @@ context_setMode (cstring s)
 bool
 context_isSpecialFile (cstring fname)
 {
-  char *ext = filenameExtension (cstring_toCharsSafe (fname));
+  cstring ext = fileLib_getExtension (fname);
   
-  return (mstring_equal (ext, ".y") 
-	  || mstring_equal (ext, ".l")
+  return (cstring_equalLit (ext, ".y") 
+	  || cstring_equalLit (ext, ".l")
 	  || cstring_equalLit (fname, "lex.yy.c"));
 }
 
@@ -1288,8 +1338,7 @@ context_addFileAccessType (typeId t)
 {
   cstring base;
 
-  if (gc.kind == CX_FUNCTION || gc.kind == CX_MACROFCN 
-      || gc.kind == CX_UNKNOWNMACRO)
+  if (context_inFunctionLike ())
     {
       gc.acct = typeIdSet_insert (gc.acct, t);
     }
@@ -1315,21 +1364,48 @@ context_removeFileAccessType (typeId t)
   gc.nacct = typeIdSet_insert (gc.nacct, t);
 }
 
-void context_enterFunctionDecl (void)
+void context_enterFunctionHeader (void)
 {
   llassert (gc.kind == CX_GLOBAL);
-  gc.kind = CX_FCNDECL;
+  DPRINTF (("Enter function decl"));
+  gc.kind = CX_FCNHEADER;
 }
 
-void context_exitFunctionDecl (void)
+void context_exitFunctionHeader (void)
 {
+  DPRINTF (("Exit function decl"));
   gc.kind = CX_GLOBAL;
 }
 
-bool context_inFunctionDecl (void)
+bool context_inFunctionHeader (void)
 {
-  return (gc.kind == CX_FCNDECL);
+  return (gc.kind == CX_FCNHEADER);
 }
+
+void context_enterFunctionDeclaration (uentry e)
+{
+  DPRINTF (("Enter function decl"));
+  llassert (gc.savekind == CX_ERROR);
+  gc.savekind = gc.kind;
+  gc.kind = CX_FCNDECLARATION;
+  gc.cont.fcn = e;
+}
+
+void context_exitFunctionDeclaration (void)
+{
+  DPRINTF (("Exit function decl"));
+  llassert (gc.savekind != CX_ERROR);
+  llassert (gc.kind == CX_FCNDECLARATION);
+  gc.kind = gc.savekind;
+  gc.cont.fcn = uentry_undefined;
+  gc.savekind = CX_ERROR;
+}
+
+bool context_inFunctionDeclaration (void)
+{
+  return (gc.kind == CX_FCNDECLARATION);
+}
+
 
 void
 context_enterMacro (/*@observer@*/ uentry e)
@@ -1639,6 +1715,8 @@ context_enterFunction (/*@exposed@*/ uentry e)
   gc.kind = CX_FUNCTION;
   gc.cont.fcn = e;
 
+  DPRINTF (("Enter function: %s", uentry_unparse (e)));
+
   if (uentry_hasAccessType (e))
     {
       gc.acct = typeIdSet_subtract (typeIdSet_union (gc.facct, uentry_accessType (e)), 
@@ -1800,7 +1878,7 @@ context_checkGlobMod (sRef el)
 {
   uentry ue = sRef_getUentry (el);
 
-  /* no: llassert (sRef_isGlobal (el)); also check local statics */
+  /* no: llassert (sRef_isFileOrGlobalScope (el)); also check local statics */
 
   if (uentry_isCheckedModify (ue)
       || (!uentry_isUnchecked (ue) && (gc.flags[FLG_ALLGLOBALS])))
@@ -1835,7 +1913,7 @@ context_checkGlobMod (sRef el)
 }
 
 void
-context_usedGlobal (sRef el)
+context_usedGlobal (/*@exposed@*/ sRef el)
 {
   if (!globSet_member (gc.globs_used, el))
     {
@@ -1859,7 +1937,7 @@ context_modList (void)
 bool
 context_globAccess (sRef s)
 {
-  llassert (sRef_isGlobal (s) || sRef_isKindSpecial (s));
+  llassert (sRef_isFileOrGlobalScope (s) || sRef_isKindSpecial (s));
   return (globSet_member (gc.globs, s));
 }
 
@@ -1868,6 +1946,8 @@ context_hasAccess (typeId t)
 {
   if (context_inFunctionLike ())
     {
+      DPRINTF (("Access %d / %s",
+		t, typeIdSet_unparse (gc.acct)));
       return (typeIdSet_member (gc.acct, t));
     }
   else
@@ -1936,7 +2016,7 @@ context_getRetType (void)
 
       return ctype_unknown;
     }
-  return (ctype_returnValue (f));
+  return (ctype_getReturnType (f));
 }    
 
 bool
@@ -1954,12 +2034,10 @@ context_hasMods (void)
 
 void
 context_exitAllClauses (void)
-{
-  
+{  
   while (!clauseStack_isEmpty (gc.clauses))
     {
       clause el = clauseStack_top (gc.clauses);
-
       gc.inclause = el;
 
       if (clause_isNone (el))
@@ -1973,9 +2051,23 @@ context_exitAllClauses (void)
 	}
     }
 
-  clauseStack_clear (gc.clauses);
+  clauseStack_clear (gc.clauses);  
+  gc.inclause = NOCLAUSE;
+}
 
-  
+void
+context_exitAllClausesQuiet (void)
+{  
+  while (!clauseStack_isEmpty (gc.clauses))
+    {
+      clause el = clauseStack_top (gc.clauses);
+      gc.inclause = el;
+
+      usymtab_quietExitScope (g_currentloc);
+      clauseStack_pop (gc.clauses);
+    }
+
+  clauseStack_clear (gc.clauses);  
   gc.inclause = NOCLAUSE;
 }
 
@@ -2001,6 +2093,7 @@ static
 void context_exitClauseAux (exprNode pred, exprNode tbranch)
 {
   context_setJustPopped ();
+  /*@i32 was makeAlt */
   usymtab_popTrueBranch (pred, tbranch, gc.inclause);
   clauseStack_pop (gc.clauses);
   gc.inclause = topClause (gc.clauses);
@@ -2008,21 +2101,20 @@ void context_exitClauseAux (exprNode pred, exprNode tbranch)
 
 void context_exitTrueClause (exprNode pred, exprNode tbranch)
 {
+  DPRINTF (("Exit true clause: %s", exprNode_unparse (tbranch)));
+
   if (gc.inclause != TRUECLAUSE)
     {
       llparseerror (cstring_makeLiteral
 		    ("Likely parse error.  Conditional clauses are inconsistent."));
       return;
     }
-
-    
-  context_setJustPopped ();
-
+  
+  context_setJustPopped ();  
   usymtab_popTrueBranch (pred, tbranch, TRUECLAUSE);
   clauseStack_pop (gc.clauses);
-  gc.inclause = topClause (gc.clauses);
-  
-  }
+  gc.inclause = topClause (gc.clauses);  
+}
 
 void context_exitIterClause (exprNode body)
 {
@@ -2061,7 +2153,7 @@ static void context_popCase (void) {
 
   DPRINTF (("Popping case clause: %s",
 	    clauseStack_unparse (gc.clauses)));
-
+  
   if (gc.inclause == CASECLAUSE) {
     context_exitCaseClause ();
   }
@@ -2139,7 +2231,7 @@ void context_exitForClause (exprNode forPred, exprNode body)
 
   if (context_getFlag (FLG_LOOPEXEC))
     {
-            usymtab_popTrueExecBranch (forPred, body, FORCLAUSE);
+      usymtab_popTrueExecBranch (forPred, body, FORCLAUSE);
     }
   else
     {
@@ -2164,18 +2256,16 @@ static void context_exitClausePlain (void)
     {
       context_exitClauseAux (exprNode_undefined, exprNode_undefined);
     }
-  
 }
 
 void context_exitClause (exprNode pred, exprNode tbranch, exprNode fbranch)
 {
-    
   context_setJustPopped ();
-
+  
   if (gc.inclause == FALSECLAUSE)
     {
       usymtab_popBranches (pred, tbranch, fbranch, FALSE, FALSECLAUSE);
-
+      
       llassert (clauseStack_top (gc.clauses) == FALSECLAUSE);
 
       clauseStack_pop (gc.clauses);
@@ -2183,7 +2273,7 @@ void context_exitClause (exprNode pred, exprNode tbranch, exprNode fbranch)
     }
   else
     {
-            context_exitTrueClause (pred, tbranch);
+      context_exitTrueClause (pred, tbranch);
     }
 }
 
@@ -2224,6 +2314,8 @@ context_exitFunction (void)
 	      exprNode_checkAllMods (gc.mods, gc.cont.fcn);
 	    }
 	}
+
+      DPRINTF (("Exit function: %s", uentry_unparse (gc.cont.fcn)));
 
       /*
       ** clear file static modifies
@@ -2447,13 +2539,14 @@ context_getAliasAnnote (void)
 void
 context_recordFileModifies (sRefSet mods)
 {
-    gc.modrecs = sRefSetList_add (gc.modrecs, mods);
+  gc.modrecs = sRefSetList_add (gc.modrecs, mods);
 }
 
 void
 context_recordFileGlobals (globSet mods)
 {
-    /*@access globSet@*/ context_recordFileModifies (mods); /*@noaccess globSet@*/
+  DPRINTF (("Recording file globals: %s", globSet_unparse (mods)));
+  /*@access globSet@*/ context_recordFileModifies (mods); /*@noaccess globSet@*/
 }
 
 void
@@ -2477,42 +2570,55 @@ context_setValue (flagcode flag, int val)
 
   llassert (index >= 0 && index <= NUMVALUEFLAGS);
 
-  if (val <= 0)
+  switch (flag)
     {
-      switch (flag)
+    case FLG_LINELEN:
+      if (val <= 0)
 	{
-	case FLG_INCLUDENEST:
-	case FLG_CONTROLNESTDEPTH:
-	case FLG_STRINGLITERALLEN:
-	case FLG_NUMSTRUCTFIELDS:
-	case FLG_NUMENUMMEMBERS:
-	case FLG_LINELEN:
-	  {
-	    cstring warn = message ("Value for %s must be a positive "
-				    "number (given %d)",
-				    flagcode_unparse (flag), val);
-	    
-	    flagWarning (warn);
-	    cstring_free (warn);
-	    val = MINLINELEN;
-	  }
+	  
+	  cstring warn = message ("Value for %s must be a positive "
+				  "number (given %d)",
+				  flagcode_unparse (flag), val);
+	  
+	  flagWarning (warn);
+	  cstring_free (warn);
 	  return;
-	default:
-	  break;
 	}
-    }
+      if (flag == FLG_LINELEN && val < MINLINELEN)
+	{
+	  cstring warn = message ("Value for %s must be at least %d (given %d)",
+				  flagcode_unparse (flag), 
+				  MINLINELEN, val);
+	  flagWarning (warn);
+	  cstring_free (warn);
+	  val = MINLINELEN;
+	}
+      break;
 
-  if (flag == FLG_LINELEN && val < MINLINELEN)
-    {
-      cstring warn = message ("Value for %s must be at least %d (given %d)",
-			      flagcode_unparse (flag), 
-			      MINLINELEN, val);
-      flagWarning (warn);
-      cstring_free (warn);
-      val = MINLINELEN;
-    }
+    case FLG_INCLUDENEST:
+    case FLG_CONTROLNESTDEPTH:
+    case FLG_STRINGLITERALLEN:
+    case FLG_NUMSTRUCTFIELDS:
+    case FLG_NUMENUMMEMBERS:      
+    case FLG_INDENTSPACES:
+      if (val < 0)
+	{
+	  
+	  cstring warn = message ("Value for %s must be a non-negative "
+				  "number (given %d)",
+				  flagcode_unparse (flag), val);
+	  
+	  flagWarning (warn);
+	  cstring_free (warn);
+	  return;
+	}
 
-    gc.values[index] = val;
+      break;
+    default:
+      break;
+    }
+    
+  gc.values[index] = val;
 }
 
 void
@@ -2674,6 +2780,7 @@ void context_initMod (void)
    /*@globals undef gc; @*/
 {
   gc.kind = CX_GLOBAL;
+  gc.savekind = CX_ERROR;
   gc.instandardlib = FALSE;
   gc.numerrors = 0;
   gc.neednl = FALSE;
@@ -2686,9 +2793,8 @@ void context_initMod (void)
   gc.mc = macrocache_create ();
   gc.nmods = 0;
   gc.maxmods = DEFAULTMAXMODS;
-  gc.moduleaccess = (maccesst *) 
-    dmalloc (sizeof (*gc.moduleaccess) * (gc.maxmods));
-
+  gc.moduleaccess = (maccesst *) dmalloc (sizeof (*gc.moduleaccess) * (gc.maxmods));
+  
   gc.library = FLG_ANSILIB;
 
   gc.locstack = filelocStack_new ();
@@ -2736,6 +2842,15 @@ void context_initMod (void)
   context_resetAllFlags ();
   conext_resetAllCounters ();
   context_setMode (DEFAULT_MODE);
+
+  gc.stateTable = metaStateTable_create ();
+  gc.annotTable = annotationTable_create ();
+
+  DPRINTF (("Annotations: \n%s",
+	    cstring_toCharsSafe (annotationTable_unparse (gc.annotTable))));
+  DPRINTF (("State: \n%s",
+	    cstring_toCharsSafe (metaStateTable_unparse (gc.stateTable))));
+
 }
 
 ctype
@@ -3053,6 +3168,7 @@ bool
 context_inFunctionLike (void)
 {
   return (gc.kind == CX_FUNCTION || gc.kind == CX_MACROFCN 
+	  || gc.kind == CX_FCNDECLARATION
 	  || gc.kind == CX_UNKNOWNMACRO || gc.kind == CX_ITERDEF);
 }
 
@@ -3091,10 +3207,7 @@ context_processMacros (void)
   if (fileId_isValid (currentFile ()))
     {
       fileloc lastfl;
-      cstring cbase = cstring_fromChars 
-	(removePathFree
-	 (removeAnyExtension 
-	  (cstring_toCharsSafe (fileName (currentFile ())))));
+      cstring cbase = fileLib_removePathFree (fileLib_removeAnyExtension (fileName (currentFile ())));
       
       gc.inmacrocache = TRUE;
 
@@ -3121,7 +3234,7 @@ context_processingMacros (void)
 }
 
 void
-context_exitFile (void)
+context_exitCFile (void)
 {
   if (gc.kind != CX_GLOBAL)
     {
@@ -3152,20 +3265,20 @@ context_exitFile (void)
   sRefSetList_elements (gc.modrecs, mods)
     {
       sRefSet_clearStatics (mods);
-          } end_sRefSetList_elements ;
+    } end_sRefSetList_elements ;
   
   sRefSetList_clear (gc.modrecs);
-
+  
   context_processMacros ();
   cleanupMessages (); 
-
+  
   usymtab_exitFile ();
-
+  
   gc.inDerivedFile = FALSE;
   filelocStack_clear (gc.locstack);
-
+  
   gc.nacct = typeIdSet_emptySet (); /* empty noaccess */
-
+  
   gc.cont.glob = TRUE;
   
   if (gc.savedFlags)
@@ -3173,6 +3286,11 @@ context_exitFile (void)
       context_restoreFlagSettings ();
       gc.savedFlags = FALSE;
     }
+  
+  /*
+    DPRINTF (("After exiting file: "));
+    usymtab_printAll ();
+  */
 }
 
 void
@@ -3180,8 +3298,11 @@ context_exitMacroCache (void)
 {
   if (gc.kind != CX_GLOBAL)
     {
-      if (context_inMacro ()) /* this is okay, file could end without newline in macro */
+      if (context_inMacro ()) 
+	/* this is okay, file could end without newline in macro */
 	{
+	  DPRINTF (("Still in macro: %s",
+		    context_unparse ()));
 	  context_exitFunction ();
 	}
       else
@@ -3243,7 +3364,7 @@ context_inFunctionName (void)
 void
 context_userSetFlag (flagcode f, bool b)
 {
-  DPRINTF (("set flag: %s", flagcode_name (f)));
+  DPRINTF (("set flag: %s", flagcode_unparse (f)));
 
   if (f == FLG_NEVERINCLUDE && b)
     {
@@ -3284,11 +3405,24 @@ context_userSetFlag (flagcode f, bool b)
 	{
 	  cstring warn = message ("setting %s%s redundant with current value", 
 				  cstring_makeLiteralTemp (b ? "+" : "-"),
-				  flagcode_name (f));
+				  flagcode_unparse (f));
 	  flagWarning (warn);
 	  cstring_free (warn);
 	}
     }
+
+  if (flagcode_isWarnUseFlag (f) && b)
+    {
+      if (!context_getFlag (FLG_WARNUSE))
+	{
+	  cstring warn = message ("flag +%s is canceled by -warnuse",
+				  flagcode_unparse (f));
+	  flagWarning (warn);
+	  cstring_free (warn);
+	  
+	}
+    }
+
 
   if (flagcode_isLibraryFlag (f)) 
     {
@@ -3297,8 +3431,8 @@ context_userSetFlag (flagcode f, bool b)
 	{
 	  cstring warn = message ("selecting library %s after library %s was "
 				  "selected (only one library may be used)",
-				  flagcode_name (f),
-				  flagcode_name (gc.library));
+				  flagcode_unparse (f),
+				  flagcode_unparse (gc.library));
 	  flagWarning (warn);
 	  cstring_free (warn);
 	}
@@ -3366,7 +3500,7 @@ context_restoreFlag (flagcode f)
 
   }
 
-/*drl7x fix this static */ void
+static void
 context_setFlag (flagcode f, bool b)
 {
   context_setFlagAux (f, b, FALSE, FALSE);
@@ -3383,7 +3517,7 @@ context_setFlagTemp (flagcode f, bool b)
 # define DOSET(ff,b) \
    do { if (inFile) { gc.setLocally[ff] = TRUE; \
 		      context_addFlagMarker (ff, ynm_fromBool (b)); } \
-        DPRINTF (("set flag: %s / %s", flagcode_name (ff), bool_unparse (b))); \
+        DPRINTF (("set flag: %s / %s", flagcode_unparse (ff), bool_unparse (b))); \
         gc.flags[ff] = b; } while (FALSE)
 
 static void
@@ -3401,265 +3535,307 @@ static void
       }
     }
 
-  if (flagcode_isSpecialFlag (f))
+  /*
+  ** Removed test for special flags.
+  */
+
+  if (flagcode_isIdemFlag (f))
     {
-      gc.flags[f] = b;
-
-      
-      switch (f)
-	{     
-	case FLG_ALLEMPTY:
-	  DOSET (FLG_ALLEMPTY, b);
-	  DOSET (FLG_IFEMPTY, b);
-	  DOSET (FLG_WHILEEMPTY, b);
-	  DOSET (FLG_FOREMPTY, b);
-	  break;
-	case FLG_PREDBOOL:
-	  DOSET (FLG_PREDBOOL, b);
-	  DOSET (FLG_PREDBOOLINT, b);
-	  DOSET (FLG_PREDBOOLPTR, b);
-	  DOSET (FLG_PREDBOOLOTHERS, b);
-	  break;
-	case FLG_GLOBALIAS:
-	  DOSET (FLG_CHECKSTRICTGLOBALIAS, b);
-	  DOSET (FLG_CHECKEDGLOBALIAS, b);
-	  DOSET (FLG_CHECKMODGLOBALIAS, b);
-	  DOSET (FLG_UNCHECKEDGLOBALIAS, b);
-	  break;
-	case FLG_ALLBLOCK:
-	  DOSET (FLG_ALLBLOCK, b);
-	  DOSET (FLG_IFBLOCK, b);
-	  DOSET (FLG_WHILEBLOCK, b);
-	  DOSET (FLG_FORBLOCK, b);
-	  break;
-	case FLG_GRAMMAR:
-	  if (b)
-	    {
-	      yydebug = 1;
-	    }
-	  else
-	    {
-	      yydebug = 0;
-	    }
-	  
-	  DOSET (FLG_GRAMMAR, b);
-	  break;
-	case FLG_CODEIMPONLY:
-	  DOSET (FLG_CODEIMPONLY, b);
-	  DOSET (FLG_GLOBIMPONLY, b);
-	  DOSET (FLG_RETIMPONLY, b);
-	  DOSET (FLG_STRUCTIMPONLY, b);
-	  break;
-	case FLG_SPECALLIMPONLY:
-	  	  DOSET (FLG_SPECALLIMPONLY, b);
-	  DOSET (FLG_SPECGLOBIMPONLY, b);
-	  DOSET (FLG_SPECRETIMPONLY, b);
-	  DOSET (FLG_SPECSTRUCTIMPONLY, b);
-	  break;
-	case FLG_ALLIMPONLY:
-	  DOSET (FLG_ALLIMPONLY, b);
-	  DOSET (FLG_GLOBIMPONLY, b);
-	  DOSET (FLG_RETIMPONLY, b);
-	  DOSET (FLG_STRUCTIMPONLY, b);
-	  DOSET (FLG_SPECGLOBIMPONLY, b);
-	  DOSET (FLG_SPECRETIMPONLY, b);
-	  DOSET (FLG_SPECSTRUCTIMPONLY, b);
-	  break;
-	case FLG_ANSILIMITS: 
-	  DOSET (FLG_ANSILIMITS, b);
-	  DOSET (FLG_CONTROLNESTDEPTH, b);
-	  DOSET (FLG_STRINGLITERALLEN, b);
-	  DOSET (FLG_INCLUDENEST, b);
-	  DOSET (FLG_NUMSTRUCTFIELDS, b);
-	  DOSET (FLG_NUMENUMMEMBERS, b);
-	  
-	  if (b)
-	    {
-	      context_setValue (FLG_CONTROLNESTDEPTH, DEFAULT_CONTROLNESTDEPTH);
-	      context_setValue (FLG_STRINGLITERALLEN, DEFAULT_STRINGLITERALLEN);
-	      context_setValue (FLG_INCLUDENEST, DEFAULT_INCLUDENEST);
-	      context_setValue (FLG_NUMSTRUCTFIELDS, DEFAULT_NUMSTRUCTFIELDS);
-	      context_setValue (FLG_NUMENUMMEMBERS, DEFAULT_NUMENUMMEMBERS);
-	    }
-	  break;
-	case FLG_EXTERNALNAMELEN:
-	  DOSET (FLG_DISTINCTEXTERNALNAMES, TRUE);
-	  DOSET (FLG_EXTERNALNAMELEN, TRUE);
-	  break;
-	case FLG_INTERNALNAMELEN:
-	  DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
-	  DOSET (FLG_INTERNALNAMELEN, TRUE);
-	  break;
-	case FLG_EXTERNALNAMECASEINSENSITIVE:
-	  DOSET (FLG_EXTERNALNAMECASEINSENSITIVE, b);
-
-	  if (b && !gc.flags[FLG_DISTINCTEXTERNALNAMES])
-	    {
-	      DOSET (FLG_DISTINCTEXTERNALNAMES, TRUE);
-	      context_setValue (FLG_EXTERNALNAMELEN, 0);
-	    }
-	  break;
-	case FLG_INTERNALNAMECASEINSENSITIVE:
-	  DOSET (FLG_INTERNALNAMECASEINSENSITIVE, b);
-
-	  if (b && !gc.flags[FLG_DISTINCTINTERNALNAMES])
-	    {
-	      DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
-	      context_setValue (FLG_INTERNALNAMELEN, 0);
-	    }
-	  break;
-	case FLG_INTERNALNAMELOOKALIKE:
-	  DOSET (FLG_INTERNALNAMELOOKALIKE, b);
-
-	  if (b && !gc.flags[FLG_DISTINCTINTERNALNAMES])
-	    {
-	      DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
-	      context_setValue (FLG_INTERNALNAMELEN, 0);
-	    }
-	  break;
-	case FLG_MODUNSPEC:
-	  DOSET (FLG_MODNOMODS, b);
-	  DOSET (FLG_MODGLOBSUNSPEC, b);
-	  DOSET (FLG_MODSTRICTGLOBSUNSPEC, b);
-	  break;
-	case FLG_EXPORTANY: 
-	  DOSET (FLG_EXPORTVAR, b);
-	  DOSET (FLG_EXPORTFCN, b);
-	  DOSET (FLG_EXPORTTYPE, b);
-	  DOSET (FLG_EXPORTMACRO, b);
-	  DOSET (FLG_EXPORTCONST, b);
-	  gc.anyExports = TRUE;
-	  break;
-	case FLG_REPEXPOSE:
-	  DOSET (FLG_RETEXPOSE, b); 
-	  DOSET (FLG_ASSIGNEXPOSE, b); 
-	  DOSET (FLG_CASTEXPOSE, b); 
-	  break;
-	case FLG_RETVAL:
-	  DOSET (FLG_RETVALBOOL, b);
-	  DOSET (FLG_RETVALINT, b);
-	  DOSET (FLG_RETVALOTHER, b);
-	  break;
-	case FLG_PARTIAL:
-	  if (b)
-	    {
-	      DOSET (FLG_EXPORTLOCAL, FALSE);
-	      DOSET (FLG_DECLUNDEF, FALSE);
-	      DOSET (FLG_SPECUNDEF, FALSE);
-	      DOSET (FLG_TOPUNUSED, FALSE);
-	    }
-	  break;
-	case FLG_DEEPBREAK:
-	  DOSET (FLG_LOOPLOOPBREAK, b);
-	  DOSET (FLG_LOOPSWITCHBREAK, b);
-	  DOSET (FLG_SWITCHLOOPBREAK, b);
-	  DOSET (FLG_SWITCHSWITCHBREAK, b);
-	  DOSET (FLG_LOOPLOOPCONTINUE, b);
-	  DOSET (FLG_DEEPBREAK, b);
-	  break;
-	case FLG_ACCESSALL:
-	  DOSET (FLG_ACCESSMODULE, b);
-	  DOSET (FLG_ACCESSFILE, b);
-	  DOSET (FLG_ACCESSCZECH, b);
-	  break;
-	case FLG_ALLMACROS:
-	  DOSET (FLG_ALLMACROS, b);
-	  DOSET (FLG_FCNMACROS, b);
-	  DOSET (FLG_CONSTMACROS, b);
-	  break;
-	case FLG_CZECH:
-	  if (b) { DOSET (FLG_ACCESSCZECH, b); }
-	  DOSET (FLG_CZECHFUNCTIONS, b);
-	  DOSET (FLG_CZECHVARS, b);
-	  DOSET (FLG_CZECHCONSTANTS, b);
-	  DOSET (FLG_CZECHTYPES, b);
-	  break;
-	case FLG_SLOVAK:
-	  if (b) { DOSET (FLG_ACCESSSLOVAK, b); }
-	  DOSET (FLG_SLOVAKFUNCTIONS, b);
-	  DOSET (FLG_SLOVAKVARS, b);
-	  DOSET (FLG_SLOVAKCONSTANTS, b);
-	  DOSET (FLG_SLOVAKTYPES, b);
-	  break;
-	case FLG_CZECHOSLOVAK:
-	  if (b) { DOSET (FLG_ACCESSCZECHOSLOVAK, b); }
-	  DOSET (FLG_CZECHOSLOVAKFUNCTIONS, b);
-	  DOSET (FLG_CZECHOSLOVAKVARS, b);
-	  DOSET (FLG_CZECHOSLOVAKCONSTANTS, b);
-	  DOSET (FLG_CZECHOSLOVAKTYPES, b);
-	  break;
-	case FLG_NULL:
-	  DOSET (FLG_NULLSTATE, b);
-	  DOSET (FLG_NULLDEREF, b);
-	  DOSET (FLG_NULLASSIGN, b);
-	  DOSET (FLG_NULLPASS, b);
-	  DOSET (FLG_NULLRET, b);
-	  break;
-	case FLG_MEMCHECKS:
-	  DOSET (FLG_NULLSTATE, b);
-	  DOSET (FLG_NULLDEREF, b);
-	  DOSET (FLG_NULLASSIGN, b);
-	  DOSET (FLG_NULLPASS, b);
-	  DOSET (FLG_NULLRET, b);
-	  DOSET (FLG_COMPDEF, b);
-	  DOSET (FLG_COMPMEMPASS, b);
-	  DOSET (FLG_UNIONDEF, b);
-	  DOSET (FLG_MEMTRANS, b);
-	  DOSET (FLG_USERELEASED, b);
-	  DOSET (FLG_ALIASUNIQUE, b);
-	  DOSET (FLG_MAYALIASUNIQUE, b);
-	  DOSET (FLG_MUSTFREE, b);
-	  DOSET (FLG_MUSTDEFINE, b);
-	  DOSET (FLG_GLOBSTATE, b); 
-	  DOSET (FLG_COMPDESTROY, b);
-	  DOSET (FLG_MUSTNOTALIAS, b);
-	  DOSET (FLG_MEMIMPLICIT, b);
-	  DOSET (FLG_BRANCHSTATE, b); 
-	  /*@fallthrough@*/ /* also sets memtrans flags */
-	case FLG_MEMTRANS:
-	  DOSET (FLG_MEMTRANS, b);
-	  DOSET (FLG_EXPOSETRANS, b);
-	  DOSET (FLG_OBSERVERTRANS, b);
-	  DOSET (FLG_DEPENDENTTRANS, b);
-	  DOSET (FLG_NEWREFTRANS, b);
-	  DOSET (FLG_ONLYTRANS, b);
-	  DOSET (FLG_OWNEDTRANS, b);
-	  DOSET (FLG_FRESHTRANS, b);
-	  DOSET (FLG_SHAREDTRANS, b);
-	  DOSET (FLG_TEMPTRANS, b);
-	  DOSET (FLG_KEPTTRANS, b);
-	  DOSET (FLG_REFCOUNTTRANS, b);
-	  DOSET (FLG_STATICTRANS, b);
-	  DOSET (FLG_UNKNOWNTRANS, b);
-	  DOSET (FLG_KEEPTRANS, b);
-	  DOSET (FLG_IMMEDIATETRANS, b);
-	  break;
-
-	default:
-	  llcontbug (message ("Unhandled special flag: %s", 
-			      flagcode_unparse (f)));
-	  break;
-	}
+      DOSET (f, TRUE);
     }
   else
     {
-      if (flagcode_isIdemFlag (f))
+      DOSET (f, b);
+    }
+
+  if (f >= FLG_ITS4MOSTRISKY && f <= FLG_ITS4LOWRISK)
+    {
+      if (b) /* Turing higher level on, turns on all lower levels */
 	{
-	  DOSET (f, TRUE);
+	  switch (f)
+	    {
+	    case FLG_ITS4MOSTRISKY:
+	      DOSET (FLG_ITS4VERYRISKY, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4VERYRISKY:
+	      DOSET (FLG_ITS4RISKY, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4RISKY:
+	      DOSET (FLG_ITS4MODERATERISK, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4MODERATERISK:
+	      DOSET (FLG_ITS4LOWRISK, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4LOWRISK:
+	      break;
+	      BADDEFAULT;
+	    }
+	}
+      else /* Turning level off, turns off all higher levels */
+	{
+	  switch (f)
+	    {
+	    case FLG_ITS4LOWRISK:
+	      DOSET (FLG_ITS4MODERATERISK, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4MODERATERISK:
+	      DOSET (FLG_ITS4RISKY, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4RISKY:
+	      DOSET (FLG_ITS4VERYRISKY, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4VERYRISKY:
+	      DOSET (FLG_ITS4MOSTRISKY, b);
+	      /*@fallthrough@*/ 
+	    case FLG_ITS4MOSTRISKY:
+	      break;
+	      BADDEFAULT;
+	    }
+	}
+    }
+  
+  switch (f)
+    {     
+    case FLG_ALLEMPTY:
+      DOSET (FLG_ALLEMPTY, b);
+      DOSET (FLG_IFEMPTY, b);
+      DOSET (FLG_WHILEEMPTY, b);
+      DOSET (FLG_FOREMPTY, b);
+      break;
+    case FLG_PREDBOOL:
+      DOSET (FLG_PREDBOOL, b);
+      DOSET (FLG_PREDBOOLINT, b);
+      DOSET (FLG_PREDBOOLPTR, b);
+      DOSET (FLG_PREDBOOLOTHERS, b);
+      break;
+    case FLG_GLOBALIAS:
+      DOSET (FLG_CHECKSTRICTGLOBALIAS, b);
+      DOSET (FLG_CHECKEDGLOBALIAS, b);
+      DOSET (FLG_CHECKMODGLOBALIAS, b);
+      DOSET (FLG_UNCHECKEDGLOBALIAS, b);
+      break;
+    case FLG_ALLBLOCK:
+      DOSET (FLG_ALLBLOCK, b);
+      DOSET (FLG_IFBLOCK, b);
+      DOSET (FLG_WHILEBLOCK, b);
+      DOSET (FLG_FORBLOCK, b);
+      break;
+    case FLG_GRAMMAR:
+      if (b)
+	{
+	  yydebug = 1;
+	  mtdebug = 1;
 	}
       else
 	{
-	  if (b && !gc.anyExports
-	      && (f == FLG_EXPORTVAR || f == FLG_EXPORTFCN
-		  || f == FLG_EXPORTTYPE || f == FLG_EXPORTMACRO
-		  || f == FLG_EXPORTCONST
-		  || f == FLG_EXPORTANY))
-	    {
-	      gc.anyExports = TRUE;
-	    }
-
-	  DOSET (f, b);
+	  yydebug = 0;
+	  mtdebug = 0;
 	}
+      
+      DOSET (FLG_GRAMMAR, b);
+      break;
+    case FLG_CODEIMPONLY:
+      DOSET (FLG_CODEIMPONLY, b);
+      DOSET (FLG_GLOBIMPONLY, b);
+      DOSET (FLG_RETIMPONLY, b);
+      DOSET (FLG_STRUCTIMPONLY, b);
+      break;
+    case FLG_SPECALLIMPONLY:
+      DOSET (FLG_SPECALLIMPONLY, b);
+      DOSET (FLG_SPECGLOBIMPONLY, b);
+      DOSET (FLG_SPECRETIMPONLY, b);
+      DOSET (FLG_SPECSTRUCTIMPONLY, b);
+      break;
+    case FLG_ALLIMPONLY:
+      DOSET (FLG_ALLIMPONLY, b);
+      DOSET (FLG_GLOBIMPONLY, b);
+      DOSET (FLG_RETIMPONLY, b);
+      DOSET (FLG_STRUCTIMPONLY, b);
+      DOSET (FLG_SPECGLOBIMPONLY, b);
+      DOSET (FLG_SPECRETIMPONLY, b);
+      DOSET (FLG_SPECSTRUCTIMPONLY, b);
+      break;
+    case FLG_ANSILIMITS: 
+      DOSET (FLG_ANSILIMITS, b);
+      DOSET (FLG_CONTROLNESTDEPTH, b);
+      DOSET (FLG_STRINGLITERALLEN, b);
+      DOSET (FLG_INCLUDENEST, b);
+      DOSET (FLG_NUMSTRUCTFIELDS, b);
+      DOSET (FLG_NUMENUMMEMBERS, b);
+      
+      if (b)
+	{
+	  context_setValue (FLG_CONTROLNESTDEPTH, DEFAULT_CONTROLNESTDEPTH);
+	  context_setValue (FLG_STRINGLITERALLEN, DEFAULT_STRINGLITERALLEN);
+	  context_setValue (FLG_INCLUDENEST, DEFAULT_INCLUDENEST);
+	  context_setValue (FLG_NUMSTRUCTFIELDS, DEFAULT_NUMSTRUCTFIELDS);
+	  context_setValue (FLG_NUMENUMMEMBERS, DEFAULT_NUMENUMMEMBERS);
+	}
+      break;
+    case FLG_EXTERNALNAMELEN:
+      DOSET (FLG_DISTINCTEXTERNALNAMES, TRUE);
+      DOSET (FLG_EXTERNALNAMELEN, TRUE);
+      break;
+    case FLG_INTERNALNAMELEN:
+      DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
+      DOSET (FLG_INTERNALNAMELEN, TRUE);
+      break;
+    case FLG_EXTERNALNAMECASEINSENSITIVE:
+      DOSET (FLG_EXTERNALNAMECASEINSENSITIVE, b);
+      
+      if (b && !gc.flags[FLG_DISTINCTEXTERNALNAMES])
+	{
+	  DOSET (FLG_DISTINCTEXTERNALNAMES, TRUE);
+	  context_setValue (FLG_EXTERNALNAMELEN, 0);
+	}
+      break;
+    case FLG_INTERNALNAMECASEINSENSITIVE:
+      DOSET (FLG_INTERNALNAMECASEINSENSITIVE, b);
+      
+      if (b && !gc.flags[FLG_DISTINCTINTERNALNAMES])
+	{
+	  DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
+	  context_setValue (FLG_INTERNALNAMELEN, 0);
+	}
+      break;
+    case FLG_INTERNALNAMELOOKALIKE:
+      DOSET (FLG_INTERNALNAMELOOKALIKE, b);
+      
+      if (b && !gc.flags[FLG_DISTINCTINTERNALNAMES])
+	{
+	  DOSET (FLG_DISTINCTINTERNALNAMES, TRUE);
+	  context_setValue (FLG_INTERNALNAMELEN, 0);
+	}
+      break;
+    case FLG_MODUNSPEC:
+      DOSET (FLG_MODNOMODS, b);
+      DOSET (FLG_MODGLOBSUNSPEC, b);
+      DOSET (FLG_MODSTRICTGLOBSUNSPEC, b);
+      break;
+    case FLG_EXPORTANY: 
+      DOSET (FLG_EXPORTVAR, b);
+      DOSET (FLG_EXPORTFCN, b);
+      DOSET (FLG_EXPORTTYPE, b);
+      DOSET (FLG_EXPORTMACRO, b);
+      DOSET (FLG_EXPORTCONST, b);
+      gc.anyExports = TRUE;
+      break;
+    case FLG_REPEXPOSE:
+      DOSET (FLG_RETEXPOSE, b); 
+      DOSET (FLG_ASSIGNEXPOSE, b); 
+      DOSET (FLG_CASTEXPOSE, b); 
+      break;
+    case FLG_RETVAL:
+      DOSET (FLG_RETVALBOOL, b);
+      DOSET (FLG_RETVALINT, b);
+      DOSET (FLG_RETVALOTHER, b);
+      break;
+    case FLG_PARTIAL:
+      if (b)
+	{
+	  DOSET (FLG_EXPORTLOCAL, FALSE);
+	  DOSET (FLG_DECLUNDEF, FALSE);
+	  DOSET (FLG_SPECUNDEF, FALSE);
+	  DOSET (FLG_TOPUNUSED, FALSE);
+	}
+      break;
+    case FLG_DEEPBREAK:
+      DOSET (FLG_LOOPLOOPBREAK, b);
+      DOSET (FLG_LOOPSWITCHBREAK, b);
+      DOSET (FLG_SWITCHLOOPBREAK, b);
+      DOSET (FLG_SWITCHSWITCHBREAK, b);
+      DOSET (FLG_LOOPLOOPCONTINUE, b);
+      DOSET (FLG_DEEPBREAK, b);
+      break;
+    case FLG_ACCESSALL:
+      DOSET (FLG_ACCESSMODULE, b);
+      DOSET (FLG_ACCESSFILE, b);
+      DOSET (FLG_ACCESSCZECH, b);
+      break;
+    case FLG_ALLMACROS:
+      DOSET (FLG_ALLMACROS, b);
+      DOSET (FLG_FCNMACROS, b);
+      DOSET (FLG_CONSTMACROS, b);
+      break;
+    case FLG_CZECH:
+      if (b) { DOSET (FLG_ACCESSCZECH, b); }
+      DOSET (FLG_CZECHFUNCTIONS, b);
+      DOSET (FLG_CZECHVARS, b);
+      DOSET (FLG_CZECHCONSTANTS, b);
+      DOSET (FLG_CZECHTYPES, b);
+      break;
+    case FLG_SLOVAK:
+      if (b) { DOSET (FLG_ACCESSSLOVAK, b); }
+      DOSET (FLG_SLOVAKFUNCTIONS, b);
+      DOSET (FLG_SLOVAKVARS, b);
+      DOSET (FLG_SLOVAKCONSTANTS, b);
+      DOSET (FLG_SLOVAKTYPES, b);
+      break;
+    case FLG_CZECHOSLOVAK:
+      if (b) { DOSET (FLG_ACCESSCZECHOSLOVAK, b); }
+      DOSET (FLG_CZECHOSLOVAKFUNCTIONS, b);
+      DOSET (FLG_CZECHOSLOVAKVARS, b);
+      DOSET (FLG_CZECHOSLOVAKCONSTANTS, b);
+      DOSET (FLG_CZECHOSLOVAKTYPES, b);
+      break;
+    case FLG_NULL:
+      DOSET (FLG_NULLSTATE, b);
+      DOSET (FLG_NULLDEREF, b);
+      DOSET (FLG_NULLASSIGN, b);
+      DOSET (FLG_NULLPASS, b);
+      DOSET (FLG_NULLRET, b);
+      break;
+    case FLG_MEMCHECKS:
+      DOSET (FLG_NULLSTATE, b);
+      DOSET (FLG_NULLDEREF, b);
+      DOSET (FLG_NULLASSIGN, b);
+      DOSET (FLG_NULLPASS, b);
+      DOSET (FLG_NULLRET, b);
+      DOSET (FLG_COMPDEF, b);
+      DOSET (FLG_COMPMEMPASS, b);
+      DOSET (FLG_UNIONDEF, b);
+      DOSET (FLG_MEMTRANS, b);
+      DOSET (FLG_USERELEASED, b);
+      DOSET (FLG_ALIASUNIQUE, b);
+      DOSET (FLG_MAYALIASUNIQUE, b);
+      DOSET (FLG_MUSTFREE, b);
+      DOSET (FLG_MUSTDEFINE, b);
+      DOSET (FLG_GLOBSTATE, b); 
+      DOSET (FLG_COMPDESTROY, b);
+      DOSET (FLG_MUSTNOTALIAS, b);
+      DOSET (FLG_MEMIMPLICIT, b);
+      DOSET (FLG_BRANCHSTATE, b); 
+      /*@fallthrough@*/ /* also sets memtrans flags */
+    case FLG_MEMTRANS:
+      DOSET (FLG_MEMTRANS, b);
+      DOSET (FLG_EXPOSETRANS, b);
+      DOSET (FLG_OBSERVERTRANS, b);
+      DOSET (FLG_DEPENDENTTRANS, b);
+      DOSET (FLG_NEWREFTRANS, b);
+      DOSET (FLG_ONLYTRANS, b);
+      DOSET (FLG_OWNEDTRANS, b);
+      DOSET (FLG_FRESHTRANS, b);
+      DOSET (FLG_SHAREDTRANS, b);
+      DOSET (FLG_TEMPTRANS, b);
+      DOSET (FLG_KEPTTRANS, b);
+      DOSET (FLG_REFCOUNTTRANS, b);
+      DOSET (FLG_STATICTRANS, b);
+      DOSET (FLG_UNKNOWNTRANS, b);
+      DOSET (FLG_KEEPTRANS, b);
+      DOSET (FLG_IMMEDIATETRANS, b);
+      break;
+      
+    default:
+      break;
+    }
+
+  if (b && !gc.anyExports
+      && (f == FLG_EXPORTVAR || f == FLG_EXPORTFCN
+	  || f == FLG_EXPORTTYPE || f == FLG_EXPORTMACRO
+	  || f == FLG_EXPORTCONST
+	  || f == FLG_EXPORTANY))
+    {
+      gc.anyExports = TRUE;
     }
 }
 
@@ -3673,6 +3849,12 @@ bool
 context_getFlag (flagcode d)
 {
   return (gc.flags[d]);
+}
+
+bool
+context_flagOn (flagcode f, fileloc loc)
+{
+  return (!context_suppressFlagMsg (f, loc));
 }
 
 static void context_saveFlagSettings (void)
@@ -3784,7 +3966,9 @@ context_destroyMod (void)
   
   cstring_free (gc.msgAnnote);
   globSet_free (gc.globs_used);
-  }
+  metaStateTable_free (gc.stateTable);
+  annotationTable_free (gc.annotTable);
+}
 
 /*
 ** Flag shortcuts.
@@ -4135,9 +4319,125 @@ void context_showFilelocStack (void)
   filelocStack_printIncludes (gc.locstack);
 }
 
+metaStateTable context_getMetaStateTable (void) 
+{
+  return gc.stateTable;
+}
 
+metaStateInfo context_lookupMetaStateInfo (cstring key)
+{
+  return metaStateTable_lookup (gc.stateTable, key);
+}
 
+/*@null@*/ annotationInfo context_lookupAnnotation (cstring annot) 
+{
+  annotationInfo ainfo;
 
+  ainfo = annotationTable_lookup (gc.annotTable, annot);
+
+  return ainfo;
+}
+
+void context_addAnnotation (annotationInfo ainfo)
+{
+  if (annotationTable_contains (gc.annotTable, annotationInfo_getName (ainfo)))
+    {
+      voptgenerror 
+	(FLG_SYNTAX,
+	 message ("Duplicate annotation declaration: %s", annotationInfo_getName (ainfo)),
+	 annotationInfo_getLoc (ainfo));
+
+      annotationInfo_free (ainfo);
+    }
+  else
+    {
+      annotationTable_insert (gc.annotTable, ainfo);
+    }
+}
+
+void context_addMetaState (cstring mname, metaStateInfo msinfo)
+{
+  if (metaStateTable_contains (gc.stateTable, mname))
+    {
+      voptgenerror 
+	(FLG_SYNTAX,
+	 message ("Duplicate metastate declaration: %s", mname),
+	 metaStateInfo_getLoc (msinfo));
+      cstring_free (mname);
+      metaStateInfo_free (msinfo);
+    }
+  else
+    {
+      metaStateTable_insert (gc.stateTable, mname, msinfo); 
+    }
+}
+
+valueTable context_createValueTable (sRef s)
+{
+  if (metaStateTable_size (gc.stateTable) > 0)
+    {
+      valueTable res = valueTable_create (metaStateTable_size (gc.stateTable));
+      /*@i32 should use smaller value... */
+      DPRINTF (("Value table for: %s", sRef_unparse (s)));
+
+      metaStateTable_elements (gc.stateTable, msname, msi)
+	{
+	  mtContextNode context = metaStateInfo_getContext (msi);
+
+	  if (mtContextNode_matchesRefStrict (context, s))
+	    {
+	      DPRINTF (("Create: %s", metaStateInfo_unparse (msi)));
+	      llassert (cstring_equal (msname, metaStateInfo_getName (msi)));
+	      
+	      valueTable_insert (res,
+				 cstring_copy (metaStateInfo_getName (msi)),
+				 stateValue_create (metaStateInfo_getDefaultValue (msi, s),
+						    stateInfo_undefined));
+	    }
+	  else
+	    {
+	      DPRINTF (("No match: %s", metaStateInfo_unparse (msi)));
+	    }
+	} 
+      end_metaStateTable_elements ;
+      
+      DPRINTF (("Value table: %s", valueTable_unparse (res)));
+      return res;
+    }
+  else
+    {
+      return valueTable_undefined;
+    }
+}
+
+valueTable context_createGlobalMarkerValueTable ()
+{
+  if (metaStateTable_size (gc.stateTable) > 0)
+    {
+      valueTable res = valueTable_create (metaStateTable_size (gc.stateTable));
+      /*@i32 should use smaller value... */
+      
+      metaStateTable_elements (gc.stateTable, msname, msi)
+	{
+	  /*@i23 only add global...*/
+	  DPRINTF (("Create: %s", metaStateInfo_unparse (msi)));
+	  llassert (cstring_equal (msname, metaStateInfo_getName (msi)));
+	  
+	  valueTable_insert (res,
+			     cstring_copy (metaStateInfo_getName (msi)),
+			     stateValue_create (metaStateInfo_getDefaultGlobalValue (msi),
+						stateInfo_undefined));
+	} 
+      end_metaStateTable_elements ;
+      
+      DPRINTF (("Value table: %s", valueTable_unparse (res)));
+      return res;
+    }
+  else
+    {
+      return valueTable_undefined;
+    }
+}
 
 
 

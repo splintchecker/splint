@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -41,11 +41,11 @@ globSet_clear (globSet g)
 }
 
 globSet
-globSet_insert (/*@returned@*/ globSet s, sRef el)
+globSet_insert (/*@returned@*/ globSet s, /*@exposed@*/ sRef el)
 {
   if (sRef_isKnown (el) && !sRef_isConst (el) && !sRef_isType (el))
     {
-      llassertprint (sRef_isGlobal (el) || sRef_isKindSpecial (el),
+      llassertprint (sRef_isFileOrGlobalScope (el) || sRef_isKindSpecial (el),
 		     ("el: %s", sRef_unparse (el)));
       
       return (sRefSet_insert (s, el));
@@ -57,9 +57,22 @@ globSet_insert (/*@returned@*/ globSet s, sRef el)
 }
 
 globSet
-  globSet_copy (/*@returned@*/ globSet s1, /*@exposed@*/ globSet s2)
+globSet_single (/*@exposed@*/ sRef el)
 {
-  return (sRefSet_copy (s1, s2));
+  globSet res = globSet_new ();
+  return globSet_insert (res, el);
+}
+
+void 
+globSet_markImmutable (globSet g)
+{
+  sRefSet_markImmutable (g);
+}
+ 
+globSet
+globSet_copyInto (/*@returned@*/ globSet s1, /*@exposed@*/ globSet s2)
+{
+  return (sRefSet_copyInto (s1, s2));
 }
 
 /*@only@*/ globSet
@@ -154,7 +167,8 @@ globSet_undump (char **s)
 /*@only@*/ cstring
 globSet_unparse (globSet ll)
 {
-  return (sRefSet_unparse (ll));
+  return (sRefSet_unparseFull (ll));
+  /* return (sRefSet_unparsePlain (ll)); */
 }
 
 int 

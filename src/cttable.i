@@ -62,81 +62,6 @@ static void cttable_reset (void)
   cttab.nspace = 0 ;
 }
 
-static /*@observer@*/ ctbase ctype_getCtbase (ctype c)
-{
-  /*@+enumint@*/
-  if (c >= 0 && c < cttab.size)
-    {
-      return (cttab.entries[c]->ctbase);
-    }
-  else 
-    {
-      if (c == CTK_UNKNOWN)
-	llbuglit ("ctype_getCtbase: ctype unknown");
-      if (c == CTK_INVALID)
-	llbuglit ("ctype_getCtbase: ctype invalid");
-      if (c == CTK_DNE)
-	llbuglit ("ctype_getCtbase: ctype dne");
-      if (c == CTK_ELIPS)
-	llbuglit ("ctype_getCtbase: elips marker");
-      
-      llfatalbug (message ("ctype_getCtbase: ctype out of range: %d", c));
-      BADEXIT;
-    }
-
-  /*@=enumint@*/
-}
-
-static /*@notnull@*/ /*@observer@*/ ctbase
-ctype_getCtbaseSafe (ctype c)
-{
-  ctbase res = ctype_getCtbase (c);
-
-  llassert (ctbase_isDefined (res));
-  return res;
-}
-
-/*
-** ctentry
-*/
-
-static ctentry
-ctype_getCtentry (ctype c)
-{
-  static /*@only@*/ ctentry errorEntry = NULL;
-
-  if (cttab.size == 0)
-    {
-      if (errorEntry == NULL)
-	{
-	  errorEntry = ctentry_makeNew (CTK_UNKNOWN, ctbase_undefined);
-	}
-
-      return errorEntry;
-    }
-
-  /*@+enumint@*/
-  if (c >= CTK_PLAIN && c < cttab.size)
-    {
-      return (cttab.entries[c]);
-    }
-  else if (c == CTK_UNKNOWN) 
-    llcontbuglit ("ctype_getCtentry: ctype unknown");
-  else if (c == CTK_INVALID)
-    llcontbuglit ("ctype_getCtentry: ctype invalid (ctype_undefined)");
-  else if (c == CTK_DNE)
-    llcontbuglit ("ctype_getCtentry: ctype dne");
-  else if (c == CTK_ELIPS) 
-    llcontbuglit ("ctype_getCtentry: ctype elipsis");
-  else if (c == CTK_MISSINGPARAMS) 
-    llcontbuglit ("ctype_getCtentry: ctype missing params");
-  else
-    llbug (message ("ctype_getCtentry: ctype out of range: %d", c));
-
-  return (cttab.entries[ctype_unknown]);
-  /*@=enumint@*/
-}
-
 static ctentry
 ctentry_makeNew (ctkind ctk, /*@only@*/ ctbase c)
 {
@@ -232,40 +157,40 @@ ctentry_undump (/*@dependent@*/ char *s)
   ctkind kind;
   ctbase ct;
 
-  kind = ctkind_fromInt (getInt (&s));
+  kind = ctkind_fromInt (reader_getInt (&s));
   ct = ctbase_undump (&s);
 
-  if (optCheckChar (&s, '&'))
+  if (reader_optCheckChar (&s, '&'))
     {
       base = ctype_dne;
       ptr = ctype_dne;
       array = ctype_dne;
     }
-  else if (optCheckChar (&s, '!'))
+  else if (reader_optCheckChar (&s, '!'))
     {
       base = ctype_undefined;
       ptr = ctype_dne;
       array = ctype_dne;
     }
-  else if (optCheckChar (&s, '^'))
+  else if (reader_optCheckChar (&s, '^'))
     {
       base = ctype_undefined;
-      ptr = getInt (&s);
+      ptr = reader_getInt (&s);
       array = ctype_dne;
     }
   else
     {
-      base = getInt (&s);
+      base = reader_getInt (&s);
       
-      if (optCheckChar (&s, '&'))
+      if (reader_optCheckChar (&s, '&'))
 	{
 	  ptr = ctype_dne;
 	  array = ctype_dne;
 	}
       else
 	{
-	  ptr = getInt (&s);
-	  array = getInt (&s);
+	  ptr = reader_getInt (&s);
+	  array = reader_getInt (&s);
 	}
     }
 
@@ -352,7 +277,7 @@ cttable_print (void)
     {
       ctentry cte = cttab.entries[i];
 
-      if (ctentry_isInteresting (cte))
+      if (TRUE) /* ctentry_isInteresting (cte)) */
 	{
 	  if (ctbase_isUA (cte->ctbase))
 	    {
@@ -395,11 +320,17 @@ cttable_dump (FILE *fout)
       showdots = TRUE;
     }
 
+  /*
+  DPRINTF (("Dumping cttable: "));
+  cttable_print ();
+  */
+
   for (i = 0; i < cttab.size; i++)
     {
       cstring s;
 
       s = ctentry_dump (cttab.entries[i]);
+      DPRINTF (("[%d] = %s", i, ctentry_unparse (cttab.entries[i])));
       llassert (cstring_length (s) < MAX_DUMP_LINE_LENGTH);
       fputline (fout, cstring_toCharsSafe (s));
       cstring_free (s);
@@ -432,7 +363,12 @@ static void cttable_load (FILE *f)
 
   cttable_reset ();
 
-  while (fgets (s, MAX_DUMP_LINE_LENGTH, f) != NULL && *s == ';')
+  /*
+  DPRINTF (("Loading cttable: "));
+  cttable_print ();
+  */
+
+  while (reader_readLine (f, s, MAX_DUMP_LINE_LENGTH) != NULL && *s == ';')
     {
       ;
     }
@@ -449,17 +385,24 @@ static void cttable_load (FILE *f)
       cte = ctentry_undump (s);
       ct = cttable_addFull (cte);
 
+      DPRINTF (("Type: %d: %s", ct, ctype_unparse (ct)));
+
       if (ctbase_isConj (cte->ctbase)
-	  && !(cte->ctbase->contents.conj->isExplicit))
+	  && !(ctbase_isExplicitConj (cte->ctbase)))
 	{
 	  ctype_recordConj (ct);
 	}
 
-      (void) fgets (s, MAX_DUMP_LINE_LENGTH, f);
+      (void) reader_readLine (f, s, MAX_DUMP_LINE_LENGTH);
     }
 
   sfree (s);
-  }
+
+  /*
+  DPRINTF (("Done loading cttable: "));
+  cttable_print ();
+  */
+}
 
 /*
 ** cttable_init
@@ -576,9 +519,10 @@ cttable_addDerived (ctkind ctk, /*@keep@*/ ctbase cnew, ctype base)
 }
 
 static ctype
-cttable_addComplex (/*@only@*/ /*@notnull@*/ ctbase cnew)
+cttable_addComplex (/*@only@*/ ctbase cnew)
    /*@modifies cttab; @*/
 {
+  /*@access ctbase@*/
   if (cnew->type != CT_FCN && cnew->type != CT_EXPFCN) 
     {
       ctype i;
@@ -594,12 +538,15 @@ cttable_addComplex (/*@only@*/ /*@notnull@*/ ctbase cnew)
 	  ctbase ctb;
 	  
 	  ctb = ctype_getCtbase (i);
+	  
+	  /*@i32 is this optimization really worthwhile??? */
 
 	  if (ctbase_isDefined (ctb) && ctbase_equivStrict (cnew, ctb))
 	    {
 	      DPRINTF (("EQUIV!! %s / %s",
 			ctbase_unparse (cnew),
 			ctbase_unparse (ctb)));
+
 	      ctbase_free (cnew);
 	      return i;
 	    }
@@ -615,6 +562,7 @@ cttable_addComplex (/*@only@*/ /*@notnull@*/ ctbase cnew)
   cttab.nspace--;
   
   return (cttab.size++);
+  /*@noaccess ctbase@*/
 }
 
 static ctype

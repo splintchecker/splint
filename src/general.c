@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -50,13 +50,16 @@ void sfree (void *x)
 {
   if (x != NULL)
     {
+      /* fprintf (stderr, "Freeing: %p\n", x); */
+
       /*
-      fprintf (stderr, "Freeing: %ld\n", x);
-      if ((unsigned long) x < 136000000 && (unsigned long) x > 135000000) {
+      if ((unsigned long) x > 0xbf000000) {
 	fprintf (stderr, "Looks bad!\n");
       }
       */
+      
       free (x);
+      
       /* fprintf (stderr, "Done.\n"); */
     }
 }
@@ -83,7 +86,7 @@ static long unsigned size_toLongUnsigned (size_t x)
   return res;
 }
 
-/*@out@*/ void *dimalloc (size_t size, char *name, int line)
+/*@out@*/ void *dimalloc (size_t size, const char *name, int line)
 {
   /*
   static void *lastaddr = 0;
@@ -123,11 +126,12 @@ static long unsigned size_toLongUnsigned (size_t x)
     }
       
   /*@-null@*/ /* null okay for size = 0 */
+  /* fprintf (stderr, "%s:%d: Allocating: [%p / %d]\n", name, line, ret, size);  */
   return ret; 
   /*@=null@*/
 }
 
-void *dicalloc (size_t num, size_t size, char *name, int line)
+void *dicalloc (size_t num, size_t size, const char *name, int line)
 {
   void *ret = (void *) calloc (num, size);
 
@@ -183,47 +187,6 @@ char *FormatInt (int i)
 }
 # endif
 
-bool
-isCext (char *ext)
-{
-  return (!mstring_equal (ext, ".lcl") && 
-	  !mstring_equal (ext, ".spc") &&
-	  !mstring_equal (ext, ".ll"));
-}
-
-bool
-isLCLfile (cstring s)
-{
-  char *ext;
-
-  ext = filenameExtension (cstring_toCharsSafe (s));
-
-  if (ext != NULL)
-    {
-      return (!(isCext (ext)));
-    }
-
-  return (TRUE);
-}
-
-char *removeExtension (/*@temp@*/ char *s, const char *suffix)
-{
-  char *t = strrchr (s, '.');
-  char *s2;
-
-  if (t == (char *) 0 || !mstring_equal (t, suffix))
-    {
-      return mstring_copy (s);
-    }
-
-  /*@-mods@*/ 
-  *t = '\0';
-  s2 = mstring_copy (s);
-  *t = '.';
-  /*@=mods@*/  /* Modification is undone. */
-  return s2;
-}
-
 # ifndef NOLCL
 bool firstWord (char *s, char *w)
 {
@@ -239,228 +202,9 @@ bool firstWord (char *s, char *w)
 }
 # endif
 
-# ifndef NOLCL
-/*@only@*/ char *removePath (char *s)
-{
-  char *t = strrchr (s, CONNECTCHAR);
-
-  if (t == NULL) return (mstring_copy (s));
-  else return (mstring_copy (t + 1));
-}
-# endif
-
-/*@only@*/ char *
-removePathFree (/*@only@*/ char *s)
-{
-  char *t = strrchr (s, CONNECTCHAR);
-
-# ifdef ALTCONNECTCHAR
-  {
-    char *at = strrchr (s, ALTCONNECTCHAR);
-    if (t == NULL || (at > t)) {
-      t = at;
-    }
-  }
-# endif
-
-  if (t == NULL) 
-    {
-      return (s);
-    }
-  else
-    {
-      char *res = mstring_copy (t + 1);
-      mstring_free (s);
-      return res;
-    }
-}
-
 void mstring_markFree (char *s)
 {
     sfreeEventually (s);
-}
-
-/*@only@*/ char *
-removeAnyExtension (char *s)
-{
-  char *ret;
-  char *t = strrchr (s, '.');
-
-  if (t == (char *) 0)
-    {
-      return mstring_copy (s);
-    }
-
-  /*@-mods@*/
-  *t = '\0';
-  ret = mstring_copy (s);
-  *t = '.';
-  /*@=mods@*/ /* modification is undone */
-
-  return ret;
-}
-
-/*@only@*/ char *
-addExtension (char *s, const char *suffix)
-{
-  if (strrchr (s, '.') == (char *) 0)
-    {
-      /* <<< was mstring_concatFree1 --- bug detected by lclint >>> */
-      return (mstring_concat (s, suffix));
-    }
-  else
-    {
-      return mstring_copy (s);
-    }
-}
-
-int
-getInt (char **s)
-{
-  bool gotOne = FALSE;
-  int i = 0;
-
-  while (**s == ' ')
-    {
-      (*s)++;
-    }
-
-  if (**s == '-')
-    {
-      (*s)++;
-      if (**s < '0' || **s > '9')
-	{
-	  llbug (message ("getInt: bad int: %s", cstring_fromChars (*s))); 
-	}
-      else
-	{
-	  i = -1 * (int) (**s - '0');
-	  gotOne = TRUE;
-	}
-
-      (*s)++;
-    }
-
-  while (**s >= '0' && **s <= '9')
-    {
-      i *= 10;
-      i += (int) (**s - '0');
-      (*s)++;
-      gotOne = TRUE;
-    }
-
-  if (!gotOne)
-    {
-      llbug (message ("No int to read: %s", cstring_fromChars (*s)));
-    }
-
-  while (**s == '\n' || **s == ' ' || **s == '\t')
-    {
-      (*s)++;
-    }
-
-  return i;
-}
-
-char
-loadChar (char **s)
-{
-  char ret;
-
-  while (**s == ' ')
-    {
-      (*s)++;
-    }
-  
-  ret = **s;
-  (*s)++;
-  return ret;
-}
-
-/*
-** not sure if this works...
-*/
-
-double
-getDouble (char **s)
-{
-  char *end = mstring_createEmpty ();
-  double ret;
-
-  ret = strtod (*s, &end);
-
-  *s = end;
-  return ret;
-}
-
-/*
-** read to ' ', '\t'. '\n', '#', ',' or '\0'
-*/
-
-char *
-getWord (char **s)
-{
-  char *res;
-  char *t = *s;
-  char c;
-
-  while ((c = **s) != '\0' && (c != ' ') && (c != ',') 
-	 && (c != '\n') && (c != '\t') && (c != '#'))
-    {
-      (*s)++;
-    }
-
-  if (*s == t)  
-    {
-      return NULL;
-    }
-
-  **s = '\0';
-  res = mstring_copy (t);
-  **s = c;
-  return res;
-}
-
-bool
-optCheckChar (char **s, char c)
-{
-  if (**s == c)
-    {
-      (*s)++;
-      return TRUE;
-    }
-  else
-    {
-      return FALSE;
-    }
-}
-
-void
-docheckChar (char **s, char c, char *file, int line)
-{
-  /*@unchecked@*/ static int nbadchars = 0;
-
-  if (**s == c)
-    {
-      (*s)++;
-    }
-  else
-    {
-      nbadchars++;
-
-      if (nbadchars > 5)
-	{
-	  llfatalbug (cstring_makeLiteral 
-		      ("checkChar: Too many errors.  Check library is up to date."));
-	}
-      else
-	{
-	  llbug (message ("checkChar: %q: Bad char, expecting %h: %s",
-			  fileloc_unparseRaw (cstring_fromChars (file), line),
-			  c,
-			  cstring_fromChars (*s)));
-	}
-    }
 }
 
 char *mstring_spaces (int n)
@@ -482,6 +226,18 @@ char *mstring_spaces (int n)
   *ptr = '\0';
 
   return ret;
+}
+
+bool mstring_containsChar (const char *s, char c)
+{
+  if (mstring_isDefined (s))
+    {
+      return (strchr (s, c) != NULL);
+    }
+  else
+    {
+      return FALSE;
+    }
 }
  
 char *mstring_concat (const char *s1, const char *s2)
@@ -689,48 +445,5 @@ bool mstring_equal (/*@null@*/ const char *s1, /*@null@*/ const char *s2)
 	  return (strcmp(s1, s2) == 0);
 	}
     }
-}
-
-/*@observer@*/ char *filenameExtension (/*@returned@*/ char *s)
-{
-  llassert (s != NULL);
-
-  return (strrchr(s, '.'));
-}
-
-char *removePreDirs (char *s)
-{
-  while (*s == '.' && *(s + 1) == CONNECTCHAR) 
-    {
-      s += 2;
-    }
-
-# if defined(OS2) || defined(MSDOS)
-  /* remove remainders from double path delimiters... */
-  while (*s == CONNECTCHAR) 
-    {
-      ++s;
-    }
-# endif /* !defined(OS2) && !defined(MSDOS) */
-
-  return s;
-}
-
-void checkUngetc (int c, FILE *f)
-{
-  int res;
-
-  llassert (c != EOF);
-  res = ungetc (c, f);
-  llassert (res == c);
-}
-
-bool isHeaderFile (cstring fname)
-{
-  char *ext = filenameExtension (cstring_toCharsSafe (fname));
-  
-  return (mstring_equal (ext, ".h")
-	  || mstring_equal (ext, ".H")
-	  || mstring_equal (ext, ".lh"));
 }
 

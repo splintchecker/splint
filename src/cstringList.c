@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -50,6 +50,18 @@ cstringList_newEmpty (void)
   return (s);
 }
 
+static /*@notnull@*/ cstringList
+cstringList_newPredict (int size)
+{
+  cstringList s = (cstringList) dmalloc (sizeof (*s));
+  
+  s->nelements = 0;
+  s->nspace = size; 
+  s->elements = (cstring *) dmalloc (sizeof (*s->elements) * size);
+
+  return (s);
+}
+
 static void
 cstringList_grow (/*@notnull@*/ cstringList s)
 {
@@ -57,10 +69,10 @@ cstringList_grow (/*@notnull@*/ cstringList s)
   cstring *newelements;
   
   s->nspace += cstringListBASESIZE;
-
+  
   newelements = (cstring *) dmalloc (sizeof (*newelements) 
 				     * (s->nelements + s->nspace));
-
+  
 
   if (newelements == (cstring *) 0)
     {
@@ -97,6 +109,36 @@ cstringList cstringList_add (cstringList s, /*@keep@*/ cstring el)
   
   s->nspace--;
   s->elements[s->nelements] = el;
+  s->nelements++;
+
+  return s;
+}
+
+cstringList cstringList_prepend (cstringList s, /*@keep@*/ cstring el)
+{
+  int i;
+
+  DPRINTF (("Prepend:  %s + %s",
+	    cstringList_unparse (s), cstring_toCharsSafe (el)));
+
+  if (!cstringList_isDefined (s))
+    {
+      return cstringList_single (el);
+    }
+
+  if (s->nspace <= 0)
+    {
+      cstringList_grow (s);
+    }
+  
+  s->nspace--;
+
+  for (i = s->nelements; i > 0; i--) 
+    {
+      s->elements[i] = s->elements [i - 1];
+    }
+
+  s->elements[0] = el;
   s->nelements++;
 
   return s;
@@ -224,6 +266,8 @@ cstringList_free (cstringList s)
 {
   if (cstringList_isDefined (s))
     {
+      DPRINTF (("cstringList free: [%p] %s",
+		s, cstringList_unparse (s)));
       sfree (s->elements);
       sfree (s);
     }
@@ -241,3 +285,57 @@ cstringList_alphabetize (cstringList s)
     }
 }
 
+int cstringList_getIndex (cstringList s, cstring key)
+{
+  int index = 0;
+
+  cstringList_elements (s, el) 
+    {
+      if (cstring_equal (el, key))
+	{
+	  return index;
+	}
+
+      index++;
+    } end_cstringList_elements ;
+
+  BADBRANCH;
+}
+
+bool cstringList_contains (cstringList s, cstring key)
+{
+  int index = 0;
+
+  cstringList_elements (s, el) 
+    {
+      if (cstring_equal (el, key))
+	{
+	  return TRUE;
+	}
+
+      index++;
+    } end_cstringList_elements ;
+
+  return FALSE;
+}
+
+cstringList cstringList_copy (cstringList s)
+{
+  cstringList res = cstringList_newPredict (cstringList_size (s));
+
+  cstringList_elements (s, el)
+    {
+      res = cstringList_add (res, cstring_copy (el));
+    } end_cstringList_elements ;
+
+  return res;
+}
+
+cstring
+cstringList_get (cstringList s, int index)
+{
+  llassertretnull (s != NULL);
+  llassertretnull (index >= 0);
+  llassertretnull (index < s->nelements);
+  return s->elements[index];
+}

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -63,7 +63,7 @@ static bool fileTable_inRange (fileTable ft, fileId fid) /*@*/
 
 static fileId fileTable_internAddEntry (fileTable p_ft, /*@only@*/ ftentry p_e) 
    /*@modifies p_ft@*/ ;
-static /*@only@*/ char *makeTempName (char *p_dir, char *p_pre, char *p_suf);
+static /*@only@*/ cstring makeTempName (cstring p_dir, cstring p_pre, cstring p_suf);
 
 static /*@only@*/ cstring
 fileType_unparse (fileType ft)
@@ -74,7 +74,9 @@ fileType_unparse (fileType ft)
     case FILE_NODELETE:  return cstring_makeLiteral ("normal");
     case FILE_LSLTEMP: return cstring_makeLiteral ("ltemp");
     case FILE_HEADER:  return cstring_makeLiteral ("header");
+    case FILE_XH:  return cstring_makeLiteral ("xh");
     case FILE_MACROS:  return cstring_makeLiteral ("macros");
+    case FILE_METASTATE:  return cstring_makeLiteral ("metastate");
     }
 
   BADEXIT;
@@ -84,7 +86,7 @@ static int
 fileTable_getIndex (fileTable ft, cstring s)
 {
   if (ft == NULL) return NOT_FOUND;
-  return (hashTable_lookup (ft->htable, s));
+  return (cstringTable_lookup (ft->htable, s));
 }
 
 /*@only@*/ cstring
@@ -189,7 +191,7 @@ fileTable_create ()
   ft->nentries = 0;
   ft->nspace = FTBASESIZE;
   ft->elements = (ftentry *) dmalloc (FTBASESIZE * sizeof (*ft->elements));
-  ft->htable = hashTable_create (FTHASHSIZE);
+  ft->htable = cstringTable_create (FTHASHSIZE);
   
   return (ft);
 }
@@ -225,7 +227,7 @@ fileTable_internAddEntry (fileTable ft, /*@only@*/ ftentry e)
 
   ft->nspace--;
 
-  hashTable_insert (ft->htable, e->fname, ft->nentries);
+  cstringTable_insert (ft->htable, e->fname, ft->nentries);
   ft->elements[ft->nentries] = e;
 
   ft->nentries++;
@@ -266,15 +268,14 @@ fileTable_addFilePrim (fileTable ft, /*@only@*/ cstring name,
 	{
 	  llassert (cstring_isUndefined (e->basename));
 
-	  e->basename = cstring_fromChars
-	    (removePathFree (removeAnyExtension
-			     (cstring_toCharsSafe (name))));
+	  e->basename = fileLib_removePathFree (fileLib_removeAnyExtension (name));
 	  e->fsystem = context_isSystemDir (name);
 	  e->fspecial = context_isSpecialFile (name);
 
 	  if (e->fspecial)
 	    {
-	      cstring srcname = cstring_concatFree (cstring_fromChars (removeAnyExtension (cstring_toCharsSafe (name))), cstring_makeLiteral (".c"));
+	      cstring srcname = cstring_concatFree1 (fileLib_removeAnyExtension (name), 
+						     C_EXTENSION);
 	      fileId fid = fileTable_lookup (ft, srcname);
 
 	      cstring_free (srcname);
@@ -310,6 +311,7 @@ fileId
 fileTable_addFile (fileTable ft, cstring name)
 {
   /* while (*name == '.' && *(name + 1) == '/') name += 2; */
+
   return (fileTable_addFilePrim (ft, cstring_copy (name), 
 				 FALSE, FILE_NORMAL, fileId_invalid));
 }
@@ -323,8 +325,12 @@ fileTable_addFileOnly (fileTable ft, /*@only@*/ cstring name)
 fileId
 fileTable_addHeaderFile (fileTable ft, cstring name)
 {
-  return (fileTable_addFilePrim (ft, cstring_copy (name), FALSE, 
-				 FILE_HEADER, fileId_invalid));
+  fileId res;
+
+  res = fileTable_addFilePrim (ft, cstring_copy (name), FALSE, 
+			       FILE_HEADER, fileId_invalid);
+  return res;
+
 }
 
 bool
@@ -352,6 +358,18 @@ fileTable_isSystemFile (fileTable ft, fileId fid)
 }
 
 bool
+fileTable_isXHFile (fileTable ft, fileId fid)
+{
+  if (fileId_isInvalid (fid))
+    {
+      return FALSE;
+    }
+
+  llassert (fileTable_isDefined (ft) && fileTable_inRange (ft, fid));
+  return (ft->elements[fid]->ftype == FILE_XH);
+}
+
+bool
 fileTable_isSpecialFile (fileTable ft, fileId fid)
 {
   if (fileId_isInvalid (fid))
@@ -368,6 +386,13 @@ fileTable_addLibraryFile (fileTable ft, cstring name)
 {
   return (fileTable_addFilePrim (ft, cstring_copy (name),
 				 FALSE, FILE_HEADER, fileId_invalid));
+}
+
+fileId
+fileTable_addXHFile (fileTable ft, cstring name)
+{
+  return (fileTable_addFilePrim (ft, cstring_copy (name),
+				 FALSE, FILE_XH, fileId_invalid));
 }
 
 # ifndef NOLCL
@@ -393,10 +418,18 @@ static int tmpcounter = 0;
 fileId
 fileTable_addMacrosFile (fileTable ft)
 {
-  cstring newname = cstring_fromChars 
-    (makeTempName (cstring_toCharsSafe (context_tmpdir ()), "lmx", ".llm"));
+  cstring newname =
+    makeTempName (context_tmpdir (), cstring_makeLiteralTemp ("lmx"),
+		  cstring_makeLiteralTemp (".llm"));
 
   return (fileTable_addFilePrim (ft, newname, TRUE, FILE_MACROS, fileId_invalid));
+}
+
+fileId
+fileTable_addMetastateFile (fileTable ft, cstring name)
+{
+  return (fileTable_addFilePrim (ft, cstring_copy (name), 
+				 FALSE, FILE_METASTATE, fileId_invalid));
 }
 
 fileId
@@ -404,22 +437,38 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
 {
 # if FALSE
   /* Can't control output file name for cl preprocessor */
-  cstring newname = cstring_concatChars (removeAnyExtension (fileName (fid)), ".i");
+  cstring newname = cstring_concatChars (fileLib_removeAnyExtension (fileName (fid)), ".i");
 # else
-  cstring newname = cstring_fromChars 
-    (makeTempName (cstring_toCharsSafe (context_tmpdir ()), "cl", ".c"));
+  cstring newname =
+    makeTempName (context_tmpdir (), cstring_makeLiteralTemp ("cl"), 
+		  C_EXTENSION);
 # endif
 
   llassert (fileTable_isDefined (ft));
 
   if (!fileId_isValid (ft->elements[fid]->fder))
     {
-      return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL, fid));
+      if (fileTable_isXHFile (ft, fid))
+	{
+	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_XH, fid));
+	}
+      else
+	{
+	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL, fid));
+	}
     }
   else 
     {
-      return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL,
-				     ft->elements[fid]->fder));
+      if (fileTable_isXHFile (ft, fid))
+	{
+	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_XH,
+					 ft->elements[fid]->fder));
+	}
+      else
+	{
+	  return (fileTable_addFilePrim (ft, newname, TRUE, FILE_NORMAL,
+					 ft->elements[fid]->fder));
+	}
     }
 }
 
@@ -427,12 +476,12 @@ fileTable_addCTempFile (fileTable ft, fileId fid)
 fileId
 fileTable_addltemp (fileTable ft)
 {
-  char *newname = makeTempName (cstring_toCharsSafe (context_tmpdir ()),
-				"ls", ".lsl");
-  char *onewname;
+  cstring newname = makeTempName (context_tmpdir (),
+				  cstring_makeLiteralTemp ("ls"), 
+				  cstring_makeLiteralTemp (".lsl"));
   fileId ret;
   
-  if (cstring_hasNonAlphaNumBar (cstring_fromChars (newname)))
+  if (cstring_hasNonAlphaNumBar (newname))
     {
       char *lastpath = (char *)NULL;
 
@@ -441,21 +490,22 @@ fileTable_addltemp (fileTable ft)
 	  lldiagmsg
 	    (message
 	     ("Operating system generates tmp filename containing invalid charater: %s",
-	      cstring_fromChars (newname)));
+	      newname));
 	  lldiagmsg (cstring_makeLiteral 
 		     ("Try cleaning up the tmp directory.  Attempting to continue."));
 	}
       
+      /*@access cstring@*/
+      llassert (cstring_isDefined (newname));
       lastpath = strrchr (newname, CONNECTCHAR); /* get the directory */
       llassert (lastpath != NULL);
       *lastpath = '\0';
 
-      onewname = newname;
-      newname = cstring_toCharsSafe (message ("%s%hlsl%d.lsl", 
-					      cstring_fromChars (newname),
-					      CONNECTCHAR,
-					      tmpcounter));
-      sfree (onewname);
+      newname = message ("%q%hlsl%d.lsl", 
+			 newname,
+			 CONNECTCHAR,
+			 tmpcounter);
+      /*@noaccess cstring@*/
       tmpcounter++;
     }
   
@@ -465,9 +515,9 @@ fileTable_addltemp (fileTable ft)
   ** since cstring is abstract.  Should make it an only?
   */
 
-  ret = fileTable_addFilePrim (ft, cstring_copy (cstring_fromChars (newname)),
+  ret = fileTable_addFilePrim (ft, cstring_copy (newname),
 			       TRUE, FILE_LSLTEMP, fileId_invalid);
-  sfree (newname);
+  cstring_free (newname);
   return (ret);
 }
 # endif
@@ -496,6 +546,21 @@ fileTable_lookup (fileTable ft, cstring s)
     {
       return tindex;
     }
+}
+
+/*
+** This is pretty awkward --- when we find the real path of 
+** a .xh file, we may need to change the recorded name.  [Sigh]
+*/
+
+void
+fileTable_setFilePath (fileTable ft, fileId fid, cstring path)
+{
+  llassert (fileId_isValid (fid));
+  llassert (fileTable_isDefined (ft));
+  /* Need to put new string in hash table */
+  cstringTable_insert (ft->htable, cstring_copy (path), fid);
+  ft->elements[fid]->fname = cstring_copy (path);
 }
 
 fileId
@@ -555,13 +620,6 @@ fileTable_getRootName (fileTable ft, fileId fid)
       return cstring_makeLiteralTemp ("<no file table>");
     }
 
-  if (fid >= ft->nentries)
-    {
-       llcontbug (message ("fileTable_getName: called with invalid id: %d", fid));
-       // fprintf(stderr, "\nbad\n");
-      return cstring_makeLiteralTemp ("<invalid>");
-    }
-  
   fder = ft->elements[fid]->fder;
 
   if (fileId_isValid (fder))
@@ -667,11 +725,12 @@ fileTable_cleanup (fileTable ft)
 	    }
 	  else if (fileId_isValid (fe->fder)) 
 	    {
-	      (void) osd_unlink (cstring_toCharsSafe (fe->fname));
+	      /*@i423 this should use close (fd) also... */
+	      (void) osd_unlink (fe->fname);
 	    }
 	  else if (fe->ftype == FILE_MACROS)
 	    {
-	      (void) osd_unlink (cstring_toCharsSafe (fe->fname));
+	      (void) osd_unlink (fe->fname);
 	    }
 	  else
 	    {
@@ -720,7 +779,7 @@ fileTable_free (/*@only@*/ fileTable f)
       i++;
     }
   
-  hashTable_free (f->htable);
+  cstringTable_free (f->htable);
   sfree (f->elements);
   sfree (f);
 }
@@ -768,15 +827,15 @@ static void nextMsg (char *msg)
   /*@-charint@*/
 }
 
-static /*@only@*/ char *makeTempName (char *dir, char *pre, char *suf)
+static /*@only@*/ cstring makeTempName (cstring dir, cstring pre, cstring suf)
 {
   static int pid = 0; 
   static /*@owned@*/ char *msg = NULL; 
-  static /*@only@*/ char *pidname = NULL;
-  size_t maxlen;
-  char *buf;
+  static /*@only@*/ cstring pidname = NULL;
+  int maxlen;
+  cstring smsg;
 
-  llassert (strlen (pre) <= 3);
+  llassert (cstring_length (pre) <= 3);
 
   /*
   ** We limit the temp name to 8 characters:
@@ -797,31 +856,24 @@ static /*@only@*/ char *makeTempName (char *dir, char *pre, char *suf)
       /*@=matchanyintegral@*/
     }
 
-  if (pidname == NULL) 
+  if (cstring_isUndefined (pidname)) 
     {
-      pidname = cstring_toCharsSafe (message ("%d", pid % 100));
-    }
-  else 
-    {
-      pidname = mstring_createEmpty ();
+      pidname = message ("%d", pid % 100);
     }
   
-  maxlen = (strlen (dir) + strlen (pre) + strlen (msg) 
-	    + strlen (pidname) + strlen (suf) + 2);
+  maxlen = (cstring_length (dir) + cstring_length (pre) + mstring_length (msg) 
+	    + cstring_length (pidname) + cstring_length (suf) + 2);
 
-  buf = mstring_create (size_toInt (maxlen));
-
-  sprintf (buf, "%s%s%s%s%s", dir, pre, pidname, msg, suf);
+  smsg = message ("%s%s%s%s%s", dir, pre, pidname, cstring_fromChars (msg), suf);
   nextMsg (msg);
 
-  while (osd_fileExists (buf))
+  while (osd_fileExists (smsg))
     {
-      sprintf (buf, "%s%s%s%s%s", dir, pre, pidname, msg, suf);
+      cstring_free (smsg);
+      smsg = message ("%s%s%s%s%s", dir, pre, pidname, cstring_fromChars (msg), suf);
       nextMsg (msg);
     }
-
-  return buf;
-}
   
 
-
+  return smsg;
+}

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -120,7 +120,7 @@ computePossibleSorts (/*@returned@*/ /*@null@*/ termNode t)
 		unsigned int arity = termNodeList_size (t->args);
 		errtok = nameNode_errorToken (t->name);
 		
-		/* errorShowPoint (tsource_thisLine (lclsource), ltoken_getCol (errtok)); */
+		/* errorShowPoint (inputStream_thisLine (lclsource), ltoken_getCol (errtok)); */
 		
 		if (isStandardOperator (t->name))
 		  {
@@ -268,7 +268,7 @@ static void
     case TRM_LITERAL:
       sortSet_elements (t->possibleSorts, s2)
       {
-	if (sort_equal (&s2, &s))
+	if (sort_equal (s2, s))
 	  {
 	    sortSet_free (t->possibleSorts);
 	    t->possibleSorts = sortSet_new ();
@@ -294,7 +294,7 @@ static void
 	  {
 	    sort rsort = sigNode_rangeSort (sig->signature);
 
-	    if (sort_equal (&s, &rsort))
+	    if (sort_equal (s, rsort))
 	      {
 		lslOp iop;
 		
@@ -335,7 +335,7 @@ static void
 	      }
 	    else
 	      {
-		/* errorShowPoint (tsource_thisLine (lclsource), ltoken_getCol (errtok)); */
+		/* errorShowPoint (inputStream_thisLine (lclsource), ltoken_getCol (errtok)); */
 		t->error_reported = TRUE;
 		
 		lclerror (errtok, message ("Operator not found: %q", 
@@ -365,7 +365,7 @@ static void
 	    else
 	      {
 		errtok = nameNode_errorToken (name);
-		/* errorShowPoint (tsource_thisLine (lclsource), ltoken_getCol (errtok)); */
+		/* errorShowPoint (inputStream_thisLine (lclsource), ltoken_getCol (errtok)); */
 		t->error_reported = TRUE;
 		
 		lclerror (errtok, message ("No matching operator: %q",
@@ -566,9 +566,9 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 
 	      sn = sort_quietLookup (current);
 
-	      while (sn.kind == SRT_SYN)
+	      while (sn->kind == SRT_SYN)
 		{
-		  sn = sort_quietLookup (sn.baseSort);
+		  sn = sort_quietLookup (sn->baseSort);
 		}
 	      
 	      /*@-loopswitchbreak@*/
@@ -580,15 +580,15 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 		    
 		    if (cstring_equalLit (text, "trashed")) /* GACK! */
 		      {
-			if (sn.kind == SRT_OBJ ||
-			    sn.kind == SRT_ARRAY)
+			if (sn->kind == SRT_OBJ ||
+			    sn->kind == SRT_ARRAY)
 			(void) sortSet_insert (ret, sort_bool);	  
 		      }
 		    
 		    if (cstring_equalLit (text, "maxIndex") || 
 			cstring_equalLit (text, "minIndex"))
 		      {
-			if (sn.kind == SRT_ARRAY || sn.kind == SRT_PTR)
+			if (sn->kind == SRT_ARRAY || sn->kind == SRT_PTR)
 			  (void) sortSet_insert (ret, sort_int);	  
 			
 			/*		  if (lsymbol_fromChars ("maxIndex") */
@@ -598,16 +598,16 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 		case LLT_MODIFIES:
 		case LLT_FRESH:
 		case LLT_UNCHANGED:
-		  if (sn.kind == SRT_OBJ ||
-		      sn.kind == SRT_ARRAY)
+		  if (sn->kind == SRT_OBJ ||
+		      sn->kind == SRT_ARRAY)
 		    {
 		      (void) sortSet_insert (ret, sort_bool);	  
 		    }
 		  break;
 		case LLT_SIZEOF:
-		  if (sn.kind == SRT_OBJ ||
-		      sn.kind == SRT_ARRAY ||
-		      sn.kind == SRT_VECTOR)
+		  if (sn->kind == SRT_OBJ ||
+		      sn->kind == SRT_ARRAY ||
+		      sn->kind == SRT_VECTOR)
 		  (void) sortSet_insert (ret, sort_int);
 		  break;
 		default:
@@ -652,7 +652,7 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 		      clause2 = sortSet_choose (argSet);
 		      
 		      if (sortSet_size (argSet) == 1 &&
-			  sort_equal (&clause, &clause2))
+			  sort_equal (clause, clause2))
 			{
 			  (void) sortSet_insert (ret, clause);
 			}
@@ -678,15 +678,15 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 
 			sn = sort_quietLookup (current);
 
-			while (sn.kind == SRT_SYN)
+			while (sn->kind == SRT_SYN)
 			  {
-			    sn = sort_quietLookup (sn.baseSort);
+			    sn = sort_quietLookup (sn->baseSort);
 			  }
 			
-			switch (sn.kind)
+			switch (sn->kind)
 			  {
 			  case SRT_OBJ:
-			    (void) sortSet_insert (ret, sn.baseSort);
+			    (void) sortSet_insert (ret, sn->baseSort);
 			    break;
 			  case SRT_ARRAY:
 			    (void) sortSet_insert (ret, 
@@ -738,14 +738,14 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 
 			sn = sort_quietLookup (current);
 			
-			while (sn.kind == SRT_SYN)
+			while (sn->kind == SRT_SYN)
 			  {
-			    sn = sort_quietLookup (sn.baseSort);
+			    sn = sort_quietLookup (sn->baseSort);
 			  }
 			
-			if (sn.kind == SRT_PTR)
+			if (sn->kind == SRT_PTR)
 			  {
-			    (void) sortSet_insert (ret, sn.baseSort);		
+			    (void) sortSet_insert (ret, sn->baseSort);		
 			  }
 		      } end_sortSet_elements; 
 		  }
@@ -776,7 +776,7 @@ standardOperators (/*@null@*/ nameNode n, sortSetList argSorts, /*@unused@*/ sor
 			  {
 			    sortSet_elements (argSet2, cl2)
 			      {
-				if (sort_equal (&cl, &cl2))
+				if (sort_equal (cl, cl2))
 				  {
 				    (void) sortSet_insert (ret, sort_bool);
 				  }

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -79,6 +79,31 @@ void ctypeList_addh (ctypeList s, ctype el)
   s->nelements++;
 }
 
+ctypeList ctypeList_add (ctypeList s, ctype el)
+{
+  llassert (ctypeListBASESIZE > 0);
+
+  if (ctypeList_isUndefined (s))
+    {
+      s = ctypeList_new ();
+    }
+
+  ctypeList_addh (s, el);
+  return s;
+}
+
+ctypeList ctypeList_append (ctypeList s1, ctypeList s2)
+{
+  ctypeList res = s1;
+
+  ctypeList_elements (s2, el)
+    {
+      res = ctypeList_add (res, el);
+    } end_ctypeList_elements;
+
+  return res;
+}
+      
 /*@only@*/ cstring
 ctypeList_unparse (ctypeList ct)
 {

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -71,6 +71,7 @@ flagMarker flagMarker_createIgnoreCount (int count, fileloc loc)
   c->info.nerrors = count;
   c->loc = fileloc_copy (loc); 
 
+  DPRINTF (("Create ignore count: %s", flagMarker_unparse (c)));
   return c;
 }
 
@@ -113,7 +114,7 @@ cstring flagMarker_unparse (flagMarker c)
     case FMK_LOCALSET:
       return (message ("%q: %s%s", 
 		       fileloc_unparse (c->loc), ynm_unparseCode (c->info.set), 
-		       flagcode_name (c->code)));
+		       flagcode_unparse (c->code)));
     case FMK_IGNORECOUNT:
       return (message ("%q: ignore count %d", 
 		       fileloc_unparse (c->loc), c->info.nerrors));
@@ -126,7 +127,7 @@ cstring flagMarker_unparse (flagMarker c)
     case FMK_SUPPRESS:
       return (message ("%q: suppress %s", 
 		       fileloc_unparse (c->loc),
-		       flagcode_name (c->code)));
+		       flagcode_unparse (c->code)));
     }
 
   BADBRANCH;
@@ -134,6 +135,7 @@ cstring flagMarker_unparse (flagMarker c)
   
 void flagMarker_free (/*@only@*/ flagMarker c)
 {
+  fileloc_free (c->loc); /* evans 2001-03-24: LCLint caught this... */
   sfree (c);
 }
 

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -242,6 +242,12 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	    {
 	      c1 = CTX_LINT;
 	    }
+	  /* 2001-06-10: This fix provided by Jim Zelenka: */
+	  else if (c1 == CTX_ULLINT) 
+	    {
+	      c1 = CTX_LLINT;
+	    }
+	  /* End fix */
 	  else if (c1 == CTX_USINT)  
 	    {
 	      c1 = CTX_SINT;
@@ -263,6 +269,12 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	    {
 	      c2 = CTX_LINT;
 	    }
+	  /* 2001-06-10: This fix provided by Jim Zelenka: */
+	  else if (c2 == CTX_ULLINT)
+	    {
+	      c2 = CTX_LLINT;
+	    }
+	  /* End fix */
 	  else if (c2 == CTX_USINT)  
 	    {
 	      c2 = CTX_SINT;
@@ -308,7 +320,9 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	    case CTX_ULLINT:
 	      return (c2 == CTX_USINT
 		      || c2 == CTX_UINT 
-		      || c2 == CTX_ULINT);
+		      || c2 == CTX_ULINT
+		      /* 2001-06-10: This fix provided by Jim Zelenka: */
+		      || (cprim_isAnyChar (c2) && context_msgCharInt ()));
 	    case CTX_LINT:
 	      return (c2 == CTX_SINT
 		      || c2 == CTX_INT 
@@ -319,7 +333,9 @@ cprim_closeEnoughAux (cprim c1, cprim c2, bool deep)
 	    case CTX_USINT:
 	      return (c2 == CTX_UCHAR && context_msgCharInt ());
 	    case CTX_ULINT:
-	      return (c2 == CTX_UINT || c2 == CTX_USINT);
+	      /* 2001-06-10: This fix provided by Jim Zelenka: */
+	      return (c2 == CTX_UINT || c2 == CTX_USINT
+                      || (c2 == CTX_UCHAR && context_msgCharInt()));
 	    case CTX_UCHAR:
 	      return (c2 == CTX_UINT && context_msgCharInt ());
 	    case CTX_CHAR:

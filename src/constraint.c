@@ -11,7 +11,6 @@
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
-# include "aliasChecks.h"
 # include "exprNodeSList.h"
 
 /*@i33*/
@@ -21,7 +20,7 @@
 /*@access exprNode @*/
 
 
-static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint c);
+static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 
 static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
@@ -67,18 +66,18 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
 static void
 advanceField (char **s)
 {
-  checkChar (s, '@');
+  reader_checkChar (s, '@');
 }
 
 
 
-constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)    
+static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)    
 {
   char *t;
   int c;
   constraint ret;
   ret = constraint_makeNew();
-  llassert (l!=NULL);
+  llassert (constraintExpr_isDefined(l) );
       
   ret->lexpr = constraintExpr_copy (l);
 
@@ -123,7 +122,7 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
 {
   constraint ret;
   ret = constraint_makeNew();
-  llassert (l !=NULL);
+  llassert (constraintExpr_isDefined(l) );
     
   ret->lexpr = constraintExpr_copy (l);
 
@@ -150,19 +149,19 @@ constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r
   return ret;
 }
 
-constraint constraint_copy (constraint c)
+constraint constraint_copy (/*@temp@*/ /*@observer@*/ constraint c)
 {
   constraint ret;
 
   llassert (constraint_isDefined(c) );
-  // TPRINTF((message("Copying constraint %q", constraint_print) ));
+  // DPRINTF((message("Copying constraint %q", constraint_print) ));
   
   ret = constraint_makeNew();
   ret->lexpr = constraintExpr_copy (c->lexpr);
   ret->ar = c->ar;
   ret->expr =  constraintExpr_copy (c->expr);
   ret->post = c->post;
-  ret->generatingExpr = exprNode_fakeCopy(c->generatingExpr);
+  ret->generatingExpr = c->generatingExpr;
   
   /*@i33 fix this*/
   if (c->orig != NULL)
@@ -244,7 +243,7 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
     
   if (c->generatingExpr == NULL)
     {
-      c->generatingExpr = exprNode_fakeCopy(e);
+      c->generatingExpr = e;
       DPRINTF ((message ("setting generatingExpr for %s to %s", constraint_print(c), exprNode_unparse(e) )  ));
     }
   else
@@ -278,7 +277,7 @@ constraint constraint_setFcnPre (/*@returned@*/ constraint c )
   else
     {
       c->fcnPre = TRUE;
-      //      TPRINTF(( message("Warning Setting fcnPre directly") ));
+      //      DPRINTF(( message("Warning Setting fcnPre directly") ));
     }
   return c;
 }
@@ -315,12 +314,12 @@ bool constraint_hasMaxSet(constraint c)
   return (checkForMaxSet(c) );
 }
 
-constraint constraint_makeReadSafeExprNode ( exprNode po, exprNode ind)
+constraint constraint_makeReadSafeExprNode (  exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew();
   //  constraintTerm term;
-  po = exprNode_fakeCopy(po);
-  ind = exprNode_fakeCopy(ind);
+  po = po;
+  ind = ind;
   ret->lexpr = constraintExpr_makeMaxReadExpr(po);
   ret->ar    = GTE;
   ret->expr  = constraintExpr_makeValueExpr (ind);
@@ -328,7 +327,7 @@ constraint constraint_makeReadSafeExprNode ( exprNode po, exprNode ind)
   return ret;
 }
 
-constraint constraint_makeWriteSafeInt (exprNode po, int ind)
+constraint constraint_makeWriteSafeInt (   exprNode po, int ind)
 {
   constraint ret = constraint_makeNew();
 
@@ -388,15 +387,13 @@ constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
 }
 
 
-constraint constraint_makeReadSafeInt ( exprNode po, int ind)
+constraint constraint_makeReadSafeInt ( exprNode t1, int index)
 {
   constraint ret = constraint_makeNew();
 
-  po = exprNode_fakeCopy(po);
-  
-  ret->lexpr = constraintExpr_makeMaxReadExpr(po);
+  ret->lexpr = constraintExpr_makeMaxReadExpr(t1);
   ret->ar    = GTE;
-  ret->expr  = constraintExpr_makeIntLiteral (ind);
+  ret->expr  = constraintExpr_makeIntLiteral (index);
   ret->post = FALSE;
   return ret;
 }
@@ -413,14 +410,11 @@ constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
   /*@i1*/return ret;
 }
 
-constraint constraint_makeEnsureMaxReadAtLeast (exprNode e1, exprNode t2, fileloc sequencePoint)
+constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, fileloc sequencePoint)
 {
   constraint ret;
-
-  e1 = exprNode_fakeCopy (e1);
-  t2 = exprNode_fakeCopy (t2);
   
-  ret = constraint_makeReadSafeExprNode(e1, t2);
+  ret = constraint_makeReadSafeExprNode(t1, t2);
 
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
   
@@ -435,7 +429,7 @@ static constraint constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintE
 
   constraint ret;
   
-  llassert(c1 && c2);
+  llassert(constraintExpr_isDefined(c1) && constraintExpr_isDefined(c2) );
   //  llassert(sequencePoint);
 
   ret = constraint_makeNew();
@@ -448,13 +442,13 @@ static constraint constraint_makeEnsuresOpConstraintExpr (/*@only@*/ constraintE
   return ret;
 }
 
-static constraint constraint_makeEnsuresOp (exprNode e1, exprNode e2, fileloc sequencePoint,  arithType  ar)
+static constraint constraint_makeEnsuresOp (/*@dependent@*/ exprNode e1, /*@dependent@*/ exprNode e2, fileloc sequencePoint,  arithType  ar)
 {
   constraintExpr c1, c2;
   constraint ret;
   exprNode e;
 
-  if (! (e1 && e2) )
+  if (! (exprNode_isDefined(e1) && exprNode_isDefined(e2) ) )
     {
       llcontbug((message("null exprNode, Exprnodes are %s and %s",
 		       exprNode_unparse(e1), exprNode_unparse(e2) )
@@ -463,10 +457,10 @@ static constraint constraint_makeEnsuresOp (exprNode e1, exprNode e2, fileloc se
 
   //  llassert (sequencePoint);
   
-  e  =  exprNode_fakeCopy(e1);
+  e  =  e1;
   c1 =  constraintExpr_makeValueExpr (e);
   
-  e  =  exprNode_fakeCopy(e2);
+  e  =  e2;
   c2 =  constraintExpr_makeValueExpr (e);
 
   ret = constraint_makeEnsuresOpConstraintExpr (c1, c2, sequencePoint, ar);
@@ -587,7 +581,7 @@ constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc seq
   constraint ret = constraint_makeNew();
   //constraintTerm term;
 
-  e = exprNode_fakeCopy(e);
+  //  e = exprNode_fakeCopy(e);
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
@@ -604,7 +598,7 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
   constraint ret = constraint_makeNew();
   //constraintTerm term;
 
-  e = exprNode_fakeCopy(e);
+  //  e = exprNode_fakeCopy(e);
   ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
@@ -744,6 +738,7 @@ void constraint_printError (constraint c, fileloc loc)
 	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
 	}
       fileloc_free(temp);
+      errorLoc = NULL;
     }
   else
     {
@@ -755,22 +750,26 @@ void constraint_printError (constraint c, fileloc loc)
 	{
 	  voptgenerror (FLG_FUNCTIONCONSTRAINT, string, errorLoc);
 	}
+      errorLoc = NULL;
     }
 }
 
 
-cstring constraint_printDeep (constraint c)
+static cstring constraint_printDeep (constraint c)
 {
+  cstring genExpr;
   cstring st = cstring_undefined;
 
   st = constraint_print(c);
 
+  
   if (c->orig != constraint_undefined)
     {
+      genExpr =  exprNode_unparse(c->orig->generatingExpr);
       if (!c->post)
 	{
 	  if (c->orig->fcnPre)
-	    st = cstring_concatFree(st, (message(" derived from %s precondition: %q", exprNode_unparse(c->orig->generatingExpr), constraint_printDeep(c->orig) )
+	    st = cstring_concatFree(st, (message(" derived from %s precondition: %q", genExpr, constraint_printDeep(c->orig) )
 					 ) );
 	  else
 	    st = cstring_concatFree(st,(message(" needed to satisfy %q",
@@ -794,15 +793,18 @@ cstring constraint_printDeep (constraint c)
 static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint c)
 {
   cstring st = cstring_undefined;
-
+  cstring genExpr;
+  
   st = message ("Unsatisfied ensures constraint condition:\nLCLint is unable to verify the constraint %q", constraint_printDeep (c) );
- 
+
+  genExpr = exprNode_unparse (c->generatingExpr);
+    
   if (context_getFlag (FLG_CONSTRAINTLOCATION) )
     {
       cstring temp;
       // llassert (c->generatingExpr);
       temp = message ("\nOriginal Generating expression %q: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
-		      exprNode_unparse(c->generatingExpr) );
+		      genExpr );
       st = cstring_concatFree (st, temp);
 
       if (constraint_hasMaxSet(c) )
@@ -817,7 +819,8 @@ static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/
 cstring  constraint_printDetailed (constraint c)
 {
   cstring st = cstring_undefined;
-
+  cstring genExpr;
+  
   if (!c->post)
     {
       st = message ("Unresolved constraint:\nLclint is unable to resolve %q", constraint_printDeep (c) );
@@ -827,12 +830,14 @@ cstring  constraint_printDetailed (constraint c)
       st = message ("Block Post condition:\nThis function block has the post condition %q", constraint_printDeep (c) );
     }
 
+  genExpr = exprNode_unparse (c->generatingExpr);
+
   if (context_getFlag (FLG_CONSTRAINTLOCATION) )
     {
       cstring temp;
       // llassert (c->generatingExpr);
       temp = message ("\nOriginal Generating expression %q: %s\n", fileloc_unparse( exprNode_getfileloc (c->generatingExpr) ),
-		      exprNode_unparse(c->generatingExpr) );
+		      genExpr );
       st = cstring_concatFree (st, temp);
 
       if (constraint_hasMaxSet(c) )
@@ -901,7 +906,7 @@ cstring  constraint_printOr (constraint c) /*@*/
 }
 
 
-constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall)
+constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exprNode fcnCall)
 {
   postcondition = constraint_copy (postcondition);
   postcondition->lexpr = constraintExpr_doFixResult (postcondition->lexpr, fcnCall);
@@ -1010,7 +1015,7 @@ constraint constraint_undump (FILE *f)
   
   constraintExpr lexpr;
   constraintExpr  expr;
-  //  /*@kept@*/ exprNode generatingExpr;
+
 
   char * s;
 
@@ -1024,21 +1029,21 @@ constraint constraint_undump (FILE *f)
 
   /*@i33*/ /*this should probably be wrappered...*/
   
-  fcnPre = (bool) getInt (&s);
+  fcnPre = (bool) reader_getInt (&s);
   advanceField(&s);
-  post = (bool) getInt (&s);
+  post = (bool) reader_getInt (&s);
   advanceField(&s);
-  ar = (arithType) getInt (&s);
+  ar = (arithType) reader_getInt (&s);
 
   s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
-  checkChar (&s, 'l');
+  reader_checkChar (&s, 'l');
 
   lexpr = constraintExpr_undump (f);
 
   s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
-  checkChar (&s, 'r');
+  reader_checkChar (&s, 'r');
   expr = constraintExpr_undump (f);
 
   c = constraint_makeNew();
@@ -1063,7 +1068,7 @@ void constraint_dump (/*@observer@*/ constraint c,  FILE *f)
   
   constraintExpr lexpr;
   constraintExpr  expr;
-  //  /*@kept@*/ exprNode generatingExpr;
+
 
   fcnPre = c->fcnPre;
   post   = c->post;

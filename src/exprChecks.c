@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -29,7 +29,7 @@
 # include "basic.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-# include "aliasChecks.h"
+# include "transferChecks.h"
 # include "exprChecks.h"
 
 /*
@@ -39,9 +39,9 @@
 
 /*@access exprNode@*/
 
-static bool checkCallModifyAux (sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
-static bool checkModifyValAux (sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
-static bool checkModifyAux (sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
+static bool checkCallModifyAux (/*@exposed@*/ sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
+static bool checkModifyValAux (/*@exposed@*/ sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
+static bool checkModifyAux (/*@exposed@*/ sRef p_s, exprNode p_f, sRef p_alias, exprNode p_err);
 static void checkSafeReturnExpr (/*@notnull@*/ exprNode p_e);
 
 /*
@@ -206,14 +206,33 @@ checkRefGlobParam (sRef base, /*@notnull@*/ exprNode e,
  
       if (ctype_isVisiblySharable (ct))
 	{
-	  if (sRef_isGlobal (base))
+	  if (sRef_isFileOrGlobalScope (base))
 	    {
-	      voptgenerror
-		(FLG_RETALIAS,
-		 message ("Function returns reference to global %q: %s",
-			  sRef_unparse (base),
-			  exprNode_unparse (e)),
-		 e->loc);
+	      uentry fcn = context_getHeader ();
+	      bool noerror = FALSE;
+
+	      if (uentry_isValid (fcn) && uentry_isFunction (fcn))
+		{
+		  sRef res = uentry_getSref (fcn);
+
+		  /* If result is dependent and global is owned, this is okay... */
+		  if (sRef_isDependent (res)
+		      && sRef_isOwned (base))
+		    {
+		      noerror = TRUE;
+
+		    }
+		}
+
+	      if (!noerror)
+		{
+		  voptgenerror
+		    (FLG_RETALIAS,
+		     message ("Function returns reference to global %q: %s",
+			      sRef_unparse (base),
+			      exprNode_unparse (e)),
+		     e->loc);
+		}
 
 	      return TRUE;
 	    }
@@ -261,7 +280,7 @@ checkRefGlobParam (sRef base, /*@notnull@*/ exprNode e,
     {
       if (ctype_isVisiblySharable (e->typ))
 	{
-	  if (sRef_isGlobal (base))
+	  if (sRef_isFileOrGlobalScope (base))
 	    {
 	      voptgenerror 
 		(FLG_RETALIAS,
@@ -325,7 +344,7 @@ exprNode_checkModify (exprNode e, exprNode err)
   llassert (exprNode_isDefined (e));
 
   DPRINTF (("Check modify: %s", exprNode_unparse (e)));
-
+  
   if (sRef_isValid (e->sref))
     {
       sRef_aliasCheckPred (checkModifyAux, sRef_isReference, e->sref, e, err);
@@ -359,7 +378,7 @@ exprChecks_checkNullReturn (fileloc loc)
     {
       if (ctype_isFunction (context_currentFunctionType ()))
 	{
-	  ctype tr = ctype_returnValue (context_currentFunctionType ());
+	  ctype tr = ctype_getReturnType (context_currentFunctionType ());
 
 	  if (!ctype_isFirstVoid (tr))
 	    {
@@ -434,7 +453,8 @@ exprNode_checkPred (cstring c, exprNode e)
 	 e->loc);
     }
 
-  if (ctype_isRealBool (ct))
+  if (ctype_isRealBool (ct) || ctype_isUnknown (ct)) 
+         /* evs 2000-12-20 added || ctype_isUnknown to avoid spurious messages */
     {
      ;
     }
@@ -762,7 +782,7 @@ void exprNode_checkMacroBody (/*@only@*/ exprNode e)
 			 e->loc);
 		    }
 		  
-		  e->typ = ctype_returnValue (e->typ);
+		  e->typ = ctype_getReturnType (e->typ);
 		  rettype = e->typ; /* avoid aditional errors */
 		}
 	    }
@@ -862,7 +882,7 @@ void exprNode_checkFunctionBody (exprNode body)
 	  && context_inRealFunction ()
 	  && ctype_isFunction (context_currentFunctionType ()))
 	{
-	  ctype tr = ctype_returnValue (context_currentFunctionType ());
+	  ctype tr = ctype_getReturnType (context_currentFunctionType ());
 	  
 	  if (!ctype_isFirstVoid (tr)) 
 	    {
@@ -883,9 +903,6 @@ void exprNode_checkFunctionBody (exprNode body)
 		}
 	    }
 	}
-
-      /*@i44*/ /* drl added call*/
-      //      exprNode_checkFunction (context_getHeader (), body);
       
       if (!checkret)
 	{
@@ -896,42 +913,47 @@ void exprNode_checkFunctionBody (exprNode body)
 /*drl modified */
 
 
-void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
+void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody)
 {
   constraintList c, t, post;
   constraintList c2, fix;
   constraintList implicitFcnConstraints;
+
+  /*@owned@*/ exprNode body;
 
  //  return;
 
  //  context_setFlag(FLG_ORCONSTRAINT, TRUE);
   context_enterInnerContext ();
 
+  body = fcnBody;
+  
   exprNode_generateConstraints (body);
+
   
   c =   uentry_getFcnPreconditions (ue);
   DPRINTF(("function constraints\n"));
   DPRINTF (("\n\n\n\n\n\n\n"));
 
   
-   if (c != NULL)
+   if (constraintList_isDefined(c) )
      {
 
        DPRINTF ( (message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
        
-       body->requiresConstraints = reflectChangesFreePre (body->requiresConstraints, c);
+       body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, c);
        
        c2  =  constraintList_copy (c);
        fix =  constraintList_makeFixedArrayConstraints (body->uses);
-       c2  =  reflectChangesFreePre (c2, fix);
+       c2  =  constraintList_reflectChangesFreePre (c2, fix);
        constraintList_free(fix);
        if ( context_getFlag (FLG_ORCONSTRAINT) )
 	 {
-	   t = reflectChangesOr (body->requiresConstraints, c2 );
+	   t = constraintList_reflectChangesOr (body->requiresConstraints, c2 );
 	 }
        else
 	 {
-	   t = reflectChanges (body->requiresConstraints, c2);
+	   t = constraintList_reflectChanges(body->requiresConstraints, c2);
 	 }
    
        constraintList_free(body->requiresConstraints);
@@ -948,7 +970,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
        constraintList_free(c2);
      }
    
-   if (c != NULL)
+   if (constraintList_isDefined(c) )
      {
        DPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
      }
@@ -959,11 +981,11 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 
    implicitFcnConstraints = getImplicitFcnConstraints();
    
-   if ( implicitFcnConstraints != NULL)
+   if (constraintList_isDefined(implicitFcnConstraints) )
      {
           if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
 	      {
-		body->requiresConstraints = reflectChangesFreePre (body->requiresConstraints, implicitFcnConstraints );
+		body->requiresConstraints = constraintList_reflectChangesFreePre (body->requiresConstraints, implicitFcnConstraints );
 	      }
      }
    
@@ -973,26 +995,26 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 
    if ( context_getFlag (FLG_CHECKPOST) )
      {
-       if (post != NULL)
+       if (constraintList_isDefined(post) )
 	 {
 	   
 	   constraintList post2;
 	   
 	   DPRINTF ( (message ("The declared function postconditions are %s \n\n\n\n\n", constraintList_printDetailed (post) ) ) );
 	   
-	   post = reflectChangesFreePre (post, body->ensuresConstraints);
+	   post = constraintList_reflectChangesFreePre (post, body->ensuresConstraints);
 	   
 	   post2  =  constraintList_copy (post);
 	   fix =  constraintList_makeFixedArrayConstraints (body->uses);
-	   post2  =  reflectChangesFreePre (post2, fix);
+	   post2  =  constraintList_reflectChangesFreePre (post2, fix);
 	   constraintList_free(fix);
 	   if ( context_getFlag (FLG_ORCONSTRAINT) )
 	     {
-	       t = reflectChangesOr (post2, body->ensuresConstraints);
+	       t = constraintList_reflectChangesOr (post2, body->ensuresConstraints);
 	     }
 	   else
 	     {
-	       t = reflectChanges (post2, body->ensuresConstraints);
+	       t = constraintList_reflectChanges(post2, body->ensuresConstraints);
 	     }
 	   
 	   constraintList_free(post2);
@@ -1007,7 +1029,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
 	 }
      }
    
-   if (post != NULL)
+   if (constraintList_isDefined(post) )
      constraintList_free(post);
    
    
@@ -1021,14 +1043,14 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, exprNode body)
      //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
      //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
    
-   if (c != NULL)
+   if (constraintList_isDefined(c) )
      constraintList_free(c);
 
    context_exitInnerPlain();
 
    /*is it okay not to free this?*/
-   exprNode_free (body);
-}
+  exprNode_free (body);
+  }
 
 void exprChecks_checkEmptyMacroBody (void)
 {
@@ -1078,7 +1100,7 @@ void exprNode_checkIterEnd (/*@only@*/ exprNode body)
 }
 
 static
-bool checkModifyAuxAux (sRef s, exprNode f, sRef alias, exprNode err)
+bool checkModifyAuxAux (/*@exposed@*/ sRef s, exprNode f, sRef alias, exprNode err)
 {
   bool hasMods = context_hasMods ();
   flagcode errCode = hasMods ? FLG_MODIFIES : FLG_MODNOMODS;
@@ -1092,20 +1114,20 @@ bool checkModifyAuxAux (sRef s, exprNode f, sRef alias, exprNode err)
       && (hasMods || context_getFlag (FLG_MODNOMODS)))
     {
       sRefSet mods = context_modList ();
-      
+
       if (!sRef_canModify (s, mods))
 	{
 	  sRef rb = sRef_getRootBase (s);
-	 
 	  
-	  if (sRef_isGlobal (rb))
+	  
+	  if (sRef_isFileOrGlobalScope (rb))
 	    {
 	      if (!context_checkGlobMod (rb))
 		{
-		  		  return FALSE;
+		  return FALSE;
 		}
 	    }
-
+	  
 	  if (sRef_isInvalid (alias) || sRef_sameName (s, alias))
 	    {
 	      if (sRef_isLocalVar (sRef_getRootBase (s)))
@@ -1177,7 +1199,7 @@ bool checkModifyAuxAux (sRef s, exprNode f, sRef alias, exprNode err)
 }
 
 static
-bool checkModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
+bool checkModifyAux (/*@exposed@*/ sRef s, exprNode f, sRef alias, exprNode err)
 {
   DPRINTF (("Check modify aux: %s", sRef_unparseFull (s)));
 
@@ -1247,16 +1269,19 @@ bool checkModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
 }
 
 static
-bool checkModifyValAux (sRef s, exprNode f, sRef alias, exprNode err)
+bool checkModifyValAux (/*@exposed@*/ sRef s, exprNode f, sRef alias, exprNode err)
 {
   (void) checkModifyAuxAux (s, f, alias, err);
   return FALSE;
 }
 
 static
-bool checkCallModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
+bool checkCallModifyAux (/*@exposed@*/ sRef s, exprNode f, sRef alias, exprNode err)
 {
   bool result = FALSE;
+
+  DPRINTF (("Check modify aux: %s / %s",
+	    sRef_unparse (s), sRef_unparse (alias)));
 
   if (sRef_isObserver (s) && context_maybeSet (FLG_MODOBSERVER))
     {	 
@@ -1297,6 +1322,10 @@ bool checkCallModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
     }
   else if (context_maybeSet (FLG_MODIFIES))
     {
+      DPRINTF (("can modify: %s / %s",
+		sRef_unparse (s),
+		sRefSet_unparse (context_modList ())));
+
       if (!(sRef_canModifyVal (s, context_modList ())))
 	{
 	  sRef p = sRef_isAddress (s) ? sRef_constructPointer (s) : s;
@@ -1305,8 +1334,10 @@ bool checkCallModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
 	  sRef rb = sRef_getRootBase (s);
 	  flagcode errCode = hasMods ? FLG_MODIFIES : FLG_MODNOMODS;
 	  bool check = TRUE;
-	  
-	  if (sRef_isGlobal (rb))
+
+	  DPRINTF (("Can't modify! %s", sRef_unparse (s)));
+
+	  if (sRef_isFileOrGlobalScope (rb))
 	    {
 	      uentry ue = sRef_getUentry (rb);
 	      
@@ -1389,6 +1420,7 @@ bool checkCallModifyAux (sRef s, exprNode f, sRef alias, exprNode err)
 void exprNode_checkCallModifyVal (sRef s, exprNodeList args, exprNode f, exprNode err)
 {
   s = sRef_fixBaseParam (s, args);
+  DPRINTF (("Check call modify: %s", sRef_unparse (s)));
   sRef_aliasCheckPred (checkCallModifyAux, NULL, s, f, err);
 }
 
@@ -1458,7 +1490,7 @@ exprChecks_checkExport (uentry e)
 
 static void checkSafeReturnExpr (/*@notnull@*/ exprNode e)
 {
-  ctype tr = ctype_returnValue (context_currentFunctionType ());
+  ctype tr = ctype_getReturnType (context_currentFunctionType ());
   ctype te = exprNode_getType (e);
 
   if (!ctype_forceMatch (tr, te) && !exprNode_matchLiteral (tr, e))
@@ -1475,7 +1507,17 @@ static void checkSafeReturnExpr (/*@notnull@*/ exprNode e)
       uentry rval = context_getHeader ();
       sRef resultref = uentry_getSref (rval);
 
+      DPRINTF (("Check return: %s / %s / %s",
+		exprNode_unparse (e),
+		sRef_unparseFull (e->sref),
+		uentry_unparse (rval)));
+
       checkReturnTransfer (e, rval);
+
+      DPRINTF (("After return: %s / %s / %s",
+		exprNode_unparse (e),
+		sRef_unparseFull (e->sref),
+		uentry_unparse (rval)));
 
       if (!(sRef_isExposed (uentry_getSref (context_getHeader ()))
 	    || sRef_isObserver (uentry_getSref (context_getHeader ())))
@@ -1508,4 +1550,8 @@ static void checkSafeReturnExpr (/*@notnull@*/ exprNode e)
 	}
     }
 }
+
+
+
+
 

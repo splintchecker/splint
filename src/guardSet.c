@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -270,7 +270,7 @@ void guardSet_flip (guardSet g)
   return guardSet_undefined;
 }
   
-guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet g, sRef s)
+guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet g, /*@exposed@*/ sRef s)
 {
   if (sRef_isMeaningful (s))
     {
@@ -285,7 +285,7 @@ guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet g, sRef s)
   return g;
 }
 
-guardSet guardSet_addFalseGuard (/*@returned@*/ guardSet g, sRef s)
+guardSet guardSet_addFalseGuard (/*@returned@*/ guardSet g, /*@exposed@*/ sRef s)
 {
   if (sRef_isMeaningful (s))
     {
@@ -333,7 +333,7 @@ guardSet_isGuarded (guardSet g, sRef s)
 }
 
 bool
-guardSet_isProbableNull (guardSet g, sRef s)
+guardSet_mustBeNull (guardSet g, sRef s)
 {
   bool ret;
 

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -368,6 +368,7 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen)
   
   if (overflow)
     {
+      /*@i23 add flags for all these...*/
       cppReader_pedwarnLit
 	(pfile, 
 	 cstring_makeLiteralTemp ("Integer constant out of range"));
@@ -1242,11 +1243,13 @@ cppReader_parseExpression (cppReader *pfile)
 		}
 	      /*@switchbreak@*/ break;
 	    default:
+	      /*@-formatconst@*/
 	      fprintf (stderr,
 		       top[1].op >= ' ' && top[1].op <= '~'
 		       ? "unimplemented operator '%c'\n"
 		       : "unimplemented operator '\\%03o'\n",
 		       top[1].op);
+	      /*@=formatconst@*/
 	    }
 	}
       if (op.op == 0)

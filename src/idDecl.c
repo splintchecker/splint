@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -29,14 +29,21 @@
 # include "basic.h"
 
 /*@only@*/ idDecl
-  idDecl_create (/*@only@*/ cstring s, /*@only@*/ qtype t)
+  idDecl_createClauses (/*@only@*/ cstring s, /*@only@*/ qtype t, /*@only@*/ functionClauseList clauses)
 {
   idDecl d = (idDecl) dmalloc (sizeof (*d));
 
   d->id = s;
   d->typ = t;
+  d->clauses = clauses;
 
   return (d);
+}
+
+/*@only@*/ idDecl
+  idDecl_create (/*@only@*/ cstring s, /*@only@*/ qtype t)
+{
+  return idDecl_createClauses (s, t, functionClauseList_undefined);
 }
 
 void
@@ -46,6 +53,7 @@ idDecl_free (idDecl t)
     {
       cstring_free (t->id);
       qtype_free (t->typ);
+      /*@!#@#! functionClauseList_free (t->clauses);*/
       sfree (t);
     }
 }
@@ -55,7 +63,28 @@ idDecl_unparse (idDecl d)
 {
   if (idDecl_isDefined (d))
     {
-      return (message ("%s : %q", d->id, qtype_unparse (d->typ)));
+      if (functionClauseList_isDefined (d->clauses)) 
+	{
+	  return (message ("%s : %q / %q", d->id, qtype_unparse (d->typ),
+			   functionClauseList_unparse (d->clauses)));
+	}
+      else
+	{
+	  return (message ("%s : %q", d->id, qtype_unparse (d->typ)));
+	}
+    }
+  else
+    {
+      return (cstring_makeLiteral ("<undefined id>"));
+    }
+}
+
+cstring
+idDecl_unparseC (idDecl d)
+{
+  if (idDecl_isDefined (d))
+    {
+      return (message ("%q %s", qtype_unparse (d->typ), d->id));
     }
   else
     {
@@ -107,6 +136,19 @@ idDecl_getQuals (idDecl d)
   else
     {
       return qualList_undefined;
+    }
+}
+
+functionClauseList
+idDecl_getClauses (idDecl d)
+{
+  if (idDecl_isDefined (d))
+    {
+      return (d->clauses);
+    }
+  else
+    {
+      return functionClauseList_undefined;
     }
 }
 
@@ -178,4 +220,12 @@ idDecl_expectFunction (/*@returned@*/ idDecl d)
 
   qtype_setType (d->typ, ctype_expectFunction (qtype_getType (d->typ)));
   return d;
+}
+
+void
+idDecl_addClauses (idDecl d, functionClauseList clauses)
+{
+  llassert (idDecl_isDefined (d));
+  llassert (functionClauseList_isUndefined (d->clauses));
+  d->clauses = clauses;
 }

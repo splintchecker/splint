@@ -11,16 +11,15 @@
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
-# include "aliasChecks.h"
 # include "exprNodeSList.h"
 
 /*@-czechfcns@*/
 
 //#include "constraintExpr.h"
 
-/*@access exprNode, constraintTermValue @*/
+/*@access exprNode @*/
 
-/*@unused@*/ static bool constraintTerm_same (constraintTerm term1, constraintTerm term2) ;
+/*@unused@*/ static bool constraintTerm_same (constraintTerm p_term1, constraintTerm p_term2) ;
 
 void constraintTerm_free (/*@only@*/ constraintTerm term)
 {
@@ -95,7 +94,7 @@ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@m
       if ( exprNode_knownIntValue (term->value.expr ) )
 	{
 	  long int temp;
-	  #warning is this a leak?
+
 	  temp  = exprNode_getLongValue (term->value.expr);
 	  term->value.intlit = (int)temp;
 	  term->kind = INTLITERAL;
@@ -124,7 +123,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return (t->value.sref);
 }
 
-/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/ exprNode e)
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@depenedent@*/  exprNode e)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_copy(exprNode_getfileloc(e));
@@ -134,7 +133,7 @@ constraintTermType constraintTerm_getKind (constraintTerm t)
   return ret;
 }
 
-/*@only@*/ constraintTerm constraintTerm_makesRef  (/*@exposed@*/ sRef s)
+/*@only@*/ constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef s)
 {
   constraintTerm ret = new_constraintTermExpr();
   ret->loc =  fileloc_undefined;
@@ -158,7 +157,7 @@ constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fi
 {
   llassert(term != NULL);
 
-  if (term->loc != fileloc_undefined)
+  if ( fileloc_isDefined(  term->loc ) )
     fileloc_free(term->loc);
 
   term->loc = fileloc_copy(loc);
@@ -372,12 +371,12 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
   s1 = constraintTerm_getsRef (term1);
   s2 = constraintTerm_getsRef (term2);
 
-  if ( ! (s1 && s2) )
+  if ( ! (sRef_isValid(s1) && sRef_isValid(s2) ) )
     {
       return FALSE;
     }
   
- DPRINTF ( (message
+ DPRINTF( (message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
@@ -416,7 +415,8 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       
     case EXPRNODE:
       u = exprNode_getUentry(t->value.expr);
-      fprintf(f, "%s\n", uentry_rawName (u) );
+      fprintf(f, "%s\n", cstring_toCharsSafe( uentry_rawName (u) )
+	      );
       break;
       
     case SREF:
@@ -441,13 +441,13 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 
 	    ctString =  ctype_dump(ct);
 	    
-	    fprintf(f, "Param %s %d\n", ctString, (int) param );
+	    fprintf(f, "Param %s %d\n", cstring_toCharsSafe(ctString), (int) param );
 	    cstring_free(ctString);
 	  }
 	else
 	  {
 	    u = sRef_getUentry(s);
-	    fprintf(f, "%s\n", uentry_rawName (u) );
+	    fprintf(f, "%s\n", cstring_toCharsSafe(uentry_rawName (u) ) );
 	  }
 	
       }
@@ -466,7 +466,6 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 
 /*@only@*/ constraintTerm constraintTerm_undump ( FILE *f)
 {
-  fileloc loc;
   constraintTermType kind;
   constraintTerm ret;
   
@@ -479,7 +478,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
   os = str;
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
-  kind = (constraintTermType) getInt(&str);
+  kind = (constraintTermType) reader_getInt(&str);
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
   switch (kind)
@@ -489,7 +488,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       {
 	sRef s;
 	char * term;
-	term = getWord(&str);
+	term = reader_getWord(&str);
 	
 	if (strcmp (term, "Result") == 0 )
 	  {
@@ -502,9 +501,9 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	    
 	    ctype t;
 
-	    checkChar(&str, ' ');
-	    str2  = getWord(&str);
-	    param = getInt(&str);
+	    reader_checkChar(&str, ' ');
+	    str2  = reader_getWord(&str);
+	    param = reader_getInt(&str);
 
 	    ostr2 = str2;
 	    t = ctype_undump(&str2) ;
@@ -514,8 +513,9 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 	else  //This must be an identified that we can search for
 	  // in usymTab
 	  {
-	    
-	    ue = usymtab_lookup (term);
+	    cstring termStr = cstring_makeLiteralTemp(term);
+
+	    ue = usymtab_lookup (termStr);
 	    s = uentry_getSref(ue);
 	  }
 	
@@ -529,12 +529,14 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       {
 	sRef s;
 	char * term;
+	cstring termStr;
 		
-	term = getWord(&str);
+	term = reader_getWord(&str);
 	//This must be an identifier that we can search for
 	  // in usymTab
+	termStr = cstring_makeLiteralTemp(term);
 	
-	ue = usymtab_lookup (term);
+	ue = usymtab_lookup (termStr);
 	s = uentry_getSref(ue);
 	ret = constraintTerm_makesRef(s);
 
@@ -547,7 +549,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
       {
 	int i;
 
-	i = getInt(&str);
+	i = reader_getInt(&str);
 	ret = constraintTerm_makeIntLiteral (i);
       }
       break;

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -386,7 +386,7 @@ cppReader_pedwarnWithLine (cppReader *pfile, int line, int column,
 void cppReader_perrorWithName (cppReader *pfile, cstring name)
 {
   cppReader_message (pfile, 1, 
-		     message ("preprocessing: %s: %s",
+		     message ("Preprocessing error for %s: %s",
 			      name, lldecodeerror (errno)));
 }
 

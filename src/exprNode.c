@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -32,7 +32,7 @@
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
-# include "aliasChecks.h"
+# include "transferChecks.h"
 # include "exprNodeSList.h"
 
 static bool exprNode_isEmptyStatement (exprNode p_e);
@@ -40,9 +40,9 @@ static /*@exposed@*/ exprNode exprNode_firstStatement (/*@returned@*/ exprNode p
 static bool exprNode_isFalseConstant (exprNode p_e) /*@*/ ;
 static bool exprNode_isBlock (exprNode p_e);
 static void checkGlobUse (uentry p_glob, bool p_isCall, /*@notnull@*/ exprNode p_e);
-static void exprNode_addUse (exprNode p_e, sRef p_s);
+static void exprNode_addUse (exprNode p_e, /*@exposed@*/ sRef p_s);
 static bool exprNode_matchArgType (ctype p_ct, exprNode p_e);
-
+static exprNode exprNode_fakeCopy (exprNode p_e) /*@*/ ;
 static exprNode exprNode_statementError (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 static bool exprNode_matchTypes (exprNode p_e1, exprNode p_e2);
 static void checkUniqueParams (exprNode p_fcn,
@@ -55,12 +55,12 @@ static void abstractOpError (ctype p_tr1, ctype p_tr2, lltok p_op,
 static ctype checkNumerics (ctype p_tr1, ctype p_tr2, ctype p_te1, ctype p_te2,
 			    /*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2, lltok p_op);
 static void doAssign (/*@notnull@*/ exprNode p_e1, /*@notnull@*/ exprNode p_e2, bool p_isInit);
-static void checkSafeUse (exprNode p_e, sRef p_s);
+static void checkSafeUse (exprNode p_e, /*@exposed@*/ sRef p_s);
 static void reflectNullTest (/*@notnull@*/ exprNode p_e, bool p_isnull);
 static void checkMacroParen (exprNode p_e);
 static exprNodeSList exprNode_flatten (/*@dependent@*/ exprNode p_e);
 static void exprNode_checkSetAny (exprNode p_e, /*@dependent@*/ cstring p_name);
-static void exprNode_checkUse (exprNode p_e, sRef p_s, fileloc p_loc);
+static void exprNode_checkUse (exprNode p_e, /*@exposed@*/ sRef p_s, fileloc p_loc);
 static void exprNode_mergeUSs (exprNode p_res, exprNode p_other);
 static void exprNode_mergeCondUSs (exprNode p_res, exprNode p_other1, exprNode p_other2);
 static /*@only@*/ /*@notnull@*/ exprNode exprNode_fromIdentifierAux (/*@observer@*/ uentry p_c);
@@ -105,11 +105,16 @@ static ctype ctypeType;
 static ctype filelocType; 
 static bool initMod = FALSE;
 
-# define exprNode_defineConstraints(e)  {  \
-					  (e)->requiresConstraints = constraintList_makeNew(); \
+static void exprNode_defineConstraints(/*@sef@*/ /*@special@*/ /*@notnull@*/ exprNode p_e)
+     /*@defines p_e->requiresConstraints,  p_e->ensuresConstraints,  p_e->trueEnsuresConstraints,  p_e->falseEnsuresConstraints @*/
+     ;
+     
+# define exprNode_defineConstraints(e)  \
+do{					  (e)->requiresConstraints = constraintList_makeNew(); \
 					  (e)->ensuresConstraints = constraintList_makeNew(); \
 					  (e)->trueEnsuresConstraints = constraintList_makeNew(); \
-					    (e)->falseEnsuresConstraints = constraintList_makeNew(); }
+					    (e)->falseEnsuresConstraints = constraintList_makeNew(); } while(FALSE)
+
 
 /*
 ** must occur after library has been read
@@ -227,6 +232,13 @@ static void exprNode_resetSref (/*@notnull@*/ exprNode e)
   e->sref = defref;
 }
 
+exprNode exprNode_fakeCopy (exprNode e)
+{
+  /*@-temptrans@*/ /*@-retalias@*/
+  return e;
+  /*@=temptrans@*/ /*@=retalias@*/
+}
+
 static bool isFlagKey (char key)
 {
   return (key == '-' || key == '+' || key == ' ' || key == '#');
@@ -268,7 +280,15 @@ exprNode_freeIniter (/*@only@*/ exprNode e)
       switch (e->kind)
 	{
 	case XPR_FACCESS:
+	  /*
+	  ** Its a fake copy, don't free the field->rec and field->field
+	  ** fields.
+	  */
+
+	  /*@-compdestroy@*/
 	  sfree (e->edata->field);
+	  /*@=compdestroy@*/
+
 	  sfree (e->edata);
 	  break;
 	case XPR_FETCH:
@@ -405,8 +425,8 @@ exprNode_new (void)
 static /*@notnull@*/ /*@special@*/ exprNode
   exprNode_createPlain (ctype c) 
   /*@defines result@*/
-  /*@post:isnull result->edata, result->loc, result->val, result->guards,
-                 result->uses, result->sets, result->msets, result->etext @*/
+  /*@ensures isnull result->edata, result->loc, result->val, result->guards,
+                    result->uses, result->sets, result->msets, result->etext @*/
   /*@*/
 {
   exprNode e = exprNode_new ();
@@ -627,7 +647,6 @@ static /*@notnull@*/ /*@special@*/ exprNode
       
       return (ret);
     }
-
 }
 
 bool
@@ -736,12 +755,56 @@ multiVal exprNode_getValue (exprNode e)
 }
 
 /*@only@*/ exprNode
-exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
+exprNode_combineLiterals (exprNode e, exprNode rest)
+{
+  cstring ns;
+
+  /* Both must be string literals. */
+
+  if (exprNode_isUndefined (rest) || exprNode_isUndefined (e))
+    {
+      exprNode_free (rest);
+      return e;
+    }
+
+  if (!exprNode_isStringLiteral (e))
+    {
+      voptgenerror 
+	(FLG_SYNTAX,
+	 message ("Constant concatentation is ungrammatical: %s %s", exprNode_unparse (e), 
+		  exprNode_unparse (rest)),
+	 e->loc);
+      exprNode_free (rest);
+      return e;
+    }
+
+  if (!exprNode_isStringLiteral (rest))
+    {
+      voptgenerror 
+	(FLG_SYNTAX,
+	 message ("Constant concatentation is ungrammatical: %s %s", exprNode_unparse (e), exprNode_unparse (rest)),
+	 rest->loc);
+  
+      exprNode_free (rest);
+      return e;
+    }
+
+  ns = cstring_concat (multiVal_forceString (exprNode_getValue (e)),
+		       multiVal_forceString (exprNode_getValue (rest)));
+
+  multiVal_free (e->val);
+  exprData_free (e->edata, e->kind);
+  e->edata = exprData_makeLiteral (cstring_copy (ns));
+  e->val = multiVal_makeString (ns);
+  exprNode_free (rest);
+  return e;
+}
+
+/*@only@*/ exprNode
+exprNode_rawStringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 {
   exprNode e = exprNode_createLoc (ctype_string, loc);
-  int len = cstring_length (t) - 2;
-  char *ts = cstring_toCharsSafe (t);
-  char *s = cstring_toCharsSafe (cstring_create (len + 1));
+  int len = cstring_length (t);
 
   if (context_getFlag (FLG_STRINGLITERALLEN))
     {
@@ -750,7 +813,7 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 	  voptgenerror (FLG_STRINGLITERALLEN,
 			message
 			("String literal length (%d) exceeds maximum "
-			 "length (%d): %s",
+			 "length (%d): \"%s\"",
 			 len,
 			 context_getValue (FLG_STRINGLITERALLEN),
 			 t),
@@ -758,24 +821,10 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
 	}
     }
 
-  strncpy (s, ts+1, size_fromInt (len));
-  *(s + len) = '\0';
-
-  
   e->kind = XPR_STRINGLITERAL;
-  e->val = multiVal_makeString (cstring_fromCharsO (s));
+  e->val = multiVal_makeString (cstring_copy (t));
   e->edata = exprData_makeLiteral (t);
   e->sref = sRef_makeType (ctype_string);
-  /* Start modifications */
-  /* This expr is null terminated, so we set the len and size */
-  sRef_setNullTerminatedState(e->sref);
-  /*
-  DPRINTF("Len is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
-  DPRINTF("Size is set to : %d\n\n", strlen((char *)multiVal_forceString(e->val)));
-  DPRINTF("State is set to: %d\n\n", e->sref->bufinfo.bufstate);
-  */
-  sRef_setLen(e->sref, (int)  strlen((char *)multiVal_forceString(e->val)));
-  sRef_setSize(e->sref, (int) strlen((char *)multiVal_forceString(e->val)));
 
   if (context_getFlag (FLG_READONLYSTRINGS))
     {
@@ -788,6 +837,20 @@ exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
     }
 
   return (e); /* s released */
+}
+
+/*@only@*/ exprNode
+exprNode_stringLiteral (/*@only@*/ cstring t, /*@only@*/ fileloc loc)
+{
+  int len = cstring_length (t) - 2;
+  char *ts = cstring_toCharsSafe (t);
+  char *s = cstring_toCharsSafe (cstring_create (len + 1));
+
+  llassert (*ts == '\"' && *(ts + len + 1) == '\"');
+  strncpy (s, ts+1, size_fromInt (len));
+  *(s + len) = '\0';
+  cstring_free (t);
+  return exprNode_rawStringLiteral (cstring_fromCharsO (s), loc);
 }
 
 exprNode exprNode_fromUIO (cstring c)
@@ -847,8 +910,7 @@ exprNode exprNode_fromUIO (cstring c)
       else
         {
           voptgenerror 
-	    (FLG_UNRECOG, message ("Unrecognized identifier: %s", c),
-	     e->loc);
+	    (FLG_UNRECOG, message ("Unrecognized identifier: %s", c),  e->loc);
 	}
     }
   
@@ -927,7 +989,7 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
     }
   else
     {
-            return exprNode_createUnknown ();
+      return exprNode_createUnknown ();
     }
 }
 
@@ -964,7 +1026,7 @@ exprNode_fromIdentifierAux (/*@observer@*/ uentry c)
 
   uentry_setUsed (c, e->loc);
 
-  if (uentry_isVar (c) && sRef_isGlobal (sr))
+  if (uentry_isVar (c) && sRef_isFileOrGlobalScope (sr))
     {
       checkGlobUse (c, FALSE, e);
     }
@@ -1172,7 +1234,7 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 		}
               else
 		{
-		  		  ret->sref = sRef_makeArrayFetch (arr->sref);
+		  ret->sref = sRef_makeArrayFetch (arr->sref);
 		}
 	      
               ret->sets = sRefSet_realNewUnion (arr->sets, ind->sets);
@@ -1276,16 +1338,20 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
       while ((code = strchr (code, '%')) != NULL)
         {
           char *origcode = code;
+	  cstring codetext = cstring_newEmpty ();
           char key = *(++code);			
           ctype modtype = ctype_int;
           bool modified = FALSE;
 
 	  fileloc_addColumn (formatloc, code - ocode);
 
+	  codetext = cstring_appendChar (codetext, key);
+
 	  /* ignore flags */
 	  while (isFlagKey (key)) 
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 	    }
 
@@ -1298,6 +1364,7 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 	  while (isdigit ((int) key) != 0) 
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 	    }
 	  
@@ -1305,6 +1372,7 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 	  if (key == '.')
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 
 	      /*
@@ -1323,6 +1391,7 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		  while (isdigit ((int) key) != 0)
 		    {
 		      key = *(++code);
+		      codetext = cstring_appendChar (codetext, key);
 		      fileloc_incColumn (formatloc);
 		    }
 		}
@@ -1332,17 +1401,20 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
             {
               modtype = ctype_sint;  /* short */
               key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
             }
           else if (key == 'l' || key == 'L') 
             {
               modtype = ctype_lint; /* long */
               key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 
 	      if (key == 'l' || key == 'L') { 
 		modtype = ctype_llint; /* long long */
 		key = *(++code);
+		codetext = cstring_appendChar (codetext, key);
 		fileloc_incColumn (formatloc);
 	      }
             }
@@ -1362,9 +1434,9 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		  if (optgenerror 
 		      (FLG_TYPE,
 		       message ("No argument corresponding to %q format "
-				"code %d (%%%h): \"%s\"",
+				"code %d (%%%s): \"%s\"",
 				uentry_getName (fcn),
-				i, key,
+				i, codetext,
 				cstring_fromChars (format)),
 		       f->loc))
 		    {
@@ -1403,9 +1475,10 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  expecttype = ctype_combine (ctype_int, modtype);
 			  /*@switchbreak@*/ break;
 
-			case 'x': /* unsigned int */
+			case 'x': /* unsigned int */ 
 			case 'X':
-			  expecttype = ctype_combine (ctype_uint, modtype);
+			  expecttype = ctype_combine (ctype_uint, modtype); 
+
 			  /*@switchbreak@*/ break;
 			  
 			case 'e':
@@ -1428,6 +1501,7 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  while (((key = *(++code)) != ']') 
 				 && (key != '\0'))
 			    {
+			      codetext = cstring_appendChar (codetext, key);
 			      fileloc_incColumn (formatloc);
 			    }
 			  
@@ -1484,11 +1558,12 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			      if (llgenformattypeerror 
 				  (expecttype, exprNode_undefined,
 				   a->typ, a,
-				   message ("Format argument %d to %q (%%%h) expects "
+				   message ("Format argument %d to %q (%%%s) expects "
 					    "%t gets %t: %s",
 					    i - argno,
 					    uentry_getName (fcn), 
-					    key, expecttype,
+					    codetext,
+					    expecttype,
 					    a->typ, exprNode_unparse (a)),
 				   a->loc))
 				{
@@ -1526,13 +1601,15 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		    }
 		}
 	    }
+
 	  ocode = code;
+	  cstring_free (codetext);
 	}
   
       if (i < nargs)
 	{
 	  voptgenerror (FLG_TYPE,
-			message ("Format string for %q has %d arg%p, given %d", 
+			message ("Format string for %q has %d arg%&, given %d", 
 				 uentry_getName (fcn), i - argno, nargs - argno),
 			f->loc);
 	}
@@ -1540,8 +1617,17 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
   else
     {
       /* no checking possible for compile-time unknown format strings */
+      if (exprNode_isDefined (a))
+	{
+	  voptgenerror
+	    (FLG_FORMATCONST,
+	     message ("Format string parameter to %s is not a compile-time constant: %s",
+		      exprNode_unparse (f),
+		      exprNode_unparse (a)),
+	     f->loc);
+	}
     }
-
+  
   fileloc_free (formatloc);
 }
 
@@ -1578,11 +1664,13 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
         {
           char *origcode = code;
           char key = *(++code);			
+	  cstring codetext = cstring_newEmpty ();
           ctype modtype = ctype_int;
 	  char modifier = '\0';
           bool modified = TRUE;
 	  bool ignore = FALSE;
 
+	  codetext = cstring_appendChar (codetext, key);
 	  fileloc_addColumn (formatloc, code - ocode);
 
 	  /*
@@ -1595,6 +1683,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 	  if (key == '*') 
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      modified = FALSE; 
 	      ignore = TRUE;
 	      fileloc_incColumn (formatloc);
@@ -1604,6 +1693,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 	  while (isdigit ((int) key) != 0)
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 	    }
 	  
@@ -1611,6 +1701,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
             {
               modtype = ctype_sint;  /* short */
               key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
             }
           else if (key == 'l' || key == 'L') 
@@ -1619,11 +1710,14 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 	      modifier = key;
 
               key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
+
 	      fileloc_incColumn (formatloc);
 
 	      if (key == 'l' || key == 'L') { 
 		modtype = ctype_llint; /* long long */
 		key = *(++code);
+		codetext = cstring_appendChar (codetext, key);
 		fileloc_incColumn (formatloc);
 	      }
             }
@@ -1649,9 +1743,9 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		      if (optgenerror 
 			  (FLG_TYPE,
 			   message ("No argument corresponding to %q format "
-				    "code %d (%%%h): \"%s\"",
+				    "code %d (%%%s): \"%s\"",
 				    uentry_getName (fcn),
-				    i, key,
+				    i, codetext,
 				    cstring_fromChars (format)),
 			   f->loc))
 			{
@@ -1728,6 +1822,7 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			      while (((key = *(++code)) != ']') 
 				     && (key != '\0'))
 				{
+				  codetext = cstring_appendChar (codetext, key);
 				  fileloc_incColumn (formatloc);
 				}
 			      
@@ -1773,52 +1868,24 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 				}
 			      else
 				{
-				  if (modifier != '\0')
+				  if (llgenformattypeerror 
+				      (expecttype, exprNode_undefined,
+				       a->typ, a,
+				       message ("Format argument %d to %q (%%%s) expects "
+						"%t gets %t: %s",
+						i - argno,
+						uentry_getName (fcn), 
+						codetext, expecttype,
+						a->typ, exprNode_unparse (a)),
+				       a->loc))
 				    {
-				      if (llgenformattypeerror 
-					  (expecttype, exprNode_undefined,
-					   a->typ, a,
-					   message ("Format argument %d to %q (%%%h%h) expects "
-						    "%t gets %t: %s",
-						    i - argno,
-						    uentry_getName (fcn), 
-						    modifier,
-						    key, expecttype,
-						    a->typ, exprNode_unparse (a)),
-					   a->loc))
+				      if (fileloc_isDefined (formatloc)
+					  && context_getFlag (FLG_SHOWCOL))
 					{
-					  if (fileloc_isDefined (formatloc)
-					      && context_getFlag (FLG_SHOWCOL))
-					    {
-					      llgenindentmsg
-						(cstring_makeLiteral 
-						 ("Corresponding format code"),
-						 formatloc);
-					    }
-					}
-
-				    }
-				  else
-				    {
-				      if (llgenformattypeerror 
-					  (expecttype, exprNode_undefined,
-					   a->typ, a,
-					   message ("Format argument %d to %q (%%%h) expects "
-						    "%t gets %t: %s",
-						    i - argno,
-						    uentry_getName (fcn), 
-						    key, expecttype,
-						    a->typ, exprNode_unparse (a)),
-					   a->loc))
-					{
-					  if (fileloc_isDefined (formatloc)
-					      && context_getFlag (FLG_SHOWCOL))
-					    {
-					      llgenindentmsg
-						(cstring_makeLiteral 
-						 ("Corresponding format code"),
-						 formatloc);
-					    }
+					  llgenindentmsg
+					    (cstring_makeLiteral 
+					     ("Corresponding format code"),
+					     formatloc);
 					}
 				    }
 				}
@@ -1841,13 +1908,15 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 		    }
 		}
 	    }
+	 
 	  ocode = code;
+	  cstring_free (codetext);
 	}
 
       if (i < nargs)
 	{
 	  voptgenerror (FLG_TYPE,
-			message ("Format string for %q has %d arg%p, given %d", 
+			message ("Format string for %q has %d arg%&, given %d", 
 				 uentry_getName (fcn), i - argno, nargs - argno),
 			f->loc);
 	}
@@ -1912,13 +1981,17 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
         {
           char *origcode = code;
           char key = *(++code);			
+	  cstring codetext = cstring_newEmpty ();
 	  bool isOnly = FALSE;
+
+	  codetext = cstring_appendChar (codetext, key);
 
 	  fileloc_addColumn (formatloc, code - ocode);
 
 	  while (key >= '0' && key <= '9')
 	    {
 	      key = *(++code);
+	      codetext = cstring_appendChar (codetext, key);
 	      fileloc_incColumn (formatloc);
 	    }
 	  
@@ -1927,7 +2000,7 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 
           if (key != '%') 
 	    {
-	      if (key == 'p')
+	      if (key == '&') /* plural marker */
 		{
 		  goto nextKey;
 		}
@@ -1936,8 +2009,8 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 		{
 		  voptgenerror
 		    (FLG_TYPE,
-		     message ("Message missing format arg %d (%%%h): \"%s\"",
-			      i + 1, key, format), 
+		     message ("Message missing format arg %d (%%%s): \"%s\"",
+			      i + 1, codetext, format), 
 		     f->loc);
 		  i++;
 		}
@@ -1971,7 +2044,7 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 			case 'b': expecttype = ctype_bool; break;
 			case 't': expecttype = ctypeType; break;
 			case 'l': expecttype = filelocType; break;
-			case 'p':  /* a wee bit of a hack methinks */
+			case '&':  /* a wee bit of a hack methinks */
 			  expecttype = ctype_int;
 			  break;
 			case 'r': expecttype = ctype_bool; break;
@@ -2000,11 +2073,11 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 			      if (llgenformattypeerror 
 				  (expecttype, exprNode_undefined,
 				   a->typ, a,
-				   message ("Format argument %d to %q (%%%h) expects "
+				   message ("Format argument %d to %q (%%%s) expects "
 					    "%t gets %t: %s",
 					    i - argno,
 					    uentry_getName (fcn), 
-					    key, expecttype,
+					    codetext, expecttype,
 					    a->typ, exprNode_unparse (a)),
 				   a->loc))
 				  {
@@ -2041,12 +2114,14 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 		    }
 		}
 	    }
+
+	  cstring_free (codetext);
 	}
 
       if (i < nargs)
 	{
 	  voptgenerror (FLG_TYPE,
-			message ("Format string for %q has %d arg%p, given %d", 
+			message ("Format string for %q has %d arg%&, given %d", 
 				 uentry_getName (fcn), i - argno, nargs -argno),
 			f->loc);
 	}
@@ -2069,7 +2144,7 @@ static void
 {
   bool hadUncon = FALSE;
 
-  if (sRef_isGlobal (sRef_getRootBase (e1->sref)) && 
+  if (sRef_isFileOrGlobalScope (sRef_getRootBase (e1->sref)) && 
       sRefSet_hasUnconstrained (sets2))
     {
       voptgenerror
@@ -2083,7 +2158,7 @@ static void
 	 e2->loc);
     }
 
-  if (sRef_isGlobal (sRef_getRootBase (e2->sref)) && 
+  if (sRef_isFileOrGlobalScope (sRef_getRootBase (e2->sref)) && 
       sRefSet_hasUnconstrained (sets1))
     {
       voptgenerror
@@ -2504,7 +2579,7 @@ checkSequencingOne (exprNode f, exprNodeList args,
 		{
 		  sRefSet otheruses = jl->uses;
 		  
-		  if (sRef_isGlobal (sRef_getRootBase (jl->sref)) && 
+		  if (sRef_isFileOrGlobalScope (sRef_getRootBase (jl->sref)) && 
 		      sRefSet_hasUnconstrained (thissets))
 		    {
 		      voptgenerror
@@ -2634,6 +2709,8 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
   bool freshMods = FALSE;
   uentryList params = uentryList_undefined;
 
+  DPRINTF (("Check glob mods: %s", exprNode_unparse (ret)));
+
   /*
   ** check globals and modifies
   */
@@ -2656,7 +2733,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
       if (!context_getFlag (FLG_MODNOMODS) 
 	  && !context_getFlag (FLG_GLOBUNSPEC))
         {
-	            checkUnspecCall (f, params, args);
+	  checkUnspecCall (f, params, args);
         }
       
       return;
@@ -2683,6 +2760,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 		      uentry_unparse (le)));
       
       params = ctype_argsFunction (ct);
+      return; /*@32 ! remove this? */
     }
 
   /*
@@ -2690,7 +2768,6 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
   */
 
   setCodePoint ();
-
     
   globSet_allElements (usesGlobs, el)
     {
@@ -2801,6 +2878,8 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 
       sRefSet_allElements (mods, s) /* s is something which may be modified */
         {
+	  DPRINTF (("Check modify: %s", sRef_unparse (s)));
+
 	  if (sRef_isKindSpecial (s))
 	    {
 	      if (sRef_isSpecInternalState (s))
@@ -2831,7 +2910,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
 	    {
 	      sRef rb = sRef_getRootBase (s);
 	      
-	      if (sRef_isGlobal (rb))
+	      if (sRef_isFileOrGlobalScope (rb))
 		{
 		  context_usedGlobal (rb);
 		}
@@ -2997,6 +3076,253 @@ void checkGlobUse (uentry glob, bool isCall, /*@notnull@*/ exprNode e)
     }
 }  
 
+static void
+reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
+{
+  DPRINTF (("Reflect ensures clause: %s(%s) / %s / %s",
+	    exprNode_unparse (f), exprNodeList_unparse (args),
+	    uentry_unparseFull (le),
+	    stateClauseList_unparse (uentry_getStateClauseList (le))));
+
+  if (uentry_isValid (le) && uentry_isFunction (le))
+    {
+      stateClauseList sclauses = uentry_getStateClauseList (le);
+
+      if (stateClauseList_isDefined (sclauses))
+	{
+	  DPRINTF (("Reflect ensures: %s / %s / %s",
+		    uentry_unparse (le),
+		    exprNode_unparse (f), exprNodeList_unparse (args)));
+	  
+	  stateClauseList_elements (sclauses, cl) 
+	    {
+	      if (stateClause_hasEnsures (cl))
+		{
+		  /* Same in usymtab.c:1904 */
+		  if (stateClause_setsMetaState (cl))
+		    {
+		      qual q = stateClause_getMetaQual (cl);
+		      annotationInfo ainfo = qual_getAnnotationInfo (q);
+		      metaStateInfo minfo = annotationInfo_getState (ainfo);
+		      cstring key = metaStateInfo_getName (minfo);
+		      int mvalue = annotationInfo_getValue (ainfo);
+
+		      sRefSet osrs = sRefSet_undefined;
+		      sRefSet srs;
+		      
+		      if (stateClause_isGlobal (cl))
+			{
+			  srs = sRefSet_single (usymtab_lookupGlobalMarker ());
+			  osrs = srs;
+			}
+		      else
+			{
+			  srs = stateClause_getRefs (cl);
+			}
+		      
+		      DPRINTF (("Reflect ensures clause: %s", stateClause_unparse (cl)));
+		      
+		      
+		      DPRINTF (("Sets meta state! %s", stateClause_unparse (cl)));
+		      
+		      sRefSet_elements (srs, sel)
+			{
+			  sRef s;
+			  
+			  if (sRef_isResult (sRef_getRootBase (sel)))
+			    {
+			      ; /*@i423 what do we do about results */
+			    }
+			  else 
+			    {
+			      s = sRef_fixBaseParam (sel, args);
+			      DPRINTF (("Reflecting state clause on: %s / %s",
+					sRef_unparse (sel), sRef_unparse (s)));
+			      
+			      sRef_setMetaStateValueComplete (s, key, mvalue, exprNode_loc (f));
+			    }
+			} end_sRefSet_elements;
+
+		      sRefSet_free (osrs);
+		    }
+		  else
+		    {
+		      sRefSet srs = stateClause_getRefs (cl);
+		      sRefModVal modf = stateClause_getEnsuresFunction (cl);
+		      int eparam = stateClause_getStateParameter (cl);
+		      
+		      DPRINTF (("Reflect after clause: %s / %s", 
+				stateClause_unparse (cl),
+				sRefSet_unparse (srs)));
+		      
+		      sRefSet_elements (srs, sel)
+			{
+			  sRef s;
+			  
+			  DPRINTF (("elements: %s", sRef_unparse (sel)));
+			  DPRINTF (("elements: %s", sRef_unparseFull (sel)));
+			  
+			  if (sRef_isResult (sRef_getRootBase (sel)))
+			    {
+			      ; /*@i423 what do we do about results */
+			    }
+			  else
+			    {
+			      s = sRef_fixBaseParam (sel, args);
+			      
+			      DPRINTF (("elements: %s", sRef_unparse (s)));
+			      DPRINTF (("elements: %s", sRef_unparseFull (s)));
+			      
+			      DPRINTF (("Reflecting state clause on: %s / %s",
+					sRef_unparse (sel), sRef_unparse (s)));
+			      
+			      modf (s, eparam, exprNode_loc (f));
+			    }
+			} end_sRefSet_elements;
+		    }
+		}
+	    } end_stateClauseList_elements ;
+	    
+	}
+    }
+}
+
+static void
+checkRequiresClause (uentry le, exprNode f, exprNodeList args)
+{
+  DPRINTF (("Check requires clause: %s(%s) / %s / %s",
+	    exprNode_unparse (f), exprNodeList_unparse (args),
+	    uentry_unparseFull (le),
+	    stateClauseList_unparse (uentry_getStateClauseList (le))));
+  
+  if (uentry_isValid (le) && uentry_isFunction (le))
+    {
+      stateClauseList sclauses = uentry_getStateClauseList (le);
+      
+      if (stateClauseList_isDefined (sclauses))
+	{
+	  DPRINTF (("Check requires: %s / %s / %s",
+		    uentry_unparse (le),
+		    exprNode_unparse (f), exprNodeList_unparse (args)));
+	  
+	  stateClauseList_elements (sclauses, cl) 
+	    {
+	      DPRINTF (("Check clause: %s / %s",
+			stateClause_unparse (cl),
+			bool_unparse (stateClause_hasRequires (cl))));
+
+	      if (stateClause_hasRequires (cl))
+		{
+		  sRefSet osrs = sRefSet_undefined;
+		  sRefSet srs;
+
+		  if (stateClause_isGlobal (cl))
+		    {
+		      srs = sRefSet_single (usymtab_lookupGlobalMarker ());
+		      osrs = srs;
+		    }
+		  else
+		    {
+		      srs = stateClause_getRefs (cl);
+		    }
+
+		  DPRINTF (("Refs: %s", sRefSet_unparse (srs)));
+
+		  if (stateClause_setsMetaState (cl))
+		    {
+		      qual q = stateClause_getMetaQual (cl);
+		      annotationInfo ainfo = qual_getAnnotationInfo (q);
+		      metaStateInfo minfo = annotationInfo_getState (ainfo);
+		      cstring key = metaStateInfo_getName (minfo);
+		      int mvalue = annotationInfo_getValue (ainfo);
+		      
+		      DPRINTF (("Requires meta state! %s = %d", key, mvalue));
+		      
+		      sRefSet_elements (srs, sel)
+			{
+			  sRef s = sRef_fixBaseParam (sel, args);
+			  
+			  if (sRef_isResult (sRef_getRootBase (sel)))
+			    {
+			      ; /*@i423 what do we do about results */
+			    }
+			  else 
+			    {
+			      DPRINTF (("Checking state clause on: %s / %s / %s = %d",
+					sRef_unparseFull (sel), sRef_unparseFull (s),
+					key, mvalue));
+			      
+			      if (!sRef_checkMetaStateValue (s, key, mvalue))
+				{			
+				  DPRINTF (("HERE: %s", sRef_unparse (s)));
+				  if (optgenerror 
+				      (FLG_STATETRANSFER,
+				       message
+				       ("Requires clause of called function %q not satisfied%q (state is %s): %q",
+					uentry_getName (le),
+					sRef_isGlobalMarker (s) 
+					   ? message ("") 
+					   : message (" by %q", sRef_unparse (s)),
+					stateValue_unparseValue (sRef_getMetaStateValue (s, key), 
+								 minfo),
+					stateClause_unparse (cl)),
+				       exprNode_loc (f)))
+				    {
+				      sRef_showAliasInfo (s);
+				    }
+				  else
+				    {
+				      DPRINTF (("Error supressed!"));
+				      DPRINTF (("Loc: %s", fileloc_unparse (exprNode_loc (f))));
+				      DPRINTF (("Context supress: %s",
+						bool_unparse (context_suppressFlagMsg (FLG_STATETRANSFER, exprNode_loc (f)))));
+				    }
+				}
+			    }
+			} end_sRefSet_elements;
+		    }
+		  else
+		    {
+		      sRefModVal modf = stateClause_getRequiresBodyFunction (cl);
+		      int eparam = stateClause_getStateParameter (cl);
+		      
+		      DPRINTF (("Reflect after clause: %s / %s", 
+				stateClause_unparse (cl),
+				sRefSet_unparse (srs)));
+		      
+		      sRefSet_elements (srs, sel)
+			{
+			  sRef s;
+			  
+			  DPRINTF (("elements: %s", sRef_unparse (sel)));
+			  DPRINTF (("elements: %s", sRef_unparseFull (sel)));
+			  
+			  s = sRef_fixBaseParam (sel, args);
+			  
+			  DPRINTF (("elements: %s", sRef_unparse (s)));
+			  DPRINTF (("elements: %s", sRef_unparseFull (s)));
+			  
+			  if (sRef_isResult (sRef_getRootBase (sel)))
+			    {
+			      ; /*@i423 what do we do about results */
+			    }
+			  else
+			    {
+			      DPRINTF (("Reflecting state clause on: %s / %s",
+					sRef_unparse (sel), sRef_unparse (s)));
+			      
+			      modf (s, eparam, exprNode_loc (f));
+			    }
+			} end_sRefSet_elements;
+		    }
+
+		  sRefSet_free (osrs);
+		}
+	    } end_stateClauseList_elements ;	    
+	}
+    }
+}
+
 static /*@only@*/ exprNode
 functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
 		  ctype t, /*@keep@*/ exprNodeList args)
@@ -3008,8 +3334,10 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
   int special;
 
   setCodePoint ();
-        
-  ret->typ = ctype_returnValue (t);
+
+  DPRINTF (("Call: %s %s",exprNode_unparse (f), exprNodeList_unparse (args)));
+
+  ret->typ = ctype_getReturnType (t);
   ret->kind = XPR_CALL;
 
   ret->edata = exprData_makeCall (f, args);
@@ -3046,7 +3374,11 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
 
   special = checkArgs (le, f, t, args, ret); 
   checkGlobMods (f, le, args, ret, special); 
+  checkRequiresClause (le, f, args);
+  setCodePoint ();
 
+  DPRINTF (("Reflect: %s", uentry_unparseFull (le)));
+  reflectEnsuresClause (le, f, args);
   setCodePoint ();
 
   if (uentry_isValid (le)
@@ -3059,6 +3391,9 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
       /* f->typ is already set to the return type */
 
       ret->sref = uentry_returnedRef (le, args);
+      DPRINTF (("Returned: %s / %s",
+		uentry_unparseFull (le),
+		sRef_unparseFull (ret->sref)));
 
       if (uentry_isFunction (le) && exprNodeList_size (args) >= 1)
 	{
@@ -3294,8 +3629,9 @@ exprNode_functionCall (/*@only@*/ exprNode f, /*@only@*/ exprNodeList args)
     }
 }
 
-exprNode
-exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
+static exprNode
+exprNode_fieldAccessAux (/*@only@*/ exprNode s, /*@observer@*/ fileloc loc,
+			 /*@only@*/ cstring f)
 {
   exprNode ret = exprNode_createPartialCopy (s);
 
@@ -3310,11 +3646,11 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
     {
       ctype t = exprNode_getType (s);
       ctype tr = ctype_realType (t);
-      
+
       checkMacroParen (s);
 
       ret->edata = exprData_makeField (s, f);
-      
+
       if (ctype_isStructorUnion (tr))
         {
           uentry tf = uentryList_lookupField (ctype_getFields (tr), f);
@@ -3324,8 +3660,8 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
               voptgenerror (FLG_TYPE,
 			    message ("Access non-existent field %s of %t: %s", f, t, 
 				     exprNode_unparse (ret)),
-			    s->loc);
-	      
+			    loc);
+	      /*! cstring_free (f); */ /* evans 2001-03-25 self-detect */
               return (ret);
             }
           else
@@ -3336,6 +3672,7 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
               checkSafeUse (ret, s->sref);
 	      
               ret->sref = sRef_makeField (s->sref, uentry_rawName (tf));
+	      /*!? exprNode_free (s); */ /* evans 2001-03-25 self-detect */
               return (ret);
             }
         }
@@ -3347,7 +3684,7 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
 		(FLG_ABSTRACT,
 		 message ("Access field of abstract type (%t): %s.%s", 
 			  t, exprNode_unparse (s), f),
-		 s->loc);
+		 loc);
               ret->typ = ctype_unknown;
             }
           else
@@ -3359,25 +3696,34 @@ exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
 		     message
 		     ("Access field of non-struct or union (%t): %s.%s",
 		      t, exprNode_unparse (s), f),
-		     s->loc);
+		     loc);
 
 		  ret->typ = ctype_unknown;
 		}
               else
 		{
 		  cstring sn = cstring_copy (f);
-
+		  
 		  checkSafeUse (ret, s->sref);
 		  cstring_markOwned (sn);
 		  ret->sref = sRef_makeField (s->sref, sn);
-
 		  return (ret);
 		}
             }
+
           return (ret);
         }
     }
   BADEXIT;
+}
+
+exprNode
+exprNode_fieldAccess (/*@only@*/ exprNode s, /*@only@*/ lltok dot,
+		      /*@only@*/ cstring f)
+{
+  exprNode res = exprNode_fieldAccessAux (s, lltok_getLoc (dot), f);
+  lltok_release (dot);
+  return res;
 }
 
 exprNode
@@ -3401,177 +3747,187 @@ exprNode_addParens (/*@only@*/ lltok lpar, /*@only@*/ exprNode e)
   return ret;
 }
 
-exprNode
-exprNode_arrowAccess (/*@only@*/ exprNode s, /*@only@*/ cstring f)
+static exprNode
+exprNode_arrowAccessAux (/*@only@*/ exprNode s, /*@observer@*/ fileloc loc,
+			 /*@only@*/ cstring f)
 {
   exprNode ret = exprNode_createPartialCopy (s);
 
   ret->edata = exprData_makeField (s, f);
   ret->kind = XPR_ARROW;
-
+  
   if (exprNode_isError (s))
     {
       return (ret);
     }
   else
     {
-       ctype t = exprNode_getType (s);
-       ctype tr = ctype_realType (t);
-
-       checkMacroParen (s);
-
-       (void) ctype_fixArrayPtr (tr); /* REWRITE THIS */
-
-       if (ctype_isRealPointer (tr)) 
-	 {
-	   ctype b = ctype_realType (ctype_baseArrayPtr (tr));
-	   
-	   if (ctype_isStructorUnion (b))
-	     {
-	       uentry fentry = uentryList_lookupField (ctype_getFields (b), f);
-	       
-	       if (sRef_isKnown (s->sref) && sRef_possiblyNull (s->sref))
-		 {
-		   if (!usymtab_isGuarded (s->sref) && !context_inProtectVars ())
-		     {
-		       if (optgenerror 
-			   (FLG_NULLDEREF,
-			    message ("Arrow access from %s pointer%q: %s", 
-				     sRef_nullMessage (s->sref),
-				     sRef_unparsePreOpt (s->sref),
-				     exprNode_unparse (ret)),
-			    s->loc))
-			 {
-			   sRef_showNullInfo (s->sref);
-			   sRef_setNullError (s->sref);
-			 }
-		     }
-		 }
-	       
-	       if (uentry_isUndefined (fentry))
-		 {
-		   voptgenerror 
-		     (FLG_TYPE,
-		      message ("Access non-existent field %s of %t: %s", 
-			       f, t, exprNode_unparse (ret)),
-		      s->loc);
-		   ret->typ = ctype_unknown;
-		   
-		   return (ret);
-		 }
-	       else
-		 {
-		   /*
-		   ** was safeUse: shouldn't be safe!
-		   **
-		   ** to do rec->field
-		   ** rec must be defined,
-		   ** *rec must be allocated
-		   ** rec->field need only be defined it if is an rvalue
-		   */
-		   
-		   uentry_setUsed (fentry, exprNode_loc (ret));
-		   ret->typ = uentry_getType (fentry);
-		   
-		   exprNode_checkUse (ret, s->sref, s->loc);
-		   
-		   /* exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc); */
-		   ret->sref = sRef_makeArrow (s->sref, uentry_rawName (fentry));
-		   return (ret);
-		 }
-	     }
-	   else /* Pointer to something that is not a struct or union*/
-	     {
-	       if (ctype_isRealAbstract (tr))
-		 {
-		   ctype xrt = ctype_forceRealType (tr);
-		   
-		   voptgenerror 
-		     (FLG_ABSTRACT,
-		      message ("Arrow access field of abstract type (%t): %s->%s", 
-			       t, exprNode_unparse (s), f),
-		      s->loc);
-		   
-		   /*
-		   ** Set the state correctly, as if the abstraction is broken.
-		   */
-		   
-		   if (ctype_isRealPointer (xrt) &&
-		       (b = ctype_realType (ctype_baseArrayPtr (xrt)),
-			ctype_isStructorUnion (b)))
-		     {
-		       uentry fentry = uentryList_lookupField (ctype_getFields (b), f);
-		       ret->typ = uentry_getType (fentry);
-		       ret->sref = sRef_makeArrow (s->sref, uentry_rawName (fentry));
-		     }
-		   else
-		     {
-		       ret->typ = ctype_unknown;
-		       ret->sref = sRef_undefined;
-		     }
-		 }
-	       else /* not a struct, union or abstract */
-		 {
-		   if (ctype_isUnknown (tr)) {
-		     cstring sn = cstring_copy (f);
-		     
-		     DPRINTF (("Here: %s", exprNode_unparse (s)));
-		     
-		     exprNode_checkUse (ret, s->sref, s->loc);
-		     exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc);
-		     
-		     cstring_markOwned (sn);
-		     ret->sref = sRef_makeArrow (s->sref, sn);
-		     
-		     ret->kind = XPR_ARROW;
-		     return (ret);
-		   } else {
-		     voptgenerror 
-		       (FLG_TYPE,
-			message ("Arrow access field of non-struct or union "
-				 "pointer (%t): %s->%s",
-				 t, exprNode_unparse (s), f),
-			s->loc);
-		     
-		     ret->typ = ctype_unknown;
-		     ret->sref = sRef_undefined;
-		   }
-		 }
-	     }
-	 }
-       else /* its not a pointer */
-	 {
-	   if (!ctype_isUnknown (tr))
-	     {
-	       voptgenerror 
-		 (FLG_TYPE,
-		  message ("Arrow access of non-pointer (%t): %s->%s",
-			   t, exprNode_unparse (s), f),
-		  s->loc);
-	       
-	       ret->typ = ctype_unknown;
-	       ret->sref = sRef_undefined;
-	     }
-	   else
-	     {
-	       cstring sn = cstring_copy (f);
-	       
-	       DPRINTF (("Here: %s", exprNode_unparse (s)));
-	       
-	       exprNode_checkUse (ret, s->sref, s->loc);
-	       exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc);
-	       
-	       cstring_markOwned (sn);
-	       ret->sref = sRef_makeArrow (s->sref, sn);
-	       
-	       ret->kind = XPR_ARROW;
-	       return (ret);
-	     }
-	 }
-
+      ctype t = exprNode_getType (s);
+      ctype tr = ctype_realType (t);
+      
+      checkMacroParen (s);
+      
+      (void) ctype_fixArrayPtr (tr); /* REWRITE THIS */
+      
+      if (ctype_isRealPointer (tr)) 
+	{
+	  ctype b = ctype_realType (ctype_baseArrayPtr (tr));
+	  
+	  if (ctype_isStructorUnion (b))
+	    {
+	      uentry fentry = uentryList_lookupField (ctype_getFields (b), f);
+	      
+	      if (sRef_isKnown (s->sref) && sRef_possiblyNull (s->sref))
+		{
+		  if (!usymtab_isGuarded (s->sref) && !context_inProtectVars ())
+		    {
+		      if (optgenerror 
+			  (FLG_NULLDEREF,
+			   message ("Arrow access from %s pointer%q: %s", 
+				    sRef_nullMessage (s->sref),
+				    sRef_unparsePreOpt (s->sref),
+				    exprNode_unparse (ret)),
+			   loc))
+			{
+			  sRef_showNullInfo (s->sref);
+			  sRef_setNullError (s->sref);
+			}
+		    }
+		}
+	      
+	      if (uentry_isUndefined (fentry))
+		{
+		  voptgenerror 
+		    (FLG_TYPE,
+		     message ("Access non-existent field %s of %t: %s", 
+			      f, t, exprNode_unparse (ret)),
+		     loc);
+		  ret->typ = ctype_unknown;
+		  return (ret);
+		}
+	      else
+		{
+		  /*
+		  ** was safeUse: shouldn't be safe!
+		  **
+		  ** to do rec->field
+		  ** rec must be defined,
+		  ** *rec must be allocated
+		  ** rec->field need only be defined it if is an rvalue
+		  */
+		  
+		  uentry_setUsed (fentry, exprNode_loc (ret));
+		  ret->typ = uentry_getType (fentry);
+		  
+		  exprNode_checkUse (ret, s->sref, s->loc);
+		  
+		  /* exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc); */
+		  ret->sref = sRef_makeArrow (s->sref, uentry_rawName (fentry));
+		  return (ret);
+		}
+	    }
+	  else /* Pointer to something that is not a struct or union*/
+	    {
+	      if (ctype_isRealAbstract (tr))
+		{
+		  ctype xrt = ctype_forceRealType (tr);
+		  
+		  voptgenerror 
+		    (FLG_ABSTRACT,
+		     message ("Arrow access field of abstract type (%t): %s->%s", 
+			      t, exprNode_unparse (s), f),
+		     loc);
+		  
+		  /*
+		  ** Set the state correctly, as if the abstraction is broken.
+		  */
+		  
+		  if (ctype_isRealPointer (xrt) &&
+		      (b = ctype_realType (ctype_baseArrayPtr (xrt)),
+		       ctype_isStructorUnion (b)))
+		    {
+		      uentry fentry = uentryList_lookupField (ctype_getFields (b), f);
+		      ret->typ = uentry_getType (fentry);
+		      ret->sref = sRef_makeArrow (s->sref, uentry_rawName (fentry));
+		    }
+		  else
+		    {
+		      ret->typ = ctype_unknown;
+		      ret->sref = sRef_undefined;
+		    }
+		}
+	      else /* not a struct, union or abstract */
+		{
+		  if (ctype_isUnknown (tr)) {
+		    cstring sn = cstring_copy (f);
+		    
+		    DPRINTF (("Here: %s", exprNode_unparse (s)));
+		    
+		    exprNode_checkUse (ret, s->sref, s->loc);
+		    exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc);
+		    
+		    cstring_markOwned (sn);
+		    ret->sref = sRef_makeArrow (s->sref, sn);
+		    
+		    ret->kind = XPR_ARROW;
+		    return (ret);
+		  } else {
+		    voptgenerror 
+		      (FLG_TYPE,
+		       message ("Arrow access field of non-struct or union "
+				"pointer (%t): %s->%s",
+				t, exprNode_unparse (s), f),
+		       loc);
+		    
+		    ret->typ = ctype_unknown;
+		    ret->sref = sRef_undefined;
+		  }
+		}
+	    }
+	}
+      else /* its not a pointer */
+	{
+	  if (!ctype_isUnknown (tr))
+	    {
+	      voptgenerror 
+		(FLG_TYPE,
+		 message ("Arrow access of non-pointer (%t): %s->%s",
+			  t, exprNode_unparse (s), f),
+		 loc);
+	      
+	      ret->typ = ctype_unknown;
+	      ret->sref = sRef_undefined;
+	    }
+	  else
+	    {
+	      cstring sn = cstring_copy (f);
+	      
+	      DPRINTF (("Here: %s", exprNode_unparse (s)));
+	      
+	      exprNode_checkUse (ret, s->sref, s->loc);
+	      exprNode_checkUse (ret, sRef_makePointer (s->sref), s->loc);
+	      
+	      cstring_markOwned (sn);
+	      ret->sref = sRef_makeArrow (s->sref, sn);
+	      
+	      ret->kind = XPR_ARROW;
+	      return (ret);
+	    }
+	}
+      
       return (ret);
     }
   BADEXIT;
+}
+
+exprNode
+exprNode_arrowAccess (/*@only@*/ exprNode s, 
+		      /*@only@*/ lltok arrow,
+		      /*@only@*/ cstring f)
+{
+  exprNode res = exprNode_arrowAccessAux (s, lltok_getLoc (arrow), f);
+  lltok_release (arrow);
+  return res;
 }
 
 /*
@@ -3747,7 +4103,6 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
     {
     case INC_OP:
     case DEC_OP:		/* should also check modification! */
-
       if (sRef_isMacroParamRef (e->sref))
 	{
 	  voptgenerror 
@@ -3849,7 +4204,7 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
     case TEXCL:		/* maybe this should be restricted */
       guardSet_flip (ret->guards);      
 
-      if (ctype_isRealBool (te))
+      if (ctype_isRealBool (te) || ctype_isUnknown (te))
 	{
 	 ;
 	}
@@ -3861,7 +4216,7 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 		{
 		  ret->guards = guardSet_addFalseGuard (ret->guards, e->sref);
 		}
-
+	      
 	      voptgenerror2n
 		(FLG_BOOLOPS, FLG_PTRNEGATE,
 		 message ("Operand of %s is non-boolean (%t): %s",
@@ -4375,6 +4730,11 @@ exprNode_cast (/*@only@*/ lltok tok, /*@only@*/ exprNode e, /*@only@*/ qtype q)
 	    }
 	  else
 	    {
+	      DPRINTF (("No access to: %s / %d",
+			ctype_unparse (bc), ctype_typeId (bc)));
+	      DPRINTF (("Context %s %s",
+			bool_unparse (context_inFunctionLike ()),
+			context_unparse ()));
 	      voptgenerror 
 		(FLG_ABSTRACT,
 		 message ("Cast to abstract type %t: %s", bc, 
@@ -5081,10 +5441,10 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	default: {
 	    llfatalbug 
 	      (cstring_makeLiteral 
-	       ("There has been a problem in the parser. This is due to a bug "
-		"in either lclint, bison or gcc version 2.95 optimizations, "
-		"but it has not been confirmed.  Please try rebuidling LCLint "
-		"without the -O<n> option."));
+	       ("There has been a problem in the parser. This is believed to result "
+		"from a problem with bison v. 1.25.  Please try rebuidling LCLint "
+		"using the pre-compiled grammar files by commenting out the "
+		"BISON= line in the top-level Makefile."));
 	  }
 	}
     }
@@ -5133,7 +5493,7 @@ void exprNode_checkAssignMod (exprNode e1, exprNode ret)
 	    sRef_unparseFull (ref)));
 
   if (sRef_isObserver (ref) 
-      || ((sRef_isFileStatic (ref) || sRef_isGlobal (ref))
+      || ((sRef_isFileStatic (ref) || sRef_isFileOrGlobalScope (ref))
 	  && ctype_isArray (ctype_realType (sRef_getType (ref)))))
     {
       sRef base = sRef_getBase (ref);
@@ -5714,6 +6074,8 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 {
   exprNode ret = exprNode_createPartialCopy (e1);
 
+  DPRINTF (("Concat: %s / %s", exprNode_unparse (e1), exprNode_unparse (e2)));
+
   ret->edata = exprData_makePair (e1, e2);
   ret->kind = XPR_STMTLIST;
 
@@ -5813,7 +6175,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
     }
 
   exprNode_mergeUSs (ret, e2);
-  // ret = exprNode_mergeEnvironments (ret, e1, e2);
+  
   usymtab_setExitCode (ret->exitCode);
   
   if (ret->mustBreak)
@@ -5826,7 +6188,8 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 
 exprNode exprNode_createTok (/*@only@*/ lltok t)
 {
-  exprNode ret = exprNode_create (ctype_unknown);
+  exprNode ret; /*@i23 if on same line, bad things happen...!@*/
+  ret = exprNode_create (ctype_unknown);
   ret->kind = XPR_TOK;
   ret->edata = exprData_makeTok (t);
   return ret;
@@ -6609,9 +6972,9 @@ exprNode exprNode_doWhile (/*@only@*/ exprNode b, /*@only@*/ exprNode t)
 	  ** forgot the copy's --- why wasn't this detected??
 	  */
 
-	  ret->sets = sRefSet_copy (ret->sets, b->sets);
-	  ret->msets = sRefSet_copy (ret->msets, b->msets);
-	  ret->uses = sRefSet_copy (ret->uses, b->uses);  
+	  ret->sets = sRefSet_copyInto (ret->sets, b->sets);
+	  ret->msets = sRefSet_copyInto (ret->msets, b->msets);
+	  ret->uses = sRefSet_copyInto (ret->uses, b->uses);  
 
 	  /* left this out --- causes and aliasing bug (infinite loop)
 	     should be detected?? */
@@ -6706,9 +7069,9 @@ exprNode exprNode_for (/*@keep@*/ exprNode inc, /*@keep@*/ exprNode body)
 
 	  context_clearMessageAnnote ();
 
-	  ret->uses = sRefSet_copy (ret->uses, inc->uses);
-	  ret->sets = sRefSet_copy (ret->sets, inc->sets);
-	  ret->msets = sRefSet_copy (ret->msets, inc->msets);
+	  ret->uses = sRefSet_copyInto (ret->uses, inc->uses);
+	  ret->sets = sRefSet_copyInto (ret->sets, inc->sets);
+	  ret->msets = sRefSet_copyInto (ret->msets, inc->msets);
 	}
     }
 
@@ -7228,7 +7591,7 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 		  hasError = optgenerror 
 		    (FLG_FULLINITBLOCK,
 		     message ("Initializer block for "
-			      "%s has %d field%p, but %s has %d field%p: %q",
+			      "%s has %d field%&, but %s has %d field%&: %q",
 			      exprNode_unparse (el),
 			      exprNodeList_size (vals),
 			      ctype_unparse (t1),
@@ -7241,7 +7604,7 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 		  hasError = optgenerror 
 		    (FLG_TYPE,
 		     message ("Initializer block for "
-			      "%s has %d field%p, but %s has %d field%p: %q",
+			      "%s has %d field%&, but %s has %d field%&: %q",
 			      exprNode_unparse (el),
 			      exprNodeList_size (vals),
 			      ctype_unparse (t1),
@@ -7256,8 +7619,9 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 		{
 		  uentry thisfield = uentryList_getN (fields, i);
 		  exprNode newel =
-		    exprNode_fieldAccess (exprNode_fakeCopy (el),
-					  uentry_getName (thisfield));
+		    exprNode_fieldAccessAux (exprNode_fakeCopy (el),
+					     exprNode_loc (el),
+					     uentry_getName (thisfield));
 
 		  if (exprNode_isDefined (newel))
 		    {
@@ -7305,37 +7669,100 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
   return hasError;
 }
 
+static exprNode 
+exprNode_makeInitializationAux (/*@temp@*/ idDecl t)
+{
+  exprNode ret;
+
+  if (usymtab_exists (idDecl_observeId (t)))
+    {
+      uentry ue = usymtab_lookup (idDecl_observeId (t));
+      ret = exprNode_createId (ue);
+
+      /*@i723 don't do this...but why? */
+# if 0
+      ct = ctype_realishType (ret->typ);
+
+      DPRINTF (("Type: %s", ctype_unparse (ret->typ)));
+
+      if (ctype_isUnknown (ct)) 
+	{
+	  if (uentry_isAnyTag (ue))
+	    {
+	      voptgenerror
+		(FLG_IMPTYPE,
+		 message ("%s used but not previously declared: %s",
+			  uentry_ekindName (ue),
+			  idDecl_getName (t)),
+		 g_currentloc);
+	      
+	    }
+	  else
+	    {
+	      voptgenerror
+		(FLG_IMPTYPE,
+		 message ("Variable has unknown (implicitly int) type: %s",
+			  idDecl_getName (t)),
+		 g_currentloc);
+	    }
+
+	  ct = ctype_int;
+	}
+# endif
+    }
+  else
+    {
+      uentry ue = uentry_makeUnrecognized (idDecl_observeId (t),
+					   g_currentloc);
+      ret = exprNode_fromIdentifierAux (ue);
+
+      /*
+      ** No error - this happens in old style declarations:
+
+      voptgenerror
+	(FLG_UNRECOG,
+	 message ("Unrecognized identifier in intializer: %s", idDecl_observeId (t)),
+	 g_currentloc);
+
+      ** 
+      */
+    }
+
+  exprData_free (ret->edata, ret->kind); 
+  ret->edata = exprData_undefined;
+  ret->exitCode = XK_NEVERESCAPE;
+  ret->mustBreak = FALSE;
+  ret->kind = XPR_INIT;
+  return ret;
+}
+  
+exprNode exprNode_makeEmptyInitialization (/*@only@*/ idDecl t)
+{
+  exprNode ret = exprNode_makeInitializationAux (t);
+  llassert (ret->edata == exprData_undefined);
+  ret->edata = exprData_makeInit (t, exprNode_undefined);
+  return ret;
+}
+
 exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 				      /*@only@*/ exprNode e)
 {
   uentry ue = usymtab_lookup (idDecl_observeId (t));
-  bool isUsed = uentry_isUsed (ue);
-  exprNode ret = exprNode_fromIdentifierAux (ue);
-  ctype ct = ctype_realishType (ret->typ);
-  fileloc loc;
-  
-  if (ctype_isUnknown (ct)) 
-    {
-      voptgenerror (FLG_IMPTYPE,
-		    message ("Variable has unknown (implicitly int) type: %s",
-			     idDecl_getName (t)),
-		    exprNode_isDefined (e) ? exprNode_loc (e) : g_currentloc);
-      
-      ct = ctype_int;
-    }
+  exprNode ret = exprNode_makeInitializationAux (t);
+  fileloc loc = exprNode_loc (e);
 
   if (exprNode_isError (e)) 
     {
       e = exprNode_createUnknown ();
-      loc = g_currentloc;
+      idDecl_free (t);
 
       /* error: assume initializer is defined */
-      sRef_setDefined (ret->sref, loc);
+      sRef_setDefined (ret->sref, g_currentloc); 
     }
   else
     {
-      loc = exprNode_loc (e);
-      
+      ctype ct = ctype_realishType (ret->typ);
+
       /*
       ** evs - 9 Apr 1995
       **
@@ -7343,6 +7770,9 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
       **
       **   int x = 3, y = x ?
       */
+
+      exprData_free (ret->edata, ret->kind);
+      ret->edata = exprData_makeInit (t, e);
 
       exprNode_checkUse (ret, e->sref, e->loc);
       
@@ -7381,8 +7811,8 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 		  (void) gentypeerror 
 		    (exprNode_getType (e), e, exprNode_getType (ret), ret,
 		     message 
-		     ("Variable %s initialized to type %t, expects %t: %s",
-		      exprNode_unparse (ret), exprNode_getType (e), 
+		     ("Variable %q initialized to type %t, expects %t: %s",
+		      uentry_getName (ue), exprNode_getType (e), 
 		      exprNode_getType (ret),
 		      exprNode_unparse (e)),
 		     e->loc);
@@ -7410,23 +7840,9 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
     }
   else
     {
-      if (!isUsed) /* could be @unused@-qualified variable */
-	{
-	  uentry_setNotUsed (ue);  
-	}
+      ;
     }
 
-  ret->exitCode = XK_NEVERESCAPE;
-  ret->mustBreak = FALSE;
-
-  /*
-  ** Must be before new kind is assigned!
-  */
-
-  exprData_free (ret->edata, ret->kind); 
-
-  ret->kind = XPR_INIT;
-  ret->edata = exprData_makeInit (t, e);
   exprNode_mergeUSs (ret, e);
   return ret;
 }
@@ -7756,7 +8172,7 @@ exprNode_unparseFirst (exprNode e)
 }
 
 /*@observer@*/ cstring
-exprNode_unparse (exprNode e)
+exprNode_unparse (/*@temp@*/ exprNode e)
 {
   if (exprNode_isError (e))
     {
@@ -8038,13 +8454,17 @@ static /*@only@*/ exprNode exprNode_effect (exprNode e)
 	  break;
 	  
 	case XPR_FACCESS:
-	  ret = exprNode_fieldAccess (exprNode_effect (exprData_getFieldNode (data)),
-				      cstring_copy (exprData_getFieldName (data)));
+	  ret = exprNode_fieldAccessAux
+	    (exprNode_effect (exprData_getFieldNode (data)),
+	     exprNode_loc (exprData_getFieldNode (data)),
+	     cstring_copy (exprData_getFieldName (data)));
 	  break;
 	  
 	case XPR_ARROW:
-	  ret = exprNode_arrowAccess (exprNode_effect (exprData_getFieldNode (data)),
-				      cstring_copy (exprData_getFieldName (data)));
+	  ret = exprNode_arrowAccessAux
+	    (exprNode_effect (exprData_getFieldNode (data)),
+	     exprNode_loc (exprData_getFieldNode (data)),
+	     cstring_copy (exprData_getFieldName (data)));
 	  break;
 	  
 	case XPR_STRINGLITERAL:
@@ -8151,7 +8571,6 @@ static /*@observer@*/ cstring exprNode_rootVarName (exprNode e)
 
   return ret;
 }
-
 
 static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
 {
@@ -8382,9 +8801,16 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
       break;
       
     case XPR_INIT:
-      ret = message ("%s = %s",
-		     idDecl_getName (exprData_getInitId (data)),
-		     exprNode_unparse (exprData_getInitNode (data)));
+      if (exprNode_isError (exprData_getInitNode (data)))
+	{
+	  ret = message ("%q", idDecl_unparseC (exprData_getInitId (data)));
+	}
+      else
+	{
+	  ret = message ("%q = %s",
+			 idDecl_unparseC (exprData_getInitId (data)),
+			 exprNode_unparse (exprData_getInitNode (data)));
+	}
       break;
       
     case XPR_FACCESS:
@@ -8400,7 +8826,7 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
       break;
 
     case XPR_STRINGLITERAL:
-      ret = cstring_copy (exprData_getLiteral (data));
+      ret = message ("\"%s\"", exprData_getLiteral (data));
       break;
 
     case XPR_NUMLIT:
@@ -8413,6 +8839,13 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
     }
 
   return ret;
+}
+
+bool
+exprNode_isInitializer (exprNode e)
+{
+  return (exprNode_isDefined (e)
+	  && e->kind == XPR_INIT);
 }
 
 bool 
@@ -8754,7 +9187,7 @@ exprNode_mergeCondUSs (exprNode res, exprNode other1, exprNode other2)
 */
 
 static void
-exprNode_addUse (exprNode e, sRef s)
+exprNode_addUse (exprNode e, /*@exposed@*/ sRef s)
 {
   if (exprNode_isDefined (e))
     {
@@ -8763,7 +9196,7 @@ exprNode_addUse (exprNode e, sRef s)
 }
   
 void
-exprNode_checkUse (exprNode e, sRef s, fileloc loc)
+exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 {
   if (sRef_isKnown (s) && !sRef_isConst (s))
     {
@@ -8773,7 +9206,7 @@ exprNode_checkUse (exprNode e, sRef s, fileloc loc)
 
       DPRINTF (("Check use: %s / %s",
 		exprNode_unparse (e), sRef_unparse (s)));
-
+      
       exprNode_addUse (e, s);
      
       if (!context_inProtectVars ())
@@ -8791,6 +9224,9 @@ exprNode_checkUse (exprNode e, sRef s, fileloc loc)
 	  while (sRef_isValid (s) && sRef_isKnown (s))
 	    {
 	      ynm readable = sRef_isReadable (s);
+
+	      DPRINTF (("Readable: %s / %s",
+			sRef_unparseFull (s), ynm_unparse (readable)));
 
 	      if (!(ynm_toBoolStrict (readable)))
 		{
@@ -8884,7 +9320,7 @@ exprNode_checkUse (exprNode e, sRef s, fileloc loc)
 		}
 	      else
 		{
-		  DPRINTF (("HERE: %s", sRef_unparse (errorRef)));
+		  DPRINTF (("HERE: %s", sRef_unparseFull (errorRef)));
 
 		  voptgenerror 
 		    (FLG_USEDEF,
@@ -8909,7 +9345,7 @@ exprNode_checkUse (exprNode e, sRef s, fileloc loc)
 }
 
 static void
-checkSafeUse (exprNode e, sRef s)
+checkSafeUse (exprNode e, /*@exposed@*/ sRef s)
 {
   if (exprNode_isDefined (e) && sRef_isKnown (s))
     {
@@ -8927,7 +9363,7 @@ exprNode_checkSetAny (exprNode e, /*@dependent@*/ cstring name)
 }
 
 void
-exprNode_checkSet (exprNode e, sRef s)
+exprNode_checkSet (exprNode e, /*@exposed@*/ sRef s)
 {
   sRef defines = sRef_undefined;
 
@@ -9030,7 +9466,7 @@ exprNode_checkSet (exprNode e, sRef s)
 }
 
 void
-exprNode_checkMSet (exprNode e, sRef s)
+exprNode_checkMSet (exprNode e, /*@exposed@*/ sRef s)
 {
   if (sRef_isValid (s) && !sRef_isNothing (s))
     {
@@ -9190,7 +9626,7 @@ static void
 	      if (specialArgs == 0 
 		  || (paramno < specialArgs))
 		{
-		  		  checkOneArg (ucurrent, current, fcn, isSpec, paramno, nargs);
+		  checkOneArg (ucurrent, current, fcn, isSpec, paramno, nargs);
 
 		  if (context_maybeSet (FLG_ALIASUNIQUE))
 		    {
@@ -9225,7 +9661,7 @@ static void
 	  sRef fb;
 	  sRef rb = sRef_getRootBase (s);
 	  
-	  if (sRef_isGlobal (rb))
+	  if (sRef_isFileOrGlobalScope (rb))
 	    {
 	      context_usedGlobal (rb);
 	    }
@@ -9587,7 +10023,7 @@ checkOneRepExpose (sRef ysr, sRef base,
 	    }
 	}
       
-      if (sRef_isGlobal (s2b))
+      if (sRef_isFileOrGlobalScope (s2b))
 	{
 	  if (sRef_sameName (base, sRef_getRootBase (e2->sref)))
 	    {
@@ -9687,7 +10123,7 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
 		    }
 		}
 
-	      if (sRef_isGlobal (s2b))
+	      if (sRef_isFileOrGlobalScope (s2b))
 		{
 		  voptgenerror
 		    (FLG_ASSIGNEXPOSE,
@@ -9728,6 +10164,8 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
     {
       if (isInit)
 	{
+	    DPRINTF (("Check init: %s / %s",
+		      exprNode_unparse (e1), exprNode_unparse (e2)));
 	  checkInitTransfer (e1, e2); 
 	}
       else
@@ -9766,15 +10204,15 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
       }
     }
 
-  if (isInit && sRef_isGlobal (e1->sref))
+  if (isInit && sRef_isFileOrGlobalScope (e1->sref))
     {
        ;
     }
   else
     {
+      DPRINTF (("Update aliases: %s / %s", exprNode_unparse (e1), exprNode_unparse (e2)));
       updateAliases (e1, e2); 
     }
-  //  updateEnvironment (e1, e2);
 }
 
 static void 
@@ -9838,13 +10276,27 @@ static void updateAliases (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
       
       if (!ctype_isRealSU (t1))
 	{
+	  DPRINTF (("Copying real! %s", ctype_unparse (t1)));
 	  sRef_copyRealDerivedComplete (s1, s2);
+	}
+      else
+	{
+	  /*
+	  ** Fields should alias
+	  */
+
+	  DPRINTF (("Not COPYING!: %s", ctype_unparse (t1)));
 	}
 
       if (ctype_isMutable (t1) && sRef_isKnown (s1))
 	{
 	  usymtab_clearAlias (s1);
 	  usymtab_addMustAlias (s1, s2); 
+	  DPRINTF (("Add must alias: %s / %s", sRef_unparse (s1), sRef_unparse (s2)));
+	}
+      else
+	{
+	  DPRINTF (("Not mutable: %s", ctype_unparse (t1)));
 	}
 
       if (sRef_possiblyNull (s1) && usymtab_isGuarded (s1))
@@ -10015,21 +10467,11 @@ long exprNode_getLongValue (exprNode e) {
     lltok t = exprData_getUopTok (e->edata);
     return fileloc_copy(lltok_getLoc (t));
   } else {
-    #warning fix
+    //drl possible problem : warning fix
     //    llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));
     return fileloc_undefined;
   }
  }
-
-
-/*drl added
- */
-exprNode exprNode_fakeCopy (/*@returned@*/ exprNode e)
-{
-  /*@-temptrans@*/ /*@-retalias@*/
-  return e;
-  /*@=temptrans@*/ /*@=retalias@*/
-}
 
 exprNode exprNode_createNew(ctype c)
 {

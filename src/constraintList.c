@@ -33,7 +33,16 @@
 # include "llbasic.h"
 
 
-/*@iter constraintList_elements_private (sef constraintList x, yield constraint el); @*/
+/*@iter constraintList_elements_private_only (sef constraintList x, yield only constraint el); @*/
+# define constraintList_elements_private_only(x, m_el) \
+   { int m_ind; constraint *m_elements = &((x)->elements[0]); \
+     for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
+       { constraint m_el = *(m_elements++); 
+
+# define end_constraintList_elements_private_only }}
+
+
+  /*@iter constraintList_elements_private (sef constraintList x, yield  constraint el); @*/
 # define constraintList_elements_private(x, m_el) \
    { int m_ind; constraint *m_elements = &((x)->elements[0]); \
      for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
@@ -79,7 +88,7 @@ constraintList_add (/*@returned@*/ constraintList s, /*@only@*/ constraint el)
 {
   /*drl7x */
   //   el = constraint_simplify (el);
-  if (resolve (el, s) )
+  if (constraintList_resolve (el, s) )
     {
       constraint_free (el);
       return s;
@@ -111,15 +120,15 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
   c = NULL;
 }
 
-/*@only@*/ constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@observer@*/ constraintList new)
+/*@only@*/ constraintList constraintList_addList (/*@only@*/ /*@returned@*/ constraintList s, /*@observer@*/ constraintList newList)
 {
   llassert(constraintList_isDefined(s) );
-  llassert(constraintList_isDefined(new) );
+  llassert(constraintList_isDefined(newList) );
 
-  if (new == constraintList_undefined)
+  if (newList == constraintList_undefined)
     return s;
   
-  constraintList_elements (new, elem)
+  constraintList_elements (newList, elem)
     {
     s = constraintList_add (s, constraint_copy(elem) );
     }
@@ -128,21 +137,21 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
   return s;
 }
 
-/*@only@*/ constraintList constraintList_addListFree (/*@only@*/ constraintList s, /*@only@*/ constraintList new)
+constraintList constraintList_addListFree (/*@returned@*/ constraintList s, /*@only@*/ constraintList newList)
 {
   llassert(constraintList_isDefined(s) );
-  llassert(constraintList_isDefined(new) );
+  llassert(constraintList_isDefined(newList) );
 
-  if (new == constraintList_undefined)
+  if (constraintList_isUndefined(newList) )
     return s;
   
-  constraintList_elements_private(new, elem)
+  constraintList_elements_private_only(newList, elem)
     {
     s = constraintList_add (s, elem);
     }
-  end_constraintList_elements_private
+  end_constraintList_elements_private_only
 
-    constraintList_freeShallow(new);
+    constraintList_freeShallow(newList);
     return s;
 }
 
@@ -156,7 +165,7 @@ extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList
 
 
 /*@only@*/ cstring
-constraintList_print (constraintList s) /*@*/
+constraintList_print (/*@temp@*/ constraintList s) /*@*/
 {
   int i;
   cstring st = cstring_undefined;
@@ -173,7 +182,7 @@ constraintList_print (constraintList s) /*@*/
       cstring type = cstring_undefined;
       constraint current = s->elements[i];
 
-      if (current != NULL)
+      if (constraint_isDefined(current) )
 	{
 	  cstring temp1;
 	    if ( context_getFlag (FLG_ORCONSTRAINT) )
@@ -202,7 +211,7 @@ void constraintList_printErrorPostConditions (constraintList s, fileloc loc)
 
   constraintList_elements (s, elem)
     {
-      if (elem != NULL)
+      if (constraint_isDefined(elem))
 	{
 	  constraint_printErrorPostCondition (elem, loc);
 	}
@@ -216,7 +225,7 @@ void constraintList_printError (constraintList s, fileloc loc)
 
   constraintList_elements (s, elem)
     {
-      if (elem != NULL)
+      if (constraint_isDefined(elem) )
 	{
 	  constraint_printError (elem, loc);
 	}
@@ -244,7 +253,7 @@ constraintList_printDetailed (constraintList s)
       cstring type = cstring_undefined;
       constraint current = s->elements[i];
 
-      if (current != NULL)
+      if (constraint_isDefined(current ) )
 	{
 	  cstring temp1 = constraint_printDetailed (current);
 	  type = message ("%s %s\n", type, temp1 );
@@ -280,11 +289,11 @@ constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ const
   ret = constraintList_makeNew();
   constraintList_elements (l1, el)
     {
-      temp = substitute (el, l2);
+      temp = constraint_substitute (el, l2);
       
-      if (resolve (el, l2) || resolve(temp,l2) )
+      if (constraintList_resolve (el, l2) || constraintList_resolve(temp,l2) )
 	{   /*avoid redundant constraints*/
-	  if (!resolve (el, ret) )
+	  if (!constraintList_resolve (el, ret) )
 	    {
 	      constraint temp2;
 	      temp2 = constraint_copy(el);
@@ -297,12 +306,12 @@ constraintList_logicalOr (/*@observer@*/ constraintList l1, /*@observer@*/ const
 
    constraintList_elements (l2, el)
     {
-      temp = substitute (el, l1);
+      temp = constraint_substitute (el, l1);
       
-      if (resolve (el, l1) || resolve(temp,l1) )
+      if (constraintList_resolve (el, l1) || constraintList_resolve(temp,l1) )
 	{
 	  /*avoid redundant constraints*/
-	  if (!resolve (el, ret) )
+	  if (!constraintList_resolve (el, ret) )
 	    {
 	      constraint temp2;
 	      temp2 = constraint_copy(el);
@@ -339,7 +348,7 @@ constraintList_free (/*@only@*/ constraintList s)
 }
 
 constraintList
-constraintList_copy (constraintList s)
+constraintList_copy (/*@oberserver@*/ /*@temp@*/ constraintList s)
 {
   constraintList ret = constraintList_makeNew ();
 
@@ -363,7 +372,7 @@ constraintList constraintList_preserveOrig (constraintList c)
   return c;
 }
 
-constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c, exprNode fcn)
+constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,/*@observer@*/ /*@depenent@*/ /*@observer@*/  exprNode fcn)
 {
   DPRINTF((message("constraintList_preserveOrig preserving the originial constraints for %s ", constraintList_print (c) ) ));
 
@@ -379,7 +388,7 @@ constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,
 
 
 
-constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
+constraintList constraintList_addGeneratingExpr (constraintList c,/*@dependent@*/ exprNode e)
 {
   DPRINTF ((message ("entering constraintList_addGeneratingExpr for %s ", exprNode_unparse(e) ) ));
   
@@ -406,7 +415,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
   return ret;
 }
 
-/*@only@*/ constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist)
+/*@only@*/ constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, /*@temp@*/ /*@observer@*/ exprNodeList arglist)
 {
   constraintList ret;
   ret = constraintList_makeNew();
@@ -421,7 +430,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
 
   return ret;
 }
-constraintList constraintList_doSRefFixBaseParam (/*@observer@*/ constraintList preconditions, /*@observer@*/
+constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, /*@observer@*/
 						   exprNodeList arglist)
 {
   constraintList ret;
@@ -468,7 +477,7 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
       constraint temp;
       char * c;
 
-      c =  getWord(&s);
+      c =  reader_getWord(&s);
       
       if (strcmp (c, "C") != 0)
 	{

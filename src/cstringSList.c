@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -100,6 +100,14 @@ cstringSList cstringSList_add (cstringSList s, /*@exposed@*/ cstring el)
   s->nelements++;
 
   return s;
+}
+
+cstring
+cstringSList_get (cstringSList s, int index)
+{
+  llassert (s != NULL);
+  llassert (index < s->nelements);
+  return s->elements[index];
 }
 
 cstring

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -70,7 +70,7 @@ outputLCSFile (char *path, char *msg, char *specname)
       return;
     }
 
-  fprintf (outfptr, msg);
+  fprintf (outfptr, "%s", msg);
   fprintf (outfptr, "%s\n", LCL_PARSE_VERSION);
   
   /* output line %LCLimports foo bar ... */
@@ -98,10 +98,10 @@ outputLCSFile (char *path, char *msg, char *specname)
 void
 importCTrait (void)
 {
-  char **infile = (char **) dmalloc (sizeof (*infile));
-  filestatus status = osd_findOnLarchPath (CTRAITSYMSNAME, infile);
+  cstring infile = cstring_undefined;
+  filestatus status = osd_findOnLarchPath (cstring_makeLiteralTemp (CTRAITSYMSNAME), 
+					   &infile);
 
-  
   switch (status)
     {
     case OSD_FILEFOUND:
@@ -112,20 +112,21 @@ importCTrait (void)
       **    open the file.                                                  
       */
 	   
-      (void) parseSignatures (cstring_fromChars (CTRAITSYMSNAME));
-      (void) parseSignatures (cstring_fromChars (*infile));
+      (void) parseSignatures (cstring_fromCharsNew (CTRAITSYMSNAME));
+      (void) parseSignatures (infile);
       break;
     case OSD_FILENOTFOUND:
       /* try spec name */
-      status = osd_findOnLarchPath (CTRAITSPECNAME, infile);
+      status = osd_findOnLarchPath (cstring_makeLiteralTemp (CTRAITSPECNAME),
+				    &infile);
 
       if (status == OSD_FILEFOUND)
 	{
-	  callLSL (CTRAITSPECNAME,
-		   cstring_toCharsSafe
-		   (message ("includes %s (%s for String)",
-			     cstring_fromChars (CTRAITFILENAMEN), 
-			     cstring_fromChars (sort_getName (sort_cstring)))));
+	  callLSL (cstring_makeLiteralTemp (CTRAITSPECNAME),
+		   message ("includes %s (%s for String)",
+			    cstring_fromChars (CTRAITFILENAMEN), 
+			    cstring_fromChars (sort_getName (sort_cstring))));
+	  cstring_free (infile);
 	  break;
 	}
       else
@@ -134,18 +135,17 @@ importCTrait (void)
 	    (message ("Unable to find %s or %s.  Check LARCH_PATH environment variable.",
 		      cstring_fromChars (CTRAITSYMSNAME), 
 		      cstring_fromChars (CTRAITSPECNAME)));
-	  llexit (LLFAILURE);
+	  cstring_free (infile);
+      	  llexit (LLFAILURE);
 	}
     case OSD_PATHTOOLONG:
       lclbug (message ("importCTrait: the concatenated directory and file "
 		       "name are too long: %s: "
 		       "continuing without it", 
 		       cstring_fromChars (CTRAITSPECNAME)));
+      cstring_free (infile);
       break;
     }
-
-  sfree (*infile);
-  sfree (infile);
 }
 
 /*
@@ -165,20 +165,22 @@ void
 processImport (lsymbol importSymbol, ltoken tok, impkind kind)
 {
   bool readableP, oldexporting;
-  bool oldFormat = FALSE;
-  tsource *imported, *imported2, *lclsource;
-  char *bufptr, *tmpbufptr, *cptr;
-  char *name;
+  bool compressedFormat = FALSE;
+  inputStream imported, imported2, lclsource;
+  char *bufptr;
+  char *tmpbufptr;
+  char *cptr;
+  cstring name;
   lsymbol sym;
-  char importName[MAX_NAME_LENGTH + 1], *importFileName, *realfname;
-  char *path;
-  char *fpath, *fpath2;
-  mapping *map;
+  char importName[MAX_NAME_LENGTH + 1];
+  cstring importFileName;
+  cstring path = cstring_undefined;
+  cstring fpath, fpath2;
+  mapping map;
   filestatus ret;
 
-  importFileName = lsymbol_toCharsSafe (importSymbol);
-  name = mstring_concat (importFileName, IO_SUFFIX);
-  realfname = name;
+  importFileName = lsymbol_toString (importSymbol);
+  name = cstring_concat (importFileName, cstring_makeLiteralTemp (IO_SUFFIX));
 
   /*
   ** find .lcs file
@@ -187,75 +189,74 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
   switch (kind)
     {
     case IMPPLAIN:
-      path = cstring_toCharsSafe 
-	(message ("%s%c%s", cstring_fromChars (g_localSpecPath), SEPCHAR, context_getLarchPath ()));
-      
+      path = message ("%s%c%s", cstring_fromChars (g_localSpecPath), SEPCHAR, 
+		      context_getLarchPath ());
+
       break;
     case IMPBRACKET:
-      path = mstring_copy (cstring_toCharsSafe (context_getLCLImportDir ()));
+      path = cstring_copy (context_getLCLImportDir ());
       break;
     case IMPQUOTE:
-      path = mstring_copy (g_localSpecPath);
+      path = cstring_fromCharsNew (g_localSpecPath);
       break;
     default:
-      path = mstring_createEmpty (); /* suppress gcc error message */
       llbuglit ("bad imports case\n");
     }
 
-  if ((ret = osd_getPath (path, realfname, &fpath)) != OSD_FILEFOUND)
+  if ((ret = osd_getPath (path, name, &fpath)) != OSD_FILEFOUND)
     {
-      char *fname2;
+      cstring fname2;
       
       if (ret == OSD_PATHTOOLONG)
 	{
 	  llfatalerrorLoc (cstring_makeLiteral ("Path too long"));
 	}
       
-      imported2 = tsource_create (importFileName, LCL_SUFFIX, FALSE);
-      fname2 = tsource_fileName (imported2);
-      
-      
+      imported2 = inputStream_create (cstring_copy (importFileName),
+				      LCL_EXTENSION, FALSE);
+      fname2 = inputStream_fileName (imported2);
 
       if (osd_getPath (path, fname2, &fpath2) == OSD_FILEFOUND)
 	{
 	  llfatalerrorLoc
 	    (message ("Specs must be processed before it can be imported: %s", 
-		      cstring_fromChars (fpath2)));
+		      fpath2));
 	}
       else
 	{
 	  if (kind == IMPPLAIN || kind == IMPQUOTE)
-	    llfatalerrorLoc (message ("Cannot find file to import: %s", 
-				       cstring_fromChars (realfname)));
+	    {
+	      llfatalerrorLoc (message ("Cannot find file to import: %s", name));
+	    }
 	  else
-	    llfatalerrorLoc (message ("Cannot find standard import file: %s",
-				       cstring_fromChars (realfname)));
+	    {
+	      llfatalerrorLoc (message ("Cannot find standard import file: %s", name));
+	    }
 	}
     }
 
   
-  imported = tsource_create (fpath, IO_SUFFIX, FALSE);
-  
-  
-  readableP = tsource_open (imported);
+  imported = inputStream_create (fpath, cstring_makeLiteralTemp (IO_SUFFIX), FALSE);
+    
+  readableP = inputStream_open (imported);
     
   if (!readableP)
     {			/* can't read ? */
       llfatalerrorLoc (message ("Cannot open import file for reading: %s",
-				 cstring_fromChars (tsource_fileName (imported))));
+				inputStream_fileName (imported)));
     }
 
-  bufptr = tsource_nextLine (imported);
+  bufptr = inputStream_nextLine (imported);
 
   if (bufptr == 0)
     {
       llerror (FLG_SYNTAX, message ("Import file is empty: %s", 
-				    cstring_fromChars (tsource_fileName (imported))));
-      sfree (name);
-      (void) tsource_close (imported);
-      tsource_free (imported);
+				    inputStream_fileName (imported)));
+      cstring_free (name);
+      (void) inputStream_close (imported);
+      inputStream_free (imported);
 
-      sfree (path);
+      cstring_free (path);
       return;
     }
 
@@ -263,15 +264,15 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
   if (firstWord (bufptr, "%FAILED"))
     {
       llfatalerrorLoc
-	(message ("Imported file was not checked successfully: %s.", 
-		  cstring_fromChars (name)));
+	(message ("Imported file was not checked successfully: %s.", name));
     }
   
-  /** is it generated by the right version of the checker? 
-   **
-   ** old .lcs files start with %PASSED
-   ** new (compressed) files start with %LCS 
-   */
+  /*
+  ** Is it generated by the right version of the checker? 
+  **
+  ** Uncompressed  .lcs files start with %PASSED
+  ** Compressed files start with %LCS 
+  */
   
   if (firstWord (bufptr, "%PASSED"))
     {
@@ -283,29 +284,38 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
       
       if (cptr != NULL)
 	{
+	  /* 
+	  ** Only really old files start this way!
+	  */
+
 	  cptr += 12;
 	  if (*cptr != '2' && *cptr != '3')
 	    {
-	      llfatalerrorLoc (message ("Imported file is obsolete: %s.",
-					 cstring_fromChars (bufptr)));
+	      llfatalerrorLoc (message ("Imported file %s is obsolete: %s.",
+					inputStream_fileName (imported),
+					cstring_fromChars (bufptr)));
 	    }
 	}
-      oldFormat = TRUE;
+
+      compressedFormat = FALSE;
     }
   else 
     {
       if (!firstWord (bufptr, "%LCS"))
 	{
-	  llfatalerrorLoc (message ("Imported file is not in correct format: %s.",
+	  llfatalerrorLoc (message ("Imported file %s is not in correct format: %s",
+				    inputStream_fileName (imported),
 				    cstring_fromChars (bufptr)));
 	}
+      
+      compressedFormat = TRUE;
     }
   
   /* push the imported LCL spec onto g_currentImports */
 
   context_enterImport ();
   
-  bufptr = tsource_nextLine (imported);
+  bufptr = inputStream_nextLine (imported);
   llassert (bufptr != NULL);
 
   tmpbufptr = bufptr;
@@ -325,8 +335,9 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
 		 invariant useful for checking imports cycles. */
 	      lclsource = LCLScanSource ();
 	      lclfatalerror (tok, 
-			     message ("Imports cycle: %s.lcl imports %s",
-				      cstring_fromChars (importFileName),
+			     message ("Imports cycle: %s%s imports %s",
+				      importFileName,
+				      LCL_EXTENSION,
 				      cstring_fromChars (importName)));
 	    }	  
 	  /* push them onto g_currentImports */
@@ -338,7 +349,7 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
     {
       lclsource = LCLScanSource ();
       lclfatalerror (tok, message ("Unexpected line in imported file %s: %s", 
-				   cstring_fromChars (name), 
+				   name, 
 				   cstring_fromChars (bufptr)));
     }
 	  
@@ -349,18 +360,18 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
 
   /* tok for error line numbering */
 
-  if (oldFormat)
+  if (!compressedFormat)
     {
-            sort_import (imported, tok, map);	
+      sort_import (imported, tok, map);	
     }
-
+  
   (void) sort_setExporting (oldexporting);
-
+  
   /* sort_import updates a mapping of old anonymous sorts to new
      anonymous sort that is needed in symtable_import */
   /* mapping_print (map); */
   
-  if (oldFormat)
+  if (!compressedFormat)
     {
       symtable_import (imported, tok, map);
     }
@@ -369,12 +380,12 @@ processImport (lsymbol importSymbol, ltoken tok, impkind kind)
       /* symtable_loadImport (imported, tok, map); */
     }
   
-  check (tsource_close (imported));
-  tsource_free (imported);
-
-  sfree (map);
-  sfree (name);
-  sfree (path);
+  check (inputStream_close (imported));
+  inputStream_free (imported);
+  
+  mapping_free (map);
+  cstring_free (name);
+  cstring_free (path);
 
   context_leaveImport ();  
 }

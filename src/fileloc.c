@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ static flkind fileId_kind (fileId s)
 {
   cstring fname = rootFileName (s);
   
-  if (isLCLfile (fname))
+  if (fileLib_isLCLFile (fname))
     {
       return (FL_SPEC);
     }
@@ -299,6 +299,14 @@ fileloc_isStandardLibrary (fileloc f)
 # endif
 
 bool
+fileloc_sameFileAndLine (fileloc f1, fileloc f2)
+{
+  return (fileloc_sameFile (f1, f2)
+	  && (fileloc_isDefined (f1) && fileloc_isDefined (f2)
+	      && f1->lineno == f2->lineno));
+}
+
+bool
 fileloc_sameFile (fileloc f1, fileloc f2)
 {
   if ((fileloc_isUndefined (f1) || (fileloc_isUndefined (f2)) 
@@ -366,6 +374,18 @@ bool fileloc_isSystemFile (fileloc f1)
       return (fileTable_isSystemFile (context_fileTable (), f1->fid));
     }
 
+  return FALSE;
+}
+
+bool fileloc_isXHFile (fileloc f1)
+{
+  if (fileloc_isDefined (f1)
+      && !fileloc_isBuiltin (f1)
+      && !fileloc_isExternal (f1))
+    {
+      return (fileTable_isXHFile (context_fileTable (), f1->fid));
+    }
+  
   return FALSE;
 }
 
@@ -542,7 +562,7 @@ fileloc_createPrim (flkind kind, fileId fid, int line, int col)
   f->fid    = fid; 
   f->lineno = line;
   f->column = col;
-  
+
   return (f);
 }
 
@@ -607,10 +627,8 @@ fileloc_unparse (fileloc f)
 
   if (fileloc_isDefined (f))
     {
-      switch (f->kind)
+       switch (f->kind)
 	{
-	case FL_LIB:
-	  return (message ("load file %s", rootFileName (f->fid)));
 	case FL_BUILTIN:
 	  return (cstring_makeLiteral ("Command Line"));
 	case FL_IMPORT:
@@ -634,57 +652,67 @@ fileloc_unparse (fileloc f)
 	case FL_EXTERNAL:
 	  return (cstring_makeLiteral ("<external>"));
 	default:
-	  if (context_getFlag (FLG_SHOWCOL))
-	    {
-	      if (fileloc_linenoDefined (f))
-		{
-		  if (fileloc_columnDefined (f))
-		    {
-		      if (parenFormat)
-			{
-			  return (message ("%s(%d,%d)", 
-					   rootFileName (f->fid),
-					   f->lineno, f->column));
-			}
-		      else
-			{
-			  return (message ("%s:%d:%d", 
-					   rootFileName (f->fid),
-					   f->lineno, f->column));
-			}
-		    }
-		  else
-		    {
-		      if (parenFormat)
-			{
-			  return (message ("%s(%d)", rootFileName (f->fid), f->lineno));
-			}
-		      else
-			{
-			  return (message ("%s:%d", rootFileName (f->fid), f->lineno));
-			}
-		    }
-		}
-	      return (cstring_copy (rootFileName (f->fid)));
-	    }
-	  else if (fileloc_linenoDefined (f))
-	    {
-	      if (parenFormat)
-		{
-		  return (message ("%s(%d)",
-				   rootFileName (f->fid), f->lineno));
-		}
-	      else
-		{
-		  return (message ("%s:%d", rootFileName (f->fid), f->lineno));
-		}
-	    }
-	  else
-	    {
-	      return (cstring_copy (rootFileName (f->fid)));
-	    }
+	  {
+	    cstring fname;
+
+	    if (f->kind == FL_LIB)
+	      {
+		fname = message ("load file %s", rootFileName (f->fid));
+		cstring_markOwned (fname); /*@i32 memory leak...@*/
+	      }
+	    else
+	      {
+		fname = rootFileName (f->fid);
+	      }
+
+	    if (context_getFlag (FLG_SHOWCOL))
+	      {
+		if (fileloc_linenoDefined (f))
+		  {
+		    if (fileloc_columnDefined (f))
+		      {
+			if (parenFormat)
+			  {
+			    return (message ("%s(%d,%d)", fname, f->lineno, f->column));
+			  }
+			else
+			  {
+			    return (message ("%s:%d:%d", fname, f->lineno, f->column));
+			  }
+		      }
+		    else
+		      {
+			if (parenFormat)
+			  {
+			    return (message ("%s(%d)", fname, f->lineno));
+			  }
+			else
+			  {
+			    return (message ("%s:%d", fname, f->lineno));
+			  }
+		      }
+		  }
+		return (cstring_copy (fname));
+	      }
+	    else if (fileloc_linenoDefined (f))
+	      {
+		if (parenFormat)
+		  {
+		    return (message ("%s(%d)", fname, f->lineno));
+		  }
+		else
+		  {
+		    return (message ("%s:%d", fname, f->lineno));
+		  }
+	      }
+	    else
+	      {
+		return (cstring_copy (fname));
+	      }
+	  }
 	}
     }
+
   return (cstring_makeLiteral ("< Location unknown >"));
 }
 
@@ -755,11 +783,6 @@ bool fileloc_isSpec (fileloc f)
 bool fileloc_isRealSpec (fileloc f)
 {
   return (fileloc_isDefined (f) && (f->kind == FL_SPEC));
-}
-
-bool fileloc_isRealLib (fileloc f)
-{
-  return (fileloc_isDefined (f) && f->kind == FL_LIB);
 }
 
 bool fileloc_isLib (fileloc f)

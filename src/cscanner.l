@@ -180,6 +180,9 @@ static void setTokLengthT (size_t len)
 }
 
 # include "flex.head"
+
+/*@-unrecog@*/ /*@i5343@*/
+
 %}
 
 %%
@@ -194,7 +197,8 @@ static void setTokLengthT (size_t len)
                    {
 		     if (lastWasString)
 		       {
-			 ;
+			 /* was nothing! */ /*@i32@*/
+			 RETURN_STRING (cstring_makeLiteral ("\"\""));
 		       }
 		     else
 		       {
@@ -503,6 +507,7 @@ static void setTokLengthT (size_t len)
 		    }
 		}
 "@.CT"          { setTokLength (4); lldiagmsg (ctype_unparseTable ()); }
+"@.FA"          { setTokLength (4); lldiagmsg (message ("Access types: %q", typeIdSet_unparse (context_fileAccessTypes ()))); }
 "@.F"           { setTokLength (3); 
 		  lldiagmsg (message ("%q: *** marker ***", fileloc_unparse (g_currentloc)));
 		}
@@ -524,9 +529,15 @@ static void setTokLengthT (size_t len)
                   int tok; 
 		  incColumn (); incColumn ();
 		  tok = handleLlSpecial (); 
+
 		  if (tok != BADTOK)
 		    {
-		      RETURN_TOK (tok); 
+		      if (tok == CANNOTATION) {
+			return (tok);
+		      } else {
+			/* Beware - this bashes yylval! */
+			RETURN_TOK (tok); 
+		      }
 		    }
 		}
 "%}"            { /* AFTER_COMMENT_MARKER */ 
@@ -535,11 +546,15 @@ static void setTokLengthT (size_t len)
 		  RETURN_TOK (QENDMACRO); }
 "\\"            { incColumn (); continueLine = TRUE; }
 .		{ incColumn (); 
-		  voptgenerror
-		    (FLG_SYNTAX, 
-		     message ("Invalid character (ascii: %d), skipping character",
-			      (int)(*yytext)),
-		     g_currentloc);
+                  if ((int) *yytext == 13 ) {
+		     ;
+                  } else {
+		    voptgenerror
+		      (FLG_SYNTAX, 
+		       message ("Invalid character (ascii: %d), skipping character",
+				(int)(*yytext)),
+		       g_currentloc);
+		  }
 		}
 %%
 
@@ -558,6 +573,7 @@ struct skeyword s_parsetable[] = {
   { "modifies", QMODIFIES } ,
   { "globals", QGLOBALS } ,
   { "alt", QALT } ,
+  { "warn", QWARN } ,
   { "constant", QCONSTANT } ,
   { "function", QFUNCTION } ,
   { "iter", QITER } ,
@@ -569,11 +585,13 @@ struct skeyword s_parsetable[] = {
   { "pre", QPRECLAUSE } ,
   { "post", QPOSTCLAUSE } ,
   {"setBufferSize", QSETBUFFERSIZE},
-  {"requires", QBUFFERCONSTRAINT},
-  {"ensures", QENSURESCONSTRAINT},
+  {"LRequires", QBUFFERCONSTRAINT},
+  {"LEnsures", QENSURESCONSTRAINT},
   {"setStringLength", QSETSTRINGLENGTH},
   {"testinRange", QTESTINRANGE},
-  { NULL, BADTOK }
+  { "requires", QPRECLAUSE } ,
+  { "ensures", QPOSTCLAUSE } ,
+  { NULL, BADTOK } 
 } ;
 
 /*
@@ -617,8 +635,8 @@ struct skeyword s_keytable[] = {
   { "relnull", QRELNULL } ,
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
-  { "requires", QBUFFERCONSTRAINT },
-  { "ensures", QENSURESCONSTRAINT },
+  { "LRequires", QBUFFERCONSTRAINT },
+  { "LEnsures", QENSURESCONSTRAINT },
   { "testInRange", QTESTINRANGE},
   { "MaxSet", QMAXSET},
   { "MaxRead", QMAXREAD},
@@ -662,6 +680,7 @@ static bool isArtificial (cstring s)
 {
   return (cstring_equalLit (s, "modifies") 
 	  || cstring_equalLit (s, "globals") 
+	  || cstring_equalLit (s, "warn")
 	  || cstring_equalLit (s, "alt"));
 }
 
@@ -687,7 +706,7 @@ void swallowMacro (void)
 	    }
 	  else
 	    {
-	      checkUngetc (i, yyin);
+	      reader_checkUngetc (i, yyin);
 	      return;
 	    }
 	}
@@ -695,7 +714,7 @@ void swallowMacro (void)
 
   if (i != EOF)
     {
-      checkUngetc (i, yyin);
+      reader_checkUngetc (i, yyin);
     }
 }
 
@@ -705,6 +724,8 @@ static int commentMarkerToken (cstring s)
   
   while (s_parsetable[i].name != NULL) 
     {
+      DPRINTF (("Try :%s:%s:", s, s_parsetable[i].name));
+
       if (cstring_equalLit (s, s_parsetable[i].name))
 	{
 	  return s_parsetable[i].token;
@@ -733,7 +754,7 @@ static int tokenMacroCode (cstring s)
 		  "This is interpreted by "
 		  "LCLint in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@fallthrough@*/ "
-		  "stylized comment"),
+		  "semantic comment"),
 		 g_currentloc);
 	      return QFALLTHROUGH;	      
 	    }
@@ -746,7 +767,7 @@ static int tokenMacroCode (cstring s)
 		  "This is interpreted by "
 		  "LCLint in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@fallthrough@*/ "
-		  "stylized comment"),
+		  "semantic comment"),
 		 g_currentloc);
 	      return QFALLTHROUGH;
 	    }
@@ -759,14 +780,14 @@ static int tokenMacroCode (cstring s)
 		  "This is interpreted by "
 		  "LCLint in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@notreached@*/ "
-		  "stylized comment."),
+		  "semantic comment."),
 		 g_currentloc);
 	      
 	      return QNOTREACHED;
 	    }
 	  else if (s_keytable[i].token == QPRINTFLIKE)
 	    {
-	      setSpecialFunction (QU_PRINTFLIKE);
+	      setSpecialFunction (qual_createPrintfLike ());
 	      return SKIPTOK;
 	    }
 	  else if (s_keytable[i].token == QLINTPRINTFLIKE)
@@ -781,17 +802,17 @@ static int tokenMacroCode (cstring s)
 		  "/*@scanflike@*/ or /*@messagelike@*/."),
 		 g_currentloc);
 	      
-	      setSpecialFunction (QU_PRINTFLIKE);
+	      setSpecialFunction (qual_createPrintfLike ());
 	      return SKIPTOK;
 	    }
 	  else if (s_keytable[i].token == QSCANFLIKE)
 	    {
-	      setSpecialFunction (QU_SCANFLIKE);
+	      setSpecialFunction (qual_createScanfLike ());
 	      return SKIPTOK;
 	    }
 	  else if (s_keytable[i].token == QMESSAGELIKE)
 	    {
-	      setSpecialFunction (QU_MESSAGELIKE);
+	      setSpecialFunction (qual_createMessageLike ());
 	      return SKIPTOK;
 	    }
 	  else if (s_keytable[i].token == QARGSUSED)
@@ -924,6 +945,7 @@ static char macro_nextChar ()
 	}
       else /* if (c == '@') */
 	{
+	  llassert (FALSE); /*@i23@*/
 	  if (handleLlSpecial () != BADTOK)
 	    {
 	      llerrorlit (FLG_SYNTAX, "Macro cannot use special syntax");
@@ -993,7 +1015,7 @@ static char macro_nextChar ()
 }
 
 /*
-** keeps stylized comments
+** keeps semantic comments
 */
 
 static char macro_nextCharC ()
@@ -1135,7 +1157,6 @@ static void handleMacro ()
 
   if (macrocode == BADTOK && !isArtificial (mac))
     {
-      DPRINTF (("Add macro: %s", mac));
       context_addMacroCache (mac);
     }
   else
@@ -1727,9 +1748,10 @@ static bool handleSpecial (char *yyt)
 	   || (sscanf (ol, " %d \"", &lineno) == 1))
     {
       char *tmp = ol;
-      char *fname;
+      cstring fname;
       fileId fid;
 
+      /*@access cstring@*/
       while (*tmp != '\"' && *tmp != '\0')
 	{
 	  tmp++;
@@ -1738,6 +1760,7 @@ static bool handleSpecial (char *yyt)
       llassert (*tmp == '\"');
 
       tmp++;
+
       fname = tmp;
       
       while (*tmp != '\"' && *tmp != '\0')
@@ -1748,8 +1771,6 @@ static bool handleSpecial (char *yyt)
       llassert (*tmp == '\"');
 
       *tmp = '\0';
-
-      DPRINTF (("fname: %s", fname));
 
 # if defined(OS2) || defined(MSDOS) || defined(WIN32)
 
@@ -1768,14 +1789,10 @@ static bool handleSpecial (char *yyt)
 	** Skip past the drive marker.
 	*/
 	
-	DPRINTF (("stmp: %s / %s", stmp, fname));
-	
 	if (strchr (stmp, ':') != NULL)
 	  {
 	    stmp = strchr (stmp, ':') + 1;
 	  }
-	
-	DPRINTF (("stmp: %s / %s", stmp, fname));
 	
 	while ((stmp = strchr (stmp, CONNECTCHAR)) != NULL )
 	  {
@@ -1785,41 +1802,34 @@ static bool handleSpecial (char *yyt)
 	      }
 	    
 	    stmp++;
-	    DPRINTF (("stmp: %s / %s", stmp, fname));
 	  }
 	
-	DPRINTF (("Now: base = %s", fname));
-	
-	fid = fileTable_lookupBase (context_fileTable (),
-				    cstring_fromChars (fname));
+	fid = fileTable_lookupBase (context_fileTable (), fname);
 	if (!(fileId_isValid (fid)))
 	  {
 	    fname = removePreDirs (fname);
-	    fid = fileTable_lookupBase (context_fileTable (),
-					cstring_fromChars (fname));
+	    fid = fileTable_lookupBase (context_fileTable (), fname);
 	  }
       }
 # else  /* !defined(OS2) && !defined(MSDOS) */
       fname = removePreDirs (fname);
-      fid = fileTable_lookupBase (context_fileTable (),
-				  cstring_fromChars (fname));
+      fid = fileTable_lookupBase (context_fileTable (), fname);      
 # endif /* !defined(OS2) && !defined(MSDOS) */
       
       if (!(fileId_isValid (fid)))
 	{
-	  if (isHeaderFile (cstring_fromChars (fname)))
+	  if (isHeaderFile (fname))
 	    {
-	      fid = fileTable_addHeaderFile (context_fileTable (), 
-					     cstring_fromChars (fname));
+	      fid = fileTable_addHeaderFile (context_fileTable (), fname);
 	    }
 	  else
 	    {
-	      fid = fileTable_addFile (context_fileTable (), 
-				       cstring_fromChars (fname));
+	      fid = fileTable_addFile (context_fileTable (), fname);
 	    }
 	}
       
       setFileLine (fid, lineno);
+      /*@noaccess cstring@*/
     }
   else if ((sscanf (ol, "line %d", &lineno) == 1) 
 	   || (sscanf (ol, " %d", &lineno) == 1))
@@ -1863,6 +1873,10 @@ static int handleLlSpecial ()
   char *os; 
   int tok;
   int charsread = 0;
+  fileloc loc;
+
+  loc = fileloc_copy (g_currentloc);
+  DPRINTF (("Handle special: %s", fileloc_unparse (loc)));
 
   while (((ic = ninput ()) != 0) && isalpha (ic))
     {
@@ -1871,6 +1885,7 @@ static int handleLlSpecial ()
       charsread++;
     }
 
+  DPRINTF (("Read: %s / %s", s, fileloc_unparse (g_currentloc)));
   os = s;
 
   if (charsread == 0 && ic == (int) AFTER_COMMENT_MARKER[0])
@@ -1878,19 +1893,16 @@ static int handleLlSpecial ()
       ic = ninput ();
 
       llassert (ic == AFTER_COMMENT_MARKER[1]);
-
             
-      if (isProcessingGlobMods () && (*s == '\0'))
+      if (*s == '\0')
 	{
 	  sfree (os);
+	  fileloc_free (loc);
 	  return QNOMODS; /* special token no modifications token */
-	}
-      else
-	{
-	  ;
 	}
     }
   
+  DPRINTF (("Coment marker: %s", os));
   tok = commentMarkerToken (cstring_fromChars (os));
 
   if (tok != BADTOK)
@@ -1898,15 +1910,16 @@ static int handleLlSpecial ()
       tokLength = charsread;
       sfree (os);
       inSpecPart = TRUE;
+      fileloc_free (loc);
       return tok;
     }
-  
+
+  DPRINTF (("Not a comment marker..."));
   /* Add rest of the comment */
   
   if (ic != 0 && ic != EOF)
     {
       c = (char) ic;
-
       
       s = mstring_append (s, c);
       charsread++;
@@ -1920,6 +1933,8 @@ static int handleLlSpecial ()
 	}
     }
 
+  DPRINTF (("Read: %s / %s", s, fileloc_unparse (g_currentloc)));
+
   if (ic == AFTER_COMMENT_MARKER[0]) 
     {
       int nc = ninput ();
@@ -1927,7 +1942,6 @@ static int handleLlSpecial ()
       charsread++;
     }
 
-  
   os = s;
 
   while (*s == ' ' || *s == '\t' || *s == '\n') 
@@ -1974,7 +1988,7 @@ static int handleLlSpecial ()
 			  llerror
 			    (FLG_BADFLAG, 
 			     message 
-			     ("Stylized comment attempts to restore flag %s.  "
+			     ("Semantic comment attempts to restore flag %s.  "
 			      "A mode flag cannot be restored.",
 			      flagname));
 			}
@@ -1987,7 +2001,7 @@ static int handleLlSpecial ()
 		    {
 		      llerror
 			(FLG_BADFLAG, 
-			 message ("Unrecognized option in stylized comment: %s", 
+			 message ("Unrecognized option in semantic comment: %s", 
 				  flagname));
 		    }
 		}
@@ -1996,7 +2010,7 @@ static int handleLlSpecial ()
 		  llerror
 		    (FLG_BADFLAG, 
 		     message 
-		     ("Stylized comment attempts to set global flag %s.  "
+		     ("Semantic comment attempts to set global flag %s.  "
 		      "A global flag cannot be set locally.",
 		      flagname));
 		}
@@ -2011,7 +2025,7 @@ static int handleLlSpecial ()
 			  llerror
 			    (FLG_BADFLAG, 
 			     message 
-			     ("Stylized comment attempts to restore flag %s.  "
+			     ("Semantic comment attempts to restore flag %s.  "
 			      "A flag for setting a value cannot be restored.",
 			      flagname));
 			}
@@ -2049,7 +2063,7 @@ static int handleLlSpecial ()
 			      llerror 
 				(FLG_BADFLAG,
 				 message
-				 ("Flag %s (in stylized comment) must be followed by an argument",
+				 ("Flag %s (in semantic comment) must be followed by an argument",
 				  flagcode_unparse (fflag)));
 			    }
 			  else
@@ -2087,7 +2101,8 @@ static int handleLlSpecial ()
 
       if (context_inHeader () && !isArtificial (cstring_fromChars (os)))
 	{
-	  	  context_addComment (cstring_fromCharsNew (os));
+	  DPRINTF (("Here adding comment: %s", os));
+	  context_addComment (cstring_fromCharsNew (os));
 	}
       else
 	{
@@ -2099,6 +2114,7 @@ static int handleLlSpecial ()
       char *t = s;
       int macrocode;
       char tchar = '\0';
+      annotationInfo ainfo;
 
       while (*s != '\0' && *s != ' ' && *s != '\t' && *s != '\n') 
 	{
@@ -2118,10 +2134,10 @@ static int handleLlSpecial ()
       if (macrocode != BADTOK)
 	{
 	  tokLength = mstring_length (t);
-
 	  
 	  sfree (t);
 	  sfree (os);
+	  fileloc_free (loc);
 
 	  if (macrocode == SKIPTOK)
 	    {
@@ -2131,6 +2147,18 @@ static int handleLlSpecial ()
 	  return macrocode;
 	}
       
+      ainfo = context_lookupAnnotation (cstring_fromChars (os));
+      
+      if (annotationInfo_isDefined (ainfo)) {
+	DPRINTF (("Found annotation: %s", annotationInfo_unparse (ainfo)));
+	/*@i324@*/ yylval.annotation = ainfo;
+	tokLength = 0;
+	sfree (os);
+	sfree (t);
+	fileloc_free (loc);
+	return CANNOTATION;
+      } 
+
       if (context_inHeader ())
 	{
 	  if (tchar != '\0')
@@ -2142,6 +2170,7 @@ static int handleLlSpecial ()
 	      && macrocode != SKIPTOK
 	      && !isArtificial (cstring_fromChars (os))) 
 	    {
+	      DPRINTF (("Add comment: %s", os));
 	      context_addComment (cstring_fromCharsNew (os));
 	    }
 	  else
@@ -2236,24 +2265,42 @@ static int handleLlSpecial ()
 
 	      *s = '\0';
 
-	      
+	      DPRINTF (("Access %s", tname));
+
 	      if (!context_getFlag (FLG_NOCOMMENTS) 
 		  && !context_getFlag (FLG_NOACCESS))
 		{
 		  if (usymtab_existsType (tname))
 		    {
-		      usymId uid = usymtab_getTypeId (tname);
-		      context_addFileAccessType (uid);
+		      typeId uid = usymtab_getTypeId (tname);
+		      uentry ue = usymtab_getTypeEntry (uid);
+
+		      if (uentry_isAbstractDatatype (ue))
+			{
+			  context_addFileAccessType (uid);
+			  DPRINTF (("Adding access to: %s / %d", tname, uid));
+			}
+		      else
+			{
+			  voptgenerror
+			    (FLG_COMMENTERROR,
+			     message
+			     ("Non-abstract type %s used in access comment",
+			      tname),
+			     g_currentloc);
+			}
 		    }
 		  else
 		    {
 		      if (!(context_inSuppressRegion ()
 			    || context_inSuppressZone (g_currentloc)))
 			{
-			  llmsg 
-			    (message
-			     ("%q: Unrecognized type %s used in access comment",
-			      fileloc_unparse (g_currentloc), tname));
+			  voptgenerror
+			    (FLG_COMMENTERROR,
+			     message
+			     ("Unrecognized type %s used in access comment",
+			      tname),
+			     g_currentloc);
 			}
 		    }
 		}
@@ -2305,6 +2352,7 @@ static int handleLlSpecial ()
 		      
 		      if (context_couldHaveAccess (tuid))
 			{
+			  DPRINTF (("Removing access: %s", tname));
 			  context_removeFileAccessType (tuid);
 			}
 		      else
@@ -2316,17 +2364,21 @@ static int handleLlSpecial ()
 			      
 			      if (uentry_isAbstractDatatype (ue))
 				{
-				  llmsg
-				    (message
-				     ("%q: Non-accessible abstract type %s used in noaccess comment",
-				      fileloc_unparse (g_currentloc), tname));
+				  voptgenerror
+				    (FLG_COMMENTERROR,
+				     message
+				     ("Non-accessible abstract type %s used in noaccess comment",
+				      tname),
+				     g_currentloc);
 				}
 			      else
 				{
-				  llmsg
-				    (message
-				     ("%q: Non-abstract type %s used in noaccess comment",
-				      fileloc_unparse (g_currentloc), tname));
+				  voptgenerror
+				    (FLG_COMMENTERROR,
+				     message
+				     ("Non-abstract type %s used in noaccess comment",
+				      tname),
+				     g_currentloc);
 				}
 			    }
 			}
@@ -2336,10 +2388,12 @@ static int handleLlSpecial ()
 		      if (!(context_inSuppressRegion () 
 			    || context_inSuppressZone (g_currentloc)))
 			{
-			  llmsg
-			    (message
-			     ("%q: Unrecognized type %s used in noaccess comment",
-			      fileloc_unparse (g_currentloc), tname));
+			  voptgenerror
+			    (FLG_COMMENTERROR,
+			     message
+			     ("Unrecognized type %s used in noaccess comment",
+			      tname),
+			     g_currentloc);
 			}
 		    }
 		}
@@ -2357,18 +2411,16 @@ static int handleLlSpecial ()
 	}
       else
 	{
-	  setTokLength (- (2 + charsread));
-
 	  voptgenerror (FLG_UNRECOGCOMMENTS, 
-			message ("Stylized comment unrecognized: %s", 
-				 cstring_fromChars (os)), 
-			g_currentloc);
+			message ("Semantic comment unrecognized: %s", 
+				 cstring_fromChars (os)), loc);
 	}
 
       sfree (t);
     }
   
-  sfree (os); 
+  sfree (os);
+  fileloc_free (loc);
   return BADTOK;
 }
 
@@ -2436,14 +2488,16 @@ static int processIdentifier (cstring id)
 {
   uentry le;
 
-  DPRINTF (("Process identifier: %s", id));
+  DPRINTF (("Process identifier: %s / %s / %s", id, fileloc_unparse (g_currentloc),
+	    bool_unparse (context_inFunctionHeader ())));
 
   context_clearJustPopped ();
   lastidprocessed = id; 
 
-  if (context_inFunctionDecl ())
+  if (context_inFunctionHeader ())
     {
       int tok = commentMarkerToken (id);
+      DPRINTF (("in function decl..."));
 
       if (tok != BADTOK)
 	{
@@ -2456,6 +2510,21 @@ static int processIdentifier (cstring id)
 	  if (tok != BADTOK)
 	    {
 	      return tok;
+	    }
+	  else 
+	    {
+	      annotationInfo ainfo = context_lookupAnnotation (id);
+	      
+	      if (annotationInfo_isDefined (ainfo)) 
+		{
+		  DPRINTF (("Found annotation: %s", annotationInfo_unparse (ainfo)));
+		  /*@i324@*/ yylval.annotation = ainfo;
+		  return CANNOTATION;
+		}
+	      else
+		{
+		  DPRINTF (("Not annotation: %s", id));
+		}
 	    }
 	}
     }
@@ -2624,12 +2693,12 @@ static int processIdentifier (cstring id)
   
   if (uentry_isIter (le))
     {
-      yylval.entry = le;
+      /*@i32@*/ yylval.entry = le;
       return (ITER_NAME);
     }
   else if (uentry_isEndIter (le))
     {
-      yylval.entry = le;
+      /*@i32@*/ yylval.entry = le;
       return (ITER_ENDNAME);
     }
   else if (uentry_isUndefined (le))
@@ -2655,7 +2724,7 @@ static int processIdentifier (cstring id)
 	}
       else
 	{
-	  yylval.entry = le;	  	  
+	  /*@i32@*/ yylval.entry = le;	  	  
 	  return (IDENTIFIER); 
 	}
     }
@@ -2677,7 +2746,7 @@ static int processIdentifier (cstring id)
     }
   else
     {
-      yylval.entry = le;            
+      /*@i32@*/ yylval.entry = le;            
       return (IDENTIFIER); 
     }
 

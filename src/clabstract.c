@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -63,9 +63,7 @@ static /*@only@*/   constraintList implicitFcnConstraints = NULL;
 
 //static  constraintList fcnPreConditions = NULL;
 
-
-static /*@only@*/ sRefSet fcnModifies = sRefSet_undefined;
-static /*@only@*/ /*@null@*/ specialClauses specClauses = specialClauses_undefined;
+static void clabstract_prepareFunction (uentry p_e) /*@modifies p_e@*/ ;
 static bool fcnNoGlobals = FALSE;
 static bool ProcessingVars = FALSE;
 static bool ProcessingParams = FALSE;
@@ -74,7 +72,6 @@ static bool ProcessingTypedef = FALSE;
 static bool ProcessingIterVars = FALSE;
 static /*@only@*/ qtype processingType = qtype_undefined;
 static uentry currentIter = uentry_undefined;
-static globSet currentGlobals = globSet_undefined;
 static /*@dependent@*/ uentryList saveParamList;  /* for old style functions */
 static /*@owned@*/ uentry saveFunction = uentry_undefined;
 static int saveIterParamNo;
@@ -84,12 +81,18 @@ static /*@dependent@*/ fileloc saveStoreLoc = fileloc_undefined;
 static storageClassCode storageClass = SCNONE;
 static void declareEnumList (/*@temp@*/ enumNameList p_el, ctype p_c, fileloc p_loc);
 static void resetGlobals (void);
-static qual specialFunctionCode = QU_UNKNOWN;
+static /*@null@*/ qual specialFunctionCode;
 static bool argsUsed = FALSE;
+
+extern void clabstract_initMod () 
+{
+  specialFunctionCode = qual_createUnknown ();
+  DPRINTF (("Initialized: %s", qual_unparse (specialFunctionCode)));
+}
 
 static bool hasSpecialCode (void)
 {
-  return (specialFunctionCode != QU_UNKNOWN);
+  return (!qual_isUnknown (specialFunctionCode));
 }
 
 extern void setArgsUsed (void)
@@ -125,7 +128,7 @@ static void reflectArgsUsed (uentry ue)
 	      
 extern void setSpecialFunction (qual qu)
 {
-  if (specialFunctionCode != QU_UNKNOWN)
+  if (!qual_isUnknown (specialFunctionCode))
     {
       voptgenerror (FLG_SYNTAX,
 		    message ("Multiple special function codes: %s, %s "
@@ -140,22 +143,19 @@ extern void setSpecialFunction (qual qu)
 
 static void reflectSpecialCode (uentry ue)
 {
-  switch (specialFunctionCode)
-    {
-    case QU_UNKNOWN: break;
-    case QU_PRINTFLIKE:
-      uentry_setPrintfLike (ue);
-      break;
-    case QU_SCANFLIKE:
-      uentry_setScanfLike (ue);
-      break;
-    case QU_MESSAGELIKE:
-      uentry_setMessageLike (ue);
-      break;
-    BADDEFAULT;
-    }
+  if (qual_isUnknown (specialFunctionCode)) {
+    ;
+  } else if (qual_isPrintfLike (specialFunctionCode)) {
+    uentry_setPrintfLike (ue);
+  } else if (qual_isScanfLike (specialFunctionCode)) {
+    uentry_setScanfLike (ue);
+  } else if (qual_isMessageLike (specialFunctionCode)) {
+    uentry_setMessageLike (ue);
+  } else {
+    BADBRANCH;
+  }
 
-  specialFunctionCode = QU_UNKNOWN;
+  specialFunctionCode = qual_createUnknown ();
 }
 
 static void resetStorageClass (void)
@@ -165,50 +165,28 @@ static void resetStorageClass (void)
   storageClass = SCNONE;
 }
 
-static void reflectModGlobs (uentry ue)
+/*drl 6-25-01
+  used to be reflectModGlobs
+  changed to reflectBufferConstraint
+  and removed buffer constraint stuff
+  to merge with other code tree.
+*/
+
+static void reflectBufferConstraint (uentry ue)
 {
-  if (fcnNoGlobals)
-    {
-      llassert (globSet_isUndefined (currentGlobals));
-
-      uentry_setGlobals (ue, globSet_undefined);
-      fcnNoGlobals = FALSE;
-    }
-  else if (globSet_isDefined (currentGlobals))
-    {
-      uentry_setGlobals (ue, currentGlobals);
-      currentGlobals = globSet_undefined;
-    }
-  else
-    {
-      ; /* no globals */
-    }
-
-  if (sRefSet_isDefined (fcnModifies))
-    {
-      uentry_setModifies (ue, fcnModifies);
-      fcnModifies = sRefSet_undefined;
-    }
   /*drl added*/
-  if (fcnConstraints != constraintList_undefined)
+  if (  constraintList_isDefined(fcnConstraints) )
     {
       uentry_setPreconditions (ue, fcnConstraints);
       fcnConstraints = constraintList_undefined;
     }
   
- if (fcnEnsuresConstraints != constraintList_undefined)
+  if (  constraintList_isDefined(fcnEnsuresConstraints) )
     {
       uentry_setPostconditions (ue, fcnEnsuresConstraints);
       fcnEnsuresConstraints = constraintList_undefined;
     }
  /*end drl*/
- 
-  if (uentry_isFunction (ue))
-    {
-      uentry_setSpecialClauses (ue, specClauses);
-      specClauses = NULL;
-      DPRINTF (("Done with spec clauses"));
-    }
 }
 
 static void reflectStorageClass (uentry u)
@@ -235,63 +213,7 @@ void storeLoc ()
 
 void setFunctionNoGlobals (void)
 {
-  llassert (globSet_isUndefined (currentGlobals));
   fcnNoGlobals = TRUE;
-}
-
-void
-  setFunctionStateSpecialClause (lltok stok, specialClauseKind kind, 
-				 sRefSet s, 
-				 /*@unused@*/ lltok etok)
-{
-  int tok = lltok_getTok (stok);
-
-  switch (tok)
-    {
-    case QPRECLAUSE:
-      specClauses = specialClauses_add (specClauses, 
-					specialClause_create (TK_BEFORE, kind, s));
-      break;
-    case QPOSTCLAUSE:
-      specClauses = specialClauses_add (specClauses, 
-					specialClause_create (TK_AFTER, kind, s));
-      break;
-    default:
-      sRefSet_free (s);
-      BADBRANCH;
-    }
-
-  DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
-}
-
-void setFunctionSpecialClause (lltok stok, sRefSet s, 
-			       /*@unused@*/ lltok etok)
-{
-  int tok = lltok_getTok (stok);
-
-  switch (tok)
-    {
-    case QUSES:
-      specClauses = specialClauses_add (specClauses, specialClause_createUses (s));
-      break;
-    case QDEFINES:
-      specClauses = specialClauses_add (specClauses, specialClause_createDefines (s));
-      break;
-    case QALLOCATES:
-      specClauses = specialClauses_add (specClauses, specialClause_createAllocates (s));
-      break;
-    case QSETS:
-      specClauses = specialClauses_add (specClauses, specialClause_createSets (s));
-      break;
-    case QRELEASES:
-      specClauses = specialClauses_add (specClauses, specialClause_createReleases (s));
-      break;
-    default:
-      sRefSet_free (s);
-      BADBRANCH;
-    }
-
-  DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
 }
 
 /*drl
@@ -309,27 +231,33 @@ constraintList getEnsuresConstraints (void)
 
 void setEnsuresConstraints (constraintList c)
 {
-  if (fcnEnsuresConstraints != NULL)
+  if (constraintList_isDefined(fcnEnsuresConstraints) )
     constraintList_free(fcnEnsuresConstraints);
+
+  DPRINTF(( message("Setting ensures constraints to %q",
+		    constraintList_print(c) ) ));
+  
   fcnEnsuresConstraints = constraintList_copy (c);
 }
 
 void setFunctionConstraints (constraintList c)
 {
-  if (fcnConstraints != NULL)
+  if (constraintList_isDefined(fcnConstraints) )
     constraintList_free(fcnConstraints);
+
+  DPRINTF(( message("Setting requires constraints to %q",
+		    constraintList_print(c) ) ));
+  
+
   fcnConstraints = constraintList_copy (c);
 }
 /* end drl*/
 
-void setFunctionModifies (sRefSet s)
-{
-  sRefSet_free (fcnModifies);
-  fcnModifies = s;
-}
-
 static void reflectGlobalQualifiers (sRef sr, qualList quals)
 {
+  DPRINTF (("Reflect global qualifiers: %s / %s", 
+	    sRef_unparseFull (sr), qualList_unparse (quals)));
+
   qualList_elements (quals, qel)
     {
       if (qual_isGlobalQual (qel)) /* undef, killed */
@@ -348,6 +276,7 @@ static void reflectGlobalQualifiers (sRef sr, qualList quals)
 	    }
 	  
 	  sRef_setDefState (sr, defstate, fileloc_undefined);
+	  DPRINTF (("State: %s", sRef_unparseFull (sr)));
 	}
       else if (qual_isAllocQual (qel)) /* out, partial, reldef, etc. */
 	{
@@ -403,15 +332,24 @@ static void reflectGlobalQualifiers (sRef sr, qualList quals)
     } end_qualList_elements;
 }
 
-void globListAdd (sRef sr, qualList quals)
+sRef clabstract_createGlobal (sRef sr, qualList quals)
 {
+  sRef res;
+
   if (sRef_isValid (sr))
     {
-      sRef sc = sRef_copy (sr);
-
-      reflectGlobalQualifiers (sc, quals);
-      currentGlobals = globSet_insert (currentGlobals, sc);
+      res = sRef_copy (sr);
+      DPRINTF (("Reflecting quals: %s / %s", sRef_unparse (sr), qualList_unparse (quals)));
+      reflectGlobalQualifiers (res, quals);
+      DPRINTF (("==> %s", sRef_unparseFull (res)));
     }
+  else
+    {
+      res = sRef_undefined;
+    }
+
+  qualList_free (quals);
+  return res;
 }
 
 extern void declareCIter (cstring name, /*@owned@*/ uentryList params)
@@ -424,7 +362,7 @@ extern void declareCIter (cstring name, /*@owned@*/ uentryList params)
 
   usymtab_supEntry (uentry_makeEndIter (name, fileloc_copy (g_currentloc)));
 
-  reflectModGlobs (ue);
+  reflectBufferConstraint (ue);
 
   ue = usymtab_supGlobalEntryReturn (ue);
 }
@@ -641,7 +579,7 @@ void  setImplictfcnConstraints (void)
   constraint c;
   params = currentParamList;
 
-  if (implicitFcnConstraints != NULL)
+  if (constraintList_isDefined(implicitFcnConstraints) )
     constraintList_free(implicitFcnConstraints);
    
   implicitFcnConstraints  = constraintList_makeNew();
@@ -718,17 +656,17 @@ extern void exitParamsTemp (void)
   usymtab_quietPlainExitScope ();
 }
 
-static /*@exposed@*/ uentry globalDeclareFunction (idDecl tid) 
+static /*@exposed@*/ uentry clabstract_globalDeclareFunction (idDecl tid) 
 {
   ctype deftype = idDecl_getCtype (tid);
   ctype rettype;
   uentry ue;
   
   DPRINTF (("Global function: %s", idDecl_unparse (tid)));
-  
+
   if (ctype_isFunction (deftype))
     {
-      rettype = ctype_returnValue (deftype);
+      rettype = ctype_getReturnType (deftype);
     }
   else
     {
@@ -754,17 +692,21 @@ static /*@exposed@*/ uentry globalDeclareFunction (idDecl tid)
 	(tid, ctype_makeFunction (ctype_unknown, uentryList_undefined));
       ue = uentry_makeIdFunction (tid);
     }
-  
-  reflectStorageClass (ue);
 
+  reflectStorageClass (ue);
   uentry_checkParams (ue);
-  reflectModGlobs (ue);
+  reflectBufferConstraint (ue);
+
+  DPRINTF (("Supercede function: %s", uentry_unparseFull (ue)));
 
   ue = usymtab_supGlobalEntryReturn (ue);
+  DPRINTF (("After supercede function: %s", uentry_unparseFull (ue)));
+
   context_enterFunction (ue);
   enterFunctionParams (uentry_getParams (ue));
 
   resetStorageClass ();
+  DPRINTF (("Function: %s", uentry_unparseFull (ue)));
   return (ue);
 }
 
@@ -791,14 +733,7 @@ static /*@only@*/ uentry globalDeclareOldStyleFunction (idDecl tid)
   reflectSpecialCode (ue);
   reflectArgsUsed (ue);
   uentry_setDefined (ue, g_currentloc);
-
-    uentry_checkParams (ue);
-  
-  if (ProcessingGlobals)
-    {
-      uentry_setGlobals (ue, currentGlobals);
-    }
-
+  uentry_checkParams (ue);
   resetStorageClass ();
   return (ue);
 }
@@ -818,7 +753,7 @@ static void oldStyleDeclareFunction (/*@only@*/ uentry e)
   resetStorageClass ();
 }
 
-void declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
+void clabstract_declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
 {
   uentry ue;
 
@@ -858,7 +793,7 @@ void declareFunction (idDecl tid) /*@globals undef saveFunction; @*/
 	    }
 	  else
 	    {
-	      ue = globalDeclareFunction (tid);
+	      ue = clabstract_globalDeclareFunction (tid);
 	    }
 	}
       
@@ -914,7 +849,7 @@ void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
 	      
 	      if (ctype_isFunction (deftype))
 		{
-		  rettype = ctype_returnValue (deftype);
+		  rettype = ctype_getReturnType (deftype);
 		}
 	      else
 		{
@@ -945,7 +880,7 @@ void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
 	      uentry_setStatic (ue);
 
 	      uentry_checkParams (ue);
-	      reflectModGlobs (ue);
+	      reflectBufferConstraint (ue);
 	
 	      DPRINTF (("Sub global entry: %s", uentry_unparse (ue)));
 	      ue = usymtab_supGlobalEntryReturn (ue);
@@ -968,7 +903,7 @@ checkTypeDecl (uentry e, ctype rep)
 {
   cstring n = uentry_getName (e);
 
-  DPRINTF (("Check type decl: %s", n));
+  DPRINTF (("Check type decl: %s", uentry_unparseFull (e)));
 
   if (cstring_equal (context_getBoolName (), n))
     {
@@ -1026,6 +961,8 @@ checkTypeDecl (uentry e, ctype rep)
       if (uentry_isAbstractDatatype (le))
 	{
 	  ctype rrep = ctype_realType (rep);
+
+	  DPRINTF (("Abstract type: %s", uentry_unparseFull (le)));
 
 	  /*
 	  ** for abstract enum types, we need to fix the enum members:
@@ -1221,19 +1158,6 @@ void
 setProcessingGlobalsList ()
 {
   ProcessingGlobals = TRUE;
-
-  llassert (globSet_isUndefined (currentGlobals));
-  currentGlobals = globSet_undefined;
-
-  llassert (sRefSet_isUndefined (fcnModifies));
-  fcnModifies = sRefSet_undefined;
-  
-  /*
-  ** No, special clauses might have been processed first!  
-  llassert (specialClauses_isUndefined (specClauses));
-  specClauses = specialClauses_undefined;
-  */
-
   fcnNoGlobals = FALSE;
 }
 
@@ -1260,9 +1184,6 @@ isProcessingGlobMods ()
 static void resetGlobals (void)
 {
   ProcessingGlobals = FALSE;
-  currentGlobals = globSet_undefined;
-  llassert (sRefSet_isUndefined (fcnModifies));
-  fcnModifies = sRefSet_undefined;
   fcnNoGlobals = FALSE;
 }
 
@@ -1311,22 +1232,17 @@ doneParams ()
       if (uentry_isInvalid (saveFunction))
 	{
 	  llbuglit ("unsetProcessingVars: no saved function\n");
-	  
-	  if (sRefSet_isDefined (fcnModifies)) {
-	    sRefSet_free (fcnModifies);
-	    fcnModifies = sRefSet_undefined;
-	  }
 	}
       else
 	{
-	  ctype ct = ctype_returnValue (uentry_getType (saveFunction));
+	  ctype ct = ctype_getReturnType (uentry_getType (saveFunction));
 	  uentryList params = uentryList_copy (saveParamList);
 	  ctype ct2 = ctype_makeFunction (ct, params);
 
 	  uentry_setType (saveFunction, ct2);
 	  ProcessingParams = FALSE;
 
-	  reflectModGlobs (saveFunction);
+	  reflectBufferConstraint (saveFunction);
 	  oldStyleDeclareFunction (saveFunction);
 	  saveFunction = uentry_undefined;
 	  resetGlobals ();
@@ -1352,7 +1268,7 @@ checkDoneParams ()
       ** old style declaration
       */
 
-      ctype ct = ctype_returnValue (uentry_getType (saveFunction));
+      ctype ct = ctype_getReturnType (uentry_getType (saveFunction));
       ctype ct2;
 
       uentryList_elements (saveParamList, current)
@@ -1424,7 +1340,6 @@ void checkValueConstant (qtype t, idDecl id, exprNode e)
   usymtab_supGlobalEntry (ue);
 }
 
-
 void processNamedDecl (idDecl t)
 {
   if (qtype_isUndefined (processingType))
@@ -1442,7 +1357,7 @@ void processNamedDecl (idDecl t)
     {
       cstring id = idDecl_getName (t);
       uentry ue = usymtab_lookupSafe (id);
-
+      
       if (!uentry_isValid (ue))
 	{
 	  llerror (FLG_UNRECOG,
@@ -1463,10 +1378,7 @@ void processNamedDecl (idDecl t)
 	  else
 	    {
 	      sRef sr = sRef_copy (uentry_getSref (ue));
-
 	      reflectGlobalQualifiers (sr, idDecl_getQuals (t));
-
-	      currentGlobals = globSet_insert (currentGlobals, sr);
 	    }
 	}
     }
@@ -1509,49 +1421,45 @@ void processNamedDecl (idDecl t)
 	      cstring_free (pname);
 
 	      if (uentry_isYield (p))
-		{
-		  e = uentry_makeParam (t, sRef_getParam (uentry_getSref (p)));
-		  
-		  uentry_checkYieldParam (p, e);
-		  
-		  usymtab_supEntrySref (e);
-		  return;
-		}
+		  {
+		      e = uentry_makeParam (t, sRef_getParam (uentry_getSref (p)));
+		      uentry_checkYieldParam (p, e);
+		      usymtab_supEntrySref (e);
+		      return;
+		  }
 	    }
-
+	  
 	  if ((hasSpecialCode () || argsUsed)
 	      && ctype_isFunction (idDecl_getCtype (t)))
-	    {
+	      {
 	      e = uentry_makeIdFunction (t);
 	      reflectSpecialCode (e);
 	      reflectArgsUsed (e);
-	    }
+	      }
 	  else
-	    {
-	      e = uentry_makeIdVariable (t);
-	    }
-
+	      {
+		  e = uentry_makeIdVariable (t);
+	      }
+	  
 	  loc = uentry_whereDeclared (e);
-
+	  
 	  /*
-	  if (context_inGlobalScope ())
+	    if (context_inGlobalScope ())
 	    {
 	    uentry_checkParams was here!
 	    }
-	    */
-
+	  */
+	  
 	  if (ctype_isFunction (uentry_getType (e)))
 	    {
-	      reflectModGlobs (e);
-	    }
-	  else
-	    {
-	      llassert (!globSet_isDefined (currentGlobals)
-			&& !sRefSet_isDefined (fcnModifies));
+	      clabstract_prepareFunction (e);
+	      reflectBufferConstraint (e);
 	    }
 	  
+	  DPRINTF (("Superceding... %s", uentry_unparseFull (e)));
 	  e = usymtab_supEntrySrefReturn (e);
-
+	  DPRINTF (("After superceding... %s", uentry_unparseFull (e)));	  
+	  
 	  if (uentry_isExtern (e) && !context_inGlobalScope ())
 	    {
 	      voptgenerror 
@@ -1563,18 +1471,19 @@ void processNamedDecl (idDecl t)
 	      uentry_setDefined (e, fileloc_getExternal ());
 	      sRef_setDefined (uentry_getSref (e), fileloc_getExternal ());
 	    }
-
+	  
 	  if (uentry_isFunction (e))
 	    {
-	      uentry_checkParams (e);
-	      checkParamNames (e);
+	      if (!context_inXHFile ())
+		{
+		  checkParamNames (e);
+		}
 	    }
-
-	  if (uentry_isVar (e) 
-	      && uentry_isCheckedUnknown (e))
+	  
+	  if (uentry_isVar (e) && uentry_isCheckedUnknown (e))
 	    {
 	      sRef sr = uentry_getSref (e);
-
+	      
 	      if (sRef_isLocalVar (sr))
 		{
 		  if (context_getFlag (FLG_IMPCHECKMODINTERNALS))
@@ -1608,7 +1517,7 @@ void processNamedDecl (idDecl t)
 	      else /* real global */
 		{
 		  llassert (sRef_isRealGlobal (sr));
-
+		  
 		  if (context_getFlag (FLG_IMPCHECKEDSTRICTGLOBALS))
 		    {
 		      uentry_setCheckedStrict (e);
@@ -1633,7 +1542,7 @@ void processNamedDecl (idDecl t)
     {
       ctype ct = idDecl_getCtype (t);
       uentry e;
-
+      
       DPRINTF (("Processing typedef: %s", ctype_unparse (ct)));
       
       e = uentry_makeIdDatatype (t);
@@ -1664,18 +1573,6 @@ void processNamedDecl (idDecl t)
       checkTypeDecl (e, ct);
       
       e = usymtab_supReturnTypeEntry (e);
-
-      if (uentry_isMaybeAbstract (e))
-	{
-	  if (context_getFlag (FLG_IMPABSTRACT))
-	    {
-	      uentry_setAbstract (e);
-	    }
-	  else
-	    {
-	      uentry_setConcrete (e);
-	    }
-	}
     }
   else
     {
@@ -1713,6 +1610,8 @@ static idDecl fixStructDecl (/*@returned@*/ idDecl d)
 ctype
 declareUnnamedStruct (/*@only@*/ uentryList f)
 {
+  DPRINTF (("Unnamed struct: %s", uentryList_unparse (f)));
+
   if (context_maybeSet (FLG_NUMSTRUCTFIELDS))
     {
       int num = uentryList_size (f);
@@ -1760,9 +1659,15 @@ ctype declareStruct (cstring id, /*@only@*/ uentryList f)
   uentry ue;
   int num = uentryList_size (f);
 
+  DPRINTF (("Declare struct: %s / %s", id, uentryList_unparse (f)));
+
   ct = ctype_createStruct (cstring_copy (id), f);
-  DPRINTF (("Declare struct: %s [%d]", ctype_unparse (ct), ct));
+
+  DPRINTF (("Ctype: %s", ctype_unparse (ct)));
+
   ue = uentry_makeStructTagLoc (id, ct);
+
+  DPRINTF (("ue: %s", uentry_unparseFull (ue)));
 
   if (context_maybeSet (FLG_NUMSTRUCTFIELDS))
     {
@@ -1947,7 +1852,7 @@ doVaDcl ()
   usymtab_supEntrySref (e);
 }
 
-/*@exposed@*/ sRef modListPointer (sRef s)
+/*@exposed@*/ sRef modListPointer (/*@exposed@*/ sRef s)
 {
   ctype ct = sRef_getType (s);
   ctype rt = ctype_realType (ct);
@@ -2038,7 +1943,7 @@ doVaDcl ()
     }
 }
 
-sRef globListUnrecognized (cstring s)
+/*@dependent@*/ sRef clabstract_unrecognizedGlobal (cstring s)
 {
   if (cstring_equalLit (s, "nothing"))
     {
@@ -2151,14 +2056,14 @@ sRef globListUnrecognized (cstring s)
   return s;
 }
 
-sRef checkSpecClausesId (uentry ue)
+sRef checkStateClausesId (uentry ue)
 {
   cstring s = uentry_rawName (ue);
 
-  if (sRef_isGlobal (uentry_getSref (ue)))
+  if (sRef_isFileOrGlobalScope (uentry_getSref (ue)))
     {
       voptgenerror 
-	(FLG_SYNTAX, 
+	(FLG_COMMENTERROR,
 	 message ("Global variable %s used special clause.  (Global variables "
 		  "are not recognized in special clauses.  If there is "
 		  "sufficient interest in support for this, it may be "
@@ -2213,7 +2118,7 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
-  return sRef_copy( uentry_getSref (ue) );
+  return sRef_saveCopy( uentry_getSref (ue) );
 }
 
 void checkModifiesId (uentry ue)
@@ -2296,7 +2201,7 @@ void checkModifiesId (uentry ue)
   return ret;
 }
 
-sRef fixSpecClausesId (cstring s) 
+sRef fixStateClausesId (cstring s) 
 {
   sRef ret;
   cstring pname = makeParam (s);
@@ -2330,7 +2235,7 @@ sRef fixSpecClausesId (cstring s)
 	{
 	  ret = uentry_getSref (ue);
 
-	  if (sRef_isGlobal (ret))
+	  if (sRef_isFileOrGlobalScope (ret))
 	    {
 	      voptgenerror 
 		(FLG_SYNTAX, 
@@ -2362,7 +2267,7 @@ sRef fixSpecClausesId (cstring s)
   return ret;
 }
 
-sRef modListArrayFetch (sRef s, /*@unused@*/ sRef mexp)
+sRef modListArrayFetch (/*@exposed@*/ sRef s, /*@unused@*/ sRef mexp)
 {
   ctype ct = sRef_getType (s);
   ctype rt = ctype_realType (ct);
@@ -2394,6 +2299,24 @@ sRef modListArrayFetch (sRef s, /*@unused@*/ sRef mexp)
 	 g_currentloc);
       return s;
     }
+}
+
+static void clabstract_prepareFunction (uentry e)
+{
+  uentry_checkParams (e);
+  DPRINTF (("After prepare: %s", uentry_unparseFull (e)));
+}
+
+sRef clabstract_checkGlobal (exprNode e)
+{
+  sRef s;
+  llassert (exprNode_isInitializer (e));
+
+  s = exprNode_getSref (e);
+  DPRINTF (("Initializer: %s -> %s", exprNode_unparse (e), sRef_unparse (s)));
+
+  exprNode_free (e);
+  return sRef_copy (s);
 }
 
 

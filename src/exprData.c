@@ -9,7 +9,6 @@
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
-# include "aliasChecks.h"
 # include "exprNodeSList.h"
 
 void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind)

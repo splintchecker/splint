@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -54,9 +54,10 @@ static flagcatinfo categories[] =
   { FK_ANSI, "ansi", "violations of constraints imposed by ANSI/ISO standard" } ,
   { FK_ARRAY, "arrays", "special checking involving arrays" } ,
   { FK_BOOL, "booleans", "checking and naming of boolean types" } ,
-  { FK_COMMENTS, "comments", "interpretation of stylized comments" } ,
+  { FK_COMMENTS, "comments", "interpretation of semantic comments" } ,
   { FK_COMPLETE, "complete", "completely defined, used, or specified system" } ,
   { FK_CONTROL, "controlflow", "suspicious control structures" } ,
+  { FK_DEBUG, "debug", "flags for debugging lclint" } ,
   { FK_DECL, "declarations", "consistency of declarations" } ,
   { FK_DEF, "definition", "undefined storage errors" } ,
   { FK_DIRECT, "directories", "set directores" } ,
@@ -92,13 +93,14 @@ static flagcatinfo categories[] =
   { FK_PROTOS, "prototypes", "function prototypes" } ,
   { FK_DEAD, "released", "using storage that has been deallocated" } ,
   { FK_IGNORERET, "returnvals", "ignored return values" },
+  { FK_SECURITY, "security", "possible security vulnerability" },
   { FK_SPEC, "specifications", "checks involving .lcl specifications" } ,
   { FK_SUPPRESS, "suppress", "local and global suppression of messages" } ,
   { FK_TYPEEQ, "typeequivalence", "control what types are equivalent" } ,
   { FK_BEHAVIOR, "undefined", "code with undefined or implementation-defined behavior" } ,
   { FK_UNRECOG, "unrecognized", "unrecognized identifiers" } ,
   { FK_UNSPEC, "unconstrained", "checking in the presence of unconstrained functions" } ,
-  { FK_DEBUG, NULL, NULL } ,
+  { FK_WARNUSE, "warnuse", "use of possibly problematic function" } ,
   { FK_SYNTAX, NULL, NULL } ,
   { FK_TYPE, NULL, NULL } ,
   { FK_SECRET, NULL, NULL } ,
@@ -193,6 +195,11 @@ void flags_initMod ()
       /*@+enumint@*/
       if (flags[code].code != code)
 	{
+	  fprintf (stderr, 
+		   "*** ERROR: inconsistent flag %s / %d / %d", 
+		   flags[code].flag,
+		   flags[code].code, code);
+	  
 	  llbug (message ("*** ERROR: inconsistent flag %s / %d / %d", 
 			  cstring_fromChars (flags[code].flag),
 			  flags[code].code, code));
@@ -626,8 +633,9 @@ void printAlphaFlags ()
   cstringSList_printSpaced (fl, 3, 1, context_getLineLen () - 25); 
   cstringSList_free (fl);
 }
+
 /*@observer@*/ cstring
-flagcode_name (flagcode code)
+flagcode_unparse (flagcode code)
 {
   return cstring_fromChars (flags[code].flag);
 }
@@ -941,6 +949,8 @@ void setValueFlag (flagcode opt, cstring arg)
     case FLG_LCLEXPECT:
     case FLG_LIMIT:  
     case FLG_LINELEN:
+    case FLG_INDENTSPACES:
+    case FLG_BUGSLIMIT:
     case FLG_EXTERNALNAMELEN:
     case FLG_INTERNALNAMELEN:
     case FLG_CONTROLNESTDEPTH:
@@ -962,7 +972,7 @@ void setValueFlag (flagcode opt, cstring arg)
 	  }
 	else
 	  {
-	    	    context_setValueAndFlag (opt, val);
+	    context_setValueAndFlag (opt, val);
 	  }
       }
       break;
@@ -1116,7 +1126,6 @@ extern int flagcode_valueIndex (flagcode f)
   /*@unchecked@*/ static bool initialized = FALSE;
   int i;
   /*@unchecked@*/ static flagcode valueFlags[NUMVALUEFLAGS];
-
   
   if (!initialized)
     {
@@ -1127,14 +1136,15 @@ extern int flagcode_valueIndex (flagcode f)
 	  if (flagcode_hasValue (code))
 	    {
 	      llassert (nv < NUMVALUEFLAGS);
+	      DPRINTF (("Value flag: %s [%d]", flagcode_unparse (code), (int) code));
 	      valueFlags[nv] = code;
-	      	      nv++;
+	      nv++;
 	    }
 	} end_allFlagCodes;
 
       llassertprint (nv == NUMVALUEFLAGS,
-		     ("number of value flags: %d (expected %d)",
-		      nv, NUMVALUEFLAGS));
+		     ("Number of value flags: %d (expected %d)",
+		      nv, (int) NUMVALUEFLAGS));
       initialized = TRUE;
     }
 
@@ -1147,7 +1157,12 @@ extern int flagcode_valueIndex (flagcode f)
 	}
     }
 
+  fprintf (stderr, "Cannot find value flag: %d", (int) f);
+  exit (EXIT_FAILURE);
+  /* Cannot do this...might call recursively...
+  llfatalbug (message ("Cannot fine value flag: %d", (int) f));
   BADEXIT;
+  */
 }
 
 extern int flagcode_stringIndex (flagcode f)

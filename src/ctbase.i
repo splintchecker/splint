@@ -20,17 +20,17 @@
 ** ctbase.i
 **
 ** NOTE: This is not a stand-alone source file, but is included in ctype.c.
-**       (This is necessary becuase there is no other way in C to have a
+**       (This is necessary because there is no other way in C to have a
 **       hidden scope, besides at the file level.)
 */
 
 /*@access cprim*/
 
-typedef /*@null@*/ struct __ctbase *ctbase;
+abst_typedef /*@null@*/ struct s_ctbase *ctbase;
 
-typedef struct _ctentry {
+/*@private@*/ typedef struct {
   ctkind kind;
-  ctbase ctbase;
+  ctbase ctbase; 
   ctype base;     /* type I point to (or element of array) */
   ctype ptr;     /* type of pointer to me */
   ctype array;    /* type of array of me */
@@ -39,7 +39,7 @@ typedef struct _ctentry {
 
 typedef /*@only@*/ ctentry o_ctentry;
           
-typedef struct _cttable {
+typedef struct {
   int size;
   int nspace;
   /*@relnull@*/ /*@only@*/ o_ctentry *entries;
@@ -120,8 +120,6 @@ static /*@notnull@*/ /*@only@*/ ctbase ctbase_makePointer (ctype p_b) /*@*/ ;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_makeArray (ctype p_b) /*@*/ ;
 static /*@notnull@*/ ctype 
   ctbase_makeFunction (ctype p_b, /*@only@*/ uentryList p_p) /*@*/ ;
-static /*@notnull@*/ /*@only@*/ ctbase 
-  ctbase_makeRealFunction (ctype p_b, /*@dependent@*/ uentryList p_p) /*@*/ ;
 static /*@notnull@*/ /*@observer@*/ ctbase 
   ctbase_realFunction (/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
 static ctype ctbase_baseArrayPtr (/*@notnull@*/ ctbase p_c) /*@*/ ;
@@ -137,39 +135,38 @@ extern int cttable_lastIndex();
 # define cttable_lastIndex()  (cttab.size - 1)
 /*@=macroundef@*/
 
-typedef struct _cfcn
+typedef struct
 {
   ctype rval;
-  /*@dependent@*/ uentryList params;  /* params are owned if liveparams is TRUE */
-  bool liveparams;
+  /*@only@*/ uentryList params; 
 } *cfcn; 
 
-typedef struct _tsu
+typedef struct
 {
   cstring   name;
   uentryList fields;
 } *tsu;
 
-typedef struct _tconj
+typedef struct
 {
   ctype a;
   ctype b;
   bool  isExplicit;
 } *tconj;
 
-typedef struct _tenum
+typedef struct
 {
   cstring      tag;
   enumNameList members;
 } *tenum;
 
-typedef struct _tfixed
+typedef struct
 {
   ctype base;
   long size;
 } *tfixed;
  
-typedef union _uconts
+typedef union 
 {
   cprim         prim;      /* primitive */
   typeId        tid;       /* abstract, user */
@@ -181,7 +178,7 @@ typedef union _uconts
   tfixed        farray;    /* fixed array */
 } uconts;
 
-struct __ctbase
+struct s_ctbase
 {
   ctuid    type;
   uconts   contents;
@@ -286,8 +283,8 @@ static bool ctbase_isExplicitConj (/*@notnull@*/ ctbase p_c) /*@*/ ;
 static bool ctbase_forceMatch (ctbase p_c1, ctbase p_c2) /*@modifies p_c1, p_c2@*/ ;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_expectFunction (ctype p_c);
 static bool ctbase_isVoidPointer(/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
-static bool ctbase_isUnion (/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
-static bool ctbase_isStruct (/*@notnull@*/ /*@dependent@*/ ctbase p_c) /*@*/ ;
+static bool ctbase_isUnion (/*@notnull@*/ /*@temp@*/ ctbase p_c) /*@*/ ;
+static bool ctbase_isStruct (/*@notnull@*/ /*@temp@*/ ctbase p_c) /*@*/ ;
 static /*@observer@*/ cstring ctbase_enumTag (/*@notnull@*/ ctbase p_ct) /*@*/ ;
 static /*@only@*/ cstring ctbase_unparseNotypes (ctbase p_c) /*@*/ ;
 
@@ -295,7 +292,14 @@ static /*@out@*/ /*@notnull@*/ /*@only@*/ ctbase ctbase_new (void) /*@*/ ;
 static int nctbases = 0;
 
 static /*@notnull@*/ /*@only@*/ 
-  ctbase ctbase_makeLiveFunction (ctype p_b, /*@owned@*/ uentryList p_p);
+  ctbase ctbase_makeLiveFunction (ctype p_b, /*@only@*/ uentryList p_p);
+
+static bool ctbase_isUnnamedSU (ctbase c)
+{
+  return (ctbase_isDefined (c)
+	  && (ctbase_isStruct (c) || ctbase_isUnion (c))
+	  && isFakeTag (c->contents.su->name));
+}
 
 static /*@observer@*/ ctbase ctbase_realType (ctbase c)
 {
@@ -365,7 +369,7 @@ ctbase_isStruct (/*@notnull@*/ ctbase c)
 }
 
 static bool
-ctbase_isUnion (/*@notnull@*/ /*@dependent@*/ ctbase c)
+ctbase_isUnion (/*@notnull@*/ ctbase c)
 {
   ctbase r = ctbase_realType (c);
 
@@ -438,8 +442,15 @@ ctbase_typeId (ctbase c)
     }
   else
     {
-      llcontbug (message ("ctbase_typeId: bad call: %q", ctbase_unparse (c)));
-      return typeId_invalid;
+      if (ctbase_isConj (c)) 
+	{
+	  return ctbase_typeId (ctype_getCtbase (ctbase_getConjA (c)));
+	}
+      else
+	{
+	  llcontbug (message ("ctbase_typeId: bad call: %q", ctbase_unparse (c)));
+	  return typeId_invalid;
+	}
     }
 }
 
@@ -493,7 +504,8 @@ ctbase_unparse (ctbase c)
 	}
       else
 	{
-	  return (message ("struct { %q }", uentryList_unparseAbbrev (c->contents.su->fields)));
+	  return (message ("struct { %q }", 
+			   uentryList_unparseAbbrev (c->contents.su->fields)));	
 	}
     case CT_UNION:
       if (cstring_isDefined (c->contents.su->name) &&
@@ -788,33 +800,33 @@ static ctbase ctbase_undump (d_char *c)
     case 'b':
       return (ctbase_createBool ());
     case 'p':
-      res = ctbase_createPrim (cprim_fromInt (getInt (c)));
-      checkChar (c, '|');
+      res = ctbase_createPrim (cprim_fromInt (reader_getInt (c)));
+      reader_checkChar (c, '|');
       return res;
     case 's':
-      res = ctbase_createUser (typeId_fromInt (getInt (c)));
-      checkChar (c, '|');
+      res = ctbase_createUser (typeId_fromInt (reader_getInt (c)));
+      reader_checkChar (c, '|');
       return res;
     case 'a':
-      res = ctbase_createAbstract (typeId_fromInt (getInt (c)));
-      checkChar (c, '|');
+      res = ctbase_createAbstract (typeId_fromInt (reader_getInt (c)));
+      reader_checkChar (c, '|');
       return res;
     case 't':
       res = ctbase_makePointer (ctype_undump (c));
-      checkChar (c, '|');
+      reader_checkChar (c, '|');
       return res;
     case 'y':
       res = ctbase_makeArray (ctype_undump (c));
-      checkChar (c, '|');
+      reader_checkChar (c, '|');
       return res;
     case 'F':
       {
 	ctype ct = ctype_undump (c);
 	int size;
 
-	checkChar (c, '/');
-	size = getInt (c);
-	checkChar (c, '|');
+	reader_checkChar (c, '/');
+	size = reader_getInt (c);
+	reader_checkChar (c, '|');
 	return (ctbase_makeFixedArray (ct, size));
       }
     case 'f':
@@ -911,12 +923,12 @@ static ctbase ctbase_undump (d_char *c)
 	bool isExplicit;
 	ctype c1, c2;
 
-	isExplicit = bool_fromInt (getInt (c));
-	checkChar (c, '.');
+	isExplicit = bool_fromInt (reader_getInt (c));
+	reader_checkChar (c, '.');
 	c1 = ctype_undump (c);
-	checkChar (c, '/');
+	reader_checkChar (c, '/');
 	c2 = ctype_undump (c);
-	checkChar (c, '|');
+	reader_checkChar (c, '|');
 
 	return (ctbase_makeConj (c1, c2, isExplicit));
       }
@@ -981,6 +993,7 @@ ctbase_dump (ctbase c)
 		       ctype_dump (c->contents.farray->base),
 		       (int) c->contents.farray->size));
     case CT_FCN:
+      DPRINTF (("Dump function: %s", ctbase_unparse (c)));
       return (message ("f%q (%q)", ctype_dump (c->contents.fcn->rval),
 		       uentryList_dumpParams (c->contents.fcn->params)));
     case CT_STRUCT:
@@ -1113,17 +1126,7 @@ ctbase_free (/*@only@*/ ctbase c)
 	  sfree (c);
 	  break;
 	case CT_FCN:
-
-	  if (c->contents.fcn->liveparams)
-	    {
-	      /* Because of liveparams, we know this can be released. */
-
-	      /*@-dependenttrans@*/ /*@-unqualifiedtrans@*/
-	      uentryList_free (c->contents.fcn->params); 
-	      c->contents.fcn->params = NULL;
-	      /*@=dependenttrans@*/ /*@=unqualifiedtrans@*/
-	    }
-
+	  /*@i32@*/ /* uentryList_free (c->contents.fcn->params); */
 	  sfree (c);
 	  break;
 	case CT_STRUCT:
@@ -1435,19 +1438,36 @@ ctbase_genMatch (ctbase c1, ctbase c2, bool force, bool arg, bool def, bool deep
 		c1->contents.su->name,
 		c2->contents.su->name));
 
-      if (!cstring_isEmpty (c1->contents.su->name))
+      if (isFakeTag (c1->contents.su->name)
+	  && isFakeTag (c2->contents.su->name))
 	{
-	  return (cstring_equal (c1->contents.su->name, c2->contents.su->name));
+	  /* Both fake tags, check structure */
+	  if (cstring_equal (c1->contents.su->name, c2->contents.su->name))
+	    {
+	      return TRUE;
+	    }
+	  else
+	    {
+	      return uentryList_matchFields (c1->contents.su->fields, 
+					     c2->contents.su->fields);
+	    }
 	}
       else
 	{
-	  if (!cstring_isEmpty (c2->contents.su->name))
+	  if (!cstring_isEmpty (c1->contents.su->name))
 	    {
-	      return FALSE;
+	      return (cstring_equal (c1->contents.su->name, c2->contents.su->name));
 	    }
-
-	  llcontbuglit ("ctbase_genMatch: match fields");
-	  return (FALSE);
+	  else
+	    {
+	      if (!cstring_isEmpty (c2->contents.su->name))
+		{
+		  return FALSE;
+		}
+	      
+	      llcontbuglit ("ctbase_genMatch: match fields");
+	      return (FALSE);
+	    }
 	}
     default:
       llcontbug (message ("ctbase_genMatch: unknown type: %d\n", (int)c1tid));
@@ -1671,14 +1691,12 @@ ctbase_makeFunction (ctype b, /*@only@*/ uentryList p)
       rval = ctype_makeFunction (ctb->contents.fcn->rval, p);
 
       c->contents.fcn->rval = rval;
-      c->contents.fcn->params = ctb->contents.fcn->params;
-      c->contents.fcn->liveparams = FALSE;
+      c->contents.fcn->params = uentryList_copy (ctb->contents.fcn->params); /* no copy before */
     }
   else
     {
       c->contents.fcn->rval = b;
-      /*@i@*/ c->contents.fcn->params = p;
-      c->contents.fcn->liveparams = TRUE;
+      c->contents.fcn->params = uentryList_copy (p); /* no copy before */
       /*@-branchstate@*/ /* p is really released on this branch */
     } 
   /*@=branchstate@*/
@@ -1716,15 +1734,12 @@ ctbase_makeNFFunction (ctype b, /*@only@*/ uentryList p)
       rval = ctype_makeNFParamsFunction (ctb->contents.fcn->rval, p);
       
       c->contents.fcn->rval = rval;
-      c->contents.fcn->params = ctb->contents.fcn->params;
-      c->contents.fcn->liveparams = FALSE;
+      c->contents.fcn->params = uentryList_copy (ctb->contents.fcn->params);
     }
   else
     {
       c->contents.fcn->rval = b;
-      /*@i@*/ c->contents.fcn->params = p;
-      c->contents.fcn->liveparams = TRUE;
-
+      c->contents.fcn->params = uentryList_copy (p);
       /*@-branchstate@*/ 
     }
   /*@=branchstate@*/
@@ -1734,7 +1749,7 @@ ctbase_makeNFFunction (ctype b, /*@only@*/ uentryList p)
 }
 
 static /*@only@*/ ctbase
-  ctbase_makeLiveFunction (ctype b, /*@owned@*/ uentryList p)
+  ctbase_makeLiveFunction (ctype b, /*@only@*/ uentryList p)
 {
   ctbase c = ctbase_new ();
 
@@ -1743,24 +1758,8 @@ static /*@only@*/ ctbase
   c->contents.fcn = (cfcn) dmalloc (sizeof (*c->contents.fcn));
   c->contents.fcn->rval = b;
   c->contents.fcn->params = p;
-  c->contents.fcn->liveparams = TRUE;
 
   /*@-mustfree@*/ return (c); /*@=mustfree@*/
-}
-
-static /*@only@*/ ctbase
-  ctbase_makeRealFunction (ctype b, /*@dependent@*/ uentryList p)
-{
-  ctbase c = ctbase_new ();
-
-  c->type = CT_FCN;
-  
-  c->contents.fcn = (cfcn) dmalloc (sizeof (*c->contents.fcn));
-  c->contents.fcn->rval = b;
-  c->contents.fcn->params = p;
-  c->contents.fcn->liveparams = FALSE;
-
-  return (c);
 }
 
 static /*@observer@*/ /*@notnull@*/ ctbase
@@ -1939,7 +1938,7 @@ ctbase_baseisExpFcn (ctype c)
 
   if (cb->type == CT_FCN)
     {
-      c = ctype_removePointers (ctype_returnValue (c));
+      c = ctype_removePointers (ctype_getReturnType (c));
 
       cb = ctype_getCtbase (c);
       llassert (ctbase_isDefined (cb));
@@ -1962,12 +1961,12 @@ ctbase_newBase (ctype c, ctype p)
 
   DPRINTF (("New base: %s / %s", ctype_unparse (c), ctype_unparse (p)));
 
-  cb = ctype_getCtbase (c);
-
-  if (ctype_isUndefined (c))
+  if (ctype_isUndefined (c) || ctype_isUnknown (c))
     {
       return p;
     }
+
+  cb = ctype_getCtbase (c);
 
   if (ctype_isConj (p))
     {
@@ -2024,7 +2023,7 @@ ctbase_newBase (ctype c, ctype p)
     case CT_ARRAY:
       return (ctype_makeArray (ctbase_newBase (cb->contents.base, p)));
     case CT_FCN:
-      return (ctype_makeRealFunction (ctbase_newBase (cb->contents.fcn->rval, p),
+      return (ctype_makeRawFunction (ctbase_newBase (cb->contents.fcn->rval, p),
 				      cb->contents.fcn->params));
     case CT_CONJ:
       return (ctype_makeConjAux (ctbase_newBase (cb->contents.conj->a, p),
@@ -2061,7 +2060,7 @@ ctbase_newBaseExpFcn (ctype c, ctype p)
   if (!ctbase_isFunction (cb))
     llbuglit ("ctbase_newBaseExpFcn: expFcn -> not a function");
   
-  tmpct = ctype_getBaseType (ctype_returnValue (c));
+  tmpct = ctype_getBaseType (ctype_getReturnType (c));
   
   /*
   ** pointers before expfcn -> p are pointers to function, not result
@@ -2131,7 +2130,7 @@ ctbase_newBaseExpFcn (ctype c, ctype p)
     }
 
  exitLoop:
-  tmpct = ctype_returnValue (c);
+  tmpct = ctype_getReturnType (c);
 
   /*
   ** pointers to expf are pointers to return value
@@ -2182,7 +2181,7 @@ ctbase_newBaseExpFcn (ctype c, ctype p)
   ** pointers to fp are pointers to function type
   */
 
-  ret = ctype_makeRealFunction (p, ctargs);
+  ret = ctype_makeRawFunction (p, uentryList_copy (ctargs));
   
   while (ctype_getCtKind (fp) > CTK_PLAIN)
     {
@@ -2340,6 +2339,10 @@ ctbase_compare (ctbase c1, ctbase c2, bool strict)
 	}
       }
 
+      DPRINTF (("Comparing fields: %s / %s",
+		ctbase_unparse (c1),
+		ctbase_unparse (c2)));
+
       return (uentryList_compareFields (c1->contents.su->fields,
 					c2->contents.su->fields));
     case CT_CONJ:
@@ -2485,4 +2488,18 @@ ctbase_almostEqual (ctbase c1, ctbase c2)
       llcontbug (message ("ctbase_almostEqual: unknown type: %d\n", (int)c1tid));
       return (FALSE);
     }
+}
+
+/*drl added July 02, 001
+  called by ctype_getArraySize
+*/
+
+long int ctbase_getArraySize (ctbase ctb)
+{
+  llassert (ctbase_isDefined (ctb) );
+  
+  llassert (ctbase_isFixedArray(ctb) );
+  
+  return (ctb->contents.farray->size);
+
 }

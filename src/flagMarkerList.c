@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -71,39 +71,40 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 {
   int i = s->nelements - 1;
 
-  
   if (i > 0)
     {
       flagMarker last = s->elements[i];
 
-      
       if (flagMarker_isIgnoreCount (last))
 	{
 	  if (!flagMarker_isIgnoreOff (fm))
 	    {
 	      if (flagMarker_isLocalSet (fm))
 		{
-		  llforceerror 
-		    (FLG_WARNFLAGS,
-		     cstring_makeLiteral ("Cannot set flag inside ignore "
-					  "count region."),
-		     flagMarker_getLoc (fm));
-		  llgenindentmsg 
-		    (cstring_makeLiteral ("Ignore count region starts"),
-		     flagMarker_getLoc (last));
-
+		  if (llforceerror 
+		      (FLG_WARNFLAGS,
+		       cstring_makeLiteral ("Cannot set flag inside ignore "
+					    "count region."),
+		       flagMarker_getLoc (fm)))
+		    {
+		      llgenindentmsg 
+			(cstring_makeLiteral ("Ignore count region starts"),
+			 flagMarker_getLoc (last));
+		    }
 		}
 	      else 
 		{
 		  if (flagMarker_isIgnoreOn (fm)) 
 		    {
-		      llforceerror 
-			(FLG_WARNFLAGS,
-			 cstring_makeLiteral ("Cannot nest ignore regions."),
-			 flagMarker_getLoc (fm));
-		      llgenindentmsg 
-			(cstring_makeLiteral ("Previous ignore region starts"),
-			 flagMarker_getLoc (last));
+		      if (llforceerror 
+			  (FLG_WARNFLAGS,
+			   cstring_makeLiteral ("Cannot nest ignore regions."),
+			   flagMarker_getLoc (fm)))
+			{
+			  llgenindentmsg 
+			    (cstring_makeLiteral ("Previous ignore region starts"),
+			     flagMarker_getLoc (last));
+			}
 		    }
 		}
 
@@ -116,37 +117,42 @@ void flagMarkerList_add (flagMarkerList s, flagMarker fm)
 	  if (flagMarker_isIgnoreOff (last))
 	    {
 	      flagMarker nlast = s->elements [i - 1];
-	      
+
 	      if (flagMarker_isIgnoreCount (nlast))
 		{
-		  if (fileloc_sameFile (flagMarker_getLoc (fm),
-					flagMarker_getLoc (last))
-		      && fileloc_notAfter (flagMarker_getLoc (fm), 
-					   flagMarker_getLoc (last)))
+		  if (fileloc_sameFileAndLine (flagMarker_getLoc (fm),
+					       flagMarker_getLoc (nlast)))
 		    {
 		      if (flagMarker_isLocalSet (fm))
 			{
-			  llforceerror 
-			    (FLG_WARNFLAGS,
-			     cstring_makeLiteral ("Cannot set flag inside ignore "
-						  "count region."),
-			     flagMarker_getLoc (fm));
-			  llgenindentmsg 
-			    (cstring_makeLiteral ("Ignore count region starts"),
-			     flagMarker_getLoc (nlast));
-			  
+			  if (llforceerror 
+			      (FLG_WARNFLAGS,
+			       cstring_makeLiteral ("Cannot set flag inside ignore "
+						    "count region."),
+			       flagMarker_getLoc (fm))) 
+			    {
+			      llgenindentmsg 
+				(cstring_makeLiteral ("Ignore count region starts"),
+				 flagMarker_getLoc (nlast));
+			      DPRINTF (("Last: %s / %s",
+					fileloc_unparse (flagMarker_getLoc (last)),
+					fileloc_unparse (flagMarker_getLoc (fm))));
+			      
+			    }
 			}
 		      else 
 			{
 			  if (flagMarker_isIgnoreOn (fm)) 
 			    {
-			      llforceerror 
-				(FLG_WARNFLAGS,
-				 cstring_makeLiteral ("Cannot nest ignore regions."),
-				 flagMarker_getLoc (fm));
-			      llgenindentmsg 
-				(cstring_makeLiteral ("Previous ignore region starts"),
-				 flagMarker_getLoc (nlast));
+			      if (llforceerror 
+				  (FLG_WARNFLAGS,
+				   cstring_makeLiteral ("Cannot nest ignore regions."),
+				   flagMarker_getLoc (fm))) 
+				{
+				  llgenindentmsg 
+				    (cstring_makeLiteral ("Previous ignore region starts"),
+				     flagMarker_getLoc (nlast));
+				}
 			    }
 			}
 		      
@@ -223,10 +229,11 @@ void flagMarkerList_checkSuppressCounts (flagMarkerList s)
 
 	      if (nexpected > 0 && nexpected != nsuppressed)
 		{
-		  llforceerror 
+		  /* Must use forceerror to prevent self-suppression! */
+		  llforceerror
 		    (FLG_SUPCOUNTS,
 		     message 
-		     ("Line expects to suppress %d error%p, found %d error%p",
+		     ("Line expects to suppress %d error%&, found %d error%&",
 		      nexpected, nsuppressed),
 		     loc);
 		}

@@ -1,6 +1,6 @@
 /*
 ** LCLint - annotation-assisted static program checker
-** Copyright (C) 1994-2000 University of Virginia,
+** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ int g_codeLine = 0;
 
 cstring g_prevCodeFile = cstring_undefined;
 int g_prevCodeLine = 0;
-FILE *g_msgstream;
+/*@open@*/ FILE *g_msgstream;
 
 /*
 ** These were in llmain.c.  Most should not be globals...

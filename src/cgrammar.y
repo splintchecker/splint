@@ -73,33 +73,44 @@ void yyerror (char *s);
 
 %union
 {
- lltok tok;
- int count;
- specialClauseKind sck;
- qual typequal;
- qualList tquallist;
- ctype ctyp;
- sRef sr;
- /*@only@*/ qtype qtyp;
- /*@only@*/ cstring cname;
- /*@only@*/ idDecl ntyp;
- /*@only@*/ idDeclList ntyplist;
- /*@only@*/ uentryList flist;
- /*@owned@*/ uentryList entrylist;
- /*@observer@*/ /*@dependent@*/ uentry entry;
- /*@only@*/ uentry oentry;
- /*@only@*/ exprNode expr;
- /*@only@*/ enumNameList enumnamelist;
- /*@only@*/ exprNodeList alist;
- /*@only@*/ sRefSet srset; 
- /*@only@*/ cstringList cstringlist;
+  lltok tok;
+  int count;
+  qual typequal;
+  qualList tquallist;
+  ctype ctyp;
+  sRef sr;
+
+  /*@only@*/ functionClauseList funcclauselist;
+  /*@only@*/ functionClause funcclause;  
+  /*@only@*/ flagSpec flagspec;
+  /*@only@*/ globalsClause globsclause;
+  /*@only@*/ modifiesClause modsclause;
+  /*@only@*/ warnClause warnclause;
+  /*@only@*/ stateClause stateclause;
+
+  /*@only@*/ sRefList srlist;
+  /*@only@*/ globSet globset;
+  /*@only@*/ qtype qtyp;
+  /*@only@*/ cstring cname;
+  /*@observer@*/ annotationInfo annotation;
+  /*@only@*/ idDecl ntyp;
+  /*@only@*/ idDeclList ntyplist;
+  /*@only@*/ uentryList flist;
+  /*@owned@*/ uentryList entrylist;
+  /*@observer@*/ /*@dependent@*/ uentry entry;
+  /*@only@*/ uentry oentry;
+  /*@only@*/ exprNode expr;
+  /*@only@*/ enumNameList enumnamelist;
+  /*@only@*/ exprNodeList alist;
+  /*@only@*/ sRefSet srset; 
+  /*@only@*/ cstringList cstringlist;
   /*drl
     added 1/19/2001
   */
   constraint con;
   constraintList conL;
   constraintExpr conE;
-  /* drl */
+  /* drl */  
 }
 
 /* standard C tokens */
@@ -117,6 +128,7 @@ void yyerror (char *s);
 %token <tok> LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %token <tok> CSTRUCT CUNION CENUM
 %token <tok> VA_ARG VA_DCL
+%token <tok> QWARN
 %token <tok> QGLOBALS
 %token <tok> QMODIFIES 
 %token <tok> QNOMODS
@@ -168,6 +180,7 @@ void yyerror (char *s);
 %token <ctyp> CGCHAR CBOOL CINT CGFLOAT CDOUBLE CVOID 
 %token <tok> QANYTYPE QINTEGRALTYPE QUNSIGNEDINTEGRALTYPE QSIGNEDINTEGRALTYPE
 
+%type <typequal> nullterminatedQualifier
 %token <tok> QNULLTERMINATED
 %token <tok> QSETBUFFERSIZE
 %token <tok> QBUFFERCONSTRAINT
@@ -183,16 +196,34 @@ void yyerror (char *s);
 /* identifiers, literals */
 %token <entry> IDENTIFIER
 %token <cname> NEW_IDENTIFIER TYPE_NAME_OR_ID 
-%token <expr>  CCONSTANT
+%token <annotation> CANNOTATION
+%token <expr> CCONSTANT
+%type <cname> flagId
+%type <flagspec> flagSpec
+%type <expr> cconstantExpr
 %token <entry> ITER_NAME ITER_ENDNAME 
 %type <entry> endIter 
-%type <sr> globId
+
+%type <funcclauselist> functionClauses functionClausesPlain
+%type <funcclause> functionClause functionClause functionClausePlain
+
+%type <globsclause> globalsClause globalsClausePlain
+%type <modsclause> modifiesClause modifiesClausePlain nomodsClause
+%type <warnclause> warnClause warnClausePlain
+%type <stateclause> conditionClause conditionClausePlain
+%type <stateclause> stateClause stateClausePlain
+
+%type <sr> globId globIdListExpr
+%type <globset> globIdList
+
 %token <ctyp>  TYPE_NAME 
 %type <cname> enumerator newId  /*@-varuse@*/ /* yacc declares yytranslate here */
 %type <count> pointers /*@=varuse@*/
 
-%type <tok> doHeader specialTag endSpecialTag stateSpecialClause endStateTag 
-%type <sck> specialClauseType
+%type <tok> doHeader stateTag conditionTag 
+%type <typequal> exitsQualifier checkQualifier stateQualifier 
+                 paramQualifier returnQualifier visibilityQualifier
+                 typedefQualifier refcountQualifier definedQualifier
 
 /* type construction */
 %type <ctyp> abstractDecl abstractDeclBase optAbstractDeclBase
@@ -212,7 +243,7 @@ void yyerror (char *s);
 %type <alist> argumentExprList iterArgList
 %type <alist> initList
 %type <flist> structDeclList structDecl
-%type <srset> locModifies locPlainModifies modList specClauseList
+%type <srset> locModifies modList specClauseList optSpecClauseList
 %type <sr>    mExpr modListExpr specClauseListExpr
 
 /*drl*/
@@ -253,7 +284,6 @@ void yyerror (char *s);
 %type <expr> expressionStmt selectionStmt iterationStmt jumpStmt iterDefIterationStmt 
 %type <expr> stmtErr stmtListErr compoundStmtErr expressionStmtErr 
 %type <expr> iterationStmtErr initializerList initializer ifPred whilePred forPred iterWhilePred
-%type <expr> tst1
 
 %type <typequal> storageSpecifier typeQualifier typeModifier globQual
 %type <tquallist> optGlobQuals
@@ -289,9 +319,11 @@ constantDecl
    { checkValueConstant ($2, $4, $8) ; }
 
 fcnDecl
- : QFUNCTION { context_enterFunctionDecl (); } plainFcn optSemi QENDMACRO 
-   { declareStaticFunction ($3); context_quietExitFunction (); 
-     context_exitFunctionDecl (); }
+ : QFUNCTION { context_enterFunctionHeader (); } plainFcn optSemi QENDMACRO 
+   { 
+     declareStaticFunction ($3); context_quietExitFunction (); 
+     context_exitFunctionHeader (); 
+   }
 
 plainFcn
  : plainNamedDecl
@@ -319,23 +351,25 @@ namedDeclBase
      $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), exprNode_getLongValue ($4)));
    }
  | namedDeclBase PushType TLPAREN TRPAREN 
-   { setCurrentParams (uentryList_missingParams); 
-        }
- optGlobMods  optGlobBufConstraints
+   { setCurrentParams (uentryList_missingParams); }
+   functionClauses
+   optGlobBufConstraints
    { /* need to support globals and modifies here! */
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
-
+     
      $$ = idDecl_replaceCtype ($1, ct);
+     idDecl_addClauses ($$, $6);
      context_popLoc (); 
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
-   { setCurrentParams ($4); 
-        } 
- optGlobMods  optGlobBufConstraints
+   { setCurrentParams ($4); } 
+   functionClauses
+   optGlobBufConstraints
    { setImplictfcnConstraints ();
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
+     idDecl_addClauses ($$, $7);
      context_popLoc (); 
    }
 
@@ -362,28 +396,29 @@ plainNamedDeclBase
      $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), value));
    }
  | plainNamedDeclBase PushType TLPAREN TRPAREN 
-   { setCurrentParams (uentryList_missingParams); 
-        }
-   optPlainGlobMods 
-   { /* need to support globals and modifies here! */
+   { setCurrentParams (uentryList_missingParams); }
+   functionClausesPlain
+   {
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
-
+     
      $$ = idDecl_replaceCtype ($1, ct);
+     idDecl_addClauses ($$, $6);
      context_popLoc (); 
    }
  | plainNamedDeclBase PushType TLPAREN genericParamList TRPAREN 
-   { setCurrentParams ($4); 
-        } 
-   optPlainGlobMods
-   { clearCurrentParams ();
+   { setCurrentParams ($4); } 
+   functionClausesPlain
+   { 
+     clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
+     idDecl_addClauses ($$, $7);
      context_popLoc (); 
    }
 
 iterDecl
  : QITER newId TLPAREN genericParamList TRPAREN 
-   { setCurrentParams ($4); } optPlainGlobMods 
+   { setCurrentParams ($4); } functionClausesPlain
    { clearCurrentParams (); } optSemi QENDMACRO
    { declareCIter ($2, $4); }
 
@@ -394,19 +429,13 @@ macroDef
  | LLMACRO TENDMACRO /* no stmt */ { exprChecks_checkEmptyMacroBody (); } 
 
 fcnDefHdr
-  : fcnDefHdrAux { declareFunction ($1); }
-
-optGlobMods
- : { setProcessingGlobMods (); } optGlobModsRest
-   { clearProcessingGlobMods (); }
-
+  : fcnDefHdrAux { clabstract_declareFunction ($1); }
 
 /*drl*/
 
 optGlobBufConstraints
  : { setProcessingGlobMods (); } optGlobBufConstraintsRest
    { clearProcessingGlobMods (); }
-
 
 optGlobBufConstraintsRest
  : optGlobBufConstraintsAux optGlobEnsuresConstraintsAux
@@ -481,7 +510,7 @@ BufConstraintSrefExpr
 : id                              {
    $$ =
      checkbufferConstraintClausesId ($1);}
- | NEW_IDENTIFIER                  { $$ = fixSpecClausesId ($1); }
+ | NEW_IDENTIFIER                  { $$ = fixStateClausesId ($1); }
 
  | BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
  |  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
@@ -516,45 +545,105 @@ BufBinaryOp
  : TPLUS
 | TMINUS
 ;
+/*
+** Function clauses can appear in any order.
+*/
 
+functionClauses
+ : { $$ = functionClauseList_new (); }
+ | functionClause functionClauses
+   { $$ = functionClauseList_prepend ($2, $1); }
 
-koptPlainGlobMods
- : { setProcessingGlobMods (); } optPlainGlobModsRest
-   { clearProcessingGlobMods (); }
+/*
+** Inside macro definitions, there are no end macros.
+*/
 
+functionClausesPlain
+ : 
+   { $$ = functionClauseList_new (); }
+ | functionClausePlain functionClausesPlain
+   { $$ = functionClauseList_prepend ($2, $1); }
 
-/*: id  {  $$ = unentry_getSref($1);  checkModifiesId ($1); }
-| NEW_INDENTIFIER { $$ = fixModifiesId ($1)} */
+functionClause
+ : globalsClause   { $$ = functionClause_createGlobals ($1); }
+ | modifiesClause  { $$ = functionClause_createModifies ($1); }
+ | nomodsClause    { $$ = functionClause_createModifies ($1); }
+ | stateClause     { $$ = functionClause_createState ($1); }  
+ | conditionClause { $$ = functionClause_createState ($1); }
+ | warnClause      { $$ = functionClause_createWarn ($1); }
 
-/*end*/
+functionClausePlain
+ : globalsClausePlain   { $$ = functionClause_createGlobals ($1); }
+ | modifiesClausePlain  { $$ = functionClause_createModifies ($1); }
+ | nomodsClause         { $$ = functionClause_createModifies ($1); }
+ | stateClausePlain     { $$ = functionClause_createState ($1); }  
+ | conditionClausePlain { $$ = functionClause_createState ($1); }
+ | warnClausePlain      { $$ = functionClause_createWarn ($1); }
 
+globalsClause
+ : globalsClausePlain QENDMACRO { $$ = $1; }
 
-optPlainGlobMods
- : { setProcessingGlobMods (); } optPlainGlobModsRest
-   { clearProcessingGlobMods (); }
+globalsClausePlain
+ : QGLOBALS { setProcessingGlobalsList (); } 
+   globIdList optSemi  
+   { 
+     unsetProcessingGlobals (); 
+     $$ = globalsClause_create ($1, $3); 
+   }
 
-optGlobModsRest
- : optGlobModsAux 
- | specialClauses optGlobModsAux
+nomodsClause
+ : QNOMODS { $$ = modifiesClause_createNoMods ($1); }
 
-optPlainGlobModsRest
- : optPlainGlobModsAux 
- | specialClauses optPlainGlobModsAux
+modifiesClause
+ : modifiesClausePlain QENDMACRO { $$ = $1; }
 
-specialClauses
- : specialClause
- | specialClause specialClauses
- 
+modifiesClausePlain
+ : QMODIFIES 
+   {
+     context_setProtectVars (); enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+   }
+   locModifies
+   { 
+     exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+     $$ = modifiesClause_create ($1, $3);
+   }
+
+flagSpec
+ : flagId 
+   { $$ = flagSpec_createPlain ($1); }
+ | flagId TBAR flagSpec
+   { $$ = flagSpec_createOr ($1, $3); }
+
+flagId
+ : NEW_IDENTIFIER
+
+warnClause
+ : warnClausePlain QENDMACRO { $$ = $1; }
+
+warnClausePlain
+ : QWARN flagSpec cconstantExpr
+   { $$ = warnClause_create ($1, $2, $3); }
+ | QWARN flagSpec
+   { $$ = warnClause_create ($1, $2, exprNode_undefined); }
+
 globIdList
- : globIdListExpr                     { ; }
- | globIdList TCOMMA globIdListExpr   { ; }
+ : globIdListExpr                     { $$ = globSet_single ($1); }
+ | globIdList TCOMMA globIdListExpr   { $$ = globSet_insert ($1, $3); }
  
 globIdListExpr 
- : optGlobQuals globId { globListAdd ($2, $1); }
+ : optGlobQuals globId { $$ = clabstract_createGlobal ($2, $1); }
+
+optGlobQuals
+ : /* empty */           { $$ = qualList_undefined; }
+ | globQual optGlobQuals { $$ = qualList_add ($2, $1); }
 
 globId
  : id             { $$ = uentry_getSref ($1); }
- | NEW_IDENTIFIER { $$ = globListUnrecognized ($1); }
+ | NEW_IDENTIFIER { $$ = clabstract_unrecognizedGlobal ($1); }
+ | initializer    { $$ = clabstract_checkGlobal ($1); }
 
 globQual
  : QUNDEF   { $$ = qual_createUndef (); }
@@ -563,122 +652,16 @@ globQual
  | QIN      { $$ = qual_createIn (); }
  | QPARTIAL { $$ = qual_createPartial (); }
 
-optGlobQuals
- : /* empty */         { $$ = qualList_undefined; }
- | globQual optGlobQuals { $$ = qualList_add ($2, $1); }
-
-optGlobModsAux  
- : QGLOBALS { setProcessingGlobalsList (); } initializerList optSemi 
-   QENDMACRO optMods
-   { unsetProcessingGlobals (); }
- | QGLOBALS { setProcessingGlobalsList (); } globIdList optSemi 
-   QENDMACRO optMods
-   { unsetProcessingGlobals (); }
- | QNOMODS 
-   { setFunctionNoGlobals ();
-     setFunctionModifies (sRefSet_single (sRef_makeNothing ())); 
-   }
- | fcnMods
- | /* empty */
-
-optPlainGlobModsAux
- : QGLOBALS { setProcessingGlobalsList (); } initializerList optSemi 
-   optMods
-   { unsetProcessingGlobals (); }
- | QGLOBALS { setProcessingGlobalsList (); } globIdList optSemi 
-   optMods
-   { unsetProcessingGlobals (); }
- | QNOMODS 
-   { setFunctionNoGlobals ();
-     setFunctionModifies (sRefSet_single (sRef_makeNothing ())); 
-   }
- | fcnPlainMods
- | /* empty */
-
-optMods
- : fcnMods
- | /* empty */
-
-fcnMods
- : QMODIFIES 
-   {
-     context_setProtectVars (); enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-   }
-   locModifies
-   { 
-     setFunctionModifies ($3); exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-   }
-
-fcnPlainMods
- : QMODIFIES 
-   {
-     context_setProtectVars (); enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-   }
-   locPlainModifies
-   { 
-     setFunctionModifies ($3); exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-   }
-
-specialTag
+stateTag
  : QDEFINES
  | QUSES
  | QALLOCATES
  | QSETS
  | QRELEASES
 
-endStateTag
- : QENDMACRO
-
-endSpecialTag
- : QENDMACRO
-
-stateSpecialClause
+conditionTag
  : QPRECLAUSE
  | QPOSTCLAUSE
-
-specialClauseType
- : QONLY       { $$ = SP_ISONLY; }
- | QOBSERVER   { $$ = SP_ISOBSERVER; }
- | QEXPOSED    { $$ = SP_ISEXPOSED; }
- | QDEPENDENT  { $$ = SP_ISDEPENDENT; }
- | QOWNED      { $$ = SP_ISOWNED; }
- | QSHARED     { $$ = SP_ISSHARED; }
- | QISNULL     { $$ = SP_ISNULL; }
- | QNOTNULL    { $$ = SP_ISNOTNULL; }
- 
-specialClause
- : specialTag NotType
-   {
-     context_setProtectVars (); 
-     enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-   }
-   specClauseList optSemi endSpecialTag IsType
-   { 
-     setFunctionSpecialClause ($1, $4, $6); 
-     exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-   }
-  | stateSpecialClause NotType specialClauseType 
-    {
-      context_setProtectVars (); 
-      enterParamsTemp (); 
-      sRef_setGlobalScopeSafe (); 
-    }
-    specClauseList optSemi endStateTag IsType
-    { 
-      setFunctionStateSpecialClause ($1, $3, $5, $7); 
-      exitParamsTemp ();
-      sRef_clearGlobalScopeSafe (); 
-      context_releaseVars ();
-    }
 
 fcnDefHdrAux
  : namedDecl                               
@@ -717,10 +700,6 @@ fcnDef
    }
 
 locModifies
- : modList optSemi QENDMACRO { $$ = $1; }
- | optSemi QENDMACRO         { $$ = sRefSet_new (); }
-
-locPlainModifies
  : modList optSemi           { $$ = $1; }
  | optSemi                   { $$ = sRefSet_new (); }
  
@@ -736,8 +715,8 @@ modListExpr
 
 
 mExpr
-  : modListExpr { $$ = $1; }
-  | CCONSTANT   { $$ = sRef_makeUnknown (); /* sRef_makeConstant ($1); ? */ }
+  : modListExpr     { $$ = $1; }
+  | cconstantExpr   { $$ = sRef_makeUnknown (); /* sRef_makeConstant ($1); ? */ }
     /* arithmetic? */
 
 modList
@@ -746,9 +725,9 @@ modList
 
 specClauseListExpr
  : id                                     
-   { $$ = checkSpecClausesId ($1); }
+   { $$ = checkStateClausesId ($1); }
  | NEW_IDENTIFIER                         
-   { $$ = fixSpecClausesId ($1); }
+   { $$ = fixStateClausesId ($1); }
  | specClauseListExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
  | specClauseListExpr TLSQBR mExpr TRSQBR { $$ = sRef_makeAnyArrayFetch ($1); }
  | TMULT specClauseListExpr               { $$ = sRef_constructPointer ($2); }
@@ -757,6 +736,10 @@ specClauseListExpr
 					    $$ = sRef_buildField ($1, $3); }
  | specClauseListExpr ARROW_OP newId      { cstring_markOwned ($3);
                                             $$ = sRef_makeArrow ($1, $3); }
+
+optSpecClauseList
+ : /* empty */ { $$ = sRefSet_undefined }
+ | specClauseList
 
 specClauseList
   : specClauseListExpr                       
@@ -777,7 +760,7 @@ specClauseList
 primaryExpr
  : id { $$ = exprNode_fromIdentifier ($1); }
  | NEW_IDENTIFIER { $$ = exprNode_fromUIO ($1); } 
- | CCONSTANT      { $$ = $1; }
+ | cconstantExpr
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  | TYPE_NAME_OR_ID { $$ = exprNode_fromIdentifier (coerceId ($1)); } 
  | QEXTENSION { $$ = exprNode_makeError (); }
@@ -788,8 +771,8 @@ postfixExpr
  | postfixExpr TLPAREN TRPAREN { $$ = exprNode_functionCall ($1, exprNodeList_new ()); }
  | postfixExpr TLPAREN argumentExprList TRPAREN { $$ = exprNode_functionCall ($1, $3); }
  | VA_ARG TLPAREN assignExpr TCOMMA typeExpression TRPAREN { $$ = exprNode_vaArg ($1, $3, $5); }
- | postfixExpr NotType TDOT newId IsType { $$ = exprNode_fieldAccess ($1, $4); }
- | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $4); }
+ | postfixExpr NotType TDOT newId IsType { $$ = exprNode_fieldAccess ($1, $3, $4); }
+ | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $3, $4); }
  | postfixExpr INC_OP { $$ = exprNode_postOp ($1, $2); }
  | postfixExpr DEC_OP { $$ = exprNode_postOp ($1, $2); }
  
@@ -938,7 +921,8 @@ initializer
  | typeDecl     { $$ = exprNode_makeError (); }
 
 instanceDecl
- : completeTypeSpecifier IsType TSEMI { $$ = exprNode_makeError (); }
+ : completeTypeSpecifier IsType TSEMI 
+   { $$ = exprNode_makeError (); }
     /*
      ** This causes r/r conflicts with function definitions.
      ** Instead we need to snarf one first. (gack)
@@ -953,21 +937,30 @@ instanceDecl
      */
  | completeTypeSpecifier NotType namedDecl NotType 
    {
-               setProcessingVars ($1); 
-     processNamedDecl ($3); }
-   IsType optDeclarators TSEMI IsType { unsetProcessingVars (); $$ = $7; }
+     setProcessingVars ($1); 
+     processNamedDecl ($3); 
+   }
+   IsType optDeclarators TSEMI IsType 
+   { 
+     unsetProcessingVars (); 
+     $$ = exprNode_makeEmptyInitialization ($3); 
+     DPRINTF (("Empty initialization: %s", exprNode_unparse ($$)));
+   }
  | completeTypeSpecifier NotType namedDecl NotType TASSIGN 
-   { setProcessingVars ($1); processNamedDecl ($3); 
-        }
+   { setProcessingVars ($1); processNamedDecl ($3); }
    IsType init optDeclarators TSEMI IsType 
    { $$ = exprNode_concat ($9, exprNode_makeInitialization ($3, $8)); 
      unsetProcessingVars ();
    }
+
 namedInitializer
- : namedDecl NotType { processNamedDecl ($1); $$ = exprNode_makeError (); }
+ : namedDecl NotType 
+   { 
+     processNamedDecl ($1); 
+     $$ = exprNode_makeEmptyInitialization ($1);
+   }
  | namedDecl NotType TASSIGN { processNamedDecl ($1); } IsType init
    { $$ = exprNode_makeInitialization ($1, $6); }
-
 
 typeDecl
  : CTYPEDEF completeTypeSpecifier { setProcessingTypedef ($2); } 
@@ -993,7 +986,7 @@ optDeclarators
  | optDeclarators TCOMMA NotType namedInitializer { $$ = exprNode_concat ($1, $4); }
 
 init
- : assignExpr                      { $$ = $1; }
+ : assignExpr                      
  | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); }
  | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); }
 
@@ -1016,62 +1009,131 @@ storageSpecifier
  | QAUTO     { $$ = qual_createAuto (); }
  | QREGISTER { $$ = qual_createRegister (); }
 
-typeQualifier
- : QCONST IsType       { $$ = qual_createConst (); }
- | QVOLATILE IsType    { $$ = qual_createVolatile (); }
- | QOUT IsType         { $$ = qual_createOut (); }
- | QIN IsType          { $$ = qual_createIn (); }
- | QPARTIAL IsType     { $$ = qual_createPartial (); }
- | QSPECIAL IsType     { $$ = qual_createSpecial (); }
- | QOWNED IsType       { $$ = qual_createOwned (); }
- | QDEPENDENT IsType   { $$ = qual_createDependent (); }
- | QYIELD IsType       { $$ = qual_createYield (); }
- | QTEMP IsType        { $$ = qual_createTemp (); }
- | QONLY IsType        { $$ = qual_createOnly (); }
- | QKEEP IsType        { $$ = qual_createKeep (); }
- | QKEPT IsType        { $$ = qual_createKept (); }
- | QSHARED IsType      { $$ = qual_createShared (); }
- | QUNIQUE IsType      { $$ = qual_createUnique (); }
- | QEXITS IsType       { $$ = qual_createExits (); }
- | QMAYEXIT IsType     { $$ = qual_createMayExit (); }
- | QTRUEEXIT IsType    { $$ = qual_createTrueExit (); }
- | QFALSEEXIT IsType   { $$ = qual_createFalseExit (); }
- | QNEVEREXIT IsType   { $$ = qual_createNeverExit (); }
- | QNULL IsType        { $$ = qual_createNull (); }
- | QRELNULL IsType     { $$ = qual_createRelNull (); }
- | QRETURNED IsType    { $$ = qual_createReturned (); }
- | QEXPOSED IsType     { $$ = qual_createExposed (); }
- | QOBSERVER IsType    { $$ = qual_createObserver (); }
- | QCHECKED IsType     { $$ = qual_createChecked (); }
- | QCHECKMOD IsType    { $$ = qual_createCheckMod (); }
- | QUNCHECKED IsType   { $$ = qual_createUnchecked (); }
- | QCHECKEDSTRICT IsType  { $$ = qual_createCheckedStrict (); }
- | QTRUENULL IsType    { $$ = qual_createTrueNull (); }
- | QFALSENULL IsType   { $$ = qual_createFalseNull (); }
- | QUNUSED IsType      { $$ = qual_createUnused (); }
- | QEXTERNAL IsType    { $$ = qual_createExternal (); }
- | QSEF IsType         { $$ = qual_createSef (); }
- | QABSTRACT IsType    { $$ = qual_createAbstract (); }
- | QCONCRETE IsType    { $$ = qual_createConcrete (); }
- | QMUTABLE IsType     { $$ = qual_createMutable (); }
- | QIMMUTABLE IsType   { $$ = qual_createImmutable (); }
- | QNOTNULL IsType     { $$ = qual_createNotNull (); }
- | QREFCOUNTED IsType  { $$ = qual_createRefCounted (); }
- | QREFS IsType        { $$ = qual_createRefs (); }
- | QKILLREF IsType     { $$ = qual_createKillRef (); }
- | QRELDEF IsType      { $$ = qual_createRelDef (); }
- | QNEWREF IsType      { $$ = qual_createNewRef (); }
- | QTEMPREF IsType     { $$ = qual_createTempRef (); }
- | QNULLTERMINATED IsType { $$ = qual_createNullTerminated (); }
+nullterminatedQualifier:
+ QNULLTERMINATED IsType { $$ = qual_createNullTerminated (); }
 
-/* | QSETBUFFERSIZE IsType { $$ = qual_createSetBufferSize (); } */
+stateClause
+ : stateClausePlain QENDMACRO { $$ = $1; }
 
+stateClausePlain
+ : stateTag NotType
+   {
+     context_setProtectVars (); 
+     enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+   }
+   specClauseList optSemi IsType
+   { 
+     exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+     $$ = stateClause_createPlain ($1, $4);
+   }
+
+conditionClause
+ : conditionClausePlain QENDMACRO { $$ = $1; }
+
+conditionClausePlain
+ : conditionTag { context_enterFunctionHeader (); } NotType stateQualifier
+   {
+     context_exitFunctionHeader ();
+     context_setProtectVars (); 
+     enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+   }
+   optSpecClauseList optSemi IsType
+   { 
+     exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+     $$ = stateClause_create ($1, $4, $6);
+   }
+ 
+exitsQualifier
+ : QEXITS        { $$ = qual_createExits (); }
+ | QMAYEXIT      { $$ = qual_createMayExit (); }
+ | QTRUEEXIT     { $$ = qual_createTrueExit (); }
+ | QFALSEEXIT    { $$ = qual_createFalseExit (); }
+ | QNEVEREXIT    { $$ = qual_createNeverExit (); }
+
+checkQualifier
+ : QCHECKED        { $$ = qual_createChecked (); }
+ | QCHECKMOD       { $$ = qual_createCheckMod (); }
+ | QUNCHECKED      { $$ = qual_createUnchecked (); }
+ | QCHECKEDSTRICT  { $$ = qual_createCheckedStrict (); }
+
+stateQualifier
+ : QOWNED        { $$ = qual_createOwned (); }
+ | QDEPENDENT    { $$ = qual_createDependent (); }
+ | QYIELD        { $$ = qual_createYield (); }
+ | QTEMP         { $$ = qual_createTemp (); }
+ | QONLY         { $$ = qual_createOnly (); }
+ | QKEEP         { $$ = qual_createKeep (); }
+ | QKEPT         { $$ = qual_createKept (); }
+ | QSHARED       { $$ = qual_createShared (); }
+ | QUNIQUE       { $$ = qual_createUnique (); }
+ | QNULL         { $$ = qual_createNull (); }
+ | QISNULL       { $$ = qual_createIsNull (); }
+ | QRELNULL      { $$ = qual_createRelNull (); }
+ | QNOTNULL      { $$ = qual_createNotNull (); }
+ | QEXPOSED      { $$ = qual_createExposed (); }
+ | QOBSERVER     { $$ = qual_createObserver (); }
+ | CANNOTATION   { $$ = qual_createMetaState ($1); }
+
+paramQualifier
+ : QRETURNED     { $$ = qual_createReturned (); }
+ | QSEF          { $$ = qual_createSef (); }
+
+visibilityQualifier
+ : QUNUSED       { $$ = qual_createUnused (); }
+ | QEXTERNAL     { $$ = qual_createExternal (); }
+
+returnQualifier
+ : QTRUENULL     { $$ = qual_createTrueNull (); }
+ | QFALSENULL    { $$ = qual_createFalseNull (); }
+
+typedefQualifier
+ : QABSTRACT     { $$ = qual_createAbstract (); }
+ | QCONCRETE     { $$ = qual_createConcrete (); }
+ | QMUTABLE      { $$ = qual_createMutable (); }
+ | QIMMUTABLE    { $$ = qual_createImmutable (); }
+
+refcountQualifier
+ : QREFCOUNTED   { $$ = qual_createRefCounted (); }
+ | QREFS         { $$ = qual_createRefs (); }
+ | QKILLREF      { $$ = qual_createKillRef (); }
+ | QRELDEF       { $$ = qual_createRelDef (); }
+ | QNEWREF       { $$ = qual_createNewRef (); }
+ | QTEMPREF      { $$ = qual_createTempRef (); }
 
 typeModifier
  : QSHORT            { $$ = qual_createShort (); }
  | QLONG             { $$ = qual_createLong (); }
  | QSIGNED           { $$ = qual_createSigned (); }
  | QUNSIGNED         { $$ = qual_createUnsigned (); }
+
+definedQualifier
+ : QOUT              { $$ = qual_createOut (); }
+ | QIN               { $$ = qual_createIn (); }
+ | QPARTIAL          { $$ = qual_createPartial (); }
+ | QSPECIAL          { $$ = qual_createSpecial (); }
+
+typeQualifier
+ : QCONST IsType       { $$ = qual_createConst (); }
+ | QVOLATILE IsType    { $$ = qual_createVolatile (); }
+ | definedQualifier IsType { $$ = $1; } 
+ | stateQualifier IsType { $$ = $1; } 
+ | exitsQualifier IsType { $$ = $1; }
+ | paramQualifier IsType { $$ = $1; }
+ | checkQualifier IsType { $$ = $1; }
+ | returnQualifier IsType { $$ = $1; }
+ | visibilityQualifier IsType { $$ = $1; }
+ | typedefQualifier IsType { $$ = $1; }
+ | refcountQualifier IsType { $$ = $1; }
+
+/*
+** This is copied into the mtgrammar!
+*/
 
 typeSpecifier
  : CGCHAR NotType 
@@ -1132,7 +1194,7 @@ suSpc
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    { $$ = declareUnnamedStruct ($7); }
- | NotType CUNION  IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
+ | NotType CUNION IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
@@ -1334,11 +1396,6 @@ lclintassertion
 
 /* | QSETBUFFERSIZE id id  {$$ = $2; printf(" QSETBUFFERSIZE id id HEllo World\n");} */
 
-tst1
-: TCOLON newId { $$ = exprNode_labelMarker ($2); }
-
-
-
 iterBody
  : iterDefStmtList { $$ = $1; }
 
@@ -1378,7 +1435,7 @@ iterDefStmt
  : labeledStmt 
  | caseStmt 
  | defaultStmt
- | openScope initializerList { $$ = $2; }
+ | openScope initializerList { $$ = $1; DPRINTF (("def stmt: %s", exprNode_unparse ($$))); }
  | openScope
  | closeScope
  | expressionStmt
@@ -1577,8 +1634,12 @@ iterArgExpr
 ** everything is the same, EXCEPT it cannot be a NEW_IDENTIFIER 
 */
 
+cconstantExpr
+ : CCONSTANT
+ | cconstantExpr CCONSTANT { $$ = exprNode_combineLiterals ($1, $2); }  
+
 primaryIterExpr
- : CCONSTANT 
+ : cconstantExpr 
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  
 postfixIterExpr
@@ -1588,8 +1649,8 @@ postfixIterExpr
  | postfixExpr TLPAREN argumentExprList TRPAREN { $$ = exprNode_functionCall ($1, $3); }
  | VA_ARG TLPAREN assignExpr TCOMMA typeExpression TRPAREN
        { $$ = exprNode_vaArg ($1, $3, $5); }
- | postfixExpr NotType TDOT newId IsType { $$ = exprNode_fieldAccess ($1, $4); }
- | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $4); }
+ | postfixExpr NotType TDOT newId IsType { $$ = exprNode_fieldAccess ($1, $3, $4); }
+ | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $3, $4); }
  | postfixExpr INC_OP { $$ = exprNode_postOp ($1, $2); }
  | postfixExpr DEC_OP { $$ = exprNode_postOp ($1, $2); }
  
@@ -1771,6 +1832,7 @@ void yyerror (/*@unused@*/ char *s)
 	}
 
       swallowMacro ();
+      context_exitAllClausesQuiet ();
     }
   else
     {
@@ -1778,30 +1840,12 @@ void yyerror (/*@unused@*/ char *s)
     }
 }
 
-void printState (idDecl t) {
- cstring id = idDecl_getName (t);
- uentry ue = usymtab_lookupSafe (id);
-
- sRef s = uentry_getSref (ue);
- 
- printf("State = %d\n", s->bufinfo.bufstate);
-}
 
 
-/*take this out soon */
-/* void testassert1 (cstring id, icstring cons ) { */
- /*   uentry ue =usymtab_lookupSafe (id); */
-/*   sRef s = uentry_getSref (ue); */
-/*   printf ("Doing testassert1 with setbuffersize\n"); */
-/*   printf("State = %d\n", s->bufinfo.bufstate); */
-/* } */
-/* void testassert2 (cstring id) { */
-/*    uentry ue =usymtab_lookupSafe (id); */
-/*   sRef s = uentry_getSref (ue); */
-/*   printf ("Doing testassert2 with setbuffersize\n"); */
-/*   printf("State = %d\n", s->bufinfo.bufstate); */
-/* } */
-  
+
+
+
+
 
 
 
