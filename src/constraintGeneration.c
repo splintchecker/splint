@@ -1204,6 +1204,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
   e->trueEnsuresConstraints = constraintList_makeNew();;
   e->falseEnsuresConstraints = constraintList_makeNew();;
   */
+
   if (exprNode_isUnhandled (e) )
      {
        return; // FALSE;
@@ -1600,6 +1601,9 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
 
   e->ensuresConstraints  = constraintList_addGeneratingExpr ( e->ensuresConstraints, e);
 
+
+  e->requiresConstraints = constraintList_removeSurpressed( e->requiresConstraints);
+  
   DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
 
   DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));

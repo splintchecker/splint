@@ -423,10 +423,33 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
 	 ce2 = constraintExpr_makeExprNode (t2);
 	 ret = constraintExpr_parseMakeBinaryOp (ce1, tok, ce2);	 
        }
-     else
+     /*
+       drl 8-11-001
+       
+       We handle expressions containing sizeof with the rule
+       (sizeof type ) * Expr = Expr
+
+       This is the total wronge way to do this but...
+       it may be better than nothing
+     */
+     else if (lltok_isMult(tok) )
        {
-        ret = oldconstraintExpr_makeTermExprNode (e);
+	 if  ((t1->kind == XPR_SIZEOF) || (t1->kind == XPR_SIZEOFT) )
+	   {
+	     ret = constraintExpr_makeExprNode(t2);
+	   }
+	 else if  ((t2->kind == XPR_SIZEOF) || (t2->kind == XPR_SIZEOFT) )
+	   {
+	     ret = constraintExpr_makeExprNode(t1);
+	   }
+	 else
+	   {
+	   ret =  oldconstraintExpr_makeTermExprNode (e);
+	   }
        }
+     else
+        ret = oldconstraintExpr_makeTermExprNode (e);
+   
      break;
    case XPR_PARENS: 
      t = exprData_getUopNode (data);

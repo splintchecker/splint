@@ -160,6 +160,48 @@ constraintList constraintList_addListFree (/*@returned@*/ constraintList s, /*@o
 }
 
 
+constraintList constraintList_removeSurpressed (/*@only@*/ constraintList s)
+{
+  constraintList ret;
+  fileloc loc;
+  llassert(constraintList_isDefined(s) );
+
+  ret = constraintList_makeNew();
+  
+  constraintList_elements_private_only(s, elem)
+    {
+      loc = constraint_getFileloc(elem);
+
+      if(fileloc_isUndefined(loc) )
+	{
+	  ret = constraintList_add (ret, elem);
+	}
+      
+      else if (context_suppressFlagMsg(FLG_ARRAYBOUNDS, loc) )
+	{
+	  DPRINTF(( message("constraintList_removeSurpressed getting rid of surpressed constraint %q", constraint_print(elem) ) ));
+	  constraint_free(elem);
+	}
+      
+      else if ( (! constraint_hasMaxSet(elem) ) && context_suppressFlagMsg(FLG_ARRAYBOUNDSREAD, loc) )
+	{
+	  DPRINTF(( message("constraintList_removeSurpressed getting rid of surpressed constraint %q", constraint_print(elem) ) ));
+	  constraint_free(elem);
+	}
+      else
+	{
+	  ret = constraintList_add (ret, elem);
+	} 
+      fileloc_free(loc);
+    } 
+  end_constraintList_elements_private_only;
+
+  constraintList_freeShallow(s);
+  
+  return ret;
+}
+
+
 extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList s) /*@*/
 {
   return (constraintList_print(s));
