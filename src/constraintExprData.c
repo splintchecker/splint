@@ -150,7 +150,8 @@ constraintExprData constraintExprData_termSetTerm (/*@returned@*/  constraintExp
 /*@observer@*/ constraintTerm constraintExprData_termGetTerm (/*@observer@*/ constraintExprData data)
 {
   llassert (constraintExprData_isDefined(data));
-  /*@i22*/return data->term;
+  /*@i22*/
+  return data->term;
 }
 
 
@@ -212,7 +213,8 @@ constraintExpr  constraintExprData_binaryExprGetExpr1 (constraintExprData data)
 constraintExpr  constraintExprData_binaryExprGetExpr2 (constraintExprData data)
 {
   llassert (constraintExprData_isDefined(data));
-  /*@i22*/ return (data->binaryOp.expr2);
+  /*@i22*/ 
+  return (data->binaryOp.expr2);
 }
 
 

@@ -35,7 +35,6 @@ extern void constraint_free (/*@only@*/  constraint p_c);
 
 /* constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant); */
 
-/*@i22*/
 /*@-czechfcns*/
 
 extern constraint 

@@ -663,7 +663,7 @@ static bool constraint_conflict (constraint c1, constraint c2)
      strlen(str) == maxRead(s) + strlen(str);
   */
 
-  /*@i324234*/ /* clean this up */
+  /*@i324234*/ /*this code is functional but it may be worth cleaning up at some point. */
   
   if (c1->ar == EQ)
     if (c1->ar == c2->ar)
@@ -865,6 +865,7 @@ static bool  sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
 */
 
 /*@i223@*/ /*need to add some type checking */
+
 static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
 {
   constraintExpr l, r, buf1, buf2, con;

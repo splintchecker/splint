@@ -275,7 +275,7 @@ static cstring constraintTerm_getName (constraintTerm term)
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  /*wtf*/
+
       s = message ("%s", exprNode_unparse (term->value.expr) );
       break;
     case INTLITERAL:
@@ -303,7 +303,7 @@ constraintTerm_doSRefFixBaseParam (/*@returned@*/constraintTerm term, exprNodeLi
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  /*wtf*/
+
       break;
     case INTLITERAL:
       break;
@@ -328,7 +328,7 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
   switch (term->kind)
     {
     case EXPRNODE:
-      /*@i334*/  /*wtf*/
+
       s = message ("%s @ %q", exprNode_unparse (term->value.expr),
 		   fileloc_unparse (term->loc) );
       break;

@@ -364,7 +364,8 @@ constraint constraint_makeSRefSetBufferSize (sRef s, long int size)
  ret->ar = EQ;
  ret->expr =  constraintExpr_makeIntLiteral ((int)size);
  ret->post = TRUE;
- /*@i1*/return ret;
+ /*@i1*/
+ return ret;
 }
 
 constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
@@ -376,7 +377,8 @@ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
-  /*@i1*/return ret;
+  /*@i1*/
+  return ret;
 }
 
 /* drl added 01/12/2000
@@ -426,7 +428,7 @@ constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
   ret->ar = GTE;
   ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
-  /*@i1*/return ret;
+  return ret;
 }
 
 constraint constraint_makeEnsureMaxReadAtLeast (exprNode t1, exprNode t2, fileloc sequencePoint)
