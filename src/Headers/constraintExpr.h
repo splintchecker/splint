@@ -10,7 +10,7 @@ typedef enum
 }
 constraintExprKind;
 
-struct constraintExpr_ {
+struct _constraintExpr {
   constraintExprKind kind;
   constraintExprData data;
 };
@@ -27,18 +27,6 @@ extern /*@truenull@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
 # define constraintExpr_isUndefined(e)      ((e) == constraintExpr_undefined)
 # define constraintExpr_isError(e)          ((e) == constraintExpr_undefined)
 
-
-
-/*@constant null constraintExprData constraintExprData_undefined; @*/
-# define constraintExprData_undefined ((constraintExprData)NULL)
-
-extern /*@falsenull@*/ bool constraintExprData_isDefined (constraintExprData p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (constraintExprData p_e) /*@*/ ;
-extern /*@truenull@*/ bool constraintExprData_isError (constraintExprData p_e) /*@*/ ;
-
-# define constraintExprData_isDefined(e)      ((e) != constraintExprData_undefined)
-# define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
-# define constraintExprData_isError(e)        ((e) == constraintExprData_undefined)
 
 
 int constraintExpr_getValue (constraintExpr expr) /*@*/;
@@ -87,7 +75,6 @@ constraintExpr constraintExpr_makeSRefMaxset (sRef s);
 constraintExpr constraintExpr_makeTermsRef (sRef s);
 constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr expr, exprNodeList arglist);
 constraintExpr constraintExpr_makeExprNode (exprNode e);
-constraintExpr constraintExpr_doSRefFixConstraintParam (/*@returned@*/  constraintExpr expr, exprNodeList arglist);
 
 constraintExpr constraintExpr_doFixResult (/*@returned@*/  constraintExpr expr, exprNode fcnCall);
 bool constraintExpr_isLit (constraintExpr expr);
@@ -108,7 +95,7 @@ constraintExpr constraintExpr_makeSRefMaxRead(sRef s);
 constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
 
 constraintExpr 
-constraintExpr_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist) /*@modifies e@*/;
+constraintExpr_doSRefFixConstraintParam (/*@returned@*/ constraintExpr e, exprNodeList arglist) /*@modifies e@*/;
 
 
 #else

@@ -31,6 +31,21 @@ abst_typedef struct _constraintTerm * constraintTerm;
 
 
 
+extern /*@falsenull@*/ bool constraintTerm_isDefined (constraintTerm p_e) /*@*/;
+extern /*@unused@*/ /*@truenull@*/ bool constraintTerm_isUndefined (constraintTerm p_e) /*@*/ ;
+extern /*@truenull@*/ bool constraintTerm_isError (constraintTerm p_e) /*@*/ ;
+
+
+# define constraintTerm_undefined ((constraintTerm)NULL)
+
+# define constraintTerm_isDefined(e)        ((e) != constraintTerm_undefined)
+# define constraintTerm_isUndefined(e)      ((e) == constraintTerm_undefined)
+# define constraintTerm_isError(e)          ((e) == constraintTerm_undefined)
+
+
+
+
+
 constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/ ;
 
 constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e) /*@*/;
@@ -77,8 +92,9 @@ constraintTerm constraintTerm_makeIntLiteral (int i) /*@*/;
 bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/;
 cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;
 
-constraintExpr 
-constraintExpr_doFixResult (constraintExpr e, exprNode fcnCall) /*@modifies e @*/;
+
+constraintTerm 
+constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
 
 #else
 
