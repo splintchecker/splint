@@ -676,8 +676,8 @@ staticarray:
 
 .PHONY: stringliteral
 stringliteral:
-	$(SPLINTR) stringliteral.c +stringliteralnoroomfinalnull -expect 4
-	$(SPLINTR) stringliteral.c -expect 3
+	$(SPLINTR) stringliteral.c -stringliteralnoroomfinalnull -expect 3
+	$(SPLINTR) stringliteral.c -expect 4
 
 .PHONY: strings
 strings:
