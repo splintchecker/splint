@@ -952,14 +952,31 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
       p->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(p);
       constraintList_free(temp);
 
+
+
+      DPRINTF((message("p->trueEnsuresConstraints before substitue %s", constraintList_print(p->trueEnsuresConstraints)  )
+	       ));
+
+            /*drl 10/10/2002 this is a bit of a hack but the reason why we do this is so that any function post conditions or similar things get applied correctly to each branch.  e.g. in strlen(s) < 5 we want the trueEnsures to be maxRead(s) < 5*/
+
+      p->trueEnsuresConstraints = constraintList_substituteFreeTarget (p->trueEnsuresConstraints,
+								       p->ensuresConstraints);
+      
+      DPRINTF(( message ("p->trueEnsuresConstraints after substitue %s", constraintList_print(p->trueEnsuresConstraints) )
+		));
+      
       temp = p->falseEnsuresConstraints;
       p->falseEnsuresConstraints =  exprNode_traversFalseEnsuresConstraints(p);
       constraintList_free(temp);
 
+      /*See comment on trueEnsures*/
+      p->falseEnsuresConstraints = constraintList_substituteFreeTarget (p->falseEnsuresConstraints,
+								       p->ensuresConstraints);
+      
       e = doIfElse (e, p, trueBranch, falseBranch);
       DPRINTF(("Done IFELSE"));
       break;
- 
+      
     case XPR_DOWHILE:
 
       e2 = (exprData_getPairB (data));
