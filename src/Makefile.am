@@ -315,7 +315,8 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	@if test x$(BISON) = xno; then \
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
-	  echo '* Making mygrammar.c'; \
+	  echo '* Making mtgrammar.c'; \
+	  echo '* Expect 11 shift/reduce conflicts.'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -384,6 +385,11 @@ lintbuffercheck:
 
 
 all: splint$(EXEEXT)
+
+up: 
+	-rm cgrammar.c llgrammar.c mtgrammar.c signature.c cscanner.c
+	$(MAKE) clean
+
 CLEANFILES = splint$(EXEEXT)
 
 .c.o:

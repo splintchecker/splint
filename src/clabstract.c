@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -28,7 +28,7 @@
 **
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "cgrammar.h"
 
@@ -1077,7 +1077,7 @@ fixUentryList (idDeclList tl, qtype q)
 ** Microsoft VC++.  It is not supported by the ANSI standard.  
 **
 ** The inner fields are added to the outer structure.  This is meaningful
-** for nesting structs inside unions, but lclint does no related 
+** for nesting structs inside unions, but Splint does no related 
 ** checking.
 */
 
@@ -2069,11 +2069,11 @@ sRef checkStateClausesId (uentry ue)
     {
       voptgenerror 
 	(FLG_COMMENTERROR,
-	 message ("Global variable %s used special clause.  (Global variables "
-		  "are not recognized in special clauses.  If there is "
+	 message ("Global variable %s used state clause.  (Global variables "
+		  "are not recognized in state clauses.  If there is "
 		  "sufficient interest in support for this, it may be "
 		  "added to a future release.  Send mail to "
-		  "lclint@cs.virginia.edu.)",
+		  "splint@cs.virginia.edu.)",
 		  s),
 	 g_currentloc);
       
@@ -2251,7 +2251,7 @@ sRef fixStateClausesId (cstring s)
 			  "are not recognized in function clauses.  If there is "
 			  "sufficient interest in support for this, it may be "
 			  "added to a future release.  Send mail to "
-			  "lclint@cs.virginia.edu.)",
+			  "splint@cs.virginia.edu.)",
 			  s), 
 		 g_currentloc);
 	      

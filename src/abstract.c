@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -34,7 +34,7 @@
 **         Massachusetts Institute of Technology
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "lslparse.h"
 # include "llgrammar.h"	/* need simpleOp, MULOP and logicalOp in makeInfixTermNode */
@@ -237,7 +237,7 @@ void LCLBuiltins (void)
   ti->modifiable = FALSE;
   ti->abstract = TRUE;
   ti->basedOn = sort_bool;
-  ti->export = FALSE; /* this wasn't set (detected by lclint) */
+  ti->export = FALSE; /* this wasn't set (detected by Splint) */
   symtable_enterType (g_symtab, ti);
   
   /* do "constant bool FALSE = false;" */
@@ -487,7 +487,7 @@ interfaceNode_makePrivFcn (/*@only@*/ fcnNode x)
   privateNode e = (privateNode) dmalloc (sizeof (*e));
 
   /*
-  ** bug detected by lclint enum checking
+  ** bug detected by enum checking
   ** e->kind = XPK_FCN;
   */
 
@@ -3690,7 +3690,7 @@ makeQuantifiedTermNode (quantifierNodeList qn, ltoken open,
   termNode n = (termNode) dmalloc (sizeof (*n));
   quantifiedTermNode q = (quantifiedTermNode) dmalloc (sizeof (*q));
 
-  n->name = NULL; /*> missing this --- detected by lclint <*/
+  n->name = NULL; /*> missing this --- detected by splint <*/
   n->error_reported = FALSE;
   n->wrapped = 0;
   n->error_reported = FALSE;
@@ -5806,7 +5806,7 @@ nameNode nameNode_copySafe (nameNode n)
     }
   else
     {
-      /* error should be detected by lclint: forgot to copy opform! */
+      /* error should be detected by splint: forgot to copy opform! */
       return (makeNameNodeForm (opFormNode_copy (n->content.opform)));
     }
 }

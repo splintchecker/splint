@@ -1,6 +1,6 @@
 /*;-*-C-*-; 
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -36,7 +36,7 @@
 /*
 ** Modified by Mike Smith 
 ** Corrected missing 'line' in scanf() calls in handleSpecial().
-** Without this, I get an error when LCLint hits a '#line' directive
+** Without this, I get an error when Splint hits a '#line' directive
 ** in the pre-pre-processed source files. For safety, I have made these
 ** conditional on OS2 and MSDOS because I don't understand why noone else
 ** has seen this problem.
@@ -64,7 +64,7 @@ IS			(u|U|l|L)*
 ULSuffix                ({U}{L}|{L}{U})
 
 %{
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # if defined(OS2) && defined(__IBMC__)
    /* needed for isatty()... */
 # include <io.h>
@@ -776,9 +776,8 @@ static int tokenMacroCode (cstring s)
 	      voptgenerror
 		(FLG_WARNLINTCOMMENTS,
 		 cstring_makeLiteral
-		 ("Traditional lint comment /*FALLTHROUGH*/ used.  "
-		  "This is interpreted by "
-		  "LCLint in the same way as most Unix lints, but it is "
+		 ("Traditional lint comment /*FALLTHROUGH*/ used. "
+		  "Splint interprets this in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@fallthrough@*/ "
 		  "semantic comment"),
 		 g_currentloc);
@@ -789,9 +788,8 @@ static int tokenMacroCode (cstring s)
 	      voptgenerror 
 		(FLG_WARNLINTCOMMENTS,
 		 cstring_makeLiteral
-		 ("Traditional lint comment /*FALLTHRU*/ used.  "
-		  "This is interpreted by "
-		  "LCLint in the same way as most Unix lints, but it is "
+		 ("Traditional lint comment /*FALLTHRU*/ used. "
+		  "Splint interprets this in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@fallthrough@*/ "
 		  "semantic comment"),
 		 g_currentloc);
@@ -802,9 +800,8 @@ static int tokenMacroCode (cstring s)
 	      voptgenerror 
 		(FLG_WARNLINTCOMMENTS,
 		 cstring_makeLiteral
-		 ("Traditional lint comment /*NOTREACHED*/ used.  "
-		  "This is interpreted by "
-		  "LCLint in the same way as most Unix lints, but it is "
+		 ("Traditional lint comment /*NOTREACHED*/ used. "
+		  "Splint interprets this in the same way as most Unix lints, but it is "
 		  "preferable to replace it with the /*@notreached@*/ "
 		  "semantic comment."),
 		 g_currentloc);
@@ -821,9 +818,8 @@ static int tokenMacroCode (cstring s)
 	      voptgenerror 
 		(FLG_WARNLINTCOMMENTS,
 		 cstring_makeLiteral
-		 ("Traditional lint comment /*PRINTFLIKE*/ used.  "
-		  "This is interpreted by "
-		  "LCLint in the same way as most Unix lints, but it is "
+		 ("Traditional lint comment /*PRINTFLIKE*/ used. "
+		  "Splint interprets this in the same way as most Unix lints, but it is "
 		  "preferable to replace it with either /*@printflike@*/, "
 		  "/*@scanflike@*/ or /*@messagelike@*/."),
 		 g_currentloc);
@@ -846,9 +842,8 @@ static int tokenMacroCode (cstring s)
 	      voptgenerror
 		(FLG_WARNLINTCOMMENTS,
 		 cstring_makeLiteral
-		 ("Traditional lint comment /*ARGSUSED*/ used.  "
-		  "This is interpreted by "
-		  "LCLint in the same way as most Unix lints, but it is "
+		 ("Traditional lint comment /*ARGSUSED*/ used. "
+		  "Splint interprets this in the same way as most Unix lints, but it is "
 		  "preferable to use /*@unused@*/ annotations on "
 		  "the unused parameters."),
 		 g_currentloc);

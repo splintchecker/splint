@@ -17,15 +17,15 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
 ** fileLib.c
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "portab.h"
 
@@ -163,7 +163,7 @@ fileLib_addExtension (/*@temp@*/ cstring s, cstring suffix)
 
   if (strrchr (s, '.') == (char *) 0)
     {
-      /* <<< was mstring_concatFree1 --- bug detected by lclint >>> */
+      /* <<< was mstring_concatFree1 --- bug detected by splint >>> */
       return (cstring_concat (s, suffix));
     }
   else

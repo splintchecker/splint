@@ -353,6 +353,7 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 
 
 CHECKS = $(subst .c,.check,$(splint_SOURCES))
+
 CLEANFILES = splint$(EXEEXT)
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -993,7 +994,8 @@ Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
 	@if test x$(BISON) = xno; then \
 	  $(CP) mtgrammar.c.der mtgrammar.c; \
 	else \
-	  echo '* Making mygrammar.c'; \
+	  echo '* Making mtgrammar.c'; \
+	  echo '* Expect 11 shift/reduce conflicts.'; \
 	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
 	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
 	  $(CP) mtgrammar.c mtgrammar.c.der; \
@@ -1053,6 +1055,10 @@ lintbuffercheck:
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint
 
 all: splint$(EXEEXT)
+
+up: 
+	-rm cgrammar.c llgrammar.c mtgrammar.c signature.c cscanner.c
+	$(MAKE) clean
 
 .c.o:
 	@echo "Compiling "$<"..."; \

@@ -17,15 +17,15 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
 ** flags.c
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "portab.h"
 
@@ -58,7 +58,7 @@ static flagcatinfo categories[] =
   { FK_SYNCOMMENTS, "syncomments", "interpretation of annotation comments" } ,
   { FK_COMPLETE, "complete", "completely defined, used, or specified system" } ,
   { FK_CONTROL, "controlflow", "suspicious control structures" } ,
-  { FK_DEBUG, "debug", "flags for debugging lclint" } ,
+  { FK_DEBUG, "debug", "flags for debugging splint" } ,
   { FK_DECL, "declarations", "consistency of declarations" } ,
   { FK_DEF, "definition", "undefined storage errors" } ,
   { FK_DIRECT, "directories", "set directores" } ,
@@ -1018,7 +1018,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	     ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
 	      "accessfunction to provide more precise control of accessibility "
 	      "of representations.  For more information, "
-	      "see lclint -help accessmodule"));
+	      "see splint -help accessmodule"));
 	}
       
       return SKIP_FLAG;
@@ -1041,7 +1041,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	    (cstring_makeLiteral
 	     ("staticmods flag is obsolete.  You probably "
 	      "want impcheckmodstatics.  For more information, "
-	      "see lclint -help impcheckmodstatics"));
+	      "see splint -help impcheckmodstatics"));
 	}
 
       return SKIP_FLAG;
@@ -1088,7 +1088,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	     ("stdio flag is obsolete.  You may "
 	      "want strictlib or one of the gloabls "
 	      "checking flags.  For more information, "
-	      "see lclint -help strictlib or lclint -help flags globals"));
+	      "see splint -help strictlib or splint -help flags globals"));
 	}
       
       return SKIP_FLAG;

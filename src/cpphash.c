@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -51,7 +51,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  You are forbidden to forbid anyone else to use, share and improve
  what you give them.   Help stamp out software-hoarding!  */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include <string.h>
 # include "cpplib.h"
@@ -213,7 +213,7 @@ static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node)
 	      **    From: "N.Komazaki" <koma@focs.sei.co.jp>
 	      */
 
-	      /*! why doesn't lclint report an error for this? */
+	      /*! why doesn't splint report an error for this? */
 	      nd->args.argnames = mstring_createEmpty ();
 	    }
 	} 

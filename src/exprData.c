@@ -3,7 +3,7 @@
 */
 
 # include <ctype.h> /* for isdigit */
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"

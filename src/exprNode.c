@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -26,7 +26,7 @@
 */
 
 # include <ctype.h> /* for isdigit */
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
@@ -979,7 +979,7 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
       
       /*
       ** yoikes!  leaving this out was a heinous bug...that would have been
-      ** caught if i had lclint working first.  gag!
+      ** caught if i had splint working first.  gag!
       */
       
       e->etext = cstring_undefined;
@@ -1009,7 +1009,7 @@ exprNode exprNode_createId (/*@observer@*/ uentry c)
       e->msets = sRefSet_new ();
       e->uses = sRefSet_new ();
       
-      /*> missing fields, detected by lclint <*/
+      /*> missing fields, detected by splint <*/
       e->exitCode = XK_NEVERESCAPE;
       e->isJumpPoint = FALSE;
       e->canBreak = FALSE;
@@ -1194,7 +1194,7 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
  
       /*
       ** this sets up funny aliasing, that leads to spurious
-      ** lclint errors.  Hence, the i2 comments.
+      ** splint errors.  Hence, the i2 comments.
       */
 
       /* evans 2001-09-09 added ctype_isKnown so there is no swap when e1 type is unknown */
@@ -3142,7 +3142,7 @@ checkGlobMods (/*@notnull@*/ /*@dependent@*/ exprNode f,
   if (freshMods)
     {
       /*
-      ** Spurious errors reported, because lclint can't tell
+      ** Spurious errors reported, because splint can't tell
       ** mods must be fresh if freshMods is true.
       */
 
@@ -8586,7 +8586,7 @@ exprNode_iterNewId (/*@only@*/ cstring s)
   e->isJumpPoint = FALSE;
   e->exitCode = XK_NEVERESCAPE;
 
-  /*> missing fields, detected by lclint <*/
+  /*> missing fields, detected by splint <*/
   e->canBreak = FALSE;
   e->mustBreak = FALSE;
   e->etext = cstring_undefined;

@@ -1,6 +1,6 @@
 /*;-*-C-*-;
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 %{
@@ -26,12 +26,12 @@
 **
 ** cgrammar.y
 **
-** Yacc/Bison grammar for extended ANSI C used by LCLint.
+** Yacc/Bison grammar for extended ANSI C used by Splint.
 **
 ** original grammar by Nate Osgood ---
 **    hacrat@catfish.lcs.mit.edu Mon Jun 14 13:06:32 1993
 **
-** changes for LCLint --- handle typedef names correctly
+** changes for Splint --- handle typedef names correctly
 ** fix struct/union parsing bug (empty struct is accepted)
 ** add productions to handle macros --- require
 ** error correction --- main source of conflicts in grammar.
@@ -50,7 +50,7 @@ extern int yylex ();
 extern void swallowMacro (void);
 extern void yyerror (char *);
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "cscanner.h"
 # include "cgrammar.h"
@@ -161,7 +161,7 @@ extern void yyerror (char *);
 %token <tok> QUNDEF QKILLED
 %token <tok> QENDMACRO
 
-/* additional tokens introduced by lclint pre-processor. */
+/* additional tokens introduced by splint pre-processor. */
 %token <tok> LLMACRO LLMACROITER LLMACROEND TENDMACRO
 
 /* break comments: */
@@ -308,7 +308,6 @@ extern void yyerror (char *);
 %type <tquallist> optGlobQuals
 %type <qtyp> completeType completeTypeSpecifier optCompleteType
 %type <qtyp> completeTypeSpecifierAux altType typeExpression 
-/*%type <expr> lclintassertion*/
 
 %start file
 
@@ -1438,18 +1437,6 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
-/* | lclintassertion {$$ = $1; printf ("Doing stmt lclintassertion\n"); }*/
-
-/*
-lclintassertion
- : QSETBUFFERSIZE id CCONSTANT QENDMACRO { printf(" QSETBUFFERSIZE id CCONSTANT HEllo World\n");  uentry_setBufferSize($2, $3); $$ = exprNode_createTok ($4);
-  }
- | QSETSTRINGLENGTH id CCONSTANT QENDMACRO { printf(" QSETSTRINGLENGTH id CCONSTANT HEllo World\n");  uentry_setStringLength($2, $3); $$ = exprNode_createTok ($4);
-  }
- | QTESTINRANGE id CCONSTANT QENDMACRO {printf(" QTESTINRANGE\n");  uentry_testInRange($2, $3); $$ = exprNode_createTok ($4);
-  }
-
-/* | QSETBUFFERSIZE id id  {$$ = $2; printf(" QSETBUFFERSIZE id id HEllo World\n");} */
 
 iterBody
  : iterDefStmtList { $$ = $1; }

@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -92,7 +92,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 /* This defines "errno" properly for VMS, and gives us EACCES.  */
 # include <errno.h>
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "lcllib.h"
 # include "cpplib.h"
@@ -3641,7 +3641,7 @@ cpplib_installBuiltinType (/*@observer@*/ char *name, ctype ctyp,
 			   /*@only@*/ /*@null@*/ char *value, int hash)
 {
   cstring sname = cstring_fromChars (name);
-  /* evs 2000 07 10 - removed a memory leak, detected by lclint */
+  /* evs 2000 07 10 - removed a memory leak, detected by splint */
 
   llassert (usymtab_inGlobalScope ());
 

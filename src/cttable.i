@@ -1,20 +1,25 @@
 /* ;-*-C-*-; 
-** Copyright (c) Massachusetts Institute of Technology 1994-1998.
-**          All Rights Reserved.
-**          Unpublished rights reserved under the copyright laws of
-**          the United States.
+** Splint - annotation-assisted static program checker
+** Copyright (C) 1994-2002 University of Virginia,
+**         Massachusetts Institute of Technology
 **
-** THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
-** OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+** This program is free software; you can redistribute it and/or modify it
+** under the terms of the GNU General Public License as published by the
+** Free Software Foundation; either version 2 of the License, or (at your
+** option) any later version.
+** 
+** This program is distributed in the hope that it will be useful, but
+** WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+** General Public License for more details.
+** 
+** The GNU General Public License is available from http://www.gnu.org/ or
+** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+** MA 02111-1307, USA.
 **
-** This code is distributed freely and may be used freely under the 
-** following conditions:
-**
-**     1. This notice may not be removed or altered.
-**
-**     2. Works derived from this code are not distributed for
-**        commercial gain without explicit permission from MIT 
-**        (for permission contact lclint-request@sds.lcs.mit.edu).
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** cttable.i
