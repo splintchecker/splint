@@ -43,6 +43,24 @@ stateClause_createRaw (stateConstraint st, stateClauseKind sk, /*@only@*/ sRefSe
   return ret;
 }
 
+/*drl added 3/7/2003*/
+bool stateClause_hasEmptyReferences (stateClause s)
+{
+  if (sRefSet_isUndefined(s->refs) )
+    return TRUE;
+    else
+    return FALSE;
+}
+
+bool stateClause_isMetaState (stateClause s)
+{
+
+  if (qual_isMetaState (s->squal) )
+    return TRUE;
+  else
+    return FALSE;
+}
+
 stateClause 
 stateClause_create (lltok tok, qual q, sRefSet s) 
 {

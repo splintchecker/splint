@@ -874,14 +874,16 @@ specClauseListExpr
 ;
 
 optSpecClauseList
- : /* empty */ { $$ = sRefSet_undefined }
+ : /* empty */ { DPRINTF ((message("Empty optSpecClauseList") )); $$ = sRefSet_undefined }
  | specClauseList
  ;
 
 specClauseList
   : specClauseListExpr                       
     { if (sRef_isValid ($1)) { $$ = sRefSet_single ($1); } 
-      else { $$ = sRefSet_undefined; } 
+      else {
+	DPRINTF((message("returning sRefSEt_undefined ")  ));
+	$$ = sRefSet_undefined; } 
     }
   | specClauseList TCOMMA specClauseListExpr 
     { if (sRef_isValid ($3))
@@ -956,6 +958,7 @@ offsetofExpr
 sizeofExpr
  : IsType { context_setProtectVars (); } 
    sizeofExprAux { context_sizeofReleaseVars (); $$ = $3; }
+;
 
 processSizeof: {context_enterSizeof()};
 

@@ -52,10 +52,19 @@ extern functionClause functionClause_createModifies (modifiesClause node) /*@*/
 }
 
 extern functionClause functionClause_createState (stateClause node) /*@*/ 
-{ 
-  functionClause res = functionClause_alloc (FCK_STATE);
-  res->val.state = node;
-  return res;
+{
+  if (stateClause_hasEmptyReferences (node) &&
+      (!stateClause_isMetaState (node) ) )
+    {
+      DPRINTF((message("functionClause_createState:: Returning functionClause_undefined" ) ));
+      return functionClause_undefined;
+    }
+  else
+    {
+      functionClause res = functionClause_alloc (FCK_STATE);
+      res->val.state = node;
+      return res;
+    }
 }
 
 extern functionClause functionClause_createEnsures (functionConstraint node) /*@*/ 

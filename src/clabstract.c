@@ -2163,7 +2163,9 @@ sRef checkStateClausesId (uentry ue)
       voptgenerror 
 	(FLG_COMMENTERROR,
 	 message ("Global variable %s used state clause.  (Global variables "
-		  "are not recognized in state clauses.  If there is "
+		  "are not recognized in state clauses.  If they are present "
+		  "they are ignored. "
+		  " If there is "
 		  "sufficient interest in support for this, it may be "
 		  "added to a future release.  Send mail to "
 		  "info@splint.org.)",
