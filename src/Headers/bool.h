@@ -7,6 +7,17 @@
 
 # define BOOL_H
 
+# ifdef WIN32
+# ifndef FALSE
+/*@constant bool FALSE=false@*/
+# define FALSE 0
+# endif
+
+# ifndef TRUE
+/*@constant bool TRUE=true@*/
+# define TRUE (!FALSE)
+# endif
+# else
 # ifndef FALSE
 /*@constant bool FALSE=false@*/
 # define FALSE false
@@ -15,6 +26,7 @@
 # ifndef TRUE
 /*@constant bool TRUE=true@*/
 # define TRUE true
+# endif
 # endif
 
 extern /*@observer@*/ cstring bool_unparse (bool p_b) /*@*/ ;

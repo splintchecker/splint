@@ -31,6 +31,7 @@
 # include "portab.h"
 # include "rcfiles.h"
 # include "lslinit.h"
+# include "llmain.h"
 
 /*
 ** from the CC man page:
@@ -145,12 +146,12 @@ static /*@observer@*/ cstring argcode_unparse (argcode arg)
     }
 # ifdef WIN32
 /* Make Microsoft VC++ happy */
-# pragma warning (disable:4715) 
+# pragma warning (disable:4715)
 # endif
 }      
 
 # ifdef WIN32
-# pragma warning (enable:4715) 
+/* # pragma warning (enable:4715)  */
 # endif
 
 typedef struct { 

@@ -381,14 +381,14 @@ static flaglist flags =
     FK_BOOL, FK_NONE, regStringFlag, ARG_STRING,
     "boolfalse",
     FLG_BOOLFALSE,
-    "set name of boolean false (default FALSE)",
+    "set name of boolean false (default false)",
     NULL, 0, 0
   },
   {
     FK_BOOL, FK_NONE, regStringFlag, ARG_STRING,
     "booltrue",
     FLG_BOOLTRUE, 
-    "set name of boolean true (default TRUE)",
+    "set name of boolean true (default true)",
     NULL, 0, 0
   },
   {
@@ -406,10 +406,10 @@ static flaglist flags =
     FK_BOOL, FK_OPS, modeFlag,
     "boolcompare",
     FLG_BOOLCOMPARE,
-    "comparison between bools (dangerous because of multiple TRUE values)",
+    "comparison between bools (dangerous because of multiple true values)",
     "Two bool values are compared directly using a C primitive. This "
     "may produce unexpected results since all non-zero values are "
-    "considered TRUE, so different TRUE values may not be equal. "
+    "considered true, so different true values may not be equal. "
     "The file bool.h (included in splint/lib) provides bool_equal "
     "for safe bool comparisons.", 0, 0
   },

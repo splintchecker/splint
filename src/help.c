@@ -30,6 +30,7 @@
 # include "help.h"
 # include "osd.h"
 # include "portab.h"
+# include "llmain.h"
 # include "version.h"
 
 static void

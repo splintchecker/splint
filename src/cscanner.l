@@ -85,7 +85,7 @@ ULSuffix                ({U}{L}|{L}{U})
 # include "cscannerHelp.h"
 # include "cgrammar.h"
 # include "cgrammar_tokens.h"
-# include "portab.h"
+# include "osd.h"
 
 /*@notfunction@*/
 # define yyinput() (incColumn (), getc (yyin))

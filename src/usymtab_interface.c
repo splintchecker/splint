@@ -1012,8 +1012,8 @@ doDeclareType (typeNode t, bool priv)
 	case TK_UNION:
 	default:
 	  {
-	    llfatalbug (message ("declareType ERROR: unknown kind: %q",
-				 cstring_fromCharsO (FormatInt ((int)t->kind))));
+	    llfatalbug (message ("declareType: unknown kind: %d",
+				 (int) t->kind));
 	  }
 	}
     }

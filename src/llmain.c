@@ -52,7 +52,6 @@
 # include "basic.h"
 # include "osd.h"
 # include "help.h"
-
 # include "gram.h"
 # include "lclscan.h"
 # include "scanline.h"
@@ -71,9 +70,8 @@
 # include "Headers/version.h" /* Visual C++ finds the wrong version.h */
 # include "lcllib.h"
 # include "cgrammar.h"
+# include "rcfiles.h"
 # include "llmain.h"
-# include "portab.h"
-
 
 extern /*@external@*/ int yydebug;
 static void cleanupFiles (void);

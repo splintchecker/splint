@@ -46,7 +46,6 @@
 
 # include "lcllib.h"
 # include "llmain.h"
-# include "portab.h"
 
 /*@-incondefs@*/ /*@-redecl@*/
 extern /*:open:*/ /*@dependent@*/ FILE *yyin;

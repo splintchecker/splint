@@ -5801,19 +5801,14 @@ uentry_getMods (uentry l)
     }
 # ifdef WIN32
 /* Make Microsoft VC++ happy */
-# pragma warning (disable:4715) 
+# pragma warning (disable : 4715) 
 # endif
 }
-
-# ifdef WIN32
-# pragma warning (enable:4715) 
-# endif
 
 ekind
 uentry_getKind (uentry e)
 {
   llassert (uentry_isValid (e));
-
   return (e->ukind);
 }
 

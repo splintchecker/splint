@@ -21,7 +21,12 @@
 
 # include <stdlib.h>
 # include <stdio.h>
+
+# ifndef WIN32
+/* Microsoft VC++ still doesn't support ISO C99... */
 # include <stdbool.h>
+# endif
+
 # include <string.h>
 # include <ctype.h>
 # include <float.h>

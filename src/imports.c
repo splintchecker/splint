@@ -41,7 +41,6 @@
 # include "lslparse.h"
 # include "lh.h"
 # include "llmain.h"
-# include "portab.h"
 
 void
 outputLCSFile (char *path, char *msg, char *specname)

@@ -26,7 +26,7 @@
 */
 /*
  * Modified by Herbert 04/19/97:
- * - added new include file portab.h.
+ * - added new include file portab.h (now in osd.h)
  * - added new private function fileloc_filenameForCpp() to handle
  *   filenames belonging to "#line" statements for OS/2 and MSDOS. It
  *   gets called by fileloc_lineMarker() and fileloc_previousLineMarker()
@@ -36,7 +36,6 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
-# include "portab.h"
 
 static /*@only@*/ fileloc fileloc_createPrim (flkind p_kind, fileId p_fid, int p_line, int p_col) /*@*/ ;
 

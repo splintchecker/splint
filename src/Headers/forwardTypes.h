@@ -3,6 +3,11 @@
 
 # include "lclForwardTypes.h"
 
+# ifdef WIN32
+/* Microsoft doesn't support ISO C99 yet */
+typedef int bool; 
+# endif
+
 abst_typedef /*@null@*/ struct s_sRef *sRef;
 abst_typedef /*@null@*/ struct s_uentry *uentry;
 typedef struct s_hashNode *hashNode;

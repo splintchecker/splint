@@ -53,6 +53,9 @@
 # include "llmain.h"
 # include "portab.h"
 
+# ifdef WIN32
+# include <io.h>
+# else
 # if defined(__IBMC__) && defined(OS2)
 # include <process.h>
 # include <io.h>
@@ -60,6 +63,7 @@
 # define S_IRUSR S_IREAD
 # define S_IWUSR S_IWRITE 
 # define S_IXUSR S_IEXEC
+# endif
 # endif
 
 /*@access fileId*/
@@ -1012,9 +1016,13 @@ fileTable_addOpen (fileTable ft, /*@observer@*/ FILE *f, /*@only@*/ cstring fnam
 FILE *fileTable_createFile (fileTable ft, cstring fname)
 {
 # ifdef WIN32
-   int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL); /* not supported by VS.net: , S_IRUSR | S_IWUSR); */
+  int fdesc = _open (cstring_toCharsSafe (fname), 
+		     O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, 
+		     _S_IWRITE | S_IREAD);
 # else
-   int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+   int fdesc = open (cstring_toCharsSafe (fname), 
+		     O_WRONLY | O_CREAT | O_TRUNC | O_EXCL,
+		     S_IRUSR | S_IWUSR);
 # endif
 
   if (fdesc == -1)
@@ -1047,7 +1055,15 @@ FILE *fileTable_createFile (fileTable ft, cstring fname)
 
 FILE *fileTable_createMacrosFile (fileTable ft, cstring fname)
 {
-  int fdesc = open (cstring_toCharsSafe (fname), O_RDWR | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+# ifdef WIN32
+  int fdesc = _open (cstring_toCharsSafe (fname), 
+		     O_RDWR | O_CREAT | O_TRUNC | O_EXCL,
+		     _S_IREAD | _S_IWRITE);
+# else
+  int fdesc = open (cstring_toCharsSafe (fname), 
+		    O_RDWR | O_CREAT | O_TRUNC | O_EXCL, 
+		    S_IRUSR | S_IWUSR);
+# endif
 
   if (fdesc == -1)
     {

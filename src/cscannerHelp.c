@@ -33,6 +33,7 @@
 # include "cscannerHelp.h"
 # include "cscanner.h"
 # include "cgrammar_tokens.h"
+# include "portab.h"
 
 static int lminput (void);
 static int s_tokLength = 0;

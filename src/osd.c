@@ -62,7 +62,6 @@
 # include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
-# include "portab.h"
 
 /* from stat.h */
 /*@ignore@*/

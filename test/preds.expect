@@ -16,8 +16,8 @@ preds.c:25:7: Test expression for if not bool, type char: (c = 'a')
 preds.c:30:7: Use of == with bool variables (risks inconsistency because of
                  multiple true values): b1 == b2
   Two bool values are compared directly using a C primitive. This may produce
-  unexpected results since all non-zero values are considered TRUE, so
-  different TRUE values may not be equal. The file bool.h (included in
+  unexpected results since all non-zero values are considered true, so
+  different true values may not be equal. The file bool.h (included in
   splint/lib) provides bool_equal for safe bool comparisons. (Use -boolcompare
   to inhibit warning)
 preds.c:35:7: Test expression for if not bool, type char: c
@@ -56,8 +56,8 @@ preds.c:25:7: Test expression for if not bool, type char: (c = 'a')
 preds.c:30:7: Use of == with bool variables (risks inconsistency because of
                  multiple true values): b1 == b2
   Two bool values are compared directly using a C primitive. This may produce
-  unexpected results since all non-zero values are considered TRUE, so
-  different TRUE values may not be equal. The file bool.h (included in
+  unexpected results since all non-zero values are considered true, so
+  different true values may not be equal. The file bool.h (included in
   splint/lib) provides bool_equal for safe bool comparisons. (Use -boolcompare
   to inhibit warning)
 preds.c:35:7: Test expression for if not bool, type char: c

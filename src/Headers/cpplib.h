@@ -417,37 +417,38 @@ extern bool cppReader_isPedantic (cppReader *) /*@*/;
 /* different flavors of hash nodes --- also used in keyword table */
 enum node_type {
  T_NONE = 0,
- T_DEFINE = 1,	/* the `#define' keyword */
- T_INCLUDE,	/* the `#include' keyword */
- T_INCLUDE_NEXT, /* the `#include_next' keyword */
- T_IFDEF,	/* the `#ifdef' keyword */
- T_IFNDEF,	/* the `#ifndef' keyword */
- T_IF,		/* the `#if' keyword */
- T_ELSE,	/* `#else' */
- T_PRAGMA,	/* `#pragma' */
- T_ELIF,	/* `#elif' */
- T_UNDEF,	/* `#undef' */
- T_LINE,	/* `#line' */
- T_ERROR,	/* `#error' */
- T_WARNING,	/* `#warning' */
- T_ENDIF,	/* `#endif' */
- T_IDENT,	/* `#ident', used on system V.  */
- T_SPECLINE,	/* special symbol `__LINE__' */
- T_DATE,	/* `__DATE__' */
- T_FILE,	/* `__FILE__' */
- T_BASE_FILE,	/* `__BASE_FILE__' */
- T_INCLUDE_LEVEL, /* `__INCLUDE_LEVEL__' */
- T_VERSION,	/* `__VERSION__' */
- T_SIZE_TYPE,   /* `__SIZE_TYPE__' */
- T_PTRDIFF_TYPE,   /* `__PTRDIFF_TYPE__' */
- T_WCHAR_TYPE,   /* `__WCHAR_TYPE__' */
- T_USER_LABEL_PREFIX_TYPE, /* `__USER_LABEL_PREFIX__' */
- T_REGISTER_PREFIX_TYPE,   /* `__REGISTER_PREFIX__' */
- T_TIME,	/* `__TIME__' */
- T_CONST,	/* Constant value, used by `__STDC__' */
- T_MACRO,	/* macro defined by `#define' */
+ T_DEFINE = 1,	/* the #define keyword */
+ T_INCLUDE,	/* the #include keyword */
+ T_INCLUDE_NEXT, /* the #include_next keyword */
+ T_IFDEF,	/* the #ifdef keyword */
+ T_IFNDEF,	/* the #ifndef keyword */
+ T_IF,		/* the #if keyword */
+ T_ELSE,	/* #else */
+ T_PRAGMA,	/* #pragma */
+ T_ELIF,	/* #elif */
+ T_UNDEF,	/* #undef */
+ T_LINE,	/* #line */
+ T_ERROR,	/* #error */
+ T_WARNING,	/* #warning */
+ T_ENDIF,	/* #endif */
+ T_IDENT,	/* #ident, used on system V.  */
+ T_SPECLINE,	/* special symbol __LINE__ */
+ T_DATE,	/* __DATE__ */
+ T_FILE,	/* __FILE__ */
+ T_BASE_FILE,	/* __BASE_FILE__ */
+ T_INCLUDE_LEVEL, /* __INCLUDE_LEVEL__ */
+ T_FUNC,        /* __func__ */
+ T_VERSION,	/* __VERSION__ */
+ T_SIZE_TYPE,   /* __SIZE_TYPE__ */
+ T_PTRDIFF_TYPE,   /* __PTRDIFF_TYPE__ */
+ T_WCHAR_TYPE,   /* __WCHAR_TYPE__ */
+ T_USER_LABEL_PREFIX_TYPE, /* __USER_LABEL_PREFIX__ */
+ T_REGISTER_PREFIX_TYPE,   /* __REGISTER_PREFIX__ */
+ T_TIME,	/* __TIME__ */
+ T_CONST,	/* Constant value, used by __STDC__ */
+ T_MACRO,	/* macro defined by #define */
  T_DISABLED,	/* macro temporarily turned off for rescan */
- T_SPEC_DEFINED, /* special `defined' macro for use in #if statements */
+ T_SPEC_DEFINED, /* special defined macro for use in #if statements */
  T_PCSTRING,	/* precompiled string (hashval is KEYDEF *) */
  T_UNUSED	/* Used for something not defined.  */
 } ;

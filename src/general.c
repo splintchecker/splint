@@ -27,6 +27,7 @@
 
 # include "splintMacros.nf"
 # include "basic.h"
+
 # undef malloc
 # undef realloc
 # undef calloc
@@ -35,7 +36,7 @@
 # include "dmalloc.h"
 # endif
 
-# include "portab.h"
+# include "osd.h"
 
 /*
 ** redefine undef'd memory ops
@@ -186,18 +187,6 @@ void *direalloc (/*@out@*/ /*@null@*/ void *x, size_t size,
 }
 
 /*@=mustdefine@*/
-
-char *FormatInt (int i)
-{
-  char temp[255]; /* assume the integer has at most 254 digits */
-  char *outs;
-  int sres = snprintf (temp, 255, "%i", i);
-  check (sres >= 0 && sres <= 255);
-  outs = (char *) dmalloc (sizeof (*outs) * (1 + strlen (temp)));
-  strcpy (outs, temp);
-
-  return (outs);
-}
 
 bool firstWord (char *s, char *w)
 {

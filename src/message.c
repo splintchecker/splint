@@ -246,8 +246,10 @@ message (/*@temp@*/ char *fmt, ...)
 	      ret = mstring_concatFree (ret, GETPRINTF ("%.2lf", va_arg (pvar, double)));
 	      break;
 	    case XBOOL:
-	      ret = mstring_concatFree1 (ret, cstring_toCharsSafe 
-				    (bool_unparse (va_arg (pvar, bool))));
+	      ret = mstring_concatFree1 
+		(ret, cstring_toCharsSafe 
+		 (bool_unparse (bool_fromInt ((va_arg (pvar, int)))))); 
+	      /* va_arg should not use bool type */
 	      break;
 	    case XUENTRY:
 	      ret = mstring_concatFree (ret, cstring_toCharsSafe 

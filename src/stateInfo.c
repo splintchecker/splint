@@ -25,6 +25,15 @@
 # include "splintMacros.nf"
 # include "basic.h"
 
+# ifdef WIN32
+/*
+** Make Microsoft VC++ happy: its control checking produces too
+** many spurious warnings.
+*/
+
+# pragma warning (disable:4715) 
+# endif
+
 static /*@observer@*/ cstring stateAction_unparse (stateAction p_sa) /*@*/ ;
 
 void stateInfo_free (/*@only@*/ stateInfo a)
