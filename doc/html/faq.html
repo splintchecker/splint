@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <title>Splint FAQ</title>
+  <head>
+    <meta name="generator"
+    content="HTML Tidy for Linux/x86 (vers 1st November 2002), see www.w3.org" />
+    <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta name="GENERATOR" content="OpenOffice.org 1.0.2 (Linux)" />
+    <meta name="CREATED" content="20030420;14270100" />
+    <meta name="CHANGED" content="20030420;14462200" />
+  </head>
+  <body lang="en-US">
+  <h1>Splint frequently asked questions</h1>
+
+  <h3>Index</h3><ol><li><a href="#quest1"><p>What is the difference between Splint and LCLint?</p>
+      </a></li>
+      <p><li><a href="#quest2">What is the Splint logo?</p>
+      </a></li>
+      <p><li><a href="#quest3">Can I include Splint in my software distribution?</p>
+      </a></li>
+      <p><li><a href="#quest4">Can we use your software in our company? (We are not a GNU organization.)</p>
+      </a></li>
+      <p><li><a href="#quest5">Does Splint handle C++?</p>
+      </a></li>
+      <p><li><a href="#quest6">I downloaded the Splint .tgz file but can't figure out how to extract it.
+        There is no 'z' option on the tar on my system.</p>
+      </a></li>
+      <p><li><a href="#quest7">I want to use Splint in win2000. How do I do that?</p>
+      </a></li>
+      <p><li><a href="#quest8">I have installed Splint for Windows 2000. Where should I put the ".splintrc"
+        file?</p>
+      </a></li>
+      <p><li><a href="#quest9">Which compilers does Splint support?</p>
+      </a></li>
+      <p><li><a href="#quest10">How does Splint handle const?</p>
+      </a></li>
+      <p><li><a href="#quest11">Why do I get a warning when multiplying different integer types? The C
+        standard says this is ok. Why is this wrong?</p>
+      </a></li>
+      <p><li><a href="#quest12">The C standard says that what I'm doing is okay. Why does Splint give me a
+        warning?</p>
+      </a></li>
+      <p><li><a href="#quest13">Splint complains if I ignore the return value of scanf but not printf?</p>
+      </a></li>
+      <p><li><a href="#quest14">I develop code on an embedded system with a compiler that uses nonstandard key
+        words and data types. I would like to run Splint on my code but these nonstandard
+        keywords cause parse errors. What should I do?</p>
+      </a></li>
+      <p><li><a href="#quest14b">How can I get Splint to recognize directory trees and local source include
+        directories?</p>
+      </a></li>
+       	<p><li><a href="#quest15">I heard that we will get lot of parse errors when we run this tool first time.
+    Hence we need to modify source code. Is it correct ?</p>
+ </a></li>
+      <p><li><a href="#quest16">I heard that Splint can generate some spurious errors ( not genuine errors).
+        Is it correct ?</p>
+      </a></li>
+      <p><li><a href="#quest17">When I build Splint I get the following errors.... Should I be worried?</p>
+      </a></li>
+ <p><li><a href="#quest18"> I just installed Splint on a new machine. I get a bunch of errors during building when the test suite is run.
+ When I look through the results, it seems like Splint is not reporting any errors in the code it analyzes. What is going on?
+ </p>
+      </a></li>
+      <p><li><a href="#quest18b">I get parse errors when I try to run Splint on code like #define
+        MACROdebug(...) blahblah . Can I use variadic macros in Splint?</p>
+      </a></li>
+      <p><li><a href="#quest20">I use realloc in my code. How can I get Splint in check this code more
+        effectively?</p>
+      </a></li>
+      <p><li><a href="#quest21">I think I've found a bug in Splint. What should I do?</p>
+      </a></li>
+      <p><li><a href="#quest22">Splint tells me that there is a bug and I should report it. What information
+        should I send?</p>
+      </a></li>
+      <p><li><a href="#quest23">My question isn't answered here. How can I get more information about
+        Splint?</p>
+      </a></li>
+    </ol>
+
+    <h3>Questions and Answers</h3>
+    <ol>
+    
+    <li><p><a name="quest1">What is the difference between Splint and LCLint?</p>
+    <p>Before 2002, Splint was known as LCLint. Splint 3.0 is the successor to LCLint
+    2.5.</p>
+    
+    <p><blockquote>LCLint was originally named for LCL, the Larch C Interface Language and lint, a
+    well-known C program checking tool. Because our tool has diverged from LCL, and our
+    focus now is on secure programming, it was renamed Splint. Splint's name has (at
+    least) three interpretations: specifications lint, secure programming lint, and first
+    aid for programmers. It's also easier to pronounce than LCLint.</p></blockquote>
+    <li><p><a name="quest2">What is the Splint logo?</p>
+    <p><blockquote>Thomas Jefferson's Serpentine Walls at the University of Virginia. The walls are
+    one brick thick, but because of their design are both strong and aesthetic. Like a
+    secure program, secure walls depend on sturdy bricks, solid construction, and elegant
+    and principled design.</p></blockquote>
+    <li><p><a name="quest3">Can I include Splint in my software distribution?</p>
+    <p><blockquote>Yes. Splint is licensed under the GNU General Public License. You may redistribute
+    it as you wish so long as credits and pointers to <a
+    href="http://www.splint.org/">www.splint.org</a> are not changed or removed. Splint
+    may be included in commercial distributions, and is included in several Linux and
+    freeware CDs. If you redistribute Splint, please let us know by sending a message to
+    <a href="mailto:splint@cs.virginia.edu">splint@cs.virginia.edu</a>.</p></blockquote>
+    <li><p><a name="quest4">Can we use your software in our company? (We are not a GNU organization.)</p>
+    <p><blockquote>Yes, splint is GPL-licensed. Anyone may use it. If you want to
+    redistribute it, check the license for details or contact us.</p></blockquote>
+    <li><p><a name="quest5">Does Splint handle C++?</p>
+    <p><blockquote>No. Splint handles ISO C99 (and some gcc extensions if +gnuextensions is used). We
+    don't have the resources (or the research justification) to build a C++ front end,
+    but if you are interested in building a C++ front end the source code is available,
+    and I will certainly be willing to help.</p></blockquote>
+    <li><p><a name="quest6">I downloaded the Splint .tgz file but can't figure out how to extract it. There is
+    no 'z' option on the tar on my system.</p>
+    <p><blockquote>Check to see if there is GNU tar on your system, it is usually invoked by the
+    command gtar or gnutar. GNU tar supports the -z option.</p>
+    <p>You can also unzip the file then untar it. Do: gunzip filename.tar.gz to unzip
+    then tar -xvf filename.tar</p></blockquote>
+    <li><p><a name="quest7">I want to use Splint in win2000. How do I do that?</p>
+    <p><blockquote>See <a href="http://www.splint.org/">www.splint.org</a> for information on
+    Splint.</p>
+    <p><a href="http://www.splint.org/win32.html">http://www.splint.org/win32.html</a>
+    for Windows instructions.</p></blockquote>
+    <li><p><a name="quest8">I have installed Splint for Windows 2000. Where should I put the ".splintrc"
+    file?</p>
+    <p><blockquote>For Win32, Splint looks for splint.rc instead of .splintrc due to the DOS filename problems. It will look first in the current directory, then in</p>
+    <p>your home directory. See the Splint manual for more information.</p>
+    </blockquote>
+    <li><p><a name="quest9">Which compilers does Splint support?</p>
+    <p><blockquote>It is independent from your compiler.</p></blockquote>
+    <li><p><a name="quest10">How does Splint handle const?</p>
+    <p><blockquote>Splint doesn't interpret const (at all). See the manual section on
+    modifies checking (<a href="http://www.splint.org/manual/html/sec7.html">http://www.splint.org/manual/html/sec7.html</a>).</p></blockquote>
+    <li><p><a name="quest11">Why do I get a Warning when multiplying different integer types? The C standard
+    says this is ok. Why is this wrong?</p>
+    <p><blockquote>There are lots of things that the C spec allows and defines clearly, that Splint will provide warnings for. It's not a question of it being "wrong",
+    it's a matter of it being likely to reveal a programming mistake.</p></blockquote>
+    <li><p><a name="quest12">The C standard says that what I'm doing is okay. Why does Splint give me a
+    warning?</p>
+   <p><blockquote>See the previous question.</p></blockquote>
+    <li><p><a name="quest13">Splint complains if I ignore the return value of scanf but not printf?</p>
+    <p><blockquote>This is just a strategic decision --- we view ignoring the result of a
+    scanf to be more likely to reveal a problem with the code than ignoring
+    the result of a printf, even though strict programmers will want to check
+    printf also.</p>
+    <p><blockquote>If you want stricter checking, use the flags +ansistrictlib, +posixstrictlib,
+    +unixstrictlib to select the strict versions of these libraries.</p></blockquote>
+    </blockquote>
+    <li><p><a name="quest14">I develop code on an embedded system with a compiler that uses nonstandard key
+    words and data types. I would like to run Splint on my code but these nonstandard
+    keywords cause parse errors. What should I do?</p>
+
+    <blockquote><p>You can often use -D to solve this problem.</p>
+    <p>If you just want to ignore a keyword, you can add
+    -Dnonstandardkeyword=
+    to make the preprocessor eliminate the keyword, where nonstandardkeyword is the
+    name of the keyword. Similarly, you can use
+    -Dspecialtype=int
+    to make a custom type parse as an int.</p></blockquote>
+    <li><p><a name="quest14b">How can I get Splint to recognize directory trees and local source include
+    directories? I've tried putting them in my path but it doesn't seem to look beyond
+    the current directory.</p>
+    <p><blockquote>You can use -I to set the include path like you would with a compiler.</p></blockquote>
+    <li><p><a name="quest15">I heard that we will get lot of parse errors when we run this tool first time.
+    Hence we need to modify source code. Is it correct ?</p>
+    <p><blockquote>Usually not, but Splint doesn't support all C99 extensions.</p></blockquote>
+    <li><p><a name="quest16">I heard that Splint can generate some spurious errors ( not genuine errors). Is it
+    correct ?</p>
+    <p><blockquote>Yes, please see <a href="http://www.splint.org/">www.splint.org</a> for
+    details.</p></blockquote>
+    <li><p><a name="quest17">When I build Splint I get the following error:</p>
+    <p><blockquote>Checking for...</p>
+    <p>Checking manual...</p>
+    <p>cmx &gt; / Checking tests2.2...</p>
+    <p>Checking tests2.4...</p>
+    <p>Checking tests2.5...</p>
+    <p>Checking db1...</p>
+    <p>0a1,2</p>
+    <p>&gt; /cmx/tools/make -e clean</p>
+    <p>&gt; /cmx/tools/make -e check</p>
+    <p>*** FAIL ***</p>
+    <p>Checking db2...</p>
+    <p>0a1,/tools/make -e clean</p>
+    <p>&gt; /cmx/tools/make -e check</p>
+    <p>*** FAIL ***</p>
+    <p>Checking db3...</p>
+    </blockquote>
+    <p>Should I be worried?</p>
+    </blockquote>
+    <p><blockquote>Those diffs look harmless. It is likely that your make is set up slightly
+    differently than ours.</p></blockquote>
+    <li><p><a name="quest18">I just installed Splint on a new machine. I get a bunch of errors during building
+    when the test suite is run. When I look through the results, it seems like Splint is
+    not reporting any errors in the code it analyzes. What is going on?</p>
+    <p><blockquote>One possibility is that the installation directory where the test suite is
+    running is on the system path (hence, splint won't report errors if
+    -sysdirerrors is set, as it is by default). Try adding +sysdirerrors to
+    the command line for the test suite to see if that is the problem, or installing
+    Splint in a different directory not in the system path.</p></blockquote>
+    <li><p><a name="quest18b">I get parse errors when I try to run Splint on code like #define MACROdebug(...)
+    blahblah . Can I use variadic macros in Splint?</p>
+    <p><blockquote>Sorry, Splint does not yet support variadic macros. We hope to fix this in a
+    future release.</p></blockquote>
+    <li><p><a name="quest20">I use realloc in my code. How can I get Splint in check this code more
+    effectively?</p>
+    <p><blockquote>realloc has complicated semantics that make it difficult to use correctly. Make
+    sure that you understand realloc and that you really need to use it.</p>
+    <p>If you decide to use realloc, we recommend that you wrapper it. The document Using
+    Wrapper Functions explains how to do this. That document is included in the Splint
+    documentation and is also available at:</p>
+    <p><a
+    href="http://www.splint.org/documentation/realloc.htm">http://www.splint.org/documentation/realloc.htm</a></p></blockquote>
+    <li><p><a name="quest21">I think I've found a bug in Splint. What should I do?</p>
+    <p><blockquote>See <a href="http://www.splint.org/bugs.html">http://www.splint.org/bugs.html</a>
+    for a list of known bugs and instructions on reporting bugs.</p></blockquote>
+    <li><p><a name="quest22">Splint tells me that there is a bug and I should report it. What information
+    should I send?</p>
+    <p><blockquote>Ideally we would like enough code to reproduce the problem. Small snippets of code
+    which trigger the bug are the best but more code is also acceptable.</p>
+    <p>If we're not able to reproduce the problem, then we are unlikely to be able to
+    patch Splint. However, we would still appreciate hearing about the bug and may be
+    able to at least to offer you advice on working around the problem.</p></blockquote>
+    <li><p><a name="quest23">My question isn't answered here. How can I get more information about Splint?</p>
+    <p><blockquote>First check the Splint manual and the mailing list archives.</p>
+    <p>The Splint manual is available at: <a
+    href="http://www.splint.org/manual/l">http://www.splint.org/manual/</a></p>
+    <p>The mailing list archives are at:</p>
+    <p><a
+    href="http://www.mail-archive.com/lclint-interest@virginia.edu/u">http://www.mail-archive.com/lclint-interest%40virginia.edu/</a></p>
+    <p>If you're still unable to find the information to answer your question, you can
+    try posting the question to the splint-discuss mailing list (see <a
+    href="http://www.splint.org/lists.html">http://www.splint.org/lists.html</a>)</p>
+    <p>You can also email us at splint@splint.org.</p>
+    </blockquote>
+  </body>
+</html>
