@@ -648,3 +648,123 @@ bool osd_equalCanonicalPrefix (cstring dirpath, cstring prefixpath)
 # endif
 }
 
+# if 0
+/*
+** This code provided by Herbert Martin Dietze, to canonicalize path names.
+*/
+
+char *osd_getcwd (/*@returned@*/ char *str, size_t size)
+{ 
+  return getcwd (str, size);
+}
+
+/*@null@*/ /*@observer@*/ char *
+osd_dirNext (char *str)
+{
+  char *p1 = strchr (str, '/');
+  char *p2 = strchr (str, '\\');
+
+  if (p1 == NULL)
+    {
+      if (p2 != NULL)
+	{
+	  return p2 + 1;
+	}
+      else
+	{
+	  return NULL;
+	}
+    }
+  else if (p2 == NULL)
+    {
+      return p1 + 1;
+    }
+  else /* both not null */
+    {
+      return (p1 < p2 ? p1 : p2) + 1;
+    }
+}
+
+static void 
+osd_dirShift (char *str, size_t num) /*@modifies str@*/
+{
+  int i;
+  
+  assert (num <= strlen (str));
+  
+  for (i = 0; str[i] != '\0'; i++)
+    {
+      str[i] = str[i + num];
+    }
+}
+
+bool
+osd_dirDotdot (char *str)
+{
+  return str[0] == '.' && str[1] == '.' && osd_isConnectChar (str[2]);
+}
+
+void
+osd_dirNormalize (char *str)
+{
+  char *pos1, *pos2;
+
+  for (; osd_isConnectChar (str[0]); str++)
+    {
+    }
+
+  for (; str != NULL && osd_dirDotdot (str); str = osd_dirNext (str))
+    {
+    }
+
+  for (pos1 = pos2 = str; 
+       pos1 != NULL; 
+       pos2 = pos1, pos1 = osd_dirNext (pos1))
+    {
+      /* remove redundant `./' entry */
+      while (pos1[0] == '.' && osd_isConnectChar (pos1[1]))
+        {
+          osd_dirShift (pos1, 2);
+        }
+
+      /* remove redundant `foo/../' entry */
+      if (osd_dirDotdot (pos1) && pos2 < pos1)
+        {
+          osd_dirShift (pos2, pos1 - pos2 + 1);
+          osd_dirNormalize (str);
+        }
+    }
+}
+
+/*@null@*/ char *
+osd_dirAbsolute (char *str)
+{
+  char *ret = NULL;
+  size_t size = PATH_MAX * sizeof (*ret);
+  
+  if (osd_isConnectChar (str[0]))
+    {
+      ret = dmalloc ((strlen (str) + 1) * sizeof (*ret));
+      strcpy (ret, str);
+    }
+  else
+    {
+      ret = dmalloc (size);
+      
+      ret = osd_getcwd (ret, size);
+      ret = realloc (ret, (strlen (str) + strlen (ret) + 2) * sizeof (*ret));
+
+      if (ret == NULL)
+        {
+          return NULL;
+        }
+
+      strcat (ret, CONNECTSTR);
+      strcat (ret, str);
+    }
+  
+  osd_dirNormalize (ret);
+  return ret;
+}
+
+# endif

@@ -991,11 +991,12 @@ void fileTable_closeAll (fileTable ft)
 
   for (i = 0; i < ft->nopen; i++) 
     {
+      /* 
+	 lldiagmsg (message ("Unclosed file at exit: %s", ft->openelements[i]->fname)); 
+      */
+
+      (void) fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
       lldiagmsg (message ("Unclosed file at exit: %s", cstring_toCharsSafe (ft->openelements[i]->fname)));
-      
-      /*@-retvalint@*/
-      fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
-      /*@=retvalint@*/
       ft->openelements[i]->f = NULL;
       foentry_free (ft->openelements[i]);
       ft->openelements[i] = NULL;

@@ -655,7 +655,6 @@ freearray:
 ###
 
 tests2.2:
-	@echo "  Note: expect difference in name of unclosed file."
 	setenv LCLINT '$(LCLINTRN)'; cd tests2.2 ; $(MAKE) -e
 
 tests2.2a:

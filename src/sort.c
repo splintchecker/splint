@@ -2636,7 +2636,7 @@ parseSortLine (char *line, ltoken t, inputStream  s,
       if (strName != lsymbol_undefined && strMemList != NULL)
 	{
 	  sort asort = sort_construct (strName, SRT_STRUCT, NOSORTHANDLE, tagName,
-				  TRUE, NOSORTHANDLE, strMemList);
+				       TRUE, NOSORTHANDLE, strMemList);
 	  
 	  if (tagName != lsymbol_undefined)
 	    {
