@@ -49,7 +49,8 @@ UNITTESTS = \
   specclauses \
   special stack staticarray strings \
   stringliteral \
-  structassign typequals typeof ud ulstypes union unioninit unreachable unsignedcompare \
+  structassign typequals typeof ud ulstypes union unioninit \
+  unnamedsu unreachable unsignedcompare \
   unused ullint utypes void widestrings
 UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
@@ -811,6 +812,10 @@ union:
 unioninit:
 	-$(SPLINTR) unioninit.c -expect 2
 
+.PHONY: unnamedsu
+unnamedsu:
+	-$(SPLINTR) unnamedsu.c -expect 0
+
 .PHONY: unreachable
 unreachable:
 	-$(SPLINTR) unreachable.c -expect 5
@@ -1181,6 +1186,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./union.c \
               ./unreachable.c \
               ./unsignedcompare.c \
+              ./unnamedsu.c \
               ./unused.c \
               ./void.c \
               ./conditions/miroslaw.c \
@@ -1446,6 +1452,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ullint.expect \
               ulstypes.expect \
               union.expect \
+              unnamedsu.expect \
               unreachable.expect \
               unsignedcompare.expect \
               unused.expect \

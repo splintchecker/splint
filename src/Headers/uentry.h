@@ -369,6 +369,7 @@ extern void uentry_showWhereLastExtra (uentry p_spec, /*@only@*/ cstring p_extra
 extern void uentry_setRefCounted (uentry p_e);
 
 extern /*@notnull@*/ /*@only@*/ uentry uentry_makeUnnamedVariable (ctype p_t);
+extern /*@falsewhennull@*/ bool uentry_isUnnamedVariable (uentry) /*@*/;
 
 extern /*@notnull@*/ uentry 
   uentry_makeUnspecFunction (cstring p_n, ctype p_t, typeIdSet p_access, 

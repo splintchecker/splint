@@ -702,12 +702,15 @@ static void uentry_setConstantValue (uentry ue, /*@only@*/ multiVal val)
   return uentry_makeVariable (n, t, setLocation (), FALSE);
 }
 
-# ifndef NOLCL
+bool uentry_isUnnamedVariable (uentry ue)
+{
+  return uentry_isVariable (ue) && cstring_isUndefined (ue->uname);
+}
+
 /*@notnull@*/ /*@only@*/ uentry uentry_makeUnnamedVariable (ctype t)
 {
   return uentry_makeVariable (cstring_undefined, t, setLocation (), FALSE);
 }
-# endif
 
 /*@notnull@*/ uentry uentry_makeIdDatatype (idDecl id)
 {

@@ -1088,9 +1088,13 @@ fixUnnamedDecl (qtype q)
 
   if (ctype_isStruct (ct) || ctype_isUnion (ct))
     {
+      /* evans 2002-03-16: this seems like a really bad idea!
       uentryList res = ctype_getFields (ct);
 
       return (uentryList_copy (res));
+      */
+
+      return uentryList_single (uentry_makeUnnamedVariable (ct));
     }
   else if (ctype_isEnum (ct))
     {
@@ -1647,6 +1651,8 @@ declareUnnamedStruct (/*@only@*/ uentryList f)
 ctype
 declareUnnamedUnion (/*@only@*/ uentryList f)
 {
+  DPRINTF (("Unnamed union: %s", uentryList_unparse (f)));
+
   if (context_maybeSet (FLG_NUMSTRUCTFIELDS))
     {
       int num = uentryList_size (f);
@@ -1672,7 +1678,8 @@ ctype declareStruct (cstring id, /*@only@*/ uentryList f)
   uentry ue;
   int num = uentryList_size (f);
 
-  DPRINTF (("Declare struct: %s / %s", id, uentryList_unparse (f)));
+  DPRINTF (("Declare struct: %s / %s [%d]", id, uentryList_unparse (f),
+	    uentryList_size (f)));
 
   ct = ctype_createStruct (cstring_copy (id), f);
 

@@ -1276,7 +1276,8 @@ suSpc
    CreateStructInnerScope 
    structDeclList  DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
-   optStructInvariant { {ctype ct; ct = declareStruct ($3, $8); /* setGlobalStructInfo(ct, $12);*/ $$ = ct;} } 
+   optStructInvariant 
+   { ctype ct; ct = declareStruct ($3, $8); /* setGlobalStructInfo(ct, $12);*/ $$ = ct; } 
  | NotType CUNION  newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); } 
@@ -1298,10 +1299,10 @@ suSpc
    { $$ = declareUnnamedUnion ($7); } 
  | NotType CSTRUCT IsType TLBRACE TRBRACE
    { $$ = ctype_createUnnamedStruct (uentryList_new ()); }
- | NotType CUNION  IsType TLBRACE TRBRACE 
+ | NotType CUNION IsType TLBRACE TRBRACE 
    { $$ = ctype_createUnnamedUnion (uentryList_new ()); } 
  | NotType CSTRUCT newId NotType { $$ = handleStruct ($3); } 
- | NotType CUNION  newId NotType { $$ = handleUnion ($3); }
+ | NotType CUNION newId NotType { $$ = handleUnion ($3); }
 
 NotType
  : { g_expectingTypeName = FALSE; }

@@ -702,6 +702,26 @@ uentryList_lookupField (uentryList f, cstring name)
     }
   else
     {
+      uentryList_elements (f, el)
+	{
+	  if (uentry_isUnnamedVariable (el))
+	    {
+	      ctype ct = uentry_getType (el);
+
+	      if (ctype_isStruct (ct) || ctype_isUnion (ct))
+		{
+		  uentryList fields = ctype_getFields (ct);
+		  uentry ue = uentryList_lookupField (fields, name);
+
+		  if (uentry_isValid (ue))
+		    {
+		      return ue;
+		    }
+		}
+	    }
+	}
+      end_uentryList_elements ;
+
       return uentry_undefined;
     }
 }
@@ -709,6 +729,8 @@ uentryList_lookupField (uentryList f, cstring name)
 /*@only@*/ uentryList
   uentryList_mergeFields (/*@only@*/ uentryList f1, /*@only@*/ uentryList f2)
 {
+  DPRINTF (("Merge: %s + %s", uentryList_unparse (f1), uentryList_unparse (f2)));
+
   if (uentryList_isUndefined (f1))
     {
       return  (f2);
