@@ -47,15 +47,13 @@ Topics:
    version (information on compilation, maintainer)
 
 
-
-Command Line: Unrecognized option: asdf
+Command Line: Unrecognized option: -asdf
   A flag is not recognized or used in an incorrect way (Use -badflag to inhibit
   warning)
 
 Finished checking --- no code processed
 
-Warning: setting +boolint redundant with current value
-
+Command Line: Setting +boolint redundant with current value
 Finished checking --- no code processed
 
    D<initializer>              
@@ -63,6 +61,7 @@ Finished checking --- no code processed
    S<directory>                
    U<initializer>              
    abstract                    
+   abstractcompare             
    accessall                   
    accessczech                 
    accessczechoslovak          
@@ -96,6 +95,7 @@ Finished checking --- no code processed
    bufferoverflowhigh          
    bugslimit                   
    casebreak                   
+   caseinsensitivefilenames    
    castexpose                  
    castfcnptr                  
    charindex                   
@@ -120,6 +120,8 @@ Finished checking --- no code processed
    continuecomment             
    controlnestdepth            
    cppnames                    
+   csv                         
+   csvoverwrite                
    czech                       
    czechconsts                 
    czechfcns                   
@@ -143,13 +145,16 @@ Finished checking --- no code processed
    duplicatecases              
    duplicatequals              
    elseifcomplete              
-   emptyreturn                 
+   emptyret                    
    enumindex                   
    enumint                     
    enummembers                 
    enummemuse                  
    enumprefix                  
    enumprefixexclude           
+   errorstream                 
+   errorstreamstderr           
+   errorstreamstdout           
    evalorder                   
    evalorderuncon              
    exitarg                     
@@ -206,6 +211,7 @@ Finished checking --- no code processed
    hasyield                    
    help                        
    hints                       
+   htmlfileformat              
    i                           
    ifblock                     
    ifempty                     
@@ -266,13 +272,18 @@ Finished checking --- no code processed
    legacy                      
    lh                          
    libmacros                   
+   likely-boundsread           
+   likely-boundswrite          
    likelybool                  
+   likelybounds                
    limit                       
    linelen                     
    lintcomments                
    load                        
    localprefix                 
    localprefixexclude          
+   locindentspaces             
+   longint                     
    longintegral                
    longsignedintegral          
    longunsignedintegral        
@@ -302,6 +313,9 @@ Finished checking --- no code processed
    memchecks                   
    memimp                      
    memtrans                    
+   messagestream               
+   messagestreamstderr         
+   messagestreamstdout         
    misplacedsharequal          
    misscase                    
    modfilesys                  
@@ -353,6 +367,9 @@ Finished checking --- no code processed
    nullstate                   
    nullterminated              
    nullterminated              
+   numabstract                 
+   numabstractcast             
+   numabstractlit              
    numenummembers              
    numliteral                  
    numstructfields             
@@ -411,12 +428,15 @@ Finished checking --- no code processed
    sharedtrans                 
    shiftimplementation         
    shiftnegative               
+   shortint                    
    showallconjs                
    showalluses                 
    showcolumn                  
    showconstraintlocation      
    showconstraintparens        
+   showdeephistory             
    showfunc                    
+   showloadloc                 
    showscan                    
    showsourceloc               
    showsummary                 
@@ -446,6 +466,7 @@ Finished checking --- no code processed
    staticinittrans             
    statictrans                 
    stats                       
+   streamoverwrite             
    strictbranchstate           
    strictdestroy               
    strictlib                   
@@ -497,11 +518,13 @@ Finished checking --- no code processed
    unusedspecial               
    usedef                      
    usereleased                 
-   usestderr                   
    usevarargs                  
    varuse                      
    voidabstract                
    warnflags                   
+   warningstream               
+   warningstreamstderr         
+   warningstreamstdout         
    warnlintcomments            
    warnmissingglobs            
    warnmissingglobsnoglobs     
@@ -515,4 +538,3 @@ Finished checking --- no code processed
    whileempty                  
    whileloopexec               
    zerobool                    
-

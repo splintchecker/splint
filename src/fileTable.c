@@ -229,6 +229,7 @@ fileTable_create ()
   return (ft);
 }
 
+/*@-bounds@*/
 static void
 fileTable_grow (fileTable ft)
 {
@@ -249,7 +250,7 @@ fileTable_grow (fileTable ft)
   sfree (ft->elements);
   ft->elements = newent;
 }
-
+/*@=bounds@*/
 static void
 fileTable_growOpen (fileTable ft)
 {

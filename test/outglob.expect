@@ -11,7 +11,7 @@ outglob.c:21:10: Undef global x1 used before definition
 outglob.c:22:10: Global x2 used by function undefined before call: g
 outglob.c:27:10: Undef global x3 used before definition
 outglob.c:37:14: Function returns with global x3 undefined
-   outglob.c:5:20: Storage x3 defined [[[ error - look into this ]]]
+   outglob.c:5:20: Storage x3 defined
 outglob.c:41:13: Function returns with global x2 undefined
    outglob.c:1:12: Storage x2 defined
 outglob.c:41:13: Function returns with global x3 undefined

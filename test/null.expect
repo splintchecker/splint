@@ -83,7 +83,7 @@ null3.c:53:3: Only storage gip (type int *) not released before assignment (z
    null3.c:5:17: Storage gip becomes only
 null3.c:55:3: Only storage gnip (type nip) not released before assignment:
                  gnip = aip
-   ??? null3.c:53:3: Storage gnip becomes kept [[[ look into this one, seems odd ]]]
+   null3.c:53:3: Storage gnip becomes kept
 null3.c:60:14: Returned storage y not completely defined (*y is undefined): y
    null3.c:24:42: Storage *y allocated
 null3.c:60:16: Function returns with non-null global gip referencing null
