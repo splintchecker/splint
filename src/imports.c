@@ -51,15 +51,15 @@ outputLCSFile (char *path, char *msg, char *specname)
   char *sfile = mstring_concat (specname, ".lcs");
   char *outfile = mstring_concat (path, sfile);
   char *s;
-  FILE *outfptr = fopen (outfile, "w");
+  FILE *outfptr = fileTable_openFile (context_fileTable (), cstring_fromChars (outfile), "w");
   sfree (sfile);
 
   DPRINTF (("Output lcl file: %s / %s / %s", path, specname, outfile));
   
   /* check write permission */
   
-  if (outfptr == 0)
-    {				/* fopen fails */
+  if (outfptr == NULL)	/* Cannot open file */
+    {			
       if (!haserror)
 	{
 	  lclplainerror (message ("Cannot write to output file: %s", 
@@ -91,7 +91,7 @@ outputLCSFile (char *path, char *msg, char *specname)
   sort_dump (outfptr, TRUE);
   symtable_dump (g_symtab, outfptr, TRUE);
 
-  check (fclose (outfptr) == 0);  
+  check (fileTable_closeFile (context_fileTable (), outfptr));  
   sfree (outfile);  
 }
 

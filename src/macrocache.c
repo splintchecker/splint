@@ -237,7 +237,7 @@ static void pushString (/*@only@*/ cstring s)
       mtid = fileTable_addMacrosFile (context_fileTable ());
       
       fname = fileName (mtid);
-      s_macFile = fopen (cstring_toCharsSafe (fname), "wb+");
+      s_macFile = fileTable_openFile (context_fileTable (), fname, "wb+");
       
       if (s_macFile == NULL)
 	{
@@ -408,7 +408,7 @@ void macrocache_finalize (void)
 {
   if (s_macFile != NULL)
     {
-      check (fclose (s_macFile) == 0);
+      check (fileTable_closeFile (context_fileTable (), s_macFile));
       s_macFile = NULL;
     }
 }

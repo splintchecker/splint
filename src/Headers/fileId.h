@@ -22,7 +22,7 @@ extern bool fileId_isInvalid (fileId) /*@*/ ;
 # define fileId_isInvalid(f) ((f) == fileId_invalid)
 
 extern bool fileId_equal (fileId p_t1, fileId p_t2) /*@*/ ;
-# define fileId_equal(p_t1, p_t2) (fileTable_sameBase (context_fileTable (), p_t1, p_t2))
+# define fileId_equal(p_t1, p_t2) (fileTable_sameBase (context_fileTable (),  p_t1, p_t2))
 /* evs 2000-07-27: was
 # define fileId_equal(t1,t2) ((t1) == (t2))
 */

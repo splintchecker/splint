@@ -294,11 +294,11 @@ osd_fileExists (cstring filespec)
   return (stat (cstring_toCharsSafe (filespec), &buf) == 0);
 # else
 # if defined (WIN32) || defined (OS2)
-  FILE *test = fopen (cstring_toCharsSafe (filespec), "r");
+  FILE *test = fileTable_openFile (context_fileTable (), filespec, "r");
   
   if (test != NULL) 
     {
-      (void) fclose (test);
+      (void) fileTable_closeFile (context_fileTable (),test);
       return TRUE;
     } 
   else
@@ -535,11 +535,11 @@ cstring osd_fixDefine (cstring x)
 
 bool osd_fileIsReadable (cstring f)
 {
-  FILE *fl = fopen (cstring_toCharsSafe (f), "r");
+  FILE *fl = fileTable_openFile (context_fileTable (), f, "r");
 
-  if (fl != (FILE *) 0)
+  if (fl != NULL)
     {
-      check (fclose (fl) == 0);
+      check (fileTable_closeFile (context_fileTable (), fl));
       return (TRUE);
     }
   else

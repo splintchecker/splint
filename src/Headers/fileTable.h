@@ -33,12 +33,25 @@ typedef enum { FILE_NORMAL, FILE_LSLTEMP, FILE_NODELETE,
 
 typedef /*@only@*/ ftentry o_ftentry;
 
+typedef /*@only@*/ struct {
+  /*@dependent@*/ /*@exposed@*/ FILE *f;
+  /*@only@*/ cstring fname;
+} *foentry;
+
 abst_typedef /*@null@*/ struct
 {
   int nentries;
   int nspace;
   cstringTable htable;
   /*@reldef@*/ /*@only@*/ o_ftentry *elements;
+
+  /*
+  ** Keep track of all the open files, so we can close them on error exits.
+  */
+
+  int nopen;
+  int nopenspace;
+  /*@reldef@*/ /*@only@*/ foentry *openelements;
 } *fileTable ;
 
 /*@constant null fileTable fileTable_undefined; @*/
@@ -121,6 +134,18 @@ extern void fileTable_noDelete (fileTable, cstring);
 extern bool fileId_baseEqual (/*@sef@*/ fileId p_t1, /*@sef@*/ fileId p_t2) /*@*/ ;
 # define fileId_baseEqual(t1,t2) \
   (fileId_equal (t1, t2) || fileTable_sameBase (context_fileTable (), t1, t2))
+
+
+extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *
+fileTable_openFile (fileTable p_ft, cstring p_fname, /*@observer@*/ char *p_mode) 
+     /*@modifies p_ft@*/ ;
+
+extern bool fileTable_closeFile (fileTable p_ft, FILE *p_f) 
+   /*@ensures closed p_f@*/ 
+   /*@modifies p_ft, p_f@*/ ;
+
+extern void fileTable_closeAll (fileTable p_ft)
+  /*@modifies p_ft@*/ ;
 
 # else
 # error "Multiple include"

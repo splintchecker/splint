@@ -115,7 +115,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
       llexit (LLFAILURE);
     }
 
-  ofile = fopen (cstring_toCharsSafe (outfile), "w");
+  ofile = fileTable_openFile (context_fileTable (), outfile, "w");
   
   if (ofile == NULL) 
     {
@@ -147,7 +147,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
     }
 
   cppReader_finish (&g_cppState);
-  check (fclose (ofile) == 0);
+  check (fileTable_closeFile (context_fileTable (), ofile));
 
   /* Restore the original definition table. */
 

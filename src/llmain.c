@@ -736,7 +736,7 @@ int main (int argc, char *argv[])
 		  {
 		    defaultf = FALSE;
 		    fname = argv[i];
-		    rcfile = fopen (fname, "r");
+		    rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
 
 		    if (rcfile != NULL)
 		      {
@@ -780,7 +780,7 @@ int main (int argc, char *argv[])
     if (!nof && defaultf)
       {
 	if (!mstring_isEmpty (fname)) {
-	  rcfile = fopen (fname, "r");
+	  rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
 	  
 	  if (rcfile != NULL)
 	    {
@@ -801,7 +801,7 @@ int main (int argc, char *argv[])
 					      cstring_fromChars (RCFILE)));
 # endif
 
-	rcfile = fopen (fname, "r");
+	rcfile = fileTable_openFile (context_fileTable (), cstring_fromChars (fname), "r");
 
 	if (rcfile != NULL)
 	  {
@@ -2113,6 +2113,13 @@ cleanupFiles (void)
 
   setCodePoint ();
 
+  /*
+  ** Close all open files
+  **    (There should only be open files, if we exited after a fatal error.)
+  */
+
+  fileTable_closeAll (context_fileTable ());
+
   if (context_getFlag (FLG_KEEP))
     {
       check (fputs ("Temporary files kept:\n", stderr) != EOF);
@@ -2401,7 +2408,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			    }
 			  else if (opt == FLG_OPTF)
 			    {
-			      FILE *innerf = fopen (cstring_toCharsSafe (extra), "r");
+			      FILE *innerf = fileTable_openFile (context_fileTable (), extra, "r");
 			      cstring_markOwned (extra);
 			      
 			      if (innerf != NULL)
@@ -2488,7 +2495,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 
   DPRINTF (("Pass through: %s", cstringSList_unparse (*passThroughArgs)));
   sfree (os); 
-  check (fclose (rcfile) == 0);
+  check (fileTable_closeFile (context_fileTable (), rcfile));
 }
 
 static fileIdList preprocessFiles (fileIdList fl, bool xhfiles)

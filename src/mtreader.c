@@ -83,6 +83,7 @@ void mtreader_readFile (cstring infile)
   (void) mtparse ();
   context_exitMTfile ();
 
+  inputStream_close (sourceFile);
   inputStream_free (sourceFile);
 }
 

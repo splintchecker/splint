@@ -87,7 +87,7 @@ static /*:open:*/ /*@dependent@*/ /*@null@*/ FILE *out_open (cstring name, cstri
      /*@modifies fileSystem@*/
 {
   cstring fullname = cstring_concat (name, suffix);
-  FILE *ret = fopen (cstring_toCharsSafe (fullname), "w+");
+  FILE *ret = fileTable_openFile (context_fileTable (), fullname, "w+");
   cstring_free (fullname);
   return ret;
 }
@@ -347,8 +347,8 @@ lhCleanup (void)
 		}
 	    }
 
-	  check (fclose (f) == 0);
-	  check (fclose (LhFile.f) == 0);
+	  check (fileTable_closeFile (context_fileTable (), f));
+	  check (fileTable_closeFile (context_fileTable (), LhFile.f));
 
 	  (void) osd_unlink (fullname);
 	  LhFile.f = NULL;

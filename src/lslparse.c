@@ -387,7 +387,7 @@ callLSL (/*@unused@*/ cstring specfile, /*@only@*/ cstring text)
   FILE *inptr;
 
   infile = fileName (fileTable_addltemp (context_fileTable ()));
-  inptr = fopen (cstring_toCharsSafe (infile), "w");
+  inptr = fileTable_openFile (context_fileTable (), infile, "w");
   
   if (inptr == NULL)
     {
@@ -405,7 +405,7 @@ callLSL (/*@unused@*/ cstring specfile, /*@only@*/ cstring text)
   cstring_free (nopath);
 
   fprintf (inptr, "%s", cstring_toCharsSafe (text));
-  check (fclose (inptr) == 0);
+  check (fileTable_closeFile (context_fileTable (), inptr));
 
   /* the default is to delete the input file */
 
@@ -428,7 +428,7 @@ static void invokeLSL (cstring infile, cstring outfile, bool deletep)
   ** way to do this. 
   */
   
-  outptr = fopen (cstring_toCharsSafe (outfile), "w");
+  outptr = fileTable_openFile (context_fileTable (), outfile, "w");
 
   if (outptr == NULL)
     {			
@@ -437,7 +437,7 @@ static void invokeLSL (cstring infile, cstring outfile, bool deletep)
 			     outfile));
     }
   
-  check (fclose (outptr) == 0);
+  check (fileTable_closeFile (context_fileTable (), outptr));
 
   /* set call to the right command */
   status = osd_getExePath (cstring_makeLiteralTemp ("PATH"), 

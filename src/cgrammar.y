@@ -696,7 +696,7 @@ fcnDef
  : fcnDefHdr fcnBody 
    { 
      context_setFunctionDefined (exprNode_loc ($2)); 
-     exprNode_checkFunction (context_getHeader (), $2); 
+     exprNode_checkFunction (context_getHeader (),  $2); 
      /* DRL 8 8 2000 */
      
      context_exitFunction ();

@@ -1,3 +1,4 @@
+  Note: expect difference in name of unclosed file.
 
 boolops.c: (in function main)
 boolops.c:12:3: Assignment of int to Kzam: b = 12
@@ -47,6 +48,7 @@ Finished LCLint checking --- no code errors found
 extension.c:2:18: Parse Error: New function scope inside function. (For help on
                parse errors, see lclint -help parseerrors.)
 *** Cannot continue.
+Unclosed file at exit: /tmp/cl50AAA.c
 
 Finished LCLint checking --- no code errors found
 

@@ -445,7 +445,7 @@ iterParamList
  
 realIterParamList  
  : iterParam           
-   { $$ = paramNodeList_add (paramNodeList_new (), $1); }
+   { $$ = paramNodeList_add (paramNodeList_new (),  $1); }
  | realIterParamList LLT_COMMA iterParam  
    { $$ = paramNodeList_add ($1,$3); }     
    
@@ -491,7 +491,7 @@ special
 fcn   
  : lclTypeSpec declarator globals { enteringFcnScope ($1, $2, $3); } LLT_LBRACE
    privateInits optLetDecl optChecks optRequire optModify optEnsure optClaim LLT_RBRACE
-   { $$ = makeFcnNode (qual_createUnknown (), $1, $2, $3, $6, $7, 
+   { $$ = makeFcnNode (qual_createUnknown (),  $1, $2, $3, $6, $7, 
 		       $8, $9, $10, $11, $12); 
      /* type, declarator, glovbls, privateinits,
 	lets, checks, requires, modifies, ensures, claims */
@@ -553,7 +553,7 @@ exposed
 
 importNameList  
  : importName        
-   { $$ = importNodeList_add (importNodeList_new (), $1); } 
+   { $$ = importNodeList_add (importNodeList_new (),  $1); } 
  | importNameList LLT_COMMA importName  
    { $$ = importNodeList_add ($1, $3); } 
 
@@ -573,7 +573,7 @@ interfaceName
 
 traitRefNodeList   
  : traitRef
-   { $$ = traitRefNodeList_add (traitRefNodeList_new (), $1); } 
+   { $$ = traitRefNodeList_add (traitRefNodeList_new (),  $1); } 
  | traitRefNodeList LLT_COMMA traitRef
    { $$ = traitRefNodeList_add ($1, $3); } 
 
@@ -593,19 +593,19 @@ traitIdList
 
 renaming   
  : replaceNodeList   
-   { $$ = makeRenamingNode (typeNameNodeList_new (), $1); } 
+   { $$ = makeRenamingNode (typeNameNodeList_new (),  $1); } 
  | nameList
    { $$ = makeRenamingNode ($1, replaceNodeList_new ()); } 
  | nameList LLT_COMMA replaceNodeList { $$ = makeRenamingNode ($1, $3); } 
  
 nameList
  : typeName
-   { $$ = typeNameNodeList_add (typeNameNodeList_new (), $1); } 
+   { $$ = typeNameNodeList_add (typeNameNodeList_new (),  $1); } 
  | nameList LLT_COMMA typeName       { $$ = typeNameNodeList_add ($1, $3); } 
 
 replaceNodeList   
  : replace
-   { $$ = replaceNodeList_add (replaceNodeList_new (), $1); } 
+   { $$ = replaceNodeList_add (replaceNodeList_new (),  $1); } 
  | replaceNodeList LLT_COMMA replace { $$ = replaceNodeList_add ($1, $3); } 
 
 replace
@@ -624,7 +624,7 @@ constLclExpr : term
 
 initDecls
  : initDecl 
-   { $$ = initDeclNodeList_add (initDeclNodeList_new (), $1); } 
+   { $$ = initDeclNodeList_add (initDeclNodeList_new (),  $1); } 
  | initDecls LLT_COMMA initDecl      
    { $$ = initDeclNodeList_add ($1, $3); } 
 
@@ -656,7 +656,7 @@ optLetDecl
  | LLT_LET beDeclList LLT_SEMI         { $$ = $2; } 
 
 beDeclList   
- : beDecl                      { $$ = letDeclNodeList_add (letDeclNodeList_new (), $1); } 
+ : beDecl                      { $$ = letDeclNodeList_add (letDeclNodeList_new (),  $1); } 
  | beDeclList LLT_COMMA beDecl     { $$ = letDeclNodeList_add ($1, $3); } 
 
 beDecl   
@@ -680,7 +680,7 @@ optModify
  | LLT_MODIFIES storeRefList LLT_SEMI   { $$ = makeModifyNodeRef ($1, $2); } 
 
 storeRefList   
- : storeRef                     { $$ = storeRefNodeList_add (storeRefNodeList_new (), $1); } 
+ : storeRef                     { $$ = storeRefNodeList_add (storeRefNodeList_new (),  $1); } 
  | storeRefList LLT_COMMA storeRef  { $$ = storeRefNodeList_add ($1, $3); } 
 
 storeRef   
@@ -704,7 +704,7 @@ optParamList
 
 realParamList      
  : paramList
- | LLT_TELIPSIS                  { $$ = paramNodeList_add (paramNodeList_new (), paramNode_elipsis ()); }
+ | LLT_TELIPSIS                  { $$ = paramNodeList_add (paramNodeList_new (),  paramNode_elipsis ()); }
  | paramList LLT_COMMA LLT_TELIPSIS  { $$ = paramNodeList_add ($1, paramNode_elipsis ()); }
 
 paramList   
@@ -750,7 +750,7 @@ stmt
    { $$ = makeStmtNode ($1, $3, $5); }
 
 valueList   
- : value                 { $$ = termNodeList_push (termNodeList_new (), $1); } 
+ : value                 { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | valueList LLT_COMMA value { $$ = termNodeList_push ($1, $3); } 
 
 value   
@@ -761,7 +761,7 @@ value
  | value simpleOp value /* infix */ { $$ = makeInfixTermNode ($1, $2, $3); }
  | LLT_LPAR value LLT_RPAR                  { $$ = $2; $$->wrapped = $$->wrapped + 1; }
  | fcnId LLT_LPAR LLT_RPAR
-   { $$ = makeOpCallTermNode ($1, $2, termNodeList_new (), $3); }
+   { $$ = makeOpCallTermNode ($1, $2, termNodeList_new (),  $3); }
  | fcnId LLT_LPAR valueList LLT_RPAR
    { $$ = makeOpCallTermNode ($1, $2, $3, $4); } 
 
@@ -789,7 +789,7 @@ typeInv
    }
 
 declaratorInvs     
- : declaratorInv        { $$ = declaratorInvNodeList_add (declaratorInvNodeList_new (), $1); } 
+ : declaratorInv        { $$ = declaratorInvNodeList_add (declaratorInvNodeList_new (),  $1); } 
  | declaratorInvs LLT_COMMA declaratorInv
    { $$ = declaratorInvNodeList_add ($1, $3); } 
 
@@ -916,7 +916,7 @@ optTagId
  | tagId
 
 structDecls   
- : structDecl               { $$ = stDeclNodeList_add (stDeclNodeList_new (), $1); } 
+ : structDecl               { $$ = stDeclNodeList_add (stDeclNodeList_new (),  $1); } 
  | structDecls structDecl   { $$ = stDeclNodeList_add ($1, $2); } 
 
 /* We don't allow specification of field size */
@@ -926,7 +926,7 @@ structDecl
 
 declaratorList   
  : declarator                       
-   { $$ = declaratorNodeList_add (declaratorNodeList_new (), $1); } 
+   { $$ = declaratorNodeList_add (declaratorNodeList_new (),  $1); } 
  | declaratorList LLT_COMMA declarator  
    { $$ = declaratorNodeList_add ($1, $3); } 
 
@@ -1152,7 +1152,7 @@ postfixOps
  | postfixOps simpleOp2            { $$ = ltokenList_push ($1, $2); } 
 
 infixOpPart   
- : simpleOp2 secondary             { $$ = pushInfixOpPartNode (termNodeList_new (), $1, $2); } 
+ : simpleOp2 secondary             { $$ = pushInfixOpPartNode (termNodeList_new (),  $1, $2); } 
  | infixOpPart simpleOp2 secondary { $$ = pushInfixOpPartNode ($1, $2, $3); } 
 
 secondary   
@@ -1175,18 +1175,18 @@ sqBracketed
  | LLT_LBRACKET args LLT_RBRACKET
    { $$ = makeSqBracketedNode ($1, $2, $3); } 
  | LLT_LBRACKET  LLT_RBRACKET LLT_COLON sortId
-   { $$ = makeSqBracketedNode ($1, termNodeList_new (), $2); 
+   { $$ = makeSqBracketedNode ($1, termNodeList_new (),  $2); 
      $$->given = sort_lookupName (ltoken_getText ($4)); 
    }
  | LLT_LBRACKET  LLT_RBRACKET
-   { $$ = makeSqBracketedNode ($1, termNodeList_new (), $2); } 
+   { $$ = makeSqBracketedNode ($1, termNodeList_new (),  $2); } 
 
 matched      
  : open args  close          { $$ = makeMatchedNode ($1, $2, $3); } 
- | open close                { $$ = makeMatchedNode ($1, termNodeList_new (), $2); } 
+ | open close                { $$ = makeMatchedNode ($1, termNodeList_new (),  $2); } 
 
 args   
- : term                      { $$ = termNodeList_push (termNodeList_new (), $1); } 
+ : term                      { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | args separator term       { $$ = termNodeList_push ($1, $3); } 
 
 primary   
@@ -1204,7 +1204,7 @@ primary
  | primary mapSym simpleIdOrTypedefName
    { ltoken_markOwned ($3); $$ = makeMapTermNode ($1, $2, $3); } 
  | primary LLT_LBRACKET LLT_RBRACKET   
-   { $$ = updateSqBracketedNode ($1, makeSqBracketedNode ($2, termNodeList_new (), $3), 
+   { $$ = updateSqBracketedNode ($1, makeSqBracketedNode ($2, termNodeList_new (),  $3), 
 				(termNode)0); }
  | primary LLT_LBRACKET termList LLT_RBRACKET
    { $$ = updateSqBracketedNode ($1, makeSqBracketedNode ($2, $3, $4), (termNode)0); }
@@ -1212,7 +1212,7 @@ primary
    { $$ = $1; $$->given = sort_lookupName (ltoken_getText ($3)); }
 
 termList   
- : term0                  { $$ = termNodeList_push (termNodeList_new (), $1); } 
+ : term0                  { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | termList LLT_COMMA term0   { $$ = termNodeList_push ($1, $3); } 
 
 stateFcn   
@@ -1255,7 +1255,7 @@ cLiteral
 
 quantifiers   
  : quantifier
-   { $$ = quantifierNodeList_add (quantifierNodeList_new (), $1); } 
+   { $$ = quantifierNodeList_add (quantifierNodeList_new (),  $1); } 
  | quantifiers quantifier
    { $$ = quantifierNodeList_add ($1, $2); } 
 
@@ -1267,7 +1267,7 @@ quantifier
    { $$ = makeQuantifierNode ($3, $1); } 
 
 quantifiedList   
- : quantified                         { $$ = varNodeList_add (varNodeList_new (), $1); } 
+ : quantified                         { $$ = varNodeList_add (varNodeList_new (),  $1); } 
  | quantifiedList LLT_COMMA quantified    { $$ = varNodeList_add ($1, $3); } 
 
 quantified   

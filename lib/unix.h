@@ -1351,9 +1351,8 @@ getpmsg (int fd, /*@out@*/ struct strbuf *c, /*@out@*/ struct strbuf *d, int *b,
 putmsg (int fd, const struct strbuf *c, const struct strbuf *d, int *f)
 	/*@modifies internalState, errno@*/;
 
-	extern int
-putpmsg (int fd, const struct strbuf *c, const struct strbuf *d, int b, int *f)
-	/*@modifies internalState, errno@*/;
+extern int putpmsg (int fd, const struct strbuf *c, const struct strbuf *d, int b, int *f)
+   /*@modifies internalState, errno@*/;
 
 /*________________________________________________________________________
  * sys/resource.h

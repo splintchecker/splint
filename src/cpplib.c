@@ -5942,7 +5942,7 @@ read_name_map (cppReader *pfile, cstring dirname)
 
   name = cstring_concatFree1 (name, cstring_makeLiteralTemp (FILE_NAME_MAP_FILE));
 
-  f = fopen (cstring_toCharsSafe (name), "r");
+  f = fileTable_openFile (context_fileTable (), name, "r");
   cstring_free (name);
 
   if (f == NULL)
@@ -6000,7 +6000,7 @@ read_name_map (cppReader *pfile, cstring dirname)
 	}
 
       assertSet (map_list_ptr->map_list_map);
-      check (fclose (f) == 0);
+      check (fileTable_closeFile (context_fileTable (),f) == 0);
     }
 
   map_list_ptr->map_list_next = pfile->opts->map_list;

@@ -245,7 +245,7 @@ dumpState (cstring cfname)
   FILE *f;
   cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
   
-  f = fopen (cstring_toCharsSafe (fname), "w");
+  f = fileTable_openFile (context_fileTable (), fname, "w");
 
   if (context_getFlag (FLG_SHOWSCAN))
     {
@@ -301,7 +301,7 @@ dumpState (cstring cfname)
       fprintf (f, ";; Modules access\n");
       context_dumpModuleAccess (f);
       fprintf (f, ";;End\n");
-      check (fclose (f) == 0);
+      check (fileTable_closeFile (context_fileTable (), f));
     }
 
   if (context_getFlag (FLG_SHOWSCAN))
@@ -333,7 +333,7 @@ loadStandardState ()
     }
   else
     {
-      stdlib = fopen (cstring_toCharsSafe (fpath), "r");
+      stdlib = fileTable_openFile (context_fileTable (), fpath, "r");
 
       if (stdlib == NULL)
 	{
@@ -382,8 +382,8 @@ loadStandardState ()
 
 	      sfree (ot);
 	      
-	      check (fclose (stdlib) == 0);
-	      stdlib = fopen (cstring_toCharsSafe (fpath), "r");
+	      check (fileTable_closeFile (context_fileTable (), stdlib));
+	      stdlib = fileTable_openFile (context_fileTable (), fpath, "r");
 	    }
 
 	  llassert (stdlib != NULL);
@@ -405,7 +405,7 @@ loadStandardState ()
 	      result = loadLCDFile (stdlib, fpath);
 	    }
 
-	  check (fclose (stdlib) == 0);
+	  check (fileTable_closeFile (context_fileTable (), stdlib));
 	}
     }
 
@@ -554,7 +554,7 @@ loadState (cstring cfname)
   FILE *f;
   cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
 
-  f = fopen (cstring_toCharsSafe (fname), "r");
+  f = fileTable_openFile (context_fileTable (), fname, "r");
 
   if (f == NULL)
     {
@@ -577,7 +577,7 @@ loadState (cstring cfname)
 	    }
 	}
       
-      check (fclose (f) == 0);
+      check (fileTable_closeFile (context_fileTable (), f));
     }
 
   /* usymtab_printAll (); */

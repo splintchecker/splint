@@ -192,6 +192,10 @@ fileTable_create ()
   ft->nspace = FTBASESIZE;
   ft->elements = (ftentry *) dmalloc (FTBASESIZE * sizeof (*ft->elements));
   ft->htable = cstringTable_create (FTHASHSIZE);
+
+  ft->nopen = 0;
+  ft->nopenspace = FTBASESIZE;
+  ft->openelements = (foentry *) dmalloc (FTBASESIZE * sizeof (*ft->openelements));
   
   return (ft);
 }
@@ -215,6 +219,27 @@ fileTable_grow (fileTable ft)
 
   sfree (ft->elements);
   ft->elements = newent;
+}
+
+static void
+fileTable_growOpen (fileTable ft)
+{
+  int i;
+  foentry *newent;
+
+  llassert (fileTable_isDefined (ft));
+
+  ft->nopenspace = FTBASESIZE;
+
+  newent = (foentry *) dmalloc ((ft->nopen + ft->nopenspace) * sizeof (*newent));
+  
+  for (i = 0; i < ft->nopen; i++)
+    {
+      newent[i] = ft->openelements[i];
+    }
+
+  sfree (ft->openelements);
+  ft->openelements = newent;
 }
 
 static fileId
@@ -878,3 +903,102 @@ static /*@only@*/ cstring makeTempName (cstring dir, cstring pre, cstring suf)
 
   return smsg;
 }
+
+static foentry
+foentry_create (/*@exposed@*/ FILE *f, /*@only@*/ cstring fname)
+{
+  foentry t = (foentry) dmalloc (sizeof (*t));
+  t->f = f;
+  t->fname = fname;
+  return t;
+}
+
+static void 
+foentry_free (/*@only@*/ foentry foe)
+{
+  cstring_free (foe->fname);
+  sfree (foe);
+}
+
+static void 
+fileTable_addOpen (fileTable ft, /*@observer@*/ FILE *f, /*@only@*/ cstring fname)
+{
+  llassert (fileTable_isDefined (ft));
+
+  if (ft->nopenspace <= 0) 
+    {
+      fileTable_growOpen (ft);
+    }
+
+  ft->nopenspace--;
+  ft->openelements[ft->nopen] = foentry_create (f, fname);
+  ft->nopen++;
+}
+
+FILE *fileTable_openFile (fileTable ft, cstring fname, char *mode)
+{
+  FILE *res = fopen (cstring_toCharsSafe (fname), mode);
+
+  if (res != NULL) {
+    fileTable_addOpen (ft, res, cstring_copy (fname));
+    DPRINTF (("Opening file: %s / %p", fname, res));
+  }
+
+  return res;
+}
+
+bool fileTable_closeFile (fileTable ft, FILE *f)
+{
+  bool foundit = FALSE;
+  int i = 0;
+
+  llassert (fileTable_isDefined (ft));
+
+  DPRINTF (("Closing file: %p", f));
+
+  for (i = 0; i < ft->nopen; i++) 
+    {
+      if (ft->openelements[i]->f == f)
+	{
+	  DPRINTF (("Closing file: %p = %s", f, ft->openelements[i]->fname));
+
+	  if (i == ft->nopen - 1)
+	    {
+	      foentry_free (ft->openelements[i]);
+	      ft->openelements[i] = NULL;
+	    }
+	  else
+	    {
+	      foentry_free (ft->openelements[i]);
+	      ft->openelements[i] = ft->openelements[ft->nopen - 1];
+	      ft->openelements[ft->nopen - 1] = NULL;
+	    }
+
+	  ft->nopen--;
+	  ft->nopenspace++;
+	  foundit = TRUE;
+	  break;
+	}
+    }
+  
+  llassert (foundit);
+  return (fclose (f) == 0);
+}
+
+void fileTable_closeAll (fileTable ft)
+{
+  int i = 0;
+
+  for (i = 0; i < ft->nopen; i++) 
+    {
+      lldiagmsg (message ("Unclosed file at exit: %s", cstring_toCharsSafe (ft->openelements[i]->fname)));
+      fclose (ft->openelements[i]->f); /* No check - cleaning up after errors */
+      ft->openelements[i]->f = NULL;
+      foentry_free (ft->openelements[i]);
+      ft->openelements[i] = NULL;
+    }
+  
+  ft->nopenspace += ft->nopen;
+  ft->nopen = 0;
+}
+

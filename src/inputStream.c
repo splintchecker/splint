@@ -56,7 +56,7 @@ inputStream_close (inputStream s)
 
   if (s->file != NULL)
     {
-      check (fclose (s->file) == 0);
+      check (fileTable_closeFile (context_fileTable (), s->file));
       s->file = NULL;
       return TRUE;
     }
@@ -275,7 +275,7 @@ inputStream_open (inputStream s)
     }
 
   DPRINTF (("Open: %s", s->name));
-  s->file = fopen (cstring_toCharsSafe (s->name), "r");
+  s->file = fileTable_openFile (context_fileTable (), s->name, "r");
   return (s->file != 0 || s->fromString);
 }
 

@@ -276,7 +276,7 @@ LCLBootstrap (void)
  
   s = sort_makeImmutable (ltoken_undefined, lsymbol_bool);
   range = ltoken_create (simpleId, lsymbol_bool);
-  sign = makesigNode (ltoken_undefined, ltokenList_new (), range);
+  sign = makesigNode (ltoken_undefined, ltokenList_new (),  range);
 
   nn1 = (nameNode) dmalloc (sizeof (*nn1));
   nn1->isOpId = TRUE;
@@ -2895,10 +2895,10 @@ static /*@observer@*/ paramNodeList
   fcnNode_fromDeclarator (/*@only@*/ /*@null@*/ lclTypeSpecNode t, 
 			  /*@only@*/ declaratorNode d)
 {
-  return (makeFcnNode (qual_createUnknown (), t, d,
-		       varDeclarationNodeList_new (),
-		       varDeclarationNodeList_new (),
-		       letDeclNodeList_new (),
+  return (makeFcnNode (qual_createUnknown (),  t, d,
+		       varDeclarationNodeList_new (), 
+		       varDeclarationNodeList_new (), 
+		       letDeclNodeList_new (), 
 		       (lclPredicateNode) 0,
 		       (lclPredicateNode) 0,
 		       (modifyNode) 0,
@@ -4190,7 +4190,7 @@ makeLiteralTermNode (ltoken tok, sort s)
   /* look up signatures for this operator too */
   
   range = ltoken_create (simpleId, sort_getLsymbol (s));
-  sign = makesigNode (ltoken_undefined, ltokenList_new (), 
+  sign = makesigNode (ltoken_undefined, ltokenList_new (),  
 			    ltoken_copy (range));
   
   if (opInfo_exists (oi) && (oi->name->isOpId) 
