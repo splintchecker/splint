@@ -13,9 +13,9 @@ fixedArrayType.c: (in function fixedArrayTouch)
 fixedArrayType.c:9:3: Possible out-of-bounds store:
     buffer[sizeof(Array) - 1]
     Unable to resolve constraint:
-    requires sizeof(Array) @ fixedArrayType.c:9:23 <= 10
+    requires sizeof(Array) @ fixedArrayType.c:9:24 <= 10
      needed to satisfy precondition:
     requires maxSet(buffer @ fixedArrayType.c:9:3) >= sizeof(Array) @
-    fixedArrayType.c:9:23 - 1
+    fixedArrayType.c:9:24 - 1
 
 Finished checking --- 1 code warning, as expected

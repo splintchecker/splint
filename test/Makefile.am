@@ -38,7 +38,7 @@ UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
-  constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  compoundliterals constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
@@ -280,6 +280,10 @@ compdestroy:
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
 	-$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+
+.PHONY: compoundliterals
+compoundliterals:
+	${SPLINTRN} compoundliterals.c 
 
 .PHONY: constannot
 constannot:
