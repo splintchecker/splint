@@ -2466,7 +2466,6 @@
 ^1556 1503$@0@@1@tp0$@0#stpcpy
 ^1557 1506$@0@@1@tp0$@0#stpncpy
 ;; Library constraints
-constraints
 vsnprintf
 pre:
 C
