@@ -2791,7 +2791,10 @@ void warnSysFiles(fileIdList files)
       
       if (fileTable_isSystemFile (context_fileTable (), file) )
 	{
-	  voptgenerror (FLG_WARNSYSFILES, message ("Warning %s is a considered a system file. No errors in this file will be reported.", fileTable_rootFileName (file) ), g_currentloc);
+	  if (!context_getFlag( FLG_SYSTEMDIRERRORS ) )
+	    {
+	      voptgenerror (FLG_WARNSYSFILES, message ("Warning %s is a considered a system file. No errors in this file will be reported.", fileTable_rootFileName (file) ), g_currentloc);
+	    }
 	}
     } 
   end_fileIdList_elements;
