@@ -44,9 +44,9 @@ typedef union _constraintExprData
 /*@constant null constraintExprData constraintExprData_undefined; @*/
 # define constraintExprData_undefined ((constraintExprData)NULL)
 
-extern /*@falsenull@*/ bool constraintExprData_isDefined (/*@observer@*/ /*@reldef@*/constraintExprData p_e) /*@*/ ;
-extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (constraintExprData p_e) /*@*/ ;
-extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (constraintExprData p_e) /*@*/ ;
+extern /*@falsenull@*/ bool constraintExprData_isDefined ( /*@temp@*/ /*@observer@*/ /*@reldef@*/constraintExprData p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (/*2oberserver@*/ constraintExprData p_e) /*@*/ ;
+extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (/*@observer@*/ constraintExprData p_e) /*@*/ ;
 
 # define constraintExprData_isDefined(e)      ((e) != constraintExprData_undefined)
 # define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
@@ -57,9 +57,9 @@ extern/*@unused@*/ /*@truenull@*/ bool constraintExprData_isError (constraintExp
 
 /*@observer@*/ constraintTerm constraintExprData_termGetTerm (/*@observer@*/ constraintExprData data) /*@*/;
 
-constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@reldef@*/constraintExprData data) /*@*/;
+constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*//*@reldef@*/constraintExprData data) /*@*/;
 
-/*@observer@*/ constraintExpr  constraintExprData_unaryExprGetExpr (/*@reldef@*/constraintExprData data) /*@*/;
+/*@observer@*/ constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ /*@reldef@*/constraintExprData data) /*@*/;
 
 
 //  /*@special@*/ constraintExprData  constraintExprData_unaryExprSetOp ( /*@out@*/ /*@special@*/ /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op) /*@sets result->unaryOp.unaryOp@*/;
@@ -72,9 +72,9 @@ constraintExprData  constraintExprData_unaryExprSetExpr (/*@reldef@*/ /*@returne
 
 constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (/*@reldef@*/constraintExprData data) /*@*/;
 
-/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr1 (/*@reldef@*/constraintExprData data)/*@*/;
+/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr1 (/*@observer@*/ /*@reldef@*/constraintExprData data)/*@*/;
 
-/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr2 (/*@reldef@*/constraintExprData data)/*@*/;
+/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr2 (/*@observer@*/ /*@reldef@*/constraintExprData data)/*@*/;
 
 constraintExprData  constraintExprData_binaryExprSetExpr1 (/*@reldef@*/ /*@returned@*/ constraintExprData data, /*@only@*/ constraintExpr expr) ;
 
@@ -82,11 +82,11 @@ constraintExprData  constraintExprData_binaryExprSetExpr2  (/*@reldef@*/ /*@retu
 
      constraintExprData  constraintExprData_binaryExprSetOp (/*@reldef@*/ /*@returned@*/ /*@out@*/constraintExprData data, constraintExprBinaryOpKind op);
 
-/*@only@*/ constraintExprData constraintExprData_copyBinaryExpr(constraintExprData data);
+/*@only@*/ constraintExprData constraintExprData_copyBinaryExpr(/*@observer@*/ constraintExprData data);
 
-/*@only@*/ constraintExprData constraintExprData_copyUnaryExpr(constraintExprData data);
+/*@only@*/ constraintExprData constraintExprData_copyUnaryExpr(/*@observer@*/ constraintExprData data);
 
-/*@only@*/ constraintExprData constraintExprData_copyTerm (constraintExprData data);
+/*@only@*/ constraintExprData constraintExprData_copyTerm (/*@observer@*/ constraintExprData data);
 
 #else
 

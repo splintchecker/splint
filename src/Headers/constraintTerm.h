@@ -4,8 +4,8 @@
 
 typedef union
 {
-  /*@dependent@*/ exprNode expr;
-  /*@only@*/  sRef     sref;
+  /*@exposed@*/ exprNode expr;
+  /*@exposed@*/  sRef     sref;
   int      intlit;
 } constraintTermValue;
 
@@ -25,8 +25,8 @@ typedef enum
 } constraintTermType;
 
 struct _constraintTerm {
-  fileloc loc;
-  constraintTermValue value;
+  /*@only@*/ fileloc loc;
+   constraintTermValue value;
   constraintTermType kind;
 };
 
@@ -53,7 +53,7 @@ void constraintTerm_free (/*@only@*/ constraintTerm term);
 
 constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/ ;
 
-constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e) /*@*/;
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@exposed@*/ exprNode e) /*@*/;
 
 constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
 
@@ -86,7 +86,7 @@ bool constraintTerm_isIntLiteral (constraintTerm term) /*@*/;
 
 cstring constraintTerm_print (constraintTerm term) /*@*/;
 
-constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s) /*@*/;
+constraintTerm constraintTerm_makesRef  (/*@exposed@*/ sRef s) /*@*/;
 
 /*@unused@*/ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
 

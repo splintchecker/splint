@@ -365,7 +365,8 @@ extern /*@exposed@*/ sRef
     added function
     12/24/2000
   */
-  extern /*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ exprNodeList args);
+  
+  /*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ /*@temp@*/ exprNodeList args);
   
 extern bool sRef_isUnionField (sRef p_s);
 extern void sRef_setModified (sRef p_s);

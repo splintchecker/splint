@@ -11,6 +11,7 @@ arithType;
 struct _constraint {
   constraint     orig;
   constraint     or;
+  bool           fcnPre;
   constraintExpr lexpr;
   arithType       ar;
   constraintExpr  expr;

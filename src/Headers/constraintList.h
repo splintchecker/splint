@@ -39,7 +39,7 @@ extern /*@truenull@*/ /*@unused@*/ bool constraintList_isError (constraintList p
 extern /*@only@*/ constraintList constraintList_makeNew(void) /*@*/;
 extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) /*@modifies p_s@*/ ;
 
-extern constraintList constraintList_addList (/*@returned@*/ constraintList p_s, /*@only@*/constraintList new) /*@modifies p_s@*/  ;
+extern /*@only@*/ constraintList constraintList_addList (/*@returned@*/ constraintList p_s, /*@observer@*/ constraintList new) /*@modifies p_s@*/  ;
 
 
 extern constraintList constraintList_copy ( /*@observer@*/ constraintList p_s) /*@*/ ;
