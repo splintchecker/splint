@@ -372,7 +372,7 @@ namedDeclBase
  | IsType TLPAREN NotType namedDecl IsType TRPAREN
    { $$ = idDecl_expectFunction ($4); }
  | namedDeclBase TLSQBR TRSQBR 
-   { $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); }
+   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); }
  | namedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    {
      exprNode_findValue ($4);
@@ -385,7 +385,7 @@ namedDeclBase
        } 
      else
        {
-	 $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); 
+	 $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); 
        }
    }
  | namedDeclBase PushType TLPAREN TRPAREN 
@@ -416,7 +416,7 @@ plainNamedDeclBase
  | IsType TLPAREN NotType plainNamedDecl IsType TRPAREN
    { $$ = idDecl_expectFunction ($4); }
  | plainNamedDeclBase TLSQBR TRSQBR 
-   { $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); }
+   { $$ = idDecl_replaceCtype ($1, ctype_makeInnerArray (idDecl_getCtype ($1))); }
  | plainNamedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    { 
      int value;
@@ -431,7 +431,7 @@ plainNamedDeclBase
 	 value = 0;
        }
 
-     $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), value));
+     $$ = idDecl_replaceCtype ($1, ctype_makeInnerFixedArray (idDecl_getCtype ($1), value));
    }
  | plainNamedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); }
@@ -1456,7 +1456,7 @@ abstractDeclBase
  | TLSQBR TRSQBR { $$ = ctype_makeArray (ctype_unknown); }
  | TLSQBR constantExpr TRSQBR 
    { $$ = ctype_makeFixedArray (ctype_unknown, exprNode_getLongValue ($2)); }
- | abstractDeclBase TLSQBR TRSQBR { $$ = ctype_makeArray ($1); }
+ | abstractDeclBase TLSQBR TRSQBR { $$ = ctype_makeInnerArray ($1); }
  | abstractDeclBase TLSQBR constantExpr TRSQBR 
    { $$ = ctype_makeInnerFixedArray ($1, exprNode_getLongValue ($3)); }
  | IsType TLPAREN TRPAREN 

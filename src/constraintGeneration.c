@@ -37,8 +37,10 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@access exprNode @*/
-
+/*@access exprNode@*/ /* NO! Don't do this recklessly! */
+/*@-nullderef@*/ /* DRL needs to fix this code! */
+/*@-nullpass@*/ /* DRL needs to fix this code! */
+/*@-temptrans@*/ /* DRL needs to fix this code! */
 
 static /*@truewhennull@*/ bool exprNode_handleError (/*@temp@*/ exprNode p_e);
 
@@ -548,9 +550,8 @@ static void doFor (/*@dependent@*/ exprNode e, /*@dependent@*/ exprNode forPred,
 
 static /*@dependent@*/ exprNode exprNode_makeDependent(/*@returned@*/  exprNode e)
 {
-  /*@-temptrans@*/
+  /* !!! DRL - this is ridiculous!  Read the manual on memory annotations please! */
   return e;
-  /*@=temptrans@*/  
 }
 
 static void 

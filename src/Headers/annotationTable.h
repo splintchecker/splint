@@ -37,8 +37,10 @@ extern void annotationTable_insert (annotationTable p_h, /*@only@*/ annotationIn
 
 extern /*@null@*/ /*@dependent@*/ /*@exposed@*/ annotationInfo
    annotationTable_lookup (annotationTable p_h, cstring p_key) /*@*/ ;
+/*@access annotationInfo@*/
 # define annotationTable_lookup(p_h,p_key) \
-  (/*@i32@*/ (annotationInfo) genericTable_lookup ((genericTable) (p_h), p_key))
+  ((annotationInfo) genericTable_lookup ((genericTable) (p_h), p_key))
+/*@noaccess annotationInfo@*/
 
 extern bool annotationTable_contains (annotationTable p_h, cstring p_key) /*@*/ ;
 # define annotationTable_contains(p_h,p_key) \

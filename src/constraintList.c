@@ -33,6 +33,10 @@
 # include "splintMacros.nf"
 # include "llbasic.h"
 
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
 /*@iter constraintList_elements_private_only (sef constraintList x, yield only constraint el); @*/
 # define constraintList_elements_private_only(x, m_el) \

@@ -12,3 +12,6 @@ char cs2[3] = "abcd"; /* gcc warns for this with -Wall */ /* stringliteraltoolon
 char cs3[3] = "a"; /* stringliteral smaller (not on default) */ 
 
 char csx[3][3] = { { 'a', 'b', 'c' } , "def", "gasdf" } ; /* 2 errors */
+
+int a2[][2] = {{1,2},{3,4},{5,6}};
+int a3[][2] = {{1,2},{3,4,5},{5,6}};

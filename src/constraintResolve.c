@@ -39,7 +39,13 @@
 # include "exprNodeSList.h"
 
 
-/*@access constraint, exprNode @*/
+/*@access constraint, exprNode @*/ /*!!! NO! Don't do this so recklessly - design your code more carefully so you don't need to! */
+
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
+
 
 
 static constraint  inequalitySubstitute  (/*@returned@*/ constraint p_c, constraintList p_p);

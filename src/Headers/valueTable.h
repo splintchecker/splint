@@ -55,17 +55,8 @@ extern /*@only@*/ valueTable valueTable_copy (valueTable p_s) ;
 
 /*@iter valueTable_elements (sef valueTable p_g, yield exposed cstring m_key, yield exposed stateValue m_el)@*/
 
-# define valueTable_elements(p_g, m_key, m_el) \
-   { if (valueTable_isDefined (p_g)) {  int m_ind; \
-     { for (m_ind = 0 ; m_ind < (p_g)->size; m_ind++) \
-       { ghbucket m_hb; m_hb = (p_g)->buckets[m_ind]; \
-         if (m_hb != NULL) { \
-           int m_j; \
-           for (m_j = 0; m_j < (m_hb)->size; m_j++) { \
-             cstring m_key; stateValue m_el; m_key = (m_hb)->entries[m_j]->key; \
-   /*@access stateValue@*/ m_el = (stateValue) (m_hb)->entries[m_j]->val; /*@noaccess stateValue@*/
-
-# define end_valueTable_elements }}}}}}
+# define valueTable_elements(p_g, m_key, m_el) genericTable_elements (p_g, m_key, m_el)
+# define end_valueTable_elements end_genericTable_elements
 
 extern int valueTable_size (valueTable p_h) /*@*/ ;
 # define valueTable_size(p_h) (genericTable_size(p_h))

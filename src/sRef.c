@@ -62,6 +62,7 @@ static void sRef_updateNullState (sRef p_res, sRef p_other) /*@modifies p_res@*/
 
 static bool sRef_isAllocatedStorage (sRef p_s) /*@*/ ;
 static void sRef_setNullErrorLoc (sRef p_s, fileloc) /*@*/ ;
+static void sRef_setNullStateN (sRef p_s, nstate p_n) /*@modifies p_s@*/ ;
 
 static int sRef_depth (sRef p_s) /*@*/ ;
 
@@ -3728,8 +3729,8 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
   llassertfatal (sRef_isValid (other));
   
   DPRINTF (("Merge aux: %s / %s",
-	    bool_unparse (sRef_isDefinitelyNull (res)),
-	    bool_unparse (sRef_isDefinitelyNull (other))));
+	    sRef_unparseFull (res),
+	    sRef_unparseFull (other)));
 
   sRef_checkMutable (res);
   sRef_checkMutable (other);
@@ -3989,6 +3990,9 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
   } end_valueTable_elements ; 
 # endif
 
+  DPRINTF (("Merge aux: %s / %s",
+	    sRef_unparseFull (res),
+	    sRef_unparseFull (other)));
 }
 
 static sRefSet
@@ -4509,8 +4513,8 @@ sRef_makeUnsafe (sRef s)
 {
   if (sRef_isInvalid (s)) return (cstring_undefined);
 
-  return (message ("[%d] %q - %q [%s] { %q } < %q >", 
-		   (int) s,
+  return (message ("[%p] %q - %q [%s] { %q } < %q >", 
+		   s,
 		   sRef_unparseDebug (s), 
 		   sRef_unparseState (s),
 		   exkind_unparse (s->oexpkind),
@@ -5398,7 +5402,6 @@ void sRef_setLastReference (sRef s, /*@exposed@*/ sRef ref, fileloc loc)
 static
 void sRef_setNullStateAux (/*@notnull@*/ sRef s, nstate ns, fileloc loc)
 {
-  DPRINTF (("Set null state: %s / %s", sRef_unparse (s), nstate_unparse (ns)));
   sRef_checkMutable (s);
   s->nullstate = ns;
   sRef_resetAliasKind (s);
@@ -5804,7 +5807,7 @@ sRef sRef_copy (sRef s)
       t->deriv = sRefSet_newDeepCopy (s->deriv);
       t->state = valueTable_copy (s->state);
 
-      DPRINTF (("Made copy: [%p] %s", t, sRef_unparse (t)));
+      DPRINTF (("Made copy: %s => %s", sRef_unparseFull (s), sRef_unparseFull (t)));
       return t;
     }
   else
@@ -6355,6 +6358,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 		}
 	    }
 
+	  DPRINTF (("Set null state: %s / %s", sRef_unparseFull (s), sRef_unparseFull (sp)));
 	  sRef_setNullStateN (s, sRef_getNullState (sp));
 	}
       else
@@ -6541,7 +6545,9 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       s->info->arrayfetch->indknown = FALSE;
       s->info->arrayfetch->ind = 0;
       s->info->arrayfetch->arr = arr; /* sRef_copy (arr); */ /*@i32@*/
+
       sRef_setArrayFetchState (s, arr);
+
       s->oaliaskind = s->aliaskind;
       s->oexpkind = s->expkind;
 
@@ -6554,7 +6560,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	{
 	  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
 	}
-
+      
       return (s);
     }
 }
@@ -6642,7 +6648,7 @@ sRef_setPartsFromUentry (sRef s, uentry ue)
   
   if (sRef_getNullState (s) == NS_UNKNOWN)
     {
-      DPRINTF (("Setting null state!"));
+      DPRINTF (("Set null state: %s / %s", sRef_unparseFull (s), uentry_unparseFull (ue)));
       sRef_setNullStateN (s, sRef_getNullState (uentry_getSref (ue)));
     }
   else
@@ -6902,8 +6908,7 @@ sRef_clearDerivedComplete (sRef s)
 
 /*@exposed@*/ sRef
 sRef_makeAnyArrayFetch (/*@exposed@*/ sRef arr)
-{
-  
+{  
   if (sRef_isAddress (arr))
     {
       return (arr->info->ref);
@@ -7122,7 +7127,7 @@ sRef_copyState (sRef s1, sRef s2)
 
       s1->expkind = s2->expkind;
       s1->expinfo = stateInfo_update (s1->expinfo, s2->expinfo);
-      
+
       s1->nullstate = s2->nullstate;
       s1->nullinfo = stateInfo_update (s1->nullinfo, s2->nullinfo);
 
@@ -8328,6 +8333,7 @@ sRef_aliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
 	{
 	  current = sRef_updateSref (current);
 	  ((*predf)(current, loc));
+	  DPRINTF (("Killed: %s", sRef_unparseFull (current)));
 	}
     } end_sRefSet_realElements;
 

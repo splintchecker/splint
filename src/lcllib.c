@@ -226,7 +226,15 @@ lcllib_isSkipHeader (cstring sname)
 	  if (context_getFlag (FLG_SKIPPOSIXHEADERS))
 	    {
 	      cstring_free (xname);
-	      return TRUE; /* evans 2002-03-02: investigate this warning */
+	      /*@-nullstate@*/ 
+	      return TRUE; 
+	      /*@=nullstate@*/
+	      /*@i233@*/
+	      /* evans 2002-03-02: 
+		 the returned reference is possibly null,
+		 but this should not change the null state of the parameter
+		 investigate this warning 
+	      */
 	    }
 	}
       else
@@ -250,7 +258,9 @@ lcllib_isSkipHeader (cstring sname)
 
   cstring_free (xname);
   /*@noaccess cstring@*/
+  /*@-nullstate@*/ /*@i233@*/ /* same problem as above */
   return FALSE;
+  /*@=nullstate@*/
 }
 
 static void printDot (void)

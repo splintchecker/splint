@@ -10613,6 +10613,207 @@ bool uentry_isReturned (uentry u)
 	      || u->info->var->kind == VKSEFRETPARAM));
 }
 
+/*@i52323@*/
+# if 0
+/*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args)
+{
+  llassert (uentry_isRealFunction (u));
+
+  if (ctype_isFunction (u->utype) && sRef_isStateSpecial (uentry_getSref (u)))
+    {
+      stateClauseList clauses = uentry_getStateClauseList (u);
+      sRef res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
+
+      DPRINTF (("Returned: %s", sRef_unparseFull (res)));
+      sRef_setAllocated (res, g_currentloc);
+
+      DPRINTF (("ensures clause: %s / %s", uentry_unparse (u), 
+		stateClauseList_unparse (clauses)));
+
+      /*
+      ** This should be in exprNode_reflectEnsuresClause
+      */
+
+      stateClauseList_postElements (clauses, cl)
+	{
+	  if (!stateClause_isGlobal (cl))
+	    {
+	      sRefSet refs = stateClause_getRefs (cl);
+	      sRefMod modf = stateClause_getEffectFunction (cl);
+	      
+	      sRefSet_elements (refs, el)
+		{
+		  sRef base = sRef_getRootBase (el);
+		  
+		  if (sRef_isResult (base))
+		    {
+		      if (modf != NULL)
+			{
+			  sRef sr = sRef_fixBase (el, res);
+			  modf (sr, g_currentloc);
+			}
+		    }
+		  else
+		    {
+		      ;
+		    }
+		} end_sRefSet_elements ;
+	    }
+	} end_stateClauseList_postElements ;
+	
+      return res;
+    }
+  else
+    {
+      uentryList params;
+      alkind ak;
+      sRefSet prefs = sRefSet_new ();
+      sRef res = sRef_undefined;
+      sRef tcref = sRef_undefined;
+      sRef tref = sRef_undefined;
+      int paramno = 0;
+      
+      params = uentry_getParams (u);
+
+      /*
+      ** Setting up aliases has to happen *after* setting null state!
+      */
+
+      uentryList_elements (params, current)
+	{
+	  if (uentry_isReturned (current))
+	    {
+	      if (exprNodeList_size (args) >= paramno)
+		{
+		  exprNode ecur = exprNodeList_nth (args, paramno);
+		  tref = exprNode_getSref (ecur);
+		  
+		  DPRINTF (("Returned reference: %s", sRef_unparseFull (tref)));
+
+		  if (sRef_isValid (tref))
+		    {
+		      tcref = sRef_copy (tref);
+		      
+		      if (sRef_isDead (tcref))
+			{
+			  sRef_setDefined (tcref, g_currentloc);
+			  sRef_setOnly (tcref, g_currentloc);
+			}
+		      
+		      if (sRef_isRefCounted (tcref))
+			{
+			  /* could be a new ref now (but only if its returned) */
+			  sRef_setAliasKindComplete (tcref, AK_ERROR, g_currentloc);
+			}
+		      
+		      sRef_makeSafe (tcref);
+		      prefs = sRefSet_insert (prefs, tcref);
+		    }
+		}
+	    }
+	  
+	  paramno++;
+	} end_uentryList_elements ;
+
+      if (sRefSet_size (prefs) > 0)
+	{
+	  nstate n = sRef_getNullState (u->sref);
+
+	  if (sRefSet_size (prefs) == 1)
+	    {
+	      sRef rref = sRefSet_choose (prefs);
+	      tref = rref;
+	      res = sRef_makeType (sRef_getType (rref));
+	      sRef_copyState (res, tref);
+	    }
+	  else
+	    {
+	      /* should this ever happen? */ /*@i534 evans 2001-05-27 */
+	      res = sRefSet_mergeIntoOne (prefs);
+	    }
+	  
+	  if (nstate_isKnown (n))
+	    {
+	      sRef_setNullState (res, n, g_currentloc);
+	      DPRINTF (("Setting null: %s", sRef_unparseFull (res)));
+	    }
+	}
+      else
+	{
+	  if (ctype_isFunction (u->utype))
+	    {
+	      DPRINTF (("Making new from %s  -->", uentry_unparseFull (u)));
+	      res = sRef_makeNew (ctype_getReturnType (u->utype), u->sref, u->uname);
+	    }
+	  else
+	    {
+	      DPRINTF (("Making new from %s  -->", uentry_unparseFull (u)));
+	      res = sRef_makeNew (ctype_unknown, u->sref, u->uname);
+	    }
+	  
+	  if (sRef_isRefCounted (res))
+	    {
+	      sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
+	    }
+	}
+      
+      if (sRef_getNullState (res) == NS_ABSNULL)
+	{
+	  ctype ct = ctype_realType (u->utype);
+	  
+	  if (ctype_isAbstract (ct))
+	    {
+	      sRef_setNotNull (res, g_currentloc);
+	    }
+	  else
+	    {
+	      if (ctype_isUser (ct))
+		{
+		  sRef_setStateFromUentry (res, usymtab_getTypeEntry (ctype_typeId (ct)));
+		}
+	      else
+		{
+		  sRef_setNotNull (res, g_currentloc);
+		}
+	    }
+	}
+      
+      if (sRef_isRefCounted (res))
+	{
+	  sRef_setAliasKind (res, AK_NEWREF, g_currentloc);
+	}
+      else if (sRef_isKillRef (res))
+	{
+	  sRef_setAliasKind (res, AK_REFCOUNTED, g_currentloc);
+	}
+      else
+	{
+	  ;
+	}
+      
+      ak = sRef_getAliasKind (res);
+      
+      if (alkind_isImplicit (ak))
+	{
+	  sRef_setAliasKind (res, alkind_fixImplicit (ak), g_currentloc);
+	}
+
+# if 0
+      DPRINTF (("Aliasing: %s / %s", sRef_unparseFull (res), sRef_unparseFull (tref)));
+      usymtab_addReallyForceMustAlias (tref, res); /* evans 2001-05-27 */
+
+      /* evans 2002-03-03 - need to be symettric explicitly, since its not a local now */
+      usymtab_addReallyForceMustAlias (res, tref);
+# endif
+
+      sRefSet_free (prefs);
+      
+      DPRINTF (("Returns ref: %s", sRef_unparseFull (res)));
+      return res;
+    }
+}
+# endif
+
 /*@exposed@*/ sRef uentry_returnedRef (uentry u, exprNodeList args)
 {
   llassert (uentry_isRealFunction (u));

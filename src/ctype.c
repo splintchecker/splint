@@ -334,11 +334,41 @@ ctype ctype_makeInnerFixedArray (ctype c, long size)
       res = ctype_makeFixedArray (ctype_makeInnerFixedArray (cb, size),
 				  osize);
     }
+  else if (ctype_isArray (c))
+    {
+      ctype cb = ctype_baseArrayPtr (c);
+
+      res = ctype_makeArray (ctype_makeInnerFixedArray (cb, size));
+    }
   else
     {
       res = ctype_makeFixedArray (c, size);
     }
 
+  DPRINTF (("Make inner fixed array: %s", ctype_unparse (res)));
+  return res;
+}
+
+ctype ctype_makeInnerArray (ctype c)
+{
+  ctype res;
+
+  DPRINTF (("Make inner array: %s", ctype_unparse (c)));
+
+  if (ctype_isFixedArray (c))
+    {
+      ctype cb = ctype_baseArrayPtr (c);
+      long osize = ctype_getArraySize (c);
+
+      res = ctype_makeFixedArray (ctype_makeInnerArray (cb),
+				  osize);
+    }
+  else
+    {
+      res = ctype_makeArray (c);
+    }
+
+  DPRINTF (("Make inner array: %s", ctype_unparse (res)));
   return res;
 }
 
@@ -348,6 +378,8 @@ ctype_makeArray (ctype c)
   ctentry cte = ctype_getCtentry (c);
   ctype clp = ctentry_getArray (cte);
 
+  DPRINTF (("Make array: %s", ctype_unparse (c)));
+
   if /*@+enumint@*/ (clp == CTK_DNE) /*@=enumint@*/
     {
       ctype cnew = cttable_addDerived (CTK_ARRAY, ctbase_makeArray (c), c);
@@ -355,7 +387,9 @@ ctype_makeArray (ctype c)
       return (cnew);
     }
   else
-    return clp;
+    {
+      return clp;
+    }
 }
 
 /*

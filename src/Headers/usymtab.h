@@ -405,7 +405,7 @@ extern void usymtab_checkDistinctName (uentry p_e, int p_scope)
   /*@modifies *g_msgstream, p_e@*/ ;
 
 extern /*@exposed@*/ sRef usymtab_lookupGlobalMarker (void) /*@globals internalState@*/ ;
-
+extern void usymtab_addReallyForceMustAlias (/*@exposed@*/ sRef p_s, /*@exposed@*/ sRef p_al) /*@modifies internalState@*/ ;
 extern int usymtab_getCurrentDepth (void) /*@globals internalState@*/ ;
 
 # else

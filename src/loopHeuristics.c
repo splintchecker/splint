@@ -43,9 +43,14 @@
 
 # include "exprDataQuite.i"
 
-/*@access constraint, exprNode @*/
+/*@access constraint, exprNode @*/  /* !!! NO! */
 
-/*@access constraintExpr @*/
+/*@access constraintExpr @*/ /* !!! NO! */
+
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
 static bool isInc (/*@observer@*/ constraintExpr c) /*@*/
 {
@@ -254,7 +259,10 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
 
 	  }
 	else
-	  DPRINTF (( message ("getForTimes: %s doesn't increment %s", constraint_print (el2), constraint_print (el) )   ));
+	  {
+	    ;
+	    DPRINTF (( message ("getForTimes: %s doesn't increment %s", constraint_print (el2), constraint_print (el) )   ));
+	  }
       }
       end_constraintList_elements;
     }

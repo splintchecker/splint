@@ -3280,7 +3280,7 @@ case 22:
 { yyval.ntyp = idDecl_expectFunction (yyvsp[-2].ntyp); ;
     break;}
 case 23:
-{ yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
+{ yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeInnerArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
     break;}
 case 24:
 {
@@ -3294,7 +3294,7 @@ case 24:
        } 
      else
        {
-	 yyval.ntyp = idDecl_replaceCtype (yyvsp[-5].ntyp, ctype_makeArray (idDecl_getCtype (yyvsp[-5].ntyp))); 
+	 yyval.ntyp = idDecl_replaceCtype (yyvsp[-5].ntyp, ctype_makeInnerArray (idDecl_getCtype (yyvsp[-5].ntyp))); 
        }
    ;
     break;}
@@ -3331,7 +3331,7 @@ case 30:
 { yyval.ntyp = idDecl_expectFunction (yyvsp[-2].ntyp); ;
     break;}
 case 31:
-{ yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
+{ yyval.ntyp = idDecl_replaceCtype (yyvsp[-2].ntyp, ctype_makeInnerArray (idDecl_getCtype (yyvsp[-2].ntyp))); ;
     break;}
 case 32:
 { 
@@ -3347,7 +3347,7 @@ case 32:
 	 value = 0;
        }
 
-     yyval.ntyp = idDecl_replaceCtype (yyvsp[-5].ntyp, ctype_makeFixedArray (idDecl_getCtype (yyvsp[-5].ntyp), value));
+     yyval.ntyp = idDecl_replaceCtype (yyvsp[-5].ntyp, ctype_makeInnerFixedArray (idDecl_getCtype (yyvsp[-5].ntyp), value));
    ;
     break;}
 case 33:
@@ -4649,7 +4649,7 @@ case 469:
 { yyval.ctyp = ctype_makeFixedArray (ctype_unknown, exprNode_getLongValue (yyvsp[-1].expr)); ;
     break;}
 case 470:
-{ yyval.ctyp = ctype_makeArray (yyvsp[-2].ctyp); ;
+{ yyval.ctyp = ctype_makeInnerArray (yyvsp[-2].ctyp); ;
     break;}
 case 471:
 { yyval.ctyp = ctype_makeInnerFixedArray (yyvsp[-3].ctyp, exprNode_getLongValue (yyvsp[-1].expr)); ;

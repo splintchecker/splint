@@ -43,8 +43,10 @@ extern void metaStateTable_insert (metaStateTable p_h,
 extern /*@null@*/ /*@dependent@*/ /*@exposed@*/ metaStateInfo
    metaStateTable_lookup (metaStateTable p_h, cstring p_key) /*@*/ ;
 
+/*@access metaStateInfo@*/ 
 # define metaStateTable_lookup(p_h,p_key) \
-  (/*@i523@*/ /*@access metaStateInfo@*/ (metaStateInfo) genericTable_lookup ((genericTable) (p_h), p_key) /*@noaccess metaStateInfo@*/)
+  ((metaStateInfo) genericTable_lookup ((genericTable) (p_h), p_key))
+/*@noaccess metaStateInfo@*/
 
 extern bool metaStateTable_contains (metaStateTable p_h, cstring p_key) /*@*/ ;
 # define metaStateTable_contains(p_h,p_key) \

@@ -38,8 +38,12 @@
 # include "exprNodeSList.h"
 
 /*@-czechfcns@*/
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-nullpass@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
-/*@access exprNode @*/
+/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
 
 bool constraintTerm_isDefined (constraintTerm t)
 {

@@ -2905,20 +2905,23 @@ updateNullState (sRef el, /*@notnull@*/ usymtab ttab,
 	      if (!guardSet_isGuarded (ttab->guards, el) 
 		  && !sRef_isNotNull (sr))
 		{
+		  DPRINTF (("Here! %s / %s",
+			    sRef_unparseFull (sr),
+			    sRef_unparseFull (el)));
 		  sRef_setDerivNullState (sr, el, NS_DEFNULL);
-		  		}
+		}
 	    }
 	}
       else
 	{
-	  	}
+	  ;
+	}
       
       ue = usymtab_getRefTab (ftab, level, index);
       
       if (!uentry_isLset (ue)) 
 	{
 	  sRef sr = uentry_getSref (ue);
-	  
 	  
 	  if (!trueGuard) /* yikes!  forgot the ! */
 	    {
@@ -2931,7 +2934,7 @@ updateNullState (sRef el, /*@notnull@*/ usymtab ttab,
 		  && !sRef_isNotNull (sr))
 		{
 		  sRef_setDerivNullState (sr, el, NS_DEFNULL);
-		  		}
+		}
 	    }
 	}
       else
@@ -3693,7 +3696,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 	  else
 	    {
 	      ctype ct = ctype_realType (uentry_getType (glob));
-
+	      
 	      DPRINTF (("Check global destroyed: %s", uentry_unparseFull (glob)));
 
 	      if (ctype_isVisiblySharable (ct))
@@ -3771,6 +3774,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 		}
 	      else
 		{
+		  DPRINTF (("Check transfer: %s", uentry_unparseFull (glob)));
 		  transferChecks_globalReturn (glob);
 		}
 	    }
@@ -5648,6 +5652,7 @@ void usymtab_addMustAlias (/*@exposed@*/ sRef s, /*@exposed@*/ sRef al)
 void usymtab_addForceMustAlias (/*@exposed@*/ sRef s, /*@exposed@*/ sRef al)
   /*@modifies utab@*/
 {
+  /* evans 2002-03-3: was sRef_isMeaningful -- but we need to keep aliases for new storage also! */
   if (sRef_isMeaningful (s) 
       && sRef_isMeaningful (al)
       && !(sRef_isConst (s) || sRef_isConst (al))
@@ -5667,8 +5672,15 @@ void usymtab_addForceMustAlias (/*@exposed@*/ sRef s, /*@exposed@*/ sRef al)
     }
   else
     {
-      ;
+      DPRINTF (("Not aliasing! %s / %s", sRef_unparseFull (s), sRef_unparseFull (al)));
+      DPRINTF (("meaningful: %d %d", sRef_isMeaningful (s), sRef_isMeaningful (al)));
     }
+}
+
+void usymtab_addReallyForceMustAlias (/*@exposed@*/ sRef s, /*@exposed@*/ sRef al)
+  /*@modifies utab@*/
+{
+  utab->aliases = aliasTable_addMustAlias (utab->aliases, s, al); 
 }
 
 void usymtab_clearAlias (sRef s)
@@ -5681,7 +5693,7 @@ void usymtab_clearAlias (sRef s)
 sRefSet usymtab_allAliases (sRef s)
    /*@globals utab@*/  
 {
-  if (sRef_isMeaningful (s))
+  if (sRef_isSomewhatMeaningful (s))
     {
       sRefSet ret;
             
@@ -5699,7 +5711,7 @@ sRefSet usymtab_allAliases (sRef s)
 /*@only@*/ sRefSet usymtab_canAlias (sRef s)
      /*@globals utab@*/
 {
-  if (sRef_isMeaningful (s))
+  if (sRef_isSomewhatMeaningful (s))
     {
       sRefSet res = aliasTable_canAlias (utab->aliases, s);
       return res;

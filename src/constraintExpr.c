@@ -38,9 +38,11 @@
 
 /*@-czechfcns@*/
 
+/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
-
-/*@access exprNode constraintExpr@*/
 
 static ctype constraintExpr_getOrigType (constraintExpr p_e);
 static bool constraintExpr_hasTypeChange(constraintExpr p_e) /*@*/;

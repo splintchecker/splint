@@ -133,7 +133,7 @@ extern cstring constraint_printLocation (/*@observer@*/ /*@temp@*/ constraint p_
 extern constraint constraint_setFcnPre (/*@returned@*/ constraint p_c) ;
 extern constraint constraint_origAddGeneratingExpr (/*@returned@*/ constraint p_c, /*@dependent@*/ /*@observer@*/ exprNode p_e) ;
 
-extern bool /*@alt void@*/ exprNode_generateConstraints (/*@dependent@*/ exprNode p_e) ;
+extern bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode p_e) ;
 constraint constraint_togglePostOrig (/*@returned@*/ constraint p_c);
 
 bool constraint_hasOrig( /*@observer@*/ /*@temp@*/ constraint p_c);

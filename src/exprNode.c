@@ -1652,8 +1652,11 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  
 			case 'p': /* pointer */
 			  expecttype = ctype_makePointer (ctype_void);
-			  uentry_setDefState (regArg, SS_RELDEF); /* need not be defined */
-			  sRef_setPosNull (uentry_getSref (regArg), fileloc_undefined); /* could be null */
+			  /* need not be defined */
+			  uentry_setDefState (regArg, SS_RELDEF); 
+			  sRef_setPosNull (uentry_getSref (regArg), 
+					   fileloc_undefined); 
+			  /* could be null */
 			  /*@switchbreak@*/ break;
 			  
 			case 'n': /* pointer to int, modified by call! */
@@ -2186,6 +2189,14 @@ checkMessageArgs (/*@notnull@*/ /*@dependent@*/ exprNode f,
 			case 'f': expecttype = ctype_float; break;
 			case 'b': expecttype = ctype_bool; break;
 			case 't': expecttype = ctypeType; break;
+			case 'p': 
+			  expecttype = ctype_makePointer (ctype_void);
+			  /* need not be defined */
+			  uentry_setDefState (regArg, SS_RELDEF); 
+			  sRef_setPosNull (uentry_getSref (regArg), 
+					   fileloc_undefined); 
+			  /* could be null */
+			  /*@switchbreak@*/ break;
 			case 'l': expecttype = filelocType; break;
 			case '&':  /* a wee bit of a hack methinks */
 			  expecttype = ctype_int;

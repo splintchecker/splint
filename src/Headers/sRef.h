@@ -145,7 +145,6 @@ extern void sRef_setNullError (sRef p_s);
 extern void sRef_setNullUnknown (sRef p_s, fileloc p_loc);
 extern void sRef_setNotNull (sRef p_s, fileloc p_loc);
 extern void sRef_setNullState (sRef p_s, nstate p_n, fileloc p_loc);
-extern void sRef_setNullStateN (sRef p_s, nstate p_n);
 extern void sRef_setNullStateInnerComplete (sRef p_s, nstate p_n, fileloc p_loc);
 extern void sRef_setPosNull (sRef p_s, fileloc p_loc);
 extern void sRef_setDefNull (sRef p_s, fileloc p_loc);
@@ -179,6 +178,10 @@ extern bool sRef_hasLastReference (sRef p_s) /*@*/ ;
 extern bool sRef_isMeaningful (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isMeaningful(s)     (sRef_isValid(s) && sRef_isKnown(s) \
 				   && (s)->kind != SK_NEW && (s)->kind != SK_TYPE)
+
+extern bool sRef_isSomewhatMeaningful (/*@sef@*/ sRef p_s) /*@*/ ;
+# define sRef_isSomewhatMeaningful(s)     (sRef_isValid(s) && sRef_isKnown(s) \
+				           && (s)->kind != SK_TYPE)
 extern bool sRef_isNew (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isNew(s)            (sRef_isValid(s) && (s)->kind == SK_NEW)
 

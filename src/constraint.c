@@ -39,8 +39,10 @@
 
 /*@i33*/
 
-/*@access exprNode @*/
-
+/*@access exprNode@*/ /* !!! NO! Don't do this recklessly! */
+/*@-nullderef@*/ /* !!! DRL needs to fix this code! */
+/*@-nullstate@*/ /* !!! DRL needs to fix this code! */
+/*@-temptrans@*/ /* !!! DRL needs to fix this code! */
 
 static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
 
