@@ -1646,6 +1646,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
       
       if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	{
+	  /*drl oops this date is wronge...*/
 	  /* drl 11-29-2002
 	     I changed this so it didn't appear as a Splint bug
 	     among other things this gets triggered when there is

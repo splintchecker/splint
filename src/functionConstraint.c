@@ -91,6 +91,7 @@ extern constraintList functionConstraint_getBufferConstraints (functionConstrain
     {
       if (node->kind == FCT_CONJUNCT)
 	{
+	  /*@i223*/ /*make sure this is safe*/
 	  return constraintList_addListFree (functionConstraint_getBufferConstraints (node->constraint.conjunct.op1),
 					     functionConstraint_getBufferConstraints (node->constraint.conjunct.op2));
 	}

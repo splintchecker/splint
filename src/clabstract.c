@@ -495,7 +495,12 @@ static /*@dependent@*/ uentryList currentParamList;
 /*drl added 3-28-2002*/
 /* this function takes a list of paramentar and generates a list
    of constraints.
-   Currently the only constraints gnerated are MaxSet(p) >= 0 for all pointers
+*/
+
+/* drl modified 10/23/2002
+
+The current semantics are generated constraints of the form MaxSet(p) >= 0 and MaxRead(p) >= 0 for all pointers
+unless the @out@ annotation has been applied to a parameter, then we only want to generate maxSet(p) > = 0
 */
 
 void  setImplictfcnConstraints (void)
@@ -524,13 +529,24 @@ void  setImplictfcnConstraints (void)
 	  DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
 	}
       /*drl 4/26/01
-	chagned this is MaxSet(s) == 0 to MaxSet(s) >= 0 */
-      
+	chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 */
       c = constraint_makeSRefWriteSafeInt (s, 0);
-      /* constraint_makeSRefSetBufferSize (s, 0); */
+      
       implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+
+      /*drl 10/23/2002 added support for out*/
+      if (!uentry_isOut(el) )
+	{
+	  c = constraint_makeSRefReadSafeInt (s, 0);
+      
+	  implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+	}
+       
+      
     }
   end_uentryList_elements;
+  DPRINTF((message("implicitFcnConstraints has been set to %s\n",
+		   constraintList_print(implicitFcnConstraints) ) ));
 }
 
 

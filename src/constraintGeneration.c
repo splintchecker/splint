@@ -2241,6 +2241,44 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
       if (constraintList_isUndefined(preconditions))
 	preconditions = constraintList_makeNew();
     }
+  
+  // drl remember to remove this code before you make a pslint release.
+  /*
+  if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
+    {
+      
+      uentryList_elements (params, el)
+	{
+	  DPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
+	  
+	  s = uentry_getSref(el);
+	  if (sRef_isReference (s) )
+	    {
+	      DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	    }
+	  else
+	    {
+	      DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	    }
+	  //drl 4/26/01
+	  //chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 
+	  c = constraint_makeSRefWriteSafeInt (s, 0);
+	  
+	  implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+	  
+	  //drl 10/23/2002 added support for out
+	  if (!uentry_isOut(el) )
+	    {
+	      c = constraint_makeSRefReadSafeInt (s, 0);
+	      
+	      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+	    }
+	  
+	  
+	}
+      
+    }
+  */
   DPRINTF ((message("Done checkCall\n")));
   DPRINTF ((message("Returning list %q ", constraintList_printDetailed(preconditions))));
 

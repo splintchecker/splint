@@ -304,6 +304,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
+	  touch cgrammar.c; \
 	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \

@@ -172,3 +172,40 @@ functionClauseList_free (functionClauseList s)
     }
 }
 
+void
+functionClauseList_ImplictConstraints (functionClauseList s)
+{
+  functionClauseList_elements(s, el)
+    {
+      if (functionClause_isRequires(el) )
+	{
+	  functionConstraint con;
+
+	  con = functionClause_getRequires(el);
+	  if (functionConstraint_hasBufferConstraint(con) )
+	    {
+	      if (con->kind == FCT_BUFFER)
+		{
+		  constraintList implCons = getImplicitFcnConstraints ();
+
+		  TPRINTF((message("functionClauseList_ImplictConstraints adding the implict constraints: %s to %s",
+				   constraintList_print(implCons), constraintList_print( con->constraint.buffer) ) ));
+		  
+		  con->constraint.buffer  = constraintList_addList ( con->constraint.buffer, constraintList_copy(implCons));
+
+		  TPRINTF((message("functionClauseList_ImplictConstraints the new constraint is %s",
+				   constraintList_print( con->constraint.buffer) ) ));
+
+		  
+		}
+	      else
+		{
+		  llassert(FALSE);
+		  // fix this
+		}
+	    }
+	}
+    }
+
+  end_functionClauseList_elements 
+}

@@ -398,16 +398,22 @@ namedDeclBase
 				    uentryList_makeMissingParams ());
      
      $$ = idDecl_replaceCtype ($1, ct);
-     idDecl_addClauses ($$, $6);
-     context_popLoc ();
+
      /*drl 7/25/01 added*/
      setImplictfcnConstraints();
+
+     functionClauseList_ImplictConstraints($6);
+
+     idDecl_addClauses ($$, $6);
+     context_popLoc ();
      lltok_free2 ($3, $4);
    }
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } 
    functionClauses
-   { setImplictfcnConstraints ();
+   {
+     setImplictfcnConstraints ();
+        functionClauseList_ImplictConstraints($6);
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      idDecl_addClauses ($$, $7);
