@@ -27,6 +27,7 @@ typedef enum
 extern void listAllCategories (void);
 extern void printAlphaFlags (void);
 extern void printAllFlags (bool p_desc, bool p_full);
+extern void printFlagManual (void);
 
 extern void flagcode_recordError (flagcode p_f);
 extern void flagcode_recordSuppressed (flagcode p_f);
@@ -73,7 +74,8 @@ extern bool flagcode_isWarnUseFlag (/*@sef@*/ flagcode p_f);
 # define flagcode_isWarnUseFlag(f) \
    ((f) == FLG_BUFFEROVERFLOW || (f) == FLG_BUFFEROVERFLOWHIGH)
 
-extern bool flagcode_hasValue (flagcode p_f);
+extern bool flagcode_hasNumber (flagcode p_f);
+extern bool flagcode_hasChar (flagcode p_f);
 extern bool flagcode_hasString (flagcode p_f);
 extern bool flagcode_hasArgument (flagcode p_f);
 

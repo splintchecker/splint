@@ -479,8 +479,8 @@ Finished checking --- no code processed
    unreachable                 
    unrecog                     
    unrecogcomments             
+   unrecogdirective            
    unrecogflagcomments         
-   unrecognizeddirective       
    unsignedcompare             
    unusedspecial               
    usedef                      
@@ -1008,7 +1008,7 @@ pointer
 predboolptr --- type of condition test (if, while or for) is a pointer
 D<initializer> --- passed to pre-processor
 U<initializer> --- passed to pre-processor
-unrecognizeddirective --- unrecognized pre-processor directive
+unrecogdirective --- unrecognized pre-processor directive
 globstate --- returns with global in inconsistent state (null or undefined)
 supcounts --- The number of errors detected does not match number in
 /*@i<n>@*/.

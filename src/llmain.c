@@ -1045,7 +1045,7 @@ int main (int argc, char *argv[])
 			  passThroughArgs = cstringSList_add 
 			    (passThroughArgs, cstring_fromChars (thisarg));
 			}
-		      else if (flagcode_hasValue (opt))
+		      else if (flagcode_hasNumber (opt))
 			{
 			  if (++i < argc)
 			    {
@@ -1056,6 +1056,20 @@ int main (int argc, char *argv[])
 			      llfatalerror 
 				(message
 				 ("Flag %s must be followed by a number",
+				  flagcode_unparse (opt)));
+			    }
+			} 
+		      else if (flagcode_hasChar (opt))
+			{
+			  if (++i < argc)
+			    {
+			      setValueFlag (opt, cstring_fromChars (argv[i]));
+			    }
+			  else
+			    {
+			      llfatalerror 
+				(message
+				 ("Flag %s must be followed by a character",
 				  flagcode_unparse (opt)));
 			    }
 			} 
@@ -1765,6 +1779,11 @@ specialFlagsHelp (char *next)
       else if (mstring_equal (next, "full"))
 	{
 	  printAllFlags (FALSE, TRUE);
+	  return TRUE;
+	}
+      else if (mstring_equal (next, "manual"))
+	{
+	  printFlagManual ();
 	  return TRUE;
 	}
       else
@@ -2482,7 +2501,8 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			}
 		    }
 		  else if (flagcode_hasString (opt)
-			   || flagcode_hasValue (opt)
+			   || flagcode_hasNumber (opt)
+			   || flagcode_hasChar (opt)
 			   || opt == FLG_INIT || opt == FLG_OPTF)
 		    {
 		      cstring extra = cstring_undefined;
@@ -2531,7 +2551,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 			  
 			  DPRINTF (("Here we are: %s", extra));
 
-			  if (flagcode_hasValue (opt))
+			  if (flagcode_hasNumber (opt) || flagcode_hasChar (opt))
 			    {
 			      DPRINTF (("Set value flag: %s", extra));
 			      setValueFlag (opt, extra);
