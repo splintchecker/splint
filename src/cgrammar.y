@@ -293,7 +293,7 @@ namedDeclBase
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); 
         }
-   optGlobMods 
+optGlobMods  optGlobBufConstraints
    { /* need to support globals and modifies here! */
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
@@ -304,7 +304,7 @@ namedDeclBase
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); 
         } 
-   optGlobMods
+optGlobMods  optGlobBufConstraints
    { clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      context_popLoc (); 
@@ -370,6 +370,20 @@ fcnDefHdr
 optGlobMods
  : { setProcessingGlobMods (); } optGlobModsRest
    { clearProcessingGlobMods (); }
+
+/*drl*/ 
+optGlobBufConstraints
+ : optGlobBufConstraintsRest
+
+optGlobBufConstraintsRest
+ : optGlobBufConstraintsAux
+
+optGlobBufConstraintsAux
+ : { printf("doing optGlobBufConstraintsAux\n");  } QSETBUFFERSIZE  id CCONSTANT QENDMACRO 
+ | /*empty*/
+
+   /* : QSETBUFFERSIZE
+/*end*/
 
 optPlainGlobMods
  : { setProcessingGlobMods (); } optPlainGlobModsRest

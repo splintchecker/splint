@@ -658,11 +658,13 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
   //  char * mes;
   exprData data;
   constraintList ret;
-  ret = constraintList_copy (e->trueEnsuresConstraints );
+
    if (exprNode_handleError (e))
      {
+       ret = constraintList_new();
        return ret;
      }
+  ret = constraintList_copy (e->trueEnsuresConstraints );
    
    handledExprNode = TRUE;
    
@@ -784,12 +786,14 @@ constraintList exprNode_traversRequiresConstraints (exprNode e)
   //  char * mes;
   exprData data;
   constraintList ret;
-  ret = constraintList_copy (e->requiresConstraints );
+
    if (exprNode_handleError (e))
      {
+       ret = constraintList_new();
        return ret;
      }
-   
+  ret = constraintList_copy (e->requiresConstraints );
+  
    handledExprNode = TRUE;
    
   data = e->edata;
@@ -912,12 +916,15 @@ constraintList exprNode_traversEnsuresConstraints (exprNode e)
   //  constraintExpr tmp;
   //  constraint cons;
   constraintList ret;
-  ret = constraintList_copy (e->ensuresConstraints );
+
+
    if (exprNode_handleError (e))
      {
+       ret = constraintList_new();
        return ret;
      }
    
+  ret = constraintList_copy (e->ensuresConstraints );   
    handledExprNode = TRUE;
    
   data = e->edata;
