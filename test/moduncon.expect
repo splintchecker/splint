@@ -9,7 +9,7 @@ moduncon.c:13:16: Undetected modification possible from call to unconstrained
 moduncon.c:13:10: Undetected modification possible from call to unconstrained
                      function umod: umod
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 moduncon.c: (in function f)
 moduncon.c:6:22: Undetected modification possible from call to unconstrained
@@ -54,4 +54,4 @@ moduncon.c:4:5: Function f exported but not declared in header file
 moduncon.c:10:5: Function g exported but not declared in header file
    moduncon.c:15:1: Definition of g
 
-Finished LCLint checking --- 22 code errors found, as expected
+Finished checking --- 22 code warnings, as expected

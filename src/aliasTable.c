@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** aliasTable.c
@@ -278,7 +278,7 @@ static /*@only@*/ sRefSet aliasTable_aliasedByAux (aliasTable s, sRef sr, int li
 	  llquietbug
 	    (message ("Alias search limit exceeded, checking %q. "
 		      "This either means there is a variable with at least "
-		      "%d indirections, or there is a bug in LCLint.",
+		      "%d indirections, or there is a bug in Splint.",
 		      sRef_unparse (sr),
 		      ALIASSEARCHLIMIT));
 	  
@@ -435,7 +435,7 @@ static /*@only@*/ sRefSet
 	  llquietbug
 	    (message ("Alias search limit exceeded, checking %q. "
 		      "This either means there is a variable with at least "
-		      "%d indirections, or there is a bug in LCLint.",
+		      "%d indirections, or there is a bug in Splint.",
 		      sRef_unparse (sr),
 		      ALIASSEARCHLIMIT));
 	  

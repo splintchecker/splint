@@ -9,10 +9,10 @@ typequals.c: (in function f)
 typequals.c:6:4: Operand of * is abstract type (tam): *xtam
 typequals.c:7:4: Operand of * is abstract type (tai): *xtai
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 typequals.c: (in function f)
 typequals.c:6:4: Operand of * is abstract type (tam): *xtam
 typequals.c:7:4: Operand of * is abstract type (tai): *xtai
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

@@ -34,7 +34,7 @@ libs.c:54:3: Return value (type [function (int) returns void]) ignored:
 libs.c:55:3: Return value (type [function (int) returns void]) ignored:
                 signal(SIGHUP, l...
 
-Finished LCLint checking --- 18 code errors found, as expected
+Finished checking --- 18 code warnings, as expected
 
 libs.c: (in function compare2)
 libs.c:14:10: Observer storage returned without qualification: "ok"
@@ -75,7 +75,7 @@ libs.c:54:3: Return value (type [function (int) returns void]) ignored:
 libs.c:55:3: Return value (type [function (int) returns void]) ignored:
                 signal(SIGHUP, l...
 
-Finished LCLint checking --- 22 code errors found, as expected
+Finished checking --- 22 code warnings, as expected
 
 libs.c: (in function compare2)
 libs.c:14:10: Observer storage returned without qualification: "ok"
@@ -122,7 +122,7 @@ libs.c:54:3: Return value (type [function (int) returns void]) ignored:
 libs.c:55:3: Return value (type [function (int) returns void]) ignored:
                 signal(SIGHUP, l...
 
-Finished LCLint checking --- 25 code errors found, as expected
+Finished checking --- 25 code warnings, as expected
 
 libs.c: (in function compare2)
 libs.c:14:10: Observer storage returned without qualification: "ok"
@@ -193,4 +193,4 @@ libs.c:55:3: Undocumented modification of errno possible from call to signal:
 libs.c:55:3: Return value (type [function (int) returns void]) ignored:
                 signal(SIGHUP, l...
 
-Finished LCLint checking --- 42 code errors found, as expected
+Finished checking --- 42 code warnings, as expected

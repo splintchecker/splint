@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** exprChecks.c
@@ -1066,7 +1066,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode fcnBody
    
    /*   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
 
-	ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
+	ConPrint (message ("Splint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
   
 	printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
 	printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );

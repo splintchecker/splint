@@ -15,4 +15,4 @@ structassign.c: (in function main)
 structassign.c:45:14: Only storage rc.name (type char *) derived from variable
                          declared in this scope is not released (memory leak)
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

@@ -6,4 +6,4 @@ unsignedcompare.c:7:7: Comparison of unsigned value involving zero: res <= 0
 unsignedcompare.c:12:7: Comparison of unsigned value involving zero: res < 0
 unsignedcompare.c:12:18: Comparison of unsigned value involving zero: res >= 0
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

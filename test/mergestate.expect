@@ -5,7 +5,7 @@ taintednm.c:15:7: Attributes merged in ensures clause in states that cannot be
    taintednm.c:1:32: s becomes tainted
 taintednm.c:24:10: Stack-allocated storage t reachable from return value: t
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 taintednm.c: (in function f)
 taintednm.c:16:18: Invalid transfer from tainted t to untainted (Possibly
@@ -22,4 +22,4 @@ taintednm.c:22:18: Invalid transfer from tainted t to untainted (Possibly
    taintednm.xh:23:55: s becomes untainted
 taintednm.c:24:10: Stack-allocated storage t reachable from return value: t
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

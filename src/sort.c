@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** sort.c
@@ -2399,7 +2399,7 @@ sort_dump (FILE *f, bool lco)
 	}
       else
 	{
-	  llcontbug (message ("Invalid sort in sort_dump: sort %d; sortname: %s.  This may result from using .lcs files produced by an old version of LCLint.  Remove the .lcs files, and rerun LCLint.",
+	  llcontbug (message ("Invalid sort in sort_dump: sort %d; sortname: %s.  This may result from using .lcs files produced by an old version of LCLint.  Remove the .lcs files, and rerun Splint.",
 			      i, lsymbol_toString (s->name)));
 	  fprintf (f, "sort _error_ ");
 	}

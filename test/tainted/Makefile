@@ -1,16 +1,16 @@
 .PHONY: tainted 
 
-LCLINT = lclint
+SPLINT = splint
 
 all: tainted 
 
 tainted:
-	${LCLINT} -mts tainted tainted.c -mustfree -exportlocal -expect 4
-	${LCLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 9
-	${LCLINT} -mts tainted tainted2.c -mustfree -exportlocal -expect 1
-	${LCLINT} -mts tainted tainted3.c -mustfree -exportlocal -expect 1
-	${LCLINT} -mts tainted tainted4.c -mustfree -exportlocal -expect 1
-	${LCLINT} -mts tainted tainted5.c -mustfree -exportlocal
-	${LCLINT} -mts tainted taintedmerge.c -mustfree -exportlocal -expect 3
-	${LCLINT} -mts tainted taintedimplicit.c -mustfree -exportlocal -expect 1
-	${LCLINT} -mts tainted sprintf.c -expect 2
+	${SPLINT} -mts tainted tainted.c -mustfree -exportlocal -expect 4
+	${SPLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 9
+	${SPLINT} -mts tainted tainted2.c -mustfree -exportlocal -expect 1
+	${SPLINT} -mts tainted tainted3.c -mustfree -exportlocal -expect 1
+	${SPLINT} -mts tainted tainted4.c -mustfree -exportlocal -expect 1
+	${SPLINT} -mts tainted tainted5.c -mustfree -exportlocal
+	${SPLINT} -mts tainted taintedmerge.c -mustfree -exportlocal -expect 3
+	${SPLINT} -mts tainted taintedimplicit.c -mustfree -exportlocal -expect 1
+	${SPLINT} -mts tainted sprintf.c -expect 2

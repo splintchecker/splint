@@ -8,4 +8,4 @@ merge.c: (in function f3)
 merge.c:51:4: Dereference of possibly null pointer y: *y
    merge.c:50:7: Storage y may become null
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected

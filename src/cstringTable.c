@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** cstringTable.c
@@ -368,7 +368,7 @@ cstringTable_rehash (/*@notnull@*/ cstringTable h)
 	    }
 	  
 	  /* 
-	  ** evans 2001-03-24: new memory leak detected by LCLint
+	  ** evans 2001-03-24: new memory leak detected by Splint
 	  **   after I fixed the checkCompletelyDestroyed.
 	  */
 

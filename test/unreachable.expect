@@ -8,13 +8,13 @@ unreachable.c:33:29: Unreachable code: z--
 unreachable.c:34:10: Fall through case (no preceding break)
 unreachable.c:45:4: Unreachable code: z++
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 unreachable.c: (in function s)
 unreachable.c:34:10: Fall through case (no preceding break)
 unreachable.c:46:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 switch.c: (in function f3)
 switch.c:31:2: Path with no return in function declared to return int
@@ -24,4 +24,4 @@ switch.c:50:2: Path with no return in function declared to return int
 switch.c: (in function f6)
 switch.c:70:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

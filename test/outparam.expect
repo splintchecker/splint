@@ -17,4 +17,4 @@ outparam.c:47:5: Arrow access from possibly null pointer t4: t4->a
 outparam.c:48:13: Fresh storage t4 not released before return
    outparam.c:46:3: Fresh storage t4 allocated
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected

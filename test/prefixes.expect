@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 prefixes.c:20: Parameterized macro has no prototype or specification: mf 
 prefixes.c: (in macro mf)
@@ -8,40 +8,40 @@ prefixes.c:20:37: Variable y name is not consistent with macro variable
 prefixes.c:20:37: Variable y declared but not used
 prefixes.c:20:26: Variable m_x declared but not used
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 prefixes.c:2:13: Datatype QINT name is not consistent with user-defined type
                     namespace prefix "T"
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "T"
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "^"
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 prefixes.c:1:13: Datatype Tin_ty name is not consistent with user-defined type
                     namespace prefix "^*"
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "^*"
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 prefixes.c:2:13: Datatype QINT name is not consistent with user-defined type
                     namespace prefix "^%*"
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "^%*"
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 prefixes.c:1:13: Datatype Tin_ty name is not consistent with user-defined type
                     namespace prefix "^~*"
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "^~*"
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 prefixes.c:3:13: Datatype tint name is not consistent with user-defined type
                     namespace prefix "^"
@@ -58,7 +58,7 @@ prefixes.c:11:12: Variable XqmXt name is not a user-defined type (it is a file
 prefixes.c:14:12: Variable Gint name is not a user-defined type (it is a
     external), but matches the user-defined type namespace prefix "^"
 
-Finished LCLint checking --- 7 code errors found, as expected
+Finished checking --- 7 code warnings, as expected
 
 prefixes.c:8:12: Variable V3int name is not consistent with file static
                     namespace prefix "^^"
@@ -69,7 +69,7 @@ prefixes.c:10:12: Variable Xqmxt name is not consistent with file static
 prefixes.c:11:12: Variable XqmXt name is not consistent with file static
                      namespace prefix "^^"
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 prefixes.c:6:12: Variable FSint name is not consistent with file static
                     namespace prefix "^#"
@@ -82,7 +82,7 @@ prefixes.c:10:12: Variable Xqmxt name is not consistent with file static
 prefixes.c:11:12: Variable XqmXt name is not consistent with file static
                      namespace prefix "^#"
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 prefixes.c:6:12: Variable FSint name is not consistent with file static
                     namespace prefix "^?&x"
@@ -95,17 +95,17 @@ prefixes.c:9:12: Variable sint name is not consistent with file static
 prefixes.c:11:12: Variable XqmXt name is not consistent with file static
                      namespace prefix "^?&x"
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 prefixes.c:15:12: Variable aGb_Xint name is not consistent with global variable
                      namespace prefix "G"
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 prefixes.c:14:12: Variable Gint name is not consistent with global variable
                      namespace prefix "&G?_^"
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 prefixes.c:1:13: Datatype Tin_ty name is not consistent with external namespace
                     prefix "G"
@@ -118,7 +118,7 @@ prefixes.c:15:12: Variable aGb_Xint name is not consistent with external
 prefixes.c:18:12: Function g name is not consistent with external namespace
                      prefix "G"
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 prefixes.c:2:13: Datatype QINT name is not consistent with user-defined type
                     namespace prefix "T"
@@ -129,7 +129,7 @@ prefixes.c:15:12: Variable aGb_Xint name is not consistent with external
 prefixes.c:18:12: Function g name is not consistent with external namespace
                      prefix "G"
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 prefixes.c:20: Expanded macro mf name is not a local variable (it is a
     unchecked macro), but matches the local variable namespace prefix "?*"
@@ -158,4 +158,4 @@ prefixes.c:15:12: Variable aGb_Xint name is not a local variable (it is a
 prefixes.c:18:12: Function g name is not a local variable (it is a external),
                      but matches the local variable namespace prefix "?*"
 
-Finished LCLint checking --- 13 code errors found, as expected
+Finished checking --- 13 code warnings, as expected

@@ -11,7 +11,7 @@ abstptr.c:20:16: Cast to underlying abstract type abst *: (abst *)&b
 abstptr.c:21:3: Assignment of int * to abst *: ap = &b
 abstptr.c:22:3: Assignment of int to abst: *ap = b
 
-Finished LCLint checking --- 9 code errors found, as expected
+Finished checking --- 9 code warnings, as expected
 
 abstptr.c: (in function main)
 abstptr.c:14:3: Assignment of abst * to int *: ip = ap2
@@ -22,4 +22,4 @@ abstptr.c:20:16: Cast to underlying abstract type abst *: (abst *)&b
 abstptr.c:21:3: Assignment of int * to abst *: ap = &b
 abstptr.c:22:3: Assignment of int to abst: *ap = b
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected

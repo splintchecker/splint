@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** uentry.c
@@ -1612,9 +1612,9 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
       if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	{
 	  /* drl 11-29-2001
-	     I changed this so it didn't appear as an LCLint bug
+	     I changed this so it didn't appear as a Splint bug
 	     among other things this gets triggered when there is
-	     a function with two requires clauses.  Now LCLint
+	     a function with two requires clauses.  Now Splint
 	     prints an error and tries to conjoin the lists.
 	  */
       llparseerror

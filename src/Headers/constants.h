@@ -18,10 +18,13 @@
 
 # if defined(MSDOS) 
 /*@constant observer char *RCFILE; @*/
-# define RCFILE         "lclint.rc"
+# define RCFILE         "splint.rc"
 # else
 /*@constant observer char *RCFILE; @*/
-# define RCFILE         ".lclintrc"
+# define RCFILE         ".splintrc"
+
+/*@constant observer char *ALTRCFILE; @*/
+# define ALTRCFILE      ".lclintrc"
 # endif
 
 /*@constant observer cstring LARCH_PATH; @*/
@@ -59,6 +62,13 @@
 /*@constant observer char *DUMP_SUFFIX; @*/
 # define DUMP_SUFFIX ".lcd"
 
+/*
+** All valid libraries start with this
+*/
+
+/*@constant observer char *LIBRARY_MARKER@*/
+# define LIBRARY_MARKER ";;; Splint Library "
+
 /*@constant int MAX_NAME_LENGTH=256; @*/
 # define MAX_NAME_LENGTH 256
 
@@ -70,6 +80,7 @@
 
 /*@constant int MINLINELEN=20; @*/
 # define MINLINELEN 20
+
 
 /*
 ** WARNING: Can't use macros in token for cgrammar.l -->
@@ -152,7 +163,7 @@
 
 /*@constant char PFX_ANYLETTERDIGIT; @*/
 # define PFX_ANYLETTERDIGIT '/'
-
+         
 /*
 ** Note: this name is wired into ansi.h!
 */

@@ -1,8 +1,8 @@
 .PHONY: check
 
-LCLINT = lclint -exportlocal
+SPLINT = splint -exportlocal
  
 check:
-	$(LCLINT) +arraybounds +arrayboundsread for.c -expect 1
+	$(SPLINT) +arraybounds +arrayboundsread for.c -expect 1
 
 

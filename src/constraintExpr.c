@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 
 /*
@@ -506,7 +506,7 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    case XPR_COMMA:
      t = exprData_getPairA(data);
      ret = constraintExpr_makeExprNode(t);
-     /*@i3434*/ /*I'm not sure if this is right.  I'm adding a break to quite LCLint*/
+     /*@i3434*/ /* drl: I'm not sure if this is right.  I'm adding a break to quiet Splint */
      break;
    default:
      ret = oldconstraintExpr_makeTermExprNode (e);
@@ -1351,7 +1351,7 @@ static /*@only@*/ constraintExpr constraintExpr_simplifyunaryExpr (/*@only@*/ co
 
   /*@i22*/
   
-  /*I think this is an LCLint bug */
+  /* drl: I think this is an Splint bug */
 
   ret =  constraintExpr_copy(c);
 

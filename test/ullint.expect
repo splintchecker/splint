@@ -10,11 +10,11 @@ ullint.c:35:3: Assignment of unsigned char to pan_uint32_t:
     | (src[5] ^ 0x80)
 ullint.c:37:3: Assignment of unsigned char to pan_uint32_t: d = c
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 ullint.c: (in function main)
 ullint.c:29:11: Operands of < have incompatible types (int, size_t):
                    i < sizeof((src))
 ullint.c:35:26: Array element src[0] used before definition
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

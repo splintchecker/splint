@@ -27,7 +27,7 @@ null1.c:67:10: Possibly null storage z returned as non-null: z
 null1.c:67:12: Fresh storage z3 not released before return
    null1.c:27:3: Fresh storage z3 allocated
 
-Finished LCLint checking --- 14 code errors found, as expected
+Finished checking --- 14 code warnings, as expected
 
 null1.c: (in function f)
 null1.c:19:20: Implicitly temp storage x returned as only: x
@@ -37,7 +37,7 @@ null1.c:34:5: Passed storage z not completely defined (*z is undefined): g (z)
 null1.c:67:12: Fresh storage z3 not released before return
    null1.c:27:3: Fresh storage z3 allocated
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 null2.c: (in function f)
 null2.c:15:10: Left operand of && is non-boolean (int *): x1 && (*x1 == 3)
@@ -56,7 +56,7 @@ null2.c:35:14: Possibly null storage x3 returned as non-null: (x3)
    null2.c:11:21: Storage x3 may become null
 null2.c:39:10: Implicitly temp storage x1 returned as only: (x1)
 
-Finished LCLint checking --- 10 code errors found, as expected
+Finished checking --- 10 code warnings, as expected
 
 null3.c: (in function f3)
 null3.c:16:4: Dereference of possibly null pointer gnip: *gnip
@@ -92,7 +92,7 @@ null3.c: (in function f2)
 null3.c:73:4: Dereference of possibly null pointer gnip: *gnip
    null3.c:55:10: Storage gnip may become null
 
-Finished LCLint checking --- 15 code errors found, as expected
+Finished checking --- 15 code warnings, as expected
 
 null3.c: (in function f3)
 null3.c:16:4: Dereference of possibly null pointer gnip: *gnip
@@ -130,14 +130,14 @@ null3.c: (in function f2)
 null3.c:73:4: Dereference of possibly null pointer gnip: *gnip
    null3.c:55:10: Storage gnip may become null
 
-Finished LCLint checking --- 16 code errors found, as expected
+Finished checking --- 16 code warnings, as expected
 
 null4.c: (in function g)
 null4.c:43:3: Only storage p (type int *) not released before assignment:
                  p = malloc(24)
    null4.c:3:28: Storage p becomes only
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 null5.c:5:29: Qualifier falsenull used with function returning char (should
                  return bool)
@@ -150,7 +150,7 @@ null5.c: (in function g3)
 null5.c:37:11: Dereference of null pointer y: *y
    null5.c:30:25: Storage y becomes null
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 null6.c:7:36: Function f1 declared with notnull parameter x of abstract type
                  mnull
@@ -163,7 +163,7 @@ null6.c: (in function f7)
 null6.c:84:10: Possibly null storage x returned as non-null: x
    null6.c:81:11: Storage x may become null
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 null6.c:7:36: Function f1 declared with notnull parameter x of abstract type
                  mnull
@@ -176,4 +176,4 @@ null6.c: (in function f7)
 null6.c:84:10: Possibly null storage x returned as non-null: x
    null6.c:81:11: Storage x may become null
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

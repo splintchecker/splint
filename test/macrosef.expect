@@ -9,7 +9,7 @@ macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
 macrosef.c:14:14: Parameter 1 to f is declared sef, but the argument may modify
                      *p: g(p)
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 macrosef.c: (in macro f)
 macrosef.c:2:14: Macro parameter y used more than once
@@ -19,7 +19,7 @@ macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
 macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
                      *stdout: (printf("yo\n"), 3)
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 macrosef.c: (in macro f)
 macrosef.c:2:14: Macro parameter y used more than once
@@ -31,4 +31,4 @@ macrosef.c:12:14: Parameter 1 to f is declared sef, but the argument may modify
 macrosef.c:14:14: Parameter 1 to f is declared sef, but the argument calls
     unconstrained function g (no guarantee it will not modify something): g(p)
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

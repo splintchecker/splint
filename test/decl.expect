@@ -3,7 +3,7 @@ decl.c: (in function main)
 decl.c:7:3: Call to non-function (type [function (int) returns int] **): x
 decl.c:8:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 decl.c:3:5: Function main declared without parameter list
 decl.c: (in function main)
@@ -12,7 +12,7 @@ decl.c:8:2: Path with no return in function declared to return int
 decl.c:1:5: Function test declared but not defined
 decl.c:1:5: Function test exported but not declared in header file
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 decl2.c:3:6: Variable glob2 defined with inconsistent type (arrays and pointers
                 are not identical in variable declarations): int *
@@ -24,4 +24,4 @@ decl2.c:6:6: Variable glob3 redeclared with inconsistent type: char
 decl2.c:9:5: Variable glob redefined
    decl2.c:8:5: Previous definition of glob
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

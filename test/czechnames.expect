@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 czechnames.c:5:5: Variable michelob_light name violates Czech naming
     convention.  Czech prefix michelob is not the name of a type.
@@ -10,14 +10,14 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
   Function or iterator name is not consistent with Czech naming convention.
   (Setting either -czechfcns or -namechecks will suppress message)
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
   Function or iterator name is not consistent with Czech naming convention.
   (Setting either -czechfcns or -namechecks will suppress message)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 czechnames.c:4:5: Variable pivo_pyet name violates Czech naming convention.
     Czech prefix pivo names an abstract type that is not accessible.
@@ -40,4 +40,4 @@ czechnames.c:15:11: Left operand of == is abstract type (pivo): p == 1
 czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected

@@ -41,7 +41,7 @@ special.c:40:10: Undocumented modification of gs possible from call to fscanf:
 special.c:42:10: Undocumented modification of gs possible from call to fscanf:
                     fscanf(stdin, "hullo, welcome to %*23d %*c %s", gs)
 
-Finished LCLint checking --- 20 code errors found, as expected
+Finished checking --- 20 code warnings, as expected
 
 special.c: (in function f)
 special.c:17:34: Variable c used before definition
@@ -90,4 +90,4 @@ special.c:40:10: Undocumented modification of gs possible from call to fscanf:
 special.c:42:10: Undocumented modification of gs possible from call to fscanf:
                     fscanf(stdin, "hullo, welcome to %*23d %*c %s", gs)
 
-Finished LCLint checking --- 22 code errors found, as expected
+Finished checking --- 22 code warnings, as expected

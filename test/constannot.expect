@@ -14,4 +14,4 @@ constannot.c:20:3: Possible out-of-bounds store:
      derived from foo precondition: requires maxSet(<parameter 1>) >= <const
     int=20>
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

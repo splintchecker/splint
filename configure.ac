@@ -1,6 +1,6 @@
 dnl Process with autoconf to create a configure script  -*- Autoconf -*-
 AC_PREREQ(2.50)
-AC_INIT([LCLint], [3.0.0.19], [lclint-bug@cs.virginia.edu], [lclint])
+AC_INIT([Splint], [3.0.0.20], [splint-bug@cs.virginia.edu], [splint])
 
 dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])
@@ -15,12 +15,12 @@ dnl Set up automake & the configuration header
 AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 AM_CONFIG_HEADER([config.h:config.hin])
 
-dnl Prepare for LCLint processing of config.h
+dnl Prepare for Splint processing of config.h
 AH_TOP([/*@-constmacros@*/])
 AH_BOTTOM([/*@=constmacros@*/])
 
 dnl Checks for programs.
-#drl 12-19-2001 commented out so LCLint won't depend on C++
+#drl 12-19-2001 commented out so Splint won't depend on C++
 #AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
@@ -116,18 +116,18 @@ AC_DEFINE_UNQUOTED(GCC_INCLUDE_DIR2, "$myprefix/include",
 AC_DEFINE_UNQUOTED(SYSTEM_LIBDIR, "$myprefix/include",
                    [The system's main include directory])
 AC_DEFINE_UNQUOTED(DEFAULT_LARCHPATH,
-                   ".$PATH_SEPARATOR$myprefix/share/lclint/lib$PATH_SEPARATOR`pwd`/lib$PATH_SEPARATOR",
-                   [The directory where LCLint's library files live])
-AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, ".$PATH_SEPARATOR$myprefix/share/lclint/imports$PATH_SEPARATOR`pwd`/imports",
-                   [LCLint's imports directory])
+                   ".$PATH_SEPARATOR$myprefix/share/splint/lib$PATH_SEPARATOR`pwd`/lib$PATH_SEPARATOR",
+                   [The directory where Splint's library files live])
+AC_DEFINE_UNQUOTED(DEFAULT_LCLIMPORTDIR, ".$PATH_SEPARATOR$myprefix/share/splint/imports$PATH_SEPARATOR`pwd`/imports",
+                   [Splint's imports directory])
 
 # These used to be in herald.h
 LCL_PARSE_VERSION="AC_PACKAGE_NAME AC_PACKAGE_VERSION"
 AC_DEFINE_UNQUOTED(LCL_VERSION,
                    "$LCL_PARSE_VERSION --- `cat $srcdir/src/DATE`",
-                   [LCLint's version number and release date])
+                   [Splint's version number and release date])
 AC_DEFINE_UNQUOTED(LCL_PARSE_VERSION, "$LCL_PARSE_VERSION",
-                   [LCLint's version number])
+                   [Splint's version number])
 AC_DEFINE_UNQUOTED(LCL_COMPILE,
                    "Compiled using $CC $CFLAGS on `uname -a` by `whoami`",
                    [String describing who compiled this binary and how])

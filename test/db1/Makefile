@@ -1,5 +1,5 @@
 ###
-### LCLint db1 test
+### Splint db1 test
 ###
 ### Taken from sample, second iteration: weakchecks
 ###
@@ -9,9 +9,9 @@
 
 SHELL = /bin/csh -f
 
-LCLINT = lclint -booltype bool
-LCL = $(LCLINT) -specundef +lh +quiet -nof
-LCLINTLH = $(LCLINT) +lh
+SPLINT = splint -booltype bool
+LCL = $(SPLINT) -specundef +lh +quiet -nof
+SPLINTLH = $(SPLINT) +lh
 LCSFILES = bool.lcs dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs 
 
 MODULES = bool.lcl employee eref empset ereftab erc dbase drive.c
@@ -26,8 +26,8 @@ test:
 ###
 
 check: $(LCSFILES)
-	$(LCLINT) -showcol -weak $(MODULES) -expect 16
-	$(LCLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 333
+	$(SPLINT) -showcol -weak $(MODULES) -expect 16
+	$(SPLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 333
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

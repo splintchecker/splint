@@ -53,7 +53,7 @@ minc3.h:1: Maximum include nesting depth (1, current depth 2) exceeded
 minc3.h:2: Maximum include nesting depth (1, current depth 2) exceeded
    mongoincludes.c:3: Include site
 
-Finished LCLint checking --- 19 code errors found, as expected
+Finished checking --- 19 code warnings, as expected
 
 minc4.h:1: Maximum include nesting depth (2, current depth 3) exceeded
    minc1.h:1: Include site
@@ -91,7 +91,7 @@ minc3.h:2: Maximum include nesting depth (2, current depth 3) exceeded
    minc1.h:4: Include site
    mongoincludes.c:1: Include site
 
-Finished LCLint checking --- 10 code errors found, as expected
+Finished checking --- 10 code warnings, as expected
 
 minc3.h:1: Maximum include nesting depth (3, current depth 4) exceeded
    minc2.h:1: Include site
@@ -111,7 +111,7 @@ minc4.h:1: Maximum include nesting depth (3, current depth 4) exceeded
    minc1.h:3: Include site
    mongoincludes.c:1: Include site
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 minc4.h:1: Maximum include nesting depth (4, current depth 5) exceeded
    minc3.h:1: Include site
@@ -119,6 +119,6 @@ minc4.h:1: Maximum include nesting depth (4, current depth 5) exceeded
    minc1.h:3: Include site
    mongoincludes.c:1: Include site
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings

@@ -34,9 +34,9 @@ flags.c:17:26: Flag macrovarprefix (in semantic comment) must be
 flags.c:18:20: Flag linelen must be followed by a positive number
                   number.  Followed by asdf
 
-Finished LCLint checking --- 8 code errors found, as expected
+Finished checking --- 8 code warnings, as expected
 
 flags.c:1:9: Variable x initialized to type char, expects int: 'c'
 flags.c:5:9: Variable y initialized to type char, expects int: 'c'
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

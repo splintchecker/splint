@@ -85,7 +85,7 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 
 SUFFIXES = .h .c .o .l .check
 
-# Check files before compiling; requires lclint!
+# Check files before compiling; requires splint!
 CHECK = 1
 
 # Some preferences
@@ -93,7 +93,7 @@ YFLAGS = -v -t -d --debug
 
 BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
 
-bin_PROGRAMS = lclint
+bin_PROGRAMS = splint
 
 EXTRA_PROGRAMS = lcl
 
@@ -117,7 +117,7 @@ CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c
 
 
-LCLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c
@@ -308,14 +308,14 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbol.h                Headers/version.h \
           Headers/lsymbolList.h            Headers/warnClause.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
-          Headers/ltoken.h   Headers/lclintMacros.nf  
+          Headers/ltoken.h   Headers/splintMacros.nf  
 
 
 IFILES = ctbase.i  cttable.i  exprDataQuite.i
 
 EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             flags.def cscanner.l flex.head flex.reset $(IFILES) \
- Headers/256_random_numbers.nf  Headers/lclintMacros.nf	Headers/reservedNames.nf
+ Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
 
 
 #Files that are used on systems that do not have bison or yacc
@@ -328,24 +328,24 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
             $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
 
 
-ALLSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
+ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
-#files to run LCLint on
-LINTSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) 
+#files to run Splint on
+LINTSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) 
 
 
-#ALLSRC = $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
+#ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) \
          $(LCLGRAMSRC)
 
 
 lcl_SOURCES = $(LCLSRC)
 
-lclint_SOURCES = $(ALLSRC)
-lclint_LDADD = $(LCLOBJ) @LEXLIB@
+splint_SOURCES = $(ALLSRC)
+splint_LDADD = $(LCLOBJ) @LEXLIB@
 
 # Ensure the LCL objects get built if needed
-lclint_DEPENDENCIES = $(LCLOBJ)
+splint_DEPENDENCIES = $(LCLOBJ)
 
 BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
                 Headers/llgrammar_gen.h Headers/llgrammar_gen2.h \
@@ -354,14 +354,14 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
                 $(DER_FILES)
 
 
-CHECKS = $(subst .c,.check,$(lclint_SOURCES))
-CLEANFILES = lclint$(EXEEXT)
+CHECKS = $(subst .c,.check,$(splint_SOURCES))
+CLEANFILES = splint$(EXEEXT)
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 EXTRA_PROGRAMS = lcl$(EXEEXT)
-bin_PROGRAMS = lclint$(EXEEXT)
+bin_PROGRAMS = splint$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_lcl_OBJECTS = lsymbolSet.$(OBJEXT) sigNodeSet.$(OBJEXT) \
@@ -391,7 +391,7 @@ lcl_OBJECTS = $(am_lcl_OBJECTS)
 lcl_LDADD = $(LDADD)
 lcl_DEPENDENCIES =
 lcl_LDFLAGS =
-am_lclint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
+am_splint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	mtscanner.$(OBJEXT) mtreader.$(OBJEXT) mtgrammar.$(OBJEXT) \
 	constraintGeneration.$(OBJEXT) constraintTerm.$(OBJEXT) \
 	constraintExprData.$(OBJEXT) constraintExpr.$(OBJEXT) \
@@ -444,8 +444,8 @@ am_lclint_OBJECTS = cgrammar.$(OBJEXT) cscanner.$(OBJEXT) \
 	mtDefaultsDecl.$(OBJEXT) mtMergeItem.$(OBJEXT) \
 	mtMergeClause.$(OBJEXT) mtMergeClauseList.$(OBJEXT) \
 	exprNode.$(OBJEXT) exprChecks.$(OBJEXT) llmain.$(OBJEXT)
-lclint_OBJECTS = $(am_lclint_OBJECTS)
-lclint_LDFLAGS =
+splint_OBJECTS = $(am_splint_OBJECTS)
+splint_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -575,9 +575,9 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
-DIST_SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
+DIST_SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(lcl_SOURCES) $(lclint_SOURCES)
+SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -614,9 +614,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-lclint$(EXEEXT): $(lclint_OBJECTS) $(lclint_DEPENDENCIES) 
-	@rm -f lclint$(EXEEXT)
-	$(LINK) $(lclint_LDFLAGS) $(lclint_OBJECTS) $(lclint_LDADD) $(LIBS)
+splint$(EXEEXT): $(splint_OBJECTS) $(splint_DEPENDENCIES) 
+	@rm -f splint$(EXEEXT)
+	$(LINK) $(splint_LDFLAGS) $(splint_OBJECTS) $(splint_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -1039,16 +1039,16 @@ etags:
 	maketags
 
 lintnew: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
 lintbuffercheck: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint
 
-all: lclint$(EXEEXT)
+all: splint$(EXEEXT)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -1,82 +1,82 @@
 .PHONY: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source
 
-LCLINT = lclint
+SPLINT = splint
 
 all: check
 
 check: emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source emptycase enumtest duffs bitfields bugs tests hexconstants innercomment nothing offsetof komazi print syslog error ulrich cpptest longlong subdir fink driverstub alignof source
 
 emptycase:
-	$(LCLINT) emptycase.c 
+	$(SPLINT) emptycase.c 
 
 enumtest:
-	$(LCLINT) enumtest.c -expect 2
+	$(SPLINT) enumtest.c -expect 2
 
 duffs:
-	$(LCLINT) duffs.c -expect 7
+	$(SPLINT) duffs.c -expect 7
 
 bitfields:
-	$(LCLINT) bitfields.c
+	$(SPLINT) bitfields.c
 
 bugs:
-	$(LCLINT) bug1.c 
-	$(LCLINT) bug2.c -expect 5 
-	$(LCLINT) bug3.c -expect 3
+	$(SPLINT) bug1.c 
+	$(SPLINT) bug2.c -expect 5 
+	$(SPLINT) bug3.c -expect 3
 
 tests:
-	$(LCLINT) test0.c 
-	$(LCLINT) test1.c 
-	$(LCLINT) test2.c 
+	$(SPLINT) test0.c 
+	$(SPLINT) test1.c 
+	$(SPLINT) test2.c 
 
 hexconstants:
-	$(LCLINT) hexconstants.c -expect 1 
-	$(LCLINT) +checks hexconstants.c -expect 4
+	$(SPLINT) hexconstants.c -expect 1 
+	$(SPLINT) +checks hexconstants.c -expect 4
 
 innercomment:
-	$(LCLINT) innercomment.c -expect 2 +forcehints 
-	$(LCLINT) innercomment.c -nestcomment
+	$(SPLINT) innercomment.c -expect 2 +forcehints 
+	$(SPLINT) innercomment.c -nestcomment
 
 nothing:
-	$(LCLINT) nothing.c 
+	$(SPLINT) nothing.c 
 
 offsetof:
-	$(LCLINT) offsetof.c -expect 2 
+	$(SPLINT) offsetof.c -expect 2 
 
 komazi:
-	$(LCLINT) komazi.c 
+	$(SPLINT) komazi.c 
 
 print:
-	$(LCLINT) print.c 
+	$(SPLINT) print.c 
 
 syslog:
-	$(LCLINT) syslog.c -warnunixlib +unixlib 
+	$(SPLINT) syslog.c -warnunixlib +unixlib 
 
 error:
-	$(LCLINT) error.c -expect 1 
+	$(SPLINT) error.c -expect 1 
 
 ulrich:
-	$(LCLINT) ulrich.c -expect 1
+	$(SPLINT) ulrich.c -expect 1
 
 cpptest:
-	$(LCLINT) cpptest.c '-D__P(x)=x' -expect 1
+	$(SPLINT) cpptest.c '-D__P(x)=x' -expect 1
 
 longlong:
-	$(LCLINT) longlong.c -expect 4
+	$(SPLINT) longlong.c -expect 4
 
 subdir:
-	$(LCLINT) subdir/main.c subdir/main.lcl
+	$(SPLINT) subdir/main.c subdir/main.lcl
 
 fink:
-	$(LCLINT) fink.c 
+	$(SPLINT) fink.c 
 
 driverstub:
-	$(LCLINT) driverstub.c
+	$(SPLINT) driverstub.c
 
 alignof:
-	$(LCLINT) alignof.c -expect 2
+	$(SPLINT) alignof.c -expect 2
 
 source:
-	$(LCLINT) -D DBL_MANT_DIG=25 source.c
+	$(SPLINT) -D DBL_MANT_DIG=25 source.c
 
 
 

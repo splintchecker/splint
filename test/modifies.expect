@@ -19,4 +19,4 @@ modifies.c:37:1: Function g2 specified to modify internal state but no internal
 modclient.c: (in function mod)
 modclient.c:3:3: Statement has no effect: (void)f1(p)
 
-Finished LCLint checking --- 7 code errors found, as expected
+Finished checking --- 7 code warnings, as expected

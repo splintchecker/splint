@@ -20,4 +20,4 @@ refcounts.c:71:3: New reference z2 (type rp) not released before assignment:
 refcounts.c:72:13: New reference z2 not released before return
    refcounts.c:71:3: Storage z2 becomes newref
 
-Finished LCLint checking --- 7 code errors found, as expected
+Finished checking --- 7 code warnings, as expected

@@ -24,4 +24,4 @@ args.c:59:33: Parameter 3, f, of function many1 has inconsistent type:
 args.c:73:5: Function many3 declared with 1 arg, specified with 3
    args.lcl:6: Specification of many3
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected

@@ -29,7 +29,7 @@ repexpose.c:51:10: Only storage im->name returned as dependent: (im->name)
 repexpose.c: (in function abst_setIm)
 repexpose.c:57:3: Undocumented modification of a->im: a->im = im
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected
 
 repexpose.c: (in function abst_create)
 repexpose.c:8:4: Arrow access from possibly null pointer a: a->name
@@ -65,7 +65,7 @@ repexpose.c:51:10: Function returns reference to parameter im: (im->name)
 repexpose.c: (in function abst_setIm)
 repexpose.c:57:3: Undocumented modification of a->im: a->im = im
 
-Finished LCLint checking --- 15 code errors found, as expected
+Finished checking --- 15 code warnings, as expected
 
 repexpose.c: (in function abst_create)
 repexpose.c:8:4: Arrow access from possibly null pointer a: a->name
@@ -121,4 +121,4 @@ repexpose.c: (in function abst_setIm)
 repexpose.c:57:3: Undocumented modification of a->im: a->im = im
 repexpose.lh:6:16: Variable globstring declared but not defined
 
-Finished LCLint checking --- 27 code errors found, as expected
+Finished checking --- 27 code warnings, as expected

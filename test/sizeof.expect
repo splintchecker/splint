@@ -6,4 +6,4 @@ sizeof.c:6:3: Possible out-of-bounds store:
      needed to satisfy precondition:
     requires maxSet(x @ sizeof.c:6:3) >= 3
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected

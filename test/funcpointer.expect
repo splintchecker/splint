@@ -29,4 +29,4 @@ funcpointer.c:49:10: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:11: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:10: Function ((t6)(3)) called with 0 args, expects 1
 
-Finished LCLint checking --- 18 code errors found, as expected
+Finished checking --- 18 code warnings, as expected

@@ -2,11 +2,11 @@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-## Put these files in $prefix/share/lclint/lib
-lclintlibdir = $(pkgdatadir)/lib
+## Put these files in $prefix/share/splint/lib
+splintlibdir = $(pkgdatadir)/lib
 
 ## List of files
-lclintlib_DATA = \
+splintlib_DATA = \
   ansi.h ansi.lcd ansistrict.lcd posix.h posix.lcd posixstrict.lcd \
   unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
   file.mts file.xh filerw.mts filerw.xh \
@@ -14,35 +14,35 @@ lclintlib_DATA = \
   stdio.h stdlib.h
 
 ## Include them in the distribution
-EXTRA_DIST = $(lclintlib_DATA)
+EXTRA_DIST = $(splintlib_DATA)
 
-## Rules to make lclint & the dumps
+## Rules to make splint & the dumps
 
-LCLINT = $(top_builddir)/src/lclint$(EXEEXT)
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
-$(LCLINT):
+$(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
 
-ansi.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h -dump ansi
+ansi.lcd: ansi.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h -dump ansi
 	@touch $@
 
-ansistrict.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
+ansistrict.lcd: ansi.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
 	@touch $@
 
-posix.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h -dump posix
+posix.lcd: ansi.h posix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h posix.h -dump posix
 	@touch $@
 
-posixstrict.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
+posixstrict.lcd: ansi.h posix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
 	@touch $@
 
-unix.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
+unix.lcd: ansi.h posix.h unix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
 	@touch $@
 
-unixstrict.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
+unixstrict.lcd: ansi.h posix.h unix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
 	@touch $@

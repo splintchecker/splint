@@ -38,7 +38,7 @@ dbase.c:211: Variable e declared but not used
 drive.c: (in function main)
 drive.c:123: Return value (type db_status) ignored: hire(e)
 
-Finished LCLint checking --- 16 code errors found, as expected
+Finished checking --- 16 code warnings, as expected
 
 employee.h:2: Name EMPLOYEE_H is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
@@ -654,4 +654,4 @@ varuse                       4           0
                           ========  =========
 Total                      333          73
 
-Finished LCLint checking --- 333 code errors found, as expected
+Finished checking --- 333 code warnings, as expected

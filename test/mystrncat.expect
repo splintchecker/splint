@@ -21,4 +21,4 @@ mystrncat.c:13:3: Possible out-of-bounds store:
      derived from mystrncat precondition:
     requires maxSet(<parameter 1>) >= maxRead(<parameter 1>) + <parameter 3>
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

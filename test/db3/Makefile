@@ -1,5 +1,5 @@
 ###
-### LCLint db3 test
+### Splint db3 test
 ###
 ### Taken from sample, thirteenth iteration: strictlib
 ###
@@ -9,10 +9,10 @@
 
 SHELL = /bin/csh -f
 
-LCLINT = lclint
-LCLINTF = $(LCLINT) -f ./.lclintrc
-LCL = $(LCLINTF) -specundef +lh +quiet -nof
-LCLINTLH = $(LCLINTF) +lh 
+SPLINT = splint
+SPLINTF = $(SPLINT) -f ./.splintrc
+LCL = $(SPLINTF) -specundef +lh +quiet -nof
+SPLINTLH = $(SPLINTF) +lh 
 LCSFILES = dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs bool.lcs check.lcs
 MODULES = employee eref empset ereftab erc dbase drive.c bool.lcl check.lcl
 OBJS = dbase.o employee.o empset.o erc.o eref.o ereftab.o 
@@ -21,11 +21,11 @@ test:
 	@$(MAKE) -e clean
 	@$(MAKE) -e check
 
-### Note there is a .lclint file used for checking!
+### Note there is a .splint file used for checking!
 
 check: $(LCSFILES)
-	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
-	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
+	$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
+	$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
 
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also

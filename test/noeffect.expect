@@ -10,4 +10,4 @@ noeffect.c:2:18: File static function exprNode_swap declared but not used
   header to suppress message. (-fcnuse will suppress message)
    noeffect.c:3: Definition of exprNode_swap
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected

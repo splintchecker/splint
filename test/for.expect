@@ -6,4 +6,4 @@ for.c:13:5: Possible out-of-bounds store:
      needed to satisfy precondition:
     requires maxSet(t @ for.c:13:5) >= i @ for.c:13:7
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected

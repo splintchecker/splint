@@ -21,7 +21,7 @@ fields.c:62:18: Function returns with null storage derivable from parameter
                    p->x
    fields.c:60:10: Storage p->x becomes null
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected
 
 fields2.c: (in function pair_copy)
 fields2.c:21:16: Storage p->x reachable from parameter is kept (should be
@@ -39,6 +39,6 @@ fields2.c:43:14: Storage p->x reachable from passed parameter is kept (should
                     be implicitly only): p
    fields2.c:42:3: Storage p->x becomes kept
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings

@@ -30,4 +30,4 @@ test7.c:8:3: Possible out-of-bounds store:
      needed to satisfy precondition:
     requires maxSet(j @ test7.c:8:3) >= 0
 
-Finished LCLint checking --- 7 code errors found, as expected
+Finished checking --- 7 code warnings, as expected

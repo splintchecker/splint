@@ -28,7 +28,7 @@ cast.c:22:19: Owned storage ap not released before return
 cast.c:22:19: Last reference ip to owned storage a not released before return
    cast.c:20:10: Original reference lost
 
-Finished LCLint checking --- 20 code errors found, as expected
+Finished checking --- 20 code warnings, as expected
 
 cast2.c: (in function f1)
 cast2.c:9:10: Implicitly temp storage x returned as implicitly only: x
@@ -37,4 +37,4 @@ cast2.c: (in function f2)
 cast2.c:15:10: Implicitly dependent storage x returned as implicitly only:
                   (abst1)x
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected

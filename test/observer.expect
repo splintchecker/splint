@@ -17,7 +17,7 @@ observer.c:41:10: Observer storage *s reachable from unqualified return value
 observer.c:41:10: Observer storage s returned without qualification: s
    observer.c:40:7: Storage s becomes observer
 
-Finished LCLint checking --- 9 code errors found, as expected
+Finished checking --- 9 code warnings, as expected
 
 observer.c: (in function stx_name)
 observer.c:9:10: Function returns reference to parameter x: (x->name)
@@ -36,7 +36,7 @@ observer.c:41:10: Observer storage *s reachable from unqualified return value
 observer.c:41:10: Observer storage s returned without qualification: s
    observer.c:40:7: Storage s becomes observer
 
-Finished LCLint checking --- 8 code errors found, as expected
+Finished checking --- 8 code warnings, as expected
 
 observer.c: (in function stx_name)
 observer.c:9:20: Released storage x->name reachable from parameter at return
@@ -54,4 +54,4 @@ observer.c:41:10: Observer storage *s reachable from unqualified return value
 observer.c:41:10: Observer storage s returned without qualification: s
    observer.c:40:7: Storage s becomes observer
 
-Finished LCLint checking --- 7 code errors found, as expected
+Finished checking --- 7 code warnings, as expected

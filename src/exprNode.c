@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** exprNode.c
@@ -4316,7 +4316,7 @@ exprNode_postOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
 
   /* added 7/11/2000 D.L */
   /*@i223*/ 
-  /*DRL 6/8/01 I decided to disable all LCLint Warning here since the code 
+  /*DRL 6/8/01 I decided to disable all Splint warnings here since the code 
     probably needs a rewrite any way */
 
   /*@i65234@*/
@@ -5791,7 +5791,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	    llfatalbug 
 	      (cstring_makeLiteral 
 	       ("There has been a problem in the parser. This is believed to result "
-		"from a problem with bison v. 1.25.  Please try rebuidling LCLint "
+		"from a problem with bison v. 1.25.  Please try rebuidling Splint "
 		"using the pre-compiled grammar files by commenting out the "
 		"BISON= line in the top-level Makefile."));
 	  }

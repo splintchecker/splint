@@ -8,4 +8,4 @@ alttypes.c:25:20: Variable x inconsistently redeclared with alternate types int
     be correct)
    alttypes.c:24:33: Previous declaration of x: int | char | bool
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

@@ -7,6 +7,6 @@ format.c:5:3: Format string parameter to fprintf is not a compile-time
 format.c:6:3: Format string parameter to fprintf is not a compile-time
                  constant: fmt
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings

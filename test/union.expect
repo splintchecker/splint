@@ -22,4 +22,4 @@ union.c:84:2: Released storage u->st.ip reachable from parameter at return
                  point
    union.c:82:9: Storage u->st.ip is released
 
-Finished LCLint checking --- 8 code errors found, as expected
+Finished checking --- 8 code warnings, as expected

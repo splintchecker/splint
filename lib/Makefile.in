@@ -83,9 +83,9 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-lclintlibdir = $(pkgdatadir)/lib
+splintlibdir = $(pkgdatadir)/lib
 
-lclintlib_DATA = \
+splintlib_DATA = \
   ansi.h ansi.lcd ansistrict.lcd posix.h posix.lcd posixstrict.lcd \
   unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
   file.mts file.xh filerw.mts filerw.xh \
@@ -93,15 +93,15 @@ lclintlib_DATA = \
   stdio.h stdlib.h
 
 
-EXTRA_DIST = $(lclintlib_DATA)
+EXTRA_DIST = $(splintlib_DATA)
 
-LCLINT = $(top_builddir)/src/lclint$(EXEEXT)
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 subdir = lib
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 DIST_SOURCES =
-DATA = $(lclintlib_DATA)
+DATA = $(splintlib_DATA)
 
 DIST_COMMON = Makefile.am Makefile.in
 all: all-am
@@ -115,22 +115,22 @@ Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	  CONFIG_HEADERS= CONFIG_LINKS= \
 	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
 uninstall-info-am:
-install-lclintlibDATA: $(lclintlib_DATA)
+install-splintlibDATA: $(splintlib_DATA)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(lclintlibdir)
-	@list='$(lclintlib_DATA)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(splintlibdir)
+	@list='$(splintlib_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lclintlibdir)/$$f"; \
-	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(lclintlibdir)/$$f; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(splintlibdir)/$$f"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(splintlibdir)/$$f; \
 	done
 
-uninstall-lclintlibDATA:
+uninstall-splintlibDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(lclintlib_DATA)'; for p in $$list; do \
+	@list='$(splintlib_DATA)'; for p in $$list; do \
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(lclintlibdir)/$$f"; \
-	  rm -f $(DESTDIR)$(lclintlibdir)/$$f; \
+	  echo " rm -f $(DESTDIR)$(splintlibdir)/$$f"; \
+	  rm -f $(DESTDIR)$(splintlibdir)/$$f; \
 	done
 tags: TAGS
 TAGS:
@@ -162,7 +162,7 @@ check: check-am
 all-am: Makefile $(DATA)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(lclintlibdir)
+	$(mkinstalldirs) $(DESTDIR)$(splintlibdir)
 
 install: install-am
 install-exec: install-exec-am
@@ -203,7 +203,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-lclintlibDATA
+install-data-am: install-splintlibDATA
 
 install-exec-am:
 
@@ -221,44 +221,44 @@ mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-generic
 
-uninstall-am: uninstall-info-am uninstall-lclintlibDATA
+uninstall-am: uninstall-info-am uninstall-splintlibDATA
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am info info-am install \
 	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-lclintlibDATA install-man install-strip installcheck \
+	install-exec-am install-info install-info-am install-man \
+	install-splintlibDATA install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	uninstall uninstall-am uninstall-info-am \
-	uninstall-lclintlibDATA
+	uninstall-splintlibDATA
 
 
-$(LCLINT):
+$(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
 
-ansi.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h -dump ansi
+ansi.lcd: ansi.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h -dump ansi
 	@touch $@
 
-ansistrict.lcd: ansi.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
+ansistrict.lcd: ansi.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
 	@touch $@
 
-posix.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h -dump posix
+posix.lcd: ansi.h posix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h posix.h -dump posix
 	@touch $@
 
-posixstrict.lcd: ansi.h posix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
+posixstrict.lcd: ansi.h posix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
 	@touch $@
 
-unix.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
+unix.lcd: ansi.h posix.h unix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
 	@touch $@
 
-unixstrict.lcd: ansi.h posix.h unix.h $(LCLINT)
-	-$(LCLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
+unixstrict.lcd: ansi.h posix.h unix.h $(SPLINT)
+	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
 	@touch $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -19,4 +19,4 @@ commentcmd.c:46:22: Cast to abstract type abst1: (abst1)i
 commentcmd.c:47:22: Cast to abstract type abst2: (abst2)i
 commentcmd.c:48:22: Cast to abstract type abst3: (abst3)i
 
-Finished LCLint checking --- 15 code errors found, as expected
+Finished checking --- 15 code warnings, as expected

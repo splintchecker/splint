@@ -12,7 +12,7 @@ modtest.c:25:3: Undocumented modification of tstp->b: tstp->b = 6
 modtest.c:26:3: Undocumented modification of y possible from call to g: g(j, i)
 modtest.c:26:3: Return value (type int) ignored: g(j, i)
 
-Finished LCLint checking --- 10 code errors found, as expected
+Finished checking --- 10 code warnings, as expected
 
 modtest.c: (in function g)
 modtest.lcl:15: Global x listed but not used
@@ -33,7 +33,7 @@ modtest.c:34:10: Undocumented modification of x possible from call to g:
 modtest.c:34:10: Undocumented modification of y possible from call to g:
                     g(a, &x)
 
-Finished LCLint checking --- 13 code errors found, as expected
+Finished checking --- 13 code warnings, as expected
 
 modtest.c: (in function g)
 modtest.lcl:15: Global x listed but not used
@@ -56,4 +56,4 @@ modtest.c:29:1: Suspect object listed in modifies of f not modified: ai[6]
 modtest.c:29:1: Suspect object listed in modifies of f not modified: tstp->a
    modtest.lcl:8: Specification of f
 
-Finished LCLint checking --- 14 code errors found, as expected
+Finished checking --- 14 code warnings, as expected

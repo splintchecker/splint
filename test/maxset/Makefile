@@ -1,7 +1,7 @@
 .PHONY: check
 
-LCLINT = lclint -exportlocal
+SPLINT = splint -exportlocal
  
 check:
-	$(LCLINT) +arraybounds maxsetannotations.c
-	$(LCLINT) +arraybounds maxsetnoannotations.c -expect 1
+	$(SPLINT) +arraybounds maxsetannotations.c
+	$(SPLINT) +arraybounds maxsetnoannotations.c -expect 1

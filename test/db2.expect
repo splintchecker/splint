@@ -43,7 +43,7 @@ erc.c: (in function erc_sprint)
 erc.c:141: Fresh storage returned as unqualified (should be only): result
    erc.c:122: Fresh storage result allocated
 
-Finished LCLint checking --- 15 code errors found, as expected
+Finished checking --- 15 code warnings, as expected
 
 employee.c: (in function employee_setName)
 employee.c:17: Parameter 1 (e->name) to function strcpy is declared unique but
@@ -109,6 +109,6 @@ drive.c:163: Fresh storage em2 not released before return
 drive.c:163: Fresh storage em3 not released before return
    drive.c:147: Fresh storage em3 allocated
 
-Finished LCLint checking --- 25 code errors found, as expected
+Finished checking --- 25 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings

@@ -4,14 +4,14 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czechoslovak
   Function name is not consistent with Czechoslovak naming convention. (Setting
   either -czechoslovakfcns or -namechecks will suppress message)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 slovaknames.c:32:5: Function budweiser name is not consistent with Czechoslovak
                        naming convention.
   Function name is not consistent with Czechoslovak naming convention. (Setting
   either -czechoslovakfcns or -namechecks will suppress message)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 slovaknames.c:5:5: Variable michelobLight name violates Slovak naming
     convention.  Slovak prefix michelob is not the name of a type.
@@ -22,4 +22,4 @@ slovaknames.c:32:5: Function budweiser name is not consistent with Czechoslovak
   Function name is not consistent with Czechoslovak naming convention. (Setting
   either -czechoslovakfcns or -namechecks will suppress message)
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

@@ -1,7 +1,7 @@
 .PHONY: check
 
-#LCLINT = lclint
+#SPLINT = splint
  
 check:
-	$(LCLINT) -exportlocal +arraybounds +arrayboundsread unknownsize.c arrayConstExpr.c
+	$(SPLINT) -exportlocal +arraybounds +arrayboundsread unknownsize.c arrayConstExpr.c
 

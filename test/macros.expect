@@ -35,7 +35,7 @@ macros.c:28: Variable var2 implemented as parameterized macro
 macros.c: (in macro var2)
 macros.c:28:15: Macro parameter x used more than once
 
-Finished LCLint checking --- 17 code errors found, as expected
+Finished checking --- 17 code warnings, as expected
 
 macros.c:3: Parameterized macro has no prototype or specification: mustard 
 macros.c: (in macro mustard)
@@ -82,7 +82,7 @@ macros.c:28: Parameterized macro has no prototype or specification: var2
 macros.c: (in macro var2)
 macros.c:28:15: Macro parameter x used more than once
 
-Finished LCLint checking --- 34 code errors found, as expected
+Finished checking --- 34 code warnings, as expected
 
 macros.c:3: Parameterized macro has no prototype or specification: mustard 
 macros.c: (in macro mustard)
@@ -126,4 +126,4 @@ macros.c:28: Parameterized macro has no prototype or specification: var2
 macros.c: (in macro var2)
 macros.c:28:15: Macro parameter x used more than once
 
-Finished LCLint checking --- 31 code errors found, as expected
+Finished checking --- 31 code warnings, as expected

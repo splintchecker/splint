@@ -12,7 +12,7 @@ formalarray                  0          24
                           ========  =========
 Total                        0          64
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 eref.c: (in function eref_alloc)
 eref.c:36: Called procedure printf may access global stdout
@@ -142,4 +142,4 @@ formalarray                  0          24
                           ========  =========
 Total                       77          64
 
-Finished LCLint checking --- 77 code errors found, as expected
+Finished checking --- 77 code warnings, as expected

@@ -13,7 +13,7 @@ filerw.c:12:14: Invalid transfer from rw_write f1 to rw_read (Must reset file
    filerw.c:10:22: f1 becomes rw_write
    filerw.xh:3:38: f1 becomes rw_read
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 file.c: (in function f)
 file.c:14:5: Control branches merge with incompatible states for fout (closed
@@ -26,6 +26,6 @@ file.c:23:5: Control branches merge with incompatible states for fin (closed
    file.c:22:14: fin becomes closed
 file.c:25:10: Variable res used before definition
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings

@@ -1,7 +1,7 @@
 .PHONY: check
 
-LCLINT = lclint
+SPLINT = splint
  
 check:
-	$(LCLINT) -exportlocal +arraybounds +arrayboundsread unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c -expect 8
+	$(SPLINT) -exportlocal +arraybounds +arrayboundsread unrecogCall.c strrchr.c initialization.c simplifyTest.c strncatNotReallyGood.c strncatReallyGood.c -expect 8
 

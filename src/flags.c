@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** flags.c
@@ -896,8 +896,7 @@ identifyFlag (cstring s)
     {
       llerror_flagWarning 
 	(cstring_makeLiteral
-	 ("accessunspec flag is not supported by LCLint version 2.0 or "
-	  "later.  It has been replaced by accessmodule, accessfile and "
+	 ("accessunspec flag is no longer supported.  It has been replaced by accessmodule, accessfile and "
 	  "accessfunction to provide more precise control of accessibility "
 	  "of representations.  For more information, "
 	  "see lclint -help accessmodule"));

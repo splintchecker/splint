@@ -22,7 +22,7 @@ preds.c:30:7: Use of == with bool variables (risks inconsistency because of
   suppress message)
 preds.c:35:7: Test expression for if not bool, type char: c
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected
 
 preds.c: (in function f)
 preds.c:20:7: Test expression for if is assignment expression: b1 = b2
@@ -31,7 +31,7 @@ preds.c:20:7: Test expression for if is assignment expression: b1 = b2
   (e.g., if ((a = b)) ...) to suppress this message. (-predassign will suppress
   message)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 preds.c: (in function f)
 preds.c:5:8: Operand of ! is non-boolean (int *): !p
@@ -66,4 +66,4 @@ bool.h:30:13: Function bool_equal declared but not used
 preds.c:3:5: Function f declared but not used
    preds.c:41:1: Definition of f
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected

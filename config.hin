@@ -2,10 +2,10 @@
 
 /*@-constmacros@*/
 
-/* The directory where LCLint's library files live */
+/* The directory where Splint's library files live */
 #undef DEFAULT_LARCHPATH
 
-/* LCLint's imports directory */
+/* Splint's imports directory */
 #undef DEFAULT_LCLIMPORTDIR
 
 /* gcc's private include directory */
@@ -17,10 +17,10 @@
 /* String describing who compiled this binary and how */
 #undef LCL_COMPILE
 
-/* LCLint's version number */
+/* Splint's version number */
 #undef LCL_PARSE_VERSION
 
-/* LCLint's version number and release date */
+/* Splint's version number and release date */
 #undef LCL_VERSION
 
 /* Define to disable support LCL files */

@@ -1,5 +1,5 @@
-;;LCLint Dump: unixstrict.lcd
-;;LCLint 3.0.0.19 --- 5 October 2001
+;;; Splint Library  unixstrict.lcd
+;;Splint 3.0.0.20 --- 5 October 2001
 ;;lib:168
 ;;ctTable
 0 u-2 19 38

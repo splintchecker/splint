@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 impabstract.c: (in function f)
 impabstract.c:11:7: Left operand of < is abstract type (mint): m < 2
@@ -9,7 +9,7 @@ impabstract.c:13:14: Return value type mint does not match declared type int: m
   Underlying types match, but mint is an abstract type that is not accessible
   here.
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 impabstract.c:2:28: Mutable abstract type cint declared without pointer
                        indirection: int (violates assignment semantics)
@@ -30,4 +30,4 @@ impabstract.c:8:14: Return value type cint does not match declared type int: c
   Underlying types match, but cint is an abstract type that is not accessible
   here.
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

@@ -5,11 +5,11 @@ strings.c:24:14: Function call may modify observer: "hullo"
 strings.c:25:7: Observer storage passed as only param: f3 ("hullo")
    strings.c:25:7: Storage becomes observer
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 strings.c:21:6: Function main declared to return void, should return int
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 strings.c: (in function main)
 strings.c:23:14: Call to unconstrained function f1 may modify observer: "hullo"
@@ -20,4 +20,4 @@ strings.c:25:7: Call to unconstrained function f3 may modify observer: "hullo"
 strings.c:25:7: Observer storage passed as only param: f3 ("hullo")
    strings.c:25:7: Storage becomes observer
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

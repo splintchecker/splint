@@ -1,7 +1,7 @@
 .PHONY: check
 
-LCLINT = lclint -exportlocal
+SPLINT = splint -exportlocal
  
 check:
-	$(LCLINT) +arraybounds +arrayboundsread globalvariable.c
+	$(SPLINT) +arraybounds +arrayboundsread globalvariable.c
 

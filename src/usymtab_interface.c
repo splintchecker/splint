@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,14 +19,14 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** usymtab_interface.c
 **
 ** Grammar interface to symtab.
 **
-** The LCLint parser will build symbol tables for abstract types and
+** The Splint parser will build symbol tables for abstract types and
 ** function declarations.
 **
 */
@@ -1647,7 +1647,7 @@ static
 		  
 		      llmsg (message
 			     ("%q: Warning: object and type modifications "
-			      "not understood by LCLint",
+			      "not understood by Splint",
 			      fileloc_unparse (loc)));
 		      fileloc_free (loc);
 		      shownWarning = TRUE;

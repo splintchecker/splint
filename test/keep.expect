@@ -17,4 +17,4 @@ keep.c: (in function f7)
 keep.c:60:10: Kept storage x returned as implicitly only: x
    keep.c:58:5: Storage x becomes kept
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected

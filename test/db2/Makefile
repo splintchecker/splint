@@ -1,5 +1,5 @@
 ###
-### LCLint db2 test
+### Splint db2 test
 ###
 ### Taken from sample, fifth iteration: memchecks1
 ###
@@ -9,9 +9,9 @@
 
 SHELL = /bin/csh -f
 
-LCLINT = lclint -booltype "bool"
-LCL = $(LCLINT) -specundef +lh +quiet -nof
-LCLINTLH = $(LCLINT) +lh
+SPLINT = splint -booltype "bool"
+LCL = $(SPLINT) -specundef +lh +quiet -nof
+SPLINTLH = $(SPLINT) +lh
 LCSFILES = dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs 
 
 MODULES = employee eref empset ereftab erc dbase drive.c
@@ -22,9 +22,9 @@ test:
 	$(MAKE) -e check
 
 check: $(LCSFILES)
-	$(LCLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude $(MODULES) -expect 15
-	$(LCLINT) -exportlocal -showcol +allimponly $(MODULES) -expect 25
-	$(LCLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude $(MODULES)
+	$(SPLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude $(MODULES) -expect 15
+	$(SPLINT) -exportlocal -showcol +allimponly $(MODULES) -expect 25
+	$(SPLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude $(MODULES)
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

@@ -17,4 +17,4 @@ outglob.c:41:13: Function returns with global x2 undefined
 outglob.c:41:13: Function returns with global x3 undefined
    outglob.lcl:3: Storage x3 becomes undefined
 
-Finished LCLint checking --- 10 code errors found, as expected
+Finished checking --- 10 code warnings, as expected

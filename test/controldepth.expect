@@ -5,7 +5,7 @@ controldepth.c:8:15: Maximum control nesting depth (2) exceeded
   message)
 controldepth.c:15:17: Maximum control nesting depth (2) exceeded
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 controldepth.c: (in function f)
 controldepth.c:6:15: Maximum control nesting depth (1) exceeded
@@ -13,4 +13,4 @@ controldepth.c:6:15: Maximum control nesting depth (1) exceeded
   message)
 controldepth.c:11:13: Maximum control nesting depth (1) exceeded
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected

@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 maxsetnoannotations.c: (in function noancopy)
 maxsetnoannotations.c:2:3: Possible out-of-bounds store:
@@ -12,4 +12,4 @@ maxsetnoannotations.c:2:3: Possible out-of-bounds store:
      derived from strcpy precondition: requires maxSet(<parameter 1>) >=
     maxRead(<parameter 2>)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected

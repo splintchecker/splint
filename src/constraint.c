@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 
 /*
@@ -786,7 +786,7 @@ static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/
   cstring st = cstring_undefined;
   cstring genExpr;
   
-  st = message ("Unsatisfied ensures constraint condition:\nLCLint is unable to verify the constraint %q", constraint_printDeep (c) );
+  st = message ("Unsatisfied ensures constraint condition:\nSplint is unable to verify the constraint %q", constraint_printDeep (c) );
 
   genExpr = exprNode_unparse (c->generatingExpr);
     

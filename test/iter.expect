@@ -24,8 +24,8 @@ iter.h:8:1: Macro parameter j used in conditionally executed code (may or may
 iter.lcl:3:6: Iterator noYield specified but not defined
 iter.lcl:3:6: Iterator finalizer end_noYield specified but not defined
 
-Finished LCLint checking --- 1 spec error found, as expected
-       14 code errors found, as expected
+Finished checking --- 1 spec warning, as expected
+       14 code warnings, as expected
 
 iter2.c: (in function test)
 iter2.c:9:14: Unrecognized identifier: x
@@ -49,4 +49,4 @@ iter2.h:8:55: Variable ___b name is not consistent with macro variable
 iter2.h:9:1: Macro parameter j used in conditionally executed code (may or may
                 not be evaluated exactly once) (in post loop test)
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected

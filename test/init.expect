@@ -17,7 +17,7 @@ init.c:14:13: Initializer block for b has 2 elements, but declared as int [10]:
 init.c:14:15: Initializer block used for b[0] where int is expected: { 1, 2 }
 init.c:14:25: Initializer block used for b[1] where int is expected: { 3, 4 }
 
-Finished LCLint checking --- 14 code errors found, as expected
+Finished checking --- 14 code warnings, as expected
 
 init.c:1:16: Global c[0] initialized to null value: c[0] = NULL
 init.c:1:22: Read-only string literal storage used as initial value for
@@ -43,4 +43,4 @@ init.c:14:13: Initializer block for b has 2 elements, but declared as int [10]:
 init.c:14:15: Initializer block used for b[0] where int is expected: { 1, 2 }
 init.c:14:25: Initializer block used for b[1] where int is expected: { 3, 4 }
 
-Finished LCLint checking --- 17 code errors found, as expected
+Finished checking --- 17 code warnings, as expected

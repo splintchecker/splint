@@ -33,15 +33,15 @@ infodir = ${prefix}/info
 mandir = ${prefix}/man
 includedir = ${prefix}/include
 oldincludedir = /usr/include
-pkgdatadir = $(datadir)/lclint
-pkglibdir = $(libdir)/lclint
-pkgincludedir = $(includedir)/lclint
+pkgdatadir = $(datadir)/splint
+pkglibdir = $(libdir)/splint
+pkgincludedir = $(includedir)/splint
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /tmp/LCLintDev/config/missing --run aclocal
-AUTOCONF = ${SHELL} /tmp/LCLintDev/config/missing --run autoconf
-AUTOMAKE = ${SHELL} /tmp/LCLintDev/config/missing --run automake
-AUTOHEADER = ${SHELL} /tmp/LCLintDev/config/missing --run autoheader
+ACLOCAL = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run aclocal
+AUTOCONF = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoconf
+AUTOMAKE = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run automake
+AUTOHEADER = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run autoheader
 
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -57,7 +57,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_alias = 
 host_triplet = i686-pc-linux-gnu
-AMTAR = ${SHELL} /tmp/LCLintDev/config/missing --run tar
+AMTAR = ${SHELL} /net/af10/evans/LCLintDev/config/missing --run tar
 AWK = gawk
 BISON = bison
 CAT = cat
@@ -74,12 +74,12 @@ LEX = flex
 LN_S = ln -s
 MV = mv
 OBJEXT = o
-PACKAGE = lclint
+PACKAGE = splint
 RM = rm
-VERSION = 3.0.0.19
+VERSION = 3.0.0.20
 am__include = include
 am__quote = 
-install_sh = /tmp/LCLintDev/config/install-sh
+install_sh = /net/af10/evans/LCLintDev/config/install-sh
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 

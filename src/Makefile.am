@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 
 SUFFIXES = .h .c .o .l .check
 
-# Check files before compiling; requires lclint!
+# Check files before compiling; requires splint!
 CHECK = 1
 
 # Some preferences
@@ -14,8 +14,8 @@ YFLAGS = -v -t -d --debug
 BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
 
 
-## We only build LCLint
-bin_PROGRAMS = lclint
+## We only build Splint
+bin_PROGRAMS = splint
 
 ## This is a fake program, so we can easily substitute in the extra LCL objects
 EXTRA_PROGRAMS = lcl
@@ -40,7 +40,7 @@ CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c
 
-LCLINTSRC = exprNode.c exprChecks.c llmain.c
+SPLINTSRC = exprNode.c exprChecks.c llmain.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = context.c globals.c flags.c general.c osd.c reader.c
@@ -228,14 +228,14 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbol.h                Headers/version.h \
           Headers/lsymbolList.h            Headers/warnClause.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
-          Headers/ltoken.h   Headers/lclintMacros.nf  
+          Headers/ltoken.h   Headers/splintMacros.nf  
 
 IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 
 ## Non-built files we need to distribute
 EXTRA_DIST = DATE $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             flags.def cscanner.l flex.head flex.reset $(IFILES) \
- Headers/256_random_numbers.nf  Headers/lclintMacros.nf	Headers/reservedNames.nf
+ Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
 
 
 #Files that are used on systems that do not have bison or yacc
@@ -247,23 +247,23 @@ DER_FILES = $(DER_BISON_FILES)
 COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
             $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
 
-ALLSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
+ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
-#files to run LCLint on
-LINTSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) 
+#files to run Splint on
+LINTSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) 
 
-#ALLSRC = $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
+#ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 
 LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) \
          $(LCLGRAMSRC)
 
 lcl_SOURCES = $(LCLSRC)
 
-lclint_SOURCES = $(ALLSRC)
-lclint_LDADD = $(LCLOBJ) @LEXLIB@
+splint_SOURCES = $(ALLSRC)
+splint_LDADD = $(LCLOBJ) @LEXLIB@
 
 # Ensure the LCL objects get built if needed
-lclint_DEPENDENCIES = $(LCLOBJ)
+splint_DEPENDENCIES = $(LCLOBJ)
 
 # Keep it fake
 .PHONY: lcl$(EXEEXT)
@@ -349,7 +349,7 @@ Headers/flag_codes.gen: flags.def
 
 ## Checking rules
 
-CHECKS = $(subst .c,.check,$(lclint_SOURCES))
+CHECKS = $(subst .c,.check,$(splint_SOURCES))
 
 ## Other rules
 
@@ -367,15 +367,15 @@ etags:
 	maketags
 
 lintnew: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
 lintbuffercheck: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint
 
 
-all: lclint$(EXEEXT)
-CLEANFILES = lclint$(EXEEXT)
+all: splint$(EXEEXT)
+CLEANFILES = splint$(EXEEXT)

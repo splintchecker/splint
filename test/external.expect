@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 6 characters because alphabetical case is ignored
@@ -8,7 +8,7 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
                    longfunction1 in the first 6 characters (longfu)
    external.c:7:5: Declaration of longfunction1
 
-Finished LCLint checking --- 2 code errors found, as expected
+Finished checking --- 2 code warnings, as expected
 
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 3 characters because alphabetical case is ignored
@@ -20,7 +20,7 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
                    longfunction1 in the first 3 characters (lon)
    external.c:7:5: Declaration of longfunction1
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 3 characters because alphabetical case is ignored
@@ -32,7 +32,7 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
                    longfunction1 in the first 3 characters (lon)
    external.c:7:5: Declaration of longfunction1
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 external.c:2:5: External identifier Func is not distinguishable from func in
                    the first 3 characters because alphabetical case is ignored
@@ -49,4 +49,4 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
    load file ansi.lcd:785:1: Specification of LONG_MAX
    One or more additional indistinguishable external names not reported
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected

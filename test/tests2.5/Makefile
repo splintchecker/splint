@@ -1,46 +1,46 @@
 .PHONY: boolt testalt booltest boolbad hoof testalt uconstants ull baz
 
-LCLINT = lclint
+SPLINT = splint
 
 # ull and baz added after 2.5q
 all: testalt boolt uconstants badcomment hoof boolbad booltest ull baz immutable impabsmodule
 
 testalt:
-	${LCLINT} -dump newlint.lcd testalt.c
+	${SPLINT} -dump newlint.lcd testalt.c
 
 boolt:
-	${LCLINT} -expect 1 +partial +booltype pan_bool_t +booltrue PAN_TRUE +boolfalse PAN_FALSE boolt.c
+	${SPLINT} -expect 1 +partial +booltype pan_bool_t +booltrue PAN_TRUE +boolfalse PAN_FALSE boolt.c
 
 uconstants:
-	${LCLINT} uconstants.c -expect 2
+	${SPLINT} uconstants.c -expect 2
 
 badcomment:
-	${LCLINT} badcomment.c -expect 3
+	${SPLINT} badcomment.c -expect 3
 
 hoof:
-	${LCLINT} hoof.c -expect 1
-	${LCLINT} hoof.c +ignorequals
+	${SPLINT} hoof.c -expect 1
+	${SPLINT} hoof.c +ignorequals
 
 ignorecmd:
-	${LCLINT} +ignorecommand -we
+	${SPLINT} +ignorecommand -we
 
 booltest:
-	${LCLINT} booltest.c -booltype bool -expect 2
-	${LCLINT} booltest.c -booltype bool +boolint
-	${LCLINT} booltest.c -booltype bool -predboolint -expect 1
+	${SPLINT} booltest.c -booltype bool -expect 2
+	${SPLINT} booltest.c -booltype bool +boolint
+	${SPLINT} booltest.c -booltype bool -predboolint -expect 1
 
 boolbad:
-	${LCLINT} -weak -booltype BOOLEAN boolbad.c
+	${SPLINT} -weak -booltype BOOLEAN boolbad.c
 
 
 ull:
-	${LCLINT} ull.c
+	${SPLINT} ull.c
 
 baz:
-	${LCLINT} baz.h bimbim.h -I.
+	${SPLINT} baz.h bimbim.h -I.
 
 immutable:
-	${LCLINT} immutable.c testimmutable.c -expect 2
+	${SPLINT} immutable.c testimmutable.c -expect 2
 
 impabsmodule:
-	${LCLINT} +impabstract impabsmodule.c -expect 2
+	${SPLINT} +impabstract impabsmodule.c -expect 2

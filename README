@@ -1,20 +1,19 @@
-			LCLint Version 3.0.0.19
+			Splint Version 3.0.0.20
 			     Alpha Release
 			    29 December 2001
 
 LCLint Documentation
 ====================
 
-For documentation on LCLint, please see http://lclint.cs.virginia.edu.
+For documentation on LCLint, please see http://www.splint.org
 
 WARNING: this is an Alpha release - new features and changes are not
-reflected in the documentation.  The file BUFFERCHECKING contains
-preliminary documentation on the array bounds checking.
+reflected in the documentation.  
 
 Build Instructions
 ==================
 
-To build LCLint you need:
+To build Splint you need:
 
    o a (hopefully ANSI-conforming) C compiler. On most modern Unix systems,
      cc will work fine. For older or less standard systems, gcc is
@@ -27,23 +26,23 @@ You should also have:
 
    o flex
    o bison version 1.28 or later - bison 1.27 and 1.25 are believed to
-     have bugs that cause problems with lclint's parsers.  
+     have bugs that cause problems with Splint's parsers.  
 
-If these are unavailable, you may be able to build lclint anyway using
+If these are unavailable, you may be able to build Splint anyway using
 the derived grammar files.  This is not recommended however.
 
-1. Download the LCLint source package (lclint-<version>.src.tgz).
+1. Download the Splint source package (splint-<version>.src.tgz).
 
-   Copy this package to the directory where you want to build LCLint.  When
-   the tar file is extracted, it will create an lclint-<version> subdirectory.
+   Copy this package to the directory where you want to build Splint.  When
+   the tar file is extracted, it will create an splint-<version> subdirectory.
 
 2. Extract files from the tar archive:
-      tar xzf lclint-<version>.src.tgz
+      tar xzf splint-<version>.src.tgz
 
 3. Run: ./configure
   
    This will create a Makefile with settings for your system. If you 
-   want to install LCLint or associated libraries different
+   want to install Splint or associated libraries different
    directories, edit the Makefile.
 
 4. Run: gmake
@@ -53,32 +52,32 @@ the derived grammar files.  This is not recommended however.
 
 6. Set environment variables
 
-   LARCH_PATH - path to search for lclint libraries and
+   LARCH_PATH - path to search for splint libraries and
    initializations files. If you are using the standard directories, this
-   should be .:<base-directory>/lclint-3.0.0.9/lib.
+   should be .:<base-directory>/splint-3.0.0.9/lib.
 
    LCLIMPORTDIR - directory containing lcl imports files. If you are using
-   the standard directories, this is <base-directory>/lclint-3.0.0.9/imports.
+   the standard directories, this is <base-directory>/splint-3.0.0.9/imports.
 
    Put the commands to set these variables (the actual commands will depend
    on the shell you are using) in one of your initialization dotfiles
    (usually ~/.environment). 
 
    Set up your PATH to include the directory containing
-   lclint-<version>/bin/lclint, or move the binary to a directory on
+   splint-<version>/bin/splint, or move the binary to a directory on
    your command path.
 
 7. Run: gmake test
 
    Examine the test output. If there are errors, send a bug
-   report to lclint-bug@cs.virginia.edu
+   report to splint-bug@cs.virginia.edu
 
-To subscribe to announcements of new lclint releases, send a message to
+To subscribe to announcements of new Splint releases, send a message to
 majordomo@virginia.edu containing the body:
 
 subscribe lclint-announce
 
-To participate in discussions related to lclint, send a message to
+To participate in discussions related to Splint, send a message to
 majordomo@virginia.edu containing the body:
 
 subscribe lclint-interest

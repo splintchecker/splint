@@ -50,7 +50,7 @@ sharing1.c:59:13: Function returns with global globonly referencing released
                      storage
    sharing1.c:57:9: Storage globonly is released
 
-Finished LCLint checking --- 21 code errors found, as expected
+Finished checking --- 21 code warnings, as expected
 
 sharing3.c: (in function string_copy)
 sharing3.c:17:10: Implicitly temp storage s returned as only: s
@@ -60,7 +60,7 @@ sharing3.c: (in function string_free3)
 sharing3.c:45:2: Fresh storage t not released before return
    sharing3.c:42:29: Fresh storage t allocated
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected
 
 sharing4.c: (in function f)
 sharing4.c:18:3: Only storage globonly1 (type char *) not released before
@@ -97,7 +97,7 @@ sharing4.c:42:12: Function returns with global globonly3 referencing released
                      storage
    sharing4.c:21:9: Storage globonly3 is released
 
-Finished LCLint checking --- 13 code errors found, as expected
+Finished checking --- 13 code warnings, as expected
 
 sharing4.c: (in function f)
 sharing4.c:18:3: Only storage globonly1 (type char *) not released before
@@ -132,7 +132,7 @@ sharing4.c:42:12: Function returns with global globonly3 referencing released
                      storage
    sharing4.c:21:9: Storage globonly3 is released
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected
 
 sharing5.c: (in function f)
 sharing5.c:13:4: Variable only1 used after being released
@@ -151,4 +151,4 @@ sharing5.c:32:3: Fresh storage localp (type char **) not released before
 sharing5.c:33:2: Only storage only3 not released before return
    sharing5.c:4:73: Storage only3 becomes only
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected

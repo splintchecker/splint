@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** lcllib.c
@@ -33,7 +33,6 @@
 
 # include "lclintMacros.nf"
 # include "llbasic.h"
-
 # include "osd.h"
 
 # ifndef NOLCL
@@ -275,7 +274,7 @@ dumpState (cstring cfname)
       ** Be careful, these lines must match loadLCDFile checking.
       */
 
-      fprintf (f, ";;LCLint Dump: %s\n", cstring_toCharsSafe (fname));
+      fprintf (f, "%s %s\n", LIBRARY_MARKER, cstring_toCharsSafe (fname));
       fprintf (f, ";;%s\n", LCL_VERSION);
       fprintf (f, ";;lib:%d\n", (int) context_getLibrary ());
       fprintf (f, ";;ctTable\n");
@@ -424,9 +423,9 @@ loadLCDFile (FILE *f, cstring name)
   */
 
   if (reader_readLine (f, buf, BUFLEN) == NULL
-      || !mstring_equalPrefix (buf, ";;LCLint Dump:"))
+      || !mstring_equalPrefix (buf, LIBRARY_MARKER))
     {
-      loadllmsg (message ("Load library %s is not in LCLint library format.  Attempting "
+      loadllmsg (message ("Load library %s is not in Splint library format.  Attempting "
 			  "to continue without library.", name));
       return FALSE;
     }
@@ -435,13 +434,13 @@ loadLCDFile (FILE *f, cstring name)
     {
       if (!mstring_equalPrefix (buf, ";;"))
 	{
-	  loadllmsg (message ("Load library %s is not in LCLint library format.  Attempting "
+	  loadllmsg (message ("Load library %s is not in Splint library format.  Attempting "
 			      "to continue without library.", name));
 	  return FALSE;
 	}
       else if (mstring_equalPrefix (buf, ";;ctTable"))
 	{
-	  loadllmsg (message ("Load library %s is in obsolete LCLint library format.  Attempting "
+	  loadllmsg (message ("Load library %s is in obsolete Splint library format.  Attempting "
 			      "to continue anyway, but results may be incorrect.  Rebuild "
 			      "the library with this version of lclint.", 
 			      name));
@@ -450,9 +449,10 @@ loadLCDFile (FILE *f, cstring name)
 	{
 	  float version = 0.0;
 
-	  if (sscanf (buf, ";;LCLint %f", &version) != 1)
+	  if (sscanf (buf, ";;Splint %f", &version) != 1
+	      && (sscanf (buf, ";;LCLint %f", &version) != 1))
 	    {
-	      loadllmsg (message ("Load library %s is not in LCLint library format (missing version "
+	      loadllmsg (message ("Load library %s is not in Splint library format (missing version "
 				  "number).  Attempting "
 				  "to continue without library.", name));
 	      return FALSE;
@@ -478,7 +478,7 @@ loadLCDFile (FILE *f, cstring name)
 		{
 		  if (reader_readLine (f, buf, BUFLEN) == NULL)
 		    {
-		      loadllmsg (message ("Load library %s is not in LCLint library "
+		      loadllmsg (message ("Load library %s is not in Splint library "
 					  "format (missing library code). Attempting "
 					  "to continue without library.", name));
 		      return FALSE;
@@ -489,7 +489,7 @@ loadLCDFile (FILE *f, cstring name)
 		      
 		      if (sscanf (buf, ";;lib:%d", &lib) != 1)
 			{
-			  loadllmsg (message ("Load library %s is not in LCLint library "
+			  loadllmsg (message ("Load library %s is not in Splint library "
 					      "format (missing library code). Attempting "
 					      "to continue without library.", name));
 			  return FALSE;
@@ -522,7 +522,7 @@ loadLCDFile (FILE *f, cstring name)
     }
   else
     {
-      loadllmsg (message ("Load library %s is not in LCLint library format (missing lines).  "
+      loadllmsg (message ("Load library %s is not in Splint library format (missing lines).  "
 			  "Attempting to continue without library.", name));
       return FALSE;
     }

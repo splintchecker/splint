@@ -34,7 +34,7 @@ enum.c:51:15: Enumerator member pasta declared with inconsistent type:
 enum.lcl:3:9: Enum tag enum _ietag specified but not defined
 enum.lcl:8:22: Enum member yasta specified but not defined
 
-Finished LCLint checking --- 16 code errors found, as expected
+Finished checking --- 16 code warnings, as expected
 
 enum.c:2:16: Enumerator member cero declared with inconsistent type:
                 enum { cero, uno, dos, tres }
@@ -69,4 +69,4 @@ enum.c:51:15: Enumerator member pasta declared with inconsistent type:
 enum.lcl:3:9: Enum tag enum _ietag specified but not defined
 enum.lcl:8:22: Enum member yasta specified but not defined
 
-Finished LCLint checking --- 14 code errors found, as expected
+Finished checking --- 14 code warnings, as expected

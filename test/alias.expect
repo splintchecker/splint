@@ -1,5 +1,5 @@
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 alias.c: (in function f)
 alias.c:11:3: Possible undocumented modification of *a through alias *x: *x = 3
@@ -32,7 +32,7 @@ alias.c:51:3: Undocumented modification of b possible from call to mut_mod
 alias.c:55:12: Owned storage b not released before return
    alias.c:52:3: Storage b becomes owned
 
-Finished LCLint checking --- 19 code errors found, as expected
+Finished checking --- 19 code warnings, as expected
 
 alias2.c: (in function f)
 alias2.c:17:3: Variable lx used before definition
@@ -65,7 +65,7 @@ alias2.c:55:3: Possible undocumented modification of *a through alias *globp:
 alias2.c:56:12: Function returns with global variable globp aliasing parameter
                    a
 
-Finished LCLint checking --- 17 code errors found, as expected
+Finished checking --- 17 code warnings, as expected
 
 alias3.c: (in function model)
 alias3.c:16:3: Undocumented modification of gst.a: gst.a = 3
@@ -94,9 +94,9 @@ alias3.c:62:3: Possible undocumented modification of u1->a through alias ul->a:
 alias3.c:65:3: Possible undocumented modification of *(u1->s.b) through alias
                   *(sl.b): *(sl.b) = 6
 
-Finished LCLint checking --- 14 code errors found, as expected
+Finished checking --- 14 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
 
 alias4.c: (in function f)
 alias4.c:15:10: Function may return reference to parameter a through alias c: c
@@ -107,7 +107,7 @@ alias4.c:28:12: Function returns reference to global globp: globp
 alias4.c:30:12: Function returns reference to global globs: (globs.field)
 alias4.c:32:12: Function returns reference to global globs: (&(globs.val))
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected
 
 alias5.c: (in function incx1)
 alias5.c:13:3: Possible undocumented modification of p->x through alias p2->x:
@@ -123,4 +123,4 @@ alias5.c:28:3: Possible undocumented modification of *(p->x) through alias
 alias5.c:30:2: Storage p->x reachable from parameter is kept (should be only)
    alias5.c:27:3: Storage p->x becomes kept
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected

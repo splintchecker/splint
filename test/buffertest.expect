@@ -19,4 +19,4 @@ buffertest1.c:21:10: Possible out-of-bounds read:
      needed to satisfy precondition:
     requires maxRead(g @ buffertest1.c:21:10) >= 1
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected

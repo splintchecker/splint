@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,7 +19,7 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** storeRef.c
@@ -3384,7 +3384,7 @@ sRef_getRootBaseAux (sRef s, int depth)
 		("Warning: reference base limit exceeded for %q. "
 		 "This either means there is a variable with at least "
 		 "%d indirections from this reference, or "
-		 "there is a bug in LCLint.",
+		 "there is a bug in Splint.",
 		 sRef_unparse (s),
 		 MAXBASEDEPTH),
 		g_currentloc);
@@ -4647,7 +4647,7 @@ static /*@exposed@*/ sRef whatUndefined (/*@exposed@*/ sRef fref, int depth)
 		("Warning: check definition limit exceeded, checking %q. "
 		 "This either means there is a variable with at least "
 		 "%d indirections apparent in the program text, or "
-		 "there is a bug in LCLint.",
+		 "there is a bug in Splint.",
 		 sRef_unparse (fref),
 		 MAXDEPTH),
 		g_currentloc);

@@ -8,4 +8,4 @@ list.c: (in function list_addh2)
 list.c:39:2: Storage *(l->next) reachable from parameter contains 1 undefined
                 field: next
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected

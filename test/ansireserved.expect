@@ -19,7 +19,7 @@ ansireserved.c:11:5: Name isaFish is reserved for future ANSI library
 ansireserved.c: (in function isaFish)
 ansireserved.c:16:20: Name wctomb is reserved for the standard library
 
-Finished LCLint checking --- 9 code errors found, as expected
+Finished checking --- 9 code warnings, as expected
 
 ansireserved.c:9: Name EVANS is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
@@ -47,7 +47,7 @@ ansireserved.c:15:22: Name memory is reserved for future ANSI library
     letter letter may be added to <string.h>. (See ANSI, Section 4.13.8)
 ansireserved.c:16:20: Name wctomb is reserved for the standard library
 
-Finished LCLint checking --- 11 code errors found, as expected
+Finished checking --- 11 code warnings, as expected
 
 ansireserved.c:9: Name EVANS is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
@@ -76,9 +76,9 @@ ansireserved.c: (in function isaFish)
 ansireserved.c:16:20: Name wctomb is reserved for the standard library
 ansireserved.c:5:5: Function atan2f declared but not defined
 
-Finished LCLint checking --- 12 code errors found, as expected
+Finished checking --- 12 code warnings, as expected
 
 ansireserved2.c:4:2: Name _s1 is in the implementation name space (any
                         identifier beginning with underscore)
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected

@@ -14,7 +14,7 @@ printflike.c:16:35: Multiple special function codes:
 printflike.c:17:5: Function qxprint is marked messagelike, but the argument
                       before the elipsis has type int (should be char *)
 
-Finished LCLint checking --- 6 code errors found, as expected
+Finished checking --- 6 code warnings, as expected
 
 printflike.c:2:5: Function mprint is marked printflike, but has no elipsis
                      parameter
@@ -27,4 +27,4 @@ printflike.c:16:35: Multiple special function codes:
 printflike.c:17:5: Function qxprint is marked messagelike, but the argument
                       before the elipsis has type int (should be char *)
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected

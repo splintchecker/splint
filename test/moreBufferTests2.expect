@@ -6,4 +6,4 @@ unknownsize.c:9:3: Possible out-of-bounds store:
      needed to satisfy precondition:
     requires maxSet(c @ unknownsize.c:9:3) >= 9
 
-Finished LCLint checking --- 1 code error found
+Finished checking --- 1 code warning found

@@ -9,7 +9,7 @@ argorder.c:10:13: Argument 1 modifies j, used by argument 3 (order of
 argorder.c:10:25: Argument 2 modifies i, used by argument 1 (order of
     evaluation of actual parameters is undefined): f((i++, j++), (i = 3), j)
 
-Finished LCLint checking --- 4 code errors found, as expected
+Finished checking --- 4 code warnings, as expected
 
 argorder2.c: (in function g)
 argorder2.c:16:12: Argument 1 modifies i, used by argument 2 (order of
@@ -23,7 +23,7 @@ argorder2.c:18:12: Argument 1 modifies i, used by argument 2 (order of
 argorder2.c:19:14: Argument 1 modifies i, used by argument 2 (order of
                       evaluation of actual parameters is undefined): f(i++, i)
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
 argorder3.c: (in function f)
 argorder3.c:7:8: Expression has undefined behavior (value of left operand i is
@@ -42,7 +42,7 @@ argorder3.c:12:14: Expression has undefined behavior (left operand modifies i,
                       used by right operand): --i * ++i
 argorder3.c:13:2: Path with no return in function declared to return int
 
-Finished LCLint checking --- 8 code errors found, as expected
+Finished checking --- 8 code warnings, as expected
 
 argorder4.c: (in function h)
 argorder4.c:19:21: Expression has undefined behavior (left operand uses glob,
@@ -67,12 +67,12 @@ argorder4.c:35:38: Argument 2 modifies *stdout, set by argument 1 (order of
     add((printf("hullo"), 3), (printf("goodbye"), 4))
 argorder4.c:35:10: Unreachable code: return (add((pri...
 
-Finished LCLint checking --- 9 code errors found, as expected
+Finished checking --- 9 code warnings, as expected
 
 argorder4.c: (in function h)
 argorder4.c:35:10: Unreachable code: return (add((pri...
 
-Finished LCLint checking --- 1 code error found, as expected
+Finished checking --- 1 code warning, as expected
 
 argorder5.c: (in function f)
 argorder5.c:8:9: Variable name used after being released
@@ -83,4 +83,4 @@ argorder5.c:10:28: Argument 2 modifies *name, used by argument 1 (order of
     evaluation of actual parameters is undefined):
     test2(copystring(name), f(name))
 
-Finished LCLint checking --- 3 code errors found, as expected
+Finished checking --- 3 code warnings, as expected

@@ -1,5 +1,5 @@
 /*
-** LCLint - annotation-assisted static program checker
+** Splint - annotation-assisted static program checker
 ** Copyright (C) 1994-2001 University of Virginia,
 **         Massachusetts Institute of Technology
 **
@@ -19,12 +19,12 @@
 **
 ** For information on lclint: lclint-request@cs.virginia.edu
 ** To report a bug: lclint-bug@cs.virginia.edu
-** For more information: http://lclint.cs.virginia.edu
+** For more information: http://www.splint.org
 */
 /*
 ** llmain.c
 **
-** Main module for LCLint checker
+** Main module for Splint annotation-assisted program checker
 */
 
 # include <signal.h>
@@ -1265,7 +1265,7 @@ int main (int argc, char *argv[])
   if (anylcl)
     {
 # ifdef NOLCL
-      llfatalerror (cstring_makeLiteral ("This version of LCLint does not handle LCL files."));
+      llfatalerror (cstring_makeLiteral ("This version of Splint does not handle LCL files."));
 # else
       lslProcess (lclfiles);
 # endif
@@ -1497,7 +1497,7 @@ int main (int argc, char *argv[])
 	if (nspecErrors == context_getLCLExpect ())
 	  {
 	    specErrors = 
-	      message ("%d spec error%& found, as expected\n       ", 
+	      message ("%d spec warning%&, as expected\n       ", 
 		       nspecErrors);
 	  }
 	else
@@ -1505,13 +1505,13 @@ int main (int argc, char *argv[])
 	    if (context_getLCLExpect () > 0)
 	      {
 		specErrors = 
-		  message ("%d spec error%& found, expected %d\n       ", 
+		  message ("%d spec warning%&, expected %d\n       ", 
 			   nspecErrors,
 			   (int) context_getLCLExpect ());
 	      }
 	    else
 	      {
-		specErrors = message ("%d spec error%& found\n       ",
+		specErrors = message ("%d spec warning%& found\n       ",
 				      nspecErrors);
 		expsuccess = FALSE;
 	      }
@@ -1521,7 +1521,7 @@ int main (int argc, char *argv[])
 	{
 	  if (context_getLCLExpect () > 0)
 	    {
-	      specErrors = message ("No spec errors found, expected %d\n       ", 
+	      specErrors = message ("No spec warnings, expected %d\n       ", 
 				    (int) context_getLCLExpect ());
 	      expsuccess = FALSE;
 	    }
@@ -1533,8 +1533,8 @@ int main (int argc, char *argv[])
 	  if (context_numErrors () == context_getExpect ())
 	    {
 	      if (!isQuiet) {
-		llmsg (message ("Finished LCLint checking --- "
-				"%s%d code error%& found, as expected",
+		llmsg (message ("Finished checking --- "
+				"%s%d code warning%&, as expected",
 				specErrors, context_numErrors ()));
 	      }
 	    }
@@ -1544,8 +1544,8 @@ int main (int argc, char *argv[])
 		{
 		  if (!isQuiet) {
 		    llmsg (message 
-			   ("Finished LCLint checking --- "
-			    "%s%d code error%& found, expected %d",
+			   ("Finished checking --- "
+			    "%s%d code warning%&, expected %d",
 			    specErrors, context_numErrors (), 
 			    (int) context_getExpect ()));
 		  }
@@ -1557,8 +1557,8 @@ int main (int argc, char *argv[])
 		  
 		  if (!isQuiet)
 		    {
-		      llmsg (message ("Finished LCLint checking --- "
-				      "%s%d code error%& found", 
+		      llmsg (message ("Finished checking --- "
+				      "%s%d code warning%& found", 
 				      specErrors, context_numErrors ()));
 		    }
 
@@ -1572,8 +1572,8 @@ int main (int argc, char *argv[])
 	    {
 	      if (!isQuiet) {
 		llmsg (message
-		       ("Finished LCLint checking --- "
-			"%sno code errors found, expected %d", 
+		       ("Finished checking --- "
+			"%sno code warnings, expected %d", 
 			specErrors,
 			(int) context_getExpect ()));
 	      }
@@ -1584,15 +1584,24 @@ int main (int argc, char *argv[])
 	    {
 	      if (context_getLinesProcessed () > 0)
 		{
-		  if (!isQuiet) {
-		    llmsg (message ("Finished LCLint checking --- %sno code errors found", 
-				    specErrors));
-		  }
+		  if (cstring_isEmpty (specErrors))
+		    {
+		      if (!isQuiet) 
+			{
+			  llmsg (message ("Finished checking --- no warnings"));
+			} 
+		    }
+		  else
+		      if (!isQuiet) 
+			{
+			  llmsg (message ("Finished checking --- %sno code warnings",
+					  specErrors));
+			}
 		}
 	      else
 		{
 		  if (!isQuiet) {
-		    llmsg (message ("Finished LCLint checking --- %sno code processed", 
+		    llmsg (message ("Finished checking --- %sno code processed", 
 				    specErrors));
 		  }
 		}
@@ -1681,9 +1690,9 @@ showHelp (void)
   
   llmsg (message ("Source files are .c, .h and %s files.  If there is no suffix,",
 		  LCL_EXTENSION));
-  llmsg (message ("   LCLint will look for <file>.c and <file>%s.", LCL_EXTENSION));
+  llmsg (message ("   Splint will look for <file>.c and <file>%s.", LCL_EXTENSION));
   llmsglit ("");
-  llmsglit ("Use lclint -help <topic or flag name> for more information");
+  llmsglit ("Use splint -help <topic or flag name> for more information");
   llmsglit ("");
   llmsglit ("Topics:");
   llmsglit ("");
@@ -1757,7 +1766,7 @@ printParseErrors (void)
 	    "it is not advisible to use these, oftentimes one has no choice "
 	    "when the system header files use compiler extensions. ");
   llmsglit ("");
-  llmsglit ("LCLint supports some of the GNU (gcc) compiler extensions, "
+  llmsglit ("Splint supports some of the GNU (gcc) compiler extensions, "
 	    "if the +gnuextensions flag is set. You may be able to workaround "
 	    "other compiler extensions by using a pre-processor define. "
 	    "Alternately, you can surround the unparseable code with");
@@ -1770,7 +1779,7 @@ printParseErrors (void)
   llmsglit ("Missing type definitions --- an undefined type name will usually "
 	    "lead to a parse error. This often occurs when a standard header "
 	    "file defines some type that is not part of the standard library. ");
-  llmsglit ("By default, LCLint does not process the local files corresponding "
+  llmsglit ("By default, Splint does not process the local files corresponding "
 	    "to standard library headers, but uses a library specification "
 	    "instead so dependencies on local system headers can be detected. "
 	    "If another system header file that does not correspond to a "
@@ -1778,7 +1787,7 @@ printParseErrors (void)
 	    "a parse error will result.");
   llmsglit ("");
   llmsglit ("If the parse error is inside a posix standard header file, the "
-	    "first thing to try is +posixlib. This make LCLint use "
+	    "first thing to try is +posixlib. This makes Splint use "
 	    "the posix library specification instead of reading the posix "
 	    "header files.");
   llmsglit ("");
@@ -1798,9 +1807,9 @@ printParseErrors (void)
   llmsglit ("   /*@=skipposixheaders@*/");
   llmsglit ("   # include <sys/local.h>");
   llmsglit ("");
-  llmsglit ("to force LCLint to process <sys/types.h>.");
+  llmsglit ("to force Splint to process <sys/types.h>.");
   llmsglit ("");
-  llmsglit ("At last resort, +trytorecover can be used to make LCLint attempt "
+  llmsglit ("At last resort, +trytorecover can be used to make Splint attempt "
 	    "to continue after a parse error.  This is usually not successful "
 	    "and the author does not consider assertion failures when +trytorecover "
 	    "is used to be bugs.");
@@ -1958,7 +1967,7 @@ printComments (void)
   llmsglit ("/*@i<n>@*/");
   llgenindentmsgnoloc
     (cstring_makeLiteral 
-     ("No errors will be reported from an /*@i<n>@*/ (e.g., /*@i3@*/) comment to the end of the line. If there are not exactly n errors suppressed from the comment point to the end of the line, LCLint will report an error."));
+     ("No errors will be reported from an /*@i<n>@*/ (e.g., /*@i3@*/) comment to the end of the line. If there are not exactly n errors suppressed from the comment point to the end of the line, Splint will report an error."));
   llmsglit ("/*@t@*/, /*@t<n>@*/");
   llgenindentmsgnoloc
     (cstring_makeLiteral 
@@ -2006,7 +2015,7 @@ printMail (void)
   llmsglit ("Mailing Lists");
   llmsglit ("-------------");
   llmsglit ("");
-  llmsglit ("There are two mailing lists associated with LCLint: ");
+  llmsglit ("There are two mailing lists associated with Splint: ");
   llmsglit ("");
   llmsglit ("   lclint-announce@virginia.edu");
   llmsglit ("");
@@ -2027,24 +2036,7 @@ printReferences (void)
   llmsglit ("References");
   llmsglit ("----------");
   llmsglit ("");
-  llmsglit ("The LCLint web site is http://lclint.cs.virginia.edu");
-  llmsglit ("");
-  llmsglit ("Technical papers relating to LCLint include:");
-  llmsglit ("");
-  llmsglit ("   David Evans. \"Static Detection of Dynamic Memory Errors\".");  
-  llmsglit ("   SIGPLAN Conference on Programming Language Design and ");
-  llmsglit ("   Implementation (PLDI '96), Philadelphia, PA, May 1996.");
-  llmsglit ("");
-  llmsglit ("   David Evans, John Guttag, Jim Horning and Yang Meng Tan. ");
-  llmsglit ("   \"LCLint: A Tool for Using Specifications to Check Code\".");
-  llmsglit ("   SIGSOFT Symposium on the Foundations of Software Engineering,");
-  llmsglit ("   December 1994.");
-  llmsglit ("");
-  llmsglit ("A general book on Larch is:");
-  llmsglit ("");
-  llmsglit ("   Guttag, John V., Horning, James J., (with Garland, S. J., Jones, ");
-  llmsglit ("   K. D., Modet, A., and Wing, J. M.), \"Larch: Languages and Tools ");
-  llmsglit ("   for Formal Specification\", Springer-Verlag, 1993.");
+  llmsglit ("For more information, see the Splint web site: http://www.splint.org");
 }
 
 void
@@ -2200,8 +2192,7 @@ cleanupFiles (void)
 }
 
 /*
-** cleans up temp files (if necessary)
-** exits lclint
+** cleans up temp files (if necessary) and exits
 */
 
 /*@exits@*/ void

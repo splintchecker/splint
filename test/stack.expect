@@ -9,6 +9,6 @@ stack.c:20:14: Stack-allocated storage &x reachable from return value: &x
 stack.c:31:11: Stack-allocated storage sa reachable from return value: sa
 stack.c:35:11: Stack-allocated storage sa reachable from return value: &sa[0]
 
-Finished LCLint checking --- 5 code errors found, as expected
+Finished checking --- 5 code warnings, as expected
 
-Finished LCLint checking --- no code errors found
+Finished checking --- no warnings
