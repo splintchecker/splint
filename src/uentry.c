@@ -3142,6 +3142,7 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
 
   DPRINTF (("Constant: %s", uentry_unparseFull (ue)));
+  DPRINTF (("Value: %s", multiVal_unparse (uentry_getConstantValue (ue))));
   return ue;
 }
 

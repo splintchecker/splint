@@ -1,4 +1,4 @@
-char SOME_STRING[1000] = {"kdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnbl"};
+char SOME_STRING[1000] = "kdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnblkdlsjfklds;fjkls;djflksdjflkdsjfklsdjfkl;sjfklsdjfkl;jsdflk;jsdl;fjsdlkfjsdklf;jds;lfjskdl;fjkls;dfjlkds;jfkl;sjdfk;ldsjklnvklsnbklsdnbl";
 
 void funcGood(char *str)
 {

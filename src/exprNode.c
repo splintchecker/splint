@@ -1021,6 +1021,59 @@ exprNode_fromIdentifier (/*@observer@*/ uentry c)
 }
 
 
+static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
+{
+  multiVal mval = exprNode_getValue (e2);
+  cstring slit;
+  int len;
+
+  if (ctype_isFixedArray (t1))
+    {
+      int nelements = long_toInt (ctype_getArraySize (t1));
+      
+      llassert (multiVal_isString (mval));
+      slit = multiVal_forceString (mval);
+      len = cstring_length (slit);
+      
+      if (len == nelements)
+	{
+	  voptgenerror 
+	    (FLG_STRINGLITNOROOM,
+	     message ("String literal with %d character%& "
+		      "is assigned to %s (no room for null terminator): %s",
+		      cstring_length (slit),
+		      ctype_unparse (t1),
+		      exprNode_unparse (e2)),
+	     e2->loc);	  		      
+	}
+      else if (len > nelements) 
+	{
+	  voptgenerror 
+	    (FLG_STRINGLITTOOLONG,
+	     message ("Stirng literal with %d character%& (counting null terminator) "
+		      "is assigned to %s (insufficient storage available): %s",
+		      cstring_length (slit),
+		      ctype_unparse (t1),
+		      exprNode_unparse (e2)),
+	     e2->loc);	  		      
+	}
+      else if (len < nelements - 1)
+	{
+	  voptgenerror 
+	    (FLG_STRINGLITSMALLER,
+	     message ("String literal with %d character%& is assigned to %s (possible waste of storage): %s",
+		      cstring_length (slit),
+		      ctype_unparse (t1),
+		      exprNode_unparse (e2)),
+	     e2->loc);	  
+	}
+      else
+	{
+	  ; /* okay */
+	}
+    }
+}
+
 static /*@only@*/ /*@notnull@*/ exprNode
 exprNode_fromIdentifierAux (/*@observer@*/ uentry c)
 {
@@ -7848,13 +7901,39 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
     {
       exprNodeList vals = exprData_getArgs (val->edata);
 
+      DPRINTF (("Check one init: %s", exprNodeList_unparse (vals)));
+      DPRINTF (("Type: %s", ctype_unparse (t1)));
+
       if (ctype_isRealAP (t1))
 	{
 	  int i = 0;
 	  int nerrors = 0;
 
-	  /*@i423 check number of entries int a[3] = { 1, 2, 3, 4 } ; */
-
+	  if (ctype_isFixedArray (t1))
+	    {
+	      int nelements = long_toInt (ctype_getArraySize (t1));
+	      
+	      if (exprNode_isStringLiteral (val))
+		{
+		  exprNode_checkStringLiteralLength (t1, val);
+		}
+	      else
+		{
+		  if (exprNodeList_size (vals) != nelements) 
+		    {
+		      hasError = optgenerror 
+			(exprNodeList_size (vals) > nelements ? FLG_INITSIZE : FLG_INITALLELEMENTS,
+			 message ("Initializer block for "
+				  "%s has %d element%&, but declared as %s: %q",
+				  exprNode_unparse (el),
+				  exprNodeList_size (vals),
+				  ctype_unparse (t1),
+				  exprNodeList_unparse (vals)),
+			 val->loc);	  
+		    }
+		}
+	    }
+	  
 	  exprNodeList_elements (vals, oneval)
 	    {
 	      cstring istring = message ("%d", i);
@@ -10399,6 +10478,10 @@ checkOneRepExpose (sRef ysr, sRef base,
 static void
 doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
 {
+  DPRINTF (("Do assign: %s <- %s",
+	    exprNode_unparse (e1), exprNode_unparse (e2)));
+  DPRINTF (("Ctype: %s", ctype_unparse (exprNode_getType (e1))));
+
   if (ctype_isRealFunction (exprNode_getType (e1))
       && !ctype_isRealPointer (exprNode_getType (e1)))
     {
@@ -10544,6 +10627,11 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
 	  }
 	}
       }
+    }
+
+  if (exprNode_isStringLiteral (e2))
+    {
+      exprNode_checkStringLiteralLength (exprNode_getType (e1), e2);
     }
 
   if (isInit && sRef_isFileOrGlobalScope (e1->sref))
@@ -10783,6 +10871,7 @@ long exprNode_getLongValue (exprNode e) {
     }
   else
     {
+      /*@!! BADBRANCH;*/
       value = 0;
     }
   

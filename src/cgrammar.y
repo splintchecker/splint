@@ -362,7 +362,14 @@ namedDeclBase
    { $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); }
  | namedDeclBase TLSQBR IsType constantExpr TRSQBR NotType
    { 
-     $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), exprNode_getLongValue ($4)));
+     if (exprNode_hasValue ($4)) 
+       {
+	 $$ = idDecl_replaceCtype ($1, ctype_makeFixedArray (idDecl_getCtype ($1), exprNode_getLongValue ($4)));
+       } 
+     else
+       {
+	 $$ = idDecl_replaceCtype ($1, ctype_makeArray (idDecl_getCtype ($1))); 
+       }
    }
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); }

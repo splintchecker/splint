@@ -1290,10 +1290,10 @@ unsetProcessingTypedef ()
 void checkConstant (qtype t, idDecl id) 
 {
   uentry e;
-
+  
   id = idDecl_fixBase (id, t);
   e = uentry_makeIdConstant (id);
-
+  
   reflectStorageClass (e);
   resetStorageClass ();
 

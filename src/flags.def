@@ -3216,6 +3216,46 @@ static flaglist flags =
     0, 0
   },
   {
+    FK_TYPE, FK_NONE, plainFlag,
+    "initallelements",
+    FLG_INITALLELEMENTS,
+    "initializer defines all array elements",
+    "Initializer does not define all elements of a declared array.",
+    0, 0
+  },
+  {
+    FK_TYPE, FK_NONE, plainFlag,
+    "initsize",
+    FLG_INITSIZE,
+    "initializer defines extra array elements",
+    "Initializer block contains more elements than the size of a declared array.",
+    0, 0
+  },
+  {
+    FK_TYPE, FK_NONE, plainFlag,
+    "stringliteraltoolong",
+    FLG_STRINGLITTOOLONG,
+    "string literal too long for character array",
+    "A string literal is assigned to a char array too small to hold it.",
+    0, 0
+  },
+  {
+    FK_TYPE, FK_NONE, modeFlag,
+    "stringliteralnoroom",
+    FLG_STRINGLITNOROOM,
+    "string literal leaves no room for null terminator",
+    "A string literal is assigned to a char array that is not big enough to hold the null terminator.",
+    0, 0
+  },
+  {
+    FK_TYPE, FK_NONE, modeFlag,
+    "stringliteralsmaller",
+    FLG_STRINGLITSMALLER,
+    "string literal is smaller than the char array it is assigned to",
+    "A string literal is assigned to a char array that smaller than the string literal needs.",
+    0, 0
+  },
+  {
     FK_TYPE, FK_NONE, modeFlag,
     "enummembers",
     FLG_ENUMMEMBERS,

@@ -2610,13 +2610,16 @@ long int ctype_getArraySize (ctype c)
   long int size;
   ctentry cte = ctype_getCtentry (c);
   ctbase ctb;
-  llassert ( (ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind(cte) == CTK_ARRAY) );
+
+  llassert (ctype_isFixedArray (c));
+  llassert ((ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind(cte) == CTK_ARRAY));
 
   ctb = cte->ctbase;
-
   size = ctbase_getArraySize (ctb);
 
-  DPRINTF(( message("ctype_getArraySize: got fixed array size of %d ", (int)size) ));
+  DPRINTF ((message ("ctype_getArraySize: got fixed array size of %s / %d ",
+		     ctype_unparse (c),
+		     (int) size)));
   return size;
 }
 

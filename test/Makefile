@@ -9,7 +9,7 @@
 .PHONY: all fulltest quicktest funcpointer cast abstract
 .PHONY:	version help abstptr abstract alias alttypes ansireserved 
 .PHONY: argorder args blocks branchstate break cases cast charlit 
-.PHONY: clauses commentchar 
+.PHONY: clauses commentchar arrayinit
 .PHONY: compdestroy constannot controldepth csyntax czechnames czechoslovaknames 
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
 .PHONY: impabstract init inparam internal iter keep libs lintcomments 
@@ -51,12 +51,12 @@ LCLINTR = $(LCLINTRN) -exportlocal   +debugfcnconstraint
 #  fileio tainted mergestate metastate \
 
 UNITTESTS = \
-  fileio tainted  metastate \
   help sizeoftest bufferTest simplebufferConstraintTests \
   moreBufferTests globalbufferannotation maxset strchr for \
-  abstptr abstract alias alttypes ansireserved argorder args blocks branchstate break cases cast \
+  abstptr abstract alias alttypes ansireserved argorder args arrayinit blocks branchstate break cases cast \
   charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
+  fileio tainted  metastate \
   init inparam internal iter keep libs linked lintcomments list longconstants macros macrosef merge modifies \
   modtest moduncon mongoincludes mystrncat noeffect null observer oldstyle \
   outglob outparam postnotnull preds prefixes \
@@ -196,6 +196,10 @@ ansireserved:
 	$(LCLINTR) ansireserved.c +ansireserved +ansireservedlocal -nolib -expect 11
 	$(LCLINTRN) ansireserved.c +checks -exportlocal -exportheadervar -exportheader -expect 12
 	$(LCLINTR) ansireserved2.c +ansireserved -expect 1
+
+arrayinit:
+	${LCLINTR} arrayinit.c -expect 8
+	${LCLINTR} arrayinit.c +stringliteralsmaller -expect 9
 
 argorder:
 	$(LCLINTR) argorder.c -expect 4
@@ -371,8 +375,8 @@ impabstract:
 	$(LCLINTR) -accessmodule +hints +impabstract impabstract -expect 4
 
 init:
-	$(LCLINTR) init.c -expect 12
-	$(LCLINTRN) init.c +checks -exportlocal -exportheadervar -expect 15
+	$(LCLINTR) init.c -expect 14
+	$(LCLINTRN) init.c +checks -exportlocal -exportheadervar -expect 17
 
 inparam:
 	$(LCLINTR) inparam.c -expect 2
