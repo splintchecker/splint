@@ -70,7 +70,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include <fcntl.h>
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 # include <io.h>
+/* SMF */
+# ifndef BCC32
 # include <sys/utime.h>		/* for __DATE__ and __TIME__ */
+# endif
+
 # include <time.h>
 # else
 # ifndef VMS
@@ -356,6 +360,8 @@ static void cppReader_scanBuffer (cppReader *p_pfile);
 
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
 
+/* SMF */
+# ifndef BCC32
 /*
 ** WIN32 (at least the VC++ include files) does not define mode_t.
 */
@@ -363,6 +369,7 @@ static void cppReader_scanBuffer (cppReader *p_pfile);
 /*@-incondefs@*/ /*@-czechtypes@*/
 typedef unsigned int mode_t;
 /*@=incondefs@*/ /*@=czechtypes@*/
+# endif
 
 # endif
 

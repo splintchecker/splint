@@ -1142,9 +1142,10 @@ time_t time (/*@null@*/ /*@out@*/ time_t *tp)
 /*@observer@*/ char *ctime (time_t *tp) /*@*/
      /*@ensures maxSet(result) == 25 /\  maxRead(result) == 25; @*/;
 
-/*@null@*/ /*@observer@*/ struct tm *gmtime (time_t *tp) /*@*/ ;
+/* 2003-11-01: remove null annotation: gmtima and localtime cannot return null */
+/*@observer@*/ struct tm *gmtime (time_t *tp) /*@*/ ;
 
-/*@null@*/ /*@observer@*/ struct tm *localtime (time_t *tp) 
+/*@observer@*/ struct tm *localtime (time_t *tp) 
   /*@modifies errno@*/ ;
 
 size_t strftime (/*@out@*/ char *s, size_t smax,

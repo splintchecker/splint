@@ -1014,7 +1014,7 @@ fileTable_addOpen (fileTable ft, /*@observer@*/ FILE *f, /*@only@*/ cstring fnam
 
 FILE *fileTable_createFile (fileTable ft, cstring fname)
 {
-# ifdef WIN32
+# if defined (WIN32) && !defined (BCC32)
   int fdesc = _open (cstring_toCharsSafe (fname), 
 		     O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, 
 		     _S_IWRITE | S_IREAD);
@@ -1054,7 +1054,7 @@ FILE *fileTable_createFile (fileTable ft, cstring fname)
 
 FILE *fileTable_createMacrosFile (fileTable ft, cstring fname)
 {
-# ifdef WIN32
+# if defined (WIN32) && !defined (BCC32)
   int fdesc = _open (cstring_toCharsSafe (fname), 
 		     O_RDWR | O_CREAT | O_TRUNC | O_EXCL,
 		     _S_IREAD | _S_IWRITE);
