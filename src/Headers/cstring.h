@@ -213,7 +213,7 @@ extern /*@notnull@*/ cstring  cstring_expandEscapes (cstring p_s);
 /*drl added 01/23/2001  Gives you the number of characters in an
   expanded escape squences.  This can be different from strlen bc/ of
   escaped nulls.  */
-int  cstring_lengthExpandEscapes (cstring p_s);
+extern size_t cstring_lengthExpandEscapes (cstring p_s);
 
 
 extern bool cstring_containsLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;

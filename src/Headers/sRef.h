@@ -661,9 +661,8 @@ extern bool sRef_isNotNullTerminated(/*@sef@*/sRef p_s);
 
 
      /*drl7x 11/28/00*/
-extern  bool sRef_isFixedArray (sRef p_s) /*@*/;
-
-extern long int sRef_getArraySize (sRef p_s) /*@*/;
+extern bool sRef_isFixedArray (sRef p_s) /*@*/;
+extern size_t sRef_getArraySize (sRef p_s) /*@*/;
 
 extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
 extern void sRef_resetLen (sRef p_s) /*@modifies p_s@*/ ;

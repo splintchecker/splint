@@ -315,24 +315,23 @@ ctype_makePointer (ctype c)
     }
 }
 
-ctype ctype_makeFixedArray (ctype c, long size)
+ctype ctype_makeFixedArray (ctype c, size_t size)
 {
   ctype res;
   res = cttable_addDerived (CTK_ARRAY, ctbase_makeFixedArray (c, size), c);
   return res;
 }
 
-ctype ctype_makeInnerFixedArray (ctype c, long size)
+ctype ctype_makeInnerFixedArray (ctype c, size_t size)
 {
   ctype res;
 
   if (ctype_isFixedArray (c))
     {
       ctype cb = ctype_baseArrayPtr (c);
-      long osize = ctype_getArraySize (c);
-
-      res = ctype_makeFixedArray (ctype_makeInnerFixedArray (cb, size),
-				  osize);
+      size_t osize = ctype_getArraySize (c);
+      
+      res = ctype_makeFixedArray (ctype_makeInnerFixedArray (cb, size), osize);
     }
   else if (ctype_isArray (c))
     {
@@ -358,10 +357,9 @@ ctype ctype_makeInnerArray (ctype c)
   if (ctype_isFixedArray (c))
     {
       ctype cb = ctype_baseArrayPtr (c);
-      long osize = ctype_getArraySize (c);
-
-      res = ctype_makeFixedArray (ctype_makeInnerArray (cb),
-				  osize);
+      size_t osize = ctype_getArraySize (c);
+      
+      res = ctype_makeFixedArray (ctype_makeInnerArray (cb), osize);
     }
   else
     {
@@ -2742,9 +2740,9 @@ bool ctype_isFixedArray (ctype c)
 /* requires that the type is an fixed array */
 /* return the size of the array */
 
-long int ctype_getArraySize (ctype c)
+size_t ctype_getArraySize (ctype c)
 {
-  long int size;
+  size_t size;
 
   ctbase ctb;
 

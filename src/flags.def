@@ -1853,22 +1853,6 @@ static flaglist flags =
     "Memory read or write may be out of bounds of allocated storage.", 0, 0
   },
   {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
-    "literaloversize",
-    FLG_LITERALOVERSIZE,
-    "string literal is too large for allocated array",
-    "String literal is too large for allocated array.", 0, 0
-  },
-  {
-    FK_BOUNDS, FK_MEMORY, modeFlag,
-    "literalundersize",
-    FLG_LITERALUNDERSIZE,
-    "string literal is smaller than allocated array (space may be wasted)",
-    "More storage is allocated for a string literal than the length of the literal. "
-    "If the array is not set later, this is a waste of storage.",
-    0, 0
-  },
-  {
     FK_BOUNDS, FK_MEMORY, plainFlag,
     "boundsread",
     FLG_BOUNDSREAD,

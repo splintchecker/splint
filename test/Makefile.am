@@ -37,7 +37,7 @@ SPLINTRNEST   = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
-  args arraydims arrayinit blocks break cases cast charlit clauses commentchar compdestroy \
+  args arraydims arrayinit arraylit blocks break cases cast charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
@@ -225,6 +225,11 @@ arraydims:
 .PHONY: arrayinit
 arrayinit:
 	-$(SPLINTR) arrayinit.c -expect 9
+
+.PHONY: arraylit
+arraylit:
+	-$(SPLINTR) arraylit.c -expect 2
+	-$(SPLINTR) arraylit.c +stringliteralsmaller -expect 4
 
 .PHONY: blocks
 blocks:
@@ -752,10 +757,14 @@ stack:
 staticarray:
 	-$(SPLINTR) staticarray.c -expect 3
 
+###
+### evans 2002-03-16: Default setting of stringliteralnoroomfinalnull changed
+### 
+
 .PHONY: stringliteral
 stringliteral:
-	-$(SPLINTR) stringliteral.c +stringliteralnoroomfinalnull -expect 4
-	-$(SPLINTR) stringliteral.c -expect 3
+	-$(SPLINTR) stringliteral.c -stringliteralnoroomfinalnull -expect 3
+	-$(SPLINTR) stringliteral.c -expect 4
 
 .PHONY: strings
 strings:
@@ -1017,6 +1026,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./argorder5.c \
               ./args.c \
               ./arrayinit.c \
+              ./arraylit.c \
               ./blocks.c \
               ./branchstate.c \
               ./break.c \
@@ -1335,6 +1345,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               argorder.expect \
               args.expect \
               arrayinit.expect \
+              arraylit.expect \
               blocks.expect \
               branchstate.expect \
               break.expect \

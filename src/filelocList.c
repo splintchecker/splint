@@ -219,6 +219,7 @@ cstring filelocList_unparseUses (filelocList s)
   int maxlen = context_getLineLen () - 3;
   cstring st = cstring_undefined;
   fileId lastFile = fileId_invalid;
+  bool parenFormat = context_getFlag (FLG_PARENFILEFORMAT); 
 
   if (filelocList_isDefined (s))
     {
@@ -249,9 +250,19 @@ cstring filelocList_unparseUses (filelocList s)
 			  st = message ("%q, ", st);
 			}
 		      
-		      st = message ("%q%d,%d", 
-				    st, fileloc_lineno (s->elements[i]), 
-				    fileloc_column (s->elements[i]));
+		      if (parenFormat)
+			{
+			  st = message ("%q(%d,%d)", 
+					st, fileloc_lineno (s->elements[i]), 
+					fileloc_column (s->elements[i]));
+			}
+		      else
+			{
+			  st = message ("%q%d:%d", 
+					st, fileloc_lineno (s->elements[i]), 
+					fileloc_column (s->elements[i]));
+			}
+		      
 		      linelen += 3 + int_log (fileloc_lineno (s->elements[i])) 
 			+ int_log (fileloc_column (s->elements[i]));
 		    }

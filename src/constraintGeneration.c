@@ -455,7 +455,7 @@ static exprNode doWhile (/*@returned@*/ exprNode e, /*@dependent@*/ exprNode tes
     {
       if (sRef_isFixedArray(el))
 	{
-	  long int size;
+	  size_t size;
 	  DPRINTF((message("%s is a fixed array",
 			    sRef_unparse(el))));
 	  size = sRef_getArraySize(el);

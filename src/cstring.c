@@ -911,7 +911,7 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
 }
 
 /*@i3534 @*/
-/*@ignore@*/
+/*@ignore@*/ /* !!! DRL don't ignore large segments like this without a good reason! */
 
 /* changes strings like "sdf" "sdfsd" into "sdfsdfsd"*/
 /* This function understands that "sdf\"  \"sdfsdf" is okay*/
@@ -985,12 +985,11 @@ static mstring doMergeString (cstring s)
   return ret;
 }
 
-static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
+static mstring doExpandEscapes (cstring s, /*@out@*/ size_t *len)
 {
   char *ptr;
   mstring ret;
   char * retPtr;
-
   
   llassert(cstring_isDefined (s));
   
@@ -1132,31 +1131,26 @@ static mstring doExpandEscapes (cstring s, /*@out@*/ int * len)
 /*this function is like sctring_expandEscapses */
 mstring cstring_expandEscapes (cstring s)
 {
-  int len;
+  size_t len;
 
   mstring ret;
-  
   ret = doExpandEscapes (s, &len);
   return ret;
 }
 
-int  cstring_lengthExpandEscapes (cstring s)
+size_t cstring_lengthExpandEscapes (cstring s)
 {
-  int len;
-
+  size_t len;
   mstring tmpStr, tmpStr2;
 
   tmpStr = doMergeString (s);
   tmpStr2 = doExpandEscapes (tmpStr, &len);
-
   
   cstring_free(tmpStr);
   cstring_free(tmpStr2);
 
   return len;
 }
-
-
 
 cstring cstring_replaceChar(/*@returned@*/ cstring c, char oldChar, char newChar)
 {
@@ -1178,7 +1172,6 @@ cstring cstring_replaceChar(/*@returned@*/ cstring c, char oldChar, char newChar
 
   return c;
 }
-
 /*@end@*/
 
 

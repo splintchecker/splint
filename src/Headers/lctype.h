@@ -263,9 +263,9 @@ extern ctype ctype_fixArrayPtr (ctype p_c);
 extern ctype ctype_getBaseType (ctype p_c) /*@*/ ;
 
 extern ctype ctype_makeArray (ctype p_c);
-extern ctype ctype_makeFixedArray (ctype p_c, long p_size);
+extern ctype ctype_makeFixedArray (ctype p_c, size_t p_size);
 extern ctype ctype_makeInnerArray (ctype p_c);
-extern ctype ctype_makeInnerFixedArray (ctype p_c, long p_size);
+extern ctype ctype_makeInnerFixedArray (ctype p_c, size_t p_size);
 
 extern ctype ctype_makeConj (ctype p_c1, ctype p_c2);
 extern ctype ctype_makeParamsFunction (ctype p_base, /*@only@*/ uentryList p_p);
@@ -368,7 +368,7 @@ extern /*@unused@*/ void ctype_printTable (void);
 extern ctype ctype_widest (ctype, ctype) /*@*/ ;
 
 /* drl modified */
-extern long int ctype_getArraySize (ctype p_c);
+extern size_t ctype_getArraySize (ctype p_c);
 /*end drl add functions */
 
 /* Should only be used in uentry.c */

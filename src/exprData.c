@@ -301,7 +301,7 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
 
 /*@observer@*/ lltok exprData_getOpTok (exprData data) /*@*/
 {
-  llassertretval (data != exprData_undefined, exprNode_undefined);
+  llassert (data != exprData_undefined);
   return (data->op->op);
 }
 

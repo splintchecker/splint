@@ -2502,6 +2502,7 @@ uentry_reflectQualifiers (uentry ue, qualList q)
       else if (qual_isUnused (qel))
 	{
 	  uentry_setUsed (ue, fileloc_undefined);	  
+	  DPRINTF (("Used: %s", uentry_unparseFull (ue)));
 	}
       else if (qual_isExternal (qel))
 	{
@@ -3087,7 +3088,7 @@ uentry_isSpecialFunction (uentry ue)
     {
       fileloc loc = setLocation ();
       uentry ue = uentry_makeVariable (idDecl_observeId (t), ct, loc, FALSE);
-      
+
       uentry_reflectQualifiers (ue, idDecl_getQuals (t));
 
       if (!uentry_isExtern (ue))

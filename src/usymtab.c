@@ -5583,7 +5583,7 @@ usymtab_displayAllUses ()
 
   usymtab_entries (copy, ue)
     {
-      if (uentry_isValid (ue))
+      if (uentry_isValid (ue) && !uentry_isGlobalMarker (ue))
 	{
 	  filelocList uses = uentry_getUses (ue);
 	  int size = filelocList_realSize (uses);

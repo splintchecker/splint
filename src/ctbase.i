@@ -69,7 +69,7 @@ static void cttable_grow (void);
 static ctype cttable_addDerived (ctkind p_ctk, /*@keep@*/ ctbase p_cnew, ctype p_base);
 static ctype cttable_addFull (/*@keep@*/ ctentry p_cnew);
 static bool ctentry_isInteresting (ctentry p_c) /*@*/;
-static /*@notnull@*/ /*@only@*/ ctbase ctbase_makeFixedArray (ctype p_b, long p_size) /*@*/ ;
+static /*@notnull@*/ /*@only@*/ ctbase ctbase_makeFixedArray (ctype p_b, size_t p_size) /*@*/ ;
 
 /* 
 ** These are file-static macros (used in ctype.c).  No way to
@@ -168,7 +168,7 @@ typedef struct
 typedef struct
 {
   ctype base;
-  long size;
+  size_t size;
 } *tfixed;
  
 typedef union 
@@ -828,10 +828,10 @@ static ctbase ctbase_undump (d_char *c) /*@requires maxRead(*c) >= 2 @*/
     case 'F':
       {
 	ctype ct = ctype_undump (c);
-	int size;
+	size_t size;
 
 	reader_checkChar (c, '/');
-	size = reader_getInt (c);
+	size = size_fromInt (reader_getInt (c));
 	reader_checkChar (c, '|');
 	return (ctbase_makeFixedArray (ct, size));
       }
@@ -1668,7 +1668,7 @@ ctbase_makeArray (ctype b)
 }
 
 static /*@notnull@*/ /*@only@*/ ctbase
-ctbase_makeFixedArray (ctype b, long size)
+ctbase_makeFixedArray (ctype b, size_t size)
 {
   ctbase c = ctbase_new ();
 
@@ -2513,18 +2513,14 @@ ctbase_almostEqual (ctbase c1, ctbase c2)
   called by ctype_getArraySize
 */
 
-long int ctbase_getArraySize (ctbase ctb)
+size_t ctbase_getArraySize (ctbase ctb)
 {
-  /*drl 1/25/2002 fixed discover by Jim Francis */
+  /*drl 1/25/2002 fixed discovered by Jim Francis */
   ctbase r;
-
   
   llassert (ctbase_isDefined (ctb) );
   r = ctbase_realType (ctb);
   llassert (ctbase_isFixedArray(r) );
 
-  
-
   return (r->contents.farray->size);
-
 }

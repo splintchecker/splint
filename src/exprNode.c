@@ -1049,16 +1049,15 @@ exprNode_fromIdentifier (/*@observer@*/ uentry c)
   return ret;
 }
 
-
 static void exprNode_checkStringLiteralLength (ctype t1, exprNode e2)
 {
   multiVal mval = exprNode_getValue (e2);
   cstring slit;
-  int len;
+  size_t len;
 
   if (ctype_isFixedArray (t1))
     {
-      int nelements = long_toInt (ctype_getArraySize (t1));
+      size_t nelements = ctype_getArraySize (t1);
       
       llassert (multiVal_isString (mval));
       slit = multiVal_forceString (mval);
@@ -8207,7 +8206,7 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 
 	  if (ctype_isFixedArray (t1))
 	    {
-	      int nelements = long_toInt (ctype_getArraySize (t1));
+	      size_t nelements = ctype_getArraySize (t1);
 	      
 	      DPRINTF (("Checked array: %s / %d",
 			ctype_unparse (t1), nelements));
@@ -8218,10 +8217,11 @@ static bool exprNode_checkOneInit (/*@notnull@*/ exprNode el, exprNode val)
 		}
 	      else
 		{
-		  if (exprNodeList_size (vals) != nelements) 
+		  if (exprNodeList_size (vals) != size_toInt (nelements))
 		    {
 		      hasError = optgenerror 
-			(exprNodeList_size (vals) > nelements ? FLG_INITSIZE : FLG_INITALLELEMENTS,
+			(exprNodeList_size (vals) > size_toInt (nelements) 
+			 ? FLG_INITSIZE : FLG_INITALLELEMENTS,
 			 message ("Initializer block for "
 				  "%s has %d element%&, but declared as %s: %q",
 				  exprNode_unparse (el),
@@ -8584,7 +8584,7 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 	{
 	  sRef_setDefState (ret->sref, SS_PARTIAL, fileloc_undefined);
 	}
-# if 0
+
       if (exprNode_isStringLiteral (e)
 	  && (ctype_isArray (ct))
 	  && (ctype_isChar (ctype_realType (ctype_baseArrayPtr (ct)))))
@@ -8593,61 +8593,24 @@ exprNode exprNode_makeInitialization (/*@only@*/ idDecl t,
 	  ** If t is a char [], the literal is copied.
 	  */
 
-	  cstring slit;
-
-	  if (multiVal_isDefined (e->val))
-	    {
-	      slit = multiVal_forceString (e->val);
-	    }
-	  else
-	    {
-	      slit = cstring_undefined;
-	    }
-
+	  exprNode_checkStringLiteralLength (ct, e);
 	  sRef_setDefState (ret->sref, SS_DEFINED, e->loc);
 	  ret->val = multiVal_copy (e->val);
 
-	  if (cstring_isDefined (slit))
+	  sRef_setNullTerminatedState (ret->sref);
+	  
+	  if (multiVal_isDefined (e->val))
 	    {
-	      if (ctype_isFixedArray (ct))
-		{
-		  long int alength = ctype_getArraySize (ct);
-		  
-		  if (alength < cstring_length (slit) + 1)
-		    {
-		      voptgenerror
-			(FLG_LITERALOVERSIZE,
-			 ("Array initialized to string literal bigger than allocated size (literal is %d chars long (plus one for nul terminator), array size is %d): %s", 
-			  cstring_length (slit),
-			  alength,
-			  exprNode_unparse (e)),
-			 e->loc);
-		    }
-		  else if (alength > cstring_length (slit))
-		    {
-		      voptgenerror
-			(FLG_LITERALUNDERSIZE,
-			 ("Array initialized to string literal smaller than allocated size (literal is %d chars long (plus one for nul terminator), array size is %d), could waste storage: %s", 
-			  cstring_length (slit),
-			  alength,
-			  exprNode_unparse (e)),
-			 e->loc);
-		    }
-		  else
-		    {
-		      ;
-		    }
-		}
-	      else
-		{		  
-		  sRef_setNullTerminatedState (ret->sref);
-		  sRef_setSize (ret->sref, cstring_length (slit) + 1);
-		  sRef_setLen (ret->sref, cstring_length (slit) + 1);
-		}
+	      cstring slit = multiVal_forceString (e->val);
+	      sRef_setLen (ret->sref, cstring_length (slit) + 1);
+	    }
+
+	  if (ctype_isFixedArray (ct))
+	    {
+	      sRef_setSize (ret->sref, size_toInt (ctype_getArraySize (ct)));
 	    }
 	}
       else
-# endif
 	{
 	  doAssign (ret, e, TRUE);
 	}

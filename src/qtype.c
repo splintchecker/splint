@@ -56,11 +56,14 @@ qtype qtype_unknown ()
 
 qtype qtype_addQual (qtype qt, qual q)
 {
+  DPRINTF (("Add qual: %s / %s", qtype_unparse (qt), qual_unparse (q)));
+
   if (qtype_isDefined (qt))
     {
       qt->quals = qualList_add (qt->quals, q);
     }
 
+  DPRINTF (("==> %s", qtype_unparse (qt)));
   return qt;
 }
 
