@@ -1354,6 +1354,8 @@ checkAnsiName (uentry ue)
 	  flg = FLG_ANSIRESERVEDLOCAL;
 	}
 
+      DPRINTF (("ue: %s", uentry_unparseFull (ue)));
+
       /*
       ** These restrictions only apply to identifiers with global linkage.
       */

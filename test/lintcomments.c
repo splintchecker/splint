@@ -4,7 +4,7 @@ int f (int x)
 
   switch (x)
     {
-    case 1: i++; /*@fallthrough@*/
+    case 1: i++; /*@fallthrough@*/ /*FALLTHROUGH*/
     case 2: i++; /*FALLTHROUGH*/
     case 3: i++; /*FALLTHRU*/
     case 4: i++;

@@ -458,7 +458,7 @@ libs:
 
 .PHONY: lintcomments
 lintcomments:
-	$(SPLINTR) lintcomments.c -expect 4
+	$(SPLINTR) lintcomments.c -expect 5
 	$(SPLINTR) lintcomments.c -warnlintcomments -expect 1
 	$(SPLINTR) lintcomments.c -lintcomments -expect 4
 

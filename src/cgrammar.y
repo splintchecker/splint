@@ -1534,20 +1534,28 @@ labeledStmt
  : newId TCOLON      { $$ = exprNode_labelMarker ($1); }
  | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); }
 
+/*
+** We allow more than one QFALLTHROUGH token to support mixed lint/splint markers.
+*/
+
+optExtraFallThroughs
+ : /* empty */ { ; }
+ | QFALLTHROUGH optExtraFallThroughs { ; }
+
 /* Note that we can semantically check that the object to the case is
  indeed constant. In this case, we may not want to go through this effort */
 
 caseStmt
  : CASE constantExpr { context_enterCaseClause ($2); } 
    TCOLON            { $$ = exprNode_caseMarker ($2, FALSE); }
- | QFALLTHROUGH CASE constantExpr { context_enterCaseClause ($3); } 
-   TCOLON            { $$ = exprNode_caseMarker ($3, TRUE); }
+ | QFALLTHROUGH optExtraFallThroughs CASE constantExpr { context_enterCaseClause ($4); } 
+   TCOLON            { $$ = exprNode_caseMarker ($4, TRUE); }
 
 defaultStmt
  : DEFAULT { context_enterCaseClause (exprNode_undefined); } 
    TCOLON { $$ = exprNode_defaultMarker ($1, FALSE); }
- | QFALLTHROUGH DEFAULT { context_enterCaseClause (exprNode_undefined); } 
-   TCOLON { $$ = exprNode_defaultMarker ($2, TRUE); }
+ | QFALLTHROUGH optExtraFallThroughs DEFAULT { context_enterCaseClause (exprNode_undefined); } 
+   TCOLON { $$ = exprNode_defaultMarker ($3, TRUE); }
 
 compoundStmt
  : TLPAREN compoundStmt TRPAREN { $$ = $2; }
