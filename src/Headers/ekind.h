@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -19,6 +19,9 @@ immut_typedef enum {
 
 /*@constant ekind KELAST;@*/
 # define KELAST KELIPSMARKER
+
+/*@constant int KGLOBALMARKER;@*/
+# define KGLOBALMARKER ((int) KELAST + 1)
 
 extern bool ekind_equal (ekind, ekind) /*@*/ ;
 # define ekind_equal(e1, e2) ((e1) == (e2))

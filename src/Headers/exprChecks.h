@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -15,7 +15,7 @@ extern void exprNode_checkAllMods (sRefSet p_mods, uentry p_ue);
 extern void exprNode_checkCallModifyVal (sRef p_s, exprNodeList p_args, exprNode p_f, exprNode p_err);
 extern void exprChecks_checkEmptyMacroBody (void);
 extern void exprChecks_checkExport (uentry p_e);
-extern void exprNode_checkFunction (uentry p_ue, /*@only@*/ exprNode p_body);
+extern void exprNode_checkFunction (uentry p_ue, /*@only@*/ exprNode p_fcnBody);
 extern void exprNode_checkFunctionBody (exprNode p_body);
 extern void exprNode_checkIterBody (/*@only@*/ exprNode p_body);
 extern void exprNode_checkIterEnd (/*@only@*/ exprNode p_body);
@@ -27,3 +27,4 @@ extern void exprNode_checkPred (cstring p_c, exprNode p_e);
 extern void exprNode_checkReturn (exprNode p_e);
 extern void exprNode_checkStatement (exprNode p_e);
 extern void exprChecks_checkUsedGlobs (globSet p_decl, globSet p_used);
+

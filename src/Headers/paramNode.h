@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -10,12 +10,12 @@
 # ifndef PARAMNODEH
 # define PARAMNODEH
 
-typedef enum _paramtype { PNORMAL, PYIELD, PELIPSIS } paramkind ;  
+typedef enum { PNORMAL, PYIELD, PELIPSIS } paramkind ;  
 /* add PREF later?   PYIELD is for iterators only (~ POUT) */
 
-typedef struct _paramNode {
+typedef struct {
   /*@null@*/ lclTypeSpecNode type;
-  /*@null@*/ struct _typeExpr *paramdecl;
+  /*@null@*/ struct s_typeExpr *paramdecl;
   paramkind kind;
 } *paramNode;
 

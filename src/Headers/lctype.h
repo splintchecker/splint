@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -192,6 +192,7 @@ extern bool ctype_isSignedIntegral (ctype p_c) /*@*/ ;
 extern bool ctype_isInt (ctype p_c) /*@*/ ;
 extern bool ctype_isRegularInt (ctype p_c) /*@*/ ;
 extern bool ctype_isMutable (ctype p_t) /*@*/ ;
+extern bool ctype_isImmutableAbstract (ctype p_t) /*@*/ ;
 extern bool ctype_isNumeric (ctype p_c) /*@*/ ;
 extern bool ctype_isPointer (ctype p_c) /*@*/ ;
 extern bool ctype_isReal (ctype p_c) /*@*/ ;
@@ -247,6 +248,7 @@ extern ctype ctype_createUnnamedStruct (/*@only@*/ uentryList p_f) ;
 extern ctype ctype_createUnnamedUnion (/*@only@*/ uentryList p_f) ;
 extern ctype ctype_createUser (typeId p_u) ;
 
+extern bool ctype_isUnnamedSU (ctype p_c) /*@*/ ;
 extern bool ctype_isUser (ctype p_c) /*@*/ ;
 extern ctype ctype_expectFunction(ctype p_c) ;
 
@@ -261,7 +263,7 @@ extern ctype ctype_makeParamsFunction (ctype p_base, /*@only@*/ uentryList p_p);
 extern ctype ctype_makeFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
 extern ctype ctype_makeNFParamsFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
 extern ctype ctype_makePointer (ctype p_c);
-extern ctype ctype_makeRealFunction (ctype p_base, /*@dependent@*/ uentryList p_p);
+extern ctype ctype_makeRawFunction (ctype p_base, /*@only@*/ uentryList p_p);
 
 extern ctype ctype_newBase (ctype p_c, ctype p_p) /*@*/ ;
 extern ctype ctype_realType (ctype p_c) /*@*/ ;
@@ -269,7 +271,7 @@ extern ctype ctype_realishType (ctype p_c) /*@*/ ;
 extern ctype ctype_removePointers (ctype p_c) /*@*/ ;
 extern ctype ctype_resolve (ctype p_c) /*@*/ ;
 extern ctype ctype_resolveNumerics (ctype p_c1, ctype p_c2) /*@*/ ;
-extern ctype ctype_returnValue (ctype p_c) /*@*/ ;
+extern ctype ctype_getReturnType (ctype p_c) /*@*/ ;
 
 extern bool ctype_isRefCounted (ctype p_t) /*@*/ ;
 extern /*@observer@*/ uentryList ctype_argsFunction (ctype p_c) /*@*/ ;
@@ -354,7 +356,7 @@ extern ctype ctype_widest (ctype, ctype) /*@*/ ;
 /*
   drl
   modified */
-long int ctype_getArraySize (ctype c);
+long int ctype_getArraySize (ctype p_c);
 /*end drl add functions */
 
 /* Should only be used in uentry.c */

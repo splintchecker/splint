@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -10,7 +10,7 @@ typedef enum
   XPK_FCN, XPK_CLAIM, XPK_ITER 
 } exportKind;
 
-typedef struct _exportNode {
+typedef struct {
   exportKind kind;
   union {
     constDeclarationNode constdeclaration;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 /*
@@ -9,15 +9,12 @@
 # ifndef uentryLIST_H
 # define uentryLIST_H
 
-abst_typedef /*@null@*/ struct _uentryList *uentryList ;
-
-struct _uentryList
-{
+abst_typedef /*@null@*/ struct {
   int nelements;
   int nspace;
   int current;
   /*@reldef@*/ /*@relnull@*/ o_uentry  *elements;
-} ;
+} *uentryList;
 
 /*@iter uentryList_elements (sef uentryList x, yield exposed uentry el); @*/
 # define uentryList_elements(x, m_el) \
@@ -68,6 +65,8 @@ extern void uentryList_fixMissingNames (uentryList p_cl) /*@modifies p_cl@*/ ;
 extern int uentryList_compareStrict (uentryList p_s, uentryList p_t) /*@*/ ;
 extern int uentryList_compareParams (uentryList p_s, uentryList p_t) /*@*/ ;
 extern int uentryList_compareFields (uentryList p_s, uentryList p_t) /*@*/ ;
+extern bool uentryList_equivFields (uentryList p_p1, uentryList p_p2) /*@*/ ;
+
 extern cstring uentryList_dumpParams (uentryList p_s) /*@*/ ;
 extern uentryList uentryList_undump (char **p_s) /*@modifies *p_s@*/ ;
 
@@ -89,9 +88,6 @@ extern bool uentryList_matchFields (uentryList p_p1, uentryList p_p2);
 extern bool uentryList_matchParams (uentryList p_p1, uentryList p_p2, bool p_force, bool p_arg);
 
 # define uentryList_sameObject(s,t) ((s) == (t))
-
-/*@constant int PRINTBREADTH;@*/
-# define PRINTBREADTH 3
 
 /*@constant int uentryListBASESIZE;@*/
 # define uentryListBASESIZE MIDBASESIZE

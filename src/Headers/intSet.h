@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,7 +12,7 @@
 # ifndef intSET_H
 # define intSET_H
 
-abst_typedef struct _intSet
+abst_typedef struct
 {
   int entries;
   int nspace;

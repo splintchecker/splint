@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@
 extern /*@owned@*/ fileloc g_currentloc;
 
 /* stream for error messages */
-extern FILE *g_msgstream;
+extern /*@open@*/ FILE *g_msgstream; 
 
 /*@-ansireserved@*/
 /* This macro is defined by flex. */
@@ -19,8 +19,8 @@ extern FILE *g_msgstream;
 /*@-redecl@*/
 /*@-incondefs@*/ 
 /*@-namechecks@*/
-extern /*@dependent@*/ FILE *yyin;
-extern /*@dependent@*/ FILE *yyout;
+extern /*@dependent@*/ /*@open@*/ FILE *yyin;
+extern /*@dependent@*/ /*@open@*/ FILE *yyout;
 extern int yyleng;
 /*@=incondefs@*/ 
 
@@ -59,32 +59,32 @@ extern int currentColumn (void) /*@globals g_currentloc; @*/ ;
 # define currentColumn()             (fileloc_column(g_currentloc))
 
 extern void incColumn (void) 
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc@*/ ;
 # define incColumn()                  (fileloc_incColumn(g_currentloc)) 
 
 extern void decColumn (void)
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc@*/ ;
 # define decColumn()                  (fileloc_addColumn(g_currentloc, -1))
 
 extern void incLine (void)
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc; @*/ ;
 # define incLine()                    (fileloc_nextLine(g_currentloc))
 
 extern void decLine (void)
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc; @*/ ;
 # define decLine()                    (fileloc_addLine (g_currentloc, -1))
 
 extern void beginLine (void)
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc; @*/ ;
 # define beginLine()                  (fileloc_setColumn(g_currentloc, 1))
 
 extern void addColumn (int p_n)
-   /*@globals fileloc g_currentloc; @*/ 
+   /*@globals g_currentloc; @*/ 
    /*@modifies g_currentloc; @*/ ;
 # define addColumn(n)                 (fileloc_addColumn(g_currentloc, n))
 
@@ -111,6 +111,9 @@ extern void setFileLine (fileId p_s, int p_line)
    /*@modifies g_currentloc; @*/ ;
 # define setFileLine(s, line) \
   (context_setFilename(s, line))
+
+/*@constant int PRINTBREADTH;@*/ /* For printing lists.  Should be parameter... */ /*@i32@*/
+# define PRINTBREADTH 3
 
 # else
 # error "Multiple include"

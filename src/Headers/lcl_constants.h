@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -52,14 +52,8 @@
 /*@constant observer char *IO_SUFFIX; @*/
 # define IO_SUFFIX              ".lcs"
 
-/*@constant observer char *LCL_SUFFIX; @*/
-# define LCL_SUFFIX		".lcl"
-
 /*@constant observer char *LCLINIT_SUFFIX; @*/
 # define LCLINIT_SUFFIX 	".lci"
-
-/*@constant observer char *LH_SUFFIX; @*/
-# define LH_SUFFIX              ".lh"
 
 /*@constant observer char *CTRAITSYMSNAME; @*/
 # define CTRAITSYMSNAME         "CTrait.syms"

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@
 
 extern void lhCleanup (void) /*@modifies internalState, fileSystem@*/ ;
 extern void lhIncludeBool (void) /*@modifies internalState@*/ ;
-extern void lhInit (tsource *p_f) /*@modifies internalState, fileSystem@*/ ;
+extern void lhInit (inputStream p_f) /*@modifies internalState, fileSystem@*/ ;
 extern void lhOutLine (/*@only@*/ cstring p_s) /*@modifies internalState@*/ ;
 extern void lhExternals (interfaceNodeList p_x) /*@modifies internalState@*/ ;
 

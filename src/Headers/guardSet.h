@@ -11,7 +11,7 @@
 
 /* in forwardTypes: typedef struct _guardSet *guardSet; */
 
-/*@null@*/ struct _guardSet
+/*@null@*/ struct s_guardSet
 {
   /*@only@*/ sRefSet tguard; /* guarded on true branch */
   /*@only@*/ sRefSet fguard; /* guarded on false branch */
@@ -27,8 +27,8 @@ extern /*@falsenull@*/ /*@unused@*/ bool
 extern /*@falsenull@*/ bool guardSet_isEmpty (guardSet p_g);
 
 extern /*@only@*/ guardSet guardSet_new (void);
-extern guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet p_g, sRef p_s);
-extern guardSet guardSet_addFalseGuard (/*@returned@*/ guardSet p_g, sRef p_s);
+extern guardSet guardSet_addTrueGuard (/*@returned@*/ guardSet p_g, /*@exposed@*/ sRef p_s);
+extern guardSet guardSet_addFalseGuard (/*@returned@*/ guardSet p_g, /*@exposed@*/ sRef p_s);
 extern guardSet guardSet_or (/*@returned@*/ /*@unique@*/ guardSet p_s, guardSet p_t);
 extern guardSet guardSet_and (/*@returned@*/ /*@unique@*/ guardSet p_s, guardSet p_t);
 extern void guardSet_delete (guardSet p_g, sRef p_s) /*@modifies p_g@*/ ;
@@ -43,7 +43,7 @@ extern guardSet guardSet_union (/*@only@*/ guardSet p_s, guardSet p_t)
 extern /*@only@*/ guardSet guardSet_invert (/*@temp@*/ guardSet p_g) /*@*/ ;
 extern /*@only@*/ guardSet guardSet_copy (/*@temp@*/ guardSet p_g) /*@*/ ;
 extern bool guardSet_isGuarded (guardSet p_g, sRef p_s) /*@*/ ;
-extern bool guardSet_isProbableNull (guardSet p_g, sRef p_s) /*@*/ ;
+extern bool guardSet_mustBeNull (guardSet p_g, sRef p_s) /*@*/ ;
 
 extern guardSet
   guardSet_levelUnion (/*@only@*/ guardSet p_s, 

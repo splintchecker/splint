@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -10,7 +10,7 @@
 # ifndef MACROCACHE_H
 # define MACROCACHE_H
 
-typedef struct _mce
+typedef struct
 {
   fileloc fl;
   cstring def;
@@ -20,7 +20,7 @@ typedef struct _mce
 
 typedef /*@only@*/ mce o_mce;
 
-typedef struct _mcelist
+typedef struct
 {
   int nspace;
   int entries;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@
 ** needs sort_type.h, ltoken_type.h
 */
 
-typedef struct _pairNode {
+typedef struct {
   sort sort;
   ltoken tok;   /* enable error message to pinpoint location */
 } *pairNode;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -19,31 +19,6 @@
 extern void assertSet (/*@special@*/ /*@sef@*/ /*@unused@*/ void *p_x) 
    /*@sets p_x, *p_x@*/ ;
 # define assertSet(x) ;
-
-extern bool isLCLfile (cstring p_s) /*@*/ ;
-extern bool isCext(char *p_ext) /*@*/ ;
-extern char *addExtension(char *p_s, const char *p_suffix);
-
-extern char *removeExtension (char *p_s, const char *p_suffix) /*@*/ ;
-
-# ifndef NOLCL
-extern char *removePath (char *p_s) /*@*/ ;
-# endif
-
-extern char *removePathFree (/*@only@*/ char *p_s) /*@*/ ;
-extern char *removeAnyExtension (char *p_s) /*@*/ ;
-
-extern int getInt (char **p_s) /*@modifies *p_s@*/ ;
-extern char loadChar (char **p_s) /*@modifies *p_s@*/ ; 
-extern double getDouble (char **p_s) /*@modifies *p_s@*/ ;
-extern void docheckChar (char ** p_s, char p_c, char *p_file, int p_line)
-   /*@modifies *p_s;@*/;
-
-extern bool optCheckChar (char **p_s, char p_c) /*@modifies *p_s;@*/ ;
-extern void checkChar (char **p_s, char p_c) /*@modifies *p_s;@*/ ;
-# define checkChar(s,c)  (docheckChar (s, c, __FILE__, __LINE__))
-extern /*@only@*/ /*@null@*/ char *getWord (char **p_s) /*@modifies *p_s@*/ ;
-extern cstring getStringWord (char **p_s) /*@modifies *p_s@*/ ;
 
 /*@-czechfcns@*/
 extern int size_toInt (size_t p_x) /*@*/ ;
@@ -70,6 +45,7 @@ extern char *mstring_append (/*@only@*/ char *p_s1, char p_c);
 extern char *mstring_copy (/*@null@*/ char *p_s1) /*@*/ ;
 extern bool mstring_equalPrefix (const char *p_c1, const char *p_c2) /*@*/ ;
 extern bool mstring_equal (/*@null@*/ const char *p_s1, /*@null@*/ const char *p_s2) /*@*/ ;
+extern bool mstring_containsChar (const char *p_s, char p_c) /*@*/ ;
 
 extern int mstring_length (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define mstring_length(s) \
@@ -103,6 +79,7 @@ extern int int_compare (/*@sef@*/ int p_x, /*@sef@*/ int p_y) /*@*/ ;
 /*@notfunction@*/
 # define GET(s) ((s *)smalloc(sizeof(s)))
 
+/*@-czechfcns@*/
 extern bool isHeaderFile (cstring) /*@*/ ;
 
 extern void fputline (FILE *p_out, char *p_s) /*@modifies p_out@*/;
@@ -111,16 +88,18 @@ extern int int_log (int p_x) /*@*/ ;
 
 extern char char_fromInt (int p_x) /*@*/ ;
 
-extern /*@observer@*/ /*@null@*/ char *
-  filenameExtension (/*@returned@*/ char *p_s) /*@*/ ;
-
-extern /*@exposed@*/ char *removePreDirs (char *p_s);
-extern void checkUngetc (int p_c, FILE *p_f) /*@modifies *p_f@*/ ;
+extern /*@exposed@*/ cstring removePreDirs (cstring p_s);
 
 /* These are defined by the bison library (?) */
 extern /*@external@*/ int isatty (int);
 extern /*@external@*/ int yywrap (void);
+/*@=czechfcns@*/
 
 # else
 # error "Multiple include"
 # endif
+
+
+
+
+

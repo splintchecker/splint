@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -15,7 +15,7 @@ extern int lsldebug; /* defined by bison (not a bool) */
 /*@=namechecks@*/
 
 extern lsymbol processTraitSortId (lsymbol p_sortid); 
-extern int parseSignatures (cstring p_infile);
-extern /*@only@*/ lslOp parseOpLine (char *p_fname, char *p_line);
+extern int parseSignatures (/*@only@*/ cstring p_infile);
+extern /*@only@*/ lslOp parseOpLine (cstring p_fname, cstring p_line);
 extern void readlsignatures (interfaceNode p_n);
-extern void callLSL (char *p_specfile, /*@only@*/ char *p_text);
+extern void callLSL (cstring p_specfile, /*@only@*/ cstring p_text);

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -34,17 +34,17 @@ typedef enum {
   SRT_LAST
 } sortKind;
 
-typedef struct _smemberInfo {
+typedef struct s_smemberInfo {
     lsymbol name;
     sort sort;
     /*@reldef@*/ lsymbol sortname; /* useful for sort_imports (yuk!) */
-    /*@null@*/ /*@dependent@*/ struct _smemberInfo *next;
+    /*@null@*/ /*@dependent@*/ struct s_smemberInfo *next;
 } smemberInfo;
 
 /*@constant null smemberInfo *smemberInfo_undefined; @*/
 # define smemberInfo_undefined 	((smemberInfo *)NULL)
 
-typedef struct _sortNode
+typedef struct 
 {
   sortKind	kind;  
 
@@ -92,7 +92,7 @@ typedef struct _sortNode
   bool mutable;  /* TRUE if sort represents a mutable sort */
   bool abstract; /* TRUE if sort represents an LCL abstract type */
   bool imported; /* TRUE if sort was imported */
-} sortNode;
+} *sortNode;
 
 extern cstring sort_unparse (sort p_s) /*@*/ ;
 extern /*@exposed@*/ cstring sort_unparseName (sort p_s) /*@*/ ;
@@ -154,11 +154,11 @@ extern bool sort_setExporting (bool p_flag) /*@modifies internalState@*/ ;
 
 extern /*@unused@*/ void sort_printStats(void) /*@modifies g_msgstream@*/ ;
 
-extern bool sort_equal (sort *p_s1, sort *p_s2) /*@*/ ;  
+extern bool sort_equal (sort p_s1, sort p_s2) /*@*/ ;  
 extern sort sort_fromLsymbol (lsymbol p_sortid) /*@modifies internalState@*/ ;
 
-extern void sort_import(tsource *p_imported, ltoken p_tok, mapping *p_map)
-   /*@modifies *p_imported, internalState@*/ ;
+extern void sort_import (inputStream p_imported, ltoken p_tok, mapping p_map)
+   /*@modifies p_imported, internalState@*/ ;
 
 /*@-namechecks@*/
 extern sort sort_bool;

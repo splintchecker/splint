@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -45,7 +45,7 @@ extern int lslparse (void);
 /*@=redecl@*/
 
 /*@-incondefs@*/ /*@-redecl@*/
-extern /*@dependent@*/ FILE *yyin;
+extern /*@open@*/ /*@dependent@*/ FILE *yyin;
 /*@=incondefs@*/ /*@=redecl@*/
 
 

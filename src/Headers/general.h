@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -26,10 +26,8 @@ extern void sfree (/*@out@*/ /*@only@*/ /*@null@*/ void *p_x) /*@modifies *p_x@*
 # include "cstring.h"
 # include "bool.h"
 
-# define getStringWord(s)     (cstring_fromChars(getWord(s)))
-
-extern /*@out@*/ /*@only@*/ void *dimalloc  (size_t p_size, char *p_name, int p_line);
-extern /*@only@*/ void *dicalloc  (size_t p_num, size_t p_size, char *p_name, int p_line);
+extern /*@out@*/ /*@only@*/ void *dimalloc  (size_t p_size, const char *p_name, int p_line);
+extern /*@only@*/ void *dicalloc  (size_t p_num, size_t p_size, const char *p_name, int p_line);
 extern /*@notnull@*/ /*@out@*/ /*@only@*/ void *
   direalloc (/*@returned@*/ /*@only@*/ /*@out@*/ /*@null@*/ void *p_x, 
 	     size_t p_size, char *p_name, int p_line);

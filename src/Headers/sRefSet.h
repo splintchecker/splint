@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,11 +12,13 @@
 # ifndef sRefSET_H
 # define sRefSET_H
 
-struct _sRefSet
+typedef /*@exposed@*/ sRef ex_sRef;
+
+struct s_sRefSet
 {
   int entries;
   int nspace;
-  /*@reldef@*/ /*@relnull@*/ sRef *elements;
+  /*@reldef@*/ /*@relnull@*/ ex_sRef *elements;
 } ;
 
 /* in forwardTypes: typedef _sRefSet *sRefSet; */
@@ -74,19 +76,19 @@ extern bool sRefSet_isSameNameMember (sRefSet p_s, sRef p_el) /*@*/ ;
 extern /*@only@*/ sRefSet sRefSet_newCopy (/*@exposed@*/ /*@temp@*/ sRefSet p_s);
 extern /*@only@*/ sRefSet sRefSet_newDeepCopy (sRefSet p_s);
 extern int sRefSet_size(sRefSet p_s) /*@*/ ;
-extern sRefSet sRefSet_union (/*@returned@*/ sRefSet p_s1, /*@exposed@*/ sRefSet p_s2);
 extern sRefSet sRefSet_unionFree (/*@returned@*/ sRefSet p_s1, /*@only@*/ sRefSet p_s2);
 extern /*@only@*/ sRefSet sRefSet_new (void) /*@*/ ;
 extern /*@only@*/ sRefSet sRefSet_single (/*@exposed@*/ sRef);
 extern sRefSet sRefSet_insert (/*@returned@*/ sRefSet p_s, /*@exposed@*/ sRef p_el);
 extern bool sRefSet_member (sRefSet p_s, sRef p_el) /*@*/ ;
+extern bool sRefSet_containsSameObject (sRefSet p_s, sRef p_el) /*@*/ ;
 extern /*@only@*/ cstring sRefSet_unparse (sRefSet p_s) /*@*/ ;
 extern void sRefSet_free (/*@only@*/ sRefSet p_s) /*@modifies p_s@*/;
 extern void sRefSet_clear (sRefSet p_s) /*@modifies p_s@*/;
 extern /*@only@*/ sRefSet sRefSet_addIndirection (sRefSet p_s) /*@*/ ;
 extern /*@only@*/ sRefSet sRefSet_removeIndirection (sRefSet p_s) /*@*/ ;
 extern sRefSet 
-  sRefSet_copy (/*@returned@*/ sRefSet p_s1, /*@exposed@*/ sRefSet p_s2) 
+  sRefSet_union (/*@returned@*/ sRefSet p_s1, /*@exposed@*/ sRefSet p_s2) 
   /*@modifies p_s1@*/ ;
 extern void sRefSet_levelPrune (sRefSet p_s, int p_lexlevel)
   /*@modifies p_s@*/ ;
@@ -100,21 +102,25 @@ extern /*@only@*/ sRefSet sRefSet_accessField (sRefSet p_s, /*@observer@*/ cstri
 extern /*@only@*/ sRefSet sRefSet_realNewUnion (sRefSet p_s1, sRefSet p_s2);
 extern /*@only@*/ cstring sRefSet_unparseDebug (sRefSet p_s) /*@*/ ;
 extern /*@unused@*/ cstring sRefSet_unparseFull (sRefSet p_s) /*@*/ ;
-# define sRefSet_unparseFull(s) sRefSet_unparseDebug(s)
 extern int sRefSet_compare (sRefSet p_s1, sRefSet p_s2) /*@*/ ;
 extern bool sRefSet_modifyMember (sRefSet p_s, sRef p_m) /*@modifies p_m@*/ ;
 extern /*@only@*/ sRefSet sRefSet_undump (char **p_s) /*@modifies *p_s@*/ ;
 extern /*@only@*/ cstring sRefSet_dump (sRefSet p_sl) /*@*/ ;
 extern bool sRefSet_deleteBase (sRefSet p_s, sRef p_base) /*@modifies p_s@*/ ;
 extern /*@exposed@*/ sRef sRefSet_choose (sRefSet p_s) /*@*/ ;
-extern sRef sRefSet_mergeIntoOne (sRefSet p_s) /*@*/ ;
+extern /*@exposed@*/ sRef sRefSet_mergeIntoOne (sRefSet p_s) /*@*/ ;
 extern /*@only@*/ sRefSet 
   sRefSet_levelCopy (/*@exposed@*/ sRefSet p_s, int p_lexlevel) /*@*/ ;
 extern sRefSet 
   sRefSet_unionExcept (/*@returned@*/ sRefSet p_s1, sRefSet p_s2, sRef p_ex)
      /*@modifies p_s1@*/ ;
 
+sRefSet sRefSet_copyInto (/*@returned@*/ sRefSet p_s1, /*@exposed@*/ sRefSet p_s2)
+     /*@modifies p_s1@*/ ;
+
 extern bool sRefSet_hasStatic (sRefSet p_s) /*@*/ ;
+
+extern void sRefSet_markImmutable (sRefSet p_s) /*@modifies p_s@*/ ;
 
 # else
 # error "Multiple include"

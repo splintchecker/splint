@@ -1,16 +1,17 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
-typedef struct _replaceNode {
+
+typedef struct {
   ltoken tok;
   typeNameNode typename; 
   bool isCType; /* TRUE means it is a CType */
   union {
     struct { 
-      /*@null@*/ nameNode name; 
-      /*@null@*/ sigNode signature;
+      /*@only@*/ /*@null@*/ nameNode name; 
+      /*@only@*/ /*@null@*/ sigNode signature;
     } renamesortname;
     ltoken ctype; 
   } content;

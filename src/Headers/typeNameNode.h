@@ -1,12 +1,12 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
-typedef struct _typeNameNode {
+typedef struct {
   bool isTypeName;
   /*@null@*/ typeNamePack typename;
-  /*@null@*/ struct _opFormNode *opform;  
+  /*@null@*/ opFormNode opform;  
 } *typeNameNode;
 
 extern void typeNameNode_free (/*@only@*/ /*@null@*/ typeNameNode p_n);

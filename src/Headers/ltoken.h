@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -22,25 +22,23 @@ typedef enum {
   SID_SORT          /* sortId */ 
 } SimpleIdCode;
 
-struct _ltoken {
-    unsigned int code;				
-    unsigned int col:  8;			
-    unsigned int line: 16;			
-
-
-    /* if idtype is SID_SORT, then text field keeps the sort */
-
-    lsymbol text;			/* string handle    */
-    lsymbol fname;		        /* source handle    */
-    lsymbol rawText;			/* original text    */
-    bool defined: 1;	        	/* token predefined */
-    bool hasSyn: 1;		        /* synonym exists   */
-
-    /* just for simpleId: for distinguish simpleId into varId, fcnId, TypeId, ... */
-    /*@reldef@*/ SimpleIdCode idtype; 
-
-    /* quick and dirty: just for ctypes */
-    /*@reldef@*/ unsigned int intfield; 
+struct s_ltoken {
+  ltokenCode code;				
+  int col;			
+  int line;			
+  
+  /* if idtype is SID_SORT, then text field keeps the sort */
+  lsymbol text;			/* string handle    */
+  lsymbol fname;		        /* source handle    */
+  lsymbol rawText;			/* original text    */
+  bool defined: 1;	        	/* token predefined */
+  bool hasSyn: 1;		        /* synonym exists   */
+  
+  /* just for simpleId: for distinguish simpleId into varId, fcnId, TypeId, ... */
+  /*@reldef@*/ SimpleIdCode idtype; 
+  
+  /* quick and dirty: just for ctypes */
+  /*@reldef@*/ unsigned int intfield; 
 } ;
 
 typedef /*@only@*/ ltoken o_ltoken;
@@ -63,32 +61,32 @@ extern void ltoken_setDefined (/*@sef@*/ ltoken p_tok, bool p_def);
   (ltoken_isValid (t) ? (t)->defined = (def) : (def))
 
 extern ltoken 
-  ltoken_createType (unsigned int p_code, SimpleIdCode p_idtype, lsymbol p_text) /*@*/ ;
+  ltoken_createType (ltokenCode p_code, SimpleIdCode p_idtype, lsymbol p_text) /*@*/ ;
 
-extern ltoken ltoken_create (unsigned int p_code, lsymbol p_text) /*@*/ ;
+extern ltoken ltoken_create (ltokenCode p_code, lsymbol p_text) /*@*/ ;
 
 extern void ltoken_setIntField (/*@sef@*/ ltoken p_tok, unsigned int p_i);
 # define ltoken_setIntField(tok,i) \
   (ltoken_isValid (tok) ? (tok)->intfield = (i) : (i))
      
-extern unsigned int ltoken_getLine (/*@sef@*/ ltoken p_tok);
+extern int ltoken_getLine (/*@sef@*/ ltoken p_tok);
 # define ltoken_getLine(tok) \
   (ltoken_isValid (tok) ? (tok)->line : 0)
 
-extern void ltoken_setLine (/*@sef@*/ ltoken p_tok, /*@sef@*/ unsigned int p_line);
+extern void ltoken_setLine (/*@sef@*/ ltoken p_tok, /*@sef@*/ int p_line);
 # define ltoken_setLine(tok, ln) \
   (ltoken_isValid (tok) ? (tok)->line = (ln) : 0)
 
-extern unsigned int ltoken_getCol (/*@sef@*/ ltoken p_tok);
+extern int ltoken_getCol (/*@sef@*/ ltoken p_tok);
 # define ltoken_getCol(tok) \
   (ltoken_isValid (tok) ? (tok)->col : 0)
 
-extern void ltoken_setCol (/*@sef@*/ ltoken p_tok, unsigned int p_col)
+extern void ltoken_setCol (/*@sef@*/ ltoken p_tok, int p_col)
    /*@modifies p_tok@*/ ;
 # define ltoken_setCol(tok, c) \
   (ltoken_isValid (tok) ? (tok)->col = (c) : (c))
 
-extern unsigned int ltoken_getCode (/*@sef@*/ ltoken p_tok) /*@*/ ;
+extern ltokenCode ltoken_getCode (/*@sef@*/ ltoken p_tok) /*@*/ ;
 # define ltoken_getCode(tok) \
   (ltoken_isValid (tok) ? (tok)->code : NOTTOKEN)
 
@@ -151,7 +149,7 @@ extern cstring ltoken_unparseCodeName (ltoken p_tok) /*@*/ ;
 
 extern /*@observer@*/ cstring ltoken_unparse (ltoken p_s);
 
-extern void ltoken_setCode (/*@sef@*/ ltoken p_s, unsigned int p_code);
+extern void ltoken_setCode (/*@sef@*/ ltoken p_s, ltokenCode p_code);
 # define ltoken_setCode(s,c) (ltoken_isValid (s) ? (s)->code = (c) : (c))
 
 extern void ltoken_setRawText (/*@sef@*/ ltoken p_s, lsymbol p_t);
@@ -182,9 +180,9 @@ extern /*@observer@*/ cstring ltoken_fileName (/*@sef@*/ ltoken p_s);
 # define ltoken_fileName(s) \
   (ltoken_isValid(s) ? lsymbol_toString ((s)->fname) : cstring_undefined)
 
-extern void ltoken_setFileName (/*@sef@*/ ltoken p_tok, /*@sef@*/ char *p_fname);
+extern void ltoken_setFileName (/*@sef@*/ ltoken p_tok, /*@sef@*/ cstring p_fname);
 # define ltoken_setFileName(tok,f) \
-  (ltoken_isValid(tok) ? (tok)->fname = lsymbol_fromChars (f) : lsymbol_undefined)
+  (ltoken_isValid(tok) ? (tok)->fname = lsymbol_fromString (f) : lsymbol_undefined)
 
 extern bool ltoken_isChar (ltoken p_tok);
 # define ltoken_isChar(t) \
@@ -196,11 +194,10 @@ extern void ltoken_setHasSyn (/*@sef@*/ ltoken p_tok, bool p_def);
 
 extern void ltoken_free (/*@only@*/ ltoken);
 
-extern ltoken ltoken_createFull (unsigned int p_code, lsymbol p_text, 
-				 cstring p_file, unsigned int p_line, 
-				 unsigned int p_col) /*@*/ ;
+extern ltoken ltoken_createFull (ltokenCode p_code, lsymbol p_text, 
+				 cstring p_file, int p_line, int p_col) /*@*/ ;
 
-extern ltoken ltoken_createRaw (unsigned int p_code, lsymbol p_text) /*@*/ ;
+extern ltoken ltoken_createRaw (ltokenCode p_code, lsymbol p_text) /*@*/ ;
 extern cstring ltoken_unparseLoc (ltoken p_t) /*@*/ ;
 
 extern void ltoken_markOwned (/*@owned@*/ ltoken);

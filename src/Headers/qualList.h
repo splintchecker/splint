@@ -5,7 +5,7 @@
 # ifndef QUALLIST_H
 # define QUALLIST_H
 
-abst_typedef /*@null@*/ struct _qualList
+abst_typedef /*@null@*/ struct 
 {
   int nelements;
   int free;
@@ -59,7 +59,8 @@ extern bool qualList_hasExposureQualifier (qualList p_s);
 
 /* start modifications */
 extern bool qualList_hasNullTerminatedQualifier(qualList p_s);
-//extern bool qualList_hasBufQualifiers(qualList p_s);
+
+extern bool qualList_hasBufQualifiers(qualList p_s);
 
 # define qualList_hasBufQualifiers(p_s) \
   (qualList_hasNullTerminatedQualifier(p_s))

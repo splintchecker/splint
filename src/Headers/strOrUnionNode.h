@@ -1,11 +1,11 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
 typedef enum {SU_STRUCT, SU_UNION} suKind;
 
-typedef struct _strOrUnionNode {
+typedef struct {
   suKind kind;
   ltoken tok; /* also encodes if it's struct or union */
   ltoken opttagid;

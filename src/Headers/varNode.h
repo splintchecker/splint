@@ -1,12 +1,12 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */       
 
 # ifndef VARNODE_H
 # define VARNODE_H
 
-typedef struct _varNode { /* with sort, useful in quantified */
+typedef struct { /* with sort, useful in quantified */
   ltoken varid;
   bool isObj; 
   lclTypeSpecNode type;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -26,10 +26,10 @@ typedef enum
 # define NUMFLAGS       (LAST_FLAG)
 
 /*@constant int NUMVALUEFLAGS; @*/
-# define NUMVALUEFLAGS       12
+# define NUMVALUEFLAGS       14
 
 /*@constant int NUMSTRINGFLAGS; @*/
-# define NUMSTRINGFLAGS      21
+# define NUMSTRINGFLAGS      22
 
 /*@iter allFlagCodes (yield flagcode f); @*/
 # define allFlagCodes(m_code) \

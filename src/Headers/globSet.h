@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,8 +12,6 @@
 # ifndef globSet_H
 # define globSet_H
 
-abst_typedef sRefSet globSet;
-
 /*@iter globSet_allElements (sef globSet s, yield exposed sRef el); @*/
 # define globSet_allElements(x, m_el)  sRefSet_allElements(x, m_el)
 # define end_globSet_allElements           end_sRefSet_allElements
@@ -25,7 +23,10 @@ extern bool globSet_isEmpty (/*@sef@*/ globSet p_s);
 # define globSet_isEmpty(s) (globSet_size (s) == 0)
 
 extern /*@only@*/ globSet globSet_new (void) /*@*/ ;
-extern globSet globSet_insert (/*@returned@*/ globSet p_s, sRef p_el) 
+
+extern globSet globSet_single (/*@exposed@*/ sRef p_el) ;
+
+extern globSet globSet_insert (/*@returned@*/ globSet p_s, /*@exposed@*/ sRef p_el) 
    /*@modifies p_s@*/ ;
 extern bool globSet_member (globSet p_s, sRef p_el) /*@*/ ;
 extern /*@exposed@*/ sRef globSet_lookup (globSet p_s, sRef p_el) /*@*/ ;
@@ -33,8 +34,11 @@ extern void globSet_free (/*@only@*/ /*@only@*/ globSet p_s);
 extern /*@only@*/ cstring globSet_unparse (globSet p_ll) /*@*/ ;
 extern /*@only@*/ cstring globSet_dump (globSet) /*@*/ ;
 extern /*@only@*/ globSet globSet_undump (char **p_s) /*@modifies *p_s@*/ ;
+
+extern void globSet_markImmutable (globSet p_g) /*@modifies p_g@*/ ;
+
 extern globSet 
-  globSet_copy (/*@returned@*/ globSet p_s1, /*@exposed@*/ globSet p_s2) 
+  globSet_copyInto (/*@returned@*/ globSet p_s1, /*@exposed@*/ globSet p_s2) 
   /*@modifies p_s1@*/ ;
 
 extern /*@only@*/ globSet globSet_newCopy (globSet p_s) /*@*/ ;

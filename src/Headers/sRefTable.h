@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -14,7 +14,7 @@
 
 typedef /*@owned@*/ sRef ow_sRef;
 
-abst_typedef /*@null@*/ struct _sRefTable
+abst_typedef /*@null@*/ struct 
 {
   int entries;
   int nspace;

@@ -5,7 +5,7 @@
 # ifndef FILELOCSTACK_H
 # define FILELOCSTACK_H
 
-abst_typedef /*@null@*/ struct _filelocStack
+abst_typedef /*@null@*/ struct
 {
   int nelements;
   int free;

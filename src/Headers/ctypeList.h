@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -13,7 +13,7 @@
 ** (that is, not void, so any number of arguments is okay.)
 */
 
-abst_typedef /*@null@*/ struct _ctypeList
+abst_typedef /*@null@*/ struct
 {
   int nelements;
   int nspace;
@@ -25,6 +25,12 @@ extern int ctypeList_size (/*@sef@*/ ctypeList p_s) /*@*/ ;
 
 extern /*@only@*/ ctypeList ctypeList_new(void);
 extern void ctypeList_addh (ctypeList p_s, ctype p_el) /*@modifies p_s@*/;
+
+extern /*@only@*/ ctypeList 
+   ctypeList_append (/*@returned@*/ /*@only@*/ ctypeList p_s1,
+		     ctypeList p_s2) /*@modifies p_s1@*/ ;
+
+extern ctypeList ctypeList_add (/*@only@*/ ctypeList p_s, ctype p_el) /*@modifies p_s@*/;
 
 extern /*@unused@*/ /*@only@*/ cstring ctypeList_unparse (ctypeList) /*@*/ ;
 extern void ctypeList_free (/*@only@*/ /*@only@*/ ctypeList p_s) /*@modifies p_s@*/;
@@ -38,6 +44,15 @@ extern /*@unused@*/ /*@truenull@*/ bool
 
 # define ctypeList_isDefined(ct)   ((ct) != ctypeList_undefined)
 # define ctypeList_isUndefined(ct) ((ct) == ctypeList_undefined)
+
+/*@iter ctypeList_elements (sef ctypeList x, yield ctype el); @*/
+# define ctypeList_elements(x, m_el) \
+   { if (!ctypeList_isUndefined(x)) \
+       { int m_ind; ctype *m_elements = &((x)->elements[0]); \
+          for (m_ind = 0 ; m_ind < (x)->nelements; m_ind++) \
+           { ctype m_el = *(m_elements++); 
+
+# define end_ctypeList_elements }}}
 
 /*@constant int ctypeListBASESIZE;@*/
 # define ctypeListBASESIZE SMALLBASESIZE

@@ -1,10 +1,10 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 
-typedef struct _nameNode {
+typedef struct {
   bool isOpId; /* TRUE means is opId */
   union {
     ltoken opid;

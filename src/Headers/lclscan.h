@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -19,9 +19,9 @@ extern /*@dependent@*/ /*@exposed@*/ ltoken LCLScanNextToken(void)
 extern void LCLScanFreshToken(/*@only@*/ ltoken p_tok) 
    /*@modifies internalState@*/ ;
 
-extern /*@exposed@*/ tsource *LCLScanSource(void) /*@*/ ;
+extern /*@exposed@*/ inputStream LCLScanSource(void) /*@*/ ;
 extern void LCLScanInit(void) /*@modifies internalState@*/ ;
-extern void LCLScanReset(tsource *p_s) /*@modifies internalState@*/ ;
+extern void LCLScanReset(inputStream p_s) /*@modifies internalState@*/ ;
 extern void LCLScanCleanup(void) /*@modifies internalState@*/ ;
 
 # else

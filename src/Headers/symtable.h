@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 /*
@@ -24,14 +24,14 @@ N2 and N3, each keyed on the lsymbol of the identifier. */
 
 typedef long unsigned symbolKey;
 
-typedef struct _fctInfo {
+typedef struct {
   ltoken id;
   bool	export;            /* all HOF maps to one sort kind: SRT_HOF */
   /*@only@*/ signNode signature;      /* in terms of sorts, no HOF */
   /*@only@*/ pairNodeList globals;    /* list of (sort globalnameSym) */
 } *fctInfo;
 
-typedef struct _typeInfo {
+typedef struct {
     ltoken	id;
     sort	basedOn; 
     bool	abstract;   /* TRUE means LCL abstract type */
@@ -52,9 +52,9 @@ typedef enum
   VRK_LET,    /* local let variable in a function decl */
   VRK_PARAM,  /* formal parameters of a function/claim */
   VRK_QUANT   /* bound by a quantifier */
-  } varKind;
+} varKind;
 
-typedef struct _varInfo {
+typedef struct {
     ltoken	id;
     sort	sort;
     varKind	kind;
@@ -66,12 +66,12 @@ typedef struct _varInfo {
    as one of {opId, anyOp, logicalOp, simpleOp, eqOp, MULOP} ltoken. 
    Each occurrence in an LSL file appears as an lslOp AST. */ 
 
-typedef struct _opInfo {
+typedef struct {
   /*@only@*/ nameNode name;
   /*@only@*/ sigNodeSet signatures;
 } *opInfo;
 
-typedef struct _tagInfo {
+typedef struct {
     ltoken	id;
     tagKind     kind; 
     bool        imported;
@@ -100,7 +100,7 @@ typedef enum {
   SPE_ABSTRACT, SPE_INVALID
   } scopeKind;
 
-typedef struct _scopeInfo {
+typedef struct {
     scopeKind	kind;
 } *scopeInfo;
 
@@ -113,9 +113,9 @@ typedef struct _scopeInfo {
 **   data_key: htData * -> unsigned int
 */
 
-typedef struct _htEntry {
+typedef struct s_htEntry {
   /*@only@*/ htData *data;
-  /*@only@*/ struct _htEntry *next;
+  /*@only@*/ struct s_htEntry *next;
 } htEntry;
 
 /* Each bucket is a linked list of entries */
@@ -131,7 +131,7 @@ typedef struct {
 
 /* Local to implementation */
 
-typedef struct _symtableStruct *symtable;
+typedef struct s_symtableStruct *symtable;
 
 extern /*@falsenull@*/ bool typeInfo_exists(/*@null@*/ typeInfo p_ti);
 # define typeInfo_exists(ti)  ((ti) != NULL)
@@ -172,13 +172,13 @@ extern /*@observer@*/ /*@null@*/ tagInfo symtable_tagInfo(symtable p_st, lsymbol
 extern void symtable_export(symtable p_stable, bool p_yesNo);
 extern void symtable_dump(symtable p_stable, FILE *p_f, bool p_lco);
 
-extern void symtable_import(tsource *p_imported, ltoken p_tok, mapping *p_map);
+extern void symtable_import(inputStream p_imported, ltoken p_tok, mapping p_map);
 
 extern /*@unused@*/ void symtable_printStats (symtable p_s);
 
 extern lsymbol lsymbol_sortFromType (symtable, lsymbol);
 extern cstring tagKind_unparse (tagKind p_k);
-extern lsymbol lsymbol_translateSort (mapping *p_m, lsymbol p_s);
+extern lsymbol lsymbol_translateSort (mapping p_m, lsymbol p_s);
 extern void varInfo_free (/*@only@*/ varInfo p_v);
 
 extern /*@only@*/ lslOpSet 

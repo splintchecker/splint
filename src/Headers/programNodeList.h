@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -8,12 +8,12 @@
 
 typedef /*@only@*/ programNode o_programNode;
 
-abst_typedef struct _programNodeList
+struct s_programNodeList 
 {
   int nelements;
   int nspace;
   /*@reldef@*/ /*@relnull@*/ o_programNode  *elements;
-} *programNodeList ;
+} ;
 
 /*@iter programNodeList_elements (sef programNodeList x, yield exposed programNode el); @*/
 # define programNodeList_elements(x, m_el) \

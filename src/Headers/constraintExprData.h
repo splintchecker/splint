@@ -34,7 +34,7 @@ typedef struct constraintExprUnaryOp_
 } constraintExprUnaryOp;
 
 
-typedef union _constraintExprData
+typedef union constraintExprData
 {
   constraintExprBinaryOp binaryOp;
   constraintExprUnaryOp unaryOp;
@@ -56,40 +56,40 @@ extern void constraintExprData_freeBinaryExpr (/*@only@*/ constraintExprData) ;
 extern void constraintExprData_freeUnaryExpr (/*@only@*/ constraintExprData) ;
 extern void constraintExprData_freeTerm (/*@only@*/ constraintExprData) ;
 
-/*@reldef@*/ constraintExprData constraintExprData_termSetTerm (/*@reldef@*/ /*@returned@*/ constraintExprData data, /*@only@*/ constraintTerm term);
+constraintExprData constraintExprData_termSetTerm ( /*@returned@*/ /*@partial@*/ constraintExprData p_data, /*@only@*/ constraintTerm p_term);
 
-/*@observer@*/ constraintTerm constraintExprData_termGetTerm (/*@observer@*/ constraintExprData data) /*@*/;
+/*@observer@*/ constraintTerm constraintExprData_termGetTerm (/*@observer@*/ constraintExprData p_data) /*@*/;
 
-constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*//*@reldef@*/constraintExprData data) /*@*/;
+constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (/*@observer@*//*@reldef@*/constraintExprData p_data) /*@*/;
 
-/*@observer@*/ constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ /*@reldef@*/constraintExprData data) /*@*/;
-
-
-//  /*@special@*/ constraintExprData  constraintExprData_unaryExprSetOp ( /*@out@*/ /*@special@*/ /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op) /*@sets result->unaryOp.unaryOp@*/;
+/*@observer@*/ constraintExpr  constraintExprData_unaryExprGetExpr (/*@observer@*/ /*@reldef@*/constraintExprData p_data) /*@*/;
 
 
-constraintExprData  constraintExprData_unaryExprSetOp (/*@reldef@*/ /*@returned@*/ constraintExprData data, constraintExprUnaryOpKind op);
-
-constraintExprData  constraintExprData_unaryExprSetExpr (/*@reldef@*/ /*@returned@*/ constraintExprData data,  /*@only@*/ constraintExpr expr);
+//  special constraintExprData  constraintExprData_unaryExprSetOp ( /out special@*/ @returned@ constraintExprData p_data, constraintExprUnaryOpKind op) /sets result->unaryOp.unaryOp;
 
 
-constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (/*@reldef@*/constraintExprData data) /*@*/;
+constraintExprData  constraintExprData_unaryExprSetOp (/*@partial@*/ /*@returned@*/ constraintExprData p_data, constraintExprUnaryOpKind p_op);
 
-/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr1 (/*@observer@*/ /*@reldef@*/constraintExprData data)/*@*/;
+constraintExprData  constraintExprData_unaryExprSetExpr (/*@partial@*/ /*@returned@*/ constraintExprData p_data,  /*@only@*/ constraintExpr p_expr);
 
-/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr2 (/*@observer@*/ /*@reldef@*/constraintExprData data)/*@*/;
 
-constraintExprData  constraintExprData_binaryExprSetExpr1 (/*@reldef@*/ /*@returned@*/ constraintExprData data, /*@only@*/ constraintExpr expr) ;
+constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (/*@partial@*/constraintExprData p_data) /*@*/;
 
-constraintExprData  constraintExprData_binaryExprSetExpr2  (/*@reldef@*/ /*@returned@*/  constraintExprData data, /*@only@*/ constraintExpr expr);
+/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr1 (/*@observer@*/ /*@reldef@*/constraintExprData p_data)/*@*/;
 
-     constraintExprData  constraintExprData_binaryExprSetOp (/*@reldef@*/ /*@returned@*/ /*@out@*/constraintExprData data, constraintExprBinaryOpKind op);
+/*@observer@*/ constraintExpr  constraintExprData_binaryExprGetExpr2 (/*@observer@*/ /*@reldef@*/constraintExprData p_data)/*@*/;
 
-/*@only@*/ constraintExprData constraintExprData_copyBinaryExpr(/*@observer@*/ constraintExprData data);
+constraintExprData  constraintExprData_binaryExprSetExpr1 (/*@partial@*/ /*@returned@*/ constraintExprData p_data, /*@only@*/ constraintExpr p_expr) ;
 
-/*@only@*/ constraintExprData constraintExprData_copyUnaryExpr(/*@observer@*/ constraintExprData data);
+constraintExprData  constraintExprData_binaryExprSetExpr2  (/*@partial@*/ /*@returned@*/  constraintExprData p_data, /*@only@*/ constraintExpr p_expr);
 
-/*@only@*/ constraintExprData constraintExprData_copyTerm (/*@observer@*/ constraintExprData data);
+constraintExprData  constraintExprData_binaryExprSetOp (/*@partial@*/ /*@returned@*/ /*@out@*/constraintExprData p_data, constraintExprBinaryOpKind p_op);
+
+/*@only@*/ constraintExprData constraintExprData_copyBinaryExpr(/*@observer@*/ constraintExprData p_data);
+
+/*@only@*/ constraintExprData constraintExprData_copyUnaryExpr(/*@observer@*/ constraintExprData p_data);
+
+/*@only@*/ constraintExprData constraintExprData_copyTerm (/*@observer@*/ constraintExprData p_data);
 
 #else
 

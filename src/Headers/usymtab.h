@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 /*
@@ -8,7 +8,6 @@
 
 # ifndef USYMTAB_H
 # define USYMTAB_H
-//#include "environmentTable.h"
 
 /*@constant null usymtab GLOBAL_ENV; @*/ 
 # define GLOBAL_ENV usymtab_undefined
@@ -20,11 +19,11 @@ typedef enum {
   US_CBRANCH, US_SWITCH
 } uskind;
 
-typedef struct _refentry { int level; int index; } *refentry;
+typedef struct { int level; int index; } *refentry;
 typedef /*@only@*/ refentry o_refentry;
 typedef o_refentry *refTable;
 
-struct _usymtab
+struct s_usymtab
 {
   uskind   kind;
   int      nentries;
@@ -33,12 +32,11 @@ struct _usymtab
   bool     mustBreak;
   exitkind exitCode;
   /*@reldef@*/ /*@only@*/ o_uentry  *entries;
-  /*@null@*/ /*@only@*/ hashTable htable;   /* for the global environment */
+  /*@null@*/ /*@only@*/ cstringTable htable;   /* for the global environment */
   /*@null@*/ /*@only@*/ refTable  reftable; /* for branched environments */
              /*@only@*/ guardSet  guards;   /* guarded references (not null) */
   aliasTable aliases;
   /*@owned@*/ usymtab env;
-  //  environmentTable environment;
 } ; 
 
 /*
@@ -93,8 +91,10 @@ extern bool usymtab_inDeepScope (void) /*@globals internalState@*/ ;
 
 extern /*@exposed@*/  uentry usymtab_lookupExpose (cstring p_k)
    /*@globals internalState@*/ ;
+
 extern /*@observer@*/ uentry usymtab_lookup (cstring p_k)
    /*@globals internalState@*/ ;
+
 # define usymtab_lookup(s) (usymtab_lookupExpose (s))
 
 extern /*@observer@*/ uentry usymtab_lookupGlob (cstring p_k)
@@ -113,9 +113,9 @@ extern ctype usymtab_lookupType (cstring p_k)
    /*@globals internalState@*/ ;
 # endif
 
-extern bool usymtab_isProbableNull (sRef p_s)
+extern bool usymtab_isDefinitelyNull (sRef p_s)
    /*@globals internalState@*/ ;
-extern bool usymtab_isProbableDeepNull (sRef p_s)
+extern bool usymtab_isDefinitelyNullDeep (sRef p_s)
    /*@globals internalState@*/ ;
 
 # ifndef NOLCL
@@ -185,9 +185,10 @@ extern usymId usymtab_addEntry (/*@only@*/ uentry p_e)
   /*@modifies internalState, p_e@*/ ;
 
 extern ctype usymtab_lookupAbstractType (cstring p_k) 
-  /*@globals internalState@*/ ;
+     /*@globals internalState@*/ /*@modifies nothing@*/ ;
+
 extern bool usymtab_matchForwardStruct (usymId p_u1, usymId p_u2)
-  /*@globals internalState@*/ ;
+     /*@globals internalState@*/ ;
 
 extern bool usymtab_existsEnumTag (cstring p_k)
   /*@globals internalState@*/ ;
@@ -256,6 +257,7 @@ extern /*@observer@*/ uentry usymtab_lookupEnumTag (cstring p_k)
 extern usymId usymtab_convertId (usymId p_uid) /*@globals internalState@*/ ;
 extern void usymtab_initMod (void) /*@modifies internalState@*/ ;
 extern void usymtab_initBool (void) /*@modifies internalState@*/ ;
+extern void usymtab_initGlobalMarker (void) /*@modifies internalState@*/ ;
 
 extern void usymtab_exportHeader (void)
    /*@modifies internalState@*/ ;
@@ -269,7 +271,7 @@ extern ctype usymtab_unionFieldsType (uentryList p_f)
 extern ctype usymtab_enumEnumNameListType (enumNameList p_f)
    /*@globals internalState@*/ ;
 
-extern /*@exposed@*/ uentry usymtab_getTypeEntrySafe (usymId p_uid)
+extern /*@exposed@*/ uentry usymtab_getTypeEntrySafe (typeId p_uid)
    /*@globals internalState@*/ ;
 
 extern void usymtab_popOrBranch (exprNode p_pred, exprNode p_expr)
@@ -284,6 +286,7 @@ extern void usymtab_altBranch (/*@only@*/ guardSet p_guards)
 
 extern void usymtab_popTrueBranch (exprNode p_pred, exprNode p_expr, clause p_cl)
   /*@modifies internalState@*/ ;
+
 extern void
   usymtab_popTrueExecBranch (exprNode p_pred, exprNode p_expr, clause p_cl)
   /*@modifies internalState@*/ ;
@@ -303,14 +306,13 @@ extern void usymtab_printComplete (void) /*@globals internalState@*/ /*@modifies
 extern bool usymtab_existsGlobEither (cstring p_k) /*@globals internalState@*/ ;
 # endif
 
-extern bool usymtab_isBoolType (usymId p_uid) /*@globals internalState@*/ ;
-extern /*@only@*/ cstring 
-  usymtab_getTypeEntryName (usymId p_uid)
+extern bool usymtab_isBoolType (typeId p_uid) /*@globals internalState@*/ ;
+extern /*@only@*/ cstring usymtab_getTypeEntryName (typeId p_uid)
   /*@globals internalState@*/ ;
-extern /*@exposed@*/ uentry usymtab_getTypeEntry (usymId p_uid)
+extern /*@exposed@*/ uentry usymtab_getTypeEntry (typeId p_uid)
   /*@globals internalState@*/ ;
 
-extern usymId 
+extern typeId
   usymtab_supAbstractTypeEntry (/*@only@*/ uentry p_e, bool p_dodef)
   /*@modifies internalState, p_e@*/ ;
 extern ctype usymtab_supForwardTypeEntry (/*@only@*/ uentry p_e)
@@ -350,10 +352,10 @@ extern /*@only@*/ sRefSet usymtab_canAlias (sRef p_s)
 extern void usymtab_clearAlias (sRef p_s)
   /*@modifies internalState, p_s@*/ ;
 
-extern void usymtab_addMustAlias (sRef p_s, sRef p_al)
+extern void usymtab_addMustAlias (/*@exposed@*/ sRef p_s, /*@exposed@*/ sRef p_al)
   /*@modifies internalState@*/ ;
 
-extern void usymtab_addForceMustAlias (sRef p_s, sRef p_al)
+extern void usymtab_addForceMustAlias (/*@exposed@*/ sRef p_s, /*@exposed@*/ sRef p_al)
   /*@modifies internalState@*/ ;
 
 extern /*@only@*/ cstring usymtab_unparseAliases (void)
@@ -363,7 +365,7 @@ extern /*@exposed@*/ uentry
   usymtab_supReturnFileEntry (/*@only@*/ uentry p_e)
    /*@modifies internalState@*/ ;
 
-extern bool usymtab_isAltProbablyDeepNull (sRef p_s)
+extern bool usymtab_isAltDefinitelyNullDeep (sRef p_s)
    /*@globals internalState@*/ ;
 
 extern bool usymtab_existsReal (cstring p_k)
@@ -401,6 +403,10 @@ extern /*@falsenull@*/ bool usymtab_isDefined (usymtab p_u) /*@*/ ;
 extern void usymtab_checkDistinctName (uentry p_e, int p_scope)
   /*@globals internalState@*/
   /*@modifies *g_msgstream, p_e@*/ ;
+
+extern /*@exposed@*/ sRef usymtab_lookupGlobalMarker (void) /*@globals internalState@*/ ;
+
+extern int usymtab_getCurrentDepth (void) /*@globals internalState@*/ ;
 
 # else
 # error "Multiple include"

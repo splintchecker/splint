@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -20,8 +20,8 @@ typedef enum
   FK_POINTER, FK_UNRECOG, FK_USE, FK_BOOL, FK_ALIAS, 
   FK_PROTOS, FK_SPEC, 
   FK_IMPLICIT, FK_FILES, FK_ERRORS, FK_UNSPEC, 
-  FK_SPEED, FK_PARAMS, FK_DEAD, 
-  FK_LEAK, FK_ARRAY, FK_OBSOLETE, FK_PREFIX
+  FK_SPEED, FK_PARAMS, FK_DEAD, FK_SECURITY,
+  FK_LEAK, FK_ARRAY, FK_OBSOLETE, FK_PREFIX, FK_WARNUSE
 } flagkind;
 
 extern void listAllCategories (void);
@@ -38,24 +38,22 @@ extern flagcode identifyFlag (cstring p_s);
 extern void setValueFlag (flagcode p_opt, cstring p_arg);
 extern void setStringFlag (flagcode p_opt, /*@only@*/ cstring p_arg);
 
-extern /*@observer@*/ cstring flagcode_name (flagcode p_code) /*@*/ ;
+extern /*@observer@*/ cstring flagcode_unparse (flagcode p_code) /*@*/ ;
 extern int flagcode_valueIndex (flagcode p_f) /*@*/ ;
 extern int flagcode_stringIndex (flagcode p_f) /*@*/ ;
-extern /*@observer@*/ cstring flagcode_unparse (flagcode p_f) /*@*/ ;
-# define flagcode_unparse flagcode_name
 
 extern /*@observer@*/ cstring flagcodeHint (flagcode p_f);
 
 extern flagkind identifyCategory (cstring p_s) /*@*/ ;
 extern void printCategory (flagkind p_kind) /*@modifies g_msgstream@*/ ;
 
-extern bool flagcode_isInvalid (flagcode p_f);
+extern bool flagcode_isInvalid (flagcode p_f) /*@*/ ;
 # define flagcode_isInvalid(f) ((f) == INVALID_FLAG)
 
-extern bool flagcode_isSkip (flagcode p_f);
+extern bool flagcode_isSkip (flagcode p_f) /*@*/ ;
 # define flagcode_isSkip(f) ((f) == SKIP_FLAG)
 
-extern bool flagcode_isValid (flagcode p_f);
+extern bool flagcode_isValid (flagcode p_f) /*@*/ ;
 # define flagcode_isValid(f) ((f) != INVALID_FLAG)
 
 extern bool flagcode_isPassThrough (/*@sef@*/ flagcode p_f);
@@ -67,6 +65,10 @@ extern bool flagcode_isLibraryFlag (/*@sef@*/ flagcode p_f);
     || (f) == FLG_UNIXLIB || (f) == FLG_UNIXSTRICTLIB \
     || (f) == FLG_STRICTLIB || (f) == FLG_NOLIB \
     || (f) == FLG_ANSILIB)
+
+extern bool flagcode_isWarnUseFlag (/*@sef@*/ flagcode p_f);
+# define flagcode_isWarnUseFlag(f) \
+   ((f) == FLG_BUFFEROVERFLOW || (f) == FLG_BUFFEROVERFLOWHIGH)
 
 extern bool flagcode_hasValue (flagcode p_f);
 extern bool flagcode_hasString (flagcode p_f);

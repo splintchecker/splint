@@ -1,12 +1,12 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 # ifndef cstringList_H
 # define cstringList_H
 
-abst_typedef /*@null@*/ struct _cstringList
+abst_typedef /*@null@*/ struct s_cstringList
 {
   int      nelements;
   int      nspace;
@@ -35,12 +35,23 @@ extern cstringList
   cstringList_add (/*@returned@*/ cstringList p_s, /*@keep@*/ cstring p_el) 
   /*@modifies p_s@*/ ;
 
+extern /*@only@*/ cstringList 
+  cstringList_prepend (/*@only@*/ /*@returned@*/ cstringList p_s,
+		       /*@keep@*/ cstring p_el) 
+  /*@modifies p_s@*/ ;
+
+extern bool cstringList_contains (cstringList p_s, cstring p_key) /*@*/ ;
+extern int cstringList_getIndex (cstringList p_s, cstring p_key) /*@*/ ;
+extern /*@observer@*/ cstring cstringList_get (cstringList p_s, int p_index) /*@*/ ;
+
 extern /*@unused@*/ void cstringList_alphabetize (cstringList p_s);
 extern /*@unused@*/ /*@only@*/ cstring cstringList_unparseAbbrev (cstringList p_s) /*@*/ ;
 extern /*@unused@*/ /*@only@*/ cstring cstringList_unparse (cstringList p_s) ;
 extern void cstringList_free (/*@only@*/ cstringList p_s) ;
 
 extern /*@unused@*/ void cstringList_printSpaced (cstringList p_s, int p_indent, int p_gap, int p_linelen);
+
+extern /*@only@*/ cstringList cstringList_copy (cstringList p_s) /*@*/ ;
 
 /*@constant int cstringListBASESIZE;@*/
 # define cstringListBASESIZE MIDBASESIZE

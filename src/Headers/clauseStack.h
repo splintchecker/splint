@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -10,7 +10,7 @@
 # ifndef clauseStack_H
 # define clauseStack_H
 
-abst_typedef struct _clauseStack
+abst_typedef struct
 {
   int nelements;
   int nspace;

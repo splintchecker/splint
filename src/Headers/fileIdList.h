@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -32,8 +32,12 @@ extern fileIdList fileIdList_create (void);
 
 extern bool fileIdList_isEmpty (/*@sef@*/ fileIdList p_f) /*@*/ ;
 
+extern fileIdList fileIdList_append (/*@only@*/ fileIdList p_f1, /*@temp@*/ fileIdList p_f2) 
+   /*@modifies p_f1@*/ ;
+# define fileIdList_append(f1,f2) ctypeList_append((ctypeList)(f1), (ctypeList)(f2))
+
 extern void fileIdList_add (fileIdList p_f, fileId p_fid) /*@modifies p_f@*/;
-# define fileIdList_add(f, el)     ctypeList_addh((ctypeList)(f), (ctype)(el))
+# define fileIdList_add(f, el) ctypeList_addh((ctypeList)(f), (ctype)(el))
 
 extern int fileIdList_size (/*@sef@*/ fileIdList p_f);
 # define fileIdList_size(ft)       ctypeList_size((ctypeList)(ft))

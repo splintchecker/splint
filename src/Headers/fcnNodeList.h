@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@
 
 typedef /*@only@*/ fcnNode o_fcnNode;
 
-abst_typedef /*@null@*/ struct _fcnNodeList
+abst_typedef /*@null@*/ struct
 {
   int nelements;
   int nspace;

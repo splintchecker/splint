@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -24,11 +24,8 @@
 # define RCFILE         ".lclintrc"
 # endif
 
-/*@constant observer char *C_SUFFIX; @*/
-# define C_SUFFIX               ".c"
-
-/*@constant observer char *LARCH_PATH; @*/
-# define LARCH_PATH		"LARCH_PATH"
+/*@constant observer cstring LARCH_PATH; @*/
+# define LARCH_PATH		cstring_makeLiteralTemp ("LARCH_PATH")
 
 /*@constant observer char *LCLIMPORTDIR; @*/
 # define LCLIMPORTDIR           "LCLIMPORTDIR"
@@ -69,7 +66,7 @@
 # define MAX_LINE_LENGTH 1024
 
 /*@constant int MAX_DUMP_LINE_LENGTH; @*/
-# define MAX_DUMP_LINE_LENGTH 8192
+# define MAX_DUMP_LINE_LENGTH 16384
 
 /*@constant int MINLINELEN; @*/
 # define MINLINELEN 20
@@ -96,6 +93,12 @@
 
 /*@constant int DEFAULT_LINELEN; @*/
 # define DEFAULT_LINELEN 80
+
+/*@constant int DEFAULT_BUGSLIMIT; @*/
+# define DEFAULT_BUGSLIMIT 3
+
+/*@constant int DEFAULT_INDENTSPACES; @*/
+# define DEFAULT_INDENTSPACES 3
 
 /*
 ** These constants are based on implementation limits in ANSI standard,
@@ -170,8 +173,8 @@
 ** Minimum version with compatible libraries.
 */
 
-/*@constant float LCL_MIN_VERSION; @*/
-# define LCL_MIN_VERSION 2.2
+/*@constant float LCLINT_LIBVERSION; @*/
+# define LCLINT_LIBVERSION 2.6
 
 /*
 ** Flex doesn't pre-process input, so remember to copy these manually

@@ -12,128 +12,128 @@
 /*@only@*/ exprData exprData_makePair (/*@keep@*/ exprNode p_a, /*@keep@*/ exprNode p_b);
 
 /*@-declundef*/
-/*static*/ void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind);
+/*static*/ void exprData_freeShallow (/*@only@*/ exprData p_data, exprKind p_kind);
 
-/*static*/ void exprData_free (/*@only@*/ exprData data, exprKind kind);
+/*static*/ void exprData_free (/*@only@*/ exprData p_data, exprKind p_kind);
 
-/*static*/ /*@exposed@*/ exprNode exprData_getInitNode (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getInitNode (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ idDecl exprData_getInitId (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ idDecl exprData_getInitId (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getOpA (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getOpA (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getOpB (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getOpB (exprData p_data) /*@*/;
 
-/*static*/ /*@observer@*/ lltok exprData_getOpTok (exprData data) /*@*/;
+/*static*/ /*@observer@*/ lltok exprData_getOpTok (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getPairA (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getPairA (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getPairB (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getPairB (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ uentry exprData_getIterSname (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ uentry exprData_getIterSname (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNodeList exprData_getIterAlist (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNodeList exprData_getIterAlist (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getIterBody (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getIterBody (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ uentry exprData_getIterEname (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ uentry exprData_getIterEname (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getFcn (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getFcn (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNodeList exprData_getArgs (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNodeList exprData_getArgs (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTriplePred (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTriplePred (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ uentry exprData_getIterCallIter (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ uentry exprData_getIterCallIter (exprData p_data) /*@*/;
 
 /*static*/ /*@exposed@*/ exprNodeList
-exprData_getIterCallArgs (exprData data) /*@*/;
+exprData_getIterCallArgs (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTripleInit (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTripleInit (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTripleTrue (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTripleTrue (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTripleTest (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTripleTest (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTripleFalse (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTripleFalse (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getTripleInc (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getTripleInc (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getFieldNode (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getFieldNode (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ cstring exprData_getFieldName (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ cstring exprData_getFieldName (exprData p_data) /*@*/;
 
-/*static*/ /*@observer@*/ lltok exprData_getUopTok (exprData data) /*@*/;
+/*static*/ /*@observer@*/ lltok exprData_getUopTok (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getUopNode (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getUopNode (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getCastNode (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ exprNode exprData_getCastNode (exprData p_data) /*@*/;
 
-/*static*/ /*@observer@*/ lltok exprData_getCastTok (exprData data) /*@*/;
+/*static*/ /*@observer@*/ lltok exprData_getCastTok (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ qtype exprData_getCastType (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ qtype exprData_getCastType (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ cstring exprData_getLiteral (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ cstring exprData_getLiteral (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ cstring exprData_getId (exprData data) /*@*/;
+/*static*/ /*@exposed@*/ cstring exprData_getId (exprData p_data) /*@*/;
 
-/*static*/ /*@observer@*/ lltok exprData_getTok (exprData data) /*@*/;
+/*static*/ /*@observer@*/ lltok exprData_getTok (exprData p_data) /*@*/;
 
-/*static*/ /*@exposed@*/ qtype exprData_getType (exprData data) /*@*/ ;
+/*static*/ /*@exposed@*/ qtype exprData_getType (exprData p_data) /*@*/ ;
 
-/*static*/ /*@exposed@*/ qtype exprData_getOffsetType (exprData data) /*@*/ ;
+/*static*/ /*@exposed@*/ qtype exprData_getOffsetType (exprData p_data) /*@*/ ;
 
-/*static*/ /*@exposed@*/ cstringList exprData_getOffsetName (exprData data) /*@*/ ;
+/*static*/ /*@exposed@*/ cstringList exprData_getOffsetName (exprData p_data) /*@*/ ;
 
-/*static*/ /*@exposed@*/ exprNode exprData_getSingle (exprData data);
-
-/*static*/ /*@only@*/ exprData 
-exprData_makeOp (/*@keep@*/ exprNode a, /*@keep@*/ exprNode b, /*@keep@*/ lltok op);
-
-/*static*/ /*@only@*/ exprData exprData_makeUop (/*@keep@*/ exprNode a, /*@keep@*/ lltok op);
-
-/*static*/ /*@only@*/ exprData exprData_makeSingle (/*@only@*/ exprNode a);
-
-/*static*/ /*@only@*/ exprData exprData_makeTok (/*@only@*/ lltok op);
+/*static*/ /*@exposed@*/ exprNode exprData_getSingle (exprData p_data);
 
 /*static*/ /*@only@*/ exprData 
-exprData_makeIter (/*@exposed@*/ uentry sname, /*@keep@*/ exprNodeList args,
-		   /*@keep@*/ exprNode body, /*@exposed@*/ uentry ename);
+exprData_makeOp (/*@keep@*/ exprNode p_a, /*@keep@*/ exprNode p_b, /*@keep@*/ lltok p_op);
 
-/*static*/ /*@only@*/ exprData exprData_makeTriple (/*@keep@*/ exprNode pred, 
-						/*@keep@*/ exprNode tbranch, 
-						/*@keep@*/ exprNode fbranch);
+/*static*/ /*@only@*/ exprData exprData_makeUop (/*@keep@*/ exprNode p_a, /*@keep@*/ lltok p_op);
 
-/*static*/ /*@only@*/ exprData exprData_makeCall (/*@keep@*/ exprNode fcn,
-					      /*@keep@*/ exprNodeList args);
+/*static*/ /*@only@*/ exprData exprData_makeSingle (/*@only@*/ exprNode p_a);
 
-
-/*static*/ /*@only@*/ exprData exprData_makeIterCall (/*@dependent@*/ uentry iter,
-						  /*@keep@*/ exprNodeList args);
-
-/*static*/ /*@only@*/ exprData exprData_makeField (/*@keep@*/ exprNode rec, 
-					       /*@keep@*/ cstring field);
-
-/*static*/ /*@only@*/ exprData exprData_makeOffsetof (/*@only@*/ qtype q,
-						  /*@keep@*/ cstringList s);
-
-
-/*static*/ /*@only@*/ exprData exprData_makeSizeofType (/*@only@*/ qtype q);
+/*static*/ /*@only@*/ exprData exprData_makeTok (/*@only@*/ lltok p_op);
 
 /*static*/ /*@only@*/ exprData 
-  exprData_makeCast (/*@keep@*/ lltok tok, /*@keep@*/ exprNode e, /*@only@*/ qtype q);
+exprData_makeIter (/*@exposed@*/ uentry p_sname, /*@keep@*/ exprNodeList p_args,
+		   /*@keep@*/ exprNode p_body, /*@exposed@*/ uentry p_ename);
+
+/*static*/ /*@only@*/ exprData exprData_makeTriple (/*@keep@*/ exprNode p_pred, 
+						/*@keep@*/ exprNode p_tbranch, 
+						/*@keep@*/ exprNode p_fbranch);
+
+/*static*/ /*@only@*/ exprData exprData_makeCall (/*@keep@*/ exprNode p_fcn,
+					      /*@keep@*/ exprNodeList p_args);
+
+
+/*static*/ /*@only@*/ exprData exprData_makeIterCall (/*@dependent@*/ uentry p_iter,
+						  /*@keep@*/ exprNodeList p_args);
+
+/*static*/ /*@only@*/ exprData exprData_makeField (/*@keep@*/ exprNode p_rec, 
+					       /*@keep@*/ cstring p_field);
+
+/*static*/ /*@only@*/ exprData exprData_makeOffsetof (/*@only@*/ qtype p_q,
+						  /*@keep@*/ cstringList p_s);
+
+
+/*static*/ /*@only@*/ exprData exprData_makeSizeofType (/*@only@*/ qtype p_q);
 
 /*static*/ /*@only@*/ exprData 
-  exprData_makeInit (/*@keep@*/ idDecl t, /*@keep@*/ exprNode e);
+  exprData_makeCast (/*@keep@*/ lltok p_tok, /*@keep@*/ exprNode p_e, /*@only@*/ qtype p_q);
+
+/*static*/ /*@only@*/ exprData 
+  exprData_makeInit (/*@keep@*/ idDecl p_t, /*@keep@*/ exprNode p_e);
 
 
-/*static*/ /*@only@*/ exprData exprData_makeCond (/*@keep@*/ exprNode pred, 
-					      /*@keep@*/ exprNode ifclause, 
-					      /*@keep@*/ exprNode elseclause);
+/*static*/ /*@only@*/ exprData exprData_makeCond (/*@keep@*/ exprNode p_pred, 
+					      /*@keep@*/ exprNode p_ifclause, 
+					      /*@keep@*/ exprNode p_elseclause);
 
-/*static*/ /*@only@*/ exprData exprData_makeFor (/*@keep@*/ exprNode init, 
-					     /*@keep@*/ exprNode pred, 
-					     /*@keep@*/ exprNode inc);
+/*static*/ /*@only@*/ exprData exprData_makeFor (/*@keep@*/ exprNode p_init, 
+					     /*@keep@*/ exprNode p_pred, 
+					     /*@keep@*/ exprNode p_inc);
 
 
 /*@=declundef*/

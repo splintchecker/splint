@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,7 +12,7 @@
 # ifndef SORTSET_H
 # define SORTSET_H
 
-abst_typedef /*@null@*/ struct _sortSet
+abst_typedef /*@null@*/ struct 
 {
   int entries;
   int nspace;

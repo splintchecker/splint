@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -22,7 +22,8 @@ typedef enum {
   SR_NOTHING,
   SR_INTERNAL,
   SR_SPECSTATE,
-  SR_SYSTEM
+  SR_SYSTEM,
+  SR_GLOBALMARKER
 } speckind;
     
 typedef enum { 
@@ -45,37 +46,37 @@ typedef enum {
   SK_UNKNOWN 
 } skind;
 
-typedef struct _cref
+typedef struct
 {
   int    lexlevel;
   usymId index;
 } *cref;
 
-typedef struct _ainfo
+typedef struct
 {
   /*@exposed@*/ /*@notnull@*/ sRef arr;
   bool indknown;
   int  ind;
 } *ainfo;
 
-typedef struct _fldinfo
+typedef struct
 {
   /*@exposed@*/ /*@notnull@*/  sRef rec;
   /*@observer@*/ cstring field;
 } *fldinfo ;
 
-typedef struct _cjinfo
+typedef struct
 {
   /*@exposed@*/ /*@notnull@*/ sRef a;
   /*@exposed@*/ /*@notnull@*/ sRef b;
 } *cjinfo ;
 
-typedef union _sinfo
+typedef union
 {
   /*@only@*/ cref     cvar;
              int      paramno;
   /*@only@*/ ainfo    arrayfetch;
-  /*@only@*/ fldinfo    field;
+  /*@only@*/ fldinfo  field;
              ctype    object;
   /*@observer@*/ cstring fname; /* unconstrained, new */
   /*@exposed@*/ /*@notnull@*/ sRef     ref;
@@ -83,20 +84,16 @@ typedef union _sinfo
              speckind   spec;
 } *sinfo;
   
-typedef /*@null@*/ struct _alinfo
-{
-  /*@only@*/ fileloc  loc;
-  /*@observer@*/ sRef ref;
-  /*@observer@*/ uentry ue;
-} *alinfo;
-
-struct _sRef
+struct s_sRef
 {
   /* does it need to be inside parens (macros) */
-  bool safe      BOOLBITS; 
+  bool safe;
 
   /* has it been modified */
-  bool modified  BOOLBITS;
+  bool modified; /*  BOOLBITS; */
+
+  /* for debugging: make this sRef as immutable. */
+  bool immut; /*  BOOLBITS; */
 
   skind kind;
   ctype type;
@@ -105,7 +102,7 @@ struct _sRef
   nstate nullstate;
 
   /* start modifications: We keep a track of the buf state(nullterm info)*/
-  struct _bbufinfo bufinfo;
+  struct s_bbufinfo bufinfo;
   /* end modifications */
 
   alkind aliaskind;
@@ -115,31 +112,38 @@ struct _sRef
   exkind oexpkind;
   
   /* where it becomes observer/exposed */
-  /*@null@*/ /*@only@*/ alinfo expinfo;  
+  /*@null@*/ /*@only@*/ stateInfo expinfo;  
 
   /* where it changed alias kind */
-  /*@null@*/ /*@only@*/ alinfo aliasinfo;
+  /*@null@*/ /*@only@*/ stateInfo aliasinfo;
 
   /* where it is defined/allocated */
-  /*@null@*/ /*@only@*/ alinfo definfo;  
+  /*@null@*/ /*@only@*/ stateInfo definfo;  
 
-  /* where it changes null state */
-  /*@null@*/ /*@only@*/ alinfo nullinfo;  
+  /* where it is null */
+  /*@null@*/ /*@only@*/ stateInfo nullinfo;  
 
   /*@only@*/ /*@relnull@*/ sinfo info;
   
   /* stores fields for structs, elements for arrays, derefs for pointers */
   /*@only@*/ sRefSet deriv; 
+
+  /* sRef's include a lookup table of state variables. */
+  /*@only@*/ valueTable state;
 } ;
 
 extern bool sRef_perhapsNull (sRef p_s);
 extern bool sRef_possiblyNull (sRef p_s);
 extern bool sRef_definitelyNull (sRef p_s);
 
+extern bool sRef_definitelyNullContext (sRef p_s);
+extern bool sRef_definitelyNullAltContext (sRef p_s);
+
 extern void sRef_setNullError (sRef p_s);
 extern void sRef_setNullUnknown (sRef p_s, fileloc p_loc);
 extern void sRef_setNotNull (sRef p_s, fileloc p_loc);
 extern void sRef_setNullState (sRef p_s, nstate p_n, fileloc p_loc);
+extern void sRef_setNullStateN (sRef p_s, nstate p_n);
 extern void sRef_setNullStateInnerComplete (sRef p_s, nstate p_n, fileloc p_loc);
 extern void sRef_setPosNull (sRef p_s, fileloc p_loc);
 extern void sRef_setDefNull (sRef p_s, fileloc p_loc);
@@ -157,7 +161,6 @@ extern void sRef_copyRealDerivedComplete (sRef p_s1, sRef p_s2) /*@modifies p_s1
 extern nstate sRef_getNullState (/*@sef@*/ sRef p_s) /*@*/ ;
 extern bool sRef_isNotNull (sRef p_s) /*@*/ ;
 
-# define sRef_getNullState(s)    (sRef_isValid(s) ? (s)->nullstate : NS_UNKNOWN)
 extern bool sRef_isDefinitelyNull (sRef p_s) /*@*/ ;
 						      
 extern /*@falsenull@*/ bool sRef_isLocalVar (sRef p_s) /*@*/ ;
@@ -193,7 +196,6 @@ extern bool sRef_stateKnown (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_stateKnown(s)       (sRef_isValid(s) && (s)->defstate != SS_UNKNOWN)
 
 extern alkind sRef_getAliasKind (/*@sef@*/ sRef p_s) /*@*/ ;
-# define sRef_getAliasKind(s)     (sRef_isValid(s) ? (s)->aliaskind : AK_ERROR)
 
 extern alkind sRef_getOrigAliasKind (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_getOrigAliasKind(s) (sRef_isValid(s) ? (s)->oaliaskind : AK_ERROR)
@@ -213,7 +215,7 @@ extern void sRef_clearDerived (sRef p_s);
 extern void sRef_clearDerivedComplete (sRef p_s);
 extern /*@exposed@*/ sRef sRef_getBaseSafe (sRef p_s);
 
-extern /*@observer@*/ sRefSet sRef_derivedFields (/*@dependent@*/ sRef p_rec) /*@*/ ;
+extern /*@observer@*/ sRefSet sRef_derivedFields (/*@temp@*/ sRef p_rec) /*@*/ ;
 extern bool sRef_sameName (sRef p_s1, sRef p_s2) /*@*/ ;
 extern bool sRef_isDirectParam (sRef p_s) /*@*/ ;
 extern /*@exposed@*/ sRef sRef_makeAnyArrayFetch (/*@exposed@*/ sRef p_arr);
@@ -236,17 +238,20 @@ extern /*@falsenull@*/ bool sRef_isKindSpecial (/*@sef@*/ sRef p_s) /*@*/ ;
 extern /*@observer@*/ cstring sRef_nullMessage (sRef p_s) /*@*/ ;
 
 extern bool sRef_isSystemState (sRef p_s) /*@*/ ;
+extern bool sRef_isGlobalMarker (sRef p_s) /*@*/ ;
 extern bool sRef_isInternalState (sRef p_s) /*@*/ ;
 extern bool sRef_isResult (sRef p_s) /*@*/ ;
 extern bool sRef_isSpecInternalState (sRef p_s) /*@*/ ;
 extern bool sRef_isSpecState (sRef p_s) /*@*/ ;
 extern bool sRef_isNothing (sRef p_s) /*@*/ ;
 
-extern bool sRef_isGlobal (sRef p_s) /*@*/ ;
+extern bool sRef_isFileOrGlobalScope (sRef p_s) /*@*/ ;
 extern bool sRef_isReference (sRef p_s) /*@*/ ;
 
 extern ctype sRef_deriveType (sRef p_s, uentryList p_cl) /*@*/ ;
 extern ctype sRef_getType (sRef p_s) /*@*/ ;
+
+extern void sRef_markImmutable (sRef p_s) /*@modifies p_s@*/ ;
 
 extern /*@falsenull@*/ bool sRef_isAddress (sRef p_s) /*@*/ ;
 extern /*@falsenull@*/ bool sRef_isArrayFetch (sRef p_s) /*@*/ ;
@@ -259,7 +264,7 @@ extern /*@falsenull@*/ bool sRef_isPointer (sRef p_s) /*@*/ ;
 extern void sRef_setType (sRef p_s, ctype p_t);
 extern void sRef_setTypeFull (sRef p_s, ctype p_t);
 extern void sRef_mergeNullState (sRef p_s, nstate p_n);
-extern void sRef_setLastReference (sRef p_s, sRef p_ref, fileloc p_loc);
+extern void sRef_setLastReference (/*@temp@*/ sRef p_s, /*@exposed@*/ sRef p_ref, fileloc p_loc);
 extern bool sRef_canModify (sRef p_s, sRefSet p_sl) /*@modifies p_s@*/ ;
 extern bool sRef_canModifyVal (sRef p_s, sRefSet p_sl) /*@modifies p_s@*/ ;
 extern bool sRef_isIReference (sRef p_s) /*@*/ ;
@@ -269,6 +274,7 @@ extern bool sRef_isModified (sRef p_s) /*@*/ ;
 extern bool sRef_isExternallyVisible (sRef p_s) /*@*/ ;
 extern int sRef_compare (sRef p_s1, sRef p_s2) /*@*/ ;
 extern bool sRef_realSame (sRef p_s1, sRef p_s2) /*@*/ ;
+extern bool sRef_sameObject (sRef p_s1, sRef p_s2) /*@*/ ;
 extern bool sRef_same (sRef p_s1, sRef p_s2) /*@*/ ;
 extern bool sRef_similar (sRef p_s1, sRef p_s2) /*@*/ ;
 extern /*@observer@*/ cstring sRef_getField (sRef p_s) /*@*/ ;
@@ -285,23 +291,25 @@ extern void sRef_setDefinedNCComplete (sRef p_s, fileloc p_loc);
 extern int sRef_getParam (sRef p_s) /*@*/ ;
 extern int sRef_lexLevel (sRef p_s) /*@*/ ;
 extern void sRef_setOrigAliasKind (sRef p_s, alkind p_kind);
+
 extern /*@exposed@*/ sRef 
   sRef_fixBase (/*@returned@*/ sRef p_s, /*@returned@*/ sRef p_base)
   /*@modifies p_s, p_base@*/ ;
 
 extern void sRef_showNotReallyDefined (sRef p_s) /*@modifies g_msgstream@*/ ;
 
-extern void sRef_enterFunctionScope (void);
-extern void sRef_setGlobalScope (void);
-extern void sRef_exitFunctionScope (void);
-extern void sRef_clearGlobalScopeSafe (void);
-extern void sRef_setGlobalScopeSafe (void);
+extern void sRef_enterFunctionScope (void) /*@modifies internalState@*/ ;
+extern void sRef_setGlobalScope (void) /*@modifies internalState@*/ ;
+extern bool sRef_inGlobalScope (void) /*@*/ ;
+extern void sRef_exitFunctionScope (void) /*@modifies internalState@*/ ;
+extern void sRef_clearGlobalScopeSafe (void) /*@modifies internalState@*/ ;
+extern void sRef_setGlobalScopeSafe (void) /*@modifies internalState@*/ ;
 
 extern /*@notnull@*/ /*@exposed@*/ sRef 
   sRef_buildArrayFetch (/*@exposed@*/ sRef p_arr);
 extern /*@notnull@*/ /*@exposed@*/ sRef sRef_buildArrayFetchKnown (/*@exposed@*/ sRef p_arr, int p_i);
 extern /*@exposed@*/ sRef
-  sRef_buildField (sRef p_rec, /*@dependent@*/ cstring p_f) 
+  sRef_buildField (/*@exposed@*/ sRef p_rec, /*@dependent@*/ cstring p_f) 
   /*@modifies p_rec@*/ ;
 extern /*@exposed@*/ sRef sRef_buildPointer (/*@exposed@*/ sRef p_t) 
   /*@modifies p_t@*/ ;
@@ -313,9 +321,9 @@ extern /*@falsenull@*/ bool sRef_isUnconstrained (sRef p_s) /*@*/ ;
 
 extern /*@observer@*/ cstring sRef_unconstrainedName (sRef p_s) /*@*/ ;
 
-extern /*@notnull@*/ /*@exposed@*/ sRef sRef_makeArrayFetch (sRef p_arr) /*@*/ ;
+extern /*@notnull@*/ /*@exposed@*/ sRef sRef_makeArrayFetch (/*@exposed@*/ sRef p_arr) /*@*/ ;
 extern /*@notnull@*/ /*@exposed@*/ sRef
-  sRef_makeArrayFetchKnown (sRef p_arr, int p_i);
+  sRef_makeArrayFetchKnown (/*@exposed@*/ sRef p_arr, int p_i);
 extern /*@notnull@*/ /*@dependent@*/ sRef
   sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef p_a, /*@exposed@*/ sRef p_b);
 extern /*@notnull@*/ /*@dependent@*/ sRef
@@ -327,31 +335,32 @@ extern /*@exposed@*/ sRef
 extern /*@notnull@*/ /*@dependent@*/ sRef 
   sRef_makeGlobal (usymId p_l, ctype p_ct);
 extern /*@exposed@*/ sRef
-  sRef_makeNCField (sRef p_rec, /*@dependent@*/ cstring p_f) /*@*/ ;
+  sRef_makeNCField (/*@exposed@*/ sRef p_rec, /*@dependent@*/ cstring p_f) /*@*/ ;
 extern void sRef_maybeKill (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern /*@unused@*/ /*@notnull@*/ /*@dependent@*/ sRef 
   sRef_makeObject (ctype p_o) /*@*/ ;
 extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeType (ctype p_ct) /*@*/ ;
 extern /*@notnull@*/ /*@dependent@*/ sRef sRef_makeParam (int p_l, ctype p_ct) /*@*/ ;
-extern /*@exposed@*/ sRef sRef_makePointer (sRef p_s) /*@modifies p_s@*/ ;
+extern /*@exposed@*/ sRef sRef_makePointer (/*@exposed@*/ sRef p_s) /*@modifies p_s@*/ ;
 extern void sRef_makeSafe (sRef p_s) /*@modifies p_s@*/ ;
 extern void sRef_makeUnsafe (sRef p_s) /*@modifies p_s@*/ ;
-extern sRef sRef_makeUnknown (void) /*@*/ ;
 
-extern sRef sRef_makeNothing (void) /*@*/ ;
-extern sRef sRef_makeInternalState (void) /*@*/ ;
-extern sRef sRef_makeSpecState (void) /*@*/ ;
-extern sRef sRef_makeSystemState (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeUnknown (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeNothing (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeInternalState (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeSpecState (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeGlobalMarker (void) /*@*/ ;
+extern /*@dependent@*/ sRef sRef_makeSystemState (void) /*@*/ ;
 
-extern /*@notnull@*/ sRef sRef_makeResult (void) /*@*/ ;
+extern /*@dependent@*/ /*@notnull@*/ sRef sRef_makeResult (void) /*@*/ ;
 extern /*@exposed@*/ sRef 
   sRef_fixResultType (/*@returned@*/ sRef p_s, ctype p_typ, uentry p_ue)
   /*@modifies p_s@*/;
 
 extern void sRef_setParamNo (sRef p_s, int p_l) /*@modifies p_s;@*/;
 
-extern /*@notnull@*/ sRef 
-  sRef_makeNew (ctype p_ct, sRef p_t, /*@exposed@*/ cstring p_name);
+extern /*@notnull@*/ /*@dependent@*/ sRef 
+  sRef_makeNew (ctype p_ct, sRef p_t, /*@exposed@*/ cstring p_name) ;
 
 extern usymId sRef_getScopeIndex (sRef p_s) /*@*/ ;
 extern /*@exposed@*/ uentry sRef_getBaseUentry (sRef p_s);
@@ -366,7 +375,7 @@ extern /*@exposed@*/ sRef
     12/24/2000
   */
   
-  /*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef s, /*@observer@*/ /*@temp@*/ exprNodeList args);
+/*@only@*/ constraintExpr sRef_fixConstraintParam (/*@observer@*/  sRef p_s, /*@observer@*/ /*@temp@*/ exprNodeList p_args);
   
 extern bool sRef_isUnionField (sRef p_s);
 extern void sRef_setModified (sRef p_s);
@@ -404,6 +413,7 @@ extern void sRef_setKeptComplete (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setFresh (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_setShared (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern void sRef_showAliasInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
+extern void sRef_showMetaStateInfo (sRef p_s, cstring p_key) /*@modifies g_msgstream@*/ ; 
 extern void sRef_showNullInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
 extern void sRef_showStateInfo (sRef p_s) /*@modifies g_msgstream@*/ ;
 extern void sRef_setStateFromType (sRef p_s, ctype p_ct) /*@modifies p_s@*/ ;
@@ -457,6 +467,10 @@ extern bool sRef_isPartial (/*@sef@*/ sRef p_s) /*@*/ ;
 extern bool sRef_isStateSpecial (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isStateSpecial(s) \
   ((sRef_isValid(s)) && ((s)->defstate == SS_SPECIAL))
+
+extern bool sRef_makeStateSpecial (sRef p_s) 
+     /*@modifies p_s@*/ 
+     /* returns false is sRef already has an inconsistend defstate */ ;
 
 extern bool sRef_isStateDefined (/*@sef@*/ sRef p_s) /*@*/ ;
 # define sRef_isStateDefined(s) \
@@ -523,10 +537,10 @@ extern void sRef_setExKind (sRef p_s, exkind p_exp, fileloc p_loc) /*@modifies p
 extern void sRef_setExposed (sRef p_s, fileloc p_loc) /*@modifies p_s@*/;
 
 extern bool sRef_isAnyParam (sRef p_s) /*@*/ ;
-extern /*@observer@*/ sRef sRef_getAliasInfoRef (/*@exposed@*/ sRef p_s) /*@*/ ;
+extern /*@observer@*/ sRef sRef_getAliasInfoRef (/*@temp@*/ sRef p_s) /*@*/ ;
 extern bool sRef_hasAliasInfoRef (sRef p_s) /*@*/ ;
 
-extern /*@exposed@*/ sRef sRef_constructPointer (sRef p_t) /*@modifies p_t*/ ;
+extern /*@exposed@*/ sRef sRef_constructPointer (/*@exposed@*/ sRef p_t) /*@modifies p_t*/ ;
 extern bool sRef_isAliasCheckedGlobal (sRef p_s) /*@*/ ;
 extern bool sRef_includedBy (sRef p_small, sRef p_big) /*@*/ ;
 extern /*@dependent@*/ /*@exposed@*/ sRef sRef_makeExternal (/*@exposed@*/ sRef p_t) /*@*/ ;
@@ -545,7 +559,7 @@ extern void sRef_mergeOptState (sRef p_res, sRef p_other, clause p_cl, fileloc p
    /*@modifies p_res, p_other@*/ ;
 extern void sRef_mergeStateQuiet (sRef p_res, sRef p_other)
    /*@modifies p_res@*/ ;
-extern void sRef_mergeStateQuietReverse (sRef p_res, sRef p_other)
+extern void sRef_mergeStateQuietReverse (/*@dependent@*/ sRef p_res, /*@dependent@*/ sRef p_other)
    /*@modifies p_res@*/ ;
 extern void sRef_setStateFromUentry (sRef p_s, uentry p_ue)
    /*@modifies p_s@*/ ;
@@ -560,13 +574,16 @@ extern void sRef_setDerivNullState (sRef p_set, sRef p_guide, nstate p_ns)
 
 extern void sRef_clearGlobalScope (void) /*@modifies internalState@*/ ;
 
-extern sRef sRef_makeDerived (/*@exposed@*/ sRef p_t);
+extern /*@dependent@*/ sRef sRef_makeDerived (/*@exposed@*/ sRef p_t);
 
 extern sstate sRef_getDefState (sRef p_s) /*@*/ ;
 extern void sRef_setDefState (sRef p_s, sstate p_defstate, fileloc p_loc);
 extern void sRef_showRefLost (sRef p_s);
 extern void sRef_showRefKilled (sRef p_s);
 extern /*@exposed@*/ sRef sRef_updateSref (sRef p_s);
+
+extern void sRef_reflectAnnotation (sRef p_s, annotationInfo p_a, fileloc p_loc);
+extern /*@observer@*/ valueTable sRef_getValueTable (sRef p_s) /*@*/ ;
 
 extern void sRef_aliasCheckPred (bool (p_predf) (sRef, exprNode, sRef, exprNode),
 				 /*@null@*/ bool (p_checkAliases) (sRef),
@@ -587,15 +604,13 @@ extern /*@exposed@*/ /*@notnull@*/ sRef sRef_getConjB (sRef p_s) /*@*/ ;
 extern /*@only@*/ cstring sRef_unparsePreOpt (sRef p_s) /*@*/ ;
 
 extern bool sRef_hasName (sRef p_s) /*@*/ ;
-
 extern void sRef_free (/*@only@*/ sRef p_s);
-
 extern void sRef_setObserver (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 
 /* start modifications */
 /* functions for making modification to null-term info */
-extern void sRef_setNullTerminatedStateInnerComplete(sRef p_s, struct _bbufinfo p_b, fileloc p_loc);
-extern struct _bbufinfo sRef_getNullTerminatedState(sRef p_s);
+extern void sRef_setNullTerminatedStateInnerComplete(sRef p_s, struct s_bbufinfo p_b, fileloc p_loc);
+extern struct s_bbufinfo sRef_getNullTerminatedState(sRef p_s);
 extern void sRef_setNullTerminatedState (sRef p_s);
 extern void sRef_setPossiblyNullTerminatedState (sRef p_s);
 extern void sRef_setNotNullTerminatedState (sRef p_s);
@@ -613,7 +628,7 @@ extern int sRef_getLen(sRef p_s);
 #define sRef_getLen(p_s) \
    ((p_s)->bufinfo.len)
 
-extern void sRef_hasBufStateInfo(sRef p_s);
+extern bool sRef_hasBufStateInfo(sRef p_s);
 # define sRef_hasBufStateInfo(p_s) \
     (sRef_isValid(p_s)) 
  
@@ -641,9 +656,22 @@ extern  bool sRef_isFixedArray (sRef p_s) /*@*/;
 extern long int sRef_getArraySize (sRef p_s) /*@*/;
 
 extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
+extern void sRef_resetLen (sRef p_s) /*@modifies p_s@*/ ;
+
 /* end modifications */
 
-extern void sRef_resetLen (sRef p_s) /*@modifies p_s@*/ ;
+extern void sRef_setMetaStateValueComplete (sRef p_s, cstring p_key, int p_value, fileloc p_loc)
+   /*@modifies p_s@*/ ; 
+
+extern void sRef_setMetaStateValue (sRef p_s, cstring p_key, int p_value, fileloc p_loc) 
+   /*@modifies p_s@*/ ;
+
+extern /*@observer@*/ stateValue sRef_getMetaStateValue (sRef p_s, cstring p_key) /*@*/ ;
+
+extern bool sRef_checkMetaStateValue (sRef p_s, cstring p_key, int p_value) 
+   /*@modifies p_s@*/ ;
+
+extern /*@mayexit@*/ void sRef_checkValid (/*@temp@*/ sRef p_s) /*@modifies stderr@*/ ;
 
 # else
 # error "Multiple include"

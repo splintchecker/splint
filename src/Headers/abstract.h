@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -21,26 +21,6 @@
 
 # include "ltoken.h"
 # include "ltokenList.h" 
-
-/*
-** forward declarations for structures
-*/
-
-struct _lclTypeSpecNode; 
-struct _opFormNode;
-struct _strOrUnionNode;
-struct _stmtNode;
-struct _lclPredicateNode;
-struct _typeExpr;
-struct _declaratorNode;
-struct _abstBodyNode;
-struct _functionTermNode;
-struct _quantifiedTermNode;
-struct _sigNode;
-struct _termNode;
-struct _nameNode;
-struct _importNode;
-struct _pairNode;
 
 typedef enum 
 {
@@ -66,13 +46,13 @@ extern void checkBrackets (ltoken p_lb, ltoken p_rb);
 # include "pairNode.h"
 # include "pairNodeList.h"
 
+# include "declaratorNode.h"
+# include "declaratorNodeList.h"
+
 # include "declaratorInvNode.h"
 # include "declaratorInvNodeList.h"
 
 # include "typeExpr.h"  /* also defines abstDeclaratorNode */
-
-# include "declaratorNode.h"
-# include "declaratorNodeList.h"
 
 # include "arrayQualNode.h"
 

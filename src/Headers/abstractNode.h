@@ -1,10 +1,10 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 
-typedef struct _abstractNode {
+typedef struct {
   ltoken tok;
   bool isMutable; /* TRUE means it is mutable */
   bool isRefCounted;

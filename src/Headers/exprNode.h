@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -43,26 +43,26 @@ typedef enum
   XPR_BLOCK,      XPR_INITBLOCK, XPR_LABEL
 } exprKind; 
 
-typedef struct _exprOffsetof
+typedef struct 
 {
   /*@only@*/ qtype q;
   /*@only@*/ cstringList field;
 } *exprOffsetof;
 
-typedef struct _exprPair
+typedef struct 
 {
   /*@only@*/ exprNode a;
   /*@only@*/ exprNode b;
 } *exprPair;
 
-typedef struct _exprTriple
+typedef struct
 {
   /*@only@*/ exprNode pred;
   /*@only@*/ exprNode tbranch;
   /*@only@*/ exprNode fbranch;
 } *exprTriple;
 
-typedef struct _exprIter
+typedef struct
 {
   /*@dependent@*/ /*@observer@*/ uentry sname;
   /*@only@*/    exprNodeList args;
@@ -70,51 +70,51 @@ typedef struct _exprIter
   /*@dependent@*/ /*@observer@*/ uentry ename;
 } *exprIter;
 
-typedef struct _exprCall
+typedef struct
 {
   /*@only@*/ exprNode fcn;
   /*@only@*/ exprNodeList args;
 } *exprCall;
 
-typedef struct _exprIterCall
+typedef struct
 {
   /*@dependent@*/ /*@exposed@*/ uentry iter;
   /*@only@*/   exprNodeList args;
 } *exprIterCall;
 
-typedef struct _exprOp
+typedef struct
 {
   /*@only@*/ exprNode a;
   /*@only@*/ exprNode b;
   lltok      op;
 } *exprOp;
 
-typedef struct _exprField
+typedef struct
 {
   /*@only@*/ exprNode rec;
   /*@only@*/ cstring  field;
 } *exprField;
 
-typedef struct _exprUop
+typedef struct
 {
   /*@only@*/ exprNode a;
   lltok      op;
 } *exprUop;
 
-typedef struct _exprCast
+typedef struct
 {
   /*@only@*/ exprNode exp;
 	     lltok    tok;
 	     qtype    q;
 } *exprCast;
 
-typedef struct _exprInit
+typedef struct
 {
   /*@only@*/ exprNode exp;
 	     idDecl   id;
 } *exprInit;
 
-typedef /*@null@*/ union _exprData
+typedef /*@null@*/ union
 {
   cstring literal;
   cstring id;
@@ -138,7 +138,7 @@ typedef /*@null@*/ union _exprData
 /*@constant null exprData exprData_undefined; @*/
 # define exprData_undefined  ((exprData) NULL)
 
-struct _exprNode
+struct s_exprNode
 {
   bool isJumpPoint BOOLBITS; /* expr can be reached non-sequentially */
   bool canBreak BOOLBITS;    /* expr can break (has break, continue) */
@@ -191,7 +191,7 @@ extern /*@unused@*/ /*@falsenull@*/ bool exprNode_isInParens (/*@sef@*/ exprNode
 # define exprNode_isInParens(e) \
   (exprNode_isDefined(e) && (e)->kind == XPR_PARENS)
 
-extern bool exprNode_isStringLiteral (/*@sef@*/ exprNode p_e);
+extern bool exprNode_isStringLiteral (/*@sef@*/ exprNode p_e) /*@*/ ;
 # define exprNode_isStringLiteral(e) \
   (exprNode_isDefined(e) && (e)->kind == XPR_STRINGLITERAL)
 
@@ -233,8 +233,14 @@ extern exprNode exprNode_functionCall (/*@only@*/ exprNode p_f,
 extern /*@notnull@*/ exprNode 
   exprNode_fromIdentifier (/*@observer@*/ uentry p_c) /*@globals internalState@*/ ;
 extern exprNode exprNode_fromUIO (cstring p_c) /*@globals internalState@*/ ;
-extern exprNode exprNode_fieldAccess (/*@only@*/ exprNode p_s, /*@only@*/ cstring p_f) /*@*/ ;
-extern exprNode exprNode_arrowAccess (/*@only@*/ exprNode p_s, /*@only@*/ cstring p_f) /*@*/ ;
+extern exprNode exprNode_fieldAccess (/*@only@*/ exprNode p_s, 
+				      /*@only@*/ lltok p_dot,
+				      /*@only@*/ cstring p_f) /*@*/ ;
+
+extern exprNode exprNode_arrowAccess (/*@only@*/ exprNode p_s,
+				      /*@only@*/ lltok p_arrow,
+				      /*@only@*/ cstring p_f) /*@*/ ;
+
 extern exprNode exprNode_postOp (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_op) 
           /*@modifies p_e@*/ ;
 extern exprNode exprNode_preOp (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_op) /*@*/ ;
@@ -257,8 +263,20 @@ extern exprNode
   exprNode_vaArg (/*@only@*/ lltok p_tok, /*@only@*/ exprNode p_arg, /*@only@*/ qtype p_qt) 
   /*@globals internalState@*/ ;
 
+/*
+** Has surrounding quotes.
+*/
+
 extern exprNode 
   exprNode_stringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
+
+/*
+** No surrounding quotes.
+*/
+
+extern exprNode 
+  exprNode_rawStringLiteral (/*@only@*/ cstring p_t, /*@only@*/ fileloc p_loc) /*@*/ ;
+
 extern exprNode exprNode_comma (/*@only@*/ exprNode p_e1, /*@only@*/ exprNode p_e2)  /*@*/ ;
 extern exprNode exprNode_labelMarker (/*@only@*/ cstring p_label);
 extern exprNode 
@@ -284,13 +302,18 @@ extern exprNode exprNode_break (/*@only@*/ lltok p_l, int p_bqual);
 extern exprNode exprNode_nullReturn (/*@only@*/ lltok p_t);
 extern exprNode exprNode_return (/*@only@*/ exprNode p_e);
 extern /*@dependent@*/ /*@observer@*/ cstring 
-  exprNode_unparse (exprNode p_e) /*@*/ ; 
+exprNode_unparse (/*@temp@*/ exprNode p_e) /*@*/ ; 
 
 extern bool exprNode_isCharLit (exprNode p_e) /*@*/ ;
 extern bool exprNode_isNumLit (exprNode p_e) /*@*/ ;
 
 extern exprNode 
   exprNode_makeInitialization (/*@only@*/ idDecl p_t, /*@only@*/ exprNode p_e);
+
+exprNode exprNode_makeEmptyInitialization (/*@only@*/ idDecl p_t) ;
+
+extern bool exprNode_isInitializer (exprNode p_e) /*@*/ ;
+
 extern bool exprNode_matchType (ctype p_expected, exprNode p_e);
 
 extern /*@notnull@*/ /*@only@*/ exprNode 
@@ -319,8 +342,8 @@ extern /*@notnull@*/ exprNode exprNode_createId (/*@observer@*/ uentry p_c);
 extern exprNode exprNode_cast (/*@only@*/ lltok p_tok, /*@only@*/ exprNode p_e, /*@only@*/ qtype p_q);
 extern bool exprNode_matchLiteral (ctype p_expected, exprNode p_e);
 extern void exprNode_checkUseParam (exprNode p_current);
-extern void exprNode_checkSet (exprNode p_e, sRef p_s);
-extern void exprNode_checkMSet (exprNode p_e, sRef p_s);
+extern void exprNode_checkSet (exprNode p_e, /*@exposed@*/ sRef p_s);
+extern void exprNode_checkMSet (exprNode p_e, /*@exposed@*/ sRef p_s);
 extern exprNode exprNode_checkExpr (/*@returned@*/ exprNode p_e);
 extern bool exprNode_mustEscape (exprNode p_e);
 extern bool exprNode_errorEscape (exprNode p_e);
@@ -342,30 +365,17 @@ extern bool exprNode_isCaseMarker (exprNode p_e) /*@*/ ;
 extern bool exprNode_isLabelMarker (exprNode p_e) /*@*/ ;
 /*@=exportlocal@*/
 
-/* evs 2000-08-22 */
-fileloc exprNode_getNextSequencePoint (exprNode p_e) /*@*/ ;
+extern /*@only@*/ exprNode exprNode_combineLiterals (/*@only@*/ exprNode p_e, /*@only@*/ exprNode p_rest) ;
+
+extern /*@only@*/ fileloc exprNode_getNextSequencePoint (exprNode p_e) ;
 
 /*drl 09-08-2000 */
-exprNode exprNode_fakeCopy (/*@returned@*/ exprNode e);
+// Commenting out because this seems to conflict with Dave Evans version
+//exprNode exprNode_fakeCopy (@returned@ exprNode p_e);
+
 /*drl 01-20-2001*/
-exprNode exprNode_createNew(ctype c);
+exprNode exprNode_createNew(ctype p_c);
+
 # else
 # error "Multiple include"
 # endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

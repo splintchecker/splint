@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -10,7 +10,7 @@
 # ifndef messageLog_H
 # define messageLog_H
 
-typedef struct _msgentry
+typedef struct
 {
   fileloc loc;
   cstring msg;
@@ -18,7 +18,7 @@ typedef struct _msgentry
 
 typedef /*@only@*/ msgentry o_msgentry;
 
-abst_typedef /*@null@*/ struct _messageLog
+abst_typedef /*@null@*/ struct
 {
   int        nelements;
   int        nspace;

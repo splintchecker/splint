@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@ typedef enum {
   PRIV_TYPE, PRIV_FUNCTION 
   } privateKind;
 
-typedef struct _privateNode {
+typedef struct {
   privateKind kind;
   union {
     constDeclarationNode constdeclaration;

@@ -5,7 +5,7 @@
 # ifndef filelocLIST_H
 # define filelocLIST_H
 
-abst_typedef /*@null@*/ struct _filelocList
+abst_typedef /*@null@*/ struct
 {
   int nelements;
   int free;

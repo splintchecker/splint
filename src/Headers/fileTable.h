@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -18,9 +18,9 @@
 */
 
 typedef enum { FILE_NORMAL, FILE_LSLTEMP, FILE_NODELETE,
-	       FILE_HEADER, FILE_MACROS } fileType;
+	       FILE_HEADER, FILE_XH, FILE_MACROS, FILE_METASTATE } fileType;
 
-typedef struct _ftentry
+/*@private@*/ typedef struct
 {
   bool     ftemp     BOOLBITS;
   bool     fsystem   BOOLBITS;
@@ -33,11 +33,11 @@ typedef struct _ftentry
 
 typedef /*@only@*/ ftentry o_ftentry;
 
-abst_typedef /*@null@*/ struct _fileTable
+abst_typedef /*@null@*/ struct
 {
   int nentries;
   int nspace;
-  hashTable htable;
+  cstringTable htable;
   /*@reldef@*/ /*@only@*/ o_ftentry *elements;
 } *fileTable ;
 
@@ -56,6 +56,8 @@ extern /*@observer@*/ cstring fileTable_getNameBase (fileTable p_ft, fileId p_fi
 extern fileId fileTable_addFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
 extern fileId fileTable_addHeaderFile (fileTable p_ft, cstring p_name)
+   /*@modifies p_ft@*/ ;
+extern fileId fileTable_addXHFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
 extern fileId fileTable_addLibraryFile (fileTable p_ft, cstring p_name)
    /*@modifies p_ft@*/ ;
@@ -82,6 +84,13 @@ extern fileId fileTable_addImportFile (fileTable p_ft, cstring p_name)
 
 extern fileId fileTable_addMacrosFile (fileTable p_ft)
    /*@modifies p_ft@*/ ;
+
+extern fileId fileTable_addMetastateFile (fileTable p_ft, cstring p_name)
+   /*@modifies p_ft@*/ ;
+
+extern void fileTable_setFilePath (fileTable p_ft, fileId p_fid, cstring p_path) 
+     /*@modifies p_ft@*/ ;
+
 extern /*@observer@*/ cstring fileTable_getRootName (fileTable p_ft, fileId p_fid) /*@*/ ;
 extern bool fileTable_isHeader       (fileTable p_ft, fileId p_fid) /*@*/ ;
 extern bool fileId_isHeader (fileId p_f) /*@*/ ;
@@ -96,6 +105,7 @@ extern bool fileTable_exists (fileTable p_ft, cstring p_s) /*@*/ ;
 extern void fileTable_free (/*@only@*/ fileTable p_f);
 extern bool fileTable_isSpecialFile (fileTable p_ft, fileId p_fid) /*@*/ ;
 extern bool fileTable_isSystemFile (fileTable p_ft, fileId p_fid) /*@*/ ;
+extern bool fileTable_isXHFile (fileTable p_ft, fileId p_fid) /*@*/ ;
 
 /*@-czechfcns@*/
 extern /*@observer@*/ cstring fileName (fileId p_fid) /*@*/ ;

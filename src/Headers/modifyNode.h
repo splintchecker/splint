@@ -1,9 +1,10 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
-typedef struct _modifyNode {
+
+typedef struct {
   ltoken tok;
   bool modifiesNothing;
   bool hasStoreRefList; 

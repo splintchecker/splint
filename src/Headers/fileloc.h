@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -18,7 +18,7 @@ typedef enum
   FL_PREPROC, FL_RC, FL_EXTERNAL
 } flkind;
 
-struct __fileloc
+struct s_fileloc
 {
   flkind  kind;
   fileId  fid;
@@ -34,6 +34,7 @@ extern fileloc fileloc_update (/*@only@*/ fileloc p_old, fileloc p_fnew)
 
 extern fileloc fileloc_create (fileId p_fid, int p_line, int p_col) /*@*/ ;
 extern bool fileloc_isSystemFile (fileloc p_f1) /*@*/ ;
+extern bool fileloc_isXHFile (fileloc p_f1) /*@*/ ;
 
 # ifndef NOLCL
 extern fileloc fileloc_createSpec (fileId p_fid, int p_line, int p_col) /*@*/ ;
@@ -55,10 +56,11 @@ extern bool fileloc_isSpecialFile (fileloc p_f) /*@*/ ;
 extern bool fileloc_sameBaseFile (fileloc p_f1, fileloc p_f2) /*@*/ ;
 extern /*@observer@*/ cstring fileloc_filename (fileloc p_f) /*@*/ ;
 extern int fileloc_column (fileloc p_f) /*@*/ ;
-extern /*@only@*/ cstring fileloc_unparse (fileloc p_f) /*@*/ ;
+extern cstring fileloc_unparse (fileloc p_f) /*@*/ ;
 extern cstring fileloc_unparseRaw (cstring p_fname, int p_lineno) /*@*/ ;
 extern cstring fileloc_unparseRawCol (cstring p_fname, int p_lineno, int p_col) /*@*/ ;
 extern bool fileloc_sameFile (fileloc p_f1, fileloc p_f2) /*@*/ ;
+extern bool fileloc_sameFileAndLine (fileloc p_f1, fileloc p_f2) /*@*/ ;
 extern void fileloc_free (/*@only@*/ fileloc p_f);
 extern void fileloc_reallyFree (/*@only@*/ fileloc p_f);
 extern int fileloc_lineno (fileloc p_f) /*@*/ ;
@@ -86,13 +88,12 @@ extern /*@truenull@*/ bool fileloc_isUndefined (/*@null@*/ fileloc p_f) /*@*/ ;
 extern bool fileloc_isInvalid (/*@sef@*/ /*@null@*/ fileloc p_f) /*@*/ ;
 
 /*@constant null fileloc fileloc_undefined; @*/
-# define fileloc_undefined      ((fileloc)0)
+# define fileloc_undefined      ((fileloc) NULL)
 # define fileloc_isDefined(f)   ((f) != fileloc_undefined)
 # define fileloc_isUndefined(f) ((f) == fileloc_undefined)
 # define fileloc_isInvalid(f)   (!(fileloc_isValid(f)))
 
 extern bool fileloc_isLib (fileloc p_f) /*@*/ ;
-extern bool fileloc_isRealLib (fileloc p_f) /*@*/ ;
 
 # ifndef NOLCL
 extern fileloc fileloc_fromTok (ltoken p_t) /*@*/ ;
@@ -165,11 +166,9 @@ extern fileloc fileloc_updateFileId (/*@only@*/ fileloc p_old, fileId p_s) /*@*/
 extern fileloc fileloc_makePreproc (fileloc p_loc) /*@*/ ;
 extern fileloc fileloc_makePreprocPrevious (fileloc p_loc) /*@*/ ;
 
-# ifndef NOLCL
 extern bool fileloc_isStandardLibrary (fileloc p_f) /*@*/ ;
-# endif
-
 extern bool fileloc_isStandardLib (fileloc p_f) /*@*/ ;
+
 extern cstring fileloc_unparseFilename (fileloc p_f) /*@*/ ;
 extern bool fileloc_withinLines (fileloc p_f1, fileloc p_f2, int p_n) /*@*/ ;
 extern bool fileloc_isUser (fileloc p_f) /*@*/ ;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
@@ -8,7 +8,7 @@
 
 typedef /*@only@*/ stDeclNode o_stDeclNode;
 
-abst_typedef struct _stDeclNodeList
+abst_typedef struct
 {
   int nelements;
   int nspace;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -50,37 +50,36 @@ typedef enum {
   OSD_FILENOTFOUND,
   OSD_PATHTOOLONG } filestatus;
 
-extern /*@only@*/ char *LSLRootName (char *p_filespec) /*@*/ ;
+extern /*@only@*/ cstring LSLRootName (cstring p_filespec) /*@*/ ;
 
 extern filestatus   
-  osd_getPath (char *p_path, char *p_file, /*@out@*/ char **p_returnPath)
+  osd_getPath (cstring p_path, cstring p_file, /*@out@*/ cstring *p_returnPath)
   /*@modifies *p_returnPath@*/ ;
 
 extern filestatus   
-  osd_getExePath (char *p_path, char *p_file, /*@out@*/ char **p_returnPath)
+  osd_getExePath (cstring p_path, cstring p_file, /*@out@*/ cstring *p_returnPath)
   /*@modifies *p_returnPath@*/ ;
 
-extern bool osd_fileExists (char *p_filespec) /*@*/ ;
-extern /*@observer@*/ char *
-  osd_getEnvironment (char *p_env, /*@returned@*/ char *p_def) /*@*/ ;
+extern bool osd_fileExists (cstring p_filespec) /*@*/ ;
+extern /*@observer@*/ cstring
+  osd_getEnvironment (cstring p_env, /*@returned@*/ cstring p_def) /*@*/ ;
 
-extern filestatus osd_findOnLarchPath (char *p_file, /*@out@*/ char **p_returnPath) 
+extern filestatus osd_findOnLarchPath (cstring p_file, /*@out@*/ cstring *p_returnPath) 
   /*@modifies *p_returnPath@*/ ;
 
-extern /*@observer@*/ /*@null@*/ char *osd_getHomeDir (void) /*@*/ ;
+extern /*@observer@*/  cstring osd_getHomeDir (void) /*@*/ ;
 
-extern /*@observer@*/ /*@null@*/ char *osd_getEnvironmentVariable (char *) ;
+extern /*@observer@*/ cstring osd_getEnvironmentVariable (cstring) ;
 
 # ifndef NOLCL
 /*@constant int CALL_SUCCESS@*/
 # define CALL_SUCCESS 0
-
-extern int osd_system (const char *p_cmd) /*@modifies fileSystem@*/ ;
+extern int osd_system (cstring p_cmd) /*@modifies fileSystem@*/ ;
 # endif
 
-extern int osd_unlink (const char *) /*@modifies fileSystem@*/ ;
-extern cstring osd_fixDefine (char *);
-extern bool osd_fileIsReadable (char *);
+extern int osd_unlink (cstring) /*@modifies fileSystem@*/ ;
+extern cstring osd_fixDefine (cstring);
+extern bool osd_fileIsReadable (cstring);
 
 extern bool osd_isConnectChar (char) /*@*/ ;
 

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -13,9 +13,9 @@ extern unsigned int lsllex (YYSTYPE *p_lval);
 
 extern ltoken LSLScanNextToken(void) /*@modifies internalState@*/ ;	       
 extern void LSLScanFreshToken(ltoken p_tok) /*@modifies internalState@*/ ;
-extern /*@exposed@*/ tsource *LSLScanSource (void) /*@*/ ;	   
+extern /*@exposed@*/ inputStream LSLScanSource (void) /*@*/ ;	   
 extern void LSLScanInit (void) /*@modifies internalState@*/ ;
-extern void LSLScanReset (tsource *p_s) /*@modifies internalState@*/ ;
+extern void LSLScanReset (inputStream p_s) /*@modifies internalState@*/ ;
 extern void LSLScanCleanup (void) /*@modifies internalState@*/ ;
 
 

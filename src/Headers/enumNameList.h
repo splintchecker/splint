@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -15,7 +15,7 @@ extern /*@only@*/ enumName enumName_create (/*@only@*/ cstring p_s) /*@*/ ;
 
 typedef /*@only@*/ enumName o_enumName;
 
-abst_typedef struct _enumNameList
+abst_typedef struct
 {
   int nelements;
   int nspace;

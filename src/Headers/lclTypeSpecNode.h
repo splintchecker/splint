@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,13 +12,13 @@ typedef enum
 
 typedef lclTypeSpecNode lcltsp;
 
-typedef struct _lclconj
+typedef struct
 {
   lcltsp a;
   lcltsp b;
 } *lclconj;
 
-struct _lclTypeSpecNode {
+struct s_lclTypeSpecNode {
   lclTypeSpecKind kind;
   qualList quals;
   union {

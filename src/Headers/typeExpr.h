@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 /*
@@ -11,7 +11,7 @@ typedef enum
   TEXPR_BASE, TEXPR_PTR, TEXPR_ARRAY, TEXPR_FCN
   } typeExprKind;
 
-struct _typeExpr 
+struct s_typeExpr 
 {
   int wrapped; /* number of balanced parentheses around this program node */
   typeExprKind kind; /* different kinds of type constructors */

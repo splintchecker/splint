@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 # ifndef UENTRY_H
@@ -15,7 +15,7 @@
 ** vkind --- need to fix value for consistency in dump files
 */
 
-typedef struct _ucinfo
+typedef struct 
 {
   /*@only@*/ multiVal val;
 	     typeIdSet access;
@@ -47,19 +47,19 @@ typedef enum
 } chkind;
 
 /* start modifications */
-typedef enum _bbufstate {
+typedef enum  {
   BB_POSSIBLYNULLTERMINATED, /* buffer is possibly nullterm(can't decide statically) */
   BB_NULLTERMINATED, /*buffer is known to be nullterminated */
   BB_NOTNULLTERMINATED /* buffer is known to be not nullterm */
 } bbufstate;
 
-typedef struct _bbufinfo {
+typedef  struct s_bbufinfo {
   bbufstate bufstate; /* state of the buffer */
   int size;	      /* size of the buffer allocated */
   int len;	      /* len of the buffer VALID ONLY IF state is NULLTERM */
 } *bbufinfo ;
 
-typedef struct _uvinfo
+typedef struct 
 {
   vkind   kind;      /* kind (parameter, specified) */
   chkind  checked;   /* how is it checked */
@@ -70,7 +70,7 @@ typedef struct _uvinfo
 } *uvinfo ;
 /* end modifications */
 
-typedef struct _udinfo
+typedef struct 
 {
   ynm   abs;
   ynm   mut;
@@ -88,7 +88,7 @@ typedef enum
   SPC_LAST
 } specCode;
 
-typedef struct _ufinfo
+typedef struct 
 {
   qual nullPred;
   specCode specialCode;
@@ -98,7 +98,7 @@ typedef struct _ufinfo
   /*@owned@*/ globSet globs;      /* globals list */
   /*@owned@*/ sRefSet mods;       /* modifies */
 
-  specialClauses specclauses;
+  stateClauseList specclauses;
 
   /*@dependent@*/ uentryList defparams; 
   bool hasGlobs BOOLBITS;
@@ -109,19 +109,19 @@ typedef struct _ufinfo
   
 } *ufinfo ;
 
-typedef struct _uiinfo
+typedef struct 
 {
                   typeIdSet  access;
   /*@owned@*/     globSet     globs;      /* globals list */
   /*@owned@*/     sRefSet     mods;       /* modifies */
 } *uiinfo ;
 
-typedef struct _ueinfo
+typedef struct 
 {
   typeIdSet   access;
 } *ueinfo ;
 
-typedef union _uinfo
+typedef union
 {
   ucinfo uconst;
   uvinfo var;
@@ -131,7 +131,7 @@ typedef union _uinfo
   ueinfo enditer;
 } *uinfo ;
 
-struct _uentry 
+struct s_uentry 
 {
   ekind ukind;
   cstring uname;
@@ -146,7 +146,10 @@ struct _uentry
   **        functions  state of return value
   **        types      state of datatype
   */
+
   /*@exposed@*/ /*@null@*/ sRef sref;  
+
+  warnClause warn;
 
   /* Location list is complete only if showalluses is set. */
   filelocList uses; 
@@ -295,6 +298,8 @@ extern /*@falsenull@*/ bool uentry_isDeclared (/*@special@*/ uentry p_e)
    /*@uses p_e->whereDeclared@*/ /*@*/ ;
 
 extern /*@observer@*/ cstring uentry_ekindName (uentry p_ue) /*@*/ ;
+extern /*@observer@*/ cstring uentry_ekindNameLC (uentry p_ue) /*@*/ ;
+
 extern void uentry_showWhereDefined (uentry p_spec);
 extern /*@falsenull@*/ bool uentry_isEndIter (uentry p_e) /*@*/ ;
 extern /*@falsenull@*/ bool uentry_isEnumTag (/*@special@*/ uentry p_ue)
@@ -327,6 +332,9 @@ extern /*@falsenull@*/ bool uentry_isVariable (/*@special@*/ uentry p_e)
 
 extern cstring uentry_dump (uentry p_v) ; 
 extern cstring uentry_dumpParam (uentry p_v);
+
+extern /*@observer@*/ cstring uentry_observeRealName (uentry p_e) /*@*/ ;
+
 extern cstring uentry_getName (/*@special@*/ uentry p_e) 
    /*@uses p_e->ukind, p_e->info, p_e->uname@*/
    /*@*/ ;
@@ -352,7 +360,7 @@ extern /*@notnull@*/ uentry uentry_makeExpandedMacro (cstring p_s,
 
 extern void uentry_checkMatchParam (uentry p_u1, uentry p_u2, int p_paramno, exprNode p_e) /*@modifies g_msgstream@*/ ;
 
-extern /*@observer@*/ specialClauses uentry_getSpecialClauses (uentry p_ue) /*@*/ ;
+extern /*@observer@*/ stateClauseList uentry_getStateClauseList (uentry p_ue) /*@*/ ;
 
 extern void uentry_showWhereLastExtra (uentry p_spec, /*@only@*/ cstring p_extra) 
    /*@modifies g_msgstream@*/ ;
@@ -402,11 +410,11 @@ extern /*@notnull@*/ /*@only@*/ uentry
 			  /*@keep@*/ fileloc p_f, bool p_priv,
 			  /*@only@*/ multiVal p_m) /*@*/ ;
 extern /*@notnull@*/ /*@only@*/ uentry 
-  uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, ynm p_abs, 
+  uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, ynm p_abstract, 
 		       /*@only@*/ fileloc p_f) /*@*/ ;
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeDatatypeAux (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, 
-			  ynm p_abs, /*@keep@*/ fileloc p_f, bool p_priv) /*@*/ ;
+			  ynm p_abstract, /*@keep@*/ fileloc p_f, bool p_priv) /*@*/ ;
 extern /*@notnull@*/ uentry uentry_makeElipsisMarker (void) /*@*/ ;
 
 extern void uentry_makeVarFunction (/*@temp@*/ uentry p_ue) /*@modifies p_ue@*/ ;
@@ -426,6 +434,7 @@ extern /*@notnull@*/ uentry
   uentry_makeFunction (cstring p_n, ctype p_t, 
 		       typeId p_access, 
 		       /*@only@*/ globSet p_globs, /*@only@*/ sRefSet p_mods, 
+		       /*@only@*/ warnClause p_warn,
 		       /*@only@*/ fileloc p_f);
 
 extern /*@notnull@*/ uentry
@@ -453,13 +462,13 @@ extern /*@notnull@*/ /*@only@*/
 
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeVariableSrefParam (cstring p_n, ctype p_t, 
-				       sRef p_s);
+				       /*@exposed@*/ sRef p_s);
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeIdFunction (idDecl p_id);
 extern /*@notnull@*/ /*@only@*/ 
   uentry uentry_makeIdDatatype (idDecl p_id);
 extern /*@notnull@*/ /*@only@*/ 
-  uentry uentry_makeBoolDatatype (ynm p_abs);
+  uentry uentry_makeBoolDatatype (ynm p_abstract);
 extern void uentry_mergeDefinition (uentry p_old, /*@only@*/ uentry p_unew);
 extern void uentry_mergeEntries (uentry p_spec, /*@only@*/ uentry p_def);
 extern uentry uentry_nameCopy (/*@only@*/ cstring p_name, uentry p_e);
@@ -490,7 +499,12 @@ extern void uentry_setStatic (uentry p_c);
 extern void uentry_setModifies (uentry p_ue, /*@owned@*/ sRefSet p_sr)
    /*@modifies p_ue, p_sr@*/; 
 
-extern void uentry_setSpecialClauses (uentry p_ue, /*@only@*/ specialClauses p_clauses)
+extern bool uentry_hasWarning (uentry p_ue) /*@*/ ;
+
+extern void uentry_addWarning (uentry p_ue, /*@only@*/ warnClause p_warn)
+   /*@modifies p_ue*/; 
+
+extern void uentry_setStateClauseList (uentry p_ue, /*@only@*/ stateClauseList p_clauses)
    /*@modifies p_ue@*/ ;
 
 extern void uentry_setType (uentry p_e, ctype p_t);
@@ -524,12 +538,13 @@ extern void uentry_setRefParam (uentry p_e) /*@modifies p_e@*/ ;
 
 extern void uentry_setDeclaredForce (uentry p_e, fileloc p_f) /*@modifies p_e@*/;
 extern bool uentry_isNonLocal (uentry p_ue) /*@*/ ;
-extern bool uentry_isGlobal (uentry p_ue) /*@*/; 
+extern bool uentry_isGlobalVariable (uentry p_ue) /*@*/; 
+extern bool uentry_isVisibleExternally (uentry p_ue) /*@*/; 
 extern bool uentry_isRefParam (uentry p_u) /*@*/ ;
 extern bool uentry_hasGlobs (uentry p_ue) /*@*/ ;
 extern bool uentry_hasMods (uentry p_ue) /*@*/ ;
 
-extern bool uentry_hasSpecialClauses (uentry p_ue) /*@*/ ;
+extern bool uentry_hasStateClauseList (uentry p_ue) /*@*/ ;
 extern exitkind uentry_getExitCode (uentry p_ue) /*@*/ ;
 
 extern void uentry_checkYieldParam (uentry p_old, uentry p_unew);
@@ -545,7 +560,7 @@ extern alkind uentry_getAliasKind (uentry p_u) /*@*/ ;
 extern exkind uentry_getExpKind (uentry p_u) /*@*/ ;
 extern /*@observer@*/ multiVal uentry_getConstantValue (uentry p_e) /*@*/ ;
 extern void uentry_fixupSref (uentry p_ue) /*@modifies p_ue@*/ ;
-extern void uentry_setGlobals (uentry p_ue, /*@owned@*/ globSet p_globs) /*@modifies p_ue@*/ ;
+extern void uentry_setGlobals (uentry p_ue, /*@owned@*/ globSet p_globs) /*@modifies p_ue, p_globs@*/ ;
 extern bool uentry_isYield (uentry p_ue) /*@*/ ;
 extern /*@notnull@*/ uentry uentry_makeIdConstant (idDecl p_t) /*@*/ ;
 extern /*@observer@*/ cstring uentry_getRealName (uentry p_e) /*@*/ ;
@@ -583,8 +598,8 @@ extern void uentry_setCheckedStrict (uentry p_ue) /*@modifies p_ue@*/ ;
 
 extern bool uentry_hasAccessType (uentry p_e);
 
-extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fileloc p_loc);
-
+/*@constant cstring GLOBAL_MARKER_NAME@*/
+# define GLOBAL_MARKER_NAME cstring_makeLiteralTemp ("#GM#")
 
 /* start modifications */
 //extern void uentry_setBufferSize (uentry p_e, exprNode cconstant);
@@ -620,6 +635,11 @@ extern bool uentry_hasBufStateInfo (uentry p_ue);
 
 /* end modifications */
 
+extern uentry uentry_makeGlobalMarker (void) ;
+extern bool uentry_isGlobalMarker (uentry) /*@*/ ;
+
+extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fileloc p_loc);
+
 # ifdef DOANNOTS
 typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,
 		 AN_CONST, AN_LAST
@@ -633,13 +653,13 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 /* start modifications */
 //extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
 /*drl7x*/
-extern constraintList uentry_getFcnPreconditions (uentry ue);
-extern constraintList uentry_getFcnPostconditions (uentry ue);
+extern constraintList uentry_getFcnPreconditions (uentry p_ue);
+extern constraintList uentry_getFcnPostconditions (uentry p_ue);
 extern void
-uentry_setPostconditions (uentry ue, /*@only@*/ constraintList postconditions);
+uentry_setPostconditions (uentry p_ue, /*@only@*/ constraintList p_postconditions);
 
 extern void
-uentry_setPreconditions (uentry ue, /*@only@*/ constraintList preconditions);
+uentry_setPreconditions (uentry p_ue, /*@only@*/ constraintList p_preconditions);
 
      /*end mods*/
 

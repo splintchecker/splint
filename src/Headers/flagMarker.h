@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -20,7 +20,7 @@ typedef enum
   FMK_SUPPRESS
 } flagMarkerKind ;
 
-typedef struct _flagMarker
+typedef struct
 {
   flagMarkerKind kind;
   flagcode code;
@@ -30,7 +30,7 @@ typedef struct _flagMarker
     int nerrors;
   } info;
 
-  fileloc  loc;
+  fileloc loc;
 } *flagMarker ;
 
 extern bool flagMarker_isLocalSet (flagMarker p_c) /*@*/ ;

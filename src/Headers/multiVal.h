@@ -7,17 +7,16 @@
 
 typedef enum { MVLONG, MVCHAR, MVDOUBLE, MVSTRING } mvkind;
 
-typedef /*@null@*/ struct _multiVal
+typedef /*@null@*/ struct
 {
   mvkind   kind;
-  union _mval
-    {
-      long int     ival;
-      char         cval;
-      double       fval;
-      /*@only@*/ cstring sval;
-    } value;
-
+  union
+  {
+    long int     ival;
+    char         cval;
+    double       fval;
+    /*@only@*/ cstring sval;
+  } value;
 } *multiVal;
 
 extern /*@falsenull@*/ bool multiVal_isDefined (multiVal p_m) /*@*/ ;

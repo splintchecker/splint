@@ -1,9 +1,9 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
-typedef struct _traitRefNode {
+typedef struct {
   ltokenList traitid; /* a list of traitId ltoken's */
   /*@null@*/ renamingNode rename; /* a list of renamings */
 } *traitRefNode;

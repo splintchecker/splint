@@ -103,11 +103,14 @@
 /*@notfunction@*/
 # define NOALIAS(s,t) (/*@ignore@*/ (s == NULL) || (s != t) /*@end@*/)
 
+/*@i343434*/ /*fix this before release verion*/
+/* get rid of @-formatconst@ */
+
 /*@notfunction@*/
 # define TPRINTF(arg) \
-  do { /*@-mustfree@*/ /*@-null@*/ (void) fflush (stderr); (void) fflush (stdout); \
+  do { /*@-mustfree@*/ /*@-null@*/ /*@-formatconst@*/ (void) fflush (stderr); (void) fflush (stdout); \
 	printf ("%s:%d [%s]: >> ", __FILE__, __LINE__, cstring_toCharsSafe (fileloc_unparse(g_currentloc))); \
-	(void)printf arg; printf("\n"); /*@=mustfree@*/ /*@=null@*/ (void) fflush (stdout); \
+	(void)printf arg; printf("\n"); /*@=formatconst@*/ /*@=mustfree@*/ /*@=null@*/ (void) fflush (stdout); \
 	} while (FALSE)
 
 

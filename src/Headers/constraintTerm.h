@@ -4,10 +4,12 @@
 
 typedef union
 {
-  /*@exposed@*/ exprNode expr;
-  /*@exposed@*/  sRef     sref;
+  /*@exposed@*/ /*@dependent@*/ exprNode expr;
+  /*@only@*/  sRef     sref;
   int      intlit;
 } constraintTermValue;
+
+/*@-namechecks@*/
 
 void constraintTermValue_copy (/*@out@*/ constraintTermValue src, constraintTermValue dst);
 
@@ -54,12 +56,9 @@ void constraintTerm_free (/*@only@*/ constraintTerm term);
 
 constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/ ;
 
-/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@exposed@*/ exprNode e) /*@*/;
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/ exprNode e) /*@*/;
 
 constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
-
-
-/*@i1*/ //bool constraintTerm_same (constraintTerm term1, constraintTerm term2) /*@*/;
 
 bool constraintTerm_similar (constraintTerm term1, constraintTerm term2) /*@*/;
 
@@ -73,7 +72,7 @@ bool constraintTerm_isIntLiteral (constraintTerm term) /*@*/;
 
 cstring constraintTerm_print (constraintTerm term) /*@*/;
 
-constraintTerm constraintTerm_makesRef  (/*@exposed@*/ sRef s) /*@*/;
+constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef s) /*@*/;
 
 /*@unused@*/ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
 
@@ -90,6 +89,8 @@ constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm 
 void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
 
 /*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
+
+/*@=namechecks@*/
 
 #else
 

@@ -1,9 +1,9 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
-typedef struct _typeNamePack {
+typedef struct {
   bool isObj;
   lclTypeSpecNode type;
   abstDeclaratorNode abst;

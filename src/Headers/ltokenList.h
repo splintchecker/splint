@@ -1,12 +1,12 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 # ifndef LTOKENLIST_H
 # define LTOKENLIST_H
 
-abst_typedef /*@null@*/ struct _ltokenList
+abst_typedef /*@null@*/ struct
 {
   int nelements;
   int nspace;

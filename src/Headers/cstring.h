@@ -188,6 +188,11 @@ extern bool cstring_containsLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;
 # define cstring_containsLit(c,sub) \
   (cstring_contains (c, cstring_fromChars (sub)))
 
+/*drl added July 2, 001 */
+extern int cstring_compareLit (/*@unique@*/ cstring p_c, char *p_sub) /*@*/ ;
+# define cstring_compareLit(c,sub) \
+  (cstring_compare (c, cstring_fromChars (sub)))
+
 # else
 # error "Multiple include"
 # endif

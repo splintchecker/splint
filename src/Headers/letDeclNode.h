@@ -1,13 +1,13 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 
-typedef struct _letDeclNode {
+typedef struct {
   ltoken varid;
   /*@null@*/ lclTypeSpecNode sortspec;
-  struct _termNode *term;
+  termNode term;
   sort sort;
 } *letDeclNode;
 

@@ -1,6 +1,7 @@
 # ifndef USYMID_H
 # define USYMID_H
 
+/*@i32 make them abstract/? */
 typedef int usymId;
 typedef usymId typeId;
 

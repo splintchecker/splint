@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -8,12 +8,13 @@
 
 typedef /*@only@*/ exprNode o_exprNode;
 
-abst_typedef struct _exprNodeList
+abst_typedef struct
 {
   int nelements;
   int nspace;
   int current;
-  /*@reldef@*/ /*@relnull@*/ o_exprNode *elements;
+  /*@reldef@*/ /*@relnull@*/ o_exprNode *elements
+  /*:invariant maxUse(elements) = nspace /\ maxDefined(elements) = nelements@*/;
 } *exprNodeList;
 
 /*@iter exprNodeList_elements (sef exprNodeList s, yield exposed exprNode el); @*/ 

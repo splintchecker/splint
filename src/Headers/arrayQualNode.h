@@ -1,9 +1,9 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
-typedef struct _arrayQualNode {
+typedef struct {
   ltoken tok;
-  /*@null@*/ struct _termNode *term;
+  /*@null@*/ termNode term;
 } *arrayQualNode;

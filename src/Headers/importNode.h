@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -11,8 +11,7 @@
 
 typedef enum { IMPPLAIN, IMPBRACKET, IMPQUOTE } impkind ;
 
-typedef struct _importNode
-{
+typedef struct {
   impkind   kind;
   ltoken  val;
 } *importNode ;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -12,7 +12,7 @@
 
 typedef /*@only@*/ flagMarker o_flagMarker;
 
-abst_typedef struct _flagMarkerList
+abst_typedef struct
 {
   int nelements;
   int nspace;

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -26,7 +26,7 @@ extern bool context_hasMods (void);
 
 extern bool context_isSystemDir (cstring p_dir) /*@*/ ;
 
-extern /*@observer@*/ char *context_selectedLibrary (void) /*@*/ ;
+extern /*@observer@*/ cstring context_selectedLibrary (void) /*@*/ ;
 extern bool context_usingPosixLibrary (void) /*@*/ ;
 extern bool context_usingAnsiLibrary (void) /*@*/ ;
 extern flagcode context_getLibrary (void) /*@*/ ;
@@ -39,6 +39,7 @@ extern bool context_isPreprocessing (void) /*@*/;
 extern void context_setInCommandLine (void) /*@modifies internalState@*/ ;
 extern void context_clearInCommandLine (void) /*@modifies internalState@*/ ;
 extern bool context_isInCommandLine (void) /*@*/ ;
+extern bool context_inXHFile (void) /*@*/ ;
 
 extern void context_resetErrors (void);
 
@@ -87,12 +88,16 @@ extern void context_unhideShowscan (void);
 
 extern void context_setMode (cstring p_s);
 extern void context_exitAllClauses (void);
+extern void context_exitAllClausesQuiet (void);
 extern bool context_inHeader (void);
 
 extern /*@dependent@*/ /*@exposed@*/ fileTable context_fileTable (void) /*@*/ ;
 
 extern /*@exposed@*/ messageLog context_messageLog (void);
 extern /*@dependent@*/ /*@observer@*/ cstring context_tmpdir (void);
+
+extern void context_enterMTfile (void) /*@modifies internalState@*/ ;
+extern void context_exitMTfile (void) /*@modifies internalState@*/ ;
 
 # ifndef NOLCL
 extern void context_enterLCLfile (void);
@@ -119,7 +124,7 @@ extern /*@observer@*/ uentryList context_getParams (void);
 extern bool context_isSpecialFile (cstring p_fname);
 extern /*@observer@*/ cstring context_inFunctionName (void) /*@*/ ;
 extern ctype context_currentFunctionType (void) /*@*/ ;
-extern void context_exitFile (void);
+extern void context_exitCFile (void);
 extern void context_enterConstantMacro (/*@dependent@*/ /*@exposed@*/ uentry p_e);
 extern void context_enterMacro (/*@observer@*/ uentry p_e);
 extern void context_enterFunction (/*@exposed@*/ uentry p_e);
@@ -138,8 +143,13 @@ extern void context_setFlagTemp (flagcode p_f, bool p_b);
 extern /*@unused@*/ void context_showFilelocStack (void) ;
 
 extern bool context_getFlag (flagcode p_d) /*@*/ ;
+extern bool context_flagOn (flagcode p_f, fileloc p_loc) /*@*/ ;
+
 extern int context_getLineLen (void) /*@*/ ;
 # define context_getLineLen()  ((int)context_getValue(FLG_LINELEN))
+
+extern int context_getIndentSpaces (void) /*@*/ ;
+# define context_getIndentSpaces() ((int)context_getValue(FLG_INDENTSPACES))
 
 extern int context_getValue (flagcode p_flag) /*@*/ ;
 extern void context_setValueAndFlag (flagcode p_flag, int p_val) 
@@ -166,7 +176,7 @@ extern int context_getExpect (void) /*@*/ ;
 
 extern /*@observer@*/ sRefSet context_modList(void);
 extern /*@exposed@*/ uentry context_getHeader(void) /*@*/;
-extern void context_usedGlobal (sRef p_el);
+extern void context_usedGlobal (/*@exposed@*/ sRef p_el);
 extern void context_resetModeFlags (void);
 extern ctype context_typeofZero (void);
 extern ctype context_typeofOne (void);
@@ -290,11 +300,38 @@ extern /*@observer@*/ cstring context_moduleName (void) /*@*/ ;
 extern void context_recordFileGlobals (/*@dependent@*/ globSet p_mods);
 extern void context_checkSuppressCounts (void) /*@modifies g_msgstream@*/ ;
 
-extern bool context_inFunctionDecl (void) /*@globals internalState@*/ ;
-extern void context_enterFunctionDecl (void) /*@modifies internalState@*/ ;
-extern void context_exitFunctionDecl (void) /*@modifies internalState@*/ ;
+extern bool context_inFunctionHeader (void) /*@globals internalState@*/ ;
+extern void context_enterFunctionHeader (void) /*@modifies internalState@*/ ;
+extern void context_exitFunctionHeader (void) /*@modifies internalState@*/ ;
+
+extern bool context_inFunctionDeclaration (void) /*@globals internalState@*/ ;
+extern void context_enterFunctionDeclaration (/*@exposed@*/ uentry) /*@modifies internalState@*/ ;
+extern void context_exitFunctionDeclaration (void) /*@modifies internalState@*/ ;
 
 extern ctype context_boolImplementationType (void) /*@*/ ;
+extern /*@observer@*/ /*@null@*/ annotationInfo 
+   context_lookupAnnotation (cstring p_annot) /*@*/ ;
+
+extern /*@observer@*/ metaStateTable context_getMetaStateTable (void) 
+     /*@globals internalState@*/ ;
+
+extern /*@observer@*/ metaStateInfo context_lookupMetaStateInfo (cstring p_key) 
+     /*@globals internalState@*/ ;
+
+extern void context_addAnnotation (/*@only@*/ annotationInfo)
+     /*@modifies internalState@*/ ;
+
+extern void context_addMetaState (/*@only@*/ cstring, /*@only@*/ metaStateInfo)
+     /*@modifies internalState@*/ ;
+
+extern valueTable context_createValueTable (sRef p_s)
+     /*@globals internalState@*/ ;
+
+extern valueTable context_createGlobalMarkerValueTable (void)
+     /*@globals internalState@*/ ;
+
+extern int context_getBugsLimit (void) /*@*/ ;
+# define context_getBugsLimit()  ((int)context_getValue(FLG_BUGSLIMIT))
 
 # else
 # error "Multiple include"

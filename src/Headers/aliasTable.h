@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -13,7 +13,7 @@
 typedef /*@only@*/ sRefSet o_sRefSet;
 typedef /*@exposed@*/ sRef e_sRef;
 
-struct _aliasTable
+struct s_aliasTable /*@i32 reserved works for struct identifiers@*/ 
 {
   int nelements;
   int nspace;
@@ -57,7 +57,7 @@ extern /*@only@*/ cstring aliasTable_unparse (aliasTable p_s) /*@*/ ;
 extern void aliasTable_free (/*@only@*/ aliasTable p_s) ;
 
 extern aliasTable 
-  aliasTable_addMustAlias (/*@returned@*/ aliasTable p_s, /*@exposed@*/ sRef p_sr, sRef p_al)
+  aliasTable_addMustAlias (/*@returned@*/ aliasTable p_s, /*@exposed@*/ sRef p_sr, /*@exposed@*/ sRef p_al)
   /*@modifies p_s@*/ ;
 
 extern aliasTable

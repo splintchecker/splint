@@ -1,9 +1,9 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
-struct _termNode 
+struct s_termNode 
 {
   int wrapped; /* the number of matched parentheses around this term */
   termKIND kind; 
@@ -13,7 +13,7 @@ struct _termNode
   bool error_reported; /* to prevent multiple sort checking error messages */
   lslOpSet possibleOps; /* only for TRM_ZEROARY and TRM_APPLICATION */
   /* should make a union but skip this for now */
-  /*@null@*/ struct _nameNode *name;
+  /*@null@*/ nameNode name;
   termNodeList args; /* in order */
   /*@reldef@*/ ltoken literal; /* for TRM_LITERAL, TRM_UNCHANGEDALL, 
 		       TRM_SIZEOF, LCLvariableKIND, 

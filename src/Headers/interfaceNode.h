@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -9,7 +9,7 @@ typedef enum {
   INF_EXPORT, INF_PRIVATE
 } interfaceNodeKind;
 
-typedef struct _interfaceNode {
+typedef struct {
   interfaceNodeKind kind; /* which kind of interface node */
   union { 
     /* evs 8 Sept 1993 */

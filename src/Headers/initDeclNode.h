@@ -1,12 +1,12 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 
-typedef struct _initDeclNode {
+typedef struct {
   declaratorNode declarator;
-  /*@null@*/ struct _termNode *value;
+  /*@null@*/ termNode value;
 } *initDeclNode;
 
 extern bool initDeclNode_isRedeclaration (initDeclNode p_d);

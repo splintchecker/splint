@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 # ifndef VARNODELIST_H
@@ -7,7 +7,7 @@
 
 typedef /*@only@*/ varNode o_varNode;
 
-abst_typedef struct _varNodeList
+abst_typedef struct
 {
   int nelements;
   int nspace;

@@ -1,5 +1,10 @@
+/*
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
+** See ../LICENSE for license information.
+**
+*/
 
-typedef struct _CTypesNode {
+typedef struct {
   bits intfield;  
   sort sort;
   ltokenList ctypes;

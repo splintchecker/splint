@@ -1,14 +1,14 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
 # ifndef VARDECLNODE_H
 # define VARDECLNODE_H
 
-typedef struct _varDeclarationNode {
+typedef struct {
   bool isSpecial;
-  /*@reldef@*/ sRef sref;
+  /*@dependent@*/ /*@reldef@*/ sRef sref;
   bool isGlobal; /* global or varDeclaration */
   bool isPrivate; /* static variable, within a function defn */
   qualifierKind qualifier; /* QLF_NONE, QLF_CONST, or QLF_VOLATILE */

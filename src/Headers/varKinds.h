@@ -41,7 +41,7 @@ typedef enum {
   SCSTATIC 
 } storageClassCode ;
 
-typedef enum _nstate {
+typedef enum {
   NS_ERROR = -1,     /* error (suppress messages) */
   NS_UNKNOWN = 0,    /* no annotation */
   NS_NOTNULL,        /* definitely not null */
@@ -59,6 +59,9 @@ typedef enum _nstate {
 
 extern bool nstate_isKnown (nstate p_n) /*@*/ ;
 # define nstate_isKnown(n) ((n) != NS_UNKNOWN)
+
+extern bool nstate_isValid (/*@sef@*/ nstate p_n) /*@*/ ;
+# define nstate_isValid(n) ((n) >= NS_ERROR && (n) <= NS_ABSNULL)
 
 /*
 ** aliasing states
@@ -78,11 +81,11 @@ typedef enum {
   AK_IMPONLY,
   AK_KEEP,
   AK_KEPT,
-  AK_TEMP, 
+  AK_TEMP,  /* 6 */
   AK_IMPTEMP,
   AK_SHARED, 
   AK_UNIQUE,
-  AK_RETURNED,
+  AK_RETURNED, /* 10 */
   AK_FRESH,        /* local only storage (may be shared) */
   AK_STACK,        /* allocated on local stack */
   AK_REFCOUNTED,
@@ -90,7 +93,7 @@ typedef enum {
   AK_KILLREF,
   AK_NEWREF,
   AK_OWNED,
-  AK_DEPENDENT,
+  AK_DEPENDENT, /* 18 */
   AK_IMPDEPENDENT,
   AK_STATIC,
   AK_LOCAL        /* AK_LOCAL must be last */
@@ -114,6 +117,9 @@ extern bool exkind_isUnknown (exkind p_e) /*@*/ ;
 
 extern bool exkind_isKnown (/*@sef@*/ exkind p_e) /*@*/ ;
 # define exkind_isKnown(e)      ((e) != XO_UNKNOWN && (e) != XO_NORMAL)
+
+extern bool alkind_isValid (/*@sef@*/ alkind p_a) /*@*/ ;
+# define alkind_isValid(a) ((a) >= AK_UNKNOWN && (a) <= AK_LOCAL)
 
 extern bool alkind_isImplicit (/*@sef@*/ alkind p_a) /*@*/ ;
 extern bool alkind_isDependent (/*@sef@*/ alkind p_a) /*@*/ ; 
@@ -184,7 +190,7 @@ extern sstate sstate_fromQual (qual p_q) /*@*/ ;
 extern bool alkind_compatible (alkind p_a1, alkind p_a2) /*@*/ ;
 extern alkind alkind_fixImplicit (alkind p_a) /*@*/ ;
 
-typedef enum _exitkind
+typedef enum 
 {
   XK_ERROR,
   XK_UNKNOWN,      

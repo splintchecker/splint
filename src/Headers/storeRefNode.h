@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 
@@ -7,12 +7,12 @@ typedef enum {
   SRN_TERM, SRN_TYPE, SRN_OBJ, SRN_SPECIAL
   } storeRefNodeKind;
 
-typedef struct _storeRefNode {
+typedef struct {
   storeRefNodeKind kind;
   union {
-    struct _termNode *term;         /* for SRN_TERM */
-    lclTypeSpecNode type;  /* for SRN_OBJ and SRN_TYPE */
-    sRef ref;                       /* for SRN_SPECIAL */
+    termNode term;         /* for SRN_TERM */
+    lclTypeSpecNode type;           /* for SRN_OBJ and SRN_TYPE */
+    /*@dependent@*/ sRef ref;          /* for SRN_SPECIAL */
   } content;
 } *storeRefNode;
 

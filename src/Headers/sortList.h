@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -7,12 +7,12 @@
 # ifndef SORTLIST_H
 # define SORTLIST_H
 
-abst_typedef struct _sortList
+abst_typedef struct
 {
   int nelements;
   int nspace;
   int current;
-  /*@reldef@*/ /*@relnull@*/ sort  *elements;
+  /*@reldef@*/ /*@relnull@*/ sort *elements;
 } *sortList ;
 
 extern /*@only@*/ sortList sortList_new (void);

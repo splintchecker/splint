@@ -1,15 +1,15 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
 
-typedef struct _nameAndReplaceNode {
+typedef struct {
   typeNameNodeList namelist;  /* the positional arguments */
   replaceNodeList replacelist; /* the rest of replace renamings */  
 } *nameAndReplaceNode;
 
-typedef struct _renamingNode {
+typedef struct {
   bool is_replace; /* TRUE means replace, false means name */ 
   union {
     replaceNodeList replace;

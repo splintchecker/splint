@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -11,7 +11,7 @@ typedef enum {
   OPF_BMIDDLEM, OPF_BMMIDDLEM, 
   OPF_SELECT, OPF_MAP, 
   OPF_MSELECT, OPF_MMAP
-  } opFormKind;
+} opFormKind;
 
 typedef union {
   int middle;
@@ -19,13 +19,13 @@ typedef union {
   ltoken id;
 } opFormUnion;
 
-typedef struct _opFormNode {
+struct s_opFormNode {
   ltoken tok;        /* keeps the openSym token */
   opFormKind kind;
   opFormUnion content;
   unsigned int key;
   ltoken close;      /* keeps the closeSym token */
-} *opFormNode;
+} ;
 
 extern /*@unused@*/ /*@only@*/ cstring 
   opFormNode_unparse (/*@null@*/ opFormNode p_n) /*@*/ ;

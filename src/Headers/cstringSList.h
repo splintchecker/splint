@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -8,7 +8,7 @@
 
 typedef /*@observer@*/ cstring ob_cstring;
 
-abst_typedef /*@null@*/ struct _cstringSList
+abst_typedef /*@null@*/ struct s_cstringSList
 {
   int      nelements;
   int      nspace;
@@ -38,6 +38,8 @@ extern cstringSList
   /*@modifies p_s@*/ ;
 
 extern void cstringSList_alphabetize (cstringSList p_s);
+
+extern /*@observer@*/ cstring cstringSList_get (cstringSList p_s, int p_index) /*@*/ ;
 
 extern /*@only@*/ cstring cstringSList_unparseAbbrev (cstringSList p_s) /*@*/ ;
 extern /*@unused@*/ /*@only@*/ cstring cstringSList_unparse (cstringSList p_s) ;

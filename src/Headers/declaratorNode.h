@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 **
 */
@@ -7,7 +7,7 @@
 ** declaratorNode.h
 */
 
-typedef struct _declaratorNode {
+typedef struct {
   ltoken id;
   /*@null@*/ typeExpr type;
   bool isRedecl;

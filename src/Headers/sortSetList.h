@@ -1,5 +1,5 @@
 /*
-** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2000.
+** Copyright (C) University of Virginia, Massachusetts Institue of Technology 1994-2001.
 ** See ../LICENSE for license information.
 */
 # ifndef sortSetLIST_H
@@ -7,7 +7,7 @@
 
 typedef /*@dependent@*/ sortSet o_sortSet;
 
-abst_typedef struct _sortSetList
+abst_typedef struct
 {
   int nelements;
   int free;
