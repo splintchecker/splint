@@ -362,6 +362,12 @@ extern ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies in
 extern bool context_inOldStyleScope (void) /*@*/ ;
 extern void context_setGlobalStructInfo (ctype p_ct, constraintList p_list) /*@modifies internalState@*/ ;
 
+/*drl added 3/5/2003*/
+
+extern bool context_inSizeof (void);
+extern void context_enterSizeof (void);
+extern void context_leaveSizeof (void);
+
 # else
 # error "Multiple include"
 # endif

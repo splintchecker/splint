@@ -1247,18 +1247,21 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
         {
           if (!usymtab_isGuarded (arr->sref))
             {
-              if (optgenerror (FLG_NULLDEREF,
-			       message ("Index of %s pointer %q: %s", 
-					sRef_nullMessage (arr->sref),
-					sRef_unparse (arr->sref),
-					exprNode_unparse (arr)),
-			       arr->loc))
+	      if (!context_inSizeof() )
 		{
-		  DPRINTF (("ref: %s", sRef_unparseFull (arr->sref)));
-		  sRef_showNullInfo (arr->sref);
-
-		  /* suppress future messages */
-		  sRef_setNullError (arr->sref); 
+		  if (optgenerror (FLG_NULLDEREF,
+				   message ("Index of %s pointer %q: %s", 
+					    sRef_nullMessage (arr->sref),
+					    sRef_unparse (arr->sref),
+					    exprNode_unparse (arr)),
+				   arr->loc))
+		    {
+		      DPRINTF (("ref: %s", sRef_unparseFull (arr->sref)));
+		      sRef_showNullInfo (arr->sref);
+		      
+		      /* suppress future messages */
+		      sRef_setNullError (arr->sref); 
+		    }
 		}
             }
         }

@@ -936,7 +936,7 @@ unaryExpr
  | TMINUS castExpr { $$ = exprNode_preOp ($2, $1); }
  | TTILDE castExpr { $$ = exprNode_preOp ($2, $1); }
  | TEXCL castExpr  { $$ = exprNode_preOp ($2, $1); }
- | sizeofExpr      { $$ = $1; }
+ | processSizeof sizeofExpr endprocessSizeof      { $$ = $2; }
  | offsetofExpr    { $$ = $1; }
 ;
 
@@ -956,15 +956,22 @@ offsetofExpr
 sizeofExpr
  : IsType { context_setProtectVars (); } 
    sizeofExprAux { context_sizeofReleaseVars (); $$ = $3; }
-;
+
+processSizeof: {context_enterSizeof()};
+
+
+endprocessSizeof: {context_leaveSizeof()};
+
 
 sizeofExprAux 
- : CSIZEOF TLPAREN typeExpression TRPAREN { $$ = exprNode_sizeofType ($3); lltok_free3 ($1, $2, $4); } 
- | CSIZEOF unaryExpr                      { $$ = exprNode_sizeofExpr ($2); lltok_free ($1); }
+ : CSIZEOF TLPAREN typeExpression TRPAREN { $$ = exprNode_sizeofType ($3); lltok_free3 ($1, $2, $4);  } 
+ | CSIZEOF  unaryExpr                      { $$ = exprNode_sizeofExpr ($2); lltok_free ($1); }
  | CALIGNOF TLPAREN typeExpression TRPAREN { $$ = exprNode_alignofType ($3); lltok_free3 ($1, $2, $4); } 
  | CALIGNOF unaryExpr                      { $$ = exprNode_alignofExpr ($2); lltok_free ($1); }
 ;
- 
+
+
+
 castExpr
  : unaryExpr 
  | TLPAREN typeExpression TRPAREN castExpr 

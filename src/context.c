@@ -4602,6 +4602,29 @@ bool context_inLCLLib (void)
   return (gc.kind == CX_LCLLIB);
 }
 
+
+/*drl add these 3/5/2003*/
+static bool inSizeof = FALSE;
+
+bool context_inSizeof (void)
+{
+  return (inSizeof);
+}
+
+void context_enterSizeof (void)
+{
+  DPRINTF((message("context_enterSizeof ") ) );
+  inSizeof = TRUE;
+}
+
+void context_leaveSizeof (void)
+{ 
+  DPRINTF((message("context_leaveSizeof ") ));
+  inSizeof = FALSE;
+}
+/*end function added 3/5/2003*/
+
+
 bool context_inImport (void)
 {
   return (gc.inimport);
