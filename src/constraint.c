@@ -11,16 +11,117 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-# include "exprData.i"
+//# include "exprData.i"
 
 /*@i33*/
 /*@-fcnuse*/
 /*@-assignexpose*/
 
-/*@notnull@*/ 
-/*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->term, result->expr, result->constrType@*/
-     /*@defines result->ar, result->post@*/;
+constraint constraint_makeNew (void);
+
+
+constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant)
+     
+{
+  char *t;
+  int c;
+  constraint ret;
+  ret = constraint_makeNew();
+  llassert (x);
+  if (!x)
+    return ret;
+ 
+    
+  ret->lexpr = constraintExpr_makeTermsRef (x);
+  #warning fix abstraction
+
+  if (relOp.tok == GE_OP)
+      ret->ar = GTE;
+  else if (relOp.tok == LE_OP)
+    ret->ar = LTE;
+  else if (relOp.tok == EQ_OP)
+    ret->ar = EQ;
+  else
+  llfatalbug("Unsupported relational operator");
+
+
+  t =  cstring_toCharsSafe (exprNode_unparse(cconstant));
+  c = atoi( t );
+  ret->expr = constraintExpr_makeIntLiteral (c);
+
+  ret->post = TRUE;
+  //  ret->orig = ret;
+  DPRINTF(("GENERATED CONSTRAINT:"));
+  DPRINTF( (message ("%s", constraint_print(ret) ) ) );
+  return ret;
+}
+
+constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)
+     
+{
+  char *t;
+  int c;
+  constraint ret;
+  ret = constraint_makeNew();
+  llassert (l);
+  if (!l)
+    return ret;
+ 
+    
+  ret->lexpr = constraintExpr_copy (l);
+  #warning fix abstraction
+
+  if (relOp.tok == GE_OP)
+      ret->ar = GTE;
+  else if (relOp.tok == LE_OP)
+    ret->ar = LTE;
+  else if (relOp.tok == EQ_OP)
+    ret->ar = EQ;
+  else
+  llfatalbug("Unsupported relational operator");
+
+
+  t =  cstring_toCharsSafe (exprNode_unparse(cconstant));
+  c = atoi( t );
+  ret->expr = constraintExpr_makeIntLiteral (c);
+
+  ret->post = TRUE;
+  //  ret->orig = ret;
+  DPRINTF(("GENERATED CONSTRAINT:"));
+  DPRINTF( (message ("%s", constraint_print(ret) ) ) );
+  return ret;
+}
+
+
+constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r)     
+{
+  constraint ret;
+  ret = constraint_makeNew();
+  llassert (l);
+  if (!l)
+    return ret;
+ 
+    
+  ret->lexpr = constraintExpr_copy (l);
+  #warning fix abstraction
+
+  if (relOp.tok == GE_OP)
+      ret->ar = GTE;
+  else if (relOp.tok == LE_OP)
+    ret->ar = LTE;
+  else if (relOp.tok == EQ_OP)
+    ret->ar = EQ;
+  else
+  llfatalbug("Unsupported relational operator");
+
+  ret->expr = constraintExpr_copy (r);
+
+  ret->post = TRUE;
+  //  ret->orig = ret;
+  DPRINTF(("GENERATED CONSTRAINT:"));
+  DPRINTF( (message ("%s", constraint_print(ret) ) ) );
+  return ret;
+}
 
 constraint constraint_copy (constraint c)
 {
@@ -59,10 +160,9 @@ bool constraint_resolve (/*@unused@*/ constraint c)
   return FALSE;
 }
 
-/*@notnull@*/ 
-/*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->term, result->expr, result->constrType@*/
-     /*@defines result->ar, result->post@*/
+
+
+constraint constraint_makeNew (void)
 {
   constraint ret;
   ret = dmalloc(sizeof (*ret) );
@@ -251,12 +351,18 @@ cstring  constraint_printDetailed (constraint c)
 
   if (!c->post)
     {
+    if (c->orig)  
+      st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisy %s", constraint_print (c), constraint_print(c->orig) );
+    else
+      st = message ("Unresolved constraint:\nLclint is unable to resolve %s", constraint_print (c));
       
-    st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisy %s", constraint_print (c), constraint_print(c->orig) );
     }
   else
     {
-    st = message ("Block Post condition:\nThis function block has the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
+      if (c->orig)
+	st = message ("Block Post condition:\nThis function block has the post condition %s\n based on %s", constraint_print (c), constraint_print(c->orig) );
+      else
+	st = message ("Block Post condition:\nThis function block has the post condition %s", constraint_print (c));	
     }
   return st;
 }
@@ -282,6 +388,18 @@ cstring  constraint_print (constraint c)
 		);
   return st;
 }
+
+constraint constraint_doSRefFixBaseParam (constraint precondition,
+						   exprNodeList arglist)
+{
+  precondition->lexpr = constraintExpr_doSRefFixBaseParam (precondition->lexpr,
+							   arglist);
+  precondition->expr = constraintExpr_doSRefFixBaseParam (precondition->expr,
+							   arglist);
+
+  return precondition;
+}
+
 
 // bool constraint_hasTerm (constraint c, constraintTerm term)
 // {

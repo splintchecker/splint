@@ -83,6 +83,12 @@ constraintList_add (constraintList s, constraint el)
 
 constraintList constraintList_addList (constraintList s, constraintList new)
 {
+  llassert(s);
+  llassert(new);
+
+  if (new == constraintList_undefined)
+    return s;
+  
   constraintList_elements(new, elem)
     s = constraintList_add (s, elem);
   end_constraintList_elements
@@ -166,7 +172,7 @@ constraintList_logicalOr (constraintList l1, constraintList l2)
 {
   constraint temp;
   constraintList ret;
-  TPRINTF ( (message ("Logical of on %s and %s",
+  DPRINTF ( (message ("Logical of on %s and %s",
 		      constraintList_print(l1), 
 		      constraintList_print(l2)) ) );
   
@@ -235,3 +241,22 @@ constraintList constraintList_preserveOrig (constraintList c)
   end_constraintList_elements;
   return c;
 }
+
+
+constraintList constraintList_doSRefFixBaseParam (constraintList preconditions,
+						   exprNodeList arglist)
+{
+  constraintList ret;
+  ret = constraintList_new();
+
+  constraintList_elements (preconditions, el)
+    {
+      ret = constraintList_add(ret, constraint_doSRefFixBaseParam (el, arglist) );
+    }
+  end_constraintList_elements;
+
+  return ret;
+}
+
+
+

@@ -161,12 +161,16 @@ void checkandsetBufState(idDecl id, exprNode is);
 %token <tok> QREFCOUNTED QREFS QNEWREF QTEMPREF QKILLREF QRELDEF
 %token <ctyp> CGCHAR CBOOL CINT CGFLOAT CDOUBLE CVOID 
 %token <tok> QANYTYPE QINTEGRALTYPE QUNSIGNEDINTEGRALTYPE QSIGNEDINTEGRALTYPE
+
 %token <tok> QNULLTERMINATED
-
 %token <tok> QSETBUFFERSIZE
+%token <tok> QBUFFERCONSTRAINT
 %token <tok> QSETSTRINGLENGTH
-
+%token <tok> QMAXSET
+%token <tok> QMAXREAD
 %token <tok> QTESTINRANGE
+
+
 
 /* identifiers, literals */
 %token <entry> IDENTIFIER
@@ -202,6 +206,21 @@ void checkandsetBufState(idDecl id, exprNode is);
 %type <flist> structDeclList structDecl
 %type <srset> locModifies locPlainModifies modList specClauseList
 %type <sr>    mExpr modListExpr specClauseListExpr
+
+/*drl*/
+%type <sr>    BufConstraint
+%type <tok> relationalOp
+%type <tok> BufBinaryOp
+%type <tok> bufferModifier
+
+%type <sr> BufConstraintExpr
+
+%type <sr> BufConstraintTerm
+
+%type <sr>    BufConstraintList
+
+%type <tok>  BufUnaryOp
+
 %type <enumnamelist> enumeratorList 
 %type <cstringlist> fieldDesignator
 
@@ -293,7 +312,7 @@ namedDeclBase
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); 
         }
-optGlobMods  optGlobBufConstraints
+ optGlobMods  optGlobBufConstraints
    { /* need to support globals and modifies here! */
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
@@ -304,10 +323,12 @@ optGlobMods  optGlobBufConstraints
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); 
         } 
-optGlobMods  optGlobBufConstraints
+ optGlobMods  optGlobBufConstraints
    { clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
-     context_popLoc (); 
+     context_popLoc ();
+
+     printf("Done nameDeclBase\n");
    }
 
 plainNamedDeclBase
@@ -371,19 +392,92 @@ optGlobMods
  : { setProcessingGlobMods (); } optGlobModsRest
    { clearProcessingGlobMods (); }
 
-/*drl*/ 
+
+/*drl*/
+
 optGlobBufConstraints
- : optGlobBufConstraintsRest
+ : { setProcessingGlobMods (); } optGlobBufConstraintsRest
+   { clearProcessingGlobMods (); }
+
 
 optGlobBufConstraintsRest
  : optGlobBufConstraintsAux
 
 optGlobBufConstraintsAux
- : { printf("doing optGlobBufConstraintsAux\n");  } QSETBUFFERSIZE  id CCONSTANT QENDMACRO 
+: {
+  TPRINTF ( ("doing optGlobBufConstraintsAux\n") );
+context_setProtectVars (); enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+
+}  QBUFFERCONSTRAINT BufConstraintList  QENDMACRO
+{
+  setFunctionConstraints ($3);
+  exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+  printf ("done optGlobBufConstraintsAux\n");}
  | /*empty*/
 
-   /* : QSETBUFFERSIZE
+BufConstraintList
+: BufConstraint BufConstraintList{ $$ = constraintList_add ($2, $1); }
+| BufConstraint {constraintList c; c = constraintList_new(); c = constraintList_add (c, $1); $$ = c}
+
+BufConstraint
+:  BufConstraintExpr relationalOp BufConstraintExpr TSEMI  {
+ $$ = makeConstraintParse3 ($1, $2, $3);
+ printf("Done BufConstraint1\n"); }
+
+bufferModifier
+ : QMAXSET
+ |QMAXREAD
+
+relationalOp
+ : GE_OP
+ | LE_OP
+ | EQ_OP
+
+BufConstraintExpr
+ : BufConstraintTerm 
+ | BufUnaryOp TLPAREN BufConstraintExpr TRPAREN {$$ = constraintExpr_parseMakeUnaryOp ($1, $3);  TPRINTF( ("Got BufConstraintExpr UNary Op ") ); }
+ | TLPAREN BufConstraintExpr BufBinaryOp BufConstraintExpr TRPAREN {
+   TPRINTF( ("Got BufConstraintExpr BINary Op ") );
+   $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
+
+BufConstraintTerm
+ : id                              { $$ = constraintExpr_makeTermsRef (
+					     uentry_getSref ($1));
+                                   checkModifiesId ($1); }
+ | NEW_IDENTIFIER                  { $$ = constraintExpr_makeTermsRef(fixModifiesId ($1) ); }
+ | CCONSTANT {  char *t; int c;
+  t =  cstring_toCharsSafe (exprNode_unparse($1));
+  c = atoi( t );
+  $$ = constraintExpr_makeIntLiteral (c);
+}
+
+/*BufConstraintExpr
+: BufConstraintTerm 
+*/
+
+BufUnaryOp
+: bufferModifier 
+;
+
+BufBinaryOp
+ : TPLUS
+| TMINUS
+;
+
+
+koptPlainGlobMods
+ : { setProcessingGlobMods (); } optPlainGlobModsRest
+   { clearProcessingGlobMods (); }
+
+
+/*: id  {  $$ = unentry_getSref($1);  checkModifiesId ($1); }
+| NEW_INDENTIFIER { $$ = fixModifiesId ($1)} */
+
 /*end*/
+
 
 optPlainGlobMods
  : { setProcessingGlobMods (); } optPlainGlobModsRest

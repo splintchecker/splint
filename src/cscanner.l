@@ -302,6 +302,8 @@ static void setTokLengthT (size_t len)
 "undef"                 { return (processSpec (QUNDEF)); }
 "killed"                { return (processSpec (QKILLED)); }
 "nullterminated"        { return (processSpec (QNULLTERMINATED));}
+"MaxSet"                { return (processSpec (QMAXSET));}
+"MaxRead"                { return (processSpec (QMAXREAD));}
 
 {Letter}({Letter}|{Digit})* { int tok; 
 			      context_saveLocation (); 
@@ -563,6 +565,7 @@ struct skeyword s_parsetable[] = {
   { "pre", QPRECLAUSE } ,
   { "post", QPOSTCLAUSE } ,
   {"setBufferSize", QSETBUFFERSIZE},
+  {"bufferConstraint", QBUFFERCONSTRAINT},
   {"setStringLength", QSETSTRINGLENGTH},
   {"testinRange", QTESTINRANGE},
   { NULL, BADTOK }
@@ -609,7 +612,10 @@ struct skeyword s_keytable[] = {
   { "relnull", QRELNULL } ,
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
+  { "bufferConstraint", QBUFFERCONSTRAINT },
   { "testInRange", QTESTINRANGE},
+  { "MaxSet", QMAXSET},
+  { "MaxRead", QMAXREAD},
   { "reldef", QRELDEF } ,
   { "observer", QOBSERVER } ,
   { "exits", QEXITS } ,

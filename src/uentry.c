@@ -288,7 +288,8 @@ void printAnnots ()
     }
   printf ("\n");
 
-  printf ("Total Annotations: %d (%d decls, %d sharable, %d indirect)\n", alltotals, totdecls, totshdecls, totidecls); }
+  printf ("Total Annotations: %d (%d decls, %d sharable, %d indirect)\n", alltotals, totdecls, totshdecls, totidecls);
+}
 
 extern void uentry_tallyAnnots (uentry u, ancontext kind)
 {
@@ -556,6 +557,37 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
       return cstring_makeLiteralTemp ("declared");
     }
 }
+
+
+/*drl7x*/
+constraintList uentry_getFcnPreconditions (uentry ue)
+{
+  if (uentry_isValid (ue))
+    {
+	{
+	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	    {
+	      uentry_makeVarFunction (ue);
+	    }
+
+	  llassert (uentry_isFunction (ue));
+	  //llassert ((ue->info->fcn->preconditions));
+
+	  if (!uentry_isFunction (ue))
+	    {
+	      return constraintList_undefined;
+	    }
+	  
+	   return ue->info->fcn->preconditions;
+	}
+	
+    }
+  
+  return constraintList_undefined;
+  
+}
+
+
 
 static /*@only@*/ fileloc setLocation (void)
 {
@@ -1212,6 +1244,40 @@ uentry_setModifies (uentry ue, /*@owned@*/ sRefSet sr)
   else
     {
       sRefSet_free (sr);
+    }
+}
+
+void
+uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
+{
+  if (sRef_modInFunction ())
+    {
+      llparseerror
+	(message ("Precondition list not in function context.  "
+		  "A precondition list can only appear following the parameter list "
+		  "in a function declaration or header."));
+
+      /*@-mustfree@*/ return; /*@=mustfree@*/ 
+    }
+
+  if (uentry_isValid (ue))
+    {
+	{
+	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	    {
+	      uentry_makeVarFunction (ue);
+	    }
+	  
+	  llassertfatal (uentry_isFunction (ue));
+	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
+	  
+	  ue->info->fcn->preconditions = preconditions;
+	}
+	
+    }
+  else
+    {
+      //
     }
 }
 
@@ -2824,6 +2890,10 @@ void uentry_makeVarFunction (uentry ue)
   ue->info->fcn->specclauses = NULL;
   ue->info->fcn->defparams = uentryList_undefined;
 
+  /*drl*/
+  ue->info->fcn->preconditions = constraintList_undefined;
+  /*end */
+  
   if (ctype_isFunction (ue->utype))
     {
       ue->sref = sRef_makeType (ctype_returnValue (ue->utype)); 

@@ -51,6 +51,12 @@
 ** right values are available in the right place.
 */
 
+/*drl*/
+static  constraintList fcnConstraints = NULL;
+
+static  constraintList fcnPreConditions = NULL;
+
+
 static /*@only@*/ sRefSet fcnModifies = sRefSet_undefined;
 static /*@only@*/ /*@null@*/ specialClauses specClauses = specialClauses_undefined;
 static bool fcnNoGlobals = FALSE;
@@ -177,6 +183,12 @@ static void reflectModGlobs (uentry ue)
       fcnModifies = sRefSet_undefined;
     }
 
+  if (fcnConstraints)
+    {
+      uentry_setPreconditions (ue, fcnConstraints);
+      fcnConstraints = constraintList_undefined;
+    }
+
   if (uentry_isFunction (ue))
     {
       uentry_setSpecialClauses (ue, specClauses);
@@ -266,6 +278,17 @@ void setFunctionSpecialClause (lltok stok, sRefSet s,
     }
 
   DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
+}
+
+constraintList getFunctionConstraints ()
+{
+  return constraintList_copy (fcnConstraints);
+}
+
+void setFunctionConstraints (constraintList c)
+{
+  #warning m leak
+  fcnConstraints = constraintList_copy (c);
 }
 
 void setFunctionModifies (sRefSet s)

@@ -12,7 +12,7 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-# include "exprData.i"
+//# include "exprData.i"
 
 #include "constraintExpr.h"
 
@@ -53,13 +53,36 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
   //return ret;
 }
 
+constraintList checkCall (exprNode fcn, exprNodeList arglist)
+{
+  constraintList preconditions;
+  uentry temp;
+  DPRINTF ( (message ("Got call that %s ( %s) ",  exprNode_unparse(fcn),   exprNodeList_unparse (arglist ) ) ) );
+
+  temp = exprNode_getUentry (fcn);
+
+  preconditions = uentry_getFcnPreconditions (temp);
+
+  if (preconditions)
+    {
+      preconditions = constraintList_copy(preconditions);
+      preconditions = constraintList_doSRefFixBaseParam (preconditions, arglist);
+    }
+  else
+    {
+      preconditions = constraintList_new();
+    }
+  
+  return preconditions;
+}
+
 void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 {
   constraintList temp;
 
-  TPRINTF( (message ("magically merging constraint into parent:%s for", exprNode_unparse (parent) )));
+  DPRINTF( (message ("magically merging constraint into parent:%s for", exprNode_unparse (parent) )));
 
-  TPRINTF( (message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
+  DPRINTF( (message (" children:  %s and %s", exprNode_unparse (child1), exprNode_unparse(child2) ) ) );
 
   if (exprNode_isError (child1)  || exprNode_isError(child2) )
      {
@@ -67,7 +90,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 	 {
 	   parent->requiresConstraints = constraintList_copy (child2->requiresConstraints);
 	   parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
-	   TPRINTF((message ("Copied child constraints: pre: %s and post: %s",
+	   DPRINTF((message ("Copied child constraints: pre: %s and post: %s",
 			     constraintList_print( child2->requiresConstraints),
 			     constraintList_print (child2->ensuresConstraints)
 			     )
@@ -85,7 +108,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
    llassert(!exprNode_isError (child1)  && ! exprNode_isError(child2) );
    
-  TPRINTF( (message ("Child constraints are %s %s and %s %s",
+  DPRINTF( (message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
 		     constraintList_print (child1->ensuresConstraints),
 		     constraintList_print (child2->requiresConstraints),
@@ -103,7 +126,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   parent->ensuresConstraints = constraintList_mergeEnsures(child1->ensuresConstraints,
 							   child2->ensuresConstraints);
   
-  TPRINTF( (message ("Parent constraints are %s and %s ",
+  DPRINTF( (message ("Parent constraints are %s and %s ",
 		     constraintList_print (parent->requiresConstraints),
 		     constraintList_print (parent->ensuresConstraints)
 		     ) ) );
@@ -120,14 +143,14 @@ constraintList constraintList_subsumeEnsures (constraintList list1, constraintLi
   constraintList_elements (list1, el)
     {
       
-      TPRINTF ((message ("Examining %s", constraint_print (el) ) ) );
+      DPRINTF ((message ("Examining %s", constraint_print (el) ) ) );
       if (!resolve (el, list2) )
 	{
 	    ret = constraintList_add (ret, el);
 	}
       else
 	{
-	  TPRINTF ( (message ("Subsuming %s", constraint_print (el) ) ) );
+	  DPRINTF ( (message ("Subsuming %s", constraint_print (el) ) ) );
 	}
     } end_constraintList_elements;
 
@@ -173,7 +196,7 @@ constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
 	}
       else
 	{
-	  TPRINTF ( (message ("Resolved away %s ", constraint_print(el) ) ) );
+	  DPRINTF ( (message ("Resolved away %s ", constraint_print(el) ) ) );
 	}
     } end_constraintList_elements;
 
@@ -189,7 +212,7 @@ bool constraint_conflict (constraint c1, constraint c2)
       if (c1->ar == EQ)
 	if (c1->ar == c2->ar)
 	  {
-	    TPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
+	    DPRINTF ( (message ("%s conflicts with %s ", constraint_print (c1), constraint_print(c2) ) ) );
 	    return TRUE;
 	  }
     }  
@@ -255,7 +278,7 @@ bool resolve (constraint c, constraintList p)
     {
       if ( satifies (c, el) )
 	{
-	  TPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
+	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
 	  return TRUE;
 	}
     }

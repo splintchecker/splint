@@ -2818,7 +2818,7 @@ sRef_unparseNoArgs (sRef s)
     case SK_UNKNOWN:
       return cstring_makeLiteral ("?");
     case SK_PARAM:
-      /* llcontbug (message ("sRef_unparseNoArgs: bad case: %q", sRef_unparseDebug (s))); */
+       llcontbug (message ("sRef_unparseNoArgs: bad case: %q", sRef_unparseDebug (s))); 
       return (sRef_unparseDebug (s));
     }
   BADEXIT;

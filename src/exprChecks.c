@@ -890,18 +890,51 @@ void exprNode_checkFunctionBody (exprNode body)
 	}
     }
 }
-      
+
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
+  constraintList c, t;
   /* drl added 8-8-2000 */
+
   exprNode_generateConstraints (body);
+  
+  c =   uentry_getFcnPreconditions (ue);
   DPRINTF(("function constraints\n"));
-  // constraintList_print (body->constraints);
-  DPRINTF (("----\n"));
-  // constraintList_resolve (body->constraints);
-  exprNode_free (body);
-    
-  }
+  DPRINTF (("\n\n\n\n\n\n\n"));
+
+  context_enterInnerContext ();
+  
+   if (c)
+     {
+       llassert (c);
+       DPRINTF ( (message ("Function preconditions are %s \n\n\n\n\n", constraintList_printDetailed (c) ) ) );
+       
+       t = reflectChanges (body->requiresConstraints, constraintList_copy (c) );
+       body->requiresConstraints = constraintList_copy (t);
+       
+       DPRINTF ( (message ("The body has the required cosntraints: %s", constraintList_printDetailed (t) ) ) );
+   t = constraintList_mergeEnsures (c, body->ensuresConstraints);
+
+   body->ensuresConstraints = constraintList_copy (t);
+   
+   DPRINTF ( (message ("The body has the ensures constraints: %s", constraintList_printDetailed (t) ) ) );
+     }
+
+   if (c)
+     {
+       TPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
+     }
+   else
+     {
+       TPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
+     }
+
+   printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
+   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
+   
+   context_exitInnerPlain();
+   /* exprNode_free (body); */
+}
 
 void exprChecks_checkEmptyMacroBody (void)
 {

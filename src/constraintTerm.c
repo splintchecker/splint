@@ -11,7 +11,8 @@
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
-# include "exprData.i"
+
+//# include "exprData.i"
 
 /*@-czechfcns@*/
 
@@ -57,6 +58,16 @@ constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e)
   return ret;
 }
 
+constraintTerm constraintTerm_makesRef  (/*@only@*/ sRef s)
+{
+  constraintTerm ret = new_constraintTermExpr();
+  ret->loc =  fileloc_undefined;
+  ret->value.sref = s;
+  ret->kind = SREF;
+  ret = constraintTerm_simplify(ret);
+  return ret;
+}
+
 constraintTerm constraintTerm_copy (constraintTerm term)
 {
   constraintTerm ret;
@@ -72,6 +83,59 @@ constraintTerm constraintTerm_setFileloc (constraintTerm term, fileloc loc)
   llassert(term);
   term->loc = fileloc_copy(loc);
   return term;
+}
+
+
+cstring constraintTerm_getName (constraintTerm term)
+{
+  cstring s;
+  s = cstring_undefined;
+  
+  llassert (term != NULL);
+
+  switch (term->kind)
+    {
+    case EXPRNODE:
+      /*@i334*/  //wtf
+      s = message ("%s", exprNode_unparse (term->value.expr) );
+      break;
+    case INTLITERAL:
+      s = message (" %d ", term->value.intlit);
+      break;
+      
+    case SREF:
+      s = message ("%s", sRef_unparse (term->value.sref) );
+
+      break;
+    }
+  
+  return s;
+}
+
+
+constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist)
+{
+  llassert (term != NULL);
+
+  switch (term->kind)
+    {
+    case EXPRNODE:
+      /*@i334*/  //wtf
+      //   s = message ("%s @ %s ", exprNode_unparse (term->value.expr),
+      //	   fileloc_unparse (term->loc) );
+      break;
+    case INTLITERAL:
+      //  s = message (" %d ", term->value.intlit);
+       break;
+      
+    case SREF:
+      term->value.sref = sRef_fixBaseParam (term->value.sref, arglist);
+      //      s = message ("%s ", sRef_unparse (term->value.sref) );
+
+      break;
+    }
+  return term;
+  
 }
 
 cstring constraintTerm_print (constraintTerm term)
@@ -93,8 +157,8 @@ cstring constraintTerm_print (constraintTerm term)
       break;
       
     case SREF:
-      s = cstring_makeLiteral("Not Implemented\n");
-      llassert(FALSE);
+      s = message ("%s ", sRef_unparseDebug (term->value.sref) );
+
       break;
     }
   
@@ -157,22 +221,70 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
     
 }
 
+sRef constraintTerm_getsRef (constraintTerm t)
+{
+  llassert (t);
+  if (t->kind == EXPRNODE)
+    {
+      return t->value.expr->sref;
+    }
+
+  if (t->kind == SREF)
+    {
+      return t->value.sref;
+    }
+
+  return sRef_undefined;
+}
+
+bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2)
+{
+  cstring s1, s2;
+
+  llassert (term1 !=NULL && term2 !=NULL);
+     
+ DPRINTF ( (message
+	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
+	     )
+	    )
+	   );
+  
+  s1 = constraintTerm_getName (term1);
+  s2 = constraintTerm_getName (term2);
+
+  if (cstring_equal (s1, s2) )
+    {
+      DPRINTF ((message (" %s and %s are same", s1, s2 ) ) );
+     return TRUE;
+   }
+  else
+     {
+     DPRINTF ((message (" %s and %s are not same", s1, s2 ) ) );
+     return FALSE;
+   }   
+}
+
 bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
 {
+  sRef s1, s2;
+  
   llassert (term1 !=NULL && term2 !=NULL);
 
-  if ( (term1->kind != term2->kind) || (term1->kind != EXPRNODE) )
+  s1 = constraintTerm_getsRef (term1);
+  s2 = constraintTerm_getsRef (term2);
+
+  if ( ! (s1 && s2) )
     {
       return FALSE;
     }
-      
+  
  DPRINTF ( (message
 	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
 	     )
 	    )
 	   );
  
- if (sRef_same (term1->value.expr->sref, term2->value.expr->sref) )
+ if (sRef_sameName (s1, s2) )
    {
      DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
      return TRUE;
