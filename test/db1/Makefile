@@ -29,7 +29,7 @@ test:
 
 check: $(LCSFILES)
 	-$(SPLINT) -showcol -weak $(MODULES) -expect 19
-	-$(SPLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 338
+	-$(SPLINT) -showcol +strict -bounds -modfilesystem +showsummary $(MODULES) -expect 338
 
 # evans 2002-07-09: 5 bufferoverflowhigh warnings for using sprintf
 

@@ -1955,8 +1955,7 @@ doFixResultTerm (/*@only@*/ constraintExpr e, /*@exposed@*/ exprNode fcnCall)
 /*to be used for structure checking */
 
 / *@only@* / static constraintExpr
-doSRefFixInvarConstraintTerm (/ *@only@* / constraintExpr e,
- sRef s, ctype ct)
+doSRefFixInvarConstraintTerm (/ *@only@* / constraintExpr e, sRef s, ctype ct)
 {
   constraintTerm t;
 
@@ -2457,7 +2456,8 @@ static ctype constraintExpr_getOrigType (constraintExpr e)
 
 /*drl added these around 10/18/001*/
 
-static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
+static /*@only@*/ constraintExpr 
+constraintExpr_div (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
 {
   int sizefrom = ctype_getSize (tfrom);
   int sizeto = ctype_getSize (tto);
@@ -2477,6 +2477,7 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
 
   if (sizeto == sizefrom) 
     {
+      DPRINTF (("Sizes match: %d / %d", sizeto, sizefrom));
       ; /* Sizes match, a-ok */
     }
   else
@@ -2490,6 +2491,7 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
       llassert (e != NULL);
       llassert (e->kind == term);
       ct = constraintExprData_termGetTerm (e->data);
+      DPRINTF (("constraint: %s / %s", constraintExpr_unparse (e), constraintTerm_unparse (ct)));
       llassert (constraintTerm_canGetValue (ct));
       val = constraintTerm_getValue (ct);
 
@@ -2520,7 +2522,8 @@ static /*@only@*/ constraintExpr constraintExpr_div (/*@only@*/ constraintExpr e
 
 
 /*@access exprNode@*/ 
-static /*@only@*/ constraintExpr constraintTerm_simpleDivTypeExprNode (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
+static /*@only@*/ constraintExpr 
+constraintTerm_simpleDivTypeExprNode (/*@only@*/ constraintExpr e, ctype tfrom, ctype tto, fileloc loc)
 {
   exprData data;
   exprNode t1, t2, expr;
@@ -2623,6 +2626,10 @@ static /*@only@*/ constraintExpr constraintTerm_simpleDivTypeExprNode (/*@only@*
 	      DPRINTF (("NOT A SIZEOF!"));
 	      /* empty */
 	    }
+	}
+      else 
+	{
+	  DPRINTF (("Not a mult: %s", constraintExpr_unparse (e)));
 	}
     }
 

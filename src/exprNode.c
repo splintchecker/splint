@@ -10679,8 +10679,20 @@ static ctype
 	  DPRINTF (("No error: [%s] %s / [%s]  %s",
 		    exprNode_unparse (e1), ctype_unparse (tr1),
 		    exprNode_unparse (e2), ctype_unparse (tr2)));
+	  
+	  /*
+	  ** evans 2003-06-15: changed this so if either type is a literal,
+	  **    the other type is used.
+	  **    (Need to look at the ISO C99 rules on this...)
+	  */
 
-	  ret = ctype_biggerType (tr1, tr2);
+	  if (exprNode_isNumLiteral (e1)) {
+	    ret = tr2;
+	  } else if (exprNode_isNumLiteral (e2)) {
+	    ret = tr1;
+	  } else {
+	    ret = ctype_biggerType (tr1, tr2);
+	  }
 	}
       else
 	{

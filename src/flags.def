@@ -1641,7 +1641,7 @@ static flaglist flags =
     "casebreak",
     FLG_CASEBREAK,
     "non-empty case in a switch without preceding break",
-    "Execution falls through from the previous case.", 0, 0
+    "Execution falls through from the previous case (use /*@fallthrough@*/ to mark fallthrough cases).", 0, 0
   },
   {
     FK_CONTROL, FK_NONE, modeFlag,

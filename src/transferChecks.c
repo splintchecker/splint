@@ -2346,7 +2346,7 @@ static void checkStructTransfer (exprNode lhs, sRef slhs, exprNode rhs, sRef srh
   if (ctype_isSU (st) && ctype_isRealSU (sRef_getType (slhs))
       && ctype_match (sRef_getType (slhs), st))
     {
-      if (tt == TT_DOASSIGN && sRef_isStateDefined (srhs))
+      if ((tt == TT_DOASSIGN || tt == TT_FIELDASSIGN) && sRef_isStateDefined (srhs))
 	{
 	  sRef_setDefinedComplete (slhs, loc);
 	}
@@ -2362,47 +2362,52 @@ static void checkStructTransfer (exprNode lhs, sRef slhs, exprNode rhs, sRef srh
 	  if (sRef_isLocalVar (slhs)
 	      && sRef_isFileOrGlobalScope (sRef_getRootBase (srhs)))
 	    {
+	      DPRINTF (("Global scope!"));
 	      sRef_setDependent (slhs, exprNode_loc (lhs));
 	    }
-	  else
+	}
+
+      /*
+      ** evans 2003-07-10: should always copy the fields!
+      */
+
+      if (ctype_isUnion (st))
+	{
+	  sRef_setDefState (slhs, sRef_getDefState (srhs), 
+			    exprNode_loc (lhs));
+	  
+	  sRefSet_realElements (sRef_derivedFields (srhs), sr)
 	    {
-	      if (ctype_isUnion (st))
+	      if (sRef_isField (sr))
 		{
-		  sRef_setDefState (slhs, sRef_getDefState (srhs), 
-				    exprNode_loc (lhs));
-
-		  sRefSet_realElements (sRef_derivedFields (srhs), sr)
-		    {
-		      if (sRef_isField (sr))
-			{
-			  cstring fieldname = sRef_getField (sr);
-			  sRef lfld = sRef_makeField (slhs, fieldname);
-
-			  (void) checkTransfer (rhs, sr, lhs, lfld, 
-						exprNode_undefined,
-						exprNode_loc (lhs), tt);
-			}
-		    } end_sRefSet_realElements ;
-		}
-	      else
-		{
-		  uentryList fields = ctype_getFields (st);
+		  cstring fieldname = sRef_getField (sr);
+		  sRef lfld = sRef_makeField (slhs, fieldname);
 		  
-		  uentryList_elements (fields, field)
-		    {
-		      sRef rfld = sRef_makeField (srhs, uentry_rawName (field));
-		      sRef lfld = sRef_makeField (slhs, uentry_rawName (field));
-		      (void) checkTransfer (rhs, rfld, lhs, lfld, 
-					    exprNode_undefined,
-					    exprNode_loc (lhs), tt);
-		    } end_uentryList_elements ;
+		  (void) checkTransfer (rhs, sr, lhs, lfld, 
+					exprNode_undefined,
+					exprNode_loc (lhs), tt);
 		}
-
-	      if (sRef_isOnly (srhs))
-		{
-		  sRef_setKeptComplete (srhs, loc);
-		}
-	    }
+	    } end_sRefSet_realElements ;
+	}
+      else
+	{
+	  uentryList fields = ctype_getFields (st);
+	  
+	  uentryList_elements (fields, field)
+	    {
+	      sRef rfld = sRef_makeField (srhs, uentry_rawName (field));
+	      sRef lfld = sRef_makeField (slhs, uentry_rawName (field));
+	      DPRINTF (("Transfer field: %s := %s", 
+			sRef_unparse (lfld), sRef_unparse (rfld)));
+	      (void) checkTransfer (rhs, rfld, lhs, lfld, 
+				    exprNode_undefined,
+				    exprNode_loc (lhs), tt);
+	    } end_uentryList_elements ;
+	}
+      
+      if (sRef_isOnly (srhs))
+	{
+	  sRef_setKeptComplete (srhs, loc);
 	}
     }
 }
@@ -2440,6 +2445,8 @@ transferChecks_assign (exprNode lhs, exprNode rhs)
 
   if (ctype_isRealSU (sRef_getType (srhs)))
     {
+      DPRINTF (("Check struct transfer: %s := %s", exprNode_unparse (lhs),
+		exprNode_unparse (rhs)));
       checkStructTransfer (lhs, slhs, rhs, srhs, exprNode_loc (lhs), TT_FIELDASSIGN);
     }
   else

@@ -963,6 +963,9 @@ cppOptions_init (cppOptions *opts)
   opts->warn_comments = 0;
   opts->warnings_are_errors = 0;
 
+  /* Added 2003-07-10: */
+  opts->traditional = FALSE;
+  opts->c89 = TRUE;
   initialize_char_syntax (opts);
 }
 
@@ -3726,17 +3729,10 @@ initialize_builtins (cppReader *pfile)
   cpplib_installBuiltin ("__REGISTER_PREFIX__", ctype_string, -1, T_REGISTER_PREFIX_TYPE, 0, NULL, -1);
   cpplib_installBuiltin ("__TIME__", ctype_string, -1, T_TIME, 0, NULL, -1);
 
-  /*
-  ** No, don't define __STDC__
-  **
-
   if (!cppReader_isTraditional (pfile))
     {
       cpplib_installBuiltin ("__STDC__", ctype_int, -1, T_CONST, STDC_VALUE, NULL, -1);
     }
-
-  **
-  */
 
 # ifdef WIN32
     cpplib_installBuiltin ("_WIN32", ctype_int, -1, T_CONST, STDC_VALUE, NULL, -1);
