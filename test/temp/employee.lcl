@@ -1,0 +1,7 @@
+typedef struct 
+{
+  int ssNum;
+  int salary;
+} employee;
+
+int crunch (employee e) { }
