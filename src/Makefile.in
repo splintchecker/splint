@@ -175,7 +175,7 @@ LCLLISTSRC = initDeclNodeList.c sortList.c declaratorInvNodeList.c \
 HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/abstract.h               Headers/macrocache.h \
           Headers/abstractNode.h           Headers/mapping.h \
-          Headers/aliasChecks.h            Headers/message.h \
+          Headers/message.h \
           Headers/aliasStack.h             Headers/messageLog.h \
           Headers/aliasTable.h             Headers/metaStateConstraint.h \
           Headers/annotationInfo.h         Headers/metaStateConstraintList.h \
@@ -330,6 +330,9 @@ COMMONSRC = $(OVERFLOWCHSRC) $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 
 
 ALLSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
+
+#files to run LCLint on
+LINTSRC = $(GRAMSRC) $(COMMONSRC) $(LCLINTSRC) 
 
 
 #ALLSRC = $(COMMONSRC) $(LCLINTSRC) $(DER_FILES) $(HEADERSRC)
@@ -1037,18 +1040,14 @@ etags:
 	maketags
 
 lintnew: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(ALLSRC) $(LCLSRC) -dump lclint \
+	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
                     -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
 lintbuffercheck: 
-	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(ALLSRC) $(LCLSRC) -dump lclint \
+	./lclint -f lclint.lclintrc $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(LCLSRC) -dump lclint \
                     +forcehints -misplacedsharequal +showsourceloc -unrecogcomments \
-                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread
-
-.PHONY: purify
-purify: $(lclint_OBJECTS)
-	purify $(LINK) -o lclint$(EXEEXT) $^ $(lclint_LDADD)
+                    -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +arraybounds +arrayboundsread +implictconstraint
 
 all: lclint$(EXEEXT)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

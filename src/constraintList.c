@@ -572,12 +572,12 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
 /*@only@*/ constraintList constraintList_undump (FILE *f)
 {
   constraintList ret;
-  char *s = mstring_create (MAX_DUMP_LINE_LENGTH);
+  char *s;
   char *os;
   
   ret = constraintList_makeNew();
 
-  os = s;
+  os =  mstring_create (MAX_DUMP_LINE_LENGTH);
   s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
   while (s != NULL && *s != ';')

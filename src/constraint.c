@@ -1032,10 +1032,8 @@ constraint constraint_undump (FILE *f)
 
   char *os;
 
-  s = mstring_create (MAX_DUMP_LINE_LENGTH);
+  os = mstring_create (MAX_DUMP_LINE_LENGTH);
 
-  os = s;
-  
   s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
   /*@i33*/ /*this should probably be wrappered...*/

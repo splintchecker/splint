@@ -16,7 +16,7 @@
 #define GCC_INCLUDE_DIR2 "/usr/local/include"
 
 /* String describing who compiled this binary and how */
-#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux paisley 2.4.3-12 #1 Fri Jun 8 13:35:30 EDT 2001 i686 unknown by drl7x"
+#define LCL_COMPILE "Compiled using gcc -g -O2 on Linux matthews.cs.Virginia.EDU 2.4.3-12 #1 Fri Jun 8 13:35:30 EDT 2001 i686 unknown by drl7x"
 
 /* LCLint's version number */
 #define LCL_PARSE_VERSION "LCLint 3.0.0.19"

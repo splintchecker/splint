@@ -1869,8 +1869,8 @@ static constraintExpr  binaryExpr_undump (FILE *f)
   char * str;
   char * os;
 
-  str = mstring_create (MAX_DUMP_LINE_LENGTH);
-  os = str;
+  os = mstring_create (MAX_DUMP_LINE_LENGTH);
+
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
 
   

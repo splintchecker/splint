@@ -38,7 +38,8 @@ extern /*@only@*/ void *
   /*@releases p_x@*/
   /*@modifies *p_x@*/ ;
 
-extern /*@out@*/ /*@only@*/ void *dmalloc  (/*@sef@*/ size_t p_size) /*@*/ ;
+extern /*@out@*/ /*@only@*/ void *dmalloc  (/*@sef@*/ size_t p_size) /*@*/
+          /*@ensures MaxSet(result) == (p_size - 1); @*/ ;
 
 # ifdef USEDMALLOC
 # define dmalloc(s)    (malloc(s))

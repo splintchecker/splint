@@ -90,7 +90,8 @@ lclintlib_DATA = \
   ansi.h ansi.lcd ansistrict.lcd posix.h posix.lcd posixstrict.lcd \
   unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
   file.mts file.xh filerw.mts filerw.xh \
-  lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh
+  lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh \
+  stdio.h stdlib.h
 
 
 EXTRA_DIST = $(lclintlib_DATA)

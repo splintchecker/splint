@@ -38,7 +38,7 @@
 # include "llbasic.h"
 # include "shift.h"
 
-/*@constant static int SHIFTMAX;@*/
+/*@constant static int SHIFTMAX=200;@*/
 # define SHIFTMAX 200
 
 static o_ltoken Shifts[SHIFTMAX];

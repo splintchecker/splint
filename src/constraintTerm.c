@@ -607,8 +607,8 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
   char *str;
   char *os;
 
-  str = mstring_create (MAX_DUMP_LINE_LENGTH);
-  os = str;
+  os = mstring_create (MAX_DUMP_LINE_LENGTH);
+
   str = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
   kind = (constraintTermType) reader_getInt(&str);

@@ -64,7 +64,7 @@ extern /*@truenull@*/ bool mstring_isEmpty (/*@sef@*/ /*@null@*/ char *p_s) /*@*
 
 extern void mstring_markFree (/*@owned@*/ char *p_s) /*@modifies *p_s;@*/ ;
 
-extern /*@notnull@*/ /*@only@*/ char *mstring_create (int p_n) /*@*/ ;
+extern /*@notnull@*/ /*@only@*/ char *mstring_create (int p_n) /*@*/  /*@ensures maxSet(result) == p_n @*/ ;
 extern /*@notnull@*/ /*@only@*/ char *mstring_createEmpty (void) /*@*/ ;
 
 extern void mstring_free (/*@out@*/ /*@only@*/ /*@null@*/ char *p_s);

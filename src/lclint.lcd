@@ -1521,7 +1521,7 @@
 3 f1496 (4|$#,)!
 3 f0 (23|0@0@6&#,!.,)!
 3 f1211 (23|0@0@6&#,!.,)!
-0 a2621|-1 20984 -1
+0 a2621|-1 20988 -1
 3 f0 (1519|$#,)!
 3 f2 (1519|$#,)!
 3 f0 (1519|$#,)!
@@ -2706,7 +2706,7 @@
 1 t2700|2700&
 3 Ss_mappair{1037|@1|^#domain,1037|@1|^#range,2701|@1|0@5@3&#next,}!
 0 s3629|-1 2704 -1
-1 t2703|2703 20937 -1
+1 t2703|2703 20941 -1
 0 s3630|-1 2706 -1
 1 t2705|2705&
 3 S!18{6|@1|^#count,2706|@1|0@3@2&#buckets,}^2709
@@ -2732,7 +2732,7 @@
 3 S!20{2721|@1|^#kind,1036|@1|^#handle,1037|@1|^#name,1037|@1|11@0@0&#tag,2|@1|11@0@0&#realtag,1036|@1|^#baseSort,1036|@1|11@0@0&#objSort,2726|@1|0@5@3&#members,2|@1|^#export,2|@1|^#mutable,2|@1|^#abstract,2|@1|^#imported,}^2729
 0 s3659|&
 1 t2727|2727&
-0 s3660|-1 20269 -1
+0 s3660|-1 20271 -1
 3 f0 (1036|$#,)!
 3 f1211 (1036|$#,)!
 3 f0 (1036|$#,)!
@@ -4198,7 +4198,7 @@
 3 S!122{1043|@1|0@5@3&#id,2|@1|^#export,3673|@1|0@0@2&#signature,3153|@1|0@5@2&#globals,}^4195
 0 s4564|&
 1 t4193|4193&
-0 s4565|-1 20585 -1
+0 s4565|-1 20587 -1
 3 S!123{1043|@1|0@5@3&#id,1036|@1|^#basedOn,2|@1|^#abstract,2|@1|^#modifiable,2|@1|^#export,}^4199
 0 s4566|&
 1 t4197|4197&
@@ -4239,14 +4239,14 @@
 0 s4603|-1 4235 -1
 1 t4234|4234&
 3 Ss_htEntry{4233|@1|0@0@2&#data,4235|@1|0@0@2&#next,}!
-0 s4604|-1 20566 -1
+0 s4604|-1 20568 -1
 0 s4605|-1 4239 -1
-1 t4238|4238 20610 -1
+1 t4238|4238 20612 -1
 0 s4606|-1 4241 -1
 1 t4240|4240&
 3 S!134{6|@1|^#count,6|@1|^#size,4241|@1|0@3@2&#buckets,}!
 0 s4607|&
-0 s4608|-1 20445 -1
+0 s4608|-1 20447 -1
 0 s4609|-1 4246 -1
 1 t4245|4245&
 0 s4610|&
@@ -19184,6 +19184,8 @@
 3 f1 ()!
 3 f0 (1037|$#,1043|0@5@7&#,3037|$#,)!
 3 f1 (1037|$#,1043|0@5@7&#,3037|$#,)!
+2 F0/257|0&
+2 F4/257|4&
 3 f0 (1043|0@5@7&#,)!
 3 f1 (1043|0@5@7&#,)!
 3 f0 (1043|0@5@2&#,)!
@@ -20129,7 +20131,7 @@
 3 f2 (4|$#,)!
 3 e!260{STARTCNUM,STARTCNUMDOT,STARTCSTR,STARTCCHAR,STARTWIDE,STARTSLASH,STARTOTHER}!
 0 s8129|&
-0 s8130|-1 -1 20140
+0 s8130|-1 -1 20142
 3 f0 ()!
 3 f1 ()!
 3 f0 ()!
@@ -20142,7 +20144,7 @@
 3 f1 ()!
 3 f0 (23|0@0@6&#,)!
 3 f1 (23|0@0@6&#,)!
-2 y20127|20127&
+2 y20129|20129&
 3 f0 ()!
 3 f1 ()!
 3 f0 ()!
@@ -20269,8 +20271,8 @@
 3 f1037 (1037|$#,1037|$#,)!
 3 f0 (1043|0@5@7&#,1036|$#,2730|$#,)!
 3 f1 (1043|0@5@7&#,1036|$#,2730|$#,)!
-0 s8131|-1 20268 -1
-1 t20267|20267&
+0 s8131|-1 20270 -1
+1 t20269|20269&
 1 t2730|2730&
 3 f0 (2726|0@5@2&#,)!
 3 f1 (2726|0@5@2&#,)!
@@ -20448,8 +20450,8 @@
 3 f0 (23|$#,)!
 3 f2 (23|$#,)!
 1 t4244|4244&
-3 f0 (20445|$#,211|$#,2|$#,)!
-3 f1 (20445|$#,211|$#,2|$#,)!
+3 f0 (20447|$#,211|$#,2|$#,)!
+3 f1 (20447|$#,211|$#,2|$#,)!
 3 f0 (4217|0@0@2&#,)!
 3 f1 (4217|0@0@2&#,)!
 3 f0 (4247|$#,)!
@@ -20463,71 +20465,71 @@
 0 s8138|&
 3 U!262{4196|@1|0@0@2&#fct,4232|@1|0@0@2&#scope,4200|@1|0@0@2&#type,4207|@1|0@0@2&#var,}!
 0 s8139|&
-3 S!263{20458|@1|^#kind,20459|@1|^#info,}!
+3 S!263{20460|@1|^#kind,20461|@1|^#info,}!
 0 s8140|&
-0 s8141|-1 20464 -1
-1 t20463|20463&
-3 S!264{6|@1|^#size,6|@1|^#allocated,20464|@1|0@3@3&#entries,2|@1|^#exporting,}!
+0 s8141|-1 20466 -1
+1 t20465|20465&
+3 S!264{6|@1|^#size,6|@1|^#allocated,20466|@1|0@3@3&#entries,2|@1|^#exporting,}!
 0 s8142|&
-0 s8143|-1 20468 -1
-1 t20467|20467&
-3 Ss_symtableStruct{20468|@1|0@0@3&#idTable,20445|@1|0@0@3&#hTable,2710|@1|0@0@3&#type2sort,}!
-3 f0 (20464|$#,)!
-3 f1043 (20464|$#,)!
-3 f0 (20468|$#,)!
-3 f19 (20468|$#,)!
-3 f20464 (20468|$#,)!
-3 f0 (20468|$#,1037|$#,)!
-3 f19 (20468|$#,1037|$#,)!
-3 f20464 (20468|$#,1037|$#,)!
-3 f0 (20468|$#,1037|$#,)!
-3 f19 (20468|$#,1037|$#,)!
-3 f20464 (20468|$#,1037|$#,)!
+0 s8143|-1 20470 -1
+1 t20469|20469&
+3 Ss_symtableStruct{20470|@1|0@0@3&#idTable,20447|@1|0@0@3&#hTable,2710|@1|0@0@3&#type2sort,}!
+3 f0 (20466|$#,)!
+3 f1043 (20466|$#,)!
+3 f0 (20470|$#,)!
+3 f19 (20470|$#,)!
+3 f20466 (20470|$#,)!
+3 f0 (20470|$#,1037|$#,)!
+3 f19 (20470|$#,1037|$#,)!
+3 f20466 (20470|$#,1037|$#,)!
+3 f0 (20470|$#,1037|$#,)!
+3 f19 (20470|$#,1037|$#,)!
+3 f20466 (20470|$#,1037|$#,)!
 3 f0 ()!
 3 f19 ()!
-3 f20468 ()!
-3 f0 (20463|$#,)!
-3 f1 (20463|$#,)!
+3 f20470 ()!
+3 f0 (20465|$#,)!
+3 f1 (20465|$#,)!
 3 f0 (4233|$#,)!
 3 f4192 (4233|$#,)!
-3 f0 (20445|0@0@2&#,)!
-3 f1 (20445|0@0@2&#,)!
+3 f0 (20447|0@0@2&#,)!
+3 f1 (20447|0@0@2&#,)!
 3 f0 (6|$#,)!
 3 f19 (6|$#,)!
-3 f20445 (6|$#,)!
-3 f0 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f19 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f4233 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f0 (20445|$#,4233|0@0@2&#,)!
-3 f2 (20445|$#,4233|0@0@2&#,)!
-3 f0 (20445|$#,4233|0@0@2&#,)!
-3 f19 (20445|$#,4233|0@0@2&#,)!
-3 f4233 (20445|$#,4233|0@0@2&#,)!
-3 f0 (20468|0@0@2&#,)!
-3 f1 (20468|0@0@2&#,)!
+3 f20447 (6|$#,)!
+3 f0 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f19 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f4233 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f0 (20447|$#,4233|0@0@2&#,)!
+3 f2 (20447|$#,4233|0@0@2&#,)!
+3 f0 (20447|$#,4233|0@0@2&#,)!
+3 f19 (20447|$#,4233|0@0@2&#,)!
+3 f4233 (20447|$#,4233|0@0@2&#,)!
+3 f0 (20470|0@0@2&#,)!
+3 f1 (20470|0@0@2&#,)!
 3 f0 (4207|0@0@2&#,)!
 3 f1 (4207|0@0@2&#,)!
 3 f0 (4207|$#,)!
 3 f4207 (4207|$#,)!
 3 f0 (4247|0@0@2&#,)!
 3 f1 (4247|0@0@2&#,)!
-3 f0 (20468|0@0@2&#,)!
-3 f1 (20468|0@0@2&#,)!
+3 f0 (20470|0@0@2&#,)!
+3 f1 (20470|0@0@2&#,)!
 3 f0 (4196|0@0@2&#,)!
 3 f1 (4196|0@0@2&#,)!
 3 f0 (4200|0@0@2&#,)!
 3 f1 (4200|0@0@2&#,)!
 3 f0 (4232|0@0@2&#,)!
 3 f1 (4232|0@0@2&#,)!
-3 f0 (20463|$#,)!
-3 f1 (20463|$#,)!
-3 f0 (20464|$#,)!
-3 f1043 (20464|$#,)!
+3 f0 (20465|$#,)!
+3 f1 (20465|$#,)!
+3 f0 (20466|$#,)!
+3 f1043 (20466|$#,)!
 3 f0 ()!
 3 f4247 ()!
 3 f0 ()!
 3 f19 ()!
-3 f20468 ()!
+3 f20470 ()!
 3 f0 (3683|$#,)!
 3 f1037 (3683|$#,)!
 3 f0 (4233|$#,3632|0@0@17&#,)!
@@ -20566,8 +20568,8 @@
 3 f4232 (4247|$#,)!
 3 f0 (4247|$#,2|$#,)!
 3 f1 (4247|$#,2|$#,)!
-3 f0 (20445|$#,211|$#,2|$#,)!
-3 f1 (20445|$#,211|$#,2|$#,)!
+3 f0 (20447|$#,211|$#,2|$#,)!
+3 f1 (20447|$#,211|$#,2|$#,)!
 1 t4237|4237&
 3 f0 (4247|$#,211|$#,2|$#,)!
 3 f1 (4247|$#,211|$#,2|$#,)!
@@ -20581,10 +20583,10 @@
 3 f3153 (23|$#,1094|0@5@7&#,)!
 3 f0 (23|$#,)!
 3 f2 (23|$#,)!
-0 s8144|-1 20582 -1
+0 s8144|-1 20584 -1
 3 f0 (23|$#,1094|0@5@7&#,2710|$#,)!
 3 f1 (23|$#,1094|0@5@7&#,2710|$#,)!
-1 t20579|20579&
+1 t20581|20581&
 2 F0/20|0&
 2 F4/20|4&
 1 t4196|4196&
@@ -20592,37 +20594,37 @@
 3 f1 (1094|0@5@7&#,1043|0@5@7&#,2710|$#,)!
 3 f0 (4247|$#,211|$#,2|$#,)!
 3 f1 (4247|$#,211|$#,2|$#,)!
-3 f0 (20468|$#,)!
-3 f19 (20468|$#,)!
-3 f20464 (20468|$#,)!
-3 f0 (20468|$#,1037|$#,)!
-3 f19 (20468|$#,1037|$#,)!
-3 f20464 (20468|$#,1037|$#,)!
-3 f0 (20468|$#,1037|$#,)!
-3 f19 (20468|$#,1037|$#,)!
-3 f20464 (20468|$#,1037|$#,)!
+3 f0 (20470|$#,)!
+3 f19 (20470|$#,)!
+3 f20466 (20470|$#,)!
+3 f0 (20470|$#,1037|$#,)!
+3 f19 (20470|$#,1037|$#,)!
+3 f20466 (20470|$#,1037|$#,)!
+3 f0 (20470|$#,1037|$#,)!
+3 f19 (20470|$#,1037|$#,)!
+3 f20466 (20470|$#,1037|$#,)!
 3 f0 (4233|$#,)!
 3 f4192 (4233|$#,)!
 3 f0 (4233|0@5@2&#,)!
 3 f1 (4233|0@5@2&#,)!
 3 f0 (4239|0@5@2&#,)!
 3 f1 (4239|0@5@2&#,)!
-3 f0 (20445|0@0@2&#,)!
-3 f1 (20445|0@0@2&#,)!
+3 f0 (20447|0@0@2&#,)!
+3 f1 (20447|0@0@2&#,)!
 3 f0 (6|$#,)!
 3 f19 (6|$#,)!
-3 f20445 (6|$#,)!
+3 f20447 (6|$#,)!
 1 t4239|4239&
-3 f0 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f19 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f4233 (20445|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
-3 f0 (20445|$#,4233|0@0@2&#,)!
-3 f2 (20445|$#,4233|0@0@2&#,)!
-3 f0 (20445|$#,4233|0@0@2&#,)!
-3 f19 (20445|$#,4233|0@0@2&#,)!
-3 f4233 (20445|$#,4233|0@0@2&#,)!
-3 f0 (20445|$#,)!
-3 f1 (20445|$#,)!
+3 f0 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f19 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f4233 (20447|$#,4192|$#,4220|$#,3683|0@5@7&#,)!
+3 f0 (20447|$#,4233|0@0@2&#,)!
+3 f2 (20447|$#,4233|0@0@2&#,)!
+3 f0 (20447|$#,4233|0@0@2&#,)!
+3 f19 (20447|$#,4233|0@0@2&#,)!
+3 f4233 (20447|$#,4233|0@0@2&#,)!
+3 f0 (20447|$#,)!
+3 f1 (20447|$#,)!
 3 f0 (4247|$#,)!
 3 f1 (4247|$#,)!
 3 f0 (3034|$#,)!
@@ -20865,6 +20867,8 @@
 3 f1 ()!
 3 f0 ()!
 3 f1 ()!
+2 F0/200|0&
+2 F2909/200|2909&
 3 f0 ()!
 3 f2 ()!
 3 f0 (1043|0@5@7&#,)!
@@ -20894,18 +20898,18 @@
 3 f0 ()!
 3 f1 ()!
 0 s8147|&
-3 S!266{1037|@1|^#HashNext,20891|@1|^#i,}!
+3 S!266{1037|@1|^#HashNext,20895|@1|^#i,}!
 0 s8148|&
-0 s8149|-1 20903 -1
+0 s8149|-1 20907 -1
 3 f0 (6|$#,)!
 3 f1 (6|$#,)!
 3 f0 (23|0@0@9&#,)!
-3 f20891 (23|0@0@9&#,)!
+3 f20895 (23|0@0@9&#,)!
 3 f0 (6|$#,)!
 3 f1 (6|$#,)!
 3 f0 (23|$#,10|$#,)!
 3 f1037 (23|$#,10|$#,)!
-1 t20894|20894&
+1 t20898|20898&
 3 f0 (1211|0@5@6&#,)!
 3 f1037 (1211|0@5@6&#,)!
 3 f0 (23|0@0@6&#,)!
@@ -20921,7 +20925,7 @@
 3 f0 (6|$#,)!
 3 f1 (6|$#,)!
 3 f0 (23|0@0@9&#,)!
-3 f20891 (23|0@0@9&#,)!
+3 f20895 (23|0@0@9&#,)!
 3 f0 (6|$#,)!
 3 f1 (6|$#,)!
 3 f0 (23|$#,10|$#,)!
@@ -21934,7 +21938,7 @@
 ^1025 1306$$$@0#mstring_free
 ^1026 1304@6@2@1@0@0^@2@0@0#mstring_createEmpty
 ^1027 1308$^$@0#int_compare
-^1028 20982$$$@0#generic_compare
+^1028 20986$$$@0#generic_compare
 *3 (Variable)
 ^1029 0|@11|^#GET
 *1 (Constant)
@@ -22232,7 +22236,7 @@
 ^1295 0$#LLERROR_H
 *4 (Function)
 ^1296 2439$$$@0#check
-^1297 20983@6@0@8@0@0$$@0#llassert
+^1297 20987@6@0@8@0@0$$@0#llassert
 ^1298 2445@6@0@8@0@0$$@0#llassertretnull
 ^1299 2447@6@0@8@0@0$$@0#llassertprotect
 ^1300 2449@6@0@8@0@0$$@0#llassertfatal
@@ -23116,7 +23120,7 @@
 *1 (Constant)
 ^2331 0$#LLGRAMMAR2_H
 *4 (Function)
-^2332 20930$$$@0#MMASH
+^2332 20934$$$@0#MMASH
 ^2333 9849$$$@0#swallowMacro
 *7 (Struct tag)
 ^2334 3619@1012#@s_opFormNode
@@ -24008,10 +24012,10 @@
 *0 (Datatype)
 ^3632 2709@+@=@0@0@0@0@2710#mapping
 *4 (Function)
-^3633 20936$$@2@0@0#mapping_create
-^3634 20939$$$@0#mapping_find
-^3635 20941$$$@0#mapping_bind
-^3636 20934$$$@0#mapping_free
+^3633 20940$$@2@0@0#mapping_create
+^3634 20943$$$@0#mapping_find
+^3635 20945$$$@0#mapping_bind
+^3636 20938$$$@0#mapping_free
 *1 (Constant)
 ^3637 23$#BEGINSORTTABLE#SORTTABLEEND
 *2 (Enum member)
@@ -24031,49 +24035,49 @@
 *0 (Datatype)
 ^3660 2729@-@+@0@0@0@0@2730#sortNode
 *4 (Function)
-^3661 20389@6@5@1@0@0^@3@0@0#sort_unparse
-^3662 20432@6@5@1@0@0^@19@2@0#sort_unparseName
-^3663 20285$^$@0#sort_makeSort
-^3664 20291$^$@0#sort_makeSyn
-^3665 20293$^$@0#sort_makeFormal
-^3666 20295$^$@0#sort_makeGlobal
-^3667 20299$^$@0#sort_makePtr
-^3668 20301$^$@0#sort_makePtrN
-^3669 20307$^$@0#sort_makeVal
-^3670 20297$^$@0#sort_makeObj
-^3671 20275$@1@s1@1@s1$@0#sort_destroyMod
-^3672 20303$^$@0#sort_makeArr
-^3673 20305$^$@0#sort_makeVec
-^3674 20311$^$@0#sort_makeMutable
-^3675 20309$^$@0#sort_makeImmutable
-^3676 20313$^$@0#sort_makeStr
-^3677 20327$^$@0#sort_makeUnion
-^3678 20339$^$@0#sort_makeEnum
-^3679 20315$@0@s1@1@s1$@0#sort_updateStr
-^3680 20329$@0@s1@1@s1$@0#sort_updateUnion
-^3681 20341$@0@s1@1@s1$@0#sort_updateEnum
-^3682 20317$@0@s1@1@s1$@0#sort_makeTuple
-^3683 20331$@0@s1@1@s1$@0#sort_makeUnionVal
-^3684 20427$^$@0#sort_getLsymbol
-^3685 20430$^@19@3@0#sort_getName
-^3686 20381$^@19@3@0#sort_lookup
-^3687 20383$^@19@3@0#sort_quietLookup
-^3688 20369$^$@0#sort_lookupName
-^3689 20411$@0@@1@p0$@0#sort_dump
-^3690 20367$@1@s1@1@s1$@0#sort_init
-^3691 20423$^$@0#sort_compatible
-^3692 20425$^$@0#sort_compatible_modulo_cstring
-^3693 20397$^$@0#sort_getUnderlying
-^3694 20403$^$@0#sort_mutable
-^3695 20277$@0@s1@1@s1$@0#sort_makeNoSort
-^3696 20279$^$@0#sort_makeHOFSort
-^3697 20440$^$@0#sort_isHOFSortKind
-^3698 20409$^$@0#sort_isValidSort
-^3699 20405$@0@s1@1@s1$@0#sort_setExporting
-^3700 20379$@0@g2691@0@0@1@g2691$@0#sort_printStats
-^3701 20421$^$@0#sort_equal
-^3702 20438$@0@s1@1@s1$@0#sort_fromLsymbol
-^3703 20419$@0@s1@1@p0,s1$@0#sort_import
+^3661 20391@6@5@1@0@0^@3@0@0#sort_unparse
+^3662 20434@6@5@1@0@0^@19@2@0#sort_unparseName
+^3663 20287$^$@0#sort_makeSort
+^3664 20293$^$@0#sort_makeSyn
+^3665 20295$^$@0#sort_makeFormal
+^3666 20297$^$@0#sort_makeGlobal
+^3667 20301$^$@0#sort_makePtr
+^3668 20303$^$@0#sort_makePtrN
+^3669 20309$^$@0#sort_makeVal
+^3670 20299$^$@0#sort_makeObj
+^3671 20277$@1@s1@1@s1$@0#sort_destroyMod
+^3672 20305$^$@0#sort_makeArr
+^3673 20307$^$@0#sort_makeVec
+^3674 20313$^$@0#sort_makeMutable
+^3675 20311$^$@0#sort_makeImmutable
+^3676 20315$^$@0#sort_makeStr
+^3677 20329$^$@0#sort_makeUnion
+^3678 20341$^$@0#sort_makeEnum
+^3679 20317$@0@s1@1@s1$@0#sort_updateStr
+^3680 20331$@0@s1@1@s1$@0#sort_updateUnion
+^3681 20343$@0@s1@1@s1$@0#sort_updateEnum
+^3682 20319$@0@s1@1@s1$@0#sort_makeTuple
+^3683 20333$@0@s1@1@s1$@0#sort_makeUnionVal
+^3684 20429$^$@0#sort_getLsymbol
+^3685 20432$^@19@3@0#sort_getName
+^3686 20383$^@19@3@0#sort_lookup
+^3687 20385$^@19@3@0#sort_quietLookup
+^3688 20371$^$@0#sort_lookupName
+^3689 20413$@0@@1@p0$@0#sort_dump
+^3690 20369$@1@s1@1@s1$@0#sort_init
+^3691 20425$^$@0#sort_compatible
+^3692 20427$^$@0#sort_compatible_modulo_cstring
+^3693 20399$^$@0#sort_getUnderlying
+^3694 20405$^$@0#sort_mutable
+^3695 20279$@0@s1@1@s1$@0#sort_makeNoSort
+^3696 20281$^$@0#sort_makeHOFSort
+^3697 20442$^$@0#sort_isHOFSortKind
+^3698 20411$^$@0#sort_isValidSort
+^3699 20407$@0@s1@1@s1$@0#sort_setExporting
+^3700 20381$@0@g2691@0@0@1@g2691$@0#sort_printStats
+^3701 20423$^$@0#sort_equal
+^3702 20440$@0@s1@1@s1$@0#sort_fromLsymbol
+^3703 20421$@0@s1@1@p0,s1$@0#sort_import
 *3 (Variable)
 ^3704 1036|@1|^#sort_bool#sort_capBool#sort_int#sort_char#sort_cstring#sort_float#sort_double
 *2 (Enum member)
@@ -24103,10 +24107,10 @@
 *0 (Datatype)
 ^3757 2838@-@+@0@0@0@0@2839#paramNode
 *4 (Function)
-^3758 20022$$$@0#paramNode_free
-^3759 20020@6@5@1@0@0$@3@0@0#paramNode_copy
-^3760 19850@6@5@1@0@0$@2@0@0#paramNode_unparse
-^3761 19856@6@5@1@0@0$@2@0@0#paramNode_unparseComments
+^3758 20024$$$@0#paramNode_free
+^3759 20022@6@5@1@0@0$@3@0@0#paramNode_copy
+^3760 19852@6@5@1@0@0$@2@0@0#paramNode_unparse
+^3761 19858@6@5@1@0@0$@2@0@0#paramNode_unparseComments
 *0 (Datatype)
 ^3762 2839@-@+@0@5@2@0@2852#o_paramNode
 *7 (Struct tag)
@@ -24130,14 +24134,14 @@
 ^3775 2857@i0@0@4#paramNodeList_undefined
 ^3776 1037@@0@6#lsymbol_undefined
 *4 (Function)
-^3777 20907$^$@0#lsymbol_fromChars
-^3778 20905$^$@0#lsymbol_fromString
-^3779 20915@6@5@1@0@0^@19@2@0#lsymbol_toChars
-^3780 20912$^@19@2@0#lsymbol_toCharsSafe
-^3781 20909@6@5@1@0@0^@19@3@0#lsymbol_toString
-^3782 20929$$$@0#lsymbol_printStats
-^3783 20925$@1@s1@1@s1$@0#lsymbol_initMod
-^3784 20927$@1@s1@1@s1$@0#lsymbol_destroyMod
+^3777 20911$^$@0#lsymbol_fromChars
+^3778 20909$^$@0#lsymbol_fromString
+^3779 20919@6@5@1@0@0^@19@2@0#lsymbol_toChars
+^3780 20916$^@19@2@0#lsymbol_toCharsSafe
+^3781 20913@6@5@1@0@0^@19@3@0#lsymbol_toString
+^3782 20933$$$@0#lsymbol_printStats
+^3783 20929$@1@s1@1@s1$@0#lsymbol_initMod
+^3784 20931$@1@s1@1@s1$@0#lsymbol_destroyMod
 *1 (Constant)
 ^3785 5$#HT_MAXINDEX
 *2 (Enum member)
@@ -24150,8 +24154,8 @@
 *1 (Constant)
 ^3793 1043@i0@0@4#ltoken_undefined
 *4 (Function)
-^3794 20104@6@5@1@0@0^@3@0@0#ltoken_createType
-^3795 20100@6@5@1@0@0^@3@0@0#ltoken_create
+^3794 20106@6@5@1@0@0^@3@0@0#ltoken_createType
+^3795 20102@6@5@1@0@0^@3@0@0#ltoken_create
 *3 (Variable)
 ^3796 1043|@1|0@5@18&#ltoken_forall#ltoken_exists#ltoken_true#ltoken_false#ltoken_not#ltoken_and#ltoken_or#ltoken_implies#ltoken_eq#ltoken_neq#ltoken_equals#ltoken_eqsep#ltoken_select#ltoken_open#ltoken_sep#ltoken_close#ltoken_id#ltoken_arrow#ltoken_marker#ltoken_pre#ltoken_post#ltoken_comment
 ^3818 1043|@1|6@5@18&#ltoken_compose#ltoken_if
@@ -24159,17 +24163,17 @@
 ^3824 1043|@1|6@5@18&#ltoken_farrow
 ^3825 1043|@1|0@5@18&#ltoken_lbracked#ltoken_rbracket
 *4 (Function)
-^3827 20110@6@5@1@0@0^@3@0@0#ltoken_unparseCodeName
-^3828 20112@6@5@1@0@0$@19@3@0#ltoken_unparse
-^3829 20116$^$@0#ltoken_getRawText
-^3830 19616$^$@22#ltoken_similar
-^3831 20114@6@5@1@0@0^@3@0@0#ltoken_copy
-^3832 20122$$$@0#ltoken_free
-^3833 20106@6@5@1@0@0^@3@0@0#ltoken_createFull
-^3834 20102@6@5@1@0@0^@3@0@0#ltoken_createRaw
-^3835 20118@6@5@1@0@0^@3@0@0#ltoken_unparseLoc
-^3836 20120$$$@0#ltoken_markOwned
-^3837 20124$^$@0#ltoken_isSingleChar
+^3827 20112@6@5@1@0@0^@3@0@0#ltoken_unparseCodeName
+^3828 20114@6@5@1@0@0$@19@3@0#ltoken_unparse
+^3829 20118$^$@0#ltoken_getRawText
+^3830 19618$^$@22#ltoken_similar
+^3831 20116@6@5@1@0@0^@3@0@0#ltoken_copy
+^3832 20124$$$@0#ltoken_free
+^3833 20108@6@5@1@0@0^@3@0@0#ltoken_createFull
+^3834 20104@6@5@1@0@0^@3@0@0#ltoken_createRaw
+^3835 20120@6@5@1@0@0^@3@0@0#ltoken_unparseLoc
+^3836 20122$$$@0#ltoken_markOwned
+^3837 20126$^$@0#ltoken_isSingleChar
 *7 (Struct tag)
 ^3838 2989@2990#@!27
 *0 (Datatype)
@@ -24214,10 +24218,10 @@
 *0 (Datatype)
 ^3871 3040@-@+@0@0@0@0@3041#importNode
 *4 (Function)
-^3872 20012$$$@0#importNode_free
-^3873 19658$$@2@0@0#importNode_makePlain
-^3874 19660$$@2@0@0#importNode_makeBracketed
-^3875 19664$$@2@0@0#importNode_makeQuoted
+^3872 20014$$$@0#importNode_free
+^3873 19660$$@2@0@0#importNode_makePlain
+^3874 19662$$@2@0@0#importNode_makeBracketed
+^3875 19666$$@2@0@0#importNode_makeQuoted
 *0 (Datatype)
 ^3876 3041@-@+@0@0@2@0@3050#o_importNode
 *7 (Struct tag)
@@ -24236,7 +24240,7 @@
 *1 (Constant)
 ^3885 5$#importNodeListBASESIZE
 *4 (Function)
-^3886 19668$$$@0#checkBrackets
+^3886 19670$$$@0#checkBrackets
 *7 (Struct tag)
 ^3887 3068@3069#@!32
 *0 (Datatype)
@@ -24310,7 +24314,7 @@
 *0 (Datatype)
 ^3932 3144@-@+@0@0@0@0@3145#pairNode
 *4 (Function)
-^3933 20018$$$@0#pairNode_free
+^3933 20020$$$@0#pairNode_free
 *0 (Datatype)
 ^3934 3145@-@+@0@0@2@0@3148#o_pairNode
 *7 (Struct tag)
@@ -24335,8 +24339,8 @@
 *0 (Datatype)
 ^3946 3167@-@+@0@0@0@0@3168#declaratorNode
 *4 (Function)
-^3947 19754@6@5@1@0@0$@2@0@0#declaratorNode_unparse
-^3948 19988$$$@0#declaratorNode_free
+^3947 19756@6@5@1@0@0$@2@0@0#declaratorNode_unparse
+^3948 19990$$$@0#declaratorNode_free
 *0 (Datatype)
 ^3949 3168@-@+@0@0@2@0@3173#o_declaratorNode
 *7 (Struct tag)
@@ -24360,8 +24364,8 @@
 *0 (Datatype)
 ^3961 3192@-@+@0@0@0@0@3193#declaratorInvNode
 *4 (Function)
-^3962 19994$$$@0#declaratorInvNode_free
-^3963 19798@6@5@1@0@0$@2@0@0#declaratorInvNode_unparse
+^3962 19996$$$@0#declaratorInvNode_free
+^3963 19800@6@5@1@0@0$@2@0@0#declaratorInvNode_unparse
 *0 (Datatype)
 ^3964 3193@-@+@0@0@2@0@3198#o_declaratorInvNode
 *7 (Struct tag)
@@ -24391,9 +24395,9 @@
 *8 (Union tag)
 ^3982 3222@3223#$!45
 *4 (Function)
-^3983 19762$$$@0#typeExpr_free
-^3984 19766@6@5@1@0@0$@2@0@0#typeExpr_unparse
-^3985 19768@6@5@1@0@0$@2@0@0#typeExpr_unparseNoBase
+^3983 19764$$$@0#typeExpr_free
+^3984 19768@6@5@1@0@0$@2@0@0#typeExpr_unparse
+^3985 19770@6@5@1@0@0$@2@0@0#typeExpr_unparseNoBase
 *0 (Datatype)
 ^3986 1040@-@+@0@0@0@0@3231#abstDeclaratorNode
 *7 (Struct tag)
@@ -24405,8 +24409,8 @@
 *0 (Datatype)
 ^3990 3240@-@+@0@0@0@0@3241#varNode
 *4 (Function)
-^3991 20046$$@3@0@0#varNode_copy
-^3992 20048$$$@0#varNode_free
+^3991 20048$$@3@0@0#varNode_copy
+^3992 20050$$$@0#varNode_free
 *0 (Datatype)
 ^3993 3241@-@+@0@0@2@0@3246#o_varNode
 *7 (Struct tag)
@@ -24430,8 +24434,8 @@
 *0 (Datatype)
 ^4005 3265@-@+@0@0@0@0@3266#quantifierNode
 *4 (Function)
-^4006 20026$$@3@0@0#quantifierNode_copy
-^4007 20028$$$@0#quantifierNode_free
+^4006 20028$$@3@0@0#quantifierNode_copy
+^4007 20030$$$@0#quantifierNode_free
 *0 (Datatype)
 ^4008 3266@-@+@0@0@2@0@3271#o_quantifierNode
 *7 (Struct tag)
@@ -24463,8 +24467,8 @@
 *0 (Datatype)
 ^4027 3295@-@+@0@0@0@0@3296#storeRefNode
 *4 (Function)
-^4028 20032$$@3@0@0#storeRefNode_copy
-^4029 20034$$$@0#storeRefNode_free
+^4028 20034$$@3@0@0#storeRefNode_copy
+^4029 20036$$$@0#storeRefNode_free
 *0 (Datatype)
 ^4030 3296@-@+@0@0@2@0@3309#o_storeRefNode
 *7 (Struct tag)
@@ -24488,13 +24492,13 @@
 *0 (Datatype)
 ^4042 3328@-@+@0@0@0@0@3329#modifyNode
 *4 (Function)
-^4043 19914@6@5@1@0@0$@2@0@0#modifyNode_unparse
+^4043 19916@6@5@1@0@0$@2@0@0#modifyNode_unparse
 *7 (Struct tag)
 ^4044 3332@3333#@!56
 *0 (Datatype)
 ^4045 3334@-@+@0@0@0@0@3335#letDeclNode
 *4 (Function)
-^4046 20016$$$@0#letDeclNode_free
+^4046 20018$$$@0#letDeclNode_free
 *0 (Datatype)
 ^4047 3335@-@+@0@0@2@0@3338#o_letDeclNode
 *7 (Struct tag)
@@ -24525,8 +24529,8 @@
 *0 (Datatype)
 ^4065 3360@-@+@0@0@0@0@3361#programNode
 *4 (Function)
-^4066 20024$$$@0#programNode_free
-^4067 19916@6@5@1@0@0$@2@0@0#programNode_unparse
+^4066 20026$$$@0#programNode_free
+^4067 19918@6@5@1@0@0$@2@0@0#programNode_unparse
 *0 (Datatype)
 ^4068 3361@-@+@0@0@2@0@3366#o_programNode
 *6 (Iterator finalizer)
@@ -24551,7 +24555,7 @@
 *0 (Datatype)
 ^4086 3384@-@+@0@0@0@0@3385#exposedNode
 *4 (Function)
-^4087 19794@6@5@1@0@0$@2@0@0#exposedNode_unparse
+^4087 19796@6@5@1@0@0$@2@0@0#exposedNode_unparse
 *2 (Enum member)
 ^4088 3388$#TK_ABSTRACT#TK_EXPOSED#TK_UNION
 *9 (Enum tag)
@@ -24567,8 +24571,8 @@
 *0 (Datatype)
 ^4096 3397@-@+@0@0@0@0@3398#initDeclNode
 *4 (Function)
-^4097 20004$$$@0#initDeclNode_isRedeclaration
-^4098 20014$$$@0#initDeclNode_free
+^4097 20006$$$@0#initDeclNode_isRedeclaration
+^4098 20016$$$@0#initDeclNode_free
 *0 (Datatype)
 ^4099 3398@-@+@0@0@2@0@3403#o_initDeclNode
 *7 (Struct tag)
@@ -24591,7 +24595,7 @@
 *0 (Datatype)
 ^4110 3420@-@+@0@0@0@0@3421#constDeclarationNode
 *4 (Function)
-^4111 19626@6@5@1@0@0$@2@0@0#constDeclarationNode_unparse
+^4111 19628@6@5@1@0@0$@2@0@0#constDeclarationNode_unparse
 *2 (Enum member)
 ^4112 3424$#QLF_NONE#QLF_CONST#QLF_VOLATILE
 *9 (Enum tag)
@@ -24603,8 +24607,8 @@
 *0 (Datatype)
 ^4118 3429@-@+@0@0@0@0@3430#varDeclarationNode
 *4 (Function)
-^4119 20044$$$@0#varDeclarationNode_free
-^4120 19622@6@5@1@0@0^@2@0@0#varDeclarationNode_unparse
+^4119 20046$$$@0#varDeclarationNode_free
+^4120 19624@6@5@1@0@0^@2@0@0#varDeclarationNode_unparse
 *0 (Datatype)
 ^4121 3430@-@+@0@0@2@0@3435#o_varDeclarationNode
 *7 (Struct tag)
@@ -24629,14 +24633,14 @@
 *0 (Datatype)
 ^4133 3457@-@+@0@0@0@0@3458#claimNode
 *4 (Function)
-^4134 19904@6@5@1@0@0$@2@0@0#claimNode_unparse
+^4134 19906@6@5@1@0@0$@2@0@0#claimNode_unparse
 *7 (Struct tag)
 ^4135 3461@3462#@!72
 *0 (Datatype)
 ^4136 3463@-@+@0@0@0@0@3464#fcnNode
 *4 (Function)
-^4137 19992$$$@0#fcnNode_free
-^4138 19620@6@5@1@0@0$@2@0@0#fcnNode_unparse
+^4137 19994$$$@0#fcnNode_free
+^4138 19622@6@5@1@0@0$@2@0@0#fcnNode_unparse
 *0 (Datatype)
 ^4139 3464@-@+@0@0@2@0@3469#o_fcnNode
 *7 (Struct tag)
@@ -24661,21 +24665,21 @@
 *0 (Datatype)
 ^4151 3494@-@+@0@0@0@0@3495#iterNode
 *4 (Function)
-^4152 19618@6@5@1@0@0^@2@0@0#iterNode_unparse
-^4153 19800@6@5@1@0@0$@2@0@0#abstBodyNode_unparse
+^4152 19620@6@5@1@0@0^@2@0@0#iterNode_unparse
+^4153 19802@6@5@1@0@0$@2@0@0#abstBodyNode_unparse
 *7 (Struct tag)
 ^4154 3501@3502#@!75
 *0 (Datatype)
 ^4155 3503@-@+@0@0@0@0@3504#abstractNode
 *4 (Function)
-^4156 19788@6@5@1@0@0$@2@0@0#abstractNode_unparse
+^4156 19790@6@5@1@0@0$@2@0@0#abstractNode_unparse
 *7 (Struct tag)
 ^4157 3507@3508#@!76
 *0 (Datatype)
 ^4158 3509@-@+@0@0@0@0@3510#stDeclNode
 *4 (Function)
-^4159 20038$$$@0#stDeclNode_free
-^4160 20036$$@3@0@0#stDeclNode_copy
+^4159 20040$$$@0#stDeclNode_free
+^4160 20038$$@3@0@0#stDeclNode_copy
 *0 (Datatype)
 ^4161 3510@-@+@0@0@2@0@3515#o_stDeclNode
 *7 (Struct tag)
@@ -24699,7 +24703,7 @@
 *0 (Datatype)
 ^4173 3536@-@+@0@0@0@0@3537#taggedUnionNode
 *4 (Function)
-^4174 19804@6@5@1@0@0^@2@0@0#taggedUnionNode_unparse
+^4174 19806@6@5@1@0@0^@2@0@0#taggedUnionNode_unparse
 *8 (Union tag)
 ^4175 3540@3541#$!79
 *7 (Struct tag)
@@ -24707,7 +24711,7 @@
 *0 (Datatype)
 ^4177 3544@-@+@0@0@0@0@3545#typeNode
 *4 (Function)
-^4178 19624@6@5@1@0@0^@2@0@0#typeNode_unparse
+^4178 19626@6@5@1@0@0^@2@0@0#typeNode_unparse
 *2 (Enum member)
 ^4179 3548$#SU_STRUCT#SU_UNION
 *9 (Enum tag)
@@ -24719,13 +24723,13 @@
 *0 (Datatype)
 ^4184 3553@-@+@0@0@0@0@3554#strOrUnionNode
 *4 (Function)
-^4185 19738@6@5@1@0@0$@3@0@0#strOrUnionNode_unparse
+^4185 19740@6@5@1@0@0$@3@0@0#strOrUnionNode_unparse
 *7 (Struct tag)
 ^4186 3557@3558#@!83
 *0 (Datatype)
 ^4187 3559@-@+@0@0@0@0@3560#enumSpecNode
 *4 (Function)
-^4188 19732@6@5@1@0@0^@2@0@0#enumSpecNode_unparse
+^4188 19734@6@5@1@0@0^@2@0@0#enumSpecNode_unparse
 *2 (Enum member)
 ^4189 3563$#LTS_TYPE#LTS_STRUCTUNION#LTS_ENUM#LTS_CONJ
 *9 (Enum tag)
@@ -24742,9 +24746,9 @@
 *1 (Constant)
 ^4199 1032@i0@0@6#lclTypeSpecNode_undefined
 *4 (Function)
-^4200 19972@6@5@1@0@0^@2@0@0#lclTypeSpecNode_copy
-^4201 19726@6@5@1@0@0^@2@0@0#lclTypeSpecNode_unparse
-^4202 19854@6@5@1@0@0^@2@0@0#lclTypeSpecNode_unparseComments
+^4200 19974@6@5@1@0@0^@2@0@0#lclTypeSpecNode_copy
+^4201 19728@6@5@1@0@0^@2@0@0#lclTypeSpecNode_unparse
+^4202 19856@6@5@1@0@0^@2@0@0#lclTypeSpecNode_unparseComments
 *7 (Struct tag)
 ^4203 3582@3583#@!87
 *0 (Datatype)
@@ -24754,8 +24758,8 @@
 *0 (Datatype)
 ^4206 3588@-@+@0@0@0@0@3589#typeNameNode
 *4 (Function)
-^4207 20042$$$@0#typeNameNode_free
-^4208 19714@6@5@1@0@0$@2@0@0#typeNameNode_unparse
+^4207 20044$$$@0#typeNameNode_free
+^4208 19716@6@5@1@0@0$@2@0@0#typeNameNode_unparse
 *0 (Datatype)
 ^4209 3589@-@+@0@0@2@0@3594#o_typeNameNode
 *7 (Struct tag)
@@ -24784,7 +24788,7 @@
 *0 (Datatype)
 ^4239 3616@-@-@0@0@0@0@3618#opFormUnion
 *4 (Function)
-^4240 19708@6@5@1@0@0^@2@0@0#opFormNode_unparse
+^4240 19710@6@5@1@0@0^@2@0@0#opFormNode_unparse
 *7 (Struct tag)
 ^4241 3622@3623#@!92
 *0 (Datatype)
@@ -24800,10 +24804,10 @@
 *0 (Datatype)
 ^4255 3631@-@+@0@0@0@0@3632#sigNode
 *4 (Function)
-^4256 19696@6@5@1@0@0^@2@0@0#sigNode_unparse
-^4257 19986$$$@0#sigNode_free
-^4258 19998$^@2@0@0#sigNode_copy
-^4259 19698$$$@0#sigNode_markOwned
+^4256 19698@6@5@1@0@0^@2@0@0#sigNode_unparse
+^4257 19988$$$@0#sigNode_free
+^4258 20000$^@2@0@0#sigNode_copy
+^4259 19700$$$@0#sigNode_markOwned
 *0 (Datatype)
 ^4260 3632@-@+@0@0@17@0@3641#o_sigNode
 *7 (Struct tag)
@@ -24831,8 +24835,8 @@
 *0 (Datatype)
 ^4275 3672@-@+@0@0@0@0@3673#signNode
 *4 (Function)
-^4276 19950@6@5@1@0@0^@2@0@0#signNode_unparse
-^4277 19948$$$@0#signNode_free
+^4276 19952@6@5@1@0@0^@2@0@0#signNode_unparse
+^4277 19950$$$@0#signNode_free
 *8 (Union tag)
 ^4278 3678@3679#$!97
 *7 (Struct tag)
@@ -24840,18 +24844,18 @@
 *0 (Datatype)
 ^4280 3682@-@+@0@0@0@0@3683#nameNode
 *4 (Function)
-^4281 19980$$$@0#nameNode_free
-^4282 20000@6@5@1@0@0^@2@0@0#nameNode_copy
-^4283 19692@6@5@1@0@0^@2@0@0#nameNode_unparse
-^4284 20002$^@2@0@0#nameNode_copySafe
+^4281 19982$$$@0#nameNode_free
+^4282 20002@6@5@1@0@0^@2@0@0#nameNode_copy
+^4283 19694@6@5@1@0@0^@2@0@0#nameNode_unparse
+^4284 20004$^@2@0@0#nameNode_copySafe
 *7 (Struct tag)
 ^4285 3692@3693#@!99
 *0 (Datatype)
 ^4286 3694@-@+@0@0@0@0@3695#lslOp
 ^4287 3695@-@+@0@0@2@0@3696#o_lslOp
 *4 (Function)
-^4288 19984$$$@0#lslOp_free
-^4289 19996$$@2@0@0#lslOp_copy
+^4288 19986$$$@0#lslOp_free
+^4289 19998$$@2@0@0#lslOp_copy
 *7 (Struct tag)
 ^4290 3702@3703#@!100
 *0 (Datatype)
@@ -24879,8 +24883,8 @@
 *0 (Datatype)
 ^4304 3727@-@+@0@0@0@0@3728#replaceNode
 *4 (Function)
-^4305 20030$$$@0#replaceNode_free
-^4306 19686@6@5@1@0@0$@2@0@0#replaceNode_unparse
+^4305 20032$$$@0#replaceNode_free
+^4306 19688@6@5@1@0@0$@2@0@0#replaceNode_unparse
 *0 (Datatype)
 ^4307 3728@-@+@0@0@2@0@3733#o_replaceNode
 *7 (Struct tag)
@@ -24909,13 +24913,13 @@
 *0 (Datatype)
 ^4321 3760@-@+@0@0@0@0@3761#renamingNode
 *4 (Function)
-^4322 19680@6@5@1@0@0$@2@0@0#renamingNode_unparse
+^4322 19682@6@5@1@0@0$@2@0@0#renamingNode_unparse
 *7 (Struct tag)
 ^4323 3764@3765#@!108
 *0 (Datatype)
 ^4324 3766@-@+@0@0@0@0@3767#traitRefNode
 *4 (Function)
-^4325 20040$$$@0#traitRefNode_free
+^4325 20042$$$@0#traitRefNode_free
 *0 (Datatype)
 ^4326 3767@-@+@0@0@2@0@3770#o_traitRefNode
 *7 (Struct tag)
@@ -24946,7 +24950,7 @@
 *0 (Datatype)
 ^4346 3792@-@+@0@0@0@0@3793#exportNode
 *4 (Function)
-^4347 19608@6@5@1@0@0$@2@0@0#exportNode_unparse
+^4347 19610@6@5@1@0@0$@2@0@0#exportNode_unparse
 *2 (Enum member)
 ^4348 3796$#PRIV_CONST#PRIV_VAR#PRIV_TYPE#PRIV_FUNCTION
 *9 (Enum tag)
@@ -24960,7 +24964,7 @@
 *0 (Datatype)
 ^4356 3803@-@+@0@0@0@0@3804#privateNode
 *4 (Function)
-^4357 19610@6@5@1@0@0$@2@0@0#privateNode_unparse
+^4357 19612@6@5@1@0@0$@2@0@0#privateNode_unparse
 *2 (Enum member)
 ^4358 3807$#INF_IMPORTS#INF_USES#INF_EXPORT#INF_PRIVATE
 *9 (Enum tag)
@@ -24974,8 +24978,8 @@
 *0 (Datatype)
 ^4366 3814@-@+@0@0@0@0@3815#interfaceNode
 *4 (Function)
-^4367 20058@6@5@1@0@0$@3@0@0#interfaceNode_unparse
-^4368 20060$$$@0#interfaceNode_free
+^4367 20060@6@5@1@0@0$@3@0@0#interfaceNode_unparse
+^4368 20062$$$@0#interfaceNode_free
 *0 (Datatype)
 ^4369 3815@-@+@0@0@2@0@3820#o_interfaceNode
 *7 (Struct tag)
@@ -24994,9 +24998,9 @@
 *1 (Constant)
 ^4378 5$#interfaceNodeListGROWLOW#interfaceNodeListGROWHI#interfaceNodeListBASESIZE
 *4 (Function)
-^4381 20008$^@3@0@0#termNode_copySafe
-^4382 19910@6@5@1@0@0^@3@0@0#termNode_unparse
-^4383 20006$$$@0#termNode_free
+^4381 20010$^@3@0@0#termNode_copySafe
+^4382 19912@6@5@1@0@0^@3@0@0#termNode_unparse
+^4383 20008$$$@0#termNode_free
 *0 (Datatype)
 ^4384 1017@-@+@0@0@2@0@3844#o_termNode
 *6 (Iterator finalizer)
@@ -25023,7 +25027,7 @@
 *1 (Constant)
 ^4403 5$#termNodeListGROWLOW#termNodeListGROWHI#termNodeListBASESIZE
 *4 (Function)
-^4406 19918@6@2@1@0@0$@2@0@0#stmtNode_unparse
+^4406 19920@6@2@1@0@0$@2@0@0#stmtNode_unparse
 *0 (Datatype)
 ^4407 3118@-@+@0@5@18@0@3889#o_sortSet
 *7 (Struct tag)
@@ -25059,134 +25063,134 @@
 *1 (Constant)
 ^4428 5$#lslOpListBASESIZE
 *4 (Function)
-^4429 19920$$@2@0@0#makelslOpNode
-^4430 19922@6@5@1@0@0$@2@0@0#lslOp_unparse
+^4429 19922$$@2@0@0#makelslOpNode
+^4430 19924@6@5@1@0@0$@2@0@0#lslOp_unparse
 ^4431 3933$$$@0#abstract_init
-^4432 19572$$$@0#resetImports
-^4433 19582$$$@0#consInterfaceNode
-^4434 19584$$@2@0@0#makeInterfaceNodeImports
-^4435 19688$^@2@0@0#makeNameNodeForm
-^4436 19690$^@2@0@0#makeNameNodeId
-^4437 19586$^@2@0@0#makeInterfaceNodeUses
-^4438 19588$^@2@0@0#interfaceNode_makeConst
-^4439 19590$^@2@0@0#interfaceNode_makeVar
-^4440 19592$^@2@0@0#interfaceNode_makeType
-^4441 19594$^@2@0@0#interfaceNode_makeFcn
-^4442 19596$^@2@0@0#interfaceNode_makeClaim
-^4443 19598$^@2@0@0#interfaceNode_makeIter
-^4444 19600$^@2@0@0#interfaceNode_makePrivConst
-^4445 19602$^@2@0@0#interfaceNode_makePrivVar
-^4446 19604$^@2@0@0#interfaceNode_makePrivType
-^4447 19606$^@2@0@0#interfaceNode_makePrivFcn
-^4448 19654$^@2@0@0#makeAbstractTypeNode
-^4449 19656$^@2@0@0#makeExposedTypeNode
-^4450 19670$^@2@0@0#makeTraitRefNode
-^4451 19674@6@5@1@0@0^@2@0@0#printLeaves2
-^4452 19676@6@5@1@0@0^@2@0@0#printRawLeaves2
-^4453 19700@6@5@1@0@0^@2@0@0#sigNode_unparseText
-^4454 19678$^@2@0@0#makeRenamingNode
-^4455 19684$^@2@0@0#makeReplaceNode
-^4456 19694$^@2@0@0#makesigNode
-^4457 19682$^@2@0@0#makeReplaceNameNode
-^4458 19704$^@2@0@0#makeOpFormNode
-^4459 19710$^@2@0@0#makeTypeNameNode
-^4460 19712$^@2@0@0#makeTypeNameNodeOp
-^4461 19716@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeConj
-^4462 19718@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeType
-^4463 19720@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeSU
-^4464 19722@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeEnum
-^4465 19724@6@5@1@0@0@0@@1@p0@2@0@0#lclTypeSpecNode_addQual
-^4466 19728$$@2@0@0#makeEnumSpecNode
-^4467 19730$$@2@0@0#makeEnumSpecNode2
-^4468 19734$$@2@0@0#makestrOrUnionNode
-^4469 19736$$@2@0@0#makeForwardstrOrUnionNode
-^4470 19740$$@2@0@0#makestDeclNode
-^4471 19776$$@2@0@0#makeConstDeclarationNode
-^4472 19782$$@2@0@0#makeVarDeclarationNode
-^4473 19780$$@3@0@0#makeFileSystemNode
-^4474 19778$$@3@0@0#makeInternalStateNode
-^4475 19784$$@2@0@0#makeInitDeclNode
-^4476 19786$$@2@0@0#makeAbstractNode
-^4477 19802@6@5@1@0@0$@2@0@0#abstBodyNode_unparseExposed
-^4478 19792$$@2@0@0#makeExposedNode
-^4479 19796$$@2@0@0#makeDeclaratorInvNode
-^4480 19808$$@2@0@0#fcnNode_fromDeclarator
-^4481 19812$$@2@0@0#makeFcnNode
-^4482 19810$$@2@0@0#makeIterNode
-^4483 19814$$@2@0@0#makeClaimNode
-^4484 19816$$@2@0@0#makeIntraClaimNode
-^4485 19818$$@2@0@0#makeRequiresNode
-^4486 19820$$@2@0@0#makeChecksNode
-^4487 19822$$@2@0@0#makeEnsuresNode
-^4488 19824$$@2@0@0#makeLclPredicateNode
-^4489 19838$$@2@0@0#makeStmtNode
-^4490 19650$$@2@0@0#makeProgramNodeAction
-^4491 19652$$@2@0@0#makeProgramNode
-^4492 19628$$@2@0@0#makeStoreRefNodeTerm
-^4493 19630$$@2@0@0#makeStoreRefNodeType
-^4494 19636$$@2@0@0#makeModifyNodeSpecial
-^4495 19632$$@3@0@0#makeStoreRefNodeInternal
-^4496 19634$$@3@0@0#makeStoreRefNodeSystem
-^4497 19638$$@2@0@0#makeModifyNodeRef
-^4498 19648$$@2@0@0#makeLetDeclNode
-^4499 19832$$@2@0@0#makeAbstBodyNode
-^4500 19834$$@2@0@0#makeExposedBodyNode
-^4501 19836$$@2@0@0#makeAbstBodyNode2
-^4502 19968$$$@0#markYieldParamNode
-^4503 19828$$@2@0@0#makeArrayQualNode
-^4504 19826$$@2@0@0#makeQuantifierNode
-^4505 19830$$@2@0@0#makeVarNode
-^4506 19746$$@2@0@0#makeTypeExpr
-^4507 19748$$@2@0@0#makeDeclaratorNode
-^4508 19742$$@2@0@0#makeFunctionNode
-^4509 19772$$@2@0@0#makePointerNode
-^4510 19774$$@2@0@0#makeArrayNode
-^4511 19842$$@2@0@0#makeParamNode
-^4512 19858$$@2@0@0#makeIfTermNode
-^4513 19866$$@2@0@0#makeQuantifiedTermNode
-^4514 19862$$@2@0@0#makeInfixTermNode
-^4515 19868$$@2@0@0#makePostfixTermNode
-^4516 19870$$@2@0@0#makePostfixTermNode2
-^4517 19872$$@2@0@0#makePrefixTermNode
-^4518 19876$$@19@2@0#CollapseInfixTermNode
-^4519 19888$$@2@0@0#makeMatchedNode
-^4520 19886$$@2@0@0#makeSqBracketedNode
-^4521 19884$$@2@0@0#updateSqBracketedNode
-^4522 19882$$$@0#updateMatchedNode
-^4523 19890$$@2@0@0#makeSimpleTermNode
-^4524 19892$$@2@0@0#makeSelectTermNode
-^4525 19894$$@2@0@0#makeMapTermNode
-^4526 19896$$@2@0@0#makeLiteralTermNode
-^4527 19898$$@2@0@0#makeUnchangedTermNode1
-^4528 19900$$@2@0@0#makeUnchangedTermNode2
-^4529 19902$$@2@0@0#makeSizeofTermNode
-^4530 19874$$@2@0@0#makeOpCallTermNode
-^4531 19960$$$@0#sigNode_rangeSort
-^4532 19962$$@2@0@0#sigNode_domain
-^4533 19926$$$@0#sameNameNode
-^4534 19932$$@2@0@0#makeCTypesNode
-^4535 19934$$@2@0@0#makeTypeSpecifier
-^4536 19936$$$@0#sigNode_equal
-^4537 19942$$$@0#lclTypeSpecNode2sort
-^4538 19938$$$@0#typeExpr2ptrSort
-^4539 19944$$$@0#checkAndEnterTag
-^4540 19954$$$@0#enteringFcnScope
-^4541 19956$$$@0#enteringClaimScope
-^4542 19642@6@5@1@0@0$@19@3@0#nameNode_errorToken
-^4543 19640@6@5@1@0@0$@19@3@0#termNode_errorToken
-^4544 19644@6@5@1@0@0$@19@3@0#lclTypeSpecNode_errorToken
-^4545 19964$$$@0#opFormUnion_createAnyOp
-^4546 19966$$$@0#opFormUnion_createMiddle
-^4547 19578$$$@0#LCLBuiltins
-^4548 19844$$@2@0@0#paramNode_elipsis
-^4549 19880$$$@0#pushInfixOpPartNode
-^4550 19764@6@5@1@0@0$@2@0@0#declaratorNode_unparseCode
-^4551 19770@6@5@1@0@0$@2@0@0#typeExpr_name
-^4552 19790$$$@0#setExposedType
-^4553 19576$$$@0#declareForwardType
-^4554 19756$$@2@0@0#declaratorNode_copy
-^4555 19982$$$@0#lslOp_equal
-^4556 20088$@0@s1@1@s1$@0#lsymbol_setbool
+^4432 19574$$$@0#resetImports
+^4433 19584$$$@0#consInterfaceNode
+^4434 19586$$@2@0@0#makeInterfaceNodeImports
+^4435 19690$^@2@0@0#makeNameNodeForm
+^4436 19692$^@2@0@0#makeNameNodeId
+^4437 19588$^@2@0@0#makeInterfaceNodeUses
+^4438 19590$^@2@0@0#interfaceNode_makeConst
+^4439 19592$^@2@0@0#interfaceNode_makeVar
+^4440 19594$^@2@0@0#interfaceNode_makeType
+^4441 19596$^@2@0@0#interfaceNode_makeFcn
+^4442 19598$^@2@0@0#interfaceNode_makeClaim
+^4443 19600$^@2@0@0#interfaceNode_makeIter
+^4444 19602$^@2@0@0#interfaceNode_makePrivConst
+^4445 19604$^@2@0@0#interfaceNode_makePrivVar
+^4446 19606$^@2@0@0#interfaceNode_makePrivType
+^4447 19608$^@2@0@0#interfaceNode_makePrivFcn
+^4448 19656$^@2@0@0#makeAbstractTypeNode
+^4449 19658$^@2@0@0#makeExposedTypeNode
+^4450 19672$^@2@0@0#makeTraitRefNode
+^4451 19676@6@5@1@0@0^@2@0@0#printLeaves2
+^4452 19678@6@5@1@0@0^@2@0@0#printRawLeaves2
+^4453 19702@6@5@1@0@0^@2@0@0#sigNode_unparseText
+^4454 19680$^@2@0@0#makeRenamingNode
+^4455 19686$^@2@0@0#makeReplaceNode
+^4456 19696$^@2@0@0#makesigNode
+^4457 19684$^@2@0@0#makeReplaceNameNode
+^4458 19706$^@2@0@0#makeOpFormNode
+^4459 19712$^@2@0@0#makeTypeNameNode
+^4460 19714$^@2@0@0#makeTypeNameNodeOp
+^4461 19718@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeConj
+^4462 19720@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeType
+^4463 19722@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeSU
+^4464 19724@6@5@1@0@0^@2@0@0#makeLclTypeSpecNodeEnum
+^4465 19726@6@5@1@0@0@0@@1@p0@2@0@0#lclTypeSpecNode_addQual
+^4466 19730$$@2@0@0#makeEnumSpecNode
+^4467 19732$$@2@0@0#makeEnumSpecNode2
+^4468 19736$$@2@0@0#makestrOrUnionNode
+^4469 19738$$@2@0@0#makeForwardstrOrUnionNode
+^4470 19742$$@2@0@0#makestDeclNode
+^4471 19778$$@2@0@0#makeConstDeclarationNode
+^4472 19784$$@2@0@0#makeVarDeclarationNode
+^4473 19782$$@3@0@0#makeFileSystemNode
+^4474 19780$$@3@0@0#makeInternalStateNode
+^4475 19786$$@2@0@0#makeInitDeclNode
+^4476 19788$$@2@0@0#makeAbstractNode
+^4477 19804@6@5@1@0@0$@2@0@0#abstBodyNode_unparseExposed
+^4478 19794$$@2@0@0#makeExposedNode
+^4479 19798$$@2@0@0#makeDeclaratorInvNode
+^4480 19810$$@2@0@0#fcnNode_fromDeclarator
+^4481 19814$$@2@0@0#makeFcnNode
+^4482 19812$$@2@0@0#makeIterNode
+^4483 19816$$@2@0@0#makeClaimNode
+^4484 19818$$@2@0@0#makeIntraClaimNode
+^4485 19820$$@2@0@0#makeRequiresNode
+^4486 19822$$@2@0@0#makeChecksNode
+^4487 19824$$@2@0@0#makeEnsuresNode
+^4488 19826$$@2@0@0#makeLclPredicateNode
+^4489 19840$$@2@0@0#makeStmtNode
+^4490 19652$$@2@0@0#makeProgramNodeAction
+^4491 19654$$@2@0@0#makeProgramNode
+^4492 19630$$@2@0@0#makeStoreRefNodeTerm
+^4493 19632$$@2@0@0#makeStoreRefNodeType
+^4494 19638$$@2@0@0#makeModifyNodeSpecial
+^4495 19634$$@3@0@0#makeStoreRefNodeInternal
+^4496 19636$$@3@0@0#makeStoreRefNodeSystem
+^4497 19640$$@2@0@0#makeModifyNodeRef
+^4498 19650$$@2@0@0#makeLetDeclNode
+^4499 19834$$@2@0@0#makeAbstBodyNode
+^4500 19836$$@2@0@0#makeExposedBodyNode
+^4501 19838$$@2@0@0#makeAbstBodyNode2
+^4502 19970$$$@0#markYieldParamNode
+^4503 19830$$@2@0@0#makeArrayQualNode
+^4504 19828$$@2@0@0#makeQuantifierNode
+^4505 19832$$@2@0@0#makeVarNode
+^4506 19748$$@2@0@0#makeTypeExpr
+^4507 19750$$@2@0@0#makeDeclaratorNode
+^4508 19744$$@2@0@0#makeFunctionNode
+^4509 19774$$@2@0@0#makePointerNode
+^4510 19776$$@2@0@0#makeArrayNode
+^4511 19844$$@2@0@0#makeParamNode
+^4512 19860$$@2@0@0#makeIfTermNode
+^4513 19868$$@2@0@0#makeQuantifiedTermNode
+^4514 19864$$@2@0@0#makeInfixTermNode
+^4515 19870$$@2@0@0#makePostfixTermNode
+^4516 19872$$@2@0@0#makePostfixTermNode2
+^4517 19874$$@2@0@0#makePrefixTermNode
+^4518 19878$$@19@2@0#CollapseInfixTermNode
+^4519 19890$$@2@0@0#makeMatchedNode
+^4520 19888$$@2@0@0#makeSqBracketedNode
+^4521 19886$$@2@0@0#updateSqBracketedNode
+^4522 19884$$$@0#updateMatchedNode
+^4523 19892$$@2@0@0#makeSimpleTermNode
+^4524 19894$$@2@0@0#makeSelectTermNode
+^4525 19896$$@2@0@0#makeMapTermNode
+^4526 19898$$@2@0@0#makeLiteralTermNode
+^4527 19900$$@2@0@0#makeUnchangedTermNode1
+^4528 19902$$@2@0@0#makeUnchangedTermNode2
+^4529 19904$$@2@0@0#makeSizeofTermNode
+^4530 19876$$@2@0@0#makeOpCallTermNode
+^4531 19962$$$@0#sigNode_rangeSort
+^4532 19964$$@2@0@0#sigNode_domain
+^4533 19928$$$@0#sameNameNode
+^4534 19934$$@2@0@0#makeCTypesNode
+^4535 19936$$@2@0@0#makeTypeSpecifier
+^4536 19938$$$@0#sigNode_equal
+^4537 19944$$$@0#lclTypeSpecNode2sort
+^4538 19940$$$@0#typeExpr2ptrSort
+^4539 19946$$$@0#checkAndEnterTag
+^4540 19956$$$@0#enteringFcnScope
+^4541 19958$$$@0#enteringClaimScope
+^4542 19644@6@5@1@0@0$@19@3@0#nameNode_errorToken
+^4543 19642@6@5@1@0@0$@19@3@0#termNode_errorToken
+^4544 19646@6@5@1@0@0$@19@3@0#lclTypeSpecNode_errorToken
+^4545 19966$$$@0#opFormUnion_createAnyOp
+^4546 19968$$$@0#opFormUnion_createMiddle
+^4547 19580$$$@0#LCLBuiltins
+^4548 19846$$@2@0@0#paramNode_elipsis
+^4549 19882$$$@0#pushInfixOpPartNode
+^4550 19766@6@5@1@0@0$@2@0@0#declaratorNode_unparseCode
+^4551 19772@6@5@1@0@0$@2@0@0#typeExpr_name
+^4552 19792$$$@0#setExposedType
+^4553 19578$$$@0#declareForwardType
+^4554 19758$$@2@0@0#declaratorNode_copy
+^4555 19984$$$@0#lslOp_equal
+^4556 20090$@0@s1@1@s1$@0#lsymbol_setbool
 ^4557 4185$$$@0#lsymbol_getbool
 ^4558 4187$$$@0#lsymbol_getBool
 ^4559 4189$$$@0#lsymbol_getTRUE
@@ -25256,37 +25260,37 @@
 *0 (Datatype)
 ^4608 4242@-@-@0@0@0@0@4244#symHashTable
 *7 (Struct tag)
-^4609 20469@4245#@s_symtableStruct
+^4609 20471@4245#@s_symtableStruct
 *0 (Datatype)
 ^4610 4246@-@+@0@0@0@0@4247#symtable
 *4 (Function)
-^4611 20522$^@2@0@0#symtable_new
-^4612 20541$$$@0#symtable_enterScope
-^4613 20543$$$@0#symtable_exitScope
-^4614 20545$$$@0#symtable_enterFct
-^4615 20547$$$@0#symtable_enterType
-^4616 20551$$$@0#symtable_enterVar
-^4617 20531$$$@0#symtable_enterOp
-^4618 20533$$$@0#symtable_enterTag
-^4619 20535$$$@0#symtable_enterTagForce
-^4620 20553$$$@0#symtable_exists
-^4621 20555@6@5@1@0@0$@19@3@0#symtable_typeInfo
-^4622 20557@6@5@1@0@0$@19@3@0#symtable_varInfo
-^4623 20559@6@5@1@0@0$@19@3@0#symtable_varInfoInScope
-^4624 20537@6@5@1@0@0$@19@3@0#symtable_opInfo
-^4625 20539@6@5@1@0@0$@19@3@0#symtable_tagInfo
-^4626 20563$$$@0#symtable_export
-^4627 20568$$$@0#symtable_dump
-^4628 20587$$$@0#symtable_import
-^4629 20622$$$@0#symtable_printStats
-^4630 20549$$$@0#lsymbol_sortFromType
-^4631 20624@6@5@1@0@0$@3@0@0#tagKind_unparse
-^4632 20570$$$@0#lsymbol_translateSort
-^4633 20504$$$@0#varInfo_free
-^4634 20634@6@5@1@0@0$@2@0@0#symtable_opsWithLegalDomain
-^4635 20628@6@5@1@0@0$@19@3@0#symtable_possibleOps
-^4636 20630$$$@0#symtable_opExistsWithArity
-^4637 20508$$$@0#symtable_free
+^4611 20524$^@2@0@0#symtable_new
+^4612 20543$$$@0#symtable_enterScope
+^4613 20545$$$@0#symtable_exitScope
+^4614 20547$$$@0#symtable_enterFct
+^4615 20549$$$@0#symtable_enterType
+^4616 20553$$$@0#symtable_enterVar
+^4617 20533$$$@0#symtable_enterOp
+^4618 20535$$$@0#symtable_enterTag
+^4619 20537$$$@0#symtable_enterTagForce
+^4620 20555$$$@0#symtable_exists
+^4621 20557@6@5@1@0@0$@19@3@0#symtable_typeInfo
+^4622 20559@6@5@1@0@0$@19@3@0#symtable_varInfo
+^4623 20561@6@5@1@0@0$@19@3@0#symtable_varInfoInScope
+^4624 20539@6@5@1@0@0$@19@3@0#symtable_opInfo
+^4625 20541@6@5@1@0@0$@19@3@0#symtable_tagInfo
+^4626 20565$$$@0#symtable_export
+^4627 20570$$$@0#symtable_dump
+^4628 20589$$$@0#symtable_import
+^4629 20624$$$@0#symtable_printStats
+^4630 20551$$$@0#lsymbol_sortFromType
+^4631 20626@6@5@1@0@0$@3@0@0#tagKind_unparse
+^4632 20572$$$@0#lsymbol_translateSort
+^4633 20506$$$@0#varInfo_free
+^4634 20636@6@5@1@0@0$@2@0@0#symtable_opsWithLegalDomain
+^4635 20630@6@5@1@0@0$@19@3@0#symtable_possibleOps
+^4636 20632$$$@0#symtable_opExistsWithArity
+^4637 20510$$$@0#symtable_free
 *0 (Datatype)
 ^4638 1067@-@+@0@5@2@0@4310#o_exprNode
 *7 (Struct tag)
@@ -28207,13 +28211,25 @@
 ^7396 23$#LCLIMPORTDIR#LLSTDLIBS_NAME#LLSTRICTLIBS_NAME#LLUNIXLIBS_NAME#LLUNIXSTRICTLIBS_NAME#LLPOSIXLIBS_NAME#LLPOSIXSTRICTLIBS_NAME
 ^7403 1211@@0@5#REFSNAME
 ^7404 23$#DUMP_SUFFIX
-^7405 5$#MAX_NAME_LENGTH#MAX_LINE_LENGTH#MAX_DUMP_LINE_LENGTH#MINLINELEN
+^7405 5@i256@0@0#MAX_NAME_LENGTH
+^7406 5@i1024@0@0#MAX_LINE_LENGTH
+^7407 5@i16384@0@0#MAX_DUMP_LINE_LENGTH
+^7408 5@i20@0@0#MINLINELEN
 ^7409 23$#LLMRCODE#PPMRCODE#DEFAULT_SYSTEMDIR
 ^7412 4$#DEFAULT_COMMENTCHAR
-^7413 5$#DEFAULT_LINELEN#DEFAULT_BUGSLIMIT#DEFAULT_INDENTSPACES#DEFAULT_EXTERNALNAMELEN#DEFAULT_INTERNALNAMELEN#DEFAULT_CONTROLNESTDEPTH#DEFAULT_STRINGLITERALLEN#DEFAULT_INCLUDENEST#DEFAULT_NUMSTRUCTFIELDS#DEFAULT_NUMENUMMEMBERS#DEFAULT_LIMIT
+^7413 5@i80@0@0#DEFAULT_LINELEN
+^7414 5@i3@0@0#DEFAULT_BUGSLIMIT#DEFAULT_INDENTSPACES
+^7416 5@i6@0@0#DEFAULT_EXTERNALNAMELEN
+^7417 5@i31@0@0#DEFAULT_INTERNALNAMELEN
+^7418 5@i15@0@0#DEFAULT_CONTROLNESTDEPTH
+^7419 5@i509@0@0#DEFAULT_STRINGLITERALLEN
+^7420 5@i8@0@0#DEFAULT_INCLUDENEST
+^7421 5@i127@0@0#DEFAULT_NUMSTRUCTFIELDS#DEFAULT_NUMENUMMEMBERS
+^7423 5@i-1@0@0#DEFAULT_LIMIT
 ^7424 4$#PFX_UPPERCASE#PFX_LOWERCASE#PFX_ANY#PFX_DIGIT#PFX_NOTUPPER#PFX_NOTLOWER#PFX_ANYLETTER#PFX_ANYLETTERDIGIT
 ^7432 23$#DEFAULT_BOOLTYPE#PRAGMA_EXPAND
-^7434 5$#PRAGMA_LEN_EXPAND#MAX_PRAGMA_LEN
+^7434 5@i6@0@0#PRAGMA_LEN_EXPAND
+^7435 5$#MAX_PRAGMA_LEN
 ^7436 16$#LCLINT_LIBVERSION
 ^7437 23$#BEFORE_COMMENT_MARKER#AFTER_COMMENT_MARKER
 *4 (Function)
@@ -28244,7 +28260,7 @@
 *8 (Union tag)
 ^7461 9636@9637#$!225
 *0 (Datatype)
-^7462 20965@-@-@0@0@0@0@9638#YYSTYPE
+^7462 20969@-@-@0@0@0@0@9638#YYSTYPE
 *3 (Variable)
 ^7463 23|@1|6@0@0&#yytext
 *4 (Function)
@@ -28559,11 +28575,11 @@
 *4 (Function)
 ^7771 12611$$$@0#ctbase_getArraySize
 ^7772 12635$$$@0#cttable_print
-^7773 19468$$$@0#doDeclareConstant
-^7774 19472$$$@0#doDeclareVar
-^7775 19480$$$@0#doDeclareType
-^7776 19486$$$@0#doDeclareFcn
-^7777 19482$$$@0#declareIter
+^7773 19470$$$@0#doDeclareConstant
+^7774 19474$$$@0#doDeclareVar
+^7775 19482$$$@0#doDeclareType
+^7776 19488$$$@0#doDeclareFcn
+^7777 19484$$$@0#declareIter
 *1 (Constant)
 ^7778 4$#MARKCHAR_STRUCT#MARKCHAR_UNION#MARKCHAR_ENUM#MARKCHAR_PARAM
 *4 (Function)
@@ -28636,17 +28652,17 @@
 *3 (Variable)
 ^7851 9638|@1|^#yllval
 *4 (Function)
-^7852 20958$@0@g2691@0@0@1@tg2691$@0#ylerror
-^7853 20876$@1@s1@1@s1$@0#yllex
+^7852 20962$@0@g2691@0@0@1@tg2691$@0#ylerror
+^7853 20880$@1@s1@1@s1$@0#yllex
 *3 (Variable)
 ^7854 2|@1|^#g_inTypeDef
 *4 (Function)
-^7855 20878@6@5@1@0@0@0@s1@1@s1@18@2@0#LCLScanNextToken
-^7856 20882$@0@s1@1@s1$@0#LCLScanFreshToken
-^7857 20884@6@5@1@0@0^@19@2@0#LCLScanSource
-^7858 20886$@0@s1@1@s1$@0#LCLScanInit
-^7859 20888$@0@s1@1@s1$@0#LCLScanReset
-^7860 20890$@0@s1@1@s1$@0#LCLScanCleanup
+^7855 20882@6@5@1@0@0@0@s1@1@s1@18@2@0#LCLScanNextToken
+^7856 20886$@0@s1@1@s1$@0#LCLScanFreshToken
+^7857 20888@6@5@1@0@0^@19@2@0#LCLScanSource
+^7858 20890$@0@s1@1@s1$@0#LCLScanInit
+^7859 20892$@0@s1@1@s1$@0#LCLScanReset
+^7860 20894$@0@s1@1@s1$@0#LCLScanCleanup
 *1 (Constant)
 ^7861 5$#NUMLIBS#NUMPOSIXLIBS#BUFLEN
 *7 (Struct tag)
@@ -28750,29 +28766,29 @@
 *1 (Constant)
 ^7948 5$#MAXLINE
 *4 (Function)
-^7949 20156$@0@s1@1@s1,p0$@0#LCLScanLine
-^7950 20158@6@5@1@0@0^@19@2@0#LCLScanEofToken
-^7951 20160$@0@s1@1@s1$@0#LCLReportEolTokens
-^7952 20164$@0@s1@1@s1$@0#LCLScanLineInit
-^7953 20166$@0@s1@1@s1$@0#LCLScanLineReset
-^7954 20168$@0@s1@1@s1$@0#LCLScanLineCleanup
-^7955 20172$^$@0#LCLScanCharClass
-^7956 20170$^$@0#LCLIsEndComment
-^7957 20174$@0@s1@1@s1$@0#LCLSetCharClass
-^7958 20176$@0@s1@1@s1$@0#LCLSetEndCommentChar
-^7959 20180$$$@0#LCLAddSyn
-^7960 20182@6@5@1@0@0$@19@2@0#LCLGetTokenForSyn
-^7961 20184$$$@0#LCLIsSyn
-^7962 20188$$$@0#LCLSynTableInit
-^7963 20190$$$@0#LCLSynTableReset
-^7964 20192$$$@0#LCLSynTableCleanup
-^7965 20196@6@5@1@0@0@0@s1@1@s1@19@2@0#LCLInsertToken
-^7966 20198$@0@s1@1@s1$@0#LCLUpdateToken
-^7967 20200$@0@s1@1@s1$@0#LCLSetTokenHasSyn
-^7968 20202@6@5@1@0@0^@19@2@0#LCLGetToken
-^7969 20204@6@5@1@0@0@0@s1@1@s1@19@2@0#LCLReserveToken
-^7970 20208$$$@0#LCLTokenTableInit
-^7971 20210$$$@0#LCLTokenTableCleanup
+^7949 20158$@0@s1@1@s1,p0$@0#LCLScanLine
+^7950 20160@6@5@1@0@0^@19@2@0#LCLScanEofToken
+^7951 20162$@0@s1@1@s1$@0#LCLReportEolTokens
+^7952 20166$@0@s1@1@s1$@0#LCLScanLineInit
+^7953 20168$@0@s1@1@s1$@0#LCLScanLineReset
+^7954 20170$@0@s1@1@s1$@0#LCLScanLineCleanup
+^7955 20174$^$@0#LCLScanCharClass
+^7956 20172$^$@0#LCLIsEndComment
+^7957 20176$@0@s1@1@s1$@0#LCLSetCharClass
+^7958 20178$@0@s1@1@s1$@0#LCLSetEndCommentChar
+^7959 20182$$$@0#LCLAddSyn
+^7960 20184@6@5@1@0@0$@19@2@0#LCLGetTokenForSyn
+^7961 20186$$$@0#LCLIsSyn
+^7962 20190$$$@0#LCLSynTableInit
+^7963 20192$$$@0#LCLSynTableReset
+^7964 20194$$$@0#LCLSynTableCleanup
+^7965 20198@6@5@1@0@0@0@s1@1@s1@19@2@0#LCLInsertToken
+^7966 20200$@0@s1@1@s1$@0#LCLUpdateToken
+^7967 20202$@0@s1@1@s1$@0#LCLSetTokenHasSyn
+^7968 20204@6@5@1@0@0^@19@2@0#LCLGetToken
+^7969 20206@6@5@1@0@0@0@s1@1@s1@19@2@0#LCLReserveToken
+^7970 20210$$$@0#LCLTokenTableInit
+^7971 20212$$$@0#LCLTokenTableCleanup
 *3 (Variable)
 ^7972 3695|@1|0@5@18&#g_importedlslOp
 ^7973 2|@1|^#g_lslParsingTraits
@@ -28789,12 +28805,12 @@
 ^7983 19046$@0@s1@1@s1$@0#LSLScanInit
 ^7984 19048$@0@s1@1@s1$@0#LSLScanReset
 ^7985 19050$@0@s1@1@s1$@0#LSLScanCleanup
-^7986 19422$@0@s1@1@s1$@0#LSLAddSyn
-^7987 19424@6@5@1@0@0@1@s1@1@@19@2@0#LSLGetTokenForSyn
-^7988 19426$@1@s1@1@$@0#LSLIsSyn
-^7989 19430$@1@s1@1@s1$@0#lsynTableInit
-^7990 19432$@0@s1@1@s1$@0#lsynTableReset
-^7991 19434$@0@s1@1@s1$@0#lsynTableCleanup
+^7986 19424$@0@s1@1@s1$@0#LSLAddSyn
+^7987 19426@6@5@1@0@0@1@s1@1@@19@2@0#LSLGetTokenForSyn
+^7988 19428$@1@s1@1@$@0#LSLIsSyn
+^7989 19432$@1@s1@1@s1$@0#lsynTableInit
+^7990 19434$@0@s1@1@s1$@0#lsynTableReset
+^7991 19436$@0@s1@1@s1$@0#lsynTableCleanup
 ^7992 19013@6@5@1@0@0@0@s1@1@s1@19@2@0#LSLInsertToken
 ^7993 19015$@0@s1@1@s1$@0#LSLUpdateToken
 ^7994 19019@6@5@1@0@0^@19@2@0#LSLGetToken
@@ -28809,15 +28825,15 @@
 *0 (Datatype)
 ^8086 18464@-@-@0@0@0@0@18465#LSLInitRuleCode
 *4 (Function)
-^8087 19303$$$@0#LSLProcessInitFile
-^8088 19417$$$@0#LSLProcessInitFileInit
+^8087 19305$$$@0#LSLProcessInitFile
+^8088 19419$$$@0#LSLProcessInitFileInit
 *0 (Datatype)
 ^8089 18465@-@-@0@0@0@0@18470#LCLInitRuleCode
 *4 (Function)
-^8090 20748$$$@0#LCLProcessInitFile
-^8091 20858$$$@0#LCLProcessInitFileInit
-^8092 20860$$$@0#LCLProcessInitFileReset
-^8093 20862$$$@0#LCLProcessInitFileCleanup
+^8090 20750$$$@0#LCLProcessInitFile
+^8091 20860$$$@0#LCLProcessInitFileInit
+^8092 20862$$$@0#LCLProcessInitFileReset
+^8093 20864$$$@0#LCLProcessInitFileCleanup
 ^8094 19131$@0@s1,s3@1@s1,s3$@0#lhCleanup
 ^8095 19133$@0@s1@1@s1$@0#lhIncludeBool
 ^8096 19135$@1@s1,s3@1@s1,s3$@0#lhInit
@@ -28834,7 +28850,7 @@
 ^8107 19153$$$@0#checkSort
 ^8108 19149@6@5@1@0@0$$@0#computePossibleSorts
 ^8109 19157$$$@0#checkLclPredicate
-^8110 20981$$$@0#PrintToken
+^8110 20985$$$@0#PrintToken
 *8 (Union tag)
 ^8111 19030@19031#$!257
 *7 (Struct tag)
@@ -28846,60 +28862,60 @@
 *0 (Datatype)
 ^8115 19168@-@-@0@0@0@0@19170#Lclctype2sortType
 *4 (Function)
-^8116 20866$$$@0#LSLGenShift
-^8117 20868$$$@0#LSLGenShiftOnly
-^8118 20870@6@5@1@0@0$@2@0@0#LSLGenTopPopShiftStack
-^8119 20872$$$@0#LSLGenInit
+^8116 20870$$$@0#LSLGenShift
+^8117 20872$$$@0#LSLGenShiftOnly
+^8118 20874@6@5@1@0@0$@2@0@0#LSLGenTopPopShiftStack
+^8119 20876$$$@0#LSLGenInit
 *0 (Datatype)
-^8120 3086@-@+@0@0@0@0@19418#lsymbolTable
+^8120 3086@-@+@0@0@0@0@19420#lsymbolTable
 *1 (Constant)
 ^8121 5$#CHARSIZE
 *2 (Enum member)
-^8122 20125$#STARTCNUM#STARTCNUMDOT#STARTCSTR#STARTCCHAR#STARTWIDE#STARTSLASH#STARTOTHER
+^8122 20127$#STARTCNUM#STARTCNUMDOT#STARTCSTR#STARTCCHAR#STARTWIDE#STARTSLASH#STARTOTHER
 *9 (Enum tag)
-^8129 20125@20126#&!260
+^8129 20127@20128#&!260
 *0 (Datatype)
-^8130 20126@-@-@0@0@0@0@20127#StartCharType
-^8131 2730@-@+@0@0@2@0@20267#o_sortNode
+^8130 20128@-@-@0@0@0@0@20129#StartCharType
+^8131 2730@-@+@0@0@2@0@20269#o_sortNode
 *1 (Constant)
 ^8132 5$#MAX_SORT_DEPTH
 *2 (Enum member)
-^8133 20456$#SYMK_FCN#SYMK_SCOPE#SYMK_TYPE#SYMK_VAR
+^8133 20458$#SYMK_FCN#SYMK_SCOPE#SYMK_TYPE#SYMK_VAR
 *9 (Enum tag)
-^8137 20456@20457#&!261
+^8137 20458@20459#&!261
 *0 (Datatype)
-^8138 20457@-@-@0@0@0@0@20458#symKind
+^8138 20459@-@-@0@0@0@0@20460#symKind
 *8 (Union tag)
-^8139 20459@20460#$!262
+^8139 20461@20462#$!262
 *7 (Struct tag)
-^8140 20461@20462#@!263
+^8140 20463@20464#@!263
 *0 (Datatype)
-^8141 20461@-@-@0@0@0@0@20463#idTableEntry
+^8141 20463@-@-@0@0@0@0@20465#idTableEntry
 *7 (Struct tag)
-^8142 20465@20466#@!264
+^8142 20467@20468#@!264
 *0 (Datatype)
-^8143 20465@-@-@0@0@0@0@20467#idTable
-^8144 4196@-@+@0@0@2@0@20579#o_fctInfo
+^8143 20467@-@-@0@0@0@0@20469#idTable
+^8144 4196@-@+@0@0@2@0@20581#o_fctInfo
 *8 (Union tag)
-^8145 20873@20874#$!265
+^8145 20877@20878#$!265
 *1 (Constant)
 ^8146 5$#NULLFACTOR
 *0 (Datatype)
-^8147 1237@-@-@0@0@0@0@20891#CharIndex
+^8147 1237@-@-@0@0@0@0@20895#CharIndex
 *7 (Struct tag)
-^8148 20892@20893#@!266
+^8148 20896@20897#@!266
 *0 (Datatype)
-^8149 20892@-@-@0@0@0@0@20894#StringEntry
+^8149 20896@-@-@0@0@0@0@20898#StringEntry
 *1 (Constant)
 ^8150 5$#MAPPING_SIZE
 *8 (Union tag)
-^8151 20946@20947#$!267
+^8151 20950@20951#$!267
 *4 (Function)
-^8152 20977$$$@0#lslerror
+^8152 20981$$$@0#lslerror
 *3 (Variable)
 ^8153 3695|@1|6@5@18&#importedlslOp
 *8 (Union tag)
-^8154 20965@20966#$!268
+^8154 20969@20970#$!268
 ;; Library constraints
 vsnprintf
 pre:
@@ -29799,6 +29815,22 @@ r
 Param 63 3
 ;; end precondition constraints
 post:
+;; end precondition constraints
+mstring_create
+pre:EMPTY
+post:
+C
+0@1@4
+l
+1
+1
+2
+2
+Result
+r
+2
+2
+Param 5 0
 ;; end precondition constraints
 ;; Modules access
 lltX_bool#1@

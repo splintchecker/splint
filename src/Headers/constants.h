@@ -59,16 +59,16 @@
 /*@constant observer char *DUMP_SUFFIX; @*/
 # define DUMP_SUFFIX ".lcd"
 
-/*@constant int MAX_NAME_LENGTH; @*/
+/*@constant int MAX_NAME_LENGTH=256; @*/
 # define MAX_NAME_LENGTH 256
 
-/*@constant int MAX_LINE_LENGTH; @*/
+/*@constant int MAX_LINE_LENGTH=1024; @*/
 # define MAX_LINE_LENGTH 1024
 
-/*@constant int MAX_DUMP_LINE_LENGTH; @*/
+/*@constant int MAX_DUMP_LINE_LENGTH=16384; @*/
 # define MAX_DUMP_LINE_LENGTH 16384
 
-/*@constant int MINLINELEN; @*/
+/*@constant int MINLINELEN=20; @*/
 # define MINLINELEN 20
 
 /*
@@ -91,13 +91,13 @@
 /*@constant char DEFAULT_COMMENTCHAR; @*/
 # define DEFAULT_COMMENTCHAR '@'
 
-/*@constant int DEFAULT_LINELEN; @*/
+/*@constant int DEFAULT_LINELEN=80; @*/
 # define DEFAULT_LINELEN 80
 
-/*@constant int DEFAULT_BUGSLIMIT; @*/
+/*@constant int DEFAULT_BUGSLIMIT=3; @*/
 # define DEFAULT_BUGSLIMIT 3
 
-/*@constant int DEFAULT_INDENTSPACES; @*/
+/*@constant int DEFAULT_INDENTSPACES=3; @*/
 # define DEFAULT_INDENTSPACES 3
 
 /*
@@ -105,28 +105,28 @@
 ** Section 3.1. 
 */
 
-/*@constant int DEFAULT_EXTERNALNAMELEN; @*/
+/*@constant int DEFAULT_EXTERNALNAMELEN=6; @*/
 # define DEFAULT_EXTERNALNAMELEN 6
 
-/*@constant int DEFAULT_INTERNALNAMELEN; @*/
+/*@constant int DEFAULT_INTERNALNAMELEN=31; @*/
 # define DEFAULT_INTERNALNAMELEN 31
 
-/*@constant int DEFAULT_CONTROLNESTDEPTH; @*/
+/*@constant int DEFAULT_CONTROLNESTDEPTH=15; @*/
 # define DEFAULT_CONTROLNESTDEPTH 15
 
-/*@constant int DEFAULT_STRINGLITERALLEN; @*/
+/*@constant int DEFAULT_STRINGLITERALLEN=509; @*/
 # define DEFAULT_STRINGLITERALLEN 509
 
-/*@constant int DEFAULT_INCLUDENEST; @*/
+/*@constant int DEFAULT_INCLUDENEST=8; @*/
 # define DEFAULT_INCLUDENEST 8
 
-/*@constant int DEFAULT_NUMSTRUCTFIELDS; @*/
+/*@constant int DEFAULT_NUMSTRUCTFIELDS=127; @*/
 # define DEFAULT_NUMSTRUCTFIELDS 127
 
-/*@constant int DEFAULT_NUMENUMMEMBERS; @*/
+/*@constant int DEFAULT_NUMENUMMEMBERS=127; @*/
 # define DEFAULT_NUMENUMMEMBERS 127
 
-/*@constant int DEFAULT_LIMIT; @*/
+/*@constant int DEFAULT_LIMIT=-1; @*/
 # define DEFAULT_LIMIT -1    /* unlimited messages */
 
 /*@constant char PFX_UPPERCASE; @*/
@@ -163,7 +163,7 @@
 /*@constant observer char *PRAGMA_EXPAND; @*/
 # define PRAGMA_EXPAND "expand"
 
-/*@constant int PRAGMA_LEN_EXPAND; @*/
+/*@constant int PRAGMA_LEN_EXPAND=6; @*/
 # define PRAGMA_LEN_EXPAND 6
 
 /*@constant int MAX_PRAGMA_LEN; @*/
