@@ -5,7 +5,7 @@
 typedef union
 {
   exprNode expr;
-  sRef     sref;
+  /*@only@*/  sRef     sref;
   int      intlit;
 } constraintTermValue;
 
@@ -49,7 +49,7 @@ extern /*@unused@*/ /*@truenull@*/ bool constraintTerm_isError (constraintTerm p
 
 
 
-
+void constraintTerm_free (/*@only@*/ constraintTerm term);
 
 constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/ ;
 

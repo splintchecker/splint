@@ -16,6 +16,7 @@ struct _constraintExpr {
 };
 
 
+
 /*@constant null constraintExpr constraintExpr_undefined; @*/
 # define constraintExpr_undefined ((constraintExpr)NULL)
 
@@ -28,10 +29,11 @@ extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isError (constraintExpr p
 # define constraintExpr_isError(e)          ((e) == constraintExpr_undefined)
 
 
+void constraintExpr_free ( /*@only@*/ constraintExpr expr);
 
 int constraintExpr_getValue (constraintExpr expr) /*@*/;
 
-constraintExpr constraintExpr_setFileloc (constraintExpr expr, fileloc loc) /*@modifies expr@*/;
+constraintExpr constraintExpr_setFileloc (/*@returned@*/ constraintExpr c, fileloc loc) /*@modifies c@*/;
 
 constraintExpr constraintExpr_copy (constraintExpr expr) /*@*/;
 
@@ -41,62 +43,66 @@ extern cstring constraintExpr_print (constraintExpr expr) /*@*/;
 
 bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2) /*@*/;
 bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2) /*@*/;
-constraintExpr constraintExpr_searchandreplace (constraintExpr c, constraintExpr old, constraintExpr new ) /*@modifies c@*/;
+constraintExpr constraintExpr_searchandreplace (/*@returned@*/ constraintExpr c, /*@observer@*/ constraintExpr old, /*@observer@*/ constraintExpr new ) /*@modifies c@*/;
 bool constraintExpr_canGetValue (constraintExpr expr) /*@*/;
 
 int constraintExpr_compare (constraintExpr expr1, constraintExpr expr2) /*@*/;
 
 //constraintExpr constraintExpr_makeValueInt (int i);
 
-constraintExpr constraintExpr_makeIntLiteral (int i);
+/*@only@*/ constraintExpr constraintExpr_makeIntLiteral (int i);
 
-constraintExpr constraintExpr_makeValueExpr (exprNode expr);
+/*@only@*/ constraintExpr constraintExpr_makeValueExpr (exprNode expr);
 
-constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr);
+/*@only@*/ constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr);
 
-constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr);
+/*@only@*/ constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr);
 
-constraintExpr constraintExpr_makeIncConstraintExpr (constraintExpr expr);
+/*@only@*/ constraintExpr constraintExpr_makeIncConstraintExpr (/*@only@*/ constraintExpr expr);
 
-constraintExpr constraintExpr_makeDecConstraintExpr (constraintExpr expr);
+/*@only@*/ constraintExpr constraintExpr_makeDecConstraintExpr (/*@only@*/ constraintExpr expr);
 
-constraintExpr constraintExpr_simplify (constraintExpr c) /*@modifies c@*/;
+constraintExpr constraintExpr_simplify (/*@returned@*/ constraintExpr c) /*@modifies c@*/;
 
-constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, constraintExpr expr) /*@modifies lexpr@*/;
+/*@only@*/ constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, /*@returned@*/ constraintExpr expr) /*@modifies lexpr, expr @*/;
 
 bool constraintExpr_search (constraintExpr c, constraintExpr old) /*@*/;
 
 fileloc constraintExpr_getFileloc (constraintExpr expr);
 
-constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (constraintExpr expr, int literal);
+/*@only@*/ constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/constraintExpr expr, int literal);
 
-constraintExpr constraintExpr_makeSRefMaxset (sRef s);
+/*@only@*/ constraintExpr constraintExpr_makeSRefMaxset ( /*@only@*/ sRef s);
 
-constraintExpr constraintExpr_makeTermsRef (sRef s);
+/*@only@*/ constraintExpr constraintExpr_makeTermsRef (/*@only@*/ sRef s);
+
 constraintExpr constraintExpr_doSRefFixBaseParam ( /*@returned@*/ constraintExpr expr, exprNodeList arglist);
-constraintExpr constraintExpr_makeExprNode (exprNode e);
+
+/*@only@*/ constraintExpr constraintExpr_makeExprNode (exprNode e);
 
 constraintExpr constraintExpr_doFixResult (/*@returned@*/  constraintExpr expr, exprNode fcnCall);
+
 bool constraintExpr_isLit (constraintExpr expr);
-constraintExpr constraintExpr_makeAddConstraintExpr (constraintExpr expr, constraintExpr add);
 
-constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr);
+/*@only@*/ constraintExpr constraintExpr_makeAddConstraintExpr (/*@only@*/constraintExpr expr, /*@only@*/ constraintExpr add);
 
-constraintExpr constraintExpr_parseMakeBinaryOp (constraintExpr expr1, lltok op, constraintExpr expr2);
+/*@only@*/ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op,/*@only@*/ constraintExpr cexpr);
+
+constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1, lltok op, /*@only@*/ constraintExpr expr2);
 
 bool constraintExpr_hasMaxSet (constraintExpr expr);
 
-//static constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
-//						/*@out@*/ bool * propagate,
-//						  /*@out@*/ int *literal);
 
-constraintExpr constraintExpr_makeSRefMaxRead(sRef s);
+/*@only@*/ constraintExpr constraintExpr_makeSRefMaxRead(/*@only@*/ sRef s);
 
-constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
+constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
 
-constraintExpr 
-constraintExpr_doSRefFixConstraintParam (/*@returned@*/ constraintExpr e, exprNodeList arglist) /*@modifies e@*/;
+/*@only@*/ constraintExpr constraintExpr_doSRefFixConstraintParam (/*@returned@*/ /*@only@*/ constraintExpr expr, exprNodeList arglist) /*@modifies expr@*/;
 
+/*@only@*/
+constraintExpr constraintExpr_propagateConstants (/*@only@*/ constraintExpr expr,
+						/*@out@*/ bool * propagate,
+						  /*@out@*/ int *literal);
 
 #else
 

@@ -61,7 +61,7 @@ extern bool fileloc_isSpecialFile (fileloc p_f) /*@*/ ;
 extern bool fileloc_sameBaseFile (fileloc p_f1, fileloc p_f2) /*@*/ ;
 extern /*@observer@*/ cstring fileloc_filename (fileloc p_f) /*@*/ ;
 extern int fileloc_column (fileloc p_f) /*@*/ ;
-extern cstring fileloc_unparse (fileloc p_f) /*@*/ ;
+extern /*@only@*/ cstring fileloc_unparse (fileloc p_f) /*@*/ ;
 extern cstring fileloc_unparseRaw (cstring p_fname, int p_lineno) /*@*/ ;
 extern cstring fileloc_unparseRawCol (cstring p_fname, int p_lineno, int p_col) /*@*/ ;
 extern bool fileloc_sameFile (fileloc p_f1, fileloc p_f2) /*@*/ ;

@@ -159,7 +159,6 @@ struct _exprNode
   fileloc loc;
   /*@relnull@*/ exprData edata;
   cstring etext;
-  environmentTable environment;
   constraintList requiresConstraints;
   constraintList ensuresConstraints;
   //these two are used only for boolean expressions
@@ -335,7 +334,7 @@ extern bool exprNode_isAssign (exprNode p_e) /*@*/ ;
 
 /* added 8-15-00
    by DRL */
-extern fileloc exprNode_getfileloc (exprNode p_e) ;
+extern /*@observer@*/ fileloc exprNode_getfileloc (exprNode p_e) ;
 
 /*@-exportlocal@*/
 extern bool exprNode_isDefaultMarker (exprNode p_e) /*@*/ ;
@@ -347,7 +346,7 @@ extern bool exprNode_isLabelMarker (exprNode p_e) /*@*/ ;
 fileloc exprNode_getNextSequencePoint (exprNode p_e) /*@*/ ;
 
 /*drl 09-08-2000 */
-exprNode exprNode_fakeCopy (exprNode e);
+exprNode exprNode_fakeCopy (/*@returned@*/ exprNode e);
 /*drl 01-20-2001*/
 exprNode exprNode_createNew(ctype c);
 # else

@@ -19,7 +19,7 @@ abst_typedef /*@null@*/ struct _sRefSet *sRefSet;
 abst_typedef /*@null@*/ struct _aliasTable *aliasTable;
 abst_typedef /*@null@*/ struct __fileloc *fileloc;
 
-abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
+//abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
 
 abst_typedef  struct _constraint *constraint;
 abst_typedef struct _constraintList  *constraintList;

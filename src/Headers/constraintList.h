@@ -66,7 +66,7 @@ extern constraintList constraintList_preserveOrig (/*@returned@*/ constraintList
 # define constraintListBASESIZE SMALLBASESIZE
 
 
-extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
+/*@unused@*/ extern  /*@only@*/ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
 
 extern constraintList constraintList_togglePost (/*@returned@*/ constraintList c) /*@modifies c@*/;
 
