@@ -3258,7 +3258,7 @@ checkRequiresClause (uentry le, exprNode f, exprNodeList args)
 				  if (optgenerror 
 				      (FLG_STATETRANSFER,
 				       message
-				       ("Requires clause of called function %q not satisfied%q (state is %s): %q",
+				       ("Requires clause of called function %q not satisfied%q (state is %q): %q",
 					uentry_getName (le),
 					sRef_isGlobalMarker (s) 
 					   ? message ("") 

@@ -47,8 +47,9 @@ include Makefile.sys
 CHECK = 0 ### set to 1
 
 #LCLINT = //tmp/lclint-2.5q/bin/lclint
-LCLINTNEW = //afs/cert.org/usr/dlaroche/evLCLintDev/bin/lclint
+#LCLINTNEW = //afs/cert.org/usr/dlaroche/evLCLintDev/bin/lclint
 #LCLINTNEW = /home/drl7x/evLCLintDev/evLCLintDev/bin/lclint
+LCLINTNEW = lclint
 LCLINT = ../bin/lclint
 
 ###
@@ -383,7 +384,7 @@ lintweak:
 	${HOME}/lclint-build/lclint-2.5q-freebsdbin/lclint -f weak.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC)
 
 lintnew: 
-	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file
+	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw
 
 lint: 
 	../bin/lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse 

@@ -53,7 +53,7 @@ extern void swallowMacro (void);
 /*@-matchfields@*/
 
 # define SHOWCSYM FALSE
-void yyerror (char *s);
+void yyerror (char *);
 
 /*
 ** This is necessary, or else when the bison-generated code #include's malloc.h,
@@ -78,7 +78,7 @@ void yyerror (char *s);
   qual typequal;
   qualList tquallist;
   ctype ctyp;
-  sRef sr;
+  /*@dependent@*/ sRef sr;
 
   /*@only@*/ functionClauseList funcclauselist;
   /*@only@*/ functionClause funcclause;  

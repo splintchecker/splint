@@ -19,11 +19,17 @@
 
 /*@access exprNode @*/
 
+static bool constraintTerm_isDefined (constraintTerm t)
+{
+  return t != NULL;
+}
+
 /*@unused@*/ static bool constraintTerm_same (constraintTerm p_term1, constraintTerm p_term2) ;
 
 void constraintTerm_free (/*@only@*/ constraintTerm term)
 {
-  llassert(constraintTerm_isDefined(term) );
+  llassert (constraintTerm_isDefined (term));
+
   fileloc_free (term->loc);
   
   switch (term->kind) 
@@ -107,6 +113,7 @@ constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@m
 
 fileloc constraintTerm_getFileloc (constraintTerm t)
 {
+  llassert (constraintTerm_isDefined (t));
   return (fileloc_copy (t->loc) );
 }
 
