@@ -160,6 +160,9 @@ AC_DEFINE(UNIX, 1, [Define if you're on a Unixy system])
 
 #just define some Header constants for now...
 
+UNAME=`uname`
+AC_DEFINE_UNQUOTED(UNAME, "${UNAME}")
+
 AC_DEFINE_UNQUOTED(BUILD, "${build}")
 AC_DEFINE_UNQUOTED(HOST, "${host}")
 AC_DEFINE_UNQUOTED(TARGET, "${target}")

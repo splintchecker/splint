@@ -3708,6 +3708,112 @@ initialize_builtins (cppReader *pfile)
    */
   cpplib_installBuiltin ("__" TARGET_CPU, ctype_int, -1, T_CONST, 2, NULL, -1);
 
+  /*drl 1/2/2002  set some flags based on uname
+    I'd like to be able to do this with autoconf macro instead...
+   */
+
+  /*Thanks to Nelson Beebe for suggesting possible values for these */
+  
+  if (! strcmp (UNAME, "Linux"))
+    {
+#ifdef __ppc
+      cpplib_installBuiltin ("__BIG_ENDIAN__", ctype_int, -1, T_CONST, 2, NULL, -1);
+#endif
+    }
+  
+  else if(! strcmp (UNAME, "Darwin"))
+    {
+      cpplib_installBuiltin ("__ppc__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__BIG_ENDIAN__", ctype_int, -1, T_CONST, 2, NULL, -1);
+    }
+  else if(! strcmp (UNAME, "HP-UX"))
+    {
+      cpplib_installBuiltin ("PWB", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_HIUX_SOURCE", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_HPUX_SOURCE", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_PA_RISC1_1", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__PWB", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__PWB__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__STDC_EXT__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hp9000s700", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hp9000s800", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hp9000s800__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hp9k8", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hp9k8__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hppa", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hppa__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hpux", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__hpux__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__unix", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__unix__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("hp9000s800", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("hp9k8", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("hppa", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("hpux", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("unix", ctype_int, -1, T_CONST, 2, NULL, -1);
+    }
+  else if(! strcmp (UNAME, "IRIX64"))
+    {
+      cpplib_installBuiltin ("LANGUAGE_C", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("MIPSEB", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_ABIN32", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_COMPILER_VERSION", ctype_int, -1, T_CONST, 730, NULL, -1);
+      cpplib_installBuiltin ("_LANGUAGE_C", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_LONGLONG", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_MIPSEB", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_MIPS_FPSET", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_MIPS_ISA", ctype_int, -1, T_CONST, 3, NULL, -1);
+      /*_MIPS_SIM=_ABIN32*/
+      cpplib_installBuiltin ("_MIPS_SIM", ctype_int, -1, T_CONST, 2, NULL , -1);
+      cpplib_installBuiltin ("_MIPS_SZINT", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_MIPS_SZLONG", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_MIPS_SZPTR", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_MODERN_C", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_PIC", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_SGI_SOURCE", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_SIZE_INT", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_SIZE_LONG", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_SIZE_PTR", ctype_int, -1, T_CONST, 32, NULL, -1);
+      cpplib_installBuiltin ("_SVR4_SOURCE", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("_SYSTYPE_SVR4", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__DSO__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__EXTENSIONS__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__INLINE_INTRINSICS", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__MATH_HAS_NO_SIDE_EFFECTS", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__host_mips", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__mips", ctype_int, -1, T_CONST, 3, NULL, -1);
+      cpplib_installBuiltin ("__sgi", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__unix", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("host_mips", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("mips", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("sgi", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("unix", ctype_int, -1, T_CONST, 2, NULL, -1);
+    }
+  else if(! strcmp (UNAME, "OSF1"))
+    {
+      cpplib_installBuiltin ("__alpha", ctype_int, -1, T_CONST, 2, NULL, -1);
+    }
+  else if (!strcmp (UNAME, "Rhapsody"))
+    {
+      cpplib_installBuiltin ("__ppc__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__BIG_ENDIAN__", ctype_int, -1, T_CONST, 2, NULL, -1);
+    }
+
+  else if (!strcmp (UNAME, "SunOS"))
+    {
+      cpplib_installBuiltin ("__OPEN_MAX", ctype_int, -1, T_CONST, 20, NULL, -1);
+      cpplib_installBuiltin ("__STDC__", ctype_int, -1, T_CONST, 2, NULL, -1);
+      cpplib_installBuiltin ("__sparc", ctype_int, -1, T_CONST, 2, NULL, -1);
+      /*       This define  "-Dfileno(f)=0" should be inserted but we're going to stick to deinfe constants for now...*/
+    }
+  else
+    {
+      /*
+	types which we have not explictedly handled.
+	AIX, FreeBSD, IRIX, Mach
+       */
+
+    }
   
   if (CPPOPTIONS (pfile)->debug_output)
     {

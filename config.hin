@@ -35,6 +35,8 @@
 /* drl: can't get autoheader to work so I had to enter these manually.
  figure out autoheader at some point... */
 
+#undef UNAME
+ 
 #undef BUILD
 #undef HOST
 #undef TARGET
