@@ -14,16 +14,27 @@
 # define S_IFMT (unsigned short)0xFFFF
 # endif
 
+# if defined (OS2) || defined (MSDOS) || defined (WIN32)
+/*@constant observer cstring INCLUDEPATH_VAR@*/
+# define INCLUDEPATH_VAR    cstring_makeLiteralTemp ("INCLUDE")
+# else
 /*@constant observer cstring INCLUDEPATH_VAR@*/
 # define INCLUDEPATH_VAR    cstring_makeLiteralTemp ("CPATH")
+# endif
 
 #if defined (VMS)
-/* Connection string inserted between directory and filename to make a  */
-/* full path name.							*/
+
+/*
+** VMS is here, but hasn't been tested for many releases.  Not sure if this works.
+*/
+
+/*
+** Connection string inserted between directory and filename to make a  
+** full path name.							
+*/
 
 # define    CONNECTSTR	":"
 # define    CONNECTCHAR	':'
-
 
 /* Directory separator character for search list. */
 /*@constant static char PATH_SEPARATOR; @*/
@@ -90,3 +101,4 @@
 # else
 # error "Multiple include"
 # endif
+

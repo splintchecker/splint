@@ -32,7 +32,7 @@
 extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
 # endif
 
-  /*@i523 can't include these here
+  /*@i523@*/ /* can't include these here
     # include "mtgrammar.h"
     # include "mtscanner.h"
   */

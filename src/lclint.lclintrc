@@ -1,7 +1,7 @@
 -IHeaders 
 -DDEBUGPRINT
 
-## -systemdirs /usr/include:/usr/local/lib/
+-systemdirs /usr/include:/usr/local/lib/:/usr/lib
 
 +allmacros # check all macros
 +checks    # checks mode (moderately strict checking)

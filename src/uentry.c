@@ -3574,7 +3574,8 @@ uentry_setGlobals (uentry ue, /*@owned@*/ globSet globs)
       /*@=mustfree@*/
     }
 
-  /*@i23 ??? 
+  /*@i23*/
+  /* ???  - evans 2001-09-09 not sure what's going on here...?
   if (globSet_hasStatic (globs))
     {
       context_recordFileGlobals (globs);
@@ -6144,7 +6145,7 @@ sRef uentry_getSref (uentry e)
 
 sRef uentry_getOrigSref (uentry e)
 {
-  /*@i523
+  /*@i523*/ /* evans 2001-09-09 - need to fix this 
   if (uentry_isValid (e))
     {
       if (uentry_isVariable (e))
@@ -8349,7 +8350,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 		      cstring nnamefix;
 
 		      if (cstring_isDefined (pfx)
-			  && cstring_equalPrefix (oldname, cstring_toCharsSafe (pfx)))
+			  && cstring_equalPrefix (oldname, pfx))
 			{
 			  oname = cstring_suffix (oldname, cstring_length (pfx));
 			}
@@ -8359,7 +8360,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 			/*@-branchstate@*/ } /*@=branchstate@*/
 
 		      if (cstring_isDefined (pfx)
-			  && cstring_equalPrefix (nname, cstring_toCharsSafe (pfx)))
+			  && cstring_equalPrefix (nname, pfx))
 			{
 			  nnamefix = cstring_suffix (nname, cstring_length (pfx));
 			}

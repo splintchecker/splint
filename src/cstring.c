@@ -108,6 +108,12 @@ int cstring_toPosInt (cstring s)
   return val;
 }
 
+cstring cstring_afterChar (cstring s, char c) 
+{
+  llassert (cstring_isDefined (s));
+  return strchr (s, c);
+}
+
 cstring cstring_beforeChar (cstring s, char c)
 {
   if (cstring_isDefined (s))
@@ -188,7 +194,6 @@ bool cstring_containsChar (cstring c, char ch)
 ** Replaces all occurances of old in s with new.
 */
 
-# if defined (WIN32) || defined (OS2)
 void cstring_replaceAll (cstring s, char old, char snew)
 {
   
@@ -206,7 +211,6 @@ void cstring_replaceAll (cstring s, char old, char snew)
 
           }
 }
-# endif
 
 void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew)
 {
@@ -428,7 +432,7 @@ bool cstring_equalLenCaseInsensitive (cstring c1, cstring c2, int len)
   else return (cstring_genericEqual (c1, c2, len, TRUE, FALSE) != CGE_DISTINCT);
 }
 
-bool cstring_equalPrefix (cstring c1, char *c2)
+bool cstring_equalPrefix (cstring c1, cstring c2)
 {
   llassert (c2 != NULL);
 
@@ -440,7 +444,7 @@ bool cstring_equalPrefix (cstring c1, char *c2)
   return (strncmp (c1, c2, strlen (c2)) == 0);
 }
 
-bool cstring_equalCanonicalPrefix (cstring c1, char *c2)
+bool cstring_equalPrefixLit (cstring c1, const char *c2)
 {
   llassert (c2 != NULL);
 
@@ -449,78 +453,7 @@ bool cstring_equalCanonicalPrefix (cstring c1, char *c2)
       return (strlen (c2) == 0);
     }
 
-# if defined (WIN32) || defined (OS2)
-  /*
-  ** If one has a drive specification, but the other doesn't, skip it.
-  */
-  
-  if (strchr (c1, ':') == NULL
-      && strchr (c2, ':') != NULL)
-    {
-      c2 = strchr (c2 + 1, ':');
-    }
-  else 
-    {
-      if (strchr (c2, ':') == NULL
-	  && strchr (c1, ':') != NULL)
-	{
-	  c1 = strchr (c1 + 1, ':');
-	}
-    }
-
-  {
-    int len = size_toInt (strlen (c2));
-    int i = 0;
-    int slen = 0;
-
-    if (cstring_length (c1) < len)
-      {
-	return FALSE;
-      }
-
-    for (i = 0; i < len; i++)
-      {
-	if (c1[slen] == c2[i]
-	    || (osd_isConnectChar (c1[slen]) && osd_isConnectChar (c2[i])))
-	  {
-	    ;
-	  }
-	else 
-	  {
-	    /*
-	    ** We allow \\ to match \ because MS-DOS screws up the directory
-	    ** names.
-	    */
-	    
-	    if (c1[slen] == '\\'
-		&& (slen > 0
-		    && c1[slen - 1] == '\\'
-		    && c2[i - 1] == '\\'))
-	      {
-		slen++;
-		if (c1[slen] != c2[i])
-		  {
-		    return FALSE;
-		  }
-	      }
-	    else
-	      {
-		return FALSE;
-	      }
-	  }
-
-	slen++;
-	if (slen >= cstring_length (c1))
-	  {
-	    return FALSE;
-	  }
-      }
-  }
-
-  return TRUE;
-# else
   return (strncmp (c1, c2, strlen (c2)) == 0);
-# endif
 }
 
 int cstring_xcompare (cstring *c1, cstring *c2)

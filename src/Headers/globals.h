@@ -24,10 +24,6 @@ extern /*@dependent@*/ /*:open:*/ FILE *yyout;
 extern int yyleng;
 /*@=incondefs@*/ 
 
-# ifdef WIN32
-extern int yywrap (void) /*@*/ ;
-# endif
-
 extern int yydebug;
 /*@=redecl@*/
 /*@=namechecks@*/

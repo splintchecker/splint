@@ -245,6 +245,18 @@ bool mstring_containsChar (const char *s, char c)
       return FALSE;
     }
 }
+
+bool mstring_containsString (const char *s, const char *c)
+{
+  if (mstring_isDefined (s))
+    {
+      return (strstr (s, c) != NULL);
+    }
+  else
+    {
+      return FALSE;
+    }
+}
  
 char *mstring_concat (const char *s1, const char *s2)
 {

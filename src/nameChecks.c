@@ -1395,30 +1395,30 @@ checkAnsiName (uentry ue)
       if ((cstring_lastChar (name) == 'f' || cstring_lastChar (name) == 'l')
 	  && 
 	  (((length == 4)
-	    && ((cstring_equalPrefix (name, "cos") ||
-		 cstring_equalPrefix (name, "sin") ||
-		 cstring_equalPrefix (name, "tan") ||
-		 cstring_equalPrefix (name, "exp") ||
-		 cstring_equalPrefix (name, "log") ||
-		 cstring_equalPrefix (name, "pow"))))
+	    && ((cstring_equalPrefixLit (name, "cos") ||
+		 cstring_equalPrefixLit (name, "sin") ||
+		 cstring_equalPrefixLit (name, "tan") ||
+		 cstring_equalPrefixLit (name, "exp") ||
+		 cstring_equalPrefixLit (name, "log") ||
+		 cstring_equalPrefixLit (name, "pow"))))
 	   || ((length == 5)
-	       && ((cstring_equalPrefix (name, "acos") ||
-		    cstring_equalPrefix (name, "asin") ||
-		    cstring_equalPrefix (name, "atan") ||
-		    cstring_equalPrefix (name, "cosh") ||
-		    cstring_equalPrefix (name, "sinh") ||
-		    cstring_equalPrefix (name, "sqrt") ||
-		    cstring_equalPrefix (name, "ceil") ||
-		    cstring_equalPrefix (name, "fabs") ||
-		    cstring_equalPrefix (name, "fmod") ||
-		    cstring_equalPrefix (name, "tanh") ||
-		    cstring_equalPrefix (name, "modf"))))
+	       && ((cstring_equalPrefixLit (name, "acos") ||
+		    cstring_equalPrefixLit (name, "asin") ||
+		    cstring_equalPrefixLit (name, "atan") ||
+		    cstring_equalPrefixLit (name, "cosh") ||
+		    cstring_equalPrefixLit (name, "sinh") ||
+		    cstring_equalPrefixLit (name, "sqrt") ||
+		    cstring_equalPrefixLit (name, "ceil") ||
+		    cstring_equalPrefixLit (name, "fabs") ||
+		    cstring_equalPrefixLit (name, "fmod") ||
+		    cstring_equalPrefixLit (name, "tanh") ||
+		    cstring_equalPrefixLit (name, "modf"))))
 	   || ((length == 6)
-	       && ((cstring_equalPrefix (name, "atan2") ||
-		    cstring_equalPrefix (name, "floor") ||
-		    cstring_equalPrefix (name, "frexp") ||
-		    cstring_equalPrefix (name, "ldexp") ||
-		    cstring_equalPrefix (name, "log10"))))))
+	       && ((cstring_equalPrefixLit (name, "atan2") ||
+		    cstring_equalPrefixLit (name, "floor") ||
+		    cstring_equalPrefixLit (name, "frexp") ||
+		    cstring_equalPrefixLit (name, "ldexp") ||
+		    cstring_equalPrefixLit (name, "log10"))))))
 	{
 	  hasError |= optgenerror2
 	    (flg, FLG_NAMECHECKS,
@@ -1519,7 +1519,7 @@ void checkParamNames (uentry ue)
 		{
 		  cstring pname = uentry_observeRealName (p);
 		  
-		  if (!cstring_equalPrefix (pname, cstring_toCharsSafe (fpfx)))
+		  if (!cstring_equalPrefix (pname, fpfx))
 		    {
 		      if (context_getFlag (FLG_NAMECHECKS))
 			{

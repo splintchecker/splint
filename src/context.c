@@ -1308,44 +1308,44 @@ context_isSpecialFile (cstring fname)
 bool
 context_isSystemDir (cstring dir)
 {
-  cstring sysDirs = context_exposeString (FLG_SYSTEMDIRS);
-  char *thisdir = cstring_toCharsSafe (sysDirs);
-  char *nextdir = strchr (thisdir, PATH_SEPARATOR);
-
-  if (nextdir != NULL)
+  cstring thisdir = cstring_copy (context_getString (FLG_SYSTEMDIRS));
+  cstring savedir = thisdir;
+  cstring nextdir = cstring_afterChar (thisdir, PATH_SEPARATOR);
+  
+  if (cstring_isDefined (nextdir))
     {
-      *nextdir = '\0';
+      /*@access cstring@*/
+      *nextdir = '\0'; /* closes thisdir */
       nextdir += 1;
+      /*@noaccess cstring@*/
     }
 
-  while (thisdir != NULL)
+  /* 2001-09-09: added thisdir[0] != '\0' 
+  **   herbert: don't compare with an empty name! 
+  **   should return false for empty directory path
+  */
+
+  while (!cstring_isEmpty (thisdir))
     {
       DPRINTF (("Test: %s / %s", dir, thisdir));
 
-      if (cstring_equalCanonicalPrefix (dir, thisdir))
+      if (osd_equalCanonicalPrefix (dir, thisdir))
 	{
-	  if (nextdir != NULL)
-	    {
-	      *(nextdir - 1) = PATH_SEPARATOR;
-	    }
-	  
+	  cstring_free (savedir);
 	  return TRUE;
 	}
 
-      if (nextdir != NULL)
-	{
-	  *(nextdir - 1) = PATH_SEPARATOR;
-	}
-
-      if (nextdir != NULL)
+      if (cstring_isDefined (nextdir))
 	{
 	  thisdir = nextdir;
-	  nextdir = strchr (thisdir, PATH_SEPARATOR);
+	  nextdir = cstring_afterChar (thisdir, PATH_SEPARATOR);
 	  
-	  if (nextdir != NULL)
+	  if (cstring_isDefined (nextdir))
 	    {
+	      /*@access cstring@*/
 	      *nextdir = '\0';
 	      nextdir += 1;
+	      /*@noaccess cstring@*/
 	    } 
 	}
       else
@@ -1355,6 +1355,7 @@ context_isSystemDir (cstring dir)
     } 
 
   DPRINTF (("Returns FALSE"));
+  cstring_free (savedir);
   return FALSE;
 }
 

@@ -688,6 +688,16 @@ int main (int argc, char *argv[])
 	    /*@noaccess cstring@*/
 	  }
       }
+    else /* 2001-09-09: herbert */
+      {
+	/* Put C_INCLUDE_PATH directories in sysdirs */
+	cstring cincval = osd_getEnvironmentVariable (cstring_makeLiteralTemp ("C_INCLUDE_PATH"));
+	if (cstring_isDefined (cincval))
+	  {
+	    context_setString (FLG_SYSTEMDIRS, cstring_copy (cincval));
+	  }
+      }
+    /* /herbert */
 
     cstring_free (oincval);
   }
@@ -1068,6 +1078,19 @@ int main (int argc, char *argv[])
       else if (cstring_equal (ext, XH_EXTENSION))
 	{
 	  addXHFile (xfiles, cstring_copy (current));
+	}
+      else if (cstring_equal (ext, PP_EXTENSION))
+	{
+	  if (!context_getFlag (FLG_NOPP))
+	    {
+	      voptgenerror 
+		(FLG_FILEEXTENSIONS,
+		 message ("File extension %s used without +nopp flag (will be processed as C source code): %s", 
+			  ext, current),
+		 g_currentloc);
+	    }
+	  
+	  addFile (cfiles, cstring_copy (current));
 	}
       else if (cstring_equal (ext, LCL_EXTENSION)) 
 	{
@@ -2027,7 +2050,7 @@ describeVars (void)
   llmsglit ("   --- path used to find #include'd files");
 
   llmsg (message 
-	 ("systemdirs = %s (set by -systemdirs or envirnoment variable %s)", /*@i413223@*/
+	 ("systemdirs = %s (set by -systemdirs or environment variable %s)", /*@i413223@*/
 	  context_getString (FLG_SYSTEMDIRS),
 	  INCLUDEPATH_VAR));
 

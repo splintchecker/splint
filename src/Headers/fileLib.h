@@ -46,4 +46,8 @@ extern /*@observer@*/ cstring
 /*@constant observer cstring XH_EXTENSION;@*/
 # define XH_EXTENSION cstring_makeLiteralTemp (".xh")
 
+/* C files that have already been preprocessed */
+/*@constant observer cstring PP_EXTENSION;@*/
+# define PP_EXTENSION cstring_makeLiteralTemp (".pp")
+
 # endif

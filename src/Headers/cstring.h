@@ -46,9 +46,8 @@ extern cmpcode cstring_genericEqual (cstring p_s, cstring p_t,
 				     bool p_caseinsensitive,
 				     bool p_lookalike) /*@*/ ;
 
-# ifdef WIN32
+/* evans 2001-09-09 - removed conditional compilation on this (for WIN32, OS2) */
 extern void cstring_replaceAll (cstring p_s, char p_old, char p_snew) /*@modifies p_s@*/ ;
-# endif
 
 extern void cstring_replaceLit (/*@unique@*/ cstring p_s, char *p_old, char *p_snew);
 extern char cstring_firstChar (cstring p_s) /*@*/ ;
@@ -70,8 +69,8 @@ extern bool cstring_equal (cstring p_c1, cstring p_c2) /*@*/ ;
 extern bool cstring_equalCaseInsensitive (cstring p_c1, cstring p_c2) /*@*/ ;
 extern bool cstring_equalLen (cstring p_c1, cstring p_c2, int p_len) /*@*/ ;
 extern bool cstring_equalLenCaseInsensitive (cstring p_c1, cstring p_c2, int p_len) /*@*/ ;
-extern bool cstring_equalPrefix (cstring p_c1, char *p_c2) /*@*/ ;
-extern bool cstring_equalCanonicalPrefix (cstring p_c1, char *p_c2) /*@*/ ;
+extern bool cstring_equalPrefix (cstring p_c1, cstring p_c2) /*@*/ ;
+extern bool cstring_equalPrefixLit (cstring p_c1, /*@observer@*/ const char *p_c2) /*@*/ ;
 extern bool cstring_equalLit (cstring p_c1, char *p_c2) /*@*/ ;
 extern int cstring_compare (cstring p_c1, cstring p_c2) /*@*/ ;
 extern int cstring_xcompare (cstring *p_c1, cstring *p_c2) /*@*/ ;
@@ -175,6 +174,7 @@ extern lsymbol cstring_toSymbol (/*@only@*/ cstring p_s) /*@*/ ;
 extern void cstring_markOwned (/*@owned@*/ cstring p_s) /*@modifies p_s@*/ ;
 
 extern cstring cstring_beforeChar (cstring p_s, char p_c) /*@*/ ;
+extern /*@exposed@*/ cstring cstring_afterChar (cstring p_s, char p_c) /*@*/ ;
 
 /*@iter cstring_chars (sef cstring s, yield char c);@*/
 # define cstring_chars(s, m_c) \

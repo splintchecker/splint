@@ -688,6 +688,12 @@ sRef_aliasSetCompleteParam (void (p_predf) (sRef, int, fileloc), sRef p_s,
 			    int p_kind, fileloc p_loc)
    /*@modifies p_s@*/ ;
 
+extern void
+sRef_aliasSetCompleteAlkParam (void (p_predf) (sRef, alkind, fileloc), sRef p_s, 
+			       alkind p_kind, fileloc p_loc)
+     /*@modifies p_s@*/ ;
+
+
 
 
 

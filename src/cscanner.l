@@ -168,6 +168,7 @@ static void setTokLength (int len)
 {
   addColumn (len);
   tokLength = len;
+  DPRINTF (("Set tok length: %d", len));
 }
 
 static void setTokLengthT (size_t len)
@@ -439,6 +440,16 @@ L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext));
 
 [ \t\v\f]	{ incColumn (); }
 \n              { context_incLineno ();
+                  if (tokLength != 0) { 
+		    tokLength = 0; 
+		    /* No error to report 
+		    voptgenerror
+		      (FLG_SYNTAX, 
+		       message ("Likely parse error: token spans multiple lines."),
+		       g_currentloc);
+		    */
+		  }
+		  
 		  if (continueLine)
 		    {
 		      continueLine = FALSE;
@@ -1228,7 +1239,6 @@ static bool processMacro (void)
     }
 
   hasParams = (c == '(');
-
   
   if (usymtab_exists (fname))
     {
@@ -1452,24 +1462,47 @@ static bool processMacro (void)
     {
       uentry ce;
 
-      voptgenerror 
-	(FLG_MACROMATCHNAME,
-	 message ("Unexpanded macro %s does not match name of a constant "
-		  "or iter declaration.  The name used in the control "
-		  "comment on the previous line should match.  "
-		  "(Assuming macro defines a constant.)", 
-		  fname),
-	 loc);
-
-
-      ce = uentry_makeConstant (fname, ctype_unknown, fileloc_undefined);      
-      uentry_setUsed (ce, loc); /* perhaps bogus? */
-      e2 = usymtab_supEntryReturn (ce);
-      
-      context_enterConstantMacro (e2);	      
-      cstring_free (fname);
-      fileloc_free (loc);
-      return res;
+      /* evans 2001-09-09 - if it has params, assume a function */
+      if (hasParams)
+	{
+	  voptgenerror 
+	    (FLG_MACROMATCHNAME,
+	     message ("Unexpanded macro %s does not match name of a declared "
+		      "function. The name used in the control "
+		      "comment on the previous line should match.",
+		      fname),
+	     loc);
+	  
+	  ce = uentry_makeFunction (fname, ctype_unknown, 
+				    typeId_invalid,
+				    globSet_undefined,
+				    sRefSet_undefined,
+				    warnClause_undefined,
+				    fileloc_undefined);      
+	  uentry_setUsed (ce, loc); /* perhaps bogus? */
+	  e2 = usymtab_supEntryReturn (ce);
+	  context_enterUnknownMacro (e2);	      
+	}
+      else
+	{
+	  voptgenerror 
+	    (FLG_MACROMATCHNAME,
+	     message ("Unexpanded macro %s does not match name of a constant "
+		      "or iter declaration.  The name used in the control "
+		      "comment on the previous line should match.  "
+		      "(Assuming macro defines a constant.)", 
+		      fname),
+	     loc);
+	  
+	  ce = uentry_makeConstant (fname, ctype_unknown, fileloc_undefined);      
+	  uentry_setUsed (ce, loc); /* perhaps bogus? */
+	  e2 = usymtab_supEntryReturn (ce);
+	  
+	  context_enterConstantMacro (e2);	      
+	  cstring_free (fname);
+	  fileloc_free (loc);
+	  return res;
+	}
     }
   
   /* in macros, ( must follow immediatetly after name */
@@ -1523,7 +1556,6 @@ static bool processMacro (void)
 	      sRef sr;
 	      
 	      param = uentry_nameCopy (paramname, decl);
-
 	      	      	      
 	      uentry_setParam (param);
 	      sr = sRef_makeParam (paramno, uentry_getType (param), stateInfo_makeLoc (sloc));
@@ -1559,6 +1591,7 @@ static bool processMacro (void)
 	      param = uentry_makeVariableSrefParam 
 		(paramname, ctype_unknown, fileloc_copy (sloc), 
 		 sRef_makeParam (paramno, ctype_unknown, stateInfo_makeLoc (sloc)));
+	      DPRINTF (("Unknown param: %s", uentry_unparseFull (param)));
 	      cstring_free (paramname);
 
 	      sRef_setPosNull  (uentry_getSref (param), sloc);
@@ -1675,7 +1708,7 @@ static bool handleSpecial (char *yyt)
   *l = '\0';
   olc = cstring_fromChars (ol);
   
-  if (cstring_equalPrefix (olc, "pragma"))
+  if (cstring_equalPrefixLit (olc, "pragma"))
     {
       char *pname = mstring_create (longUnsigned_fromInt (MAX_PRAGMA_LEN));
       char *opname = pname;
@@ -1733,7 +1766,7 @@ static bool handleSpecial (char *yyt)
 	  cstring_free (exname);
 	}
     }
-  else if (cstring_equalPrefix (olc, "ident"))
+  else if (cstring_equalPrefixLit (olc, "ident"))
     {
       /* Some pre-processors will leave these in the code.  Ignore rest of line */
     }
@@ -1868,6 +1901,7 @@ static bool handleSpecial (char *yyt)
   
 static int handleLlSpecial ()
 { 
+  bool hasnl = FALSE;
   int ic; 
   char c;
   char *s = mstring_createEmpty ();
@@ -1929,6 +1963,20 @@ static int handleLlSpecial ()
 	     && (ic != AFTER_COMMENT_MARKER[0]))
 	{
 	  c = (char) ic;
+
+	  /* evans 2001-09-01 added to prevent assertion failures for uncloses syntactic comments */
+
+	  if (c == '\n') {
+	    hasnl = TRUE; /* This prevents tokLength from being set later. */
+	    tokLength = 0; 
+
+	    voptgenerror
+	      (FLG_SYNTAX, 
+	       message ("Likely parse error: syntactic comment token spans multiple lines: %s",
+			cstring_fromChars (s)),
+	       g_currentloc);
+	  }
+
 	  s = mstring_append (s, c);
 	  charsread++;
 	}
@@ -2137,7 +2185,7 @@ static int handleLlSpecial ()
 
       if (macrocode != BADTOK)
 	{
-	  tokLength = mstring_length (t);
+	  tokLength = hasnl ? 0 : mstring_length (t);
 	  
 	  sfree (t);
 	  sfree (os);
@@ -2961,7 +3009,6 @@ static int
 processSpec (int tok)
 {
   size_t length = strlen (yytext);
-
   
   if (inSpecPart)
     {

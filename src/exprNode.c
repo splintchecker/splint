@@ -1086,6 +1086,9 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
   ** error in ind, assume valid and continue
   */
 
+  DPRINTF (("Array fetch: %s / %s",
+	    exprNode_unparse (e1), exprNode_unparse (e2)));
+
   if (exprNode_isError (e1))
     {
       exprNode_free (e2);
@@ -1103,7 +1106,9 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
       ** lclint errors.  Hence, the i2 comments.
       */
 
-      if (!ctype_isRealArray (crarr) 
+      /* evans 2001-09-09 added ctype_isKnown so there is no swap when e1 type is unknown */
+      if (ctype_isKnown (crarr)
+	  && !ctype_isRealArray (crarr) 
 	  && ctype_isRealNumeric (crarr) 
 	  && !exprNode_isError (e2)
 	  && ctype_isRealAP (exprNode_getType (e2)))  /* fetch like 3[a] */
@@ -1120,6 +1125,8 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 	  ind = e2;
 	}
 
+      DPRINTF (("arr: %s", exprNode_unparse (arr)));
+
       if (sRef_possiblyNull (arr->sref))
         {
           if (!usymtab_isGuarded (arr->sref))
@@ -1131,6 +1138,7 @@ exprNode_arrayFetch (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 					exprNode_unparse (arr)),
 			       arr->loc))
 		{
+		  DPRINTF (("ref: %s", sRef_unparseFull (arr->sref)));
 		  sRef_showNullInfo (arr->sref);
 
 		  /* suppress future messages */
@@ -8152,7 +8160,7 @@ exprNode exprNode_iter (/*@observer@*/ uentry name,
     {
       cstring ename = uentry_getName (end);
 
-      if (!cstring_equalPrefix (ename, "end_"))
+      if (!cstring_equalPrefixLit (ename, "end_"))
 	{
 	  llerror (FLG_ITER, message ("Iter %s not balanced with end_%s: %s", 
 				      iname, iname, ename));

@@ -222,7 +222,7 @@ betarelease:
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`/src
 	cp Makefile* ${ALLSRC} ${GRAMS} *.i flags.def ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
 	cp cscanner.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/cscanner.c.der
-	cp lastversion maketags ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
+	cp DATE lastversion maketags ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
 	cp *.head *.reset ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
 	cp cgrammar.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/cgrammar.c.der
 	cp llgrammar.c ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/llgrammar.c.der
@@ -231,6 +231,7 @@ betarelease:
 	cp -r Headers ~/temp/lclint-`cat ${VERSION_NUMBER}`/src/
 	cp -r ../lib ~/temp/lclint-`cat ${VERSION_NUMBER}`/lib
 	cp -r ../imports ~/temp/lclint-`cat ${VERSION_NUMBER}`/imports
+	cp -r ../os2 ~/temp/lclint-`cat ${VERSION_NUMBER}`/os2
 	cp -r ../test ~/temp/lclint-`cat ${VERSION_NUMBER}`/test
 	cp ../configure ../Makefile* ../LICENSE ../README ../BUFFERCHECKING ~/temp/lclint-`cat ${VERSION_NUMBER}`/
 	cd ~/temp/lclint-`cat ${VERSION_NUMBER}`; mkdir bin

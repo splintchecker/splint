@@ -49,7 +49,8 @@ extern char *mstring_append (/*@only@*/ char *p_s1, char p_c);
 extern char *mstring_copy (/*@null@*/ char *p_s1) /*@*/ ;
 extern bool mstring_equalPrefix (const char *p_c1, const char *p_c2) /*@*/ ;
 extern bool mstring_equal (/*@null@*/ const char *p_s1, /*@null@*/ const char *p_s2) /*@*/ ;
-extern bool mstring_containsChar (const char *p_s, char p_c) /*@*/ ;
+extern bool mstring_containsChar (/*@unique@*/ const char *p_s, char p_c) /*@*/ ;
+extern bool mstring_containsString (/*@unique@*/ const char *p_s, /*@unique@*/ const char *p_c) /*@*/ ;
 
 extern int mstring_length (/*@sef@*/ /*@null@*/ char *p_s) /*@*/ ;
 # define mstring_length(s) \

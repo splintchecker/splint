@@ -851,8 +851,8 @@ uentryList_matchFields (uentryList p1, uentryList p2)
       cp1 = p1->elements[index];
       cp2 = p2->elements[index];
 
-      /*@i32
-      **
+      /*@i32*/
+      /*
       ** Should compare uentry's --- need to fix report errors too.
       */
 

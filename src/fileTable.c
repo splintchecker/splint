@@ -442,14 +442,9 @@ fileTable_addMetastateFile (fileTable ft, cstring name)
 fileId
 fileTable_addCTempFile (fileTable ft, fileId fid)
 {
-# if FALSE
-  /* Can't control output file name for cl preprocessor */
-  cstring newname = cstring_concatChars (fileLib_removeAnyExtension (fileName (fid)), ".i");
-# else
   cstring newname =
     makeTempName (context_tmpdir (), cstring_makeLiteralTemp ("cl"), 
 		  C_EXTENSION);
-# endif
 
   llassert (fileTable_isDefined (ft));
 

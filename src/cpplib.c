@@ -1263,7 +1263,8 @@ cppReader_handleDirective (cppReader *pfile)
   struct directive *kt = NULL;
   int ident_length;
   size_t after_ident = 0;
-  char *ident, *line_end = NULL;
+  char *ident = NULL;
+  char *line_end = NULL;
   size_t old_written = cppReader_getWritten (pfile);
   int nspaces = cppSkipHspace (pfile);
 
@@ -1309,7 +1310,7 @@ cppReader_handleDirective (cppReader *pfile)
 	}
 
       if (kt->length == ident_length
-	  && (cstring_equalPrefix (kt->name, ident)))
+	  && (cstring_equalPrefix (kt->name, cstring_fromChars (ident))))
 	{
 	  break;
 	}
@@ -3773,20 +3774,6 @@ get_directive_token (cppReader *pfile)
    I.e. in input file specification has been popped by cppReader_handleDirective.
    This is safe.  */
 
-# ifdef WIN32
-static void replace_unixdir_with_windir(char *filename)
-{
-  int i=0;
-  
-  while(filename[i] != '\0')
-    {
-      if(filename[i] == '/')
-	filename[i] = '\\';
-      i++;
-    }
-}
-# endif
-
 static int
 do_include (cppReader *pfile, struct directive *keyword,
 	    /*@unused@*/ char *unused1, /*@unused@*/ char *unused2)
@@ -4042,11 +4029,11 @@ do_include (cppReader *pfile, struct directive *keyword,
 	  DPRINTF (("fname: %s", fname));
 	  
 	  /* Win32 directory fix from Kay Buschner. */
-#ifdef WIN32
+#if defined (WIN32) || defined (OS2)
 	  /* Fix all unixdir slashes to win dir slashes */
 	  if (searchptr->fname && (searchptr->fname[0] != 0)) 
 	    {
-	      replace_unixdir_with_windir(fname);
+	      cstring_replaceAll (fname, '/', '\\');
 	    }
 #endif /* WIN32 */
 
@@ -4878,7 +4865,7 @@ beg_of_line:
 	{
 	  cppIfStackFrame *temp;
 	  if (ident_length == kt->length
-	      && cstring_equalPrefix (kt->name, ident))
+	      && cstring_equalPrefix (kt->name, cstring_fromChars (ident)))
 	    {
 	      /* If we are asked to return on next directive, do so now.  */
 	      if (any)
@@ -6502,7 +6489,7 @@ void cppReader_initializeReader (cppReader *pfile) /* Must be done after library
 
   struct default_include *include_defaults = include_defaults_array;
 
-  /* Add dirs from CPATH after dirs from -I.  */
+  /* Add dirs from INCLUDEPATH_VAR after dirs from -I.  */
   /* There seems to be confusion about what CPATH should do,
      so for the moment it is not documented.  */
   /* Some people say that CPATH should replace the standard include dirs,
@@ -7227,6 +7214,7 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
       int i;
       char c = ' ';
       char *scomment = start + 2;
+      char savec = start[len];
 
       start[0] = BEFORE_COMMENT_MARKER[0];
       start[1] = BEFORE_COMMENT_MARKER[1];
@@ -7241,6 +7229,19 @@ cpp_handleComment (cppReader *pfile, struct parse_marker *smark)
       cppReader_putCharQ (pfile, c);
 
       cpp_setLocation (pfile);
+
+      start[len] = '\0';
+
+      if (mstring_containsString (scomment, "/*"))
+	{
+	  (void) cppoptgenerror 
+	    (FLG_NESTCOMMENT,
+	     message ("Comment starts inside syntactic comment: %s", 
+		      cstring_fromChars (scomment)),
+	     pfile);
+	}
+
+      start[len] = savec;
 
       if (mstring_equalPrefix (scomment, "ignore"))
 	{
@@ -7547,7 +7548,7 @@ static bool cpp_skipIncludeFile (cstring fname)
       fname = removePreDirs (fname);
 
 # if defined (WIN32) || defined (OS2)
-      cstring_replaceAll (fname, '\\', '/');
+      cstring_replaceAll (fname, '/', '\\');
 # endif
 
       if (fileTable_exists (context_fileTable (), fname))

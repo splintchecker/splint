@@ -565,3 +565,86 @@ bool osd_isConnectChar (char c)
   return FALSE;
 }
 
+/*
+** Returns true if c2 starts with the same path as c1
+**
+** This is called by context_isSystemDir to determine if a
+** directory is on the system path.
+**
+** In unix, this is just a string comparison.  For Win32 and OS2, we need a more
+** complex comparison.
+*/
+
+bool osd_equalCanonicalPrefix (cstring dirpath, cstring prefixpath)
+{
+  llassert (cstring_isDefined (prefixpath));
+
+  if (cstring_isEmpty (dirpath)) 
+    {
+      return (cstring_isEmpty (prefixpath));
+    }
+
+# if defined (WIN32) || defined (OS2)
+
+  /*@access cstring@*/ /* Moved this from cstring - should abstract it... */
+
+  /*
+  ** If one has a drive specification, but the other doesn't, skip it.
+  */
+  
+  if (strchr (dirpath, ':') == NULL
+      && strchr (prefixpath, ':') != NULL)
+    {
+      prefixpath = strchr (prefixpath, ':') + 1;
+    }
+  else 
+    {
+      if (strchr (prefixpath, ':') == NULL
+	  && strchr (dirpath, ':') != NULL)
+	{
+	  dirpath = strchr (dirpath, ':') + 1;
+	}
+    }
+
+  {
+    int len = size_toInt (strlen (prefixpath));
+    int i = 0;
+    int slen = 0;
+
+    for (i = 0, slen = 0; i < len; i++, slen++)
+      {
+	/* Allow any number of connect characters in any combination:
+	 * c:/usr//src\/foo == c:\\usr/src\/foo 
+	 * After this we'll be at the last of such a sequence */
+
+	if (osd_isConnectChar (dirpath[slen]) && osd_isConnectChar (prefixpath[i]))
+	  {
+	    /* Skip one or more connect chars */
+
+	    for (; osd_isConnectChar (dirpath[slen+1]); ++slen)
+	      {
+		; 
+	      }
+	    
+	    for (; osd_isConnectChar (prefixpath[i+1]); ++i)
+	      {
+		;
+	      }
+	  }
+	/* Windows, MSDOS and OS/2 use case-insensitive path specs! */
+	else if (toupper (dirpath[slen]) != toupper (prefixpath[i]))
+	  {
+	    return FALSE;
+	  }
+
+      }
+  }
+
+  /*@noaccess cstring@*/ 
+
+  return TRUE;
+# else
+  return (cstring_equalPrefix (dirpath, prefixpath));
+# endif
+}
+

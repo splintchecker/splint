@@ -77,6 +77,8 @@ extern /*@observer@*/ cstring osd_getEnvironmentVariable (cstring) ;
 extern int osd_system (cstring p_cmd) /*@modifies fileSystem@*/ ;
 # endif
 
+extern bool osd_equalCanonicalPrefix (cstring p_dirpath, cstring p_prefixpath) /*@*/ ;
+
 extern int osd_unlink (cstring) /*@modifies fileSystem@*/ ;
 extern cstring osd_fixDefine (cstring);
 extern bool osd_fileIsReadable (cstring);

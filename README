@@ -23,24 +23,30 @@ To build LCLint you need:
      system, download it from prep.ai.mit.edu.
    o standard Unix tools: gzip, tar
 
-1. Download the LCLint source package (lclint.src.tar.gz).
+You should also have:
+
+   o flex
+   o bison version 1.28 or later - bison 1.27 and 1.25 are believed to
+     have bugs that cause problems with lclint's parsers.  
+
+If these are unavailable, you may be able to build lclint anyway using
+the derived grammar files.  This is not recommended however.
+
+1. Download the LCLint source package (lclint-<version>.src.tgz).
 
    Copy this package to the directory where you want to build LCLint.  When
-   the tar file is extracted, it will create an lclint-3.0.0.9 subdirectory.
+   the tar file is extracted, it will create an lclint-<version> subdirectory.
 
-2. Uncompress the package:
-      gzip -d lclint.src.tar.gz 
+2. Extract files from the tar archive:
+      tar xzf lclint-<version>.src.tgz
 
-3. Extract files from the tar archive:
-      tar xf lclint.src.tar
-
-4. Run: configure
+3. Run: ./configure
   
    This will create a Makefile with settings for your system. If you 
    want to install LCLint or associated libraries different
    directories, edit the Makefile.
 
-5. Run: gmake
+4. Run: gmake
 
    It is best to do this in an emacs shell or a buffered terminal,
    so you can scroll through the output.
@@ -59,7 +65,7 @@ To build LCLint you need:
    (usually ~/.environment). 
 
    Set up your PATH to include the directory containing
-   lclint-3.0.0.9/bin/lclint, or move the binary to a directory on
+   lclint-<version>/bin/lclint, or move the binary to a directory on
    your command path.
 
 7. Run: gmake test

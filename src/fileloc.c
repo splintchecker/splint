@@ -48,7 +48,7 @@ static flkind fileId_kind (fileId s)
     {
       return (FL_SPEC);
     }
-  else if (cstring_equalPrefix (fname, SYSTEM_LIBDIR))
+  else if (cstring_equalPrefix (fname, cstring_makeLiteralTemp (SYSTEM_LIBDIR)))
     {
       return (FL_STDHDR); 
     }
@@ -62,6 +62,7 @@ fileloc
 fileloc_decColumn (fileloc f, int x)
 {
   fileloc ret = fileloc_copy (f);
+
   if (x > 0 && fileloc_isDefined (ret))
     {
       llassertprint (ret->column > x, ("decColumn: %d", x));
@@ -457,7 +458,7 @@ fileloc_createLib (cstring ln)
       fid = fileTable_addLibraryFile (context_fileTable (), ln);
     }
 
-  if (cstring_equalPrefix (ln, SYSTEM_LIBDIR))
+  if (cstring_equalPrefix (ln, cstring_makeLiteralTemp (SYSTEM_LIBDIR)))
     {
       fk = FL_STDLIB;
     }

@@ -717,6 +717,14 @@ void sRef_clearGlobalScopeSafe ()
 
 void sRef_enterFunctionScope ()
 {
+  /* evans 2001-09-09 - cleanup if we are in a macro! */
+  if (context_inMacro ())
+    {
+      if (inFunction) {
+	sRef_exitFunctionScope ();
+      }
+    }
+
   llassert (!inFunction);
   llassert (sRefTable_isEmpty (allRefs));
   inFunction = TRUE;
@@ -4854,10 +4862,7 @@ void sRef_clearAliasState (sRef s, fileloc loc)
 void sRef_setAliasKindComplete (sRef s, alkind kind, fileloc loc)
 {
   sRef_checkMutable (s);  
-  /*@+enumint*/ /* we allow alkind to match int for this */
-  sRef_aliasSetCompleteParam (sRef_setAliasKind, s, kind, loc); 
-  /* gcc give warning for this, should provide typesafe versions of aliasSetCompleteParam */
-  /*@=enumint@*/
+  sRef_aliasSetCompleteAlkParam (sRef_setAliasKind, s, kind, loc); 
 }
 
 void sRef_setAliasKind (sRef s, alkind kind, fileloc loc)
@@ -8281,7 +8286,39 @@ sRef_aliasSetCompleteParam (void (predf) (sRef, int, fileloc), sRef s,
 			    int kind, fileloc loc)
 {
   sRefSet aliases;
+  
+  if (sRef_isDeep (s))
+    {
+      aliases = usymtab_allAliases (s);
+    }
+  else
+    {
+      aliases = usymtab_aliasedBy (s);
+    }
 
+  (*predf)(s, kind, loc);
+
+  sRefSet_realElements (aliases, current)
+    {
+      if (sRef_isValid (current))
+	{
+	  current = sRef_updateSref (current);
+	  ((*predf)(current, kind, loc));
+	}
+    } end_sRefSet_realElements;
+
+  sRefSet_free (aliases);
+}
+
+/*
+** Version of aliasSetCompleteParam for alkind parameters
+*/
+
+void
+sRef_aliasSetCompleteAlkParam (void (predf) (sRef, alkind, fileloc), sRef s, 
+			       alkind kind, fileloc loc)
+{
+  sRefSet aliases;
   
   if (sRef_isDeep (s))
     {
@@ -8950,6 +8987,8 @@ extern /*@exposed@*/ sRef sRef_makeArrow (sRef s, /*@dependent@*/ cstring f)
   
   p = sRef_makePointer (s);
   ret = sRef_makeField (p, f);
+  DPRINTF (("Arrow: %s => %s",
+	    sRef_unparseFull (s), sRef_unparseFull (ret)));
   return ret;
 }
 

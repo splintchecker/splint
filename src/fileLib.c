@@ -220,7 +220,7 @@ bool isHeaderFile (cstring fname)
 
 cstring fileLib_cleanName (cstring s)
 {
-  if (cstring_equalPrefix (s, "./")) 
+  if (cstring_equalPrefixLit (s, "./")) 
     {
       return cstring_copySegment (s, 2, cstring_length (s) - 1);
     }
