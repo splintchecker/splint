@@ -1,6 +1,6 @@
 ;;LCLint Dump: ansistrict.lcd
 ;;LCLint 3.0b-alpha --- 20 June 2001
-;;lib:165
+;;lib:166
 ;;ctTable
 0 u-2 19 38
 0 p1|-2 20 39
@@ -60,16 +60,16 @@
 2 y17|17&
 2 y18|18&
 -2 ?!
-0 a1|&
-0 s2|&
-0 s3|&
-0 s4|&
-0 s5|&
-0 s13|&
-0 s14|&
-0 s6|-1 357 -1
-0 s7|&
-0 a0|-1 375 -1
+0 a0|&
+0 s10|&
+0 s11|&
+0 s12|&
+0 s23|&
+0 s24|&
+0 s25|&
+0 s26|-1 357 -1
+0 s27|&
+0 a28|-1 375 -1
 3 C0.5/20|!
 3 C0.68/2|!
 3 f0 (2|@7|$#,)!
@@ -101,7 +101,7 @@
 3 f0 (5|$#,)!
 3 f4 (5|$#,)!
 3 Slconv{23|@1|0@0@3&#decimal_point,23|@1|0@0@3&#thousands_sep,23|@1|0@0@3&#grouping,23|@1|0@0@3&#int_curr_symbol,23|@1|0@0@3&#currency_symbol,23|@1|0@0@3&#mon_decimal_point,23|@1|0@0@3&#mon_thousands_sep,23|@1|0@0@3&#mon_grouping,23|@1|0@0@3&#positive_sign,23|@1|0@0@3&#negative_sign,4|@1|^#int_frac_digits,4|@1|^#frac_digits,4|@1|^#p_cs_precedes,4|@1|^#p_sep_by_space,4|@1|^#n_cs_precedes,4|@1|^#n_sep_by_space,4|@1|^#p_sign_posn,4|@1|^#n_sign_posn,}!
-0 s340|-1 105 -1
+0 s45|-1 105 -1
 3 f0 (5|$#,23|0@5@7&#,)!
 3 f19 (5|$#,23|0@5@7&#,)!
 3 f23 (5|$#,23|0@5@7&#,)!
@@ -153,12 +153,12 @@
 3 f17 (17|$#,36|4@0@7&#,)!
 3 f0 (17|$#,17|$#,)!
 3 f17 (17|$#,17|$#,)!
-0 a15|&
+0 a123|&
 3 f0 (151|4@0@7&#,)!
 3 f5 (151|4@0@7&#,)!
 3 f0 (151|$#,5|$#,)!
 3 f1 (151|$#,5|$#,)!
-0 s8|&
+0 s132|&
 3 ?!
 3 f157 (5|$#,)!
 3 f1 (5|$#,)^160
@@ -186,13 +186,13 @@
 3 f180 (5|$#,172|0@5@7&#,)!
 3 f0 (5|$#,)!
 3 f5 (5|$#,)!
-0 a16|&
+0 a138|&
 3 f0 (184|4@0@7&#,!.,)!
 3 f1 (184|4@0@7&#,!.,)!
 3 f0 (184|$#,)!
 3 f1 (184|$#,)!
-0 a17|-1 191 -1
-0 a18|-1 263 -1
+0 a141|-1 191 -1
+0 a142|-1 263 -1
 1 t189|189&
 3 f0 (23|$#,)!
 3 f5 (23|$#,)!
@@ -344,15 +344,15 @@
 3 f0 (5|$#,)!
 3 f5 (5|$#,)!
 3 S!2{5|@1|^#quot,5|@1|^#rem,}!
-0 s337|&
-0 s19|&
+0 s220|&
+0 s221|&
 3 f0 (5|$#,5|$#,)!
 3 f343 (5|$#,5|$#,)!
 3 f0 (9|$#,)!
 3 f9 (9|$#,)!
 3 S!3{9|@1|^#quot,9|@1|^#rem,}!
-0 s338|&
-0 s20|&
+0 s224|&
+0 s225|&
 3 f0 (9|$#,9|$#,)!
 3 f350 (9|$#,9|$#,)!
 3 f0 (5|$#,)!
@@ -420,7 +420,7 @@
 3 f402 (357|@5|4@0@9&#,357|$#,)!
 3 f0 (357|$#,357|$#,)!
 3 f63 (357|$#,357|$#,)!
-0 s339|-1 419 -1
+0 s260|-1 419 -1
 1 t418|418&
 3 f0 (357|4@0@7&#,63|$#,357|$#,419|$#,)!
 3 f63 (357|4@0@7&#,63|$#,357|$#,419|$#,)!
@@ -480,8 +480,8 @@
 3 f5 (357|$#,!.,)!
 3 f0 (357|$#,!.,)!
 3 f5 (357|$#,!.,)!
-0 s9|&
-0 s10|&
+0 s284|&
+0 s285|&
 3 f0 (66|$#,)!
 3 f2 (66|$#,)!
 3 f0 (66|$#,)!
@@ -587,8 +587,8 @@
 3 f23 (5|$#,)!
 3 f0 (23|$#,)!
 3 f63 (23|$#,)!
-0 s11|&
-0 s12|-1 594 -1
+0 s331|&
+0 s332|-1 594 -1
 3 Stm{5|@1|^#tm_sec,5|@1|^#tm_min,5|@1|^#tm_hour,5|@1|^#tm_mday,5|@1|^#tm_mon,5|@1|^#tm_year,5|@1|^#tm_wday,5|@1|^#tm_yday,5|@1|^#tm_isdst,}!
 3 f0 ()!
 3 f585 ()!
@@ -614,305 +614,365 @@
 3 f0 (23|4@0@7&#,63|$#,23|$#,419|$#,)!
 3 f63 (23|4@0@7&#,63|$#,23|$#,419|$#,)!
 ;;tistable
-1
 0
-0,15
-15
-0,15,16
-16
-0,15,16,17
-17
-0,15,16,17,18
-18
+28
+28,123
+123
+28,123,138
+138
+28,123,138,141
+141
+28,123,138,141,142
+142
 ;;symTable
 *0 (Datatype)
-0@+@=@0@0@0@0@67#mbstate_t
-2@+@-@0@0@0@0@2#lltX_bool
-13@-@-@0@0@0@0@59#__SIZE_TYPE__
-13@-@-@0@0@0@0@60#__PTRDIFF_TYPE__
-13@-@-@0@0@0@0@61#__WCHAR_TYPE__
-13@-@-@0@0@0@0@62#ptrdiff_t
-13@-@-@0@0@0@0@65#wchar_t
-13@-@-@0@0@0@0@66#wint_t
-13@-@-@0@0@0@0@156#sig_atomic_t
-13@-@-@0@0@0@0@478#wctype_t
-13@-@-@0@0@0@0@479#wctrans_t
-13@-@-@0@0@0@0@585#clock_t
-13@-@-@0@0@0@0@586#time_t
-14@-@-@0@0@0@0@63#size_t
-15@-@-@0@0@0@0@64#ssize_t
-20@+@+@0@0@0@0@151#jmp_buf
-20@+@+@0@0@0@0@184#va_list
-20@+@+@0@0@0@0@189#FILE
-20@+@+@0@0@0@0@190#fpos_t
-341@-@-@0@0@0@0@343#div_t
-348@-@-@0@0@0@0@350#ldiv_t
+^0 2@+@-@0@0@0@0@2#lltX_bool
 *1 (Constant)
-0@i0@0@6#NULL
-2@i1@0@0#TRUE
-2$#NDEBUG
-2@i0@0@6#FALSE
-3$#UCHAR_MAX#UCHAR_MIN
-4$#CHAR_MAX#CHAR_MIN#SCHAR_MAX#SCHAR_MIN
-5$#BUFSIZ#CHAR_BIT#CLOCKS_PER_SEC#EDOM#EILSEQ#EOF#ERANGE#EXIT_FAILURE#EXIT_SUCCESS#FILENAME_MAX#FLT_RADIX#FOPEN_MAX#INT_MAX#INT_MIN#LC_ALL#LC_COLLATE#LC_CTYPE#LC_MONETARY#LC_NUMERIC#LC_TIME#L_tmpnam#RAND_MAX#SEEK_CUR#SEEK_END#SEEK_SET#SIGABRT#SIGFPE#SIGILL#SIGINT#SIGSEGV#SIGTERM#TMP_MAX#WCHAR_MAX#WCHAR_MIN#_IOFBF#_IOLBF#_IONBF#__INCLUDE_LEVEL__#__LCLINT__#__LINE__
-6$#UINT_MAX
-7$#SHRT_MAX#SHRT_MIN
-8$#USHRT_MAX
-9$#LONG_MAX#LONG_MIN#MB_LEN_MAX
-10$#ULONG_MAX
-17$#HUGE_VAL
-23$#__BASE_FILE__#__DATE__#__FILE__#__REGISTER_PREFIX__#__TIME__#__USER_LABEL_PREFIX__#__VERSION__
-63$#MB_CUR_MAX
-66$#WEOF
-160$#SIG_DFL
-164$#SIG_ERR
-168$#SIG_IGN
+^1 2@i0@0@6#FALSE
+^2 2@i1@0@0#TRUE
+*11 (GlobalMarker)
+*1 (Constant)
+^4 5$#__LINE__
+^5 23$#__DATE__#__FILE__#__BASE_FILE__
+^8 5$#__INCLUDE_LEVEL__
+^9 23$#__VERSION__
+*0 (Datatype)
+^10 13@-@-@0@0@0@0@59#__SIZE_TYPE__
+^11 13@-@-@0@0@0@0@60#__PTRDIFF_TYPE__
+^12 13@-@-@0@0@0@0@61#__WCHAR_TYPE__
+*1 (Constant)
+^13 23$#__USER_LABEL_PREFIX__#__REGISTER_PREFIX__#__TIME__
+^16 5$#__LCLINT__
 *3 (Variable)
-5|@1|0@0@0@0@1#DBL_DIG#DBL_MANT_DIG#DBL_MAX_10_EXP#DBL_MAX_EXP#DBL_MIN_10_EXP#DBL_MIN_EXP#FLT_DIG#FLT_MANT_DIG#FLT_MAX_10_EXP#FLT_MAX_EXP#FLT_MIN_10_EXP#FLT_MIN_EXP#FLT_ROUNDS#LDBL_DIG#LDBL_MANT_DIG#LDBL_MAX_10_EXP#LDBL_MAX_EXP#LDBL_MIN_10_EXP#LDBL_MIN_EXP
-5|@1|0@0@0@0@4#errno
-16|@1|0@0@0@0@1#FLT_EPSILON#FLT_MAX#FLT_MIN
-17|@1|0@0@0@0@1#DBL_EPSILON#DBL_MAX#DBL_MIN
-18|@1|0@0@0@0@1#LDBL_EPSILON#LDBL_MAX#LDBL_MIN
-191|@1|0@0@0@0@2#stderr#stdin#stdout
+^17 191|@1|6@0@0@0@2#stdin#stdout
+*1 (Constant)
+^19 5$#EDOM#ERANGE#EILSEQ
+*3 (Variable)
+^22 5|@1|6@0@0@0@4#errno
+*0 (Datatype)
+^23 13@-@-@0@0@0@0@62#ptrdiff_t
+^24 14@-@-@0@0@0@0@63#size_t
+^25 15@-@-@0@0@0@0@64#ssize_t
+^26 13@-@-@0@0@0@0@65#wchar_t
+^27 13@-@-@0@0@0@0@66#wint_t
+^28 0@+@=@0@0@0@0@67#mbstate_t
+*1 (Constant)
+^29 0@i0@0@6#NULL
+^30 2$#NDEBUG
 *4 (Function)
-338$@0@g111@0@0@1@tp0,g111$@0#qsort
-155@6@0@5@0@0@1@@1@s0$@0#longjmp
-186$@0@@1@p0$@0#va_start
-213$@0@s3@1@s3,tp0,tp1$@0#setbuf
-71@6@0@8@0@0@1@@1@s0$@0#assert
-314@6@0@6@0@0@1@@1@s0$@0#exit
-299$@0@s1@1@s1$@0#srand
-310$@0@@1@tp0$@0#free
-281$@1@g111@0@0,g121@0@0,s3@1@s3,tg121$@0#perror
-188$@0@@1@p0$@0#va_end
-275$@0@@1@tp0$@0#clearerr#rewind
-312@6@0@6@0@0@1@@1@s0$@0#abort
-487$@1@@1@s0$@0#iswctype
-73$@1@@1@s0$@0#isalnum#isalpha#iscntrl#isdigit#isgraph#islower#isprint#ispunct#isspace#isupper#isxdigit
-481$@1@@1@s0$@0#iswalnum#iswalpha#iswcntrl#iswdigit#iswgraph#iswlower#iswprint#iswpunct#iswspace#iswupper#iswxdigit
-95$@1@@1@s0$@0#tolower#toupper
-215$@0@s3@1@s3,tp0,tp1$@0#setvbuf
-397$@0@@1@tp0$@0#vswprintf
-389@6@0@1@1@0@0@@1@tp0$@0#swprintf
-545$@1@@1@s0$@0#memcmp
-551$@1@@1@s0$@0#strncmp
-227@6@0@1@2@0@1@@1@s0$@0#sscanf
-233$@0@@1@tp0,p2$@0#vsprintf
-225@6@0@1@1@0@0@@1@tp0$@0#sprintf
-267$@0@s3,g111@0@0@1@s3,tp0,g111$@0#fseek
-229$@0@s3,g111@0@0@1@s3,tp0,p2,g111$@0#vfprintf
-217@6@0@1@1@0@0@s3@1@s3,tp0$@0#fprintf
-219@6@0@1@2@0@0@s3@1@s3,tp0$@0#fscanf
-395$@0@s3@1@s3,tp0$@0#vfwprintf
-368@6@0@1@1@0@0@s3@1@tp0,s3$@0#fwprintf
-370@6@0@1@2@0@0@s3@1@tp0,s3$@0#fwscanf
-429$@1@@1@s0$@0#wcsncmp#wmemcmp
-391@6@0@1@2@0@0@g122@0@0@1@tg122$@0#swscanf
-517$@0@@1@tp0$@0#mbtowc
-547$@1@@1@s0$@0#strcmp#strcoll
-195$@0@s3,g111@0@0@1@s3,g111$@0#rename
-515$@1@@1@s0$@0#mblen
-231$@1@g123@0@0,s3@1@s3,p1,tg123$@0#vprintf
-243$@0@s3@1@s3,tp1$@0#fputs
-221@6@0@1@1@0@1@g123@0@0,s3@1@s3,tg123$@0#printf
-223@6@0@1@2@0@1@g122@0@0,s3@1@s3,tg122$@0#scanf
-519$@0@@1@tp0$@0#wctomb
-366$@1@@1@s0$@0#fwide
-269$@0@s3,g111@0@0@1@s3,tp0,g111$@0#fsetpos
-265$@0@g111@0@0@1@tp1,g111$@0#fgetpos
-399$@0@s3,g123@0@0@1@s3,tg123$@0#vwprintf
-364$@0@s3@1@s3,tp1$@0#fputws
-410$@1@@1@s0$@0#wcscmp#wcscoll
-475@6@0@1@1@0@1@g123@0@0,g111@0@0@1@g111,tg123$@0#wprintf
-477@6@0@1@2@0@1@g122@0@0,g111@0@0@1@g111,tg122$@0#wscanf
-241$@0@s3,g111@0@0@1@s3,tp1,g111$@0#fputc#ungetc
-252$@0@s3@1@s3,tp1$@0#putc
-340$@1@@1@s0$@0#abs
-183@6@0@5@0@0$$@0#raise
-193$@0@s3,g111@0@0@1@s3,g111$@0#remove
-256$@1@g123@0@0,s3@1@s3,tg123$@0#puts
-285$@1@@1@s0$@0#atoi
-325$@0@s3@1@s3$@0#system
-459$@1@@1@s0$@0#wctob
-153$@0@@1@p0$@0#setjmp
-203$@0@g111@0@0,s3@1@tp0,g111,s3$@0#fclose#fgetc
-277$@0@g111@0@0@1@g111$@0#feof#ferror
-245$@0@s3@1@s3,tp0$@0#getc
-205$@0@g111@0@0,s3@1@tp0,g111,s3$@0#fflush
-320$@0@s1@1@s1$@0#atexit
-381$@1@@1@s0$@0#mbsinit
-254$@1@g123@0@0,s3@1@s3,tg123$@0#putchar
-247$@1@g122@0@0,s3@1@s3,tg122$@0#getchar
-297$@0@s1@1@s1$@0#rand
-293$@0@g111@0@0@1@tp1,g111$@0#strtol
-453$@0@@1@tp1$@0#wcstol
-347$@1@@1@s0$@0#labs
-287$@1@@1@s0$@0#atol
-271$@0@g111@0@0@1@g111$@0#ftell
-295$@0@g111@0@0@1@tp1,g111$@0#strtoul
-455$@0@@1@tp1$@0#wcstoul
-130$@0@g111@0@0@1@g111$@0#ldexp
-120$@1@@1@s0$@0#atan2#fmod
-138$@0@g111@0@0@1@g111$@0#pow
-132$@0@@1@tp1$@0#frexp
-148$@0@@1@tp1$@0#modf
-291$@0@g111@0@0@1@tp1,g111$@0#strtod
-448$@0@@1@tp1$@0#wcstod
-591$@1@@1@s0$@0#difftime
-116$@0@g111@0@0@1@g111$@0#acos#asin#cosh#exp#log#log10#sqrt
-118$@1@@1@s0$@0#atan#ceil#cos#fabs#floor#sin#sinh#tan#tanh
-283$@1@@1@s0$@0#atof
-332@6@5@1@0@0@1@@1@s0@18@0@0#bsearch
-556@6@5@1@0@0@1@@1@s0@3@0@0#memchr
-308@6@5@1@0@0@0@@1@tp0@2@0@0#realloc
-302@6@5@1@0@0@1@@1@s0@2@0@0#calloc
-305@4@5@1@0@0@1@@1@s0@2@0@0#malloc
-238@6@5@1@0@0@0@s3,g111@0@0@1@s3,tp0,tp2,g111$@0#fgets
-102@6@5@1@0@0@0@s1,g111@0@0@1@s1,g111@19@3@0#setlocale
-559@6@5@1@0@0@1@@1@s0@19@2@0#strchr
-567@6@5@1@0@0@1@@1@s0@19@2@0#strrchr
-564@6@5@1@0@0@1@@1@s0@19@2@0#strpbrk
-575@6@5@1@0@0@0@s1,g111@0@0@1@tp0,s1,g111@19@2@0#strtok
-572@6@5@1@0@0@1@@1@s0@19@2@0#strstr
-582$@1@@1@s0@19@3@0#strerror
-323@6@5@1@0@0@1@@1@s0@19@3@0#getenv
-250@6@5@1@0@0@1@g122@0@0,s3,g111@0@0@1@s3,tp0,tg122,g111@3@0@0#gets
-201$@0@s1@1@tp0,s1@19@3@0#tmpnam
-599$@0@g111@0@0@1@g111@19@3@0#asctime
-602$@1@@1@s0@19@3@0#ctime
-262$@0@s3,g111@0@0@1@s3,tp3,g111$@0#fwrite
-260$@0@s3,g111@0@0@1@s3,tp0,tp3,g111$@0#fread
-441$@0@@1@tp1$@0#wcsrtombs
-610$@0@@1@tp0$@0#strftime
-379$@0@@1@tp0$@0#mbrtowc
-383$@0@@1@tp0$@0#mbsrtowcs
-421$@0@@1@tp0$@0#wcsftime
-377$@1@@1@s0$@0#mbrlen
-523$@0@@1@tp0$@0#wcstombs
-553$@0@@1@tp0$@0#strxfrm
-401$@0@@1@tp0$@0#wcrtomb
-457$@0@@1@tp0$@0#wcsxfrm
-521$@0@@1@tp0$@0#mbstowcs
-561$@1@@1@s0$@0#strcspn#strspn
-417$@1@@1@s0$@0#wcscspn#wcsspn
-584$@1@@1@s0$@0#strlen
-423$@1@@1@s0$@0#wcslen
-362$@0@s3@1@s3,tp1$@0#fputwc
-385$@0@s3@1@s3,tp1$@0#putwc
-393$@0@s3@1@s3,tp1$@0#ungetwc
-505$@1@@1@s0$@0#towctrans
-354$@1@@1@s0$@0#btowc
-387$@0@s3,g123@0@0@1@s3,tg123$@0#putwchar
-507$@1@@1@s0$@0#towlower#towupper
-356$@0@s3@1@s3,tp0$@0#fgetwc
-372$@0@s3@1@s3,tp0$@0#getwc
-374$@0@s3,g122@0@0@1@s3,tg122$@0#getwchar
-106$@1@@1@s0@3@0@0#localeconv
-211@6@5@1@0@0@0@s3,g111@0@0@1@tp2,s3,g111@3@0@0#freopen
-208@6@5@1@0@0@0@s3@1@s3@18@0@0#fopen
-198@6@5@1@0@0@0@s3@1@s3@3@0@0#tmpfile
-345$@1@@1@s0$@0#div
-352$@1@@1@s0$@0#ldiv
-462@6@5@1@0@0@1@@1@s0@3@0@0#wmemchr
-360@6@5@1@0@0@0@s3@1@s3,tp0,tp2$@0#fgetws
-473$@0@@1@tp0$@0#wmemset
-467$@0@@1@tp0$@0#wmemcpy#wmemmove
-451@6@5@1@0@0@0@@1@tp2@3@0@0#wcstok
-446@6@5@1@0@0@1@@1@s0@3@0@0#wcsstr
-438@6@5@1@0@0@1@@1@s0$@0#wcsrchr
-408@6@5@1@0@0@1@@1@s0@19@2@0#wcschr
-435@6@5@1@0@0@1@@1@s0$@0#wcspbrk
-608@6@5@1@0@0@0@g111@0@0@1@g111@19@3@0#localtime
-605@6@5@1@0@0@1@@1@s0@19@3@0#gmtime
-513$@1@@1@s0$@0#wctype
-511$@1@@1@s0$@0#wctrans
-589$@0@s1@1@s1$@0#clock
-593$@1@@1@s0$@0#mktime
-596$@0@@1@tp0$@0#time
-181@6@5@1@0@0@0@s1,g111@0@0@1@s1,g111$@0#signal
-579$@0@@1@tp0$@0#memset
-530$@0@@1@tp0$@0#memmove
-527$@0@@1@tp0$@0#memcpy
-543$@0@@1@tp0@3@0@0#strncat
-537$@0@@1@tp0@3@0@0#strncpy
-540$@0@@1@tp0@3@0@0#strcat#strcpy
-427$@0@@1@tp0$@0#wcsncat#wcsncpy
-405$@0@@1@tp0$@0#wcscat#wcscpy
+^31 71@6@0@8@0@0^$@0#assert
+^32 73$^$@0#isalnum
+^33 75$^$@0#isalpha
+^34 77$^$@0#iscntrl
+^35 79$^$@0#isdigit
+^36 81$^$@0#isgraph
+^37 83$^$@0#islower
+^38 85$^$@0#isprint
+^39 87$^$@0#ispunct
+^40 89$^$@0#isspace
+^41 91$^$@0#isupper
+^42 93$^$@0#isxdigit
+^43 95$^$@0#tolower
+^44 97$^$@0#toupper
 *7 (Struct tag)
-341@342#@!2
-348@349#@!3
-587@418#@tm
-98@99#@lconv
+^45 98@99#@lconv
+*1 (Constant)
+^46 5$#LC_ALL#LC_COLLATE#LC_CTYPE#LC_MONETARY#LC_NUMERIC#LC_TIME
+*4 (Function)
+^52 102@6@5@1@0@0@0@s1,g22@6@0@1@s1,g22@19@3@0#setlocale
+^53 106$^@3@0@0#localeconv
+*3 (Variable)
+^54 5|@1|6@0@0@0@1#DBL_DIG
+^55 17|@1|6@0@0@0@1#DBL_EPSILON
+^56 5|@1|6@0@0@0@1#DBL_MANT_DIG
+^57 17|@1|6@0@0@0@1#DBL_MAX
+^58 5|@1|6@0@0@0@1#DBL_MAX_10_EXP#DBL_MAX_EXP
+^60 17|@1|6@0@0@0@1#DBL_MIN
+^61 5|@1|6@0@0@0@1#DBL_MIN_10_EXP#DBL_MIN_EXP#FLT_DIG
+^64 16|@1|6@0@0@0@1#FLT_EPSILON
+^65 5|@1|6@0@0@0@1#FLT_MANT_DIG
+^66 16|@1|6@0@0@0@1#FLT_MAX
+^67 5|@1|6@0@0@0@1#FLT_MAX_10_EXP#FLT_MAX_EXP
+^69 16|@1|6@0@0@0@1#FLT_MIN
+^70 5|@1|6@0@0@0@1#FLT_MIN_10_EXP#FLT_MIN_EXP
+*1 (Constant)
+^72 5$#FLT_RADIX
+*3 (Variable)
+^73 5|@1|6@0@0@0@1#FLT_ROUNDS#LDBL_DIG
+^75 18|@1|6@0@0@0@1#LDBL_EPSILON
+^76 5|@1|6@0@0@0@1#LDBL_MANT_DIG
+^77 18|@1|6@0@0@0@1#LDBL_MAX
+^78 5|@1|6@0@0@0@1#LDBL_MAX_10_EXP#LDBL_MAX_EXP
+^80 18|@1|6@0@0@0@1#LDBL_MIN
+^81 5|@1|6@0@0@0@1#LDBL_MIN_10_EXP#LDBL_MIN_EXP
+*1 (Constant)
+^83 5$#CHAR_BIT
+^84 4$#CHAR_MAX#CHAR_MIN
+^86 5$#INT_MAX#INT_MIN
+^88 9$#LONG_MAX#LONG_MIN#MB_LEN_MAX
+^91 4$#SCHAR_MAX#SCHAR_MIN
+^93 7$#SHRT_MAX#SHRT_MIN
+^95 3$#UCHAR_MAX#UCHAR_MIN
+^97 6$#UINT_MAX
+^98 10$#ULONG_MAX
+^99 8$#USHRT_MAX
+^100 17$#HUGE_VAL
+*4 (Function)
+^101 108$^$@0#sin
+^102 110$^$@0#cos
+^103 112$^$@0#tan
+^104 114$@0@g22@6@0@1@g22$@0#asin
+^105 116$@0@g22@6@0@1@g22$@0#acos
+^106 118$^$@0#atan
+^107 120$^$@0#atan2
+^108 122$^$@0#sinh
+^109 124$@0@g22@6@0@1@g22$@0#cosh
+^110 126$^$@0#tanh
+^111 128$@0@g22@6@0@1@g22$@0#exp
+^112 130$@0@g22@6@0@1@g22$@0#ldexp
+^113 132$@0@@1@tp1$@0#frexp
+^114 134$@0@g22@6@0@1@g22$@0#log
+^115 136$@0@g22@6@0@1@g22$@0#log10
+^116 138$@0@g22@6@0@1@g22$@0#pow
+^117 140$@0@g22@6@0@1@g22$@0#sqrt
+^118 142$^$@0#ceil
+^119 144$^$@0#floor
+^120 146$^$@0#fabs
+^121 148$@0@@1@tp1$@0#modf
+^122 150$^$@0#fmod
+*0 (Datatype)
+^123 20@+@+@0@0@0@0@151#jmp_buf
+*4 (Function)
+^124 153$@0@@1@p0$@0#setjmp
+^125 155@6@0@5@0@0^$@0#longjmp
+*1 (Constant)
+^126 5$#SIGABRT#SIGFPE#SIGILL#SIGINT#SIGSEGV#SIGTERM
+*0 (Datatype)
+^132 13@-@-@0@0@0@0@156#sig_atomic_t
+*1 (Constant)
+^133 160$#SIG_DFL
+^134 164$#SIG_ERR
+^135 168$#SIG_IGN
+*4 (Function)
+^136 181@6@5@1@0@0@0@s1,g22@6@0@1@s1,g22$@0#signal
+^137 183@6@0@5@0@0$$@0#raise
+*0 (Datatype)
+^138 20@+@+@0@0@0@0@184#va_list
+*4 (Function)
+^139 186$@0@@1@p0$@0#va_start
+^140 188$@0@@1@p0$@0#va_end
+*0 (Datatype)
+^141 20@+@+@0@0@0@0@189#FILE
+^142 20@+@+@0@0@0@0@190#fpos_t
+*1 (Constant)
+^143 5$#_IOFBF#_IOLBF#_IONBF#BUFSIZ#EOF#FOPEN_MAX#FILENAME_MAX#L_tmpnam#SEEK_CUR#SEEK_END#SEEK_SET#TMP_MAX
+*3 (Variable)
+^155 191|@1|6@0@0@0@2#stderr
+*4 (Function)
+^156 193$@0@s3,g22@6@0@1@s3,g22$@0#remove
+^157 195$@0@s3,g22@6@0@1@s3,g22$@0#rename
+^158 198@6@5@1@0@0@0@s3@1@s3@3@0@0#tmpfile
+^159 201$@0@s1@1@tp0,s1@19@3@0#tmpnam
+^160 203$@0@g22@6@0,s3@1@tp0,g22,s3$@0#fclose
+^161 205$@0@g22@6@0,s3@1@tp0,g22,s3$@0#fflush
+^162 208@6@5@1@0@0@0@s3@1@s3@18@0@0#fopen
+^163 211@6@5@1@0@0@0@s3,g22@6@0@1@tp2,s3,g22@3@0@0#freopen
+^164 213$@0@s3@1@s3,tp0,tp1$@0#setbuf
+^165 215$@0@s3@1@s3,tp0,tp1$@0#setvbuf
+^166 217@6@0@1@1@0@0@s3@1@s3,tp0$@0#fprintf
+^167 219@6@0@1@2@0@0@s3@1@s3,tp0$@0#fscanf
+^168 221@6@0@1@1@0@1@g18@6@0,s3@1@s3,tg18$@0#printf
+^169 223@6@0@1@2@0@1@g17@6@0,s3@1@s3,tg17$@0#scanf
+^170 225@6@0@1@1@0@0@@1@tp0$@0#sprintf
+^171 227@6@0@1@2@0^$@0#sscanf
+^172 229$@0@s3,g22@6@0@1@s3,tp0,p2,g22$@0#vfprintf
+^173 231$@1@g18@6@0,s3@1@s3,p1,tg18$@0#vprintf
+^174 233$@0@@1@tp0,p2$@0#vsprintf
+^175 235$@0@s3,g22@6@0@1@s3,tp0,g22$@0#fgetc
+^176 238@6@5@1@0@0@0@s3,g22@6@0@1@s3,tp0,tp2,g22$@0#fgets
+^177 241$@0@s3,g22@6@0@1@s3,tp1,g22$@0#fputc
+^178 243$@0@s3@1@s3,tp1$@0#fputs
+^179 245$@0@s3@1@s3,tp0$@0#getc
+^180 247$@1@g17@6@0,s3@1@s3,tg17$@0#getchar
+^181 250@6@5@1@0@0@1@g17@6@0,s3,g22@6@0@1@s3,tp0,tg17,g22@3@0@0#gets
+^182 252$@0@s3@1@s3,tp1$@0#putc
+^183 254$@1@g18@6@0,s3@1@s3,tg18$@0#putchar
+^184 256$@1@g18@6@0,s3@1@s3,tg18$@0#puts
+^185 258$@0@s3,g22@6@0@1@s3,tp1,g22$@0#ungetc
+^186 260$@0@s3,g22@6@0@1@s3,tp0,tp3,g22$@0#fread
+^187 262$@0@s3,g22@6@0@1@s3,tp3,g22$@0#fwrite
+^188 265$@0@g22@6@0@1@tp1,g22$@0#fgetpos
+^189 267$@0@s3,g22@6@0@1@s3,tp0,g22$@0#fseek
+^190 269$@0@s3,g22@6@0@1@s3,tp0,g22$@0#fsetpos
+^191 271$@0@g22@6@0@1@g22$@0#ftell
+^192 273$@0@@1@tp0$@0#rewind
+^193 275$@0@@1@tp0$@0#clearerr
+^194 277$@0@g22@6@0@1@g22$@0#feof
+^195 279$@0@g22@6@0@1@g22$@0#ferror
+^196 281$@1@g22@6@0,g155@6@0,s3@1@s3,tg155$@0#perror
+^197 283$^$@0#atof
+^198 285$^$@0#atoi
+^199 287$^$@0#atol
+^200 291$@0@g22@6@0@1@tp1,g22$@0#strtod
+^201 293$@0@g22@6@0@1@tp1,g22$@0#strtol
+^202 295$@0@g22@6@0@1@tp1,g22$@0#strtoul
+*1 (Constant)
+^203 5$#RAND_MAX
+*4 (Function)
+^204 297$@0@s1@1@s1$@0#rand
+^205 299$@0@s1@1@s1$@0#srand
+^206 302@6@5@1@0@0^@2@0@0#calloc
+^207 305@4@5@1@0@0^@2@0@0#malloc
+^208 308@6@5@1@0@0@0@@1@tp0@2@0@0#realloc
+^209 310$@0@@1@tp0$@0#free
+*1 (Constant)
+^210 5$#EXIT_FAILURE#EXIT_SUCCESS
+*4 (Function)
+^212 312@6@0@6@0@0^$@0#abort
+^213 314@6@0@6@0@0^$@0#exit
+^214 320$@0@s1@1@s1$@0#atexit
+^215 323@6@5@1@0@0^@19@3@0#getenv
+^216 325$@0@s3@1@s3$@0#system
+^217 332@6@5@1@0@0^@18@0@0#bsearch
+^218 338$@0@g22@6@0@1@tp0,g22$@0#qsort
+^219 340$^$@0#abs
+*7 (Struct tag)
+^220 341@342#@!2
+*0 (Datatype)
+^221 341@-@-@0@0@0@0@343#div_t
+*4 (Function)
+^222 345$^$@0#div
+^223 347$^$@0#labs
+*7 (Struct tag)
+^224 348@349#@!3
+*0 (Datatype)
+^225 348@-@-@0@0@0@0@350#ldiv_t
+*4 (Function)
+^226 352$^$@0#ldiv
+*1 (Constant)
+^227 63$#MB_CUR_MAX
+^228 5$#WCHAR_MAX#WCHAR_MIN
+^230 66$#WEOF
+*4 (Function)
+^231 354$^$@0#btowc
+^232 356$@0@s3@1@s3,tp0$@0#fgetwc
+^233 360@6@5@1@0@0@0@s3@1@s3,tp0,tp2$@0#fgetws
+^234 362$@0@s3@1@s3,tp1$@0#fputwc
+^235 364$@0@s3@1@s3,tp1$@0#fputws
+^236 366$^$@0#fwide
+^237 368@6@0@1@1@0@0@s3@1@tp0,s3$@0#fwprintf
+^238 370@6@0@1@2@0@0@s3@1@tp0,s3$@0#fwscanf
+^239 372$@0@s3@1@s3,tp0$@0#getwc
+^240 374$@0@s3,g17@6@0@1@s3,tg17$@0#getwchar
+^241 377$^$@0#mbrlen
+^242 379$@0@@1@tp0$@0#mbrtowc
+^243 381$^$@0#mbsinit
+^244 383$@0@@1@tp0$@0#mbsrtowcs
+^245 385$@0@s3@1@s3,tp1$@0#putwc
+^246 387$@0@s3,g18@6@0@1@s3,tg18$@0#putwchar
+^247 389@6@0@1@1@0@0@@1@tp0$@0#swprintf
+^248 391@6@0@1@2@0@0@g17@6@0@1@tg17$@0#swscanf
+^249 393$@0@s3@1@s3,tp1$@0#ungetwc
+^250 395$@0@s3@1@s3,tp0$@0#vfwprintf
+^251 397$@0@@1@tp0$@0#vswprintf
+^252 399$@0@s3,g18@6@0@1@s3,tg18$@0#vwprintf
+^253 401$@0@@1@tp0$@0#wcrtomb
+^254 405$@0@@1@tp0$@0#wcscat
+^255 408@6@5@1@0@0^@19@2@0#wcschr
+^256 410$^$@0#wcscmp
+^257 412$^$@0#wcscoll
+^258 415$@0@@1@tp0$@0#wcscpy
+^259 417$^$@0#wcscspn
+*7 (Struct tag)
+^260 587@418#@tm
+*4 (Function)
+^261 421$@0@@1@tp0$@0#wcsftime
+^262 423$^$@0#wcslen
+^263 427$@0@@1@tp0$@0#wcsncat
+^264 429$^$@0#wcsncmp
+^265 432$@0@@1@tp0$@0#wcsncpy
+^266 435@6@5@1@0@0^$@0#wcspbrk
+^267 438@6@5@1@0@0^$@0#wcsrchr
+^268 441$@0@@1@tp1$@0#wcsrtombs
+^269 443$^$@0#wcsspn
+^270 446@6@5@1@0@0^@3@0@0#wcsstr
+^271 448$@0@@1@tp1$@0#wcstod
+^272 451@6@5@1@0@0@0@@1@tp2@3@0@0#wcstok
+^273 453$@0@@1@tp1$@0#wcstol
+^274 455$@0@@1@tp1$@0#wcstoul
+^275 457$@0@@1@tp0$@0#wcsxfrm
+^276 459$^$@0#wctob
+^277 462@6@5@1@0@0^@3@0@0#wmemchr
+^278 464$^$@0#wmemcmp
+^279 467$@0@@1@tp0$@0#wmemcpy
+^280 470$@0@@1@tp0$@0#wmemmove
+^281 473$@0@@1@tp0$@0#wmemset
+^282 475@6@0@1@1@0@1@g18@6@0,g22@6@0@1@g22,tg18$@0#wprintf
+^283 477@6@0@1@2@0@1@g17@6@0,g22@6@0@1@g22,tg17$@0#wscanf
+*0 (Datatype)
+^284 13@-@-@0@0@0@0@478#wctype_t
+^285 13@-@-@0@0@0@0@479#wctrans_t
+*4 (Function)
+^286 481$^$@0#iswalnum
+^287 483$^$@0#iswalpha
+^288 485$^$@0#iswcntrl
+^289 487$^$@0#iswctype
+^290 489$^$@0#iswdigit
+^291 491$^$@0#iswgraph
+^292 493$^$@0#iswlower
+^293 495$^$@0#iswprint
+^294 497$^$@0#iswpunct
+^295 499$^$@0#iswspace
+^296 501$^$@0#iswupper
+^297 503$^$@0#iswxdigit
+^298 505$^$@0#towctrans
+^299 507$^$@0#towlower
+^300 509$^$@0#towupper
+^301 511$^$@0#wctrans
+^302 513$^$@0#wctype
+^303 515$^$@0#mblen
+^304 517$@0@@1@tp0$@0#mbtowc
+^305 519$@0@@1@tp0$@0#wctomb
+^306 521$@0@@1@tp0$@0#mbstowcs
+^307 523$@0@@1@tp0$@0#wcstombs
+^308 527$@0@@1@tp0$@0#memcpy
+^309 530$@0@@1@tp0$@0#memmove
+^310 534$@0@@1@tp0@3@0@0#strcpy
+^311 537$@0@@1@tp0@3@0@0#strncpy
+^312 540$@0@@1@tp0@3@0@0#strcat
+^313 543$@0@@1@tp0@3@0@0#strncat
+^314 545$^$@0#memcmp
+^315 547$^$@0#strcmp
+^316 549$^$@0#strcoll
+^317 551$^$@0#strncmp
+^318 553$@0@@1@tp0$@0#strxfrm
+^319 556@6@5@1@0@0^@3@0@0#memchr
+^320 559@6@5@1@0@0^@19@2@0#strchr
+^321 561$^$@0#strcspn
+^322 564@6@5@1@0@0^@19@2@0#strpbrk
+^323 567@6@5@1@0@0^@19@2@0#strrchr
+^324 569$^$@0#strspn
+^325 572@6@5@1@0@0^@19@2@0#strstr
+^326 575@6@5@1@0@0@0@s1,g22@6@0@1@tp0,s1,g22@19@2@0#strtok
+^327 579$@0@@1@tp0$@0#memset
+^328 582$^@19@3@0#strerror
+^329 584$^$@0#strlen
+*1 (Constant)
+^330 5$#CLOCKS_PER_SEC
+*0 (Datatype)
+^331 13@-@-@0@0@0@0@585#clock_t
+^332 13@-@-@0@0@0@0@586#time_t
+*4 (Function)
+^333 589$@0@s1@1@s1$@0#clock
+^334 591$^$@0#difftime
+^335 593$^$@0#mktime
+^336 596$@0@@1@tp0$@0#time
+^337 599$@0@g22@6@0@1@g22@19@3@0#asctime
+^338 602$^@19@3@0#ctime
+^339 605@6@5@1@0@0^@19@3@0#gmtime
+^340 608@6@5@1@0@0@0@g22@6@0@1@g22@19@3@0#localtime
+^341 610$@0@@1@tp0$@0#strftime
 ;; Library constraints
-realloc
-pre:EMPTY
-post:
-C
-0@1@3
-l
-1
-1
-2
-2
-Result
-r
-0
-1
-e1
-2
-2
-Param 63 1
-e2
-2
-3
--1
-;; end precondition constraints
-calloc
-pre:EMPTY
-post:
-C
-0@1@4
-l
-1
-1
-2
-2
-Result
-r
-0
-1
-e1
-2
-2
-Param 63 0
-e2
-2
-3
--1
-;; end precondition constraints
-malloc
-pre:EMPTY
-post:
-C
-0@1@4
-l
-1
-1
-2
-2
-Result
-r
-0
-1
-e1
-2
-2
-Param 63 0
-e2
-2
-3
--1
-;; end precondition constraints
 fgets
 pre:
 C
@@ -967,6 +1027,340 @@ e2
 2
 3
 -1
+;; end precondition constraints
+calloc
+pre:EMPTY
+post:
+C
+0@1@4
+l
+1
+1
+2
+2
+Result
+r
+0
+1
+e1
+2
+2
+Param 63 0
+e2
+2
+3
+-1
+;; end precondition constraints
+malloc
+pre:EMPTY
+post:
+C
+0@1@4
+l
+1
+1
+2
+2
+Result
+r
+0
+1
+e1
+2
+2
+Param 63 0
+e2
+2
+3
+-1
+;; end precondition constraints
+realloc
+pre:EMPTY
+post:
+C
+0@1@3
+l
+1
+1
+2
+2
+Result
+r
+0
+1
+e1
+2
+2
+Param 63 1
+e2
+2
+3
+-1
+;; end precondition constraints
+memcpy
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 20 0
+r
+2
+2
+Param 63 2
+C
+0@1@3
+l
+1
+3
+2
+2
+Param 20 1
+r
+2
+2
+Param 63 2
+;; end precondition constraints
+post:EMPTY
+memmove
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 20 0
+r
+2
+2
+Param 63 2
+C
+0@1@3
+l
+1
+3
+2
+2
+Param 20 1
+r
+2
+2
+Param 63 2
+;; end precondition constraints
+post:EMPTY
+strcpy
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 0
+r
+1
+3
+2
+2
+Param 23 1
+;; end precondition constraints
+post:
+C
+0@1@4
+l
+1
+1
+2
+2
+Result
+r
+1
+1
+2
+2
+Param 23 0
+C
+0@1@4
+l
+1
+3
+2
+2
+Result
+r
+1
+3
+2
+2
+Param 23 1
+C
+0@1@4
+l
+1
+3
+2
+2
+Param 23 0
+r
+1
+3
+2
+2
+Param 23 1
+;; end precondition constraints
+strncpy
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 0
+r
+0
+1
+e1
+2
+2
+Param 63 2
+e2
+2
+3
+-1
+;; end precondition constraints
+post:
+C
+0@1@1
+l
+1
+3
+2
+2
+Param 23 0
+r
+2
+2
+Param 63 2
+C
+0@1@3
+l
+1
+3
+2
+2
+Param 23 1
+r
+1
+3
+2
+2
+Param 23 0
+;; end precondition constraints
+strcat
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 0
+r
+0
+1
+e1
+1
+3
+2
+2
+Param 23 0
+e2
+1
+3
+2
+2
+Param 23 1
+;; end precondition constraints
+post:
+C
+0@1@4
+l
+1
+3
+2
+2
+Result
+r
+0
+1
+e1
+1
+3
+2
+2
+Param 23 0
+e2
+1
+3
+2
+2
+Param 23 1
+;; end precondition constraints
+strncat
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 23 0
+r
+0
+1
+e1
+1
+3
+2
+2
+Param 23 0
+e2
+2
+2
+Param 5 2
+;; end precondition constraints
+post:
+C
+0@1@3
+l
+1
+3
+2
+2
+Result
+r
+0
+1
+e1
+1
+3
+2
+2
+Param 23 0
+e2
+2
+2
+Param 5 2
 ;; end precondition constraints
 strchr
 pre:EMPTY
@@ -1136,6 +1530,65 @@ r
 3
 0
 ;; end precondition constraints
+memset
+pre:
+C
+0@1@3
+l
+1
+1
+2
+2
+Param 20 0
+r
+0
+1
+e1
+2
+2
+Param 63 2
+e2
+2
+3
+-1
+;; end precondition constraints
+post:
+C
+0@1@3
+l
+1
+3
+2
+2
+Param 20 0
+r
+0
+1
+e1
+2
+2
+Param 63 2
+e2
+2
+3
+-1
+;; end precondition constraints
+strlen
+pre:EMPTY
+post:
+C
+0@1@4
+l
+2
+2
+Result
+r
+1
+3
+2
+2
+Param 23 0
+;; end precondition constraints
 asctime
 pre:EMPTY
 post:
@@ -1191,306 +1644,6 @@ r
 2
 3
 25
-;; end precondition constraints
-strlen
-pre:EMPTY
-post:
-C
-0@1@4
-l
-2
-2
-Result
-r
-1
-3
-2
-2
-Param 23 0
-;; end precondition constraints
-memset
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 20 0
-r
-0
-1
-e1
-2
-2
-Param 63 2
-e2
-2
-3
--1
-;; end precondition constraints
-post:
-C
-0@1@3
-l
-1
-3
-2
-2
-Param 20 0
-r
-0
-1
-e1
-2
-2
-Param 63 2
-e2
-2
-3
--1
-;; end precondition constraints
-memmove
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 20 0
-r
-2
-2
-Param 63 2
-C
-0@1@3
-l
-1
-3
-2
-2
-Param 20 1
-r
-2
-2
-Param 63 2
-;; end precondition constraints
-post:EMPTY
-memcpy
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 20 0
-r
-2
-2
-Param 63 2
-C
-0@1@3
-l
-1
-3
-2
-2
-Param 20 1
-r
-2
-2
-Param 63 2
-;; end precondition constraints
-post:EMPTY
-strncat
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 23 0
-r
-0
-1
-e1
-1
-3
-2
-2
-Param 23 0
-e2
-2
-2
-Param 5 2
-;; end precondition constraints
-post:
-C
-0@1@3
-l
-1
-3
-2
-2
-Result
-r
-0
-1
-e1
-1
-3
-2
-2
-Param 23 0
-e2
-2
-2
-Param 5 2
-;; end precondition constraints
-strncpy
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 23 0
-r
-0
-1
-e1
-2
-2
-Param 63 2
-e2
-2
-3
--1
-;; end precondition constraints
-post:
-C
-0@1@1
-l
-1
-3
-2
-2
-Param 23 0
-r
-2
-2
-Param 63 2
-C
-0@1@3
-l
-1
-3
-2
-2
-Param 23 1
-r
-1
-3
-2
-2
-Param 23 0
-;; end precondition constraints
-strcat
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 23 0
-r
-0
-1
-e1
-1
-3
-2
-2
-Param 23 0
-e2
-1
-3
-2
-2
-Param 23 1
-;; end precondition constraints
-post:EMPTY
-strcpy
-pre:
-C
-0@1@3
-l
-1
-1
-2
-2
-Param 23 0
-r
-1
-3
-2
-2
-Param 23 1
-;; end precondition constraints
-post:
-C
-0@1@4
-l
-1
-1
-2
-2
-Result
-r
-1
-1
-2
-2
-Param 23 0
-C
-0@1@4
-l
-1
-3
-2
-2
-Result
-r
-1
-3
-2
-2
-Param 23 1
-C
-0@1@4
-l
-1
-3
-2
-2
-Param 23 0
-r
-1
-3
-2
-2
-Param 23 1
 ;; end precondition constraints
 ;; Modules access
 lltX_bool#1@
