@@ -13,6 +13,7 @@ arithType;
 
 struct _constraint {
   constraint     orig;
+  constraint     or;
   constraintExpr lexpr;
   arithType       ar;
   constraintExpr  expr;

@@ -11,6 +11,7 @@ typedef union constraintTermValue_
 
 typedef enum
 {
+  ERRORBADCONSTRAINTTERMTYPE,
  EXPRNODE, SREF,
  INTLITERAL
 } constraintTermType;
@@ -42,7 +43,7 @@ typedef enum
 {
   binaryexpr,
   unaryExpr,
-  term,
+  term
 }
 constraintExprKind;
 
@@ -173,5 +174,7 @@ bool constraintExpr_hasMaxSet (constraintExpr expr);
 constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
 						/*@out@*/ bool * propagate,
 						  /*@out@*/ int *literal);
+
+constraintExpr constraintExpr_makeSRefMaxRead(sRef s);
 
 #endif

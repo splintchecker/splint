@@ -17,3 +17,4 @@ extern constraintList constraintList_mergeEnsures (constraintList list1, constra
 
 bool constraint_isAlwaysTrue (constraint c);
 constraintList constraintList_mergeRequires (constraintList list1, constraintList list2);
+constraintList reflectChangesOr (constraintList pre2, constraintList post1);
