@@ -88,15 +88,15 @@
 %LCLop 9 : -> int
 %LCLop MALE : -> _eemployee0e_Enum
 %LCLop FEMALE : -> _eemployee0e_Enum
+%LCLop gender_ANY : -> _eemployee0e_Enum
 %LCLop __ * __  :int, int -> int
 %LCLop __ * __  :double, double -> double
-%LCLop gender_ANY : -> _eemployee0e_Enum
 %LCLop true : -> bool
 %LCLop false : -> bool
 %LCLop MGR : -> _eemployee1e_Enum
 %LCLop NONMGR : -> _eemployee1e_Enum
-%LCLop __ \and __  :bool, bool -> bool
 %LCLop job_ANY : -> _eemployee1e_Enum
+%LCLop __ \and __  :bool, bool -> bool
 %LCLop __ \or __  :bool, bool -> bool
 %LCLop __ \eq __  :bool, bool -> bool
 %LCLop __ \eq __  :int, int -> bool
