@@ -37,12 +37,13 @@
 # include "exprChecks.h"
 # include "exprNodeSList.h"
 
-/*@access exprNode@*/ /* NO! Don't do this recklessly! */
-/*@-nullderef@*/ /* DRL needs to fix this code! */
-/*@-nullpass@*/ /* DRL needs to fix this code! */
-/*@-temptrans@*/ /* DRL needs to fix this code! */
+/*drl We need to access the internal representation of exprNode
+  because these functions walk down the parse tree and need a richer
+information than is accessible through the exprNode interface.*/
+  
+/*@access exprNode@*/
 
-static /*@truewhennull@*/ bool exprNode_handleError (/*@temp@*/ exprNode p_e);
+static /*@nullwhentrue@*/ bool exprNode_handleError (/*@temp@*/ exprNode p_e);
 
 static void exprNode_stmt (/*@temp@*/ /*@temp@*/ exprNode p_e);
 static void  exprNode_multiStatement (/*@temp@*/ exprNode p_e);
@@ -94,7 +95,7 @@ static bool exprNode_isUnhandled (/*@temp@*/ /*@observer@*/ exprNode e)
   return FALSE;
 }
 
-bool exprNode_handleError (exprNode e)
+/*@nullwhentrue@*/ bool exprNode_handleError (exprNode e) 
 {
   if (exprNode_isError (e) || exprNode_isUnhandled (e))
     {
@@ -991,13 +992,25 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
       break;
       
     case XPR_BLOCK:
-      exprNode_generateConstraints (exprData_getSingle (data));
-      
-      constraintList_free(e->requiresConstraints);
-      e->requiresConstraints = constraintList_copy ((exprData_getSingle (data))->requiresConstraints);
-      
-      constraintList_free(e->ensuresConstraints);
-      e->ensuresConstraints = constraintList_copy ((exprData_getSingle (data))->ensuresConstraints);
+      {
+	exprNode tempExpr;
+
+	tempExpr = exprData_getSingle (data);
+
+	exprNode_generateConstraints (tempExpr);
+
+	if (exprNode_isDefined(tempExpr) )
+	  {
+	    constraintList_free(e->requiresConstraints);
+	    e->requiresConstraints = constraintList_copy (tempExpr->requiresConstraints);
+	    constraintList_free(e->ensuresConstraints);
+	    e->ensuresConstraints = constraintList_copy (tempExpr->ensuresConstraints);
+	  }
+	else
+	  {
+	    llassert(FALSE);
+	  }
+      }
       break;
 
     case XPR_SWITCH:
@@ -1067,11 +1080,22 @@ static void exprNode_booleanTraverse (/*@dependent@*/ exprNode e, /*@unused@*/ b
   exprData data;
   lltok tok;
   constraintList tempList, temp;
+
+  if (exprNode_isUndefined(e) )
+    {
+      llassert (exprNode_isDefined(e) );
+      return;
+    }
+  
   data = e->edata;
   
   tok = exprData_getOpTok (data);
   t1 = exprData_getOpA (data);
   t2 = exprData_getOpB (data);
+
+  /* drl 3/2/2003 we know this because of the type of expression*/
+  llassert( exprNode_isDefined(t1) &&   exprNode_isDefined(t2) );
+  
   
   tempList = constraintList_undefined;
   
@@ -1161,7 +1185,7 @@ static void exprNode_booleanTraverse (/*@dependent@*/ exprNode e, /*@unused@*/ b
     } 
 }
 
-void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@observer@*/ /*@temp@*/ fileloc sequencePoint)
+void exprNode_exprTraverse (/*@dependent@*/ exprNode e, bool definatelv, bool definaterv,  /*@observer@*/ /*@temp@*/ fileloc sequencePoint)
 {
   exprNode t1, t2, fcn;
   lltok tok;
@@ -1327,6 +1351,8 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       exprNode_exprTraverse (fcn, definatelv, definaterv, sequencePoint);
       DPRINTF ((message ("Got call that %s (%s) ",  exprNode_unparse(fcn),   exprNodeList_unparse (exprData_getArgs (data)))));
 
+      llassert( exprNode_isDefined(fcn) );
+		
       fcn->requiresConstraints = constraintList_addListFree (fcn->requiresConstraints,
 						 checkCall (fcn, exprData_getArgs (data) ));      
 
@@ -1366,6 +1392,12 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       
     case XPR_PREOP: 
       t1 = exprData_getUopNode(data);
+
+      
+      /* drl 3/2/2003 we know this because of the type of expression*/
+      llassert( exprNode_isDefined(t1) );
+  
+      
       tok = (exprData_getUopTok (data));
       exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint);
       /*handle * pointer access */
@@ -2123,6 +2155,9 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
 void checkArgumentList (/*@out@*/ exprNode temp, exprNodeList arglist,
 			fileloc sequencePoint)
 {
+  
+  llassert(temp != NULL );
+  
   temp->requiresConstraints = constraintList_makeNew();
   temp->ensuresConstraints = constraintList_makeNew();
   temp->trueEnsuresConstraints = constraintList_makeNew();
@@ -2131,6 +2166,9 @@ void checkArgumentList (/*@out@*/ exprNode temp, exprNodeList arglist,
   exprNodeList_elements (arglist, el)
     {
       constraintList temp2;
+
+      llassert(exprNode_isDefined(el) );
+
       exprNode_exprTraverse (el, FALSE, FALSE, sequencePoint);
       temp2 = el->requiresConstraints;
       el->requiresConstraints = exprNode_traversRequiresConstraints(el);
@@ -2307,6 +2345,8 @@ void exprNode_findValue(exprNode e)
   exprNode t1, t2;
   lltok tok;
 
+  llassert(exprNode_isDefined(e) );
+ 
   data = e->edata;
   
   if (exprNode_hasValue(e))
