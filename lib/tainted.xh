@@ -9,6 +9,9 @@ extern int fprintf (FILE *stream, /*@untainted@*/ char *format, ...) ;
 extern int sprintf (/*@out@*/ char *s, /*@untainted@*/ char *format, ...) 
    /*@ensures s:taintedness = ...:taintedness@*/ ;
 
+extern int snprintf (/*@out@*/ char *s, size_t n, /*@untainted@*/ const char *format, ...)
+   /*@ensures s:taintedness = ...:taintedness@*/ ;
+
 extern int vprintf (/*@untainted@*/ const char *format, va_list ap);
 extern int vfprintf(FILE *stream, /*@untainted@*/ const char *format, va_list ap);
 extern int vsprintf (/*@out@*/ char *str, /*@untainted@*/ const char *format, va_list ap)

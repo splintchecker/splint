@@ -73,7 +73,6 @@ typedef enum
        
 typedef enum 
 { 
-  CTK_ANYTYPE = -4,
   CTK_UNKNOWN = -3,
   CTK_INVALID = -2, 
   CTK_DNE = -1,
@@ -97,9 +96,6 @@ extern int ctkind_toInt (ctkind p_x);
 
 /*@constant ctype ctype_dne; @*/
 # define ctype_dne        ((ctype) CTK_DNE)
-
-/*@constant ctype ctype_anytype; @*/
-# define ctype_anytype    ((ctype) CTK_ANYTYPE)
 
 /*@constant ctype ctype_unknown; @*/
 # define ctype_unknown    CTX_UNKNOWN
@@ -262,12 +258,14 @@ extern ctype ctype_fixArrayPtr (ctype p_c);
 
 extern ctype ctype_getBaseType (ctype p_c) /*@*/ ;
 
+extern ctype ctype_makeAnytype (void) /*@*/ ;
+extern bool ctype_isAnytype (ctype) /*@*/ ;
+
 extern ctype ctype_makeArray (ctype p_c);
 extern ctype ctype_makeFixedArray (ctype p_c, size_t p_size);
-extern ctype ctype_makeInnerArray (ctype p_c);
 extern ctype ctype_makeInnerFixedArray (ctype p_c, size_t p_size);
-
-extern ctype ctype_makeConj (ctype p_c1, ctype p_c2);
+extern ctype ctype_makeInnerArray (ctype p_c);
+extern ctype ctype_makeConj (ctype p_c1, ctype p_c2) /*@modifies internalState@*/ ;
 extern ctype ctype_makeParamsFunction (ctype p_base, /*@only@*/ uentryList p_p);
 extern ctype ctype_makeFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
 extern ctype ctype_makeNFParamsFunction (ctype p_base, /*@only@*/ uentryList p_p) /*@*/ ;
@@ -346,9 +344,6 @@ extern bool ctype_isUndefined (ctype p_c) /*@*/ ;
 
 extern bool ctype_isUnknown (ctype p_c) /*@*/;
 # define ctype_isUnknown(c)       ((c) == CTX_UNKNOWN)
-
-extern bool ctype_isAnytype (ctype p_c) /*@*/;
-# define ctype_isAnytype(c)       ((c) == ctype_anytype)
 
 extern bool ctype_isBogus (/*@sef@*/ ctype p_c) /*@*/ ;
 # define ctype_isBogus(c)         (ctype_isUndefined(c) || ctype_isUnknown(c))

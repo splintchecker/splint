@@ -274,7 +274,7 @@ dumpState (cstring cfname)
   FILE *f;
   cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
   
-  f = fileTable_openFile (context_fileTable (), fname, "w");
+  f = fileTable_openWriteFile (context_fileTable (), fname);
 
   displayScanOpen (message ("Dumping to %s ", fname)); 
   
@@ -355,7 +355,7 @@ loadStandardState ()
     }
   else
     {
-      stdlib = fileTable_openFile (context_fileTable (), fpath, "r");
+      stdlib = fileTable_openReadFile (context_fileTable (), fpath);
 
       if (stdlib == NULL)
 	{
@@ -405,7 +405,7 @@ loadStandardState ()
 	      sfree (ot);
 	      
 	      check (fileTable_closeFile (context_fileTable (), stdlib));
-	      stdlib = fileTable_openFile (context_fileTable (), fpath, "r");
+	      stdlib = fileTable_openReadFile (context_fileTable (), fpath);
 	    }
 
 	  llassert (stdlib != NULL);
@@ -569,7 +569,7 @@ loadState (cstring cfname)
   FILE *f;
   cstring fname = fileLib_addExtension (cfname, cstring_makeLiteralTemp (DUMP_SUFFIX));
 
-  f = fileTable_openFile (context_fileTable (), fname, "r");
+  f = fileTable_openReadFile (context_fileTable (), fname);
 
   if (f == NULL)
     {

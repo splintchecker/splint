@@ -2295,7 +2295,7 @@ bool readOptionsFile (cstring fname, cstringSList *passThroughArgs, bool report)
     }
   else
     {
-      FILE *innerf = fileTable_openFile (context_fileTable (), fname, "r");
+      FILE *innerf = fileTable_openReadFile (context_fileTable (), fname);
       
       if (innerf != NULL)
 	{

@@ -50,7 +50,7 @@ outputLCSFile (char *path, char *msg, char *specname)
   char *sfile = mstring_concat (specname, ".lcs");
   char *outfile = mstring_concat (path, sfile);
   char *s;
-  FILE *outfptr = fileTable_openFile (context_fileTable (), cstring_fromChars (outfile), "w");
+  FILE *outfptr = fileTable_openWriteFile (context_fileTable (), cstring_fromChars (outfile));
   sfree (sfile);
 
   DPRINTF (("Output lcl file: %s / %s / %s", path, specname, outfile));

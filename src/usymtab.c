@@ -1594,7 +1594,7 @@ usymtab_rehash (/*@notnull@*/ usymtab s)
       cstringTable_free (s->htable);
     }
   
-  s->htable = cstringTable_create (LLHASHSIZE);
+  s->htable = cstringTable_create (LLAHSHSIZE);
 
   for (i = 0; i < s->nentries; i++)
     {

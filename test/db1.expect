@@ -561,25 +561,25 @@ drive.c:134: Return value (type bool) ignored: fire(17)
 drive.c:158: Return value (type bool) ignored: fire(empset_choo...
 drive.c:11: Parameter argv not used
 dbase.c:11: Type employeeKinds declared but not used
-eref.lh:8: Function exported but not used outside eref: eref_free
+eref.lh:7: Function exported but not used outside eref: eref_free
    eref.h:23: Definition of eref_free
-empset.lh:8: Function exported but not used outside empset: empset_final
+empset.lh:7: Function exported but not used outside empset: empset_final
    empset.h:29: Definition of empset_final
-empset.lh:9: Function exported but not used outside empset: empset_clear
+empset.lh:8: Function exported but not used outside empset: empset_clear
    empset.c:24: Definition of empset_clear
-empset.lh:11: Function exported but not used outside empset:
+empset.lh:10: Function exported but not used outside empset:
                  empset_insertUnique
    empset.c:53: Definition of empset_insertUnique
-empset.lh:17: Function exported but not used outside empset: empset_member
+empset.lh:16: Function exported but not used outside empset: empset_member
    empset.h:30: Definition of empset_member
-empset.lh:18: Function exported but not used outside empset: empset_subset
+empset.lh:17: Function exported but not used outside empset: empset_subset
    empset.c:144: Definition of empset_subset
-ereftab.lh:10: Function exported but not used outside ereftab: ereftab_delete
+ereftab.lh:9: Function exported but not used outside ereftab: ereftab_delete
    ereftab.c:26: Definition of ereftab_delete
 dbase.c:13: Variable exported but not used outside dbase: db
-dbase.lh:27: Function exported but not used outside dbase: promote
+dbase.lh:26: Function exported but not used outside dbase: promote
    dbase.c:182: Definition of promote
-dbase.lh:28: Function exported but not used outside dbase: setSalary
+dbase.lh:27: Function exported but not used outside dbase: setSalary
    dbase.c:206: Definition of setSalary
 empset.h:10: Variable exported but not used outside empset: known
 dbase.c:15: Variable exported but not used outside dbase: initDone

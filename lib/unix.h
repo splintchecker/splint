@@ -1142,14 +1142,21 @@ extern int shmget (key_t key, int size, int flag)
 
 /*@constant observer char *P_tmpdir@*/
 
+void clearerr (FILE *s) 
+   /*@modifies s@*/ ;
+
 /*@dependent@*/ char *ctermid (/*@returned@*/ /*@null@*/ char *) /*@*/ ;
    /* Result may be static pointer if parameter is NULL, otherwise is fresh. */
 
 char *cuserid (/*@null@*/ /*@returned@*/ char *) 
   /*@warn legacy "cuserid is obsolete"@*/ /*@*/ ;
 
+/* fclose in standard.h */
+
 /*@null@*/ FILE *fdopen (int, const char *)
   /*@modifies errno, fileSystem@*/ ;
+
+/* feof, ferror fflush, fgetc, fgetpos, fgets - in standard.h */
 
 int fileno (/*@notnull@*/ FILE *)
   /*:errorcode -1:*/ 
@@ -1219,9 +1226,15 @@ int rename (const char *, const char *)
 void rewind (FILE *stream)
    /*@modifies *stream@*/ ;
 
-void setbuf (FILE *stream, /*@null@*/ char *buf);
-     int      setvbuf(FILE *, char *, int, size_t);
-     int      snprintf(char *, size_t, const char *, ...);
+void setbuf (FILE *stream, /*@null@*/ /*@dependent@*/ /*@exposed@*/ char *buf)
+     /*@modifies stream@*/
+
+int setvbuf (FILE *stream, /*@null@*/ /*@dependent@*/ /*@exposed@*/ char *buf, int type, size_t size)
+     /*@modifies stream@*/ 
+     /*:errorcode !0:*/ ;
+     
+int snprintf (char *s, size_t n, const char *format, ...);
+
      int      sprintf(char *, const char *, ...);
      int      sscanf(const char *, const char *, int ...);
      char    *tempnam(const char *, const char *);
@@ -1285,33 +1298,26 @@ void setbuf (FILE *stream, /*@null@*/ char *buf);
 /*@constant int LOG_NOWAIT@*/
 /*@constant int LOG_PERROR@*/
 
-	extern int
-LOG_MASK (int pri)
-	/*@*/;
-
-	extern int
-LOG_UPTO (int pri)
-	/*@*/;
-
-	extern void
-closelog (void)
-	/*@modifies fileSystem@*/;
-
-	extern void
-openlog (const char *ident, int logopt, int facility)
-	/*@modifies fileSystem@*/;
-
-	extern int
-setlogmask (int maskpri)
-	/*@modifies internalState@*/;
-
-	extern void /*@printflike@*/
-syslog (int priority, const char *message, ...)
-	/*@modifies fileSystem@*/;
-
-	extern void
-vsyslog (int priority, const char *message, va_list args)
-	/*@modifies fileSystem@*/;
+int LOG_MASK (int pri)
+     /*@*/;
+     
+int LOG_UPTO (int pri)
+     /*@*/;
+     
+void closelog (void)
+     /*@modifies fileSystem@*/;
+     
+void openlog (const char *ident, int logopt, int facility)
+     /*@modifies fileSystem@*/;
+     
+int setlogmask (int maskpri)
+     /*@modifies internalState@*/;
+     
+void /*@printflike@*/ syslog (int priority, const char *message, ...)
+     /*@modifies fileSystem@*/;
+     
+void vsyslog (int priority, const char *message, va_list args)
+     /*@modifies fileSystem@*/;
 
 /*________________________________________________________________________
  * pwd.h
@@ -1387,18 +1393,6 @@ struct stat {
 } ;
 /*@=redef@*/ /*@=matchfields@*/
 
-/*@constant mode_t S_IFMT@*/
-/*@constant mode_t S_IFBLK@*/
-/*@constant mode_t S_IFCHR@*/
-/*@constant mode_t S_IFIFO@*/
-/*@constant mode_t S_IFREG@*/
-/*@constant mode_t S_IFDIR@*/
-/*@constant mode_t S_IFLNK@*/
-
-/*@constant mode_t S_IRWXU@*/
-/*@constant mode_t S_IRUSR@*/
-
-/*@-incondefs@*/ /*: probably wrong in posix.h? */
 /*@constant mode_t S_IWUSR@*/
 /*@constant mode_t S_IXUSR@*/
 /*@constant mode_t S_IRWXG@*/
@@ -1412,8 +1406,6 @@ struct stat {
 /*@constant mode_t S_ISUID@*/
 /*@constant mode_t S_ISGID@*/
 /*@constant mode_t S_ISVTX@*/
-
-/*@=incondefs@*/
 
 # if 0
 /*These are the old definitions - they don't appear to be in the Single UNIX Specification */
@@ -2253,8 +2245,13 @@ typedef /*@abstract@*/ DIR;
 
 int closedir (DIR *) /*:errorcode -1*/ ; 
 /*@null@*/ /*@dependent@*/ DIR *opendir(const char *)  /*@modifies errno, fileSystem@*/ ;
-struct dirent *readdir(DIR *);
-int readdir_r(DIR *, struct dirent *, struct dirent **);
+
+/* in posix.h: struct dirent *readdir(DIR *); */
+
+int readdir_r (DIR *, struct dirent *, /*@out@*/ struct dirent **result)
+     /*@modifies *result@*/
+     /*:errorcode !0:*/ ;
+
 void rewinddir(DIR *);
 void seekdir(DIR *, long int);
 long int telldir(DIR *);

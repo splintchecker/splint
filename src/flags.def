@@ -2855,7 +2855,7 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "isolib",
     FLG_ANSILIB,
     "use normal standard library",
@@ -2863,7 +2863,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "strictlib",
     FLG_STRICTLIB,
     "interpret standard library strictly",
@@ -2872,7 +2872,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "unixlib",
     FLG_UNIXLIB,
     "use UNIX (sort-of) standard library",
@@ -2880,7 +2880,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "unixstrictlib",
     FLG_UNIXSTRICTLIB,
     "use strict version of UNIX (sort-of) library",
@@ -2888,7 +2888,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "posixlib",
     FLG_POSIXLIB,
     "use POSIX standard library",
@@ -2896,7 +2896,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "posixstrictlib",
     FLG_POSIXSTRICTLIB,
     "use strict POSIX standard library",
@@ -2904,7 +2904,7 @@ static flaglist flags =
     0, 0
   },
   {
-    FK_LIBS, FK_INIT, globalFlag,
+    FK_LIBS, FK_INIT, idemGlobalFlag,
     "whichlib",
     FLG_WHICHLIB,
     "show standard library filename",

@@ -3009,7 +3009,7 @@ context_setString (flagcode flag, cstring val)
       {
 	; /* Okay not handle everything in this switch */
       }
-    }
+    } /* evans 2002-03-24: splintme reports a spurious (I think) warning here...need to look into it */
   
   if (cstring_length (val) >= 1
       && cstring_firstChar (val) == '\"')

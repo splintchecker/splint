@@ -305,7 +305,7 @@ osd_fileExists (cstring filespec)
   return (stat (cstring_toCharsSafe (filespec), &buf) == 0);
 # else
 # if defined (WIN32) || defined (OS2)
-  FILE *test = fileTable_openFile (context_fileTable (), filespec, "r");
+  FILE *test = fileTable_openReadFile (context_fileTable (), filespec);
   
   if (test != NULL) 
     {
@@ -567,7 +567,7 @@ cstring osd_fixDefine (cstring x)
 
 bool osd_fileIsReadable (cstring f)
 {
-  FILE *fl = fileTable_openFile (context_fileTable (), f, "r");
+  FILE *fl = fileTable_openReadFile (context_fileTable (), f);
 
   if (fl != NULL)
     {

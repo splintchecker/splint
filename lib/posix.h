@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.14 2002/03/18 01:54:51 evans1629 Exp $
+ * $Id: posix.h,v 1.15 2002/03/25 18:55:48 evans1629 Exp $
  */
 
 /*
@@ -95,10 +95,10 @@ extern int closedir (DIR *dirp)
    /*drl 1/4/2001 added the dependent annotation as suggested by
      Ralf Wildenhues */
    
-   extern /*@null@*/ /*@dependent@*/ DIR *opendir (const char *dirname)
+extern /*@null@*/ /*@dependent@*/ DIR *opendir (const char *dirname)
    /*@modifies errno, fileSystem@*/;
 
-extern /*@null@*/ struct dirent *readdir (DIR *dirp)
+extern /*@dependent@*/ /*@null@*/ struct dirent *readdir (DIR *dirp)
    /*@modifies errno@*/;
 
 extern void rewinddir (DIR *dirp)
@@ -173,20 +173,32 @@ extern void rewinddir (DIR *dirp)
 /*@constant int SEEK_CUR@*/
 /*@constant int SEEK_END@*/
 /*@constant int SEEK_SET@*/
-/*@constant int S_IRGRP@*/
-/*@constant int S_IROTH@*/
-/*@constant int S_IUSR@*/
-/*@constant int S_IWXG@*/
-/*@constant int S_IWXO@*/
-/*@constant int S_IWXU@*/
-/*@constant int S_ISGID@*/
-/*@constant int S_ISUID@*/
-/*@constant int S_IWGRP@*/
-/*@constant int S_IWOTH@*/
-/*@constant int S_IWUSR@*/
-/*@constant int S_IXGRP@*/
-/*@constant int S_IXOTH@*/
-/*@constant int S_IXUSR@*/
+
+/*@constant mode_t S_IFMT@*/
+/*@constant mode_t S_IFBLK@*/
+/*@constant mode_t S_IFCHR@*/
+/*@constant mode_t S_IFIFO@*/
+/*@constant mode_t S_IFREG@*/
+/*@constant mode_t S_IFDIR@*/
+/*@constant mode_t S_IFLNK@*/
+
+/*@constant mode_t S_IRWXU@*/
+/*@constant mode_t S_IRUSR@*/
+
+/*@constant mode_t S_IRGRP@*/
+/*@constant mode_t S_IROTH@*/
+/*@constant mode_t S_IUSR@*/
+/*@constant mode_t S_IWXG@*/
+/*@constant mode_t S_IWXO@*/
+/*@constant mode_t S_IWXU@*/
+/*@constant mode_t S_ISGID@*/
+/*@constant mode_t S_ISUID@*/
+/*@constant mode_t S_IWGRP@*/
+/*@constant mode_t S_IWOTH@*/
+/*@constant mode_t S_IWUSR@*/
+/*@constant mode_t S_IXGRP@*/
+/*@constant mode_t S_IXOTH@*/
+/*@constant mode_t S_IXUSR@*/
 
 struct flock {
   short l_type;
@@ -204,7 +216,8 @@ extern int fcntl (int fd, int cmd, ...)
 
 extern int open (const char *path, int oflag, ...)
   /*:checkerror -1 - returns -1 on error */
-  /*@modifies errno@*/;
+     /* the ... is one mode_t param */
+  /*@modifies errno@*/ ;
 
 /*
 ** grp.h
@@ -397,21 +410,6 @@ extern int fileno (FILE *fp) /*@modifies errno@*/;
 ** sys/stat.h
 */
 
-/*@constant int S_IRGRP@*/
-/*@constant int S_IROTH@*/
-/*@constant int S_IUSR@*/
-/*@constant int S_IWXG@*/
-/*@constant int S_IWXO@*/
-/*@constant int S_IWXU@*/
-/*@constant int S_ISGID@*/
-/*@constant int S_ISUID@*/
-/*@constant int S_IWGRP@*/
-/*@constant int S_IWOTH@*/
-/*@constant int S_IWUSR@*/
-/*@constant int S_IXGRP@*/
-/*@constant int S_IXOTH@*/
-/*@constant int S_IXUSR@*/
-
 struct stat {
   mode_t st_mode;
   ino_t	st_ino;
@@ -510,6 +508,10 @@ extern int WSTOPSIG (int status) /*@*/ ;
 extern int WTERMSIG (int status) /*@*/ ;
 
 /*@constant int WUNTRACED@*/
+
+/* These are in Unix spec, are they in POSIX? */
+/*@constant int WCONTINUED@*/
+/*@constant int WNOHANG@*/
 
 pid_t wait (/*@out@*/ /*@null@*/ int *st)
    /*@modifies *st, errno, systemState@*/;

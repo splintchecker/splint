@@ -70,6 +70,7 @@ static ctype cttable_addDerived (ctkind p_ctk, /*@keep@*/ ctbase p_cnew, ctype p
 static ctype cttable_addFull (/*@keep@*/ ctentry p_cnew);
 static bool ctentry_isInteresting (ctentry p_c) /*@*/;
 static /*@notnull@*/ /*@only@*/ ctbase ctbase_makeFixedArray (ctype p_b, size_t p_size) /*@*/ ;
+static bool ctbase_isAnytype (/*@notnull@*/ ctbase p_b) /*@*/ ;
 
 /* 
 ** These are file-static macros (used in ctype.c).  No way to
@@ -538,7 +539,11 @@ ctbase_unparse (ctbase c)
 			   enumNameList_unparseBrief (c->contents.cenum->members)));
 	}
     case CT_CONJ:
-      if (c->contents.conj->isExplicit || context_getFlag (FLG_SHOWALLCONJS))
+      if (ctbase_isAnytype (c))
+	{
+	  return (cstring_makeLiteral ("<any>"));
+	}
+      else if (c->contents.conj->isExplicit || context_getFlag (FLG_SHOWALLCONJS))
 	{
 	  if (!ctype_isSimple (c->contents.conj->a) ||
 	      !ctype_isSimple (c->contents.conj->b))
@@ -609,7 +614,14 @@ static /*@only@*/ cstring
     case CT_UNION:
       return (message ("union %s { ... }", c->contents.su->name));
     case CT_CONJ:
-      return (message ("%t", c->contents.conj->a));
+      if (ctbase_isAnytype (c))
+	{
+	  return (cstring_makeLiteral ("<any>"));
+	}
+      else
+	{
+	  return (message ("%t", c->contents.conj->a));
+	}
     BADDEFAULT;
     }
   BADEXIT;
@@ -657,9 +669,16 @@ ctbase_unparseNotypes (ctbase c)
     case CT_ENUMLIST:
       return (message ("[enumlist]"));
     case CT_CONJ:
-      return (message ("%q/%q", 
-		       ctbase_unparseNotypes (ctype_getCtbase (c->contents.conj->a)),
-		       ctbase_unparseNotypes (ctype_getCtbase (c->contents.conj->b))));
+      if (ctbase_isAnytype (c))
+	{
+	  return (cstring_makeLiteral ("<any>"));
+	}
+      else
+	{
+	  return (message ("%q/%q", 
+			   ctbase_unparseNotypes (ctype_getCtbase (c->contents.conj->a)),
+			   ctbase_unparseNotypes (ctype_getCtbase (c->contents.conj->b))));
+	}
     BADDEFAULT;
     }
   BADEXIT;
@@ -754,8 +773,12 @@ ctbase_unparseDeclaration (ctbase c, /*@only@*/ cstring name) /*@*/
 			   enumNameList_unparseBrief (c->contents.cenum->members),
 			   name));
 	}
-    case CT_CONJ:      
-      if (c->contents.conj->isExplicit || context_getFlag (FLG_SHOWALLCONJS))
+    case CT_CONJ:
+      if (ctbase_isAnytype (c))
+	{
+	  return (message ("<any> %q", name));
+	}
+      else if (c->contents.conj->isExplicit || context_getFlag (FLG_SHOWALLCONJS))
 	{
 	  if (!ctype_isSimple (c->contents.conj->a) ||
 	      !ctype_isSimple (c->contents.conj->b))
@@ -1837,6 +1860,23 @@ static /*@only@*/ ctbase
   c->contents.conj->isExplicit = isExplicit;
 
   return (c);
+}
+
+static bool ctbase_isAnytype (/*@notnull@*/ ctbase b)
+{
+  /*
+  ** A unknown|dne conj is a special representation for an anytype.
+  */
+
+  if (b->type == CT_CONJ)
+    {
+      /*@access ctype@*/
+      return (b->contents.conj->a == ctype_unknown
+	      && b->contents.conj->b == ctype_dne);
+      /*@noaccess ctype@*/ 
+    }
+  
+  return FALSE;
 }
 
 static ctype

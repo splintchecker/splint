@@ -375,27 +375,31 @@ typedef /*@abstract@*/ /*@mutable@*/ void *fpos_t;
 int remove (char *filename) /*@modifies fileSystem, errno@*/ ;
 int rename (char *old, char *new) /*@modifies fileSystem, errno@*/ ;
 
-/*@null@*/ FILE *tmpfile (void) /*@modifies fileSystem@*/ ;
+/*@dependent@*/ /*@null@*/ FILE *tmpfile (void)
+   /*@modifies fileSystem, errno@*/ ;
+
 /*@observer@*/ char *
   tmpnam (/*@out@*/ /*@null@*/ /*@returned@*/ char *s) 
   /*@modifies *s, internalState@*/ ;
 
-int fclose (FILE *stream) /*@modifies *stream, errno, fileSystem;@*/ ;
+int fclose (FILE *stream) 
+   /*@modifies *stream, errno, fileSystem;@*/ ;
+
 int fflush (/*@null@*/ FILE *stream) 
    /*@modifies *stream, errno, fileSystem;@*/ ;
 
 /*@null@*/ /*@dependent@*/ FILE *fopen (char *filename, char *mode) 
    /*@modifies fileSystem@*/ ;         
 
-/*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
+/*@dependent@*/ /*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
   /*@modifies *stream, fileSystem, errno@*/ ;
 
-  extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
-   /*@modifies fileSystem, *stream, *buf@*/ ;
+extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
+     /*@modifies fileSystem, *stream, *buf@*/ ;
 
-   extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
+extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
 		    int mode, size_t size)
-   /*@modifies fileSystem, *stream, *buf@*/ ;
+     /*@modifies fileSystem, *stream, *buf@*/ ;
 
 # ifdef STRICT
 /*@printflike@*/ 
@@ -525,6 +529,7 @@ void rewind (FILE *stream) /*@modifies *stream@*/ ;
 void clearerr (FILE *stream) /*@modifies *stream@*/ ;
 
 int feof (FILE *stream) /*@modifies errno@*/ ;
+
 int ferror (FILE *stream) /*@modifies errno@*/ ;
 
 void perror (/*@null@*/ char *s) 

@@ -387,7 +387,7 @@ callLSL (/*@unused@*/ cstring specfile, /*@only@*/ cstring text)
   FILE *inptr;
 
   infile = fileTable_fileName (fileTable_addltemp (context_fileTable ()));
-  inptr = fileTable_openFile (context_fileTable (), infile, "w");
+  inptr = fileTable_createFile (context_fileTable (), infile);
   
   if (inptr == NULL)
     {
@@ -428,7 +428,7 @@ static void invokeLSL (cstring infile, cstring outfile, bool deletep)
   ** way to do this. 
   */
   
-  outptr = fileTable_openFile (context_fileTable (), outfile, "w");
+  outptr = fileTable_createFile (context_fileTable (), outfile);
 
   if (outptr == NULL)
     {			

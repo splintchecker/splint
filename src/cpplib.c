@@ -6737,7 +6737,7 @@ read_name_map (cppReader *pfile, cstring dirname)
 
   name = cstring_concatFree1 (name, cstring_makeLiteralTemp (FILE_NAME_MAP_FILE));
 
-  f = fileTable_openFile (context_fileTable (), name, "r");
+  f = fileTable_openReadFile (context_fileTable (), name);
   cstring_free (name);
 
   if (f == NULL)

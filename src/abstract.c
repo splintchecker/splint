@@ -3413,23 +3413,23 @@ lclTypeSpecNode_unparseAltComments (/*@null@*/ lclTypeSpecNode typespec) /*@*/
 		    return (message ("%q%s", s, ltoken_unparse (n->opttagid)));
 		  }
 
-		s = message ("%q%s {\n\2\1", s, ltoken_unparse (n->opttagid));
+		s = message ("%q%s {\n\t", s, ltoken_unparse (n->opttagid));
 	      }
 	    else
 	      {
-		s = message ("%q{\n\2\1", s);
+		s = message ("%q{\n\t", s);
 	      }
 
 	    decls = n->structdecls;
 
 	    stDeclNodeList_elements (decls, f)
 	    {
-	      s = message ("%q%q\1%q;\n\1", s, 
+	      s = message ("%q%q %q;\n\t", s, 
 			   lclTypeSpecNode_unparseAltComments (f->lcltypespec),
 			  declaratorNodeList_unparse (f->declarators));
 	    } end_stDeclNodeList_elements;
 
-	    return (message ("%q\3}", s));
+	    return (message ("%q }", s));
 	  }
 	case LTS_CONJ:
 	  {
@@ -3520,23 +3520,23 @@ cstring lclTypeSpecNode_unparseComments (/*@null@*/ lclTypeSpecNode typespec)
 		    return (message ("%q%s", s, ltoken_unparse (n->opttagid)));
 		  }
 
-		s = message ("%q%s {\n\2\1", s, ltoken_unparse (n->opttagid));
+		s = message ("%q%s {\n\t", s, ltoken_unparse (n->opttagid));
 	      }
 	    else
 	      {
-		s = message ("%q{\n\2\1", s);
+		s = message ("%q{\n\t", s);
 	      }
 
 	    decls = n->structdecls;
 
 	    stDeclNodeList_elements (decls, f)
 	    {
-	      s = message ("%q%q\1%q;\n\1", s, 
+	      s = message ("%q%q %q;\n\t", s, 
 			   lclTypeSpecNode_unparseComments (f->lcltypespec),
 			  declaratorNodeList_unparse (f->declarators));
 	    } end_stDeclNodeList_elements;
 
-	    return (message ("%q\3}", s));
+	    return (message ("%q }", s));
 	  }
 	case LTS_CONJ:
 	  {

@@ -40,9 +40,6 @@ extern /*@observer@*/ cstring
 /*@constant observer cstring C_EXTENSION; @*/
 # define C_EXTENSION cstring_makeLiteralTemp (".c")
 
-/*@constant observer cstring LHTMP_EXTENSION; @*/
-# define LHTMP_EXTENSION cstring_makeLiteralTemp (".lh_tmp")
-
 /*@constant observer cstring XH_EXTENSION;@*/
 # define XH_EXTENSION cstring_makeLiteralTemp (".xh")
 

@@ -46,19 +46,11 @@
 # include "llmain.h"
 
 /*@constant static char TABCH; @*/
-# define TABCH 		'\1'
+# define TABCH 		' '
 
 /*@constant static char TABINCH; @*/
-# define TABINCH 	'\2'
+# define TABINCH 	'\t'
 
-/*@constant static char TABOUTCH; @*/
-# define TABOUTCH	'\3'
-
-/*
-  # define TAB 		        fputc (TABCH, 	LhFile.f);
-  # define TABIN		fputc (TABINCH, 	LhFile.f);
-  # define TABOUT		fputc (TABOUTCH, LhFile.f);
-*/
 
 /*@private@*/ typedef struct
 {
@@ -82,15 +74,6 @@ static cstring lhTypeSpecNode (lclTypeSpecNode p_typespec);
 static /*@only@*/ cstring lhTypeExpr (/*@null@*/ typeExpr p_x);
 static /*@only@*/ cstring lhDeclaratorNode (declaratorNode p_x);
 
-static /*:open:*/ /*@dependent@*/ /*@null@*/ FILE *out_open (cstring name, cstring suffix)
-     /*@modifies fileSystem@*/
-{
-  cstring fullname = cstring_concat (name, suffix);
-  FILE *ret = fileTable_openFile (context_fileTable (), fullname, "w+");
-  cstring_free (fullname);
-  return ret;
-}
-
 /*@only@*/ cstring 
 lhFunction (lclTypeSpecNode lclTypeSpec, declaratorNode declarator)
 {
@@ -99,7 +82,7 @@ lhFunction (lclTypeSpecNode lclTypeSpec, declaratorNode declarator)
   if (!genLh)
     return cstring_undefined;
   
-  s = message ("extern %q\1%q;", lhTypeSpecNode (lclTypeSpec),
+  s = message ("extern %q %q;", lhTypeSpecNode (lclTypeSpec),
 	       lhDeclaratorNode (declarator));
   
   return s;
@@ -261,7 +244,7 @@ lhVarDecl (lclTypeSpecNode lclTypeSpec, initDeclNodeList initDecls,
       break;
     }
   
-  s = message ("%q %q\1", s, lhTypeSpecNode (lclTypeSpec));
+  s = message ("%q %q ", s, lhTypeSpecNode (lclTypeSpec));
 
   initDeclNodeList_elements (initDecls, i)
   {
@@ -289,71 +272,19 @@ lhCleanup (void)
     }
   else
     {
-      FILE *f;
-      int c, col = 0, tabcol = 0;
-      cstring fullname;
-
-      f = out_open (LhFile.name, LH_EXTENSION);
       llassert (LhFile.f != NULL);
       
-      fullname = cstring_concat (LhFile.name, LHTMP_EXTENSION);
-
-      if (f == NULL)
+      if (LhFile.f == NULL)
 	{
 	  /*@i25534  check this!  does it report the right filename? */
-	  lldiagmsg (message ("Cannot open lh file for output: %s", 
-			      fullname));
+	  lldiagmsg (message ("Cannot open lh file for output: %s", LhFile.name));
 	}
       else
 	{
-	  fprintf (f, "/* Output from %s */\n", LCL_PARSE_VERSION);
-
-	  rewind (LhFile.f);
-
-	  while (EOF != (c = getc (LhFile.f)))
-	    {
-	      switch (c)
-		{
-		case TABCH:
-		  if (col == 0)
-		    {
-		      if (tabcol > 0)
-			fprintf (f, "%*s", tabcol, "");
-		    }
-		  else
-		    {
-		      check (fputc (' ', f) == (int) ' ');
-		    }
-		  /*@switchbreak@*/ break;
-		  
-		case TABINCH:
-		  tabcol += 4;
-		  /*@switchbreak@*/ break;
-		  
-		case TABOUTCH:
-		  tabcol -= 4;
-		  /*@switchbreak@*/ break;
-		  
-		case '\n':
-		  col = 0;
-		  check (fputc (c, f) == (int) c);
-		  /*@switchbreak@*/ break;
-		  
-		default:
-		  col++;
-		  check (fputc (c, f) == (int) c);
-		  /*@switchbreak@*/ break;
-		}
-	    }
-
-	  check (fileTable_closeFile (context_fileTable (), f));
+	  check (fprintf (LhFile.f, "/* Output from %s */\n", LCL_PARSE_VERSION) > 0);
 	  check (fileTable_closeFile (context_fileTable (), LhFile.f));
-
-	  (void) osd_unlink (fullname);
 	  LhFile.f = NULL;
 	}
-      
-      cstring_free (fullname);
     }
 }
 
@@ -364,32 +295,7 @@ lhIncludeBool (void)
   needIncludeBool = TRUE;
 }
 
-/*
-**++
-**  FUNCTIONAL DESCRIPTION:
-**
-**      Initialize the .lh file processing.
-**
-**  FORMAL PARAMETERS:
-**
-**      source * f: The source file, from which we compute the name of
-**	the .lh file.
-**
-**	bool outputLh: If true, produce a .lh file, otherwise don't.
-**
-**  RETURN VALUE:
-**
-**      None
-**
-**  SIDE EFFECTS:
-**
-**      The .lh file may be opened.
-**
-**
-**--
-*/
-
-void lhInit (inputStream  f) /*@globals undef LhFile; @*/
+void lhInit (inputStream f) /*@globals undef LhFile; @*/
 {
   static bool lherror = FALSE;
   
@@ -401,18 +307,17 @@ void lhInit (inputStream  f) /*@globals undef LhFile; @*/
       return;
     }
   
-  LhFile.name = LSLRootName (inputStream_fileName (f));
-  LhFile.f = out_open (LhFile.name, LHTMP_EXTENSION);
+  LhFile.name = cstring_concatFree1 (LSLRootName (inputStream_fileName (f)),
+				     LH_EXTENSION);
+  LhFile.f = fileTable_openWriteUpdateFile (context_fileTable (), LhFile.name);
 
   if (LhFile.f == NULL)
     {
       genLh = FALSE;
       if (!lherror)
 	{
-	  lclplainerror (message ("Cannot write temporary %s file: %s%s", 
-				  LH_EXTENSION,
-				  LhFile.name,
-				  LHTMP_EXTENSION));
+	  lclplainerror (message ("Cannot write temporary file: %s", 
+				  LhFile.name));
 	  lherror = TRUE;
 	}
     } 
@@ -423,6 +328,7 @@ void lhOutLine (/*@only@*/ cstring s)
   if (genLh)
     {
       llassert (LhFile.f != NULL);
+      DPRINTF (("lhOutLine: %s / %s", s, LhFile.name));
 
       if (cstring_length (s) > 0) 
 	{

@@ -129,6 +129,12 @@ extern /*@observer@*/ cstring fileTable_fileName (fileId p_fid) /*@*/ ;
 extern /*@observer@*/ cstring fileTable_fileNameBase (fileId p_fid) /*@*/ ;
 extern /*@observer@*/ cstring fileTable_rootFileName (fileId p_fid) /*@*/ ;
 
+extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *fileTable_createFile (fileTable p_ft, cstring p_fname) 
+     /*@modifies p_ft, fileSystem@*/ ;
+
+extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *fileTable_createMacrosFile (fileTable p_ft, cstring p_fname) 
+     /*@modifies p_ft, fileSystem@*/ ;
+
 # define fileTable_fileName(fid)     (fileTable_getName(context_fileTable(), fid))
 # define fileTable_fileNameBase(fid) (fileTable_getNameBase(context_fileTable(), fid))
 # define fileTable_rootFileName(fid) (fileTable_getRootName(context_fileTable(), fid))
@@ -138,9 +144,16 @@ extern bool fileId_baseEqual (/*@sef@*/ fileId p_t1, /*@sef@*/ fileId p_t2) /*@*
 # define fileId_baseEqual(t1,t2) \
   (fileId_equal (t1, t2) || fileTable_sameBase (context_fileTable (), t1, t2))
 
+extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *
+fileTable_openReadFile (fileTable p_ft, cstring p_fname) 
+     /*@modifies p_ft@*/ ;
 
 extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *
-fileTable_openFile (fileTable p_ft, cstring p_fname, /*@observer@*/ char *p_mode) 
+fileTable_openWriteFile (fileTable p_ft, cstring p_fname) 
+     /*@modifies p_ft@*/ ;
+
+extern /*@null@*/ /*@open@*/ /*@dependent@*/ FILE *
+fileTable_openWriteUpdateFile (fileTable p_ft, cstring p_fname) 
      /*@modifies p_ft@*/ ;
 
 extern bool fileTable_closeFile (fileTable p_ft, FILE *p_f) 

@@ -279,8 +279,8 @@ inputStream_open (inputStream s)
       return TRUE;
     }
 
-  DPRINTF (("Open: %s", s->name));
-  s->file = fileTable_openFile (context_fileTable (), s->name, "r");
+  DPRINTF (("Opening: %s", s->name));
+  s->file = fileTable_openReadFile (context_fileTable (), s->name);
   return (s->file != 0 || s->fromString);
 }
 

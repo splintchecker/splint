@@ -116,7 +116,7 @@ int cppProcess (/*@dependent@*/ cstring infile,
       llexit (LLFAILURE);
     }
 
-  ofile = fileTable_openFile (context_fileTable (), outfile, "w");
+  ofile = fileTable_createFile (context_fileTable (), outfile);
   
   if (ofile == NULL) 
     {

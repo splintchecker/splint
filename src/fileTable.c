@@ -44,11 +44,15 @@
  * - Added conditional stuff (#define and #include) for IBM's compiler.
  */
 
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 # include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
 # include "llmain.h"
 # include "portab.h"
+
 # if defined(__IBMC__) && defined(OS2)
 # include <process.h>
 # define getpid _getpid
@@ -948,7 +952,6 @@ static /*@only@*/ cstring makeTempName (cstring dir, cstring pre, cstring suf)
       smsg = message ("%s%s%s%s%s", dir, pre, pidname, cstring_fromChars (msg), suf);
       nextMsg (msg);
     }
-  
 
   return smsg;
 }
@@ -984,9 +987,106 @@ fileTable_addOpen (fileTable ft, /*@observer@*/ FILE *f, /*@only@*/ cstring fnam
   ft->nopen++;
 }
 
-FILE *fileTable_openFile (fileTable ft, cstring fname, char *mode)
+FILE *fileTable_createFile (fileTable ft, cstring fname)
 {
-  FILE *res = fopen (cstring_toCharsSafe (fname), mode);
+  int fdesc = open (cstring_toCharsSafe (fname), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+
+  if (fdesc == -1)
+    {
+      osd_setTempError ();
+      llfatalerror (message ("Temporary file for "
+			     "pre-processor output already exists.  Trying to "
+			     "open: %s.",
+			     fname));
+
+      /*@notreached@*/ return NULL;
+    }
+  else
+    {
+      FILE *res = fdopen (fdesc, "w");
+  
+      if (res != NULL) 
+	{
+	  fileTable_addOpen (ft, res, cstring_copy (fname));
+	  DPRINTF (("Opening file: %s / %p", fname, res));
+	}
+      else
+	{
+	  DPRINTF (("Error opening: %s", fname));
+	}
+
+      return res;
+    }
+}
+
+FILE *fileTable_createMacrosFile (fileTable ft, cstring fname)
+{
+  int fdesc = open (cstring_toCharsSafe (fname), O_RDWR | O_CREAT | O_TRUNC | O_EXCL, S_IRUSR | S_IWUSR);
+
+  if (fdesc == -1)
+    {
+      osd_setTempError ();
+      llfatalerror (message ("Temporary file for "
+			     "pre-processor output already exists.  Trying to "
+			     "open: %s.",
+			     fname));
+
+      /*@notreached@*/ return NULL;
+    }
+  else
+    {
+      FILE *res = fdopen (fdesc, "w+");
+  
+      if (res != NULL) 
+	{
+	  fileTable_addOpen (ft, res, cstring_copy (fname));
+	  DPRINTF (("Opening file: %s / %p", fname, res));
+	}
+      else
+	{
+	  DPRINTF (("Error opening: %s", fname));
+	}
+
+      return res;
+    }
+}
+
+FILE *fileTable_openReadFile (fileTable ft, cstring fname)
+{
+  FILE *res = fopen (cstring_toCharsSafe (fname), "r");
+
+  if (res != NULL) 
+    {
+      fileTable_addOpen (ft, res, cstring_copy (fname));
+      DPRINTF (("Opening read file: %s / %p", fname, res));
+    }
+  else
+    {
+      DPRINTF (("Cannot open read file: %s", fname));
+    }
+
+  return res;
+}
+
+/*
+** Allows overwriting
+*/
+
+FILE *fileTable_openWriteFile (fileTable ft, cstring fname)
+{
+  FILE *res = fopen (cstring_toCharsSafe (fname), "w");
+
+  if (res != NULL) {
+    fileTable_addOpen (ft, res, cstring_copy (fname));
+    DPRINTF (("Opening file: %s / %p", fname, res));
+  }
+
+  return res;
+}
+
+FILE *fileTable_openWriteUpdateFile (fileTable ft, cstring fname)
+{
+  FILE *res = fopen (cstring_toCharsSafe (fname), "w+");
 
   if (res != NULL) {
     fileTable_addOpen (ft, res, cstring_copy (fname));
@@ -1010,7 +1110,7 @@ bool fileTable_closeFile (fileTable ft, FILE *f)
       if (ft->openelements[i]->f == f)
 	{
 	  DPRINTF (("Closing file: %p = %s", f, ft->openelements[i]->fname));
-
+	  
 	  if (i == ft->nopen - 1)
 	    {
 	      foentry_free (ft->openelements[i]);

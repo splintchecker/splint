@@ -119,6 +119,6 @@ repexpose.c:51:10: Function returns reference to parameter im: (im->name)
 repexpose.c:51:10: Return value exposes rep of immut: (im->name)
 repexpose.c: (in function abst_setIm)
 repexpose.c:57:3: Undocumented modification of a->im: a->im = im
-repexpose.lh:6:16: Variable globstring declared but not defined
+repexpose.lh:5:16: Variable globstring declared but not defined
 
 Finished checking --- 27 code warnings, as expected

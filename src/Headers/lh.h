@@ -9,7 +9,7 @@
 
 extern void lhCleanup (void) /*@modifies internalState, fileSystem@*/ ;
 extern void lhIncludeBool (void) /*@modifies internalState@*/ ;
-extern void lhInit (inputStream p_f) /*@modifies internalState, fileSystem@*/ ;
+extern void lhInit (inputStream p_f) /*@modifies internalState@*/ ;
 extern void lhOutLine (/*@only@*/ cstring p_s) /*@modifies internalState@*/ ;
 extern void lhExternals (interfaceNodeList p_x) /*@modifies internalState@*/ ;
 
