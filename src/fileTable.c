@@ -55,7 +55,11 @@
 
 # if defined(__IBMC__) && defined(OS2)
 # include <process.h>
+# include <io.h>
 # define getpid _getpid
+# define S_IRUSR S_IREAD
+# define S_IWUSR S_IWRITE 
+# define S_IXUSR S_IEXEC
 # endif
 
 /*@access fileId*/

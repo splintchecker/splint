@@ -36,6 +36,7 @@ goto end
 
 :oldconf
 make -f Makefile.os2 --directory=../src --warn-undefined-variables %2 %3 %4 %5 %6 %7 %8 %9 
+make -f Makefile.os2 --directory=../lib --warn-undefined-variables %2 %3 %4 %5 %6 %7 %8 %9 
 goto end
 
 :test
