@@ -254,13 +254,14 @@ typedef union
 #define	QMAXSET	434
 #define	QMAXREAD	435
 #define	QTESTINRANGE	436
-#define	IDENTIFIER	437
-#define	NEW_IDENTIFIER	438
-#define	TYPE_NAME_OR_ID	439
-#define	CCONSTANT	440
-#define	ITER_NAME	441
-#define	ITER_ENDNAME	442
-#define	TYPE_NAME	443
+#define	TCAND	437
+#define	IDENTIFIER	438
+#define	NEW_IDENTIFIER	439
+#define	TYPE_NAME_OR_ID	440
+#define	CCONSTANT	441
+#define	ITER_NAME	442
+#define	ITER_ENDNAME	443
+#define	TYPE_NAME	444
 
 
 extern YYSTYPE yylval;
