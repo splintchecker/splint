@@ -3360,10 +3360,11 @@ void uentry_makeVarFunction (uentry ue)
   llassert (uentry_isVariable (ue));
   oldInfo = ue->info->var;
 
-  llassert (ctype_isUnknown (ue->utype) || ctype_isFunction (ue->utype));
+  DPRINTF (("ue: %s", uentry_unparseFull (ue)));
+  llassert (ctype_isUnknown (ue->utype) || ctype_isFunction (ctype_realType (ue->utype)));
 
   /*
-  ** expanded macro is marked used (until I write a pre-processor)
+  ** expanded macro is marked used 
   */
 
   ue->used = ue->used || (oldInfo->kind == VKEXPMACRO);
@@ -8227,7 +8228,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   uentryList oldParams  = uentry_getParams (old);
   uentryList newParams  = uentry_getParams (unew);
   ctype      newType    = unew->utype;
-  ctype      oldType    = old->utype;
+  ctype      oldType    = ctype_realType (old->utype);
   ctype      oldRetType = ctype_unknown;
   ctype      newRetType = ctype_unknown;
 
@@ -8249,14 +8250,12 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
   if (ctype_isKnown (oldType))
     {
       llassert (ctype_isFunction (oldType));
-
       oldRetType = ctype_getReturnType (oldType);
     }
 
   if (ctype_isKnown (newType))
     {
       llassert (ctype_isFunction (newType));
-
       newRetType = ctype_getReturnType (newType);
     }
 
