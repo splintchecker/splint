@@ -37,6 +37,10 @@ extern /*@null@*/ /*@dependent@*/ /*@exposed@*/ stateValue
   ((stateValue) genericTable_lookup ((genericTable) (p_h), p_key))
 /*@noaccess stateValue@*/
 
+extern bool valueTable_contains (valueTable p_h, cstring p_key) /*@*/ ;
+# define valueTable_contains(p_h,p_key) \
+ (stateValue_isDefined (valueTable_lookup (p_h, p_key)))
+
 extern /*@unused@*/ /*@only@*/ cstring valueTable_stats(valueTable p_h);
 # define valueTable_stats(p_h) genericTable_stats ((genericTable) (p_h))
 

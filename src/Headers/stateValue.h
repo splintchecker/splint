@@ -17,10 +17,12 @@
 struct s_stateValue
 {
   int value;
+  bool implicit;
   /*@only@*/ stateInfo info;
 };
 
-extern stateValue stateValue_create (int p_value, /*@only@*/ stateInfo p_info) /*@*/ ;
+extern /*@notnull@*/ stateValue stateValue_create (int p_value, /*@only@*/ stateInfo p_info) /*@*/ ;
+extern /*@notnull@*/ stateValue stateValue_createImplicit (int p_value, /*@only@*/ stateInfo p_info) /*@*/ ;
 
 /*@constant null stateValue stateValue_undefined@*/
 # define stateValue_undefined (NULL)
@@ -30,6 +32,8 @@ extern /*@truenull@*/ bool stateValue_isUndefined (stateValue) /*@*/ ;
 
 extern /*@falsenull@*/ bool stateValue_isDefined (stateValue) /*@*/ ;
 # define stateValue_isDefined(p_s) ((p_s) != NULL)
+
+extern bool stateValue_isImplicit (stateValue) /*@*/ ;
 
 extern int stateValue_getValue (stateValue p_s) /*@*/ ;
 
@@ -50,7 +54,7 @@ extern void stateValue_show (stateValue p_s, metaStateInfo p_msinfo) ;
 
 extern stateValue stateValue_copy (stateValue p_s) /*@*/ ;
 
-extern /*@observer@*/ cstring 
+extern /*@only@*/ cstring 
    stateValue_unparseValue (stateValue p_s, metaStateInfo p_msinfo) /*@*/ ;
 
 extern cstring stateValue_unparse (stateValue p_s) /*@*/ ;
