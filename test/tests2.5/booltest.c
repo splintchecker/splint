@@ -1,8 +1,8 @@
 /*
 ** Boolean type checking
 */
-
-typedef int bool;
+// bool is now defined in the standard library
+#include<stdbool.h>
 
 bool f (int i, bool b) {
   if (i) { /* error with -boolint -predboolint */
