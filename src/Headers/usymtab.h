@@ -8,7 +8,7 @@
 
 # ifndef USYMTAB_H
 # define USYMTAB_H
-#include "environmentTable.h"
+//#include "environmentTable.h"
 
 /*@constant null usymtab GLOBAL_ENV; @*/ 
 # define GLOBAL_ENV usymtab_undefined
