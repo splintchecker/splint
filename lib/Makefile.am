@@ -18,6 +18,10 @@ splintlib_DATA = \
 ## Include them in the distribution
 EXTRA_DIST = $(splintlib_DATA)
 
+##get rid of lcd files if the user does a make clean
+CLEANFILES = posix.lcd standard.lcd unix.lcd \
+             posixstrict.lcd  standardstrict.lcd  unixstrict.lcd
+
 
 ## Rules to make splint & the dumps
 

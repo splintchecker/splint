@@ -2165,6 +2165,7 @@ sRef checkStateClausesId (uentry ue)
 
 sRef checkbufferConstraintClausesId (uentry ue)
 {
+  sRef sr;
   cstring s = uentry_rawName (ue);
 
   if (cstring_equalLit (s, "result"))
@@ -2179,8 +2180,14 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
-  DPRINTF (("constrant id: %s", uentry_unparseFull (ue)));
-  return sRef_saveCopy (uentry_getSref (ue)); /*@i523 why the saveCopy? */
+  DPRINTF (("constraint id: %s", uentry_unparseFull (ue)));
+  sr = uentry_getSref (ue);
+
+  if (sRef_isInvalid (sr) )
+    {
+      llfatalerrorLoc (cstring_makeLiteral("Macro defined constants can not be used in function constraints unless they are specifed with the constant annotation.  To use a macro defined constant include an annotation of the form /*@constant <type> <name>=<value>@*/ somewhere before the function constraint.  This restriction may be removed in future releases if it is determined to be excessively burdensome." ));
+    }
+  return sRef_saveCopy (sr); /*@i523 why the saveCopy? */
 }
 
 void checkModifiesId (uentry ue)
