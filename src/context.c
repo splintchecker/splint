@@ -62,7 +62,7 @@ typedef enum {
   CX_ERROR,
 
   CX_GLOBAL, CX_INNER, 
-  CX_FUNCTION, CX_FCNHEADER, CX_FCNDECLARATION,
+  CX_FUNCTION, CX_FCNDECLARATION,
   CX_MACROFCN, CX_MACROCONST, CX_UNKNOWNMACRO, 
   CX_ITERDEF, CX_ITEREND,
   CX_LCL, CX_LCLLIB, CX_MT
@@ -95,6 +95,7 @@ static struct
   bool savedFlags  BOOLBITS;
   bool justpopped  BOOLBITS;
   bool anyExports BOOLBITS;
+  bool inFunctionHeader BOOLBITS;
 
   flagcode library;
 
@@ -1378,19 +1379,19 @@ context_removeFileAccessType (typeId t)
 void context_enterFunctionHeader (void)
 {
   llassert (gc.kind == CX_GLOBAL);
-  DPRINTF (("Enter function decl"));
-  gc.kind = CX_FCNHEADER;
+  DPRINTF (("Enter function header!"));
+  gc.inFunctionHeader = TRUE;
 }
 
 void context_exitFunctionHeader (void)
 {
-  DPRINTF (("Exit function decl"));
-  gc.kind = CX_GLOBAL;
+  DPRINTF (("Exit function header!"));
+  gc.inFunctionHeader = FALSE;
 }
 
 bool context_inFunctionHeader (void)
 {
-  return (gc.kind == CX_FCNHEADER);
+  return (gc.inFunctionHeader);
 }
 
 void context_enterFunctionDeclaration (uentry e)
@@ -2843,6 +2844,8 @@ void context_initMod (void)
 
   gc.stateTable = metaStateTable_create ();
   gc.annotTable = annotationTable_create ();
+
+  gc.inFunctionHeader = FALSE;
 
   DPRINTF (("Annotations: \n%s",
 	    cstring_toCharsSafe (annotationTable_unparse (gc.annotTable))));

@@ -184,8 +184,6 @@ extern void yyerror (char *);
 %type <typequal> nullterminatedQualifier
 %token <tok> QNULLTERMINATED
 %token <tok> QSETBUFFERSIZE
-%token <tok> QBUFFERCONSTRAINT
-%token <tok> QENSURESCONSTRAINT
 %token <tok> QSETSTRINGLENGTH
 %token <tok> QMAXSET
 %token <tok> QMAXREAD
@@ -211,7 +209,7 @@ extern void yyerror (char *);
 %type <globsclause> globalsClause globalsClausePlain
 %type <modsclause> modifiesClause modifiesClausePlain nomodsClause
 %type <warnclause> warnClause warnClausePlain
-%type <stateclause> conditionClause conditionClausePlain
+%type <funcclause> conditionClause conditionClausePlain
 %type <stateclause> stateClause stateClausePlain
 
 %type <sr> globId globIdListExpr
@@ -221,7 +219,7 @@ extern void yyerror (char *);
 %type <cname> enumerator newId  /*@-varuse@*/ /* yacc declares yytranslate here */
 %type <count> pointers /*@=varuse@*/
 
-%type <tok> doHeader stateTag conditionTag 
+%type <tok> doHeader stateTag conditionTag startConditionClause
 %type <typequal> exitsQualifier checkQualifier stateQualifier 
                  paramQualifier returnQualifier visibilityQualifier
                  typedefQualifier refcountQualifier definedQualifier
@@ -354,7 +352,6 @@ namedDeclBase
  | namedDeclBase PushType TLPAREN TRPAREN 
    { setCurrentParams (uentryList_missingParams); }
    functionClauses
-   optGlobBufConstraints
    { /* need to support globals and modifies here! */
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
@@ -366,7 +363,6 @@ namedDeclBase
  | namedDeclBase PushType TLPAREN genericParamList TRPAREN 
    { setCurrentParams ($4); } 
    functionClauses
-   optGlobBufConstraints
    { setImplictfcnConstraints ();
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
@@ -434,45 +430,6 @@ fcnDefHdr
 
 /*drl*/
 
-optGlobBufConstraints
- : { setProcessingGlobMods (); } optGlobBufConstraintsRest
-   { clearProcessingGlobMods (); }
-
-optGlobBufConstraintsRest
- : optGlobBufConstraintsAux optGlobEnsuresConstraintsAux
-
-
-optGlobEnsuresConstraintsAux
-: {
-  DPRINTF ( ("doing optGlobEnsuresConstraintsAux\n") );
-context_setProtectVars (); enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-
-}  QENSURESCONSTRAINT BufConstraintList optSemi QENDMACRO
-{
-  setEnsuresConstraints ($3);
-  exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-  DPRINTF (("done optGlobBufConstraintsAux\n"));}
- | /*empty*/
-
-
-optGlobBufConstraintsAux
-: {
-  DPRINTF ( ("doing optGlobBufConstraintsAux\n") );
-context_setProtectVars (); enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-
-}  QBUFFERCONSTRAINT BufConstraintList optSemi QENDMACRO
-{
-  setFunctionConstraints ($3);
-  exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-  DPRINTF (("done optGlobBufConstraintsAux\n"));}
- | /*empty*/
-
 BufConstraintList
 : BufConstraint TCAND BufConstraintList { $$ = constraintList_add ($3, $1); }
 | BufConstraint {constraintList c; c = constraintList_makeNew(); c = constraintList_add (c, $1); $$ = c}
@@ -484,7 +441,7 @@ BufConstraint
 
 bufferModifier
  : QMAXSET
- |QMAXREAD
+ | QMAXREAD
 
 relationalOp
  : GE_OP
@@ -567,7 +524,7 @@ functionClause
  | modifiesClause  { $$ = functionClause_createModifies ($1); }
  | nomodsClause    { $$ = functionClause_createModifies ($1); }
  | stateClause     { $$ = functionClause_createState ($1); }  
- | conditionClause { $$ = functionClause_createState ($1); }
+ | conditionClause { $$ = $1; }
  | warnClause      { $$ = functionClause_createWarn ($1); }
 
 functionClausePlain
@@ -575,7 +532,7 @@ functionClausePlain
  | modifiesClausePlain  { $$ = functionClause_createModifies ($1); }
  | nomodsClause         { $$ = functionClause_createModifies ($1); }
  | stateClausePlain     { $$ = functionClause_createState ($1); }  
- | conditionClausePlain { $$ = functionClause_createState ($1); }
+ | conditionClausePlain { $$ = $1; }
  | warnClausePlain      { $$ = functionClause_createWarn ($1); }
 
 globalsClause
@@ -1031,8 +988,11 @@ stateClausePlain
 conditionClause
  : conditionClausePlain QENDMACRO { $$ = $1; }
 
+startConditionClause
+: conditionTag NotType { $$ = $1; context_enterFunctionHeader (); } 
+
 conditionClausePlain
- : conditionTag { context_enterFunctionHeader (); } NotType stateQualifier
+ : startConditionClause stateQualifier
    {
      context_exitFunctionHeader ();
      context_setProtectVars (); 
@@ -1044,7 +1004,34 @@ conditionClausePlain
      exitParamsTemp ();
      sRef_clearGlobalScopeSafe (); 
      context_releaseVars ();
-     $$ = stateClause_create ($1, $4, $6);
+     $$ = functionClause_createState (stateClause_create ($1, $2, $4));
+   }
+ | startConditionClause
+   {
+     context_setProtectVars (); 
+     enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+   } 
+   BufConstraintList optSemi IsType
+   {
+     context_exitFunctionHeader ();
+     exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+     DPRINTF (("done optGlobBufConstraintsAux\n"));
+
+     if (lltok_isEnsures ($1)) 
+       {
+	 $$ = functionClause_createEnsures ($3);
+       }
+     else if (lltok_isRequires ($1))
+       {
+	 $$ = functionClause_createRequires ($3);
+       }
+     else
+       {
+	 BADBRANCH;
+       }
    }
  
 exitsQualifier

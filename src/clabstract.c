@@ -54,7 +54,6 @@
 /*drl*/
 /*@only@*/ static  constraintList fcnConstraints = NULL;
 
-/*@only@*/ static constraintList fcnEnsuresConstraints = NULL;
 /*end drl*/
 
 /*drl */
@@ -165,30 +164,6 @@ static void resetStorageClass (void)
   storageClass = SCNONE;
 }
 
-/*drl 6-25-01
-  used to be reflectModGlobs
-  changed to reflectBufferConstraint
-  and removed buffer constraint stuff
-  to merge with other code tree.
-*/
-
-static void reflectBufferConstraint (uentry ue)
-{
-  /*drl added*/
-  if (  constraintList_isDefined(fcnConstraints) )
-    {
-      uentry_setPreconditions (ue, fcnConstraints);
-      fcnConstraints = constraintList_undefined;
-    }
-  
-  if (  constraintList_isDefined(fcnEnsuresConstraints) )
-    {
-      uentry_setPostconditions (ue, fcnEnsuresConstraints);
-      fcnEnsuresConstraints = constraintList_undefined;
-    }
- /*end drl*/
-}
-
 static void reflectStorageClass (uentry u)
 {
   if (storageClass == SCSTATIC)
@@ -215,43 +190,6 @@ void setFunctionNoGlobals (void)
 {
   fcnNoGlobals = TRUE;
 }
-
-/*drl
- */
-constraintList getFunctionConstraints (void)
-{
-  return constraintList_copy (fcnConstraints);
-}
-
-
-constraintList getEnsuresConstraints (void)
-{
-  return constraintList_copy (fcnEnsuresConstraints);
-}
-
-void setEnsuresConstraints (constraintList c)
-{
-  if (constraintList_isDefined(fcnEnsuresConstraints) )
-    constraintList_free(fcnEnsuresConstraints);
-
-  DPRINTF(( message("Setting ensures constraints to %q",
-		    constraintList_print(c) ) ));
-  
-  fcnEnsuresConstraints = constraintList_copy (c);
-}
-
-void setFunctionConstraints (constraintList c)
-{
-  if (constraintList_isDefined(fcnConstraints) )
-    constraintList_free(fcnConstraints);
-
-  DPRINTF(( message("Setting requires constraints to %q",
-		    constraintList_print(c) ) ));
-  
-
-  fcnConstraints = constraintList_copy (c);
-}
-/* end drl*/
 
 static void reflectGlobalQualifiers (sRef sr, qualList quals)
 {
@@ -361,9 +299,6 @@ extern void declareCIter (cstring name, /*@owned@*/ uentryList params)
 			fileloc_copy (g_currentloc));
 
   usymtab_supEntry (uentry_makeEndIter (name, fileloc_copy (g_currentloc)));
-
-  reflectBufferConstraint (ue);
-
   ue = usymtab_supGlobalEntryReturn (ue);
 }
 
@@ -695,7 +630,6 @@ static /*@exposed@*/ uentry clabstract_globalDeclareFunction (idDecl tid)
 
   reflectStorageClass (ue);
   uentry_checkParams (ue);
-  reflectBufferConstraint (ue);
 
   DPRINTF (("Supercede function: %s", uentry_unparseFull (ue)));
 
@@ -880,7 +814,6 @@ void declareStaticFunction (idDecl tid) /*@globals undef saveFunction; @*/
 	      uentry_setStatic (ue);
 
 	      uentry_checkParams (ue);
-	      reflectBufferConstraint (ue);
 	
 	      DPRINTF (("Sub global entry: %s", uentry_unparse (ue)));
 	      ue = usymtab_supGlobalEntryReturn (ue);
@@ -1242,7 +1175,6 @@ doneParams ()
 	  uentry_setType (saveFunction, ct2);
 	  ProcessingParams = FALSE;
 
-	  reflectBufferConstraint (saveFunction);
 	  oldStyleDeclareFunction (saveFunction);
 	  saveFunction = uentry_undefined;
 	  resetGlobals ();
@@ -1453,7 +1385,6 @@ void processNamedDecl (idDecl t)
 	  if (ctype_isFunction (uentry_getType (e)))
 	    {
 	      clabstract_prepareFunction (e);
-	      reflectBufferConstraint (e);
 	    }
 	  
 	  DPRINTF (("Superceding... %s", uentry_unparseFull (e)));
@@ -2225,8 +2156,8 @@ sRef fixStateClausesId (cstring s)
 	{
 	  voptgenerror 
 	    (FLG_SYNTAX, 
-	     message ("Special clause uses %s which is a parameter and has special "
-		      "meaning in a special clause.  (Special meaning assumed.)", s), 
+	     message ("Function clause uses %s which is a parameter and has special "
+		      "meaning in a function clause.  (Special meaning assumed.)", s), 
 	     g_currentloc);
 	}
     }
@@ -2240,8 +2171,8 @@ sRef fixStateClausesId (cstring s)
 	    {
 	      voptgenerror 
 		(FLG_SYNTAX, 
-		 message ("Global variable %s used special clause.  (Global variables "
-			  "are not recognized in special clauses.  If there is "
+		 message ("Global variable %s used in function clause.  (Global variables "
+			  "are not recognized in function clauses.  If there is "
 			  "sufficient interest in support for this, it may be "
 			  "added to a future release.  Send mail to "
 			  "lclint@cs.virginia.edu.)",
@@ -2258,7 +2189,7 @@ sRef fixStateClausesId (cstring s)
 	  
 	  voptgenerror 
 	    (FLG_UNRECOG, 
-	     message ("Unrecognized identifier in special clause: %s", s), 
+	     message ("Unrecognized identifier in function clause: %s", s), 
 	     loc);
 
 	  fileloc_free (loc);
