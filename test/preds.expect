@@ -18,7 +18,7 @@ preds.c:30:7: Use of == with bool variables (risks inconsistency because of
   Two bool values are compared directly using a C primitive. This may produce
   unexpected results since all non-zero values are considered TRUE, so
   different TRUE values may not be equal. The file bool.h (included in
-  lclint/lib) provides bool_equal for safe bool comparisons. (-boolcompare will
+  splint/lib) provides bool_equal for safe bool comparisons. (-boolcompare will
   suppress message)
 preds.c:35:7: Test expression for if not bool, type char: c
 
@@ -54,7 +54,7 @@ preds.c:30:7: Use of == with bool variables (risks inconsistency because of
   Two bool values are compared directly using a C primitive. This may produce
   unexpected results since all non-zero values are considered TRUE, so
   different TRUE values may not be equal. The file bool.h (included in
-  lclint/lib) provides bool_equal for safe bool comparisons. (-boolcompare will
+  splint/lib) provides bool_equal for safe bool comparisons. (-boolcompare will
   suppress message)
 preds.c:35:7: Test expression for if not bool, type char: c
 bool.h:21:13: Function bool_initMod declared but not used

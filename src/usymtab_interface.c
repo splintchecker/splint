@@ -655,16 +655,14 @@ doDeclareConstant (constDeclarationNode c, bool priv)
 	  if (i->value != (termNode)0 &&
 	      i->value->kind == TRM_LITERAL)
 	    {
-	      ue = uentry_makeConstantAux (s, ct, loc, priv, 
-					   literalValue (ct, i->value->literal));
+	      ue = uentry_makeConstantValue (s, ct, loc, priv, literalValue (ct, i->value->literal));
 	    }
 	  else
 	    {
-	      ue = uentry_makeConstantAux (s, ct, loc, priv, multiVal_unknown ());
+	      ue = uentry_makeConstantValue (s, ct, loc, priv, multiVal_unknown ());
 	    }
-
-	  	  uentry_reflectQualifiers (ue, qtype_getQuals (qt));
-
+	  
+	  uentry_reflectQualifiers (ue, qtype_getQuals (qt));
 	  
 	  if (context_inLCLLib () && !priv)
 	    {

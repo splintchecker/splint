@@ -372,13 +372,13 @@ usymtab_initBool ()
       */
 
       usymtab_supGlobalEntry 
-	(uentry_makeConstantAux (context_getFalseName (), boolt, 
-				 fileloc_getBuiltin (), FALSE,
-				 multiVal_makeInt (0)));
+	(uentry_makeConstantValue (context_getFalseName (), boolt, 
+				   fileloc_getBuiltin (), FALSE, 
+				   multiVal_makeInt (0)));
       usymtab_supGlobalEntry 
-	(uentry_makeConstantAux (context_getTrueName (), boolt, 
-				 fileloc_getBuiltin (), FALSE,
-				 multiVal_makeInt (1)));
+	(uentry_makeConstantValue (context_getTrueName (), boolt, 
+				   fileloc_getBuiltin (), FALSE, 
+				   multiVal_makeInt (1)));
     }
 }
 

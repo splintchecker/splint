@@ -18,6 +18,7 @@
 typedef struct 
 {
   typeIdSet access;
+  bool macro;
 } *ucinfo;
 
 typedef enum 
@@ -404,10 +405,21 @@ extern /*@notnull@*/ uentry
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeConstant (/*@temp@*/ cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f) 
   /*@*/ ;
+
+extern /*@only@*/ /*@notnull@*/ uentry 
+  uentry_makeConstantValue (/*@temp@*/ cstring p_n, ctype p_t, /*@only@*/ fileloc p_f, 
+			    bool p_priv, multiVal p_val)
+  /*@*/ ;
+
+extern /*@notnull@*/ /*@only@*/ uentry 
+  uentry_makeMacroConstant (/*@temp@*/ cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f) 
+  /*@*/ ;
+
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeConstantAux (/*@temp@*/ cstring p_n, ctype p_t,
-			  /*@keep@*/ fileloc p_f, bool p_priv,
+			  /*@keep@*/ fileloc p_f, bool p_priv, bool p_macro,
 			  /*@only@*/ multiVal p_m) /*@*/ ;
+
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, ynm p_abstract, 
 		       /*@only@*/ fileloc p_f) /*@*/ ;
@@ -639,9 +651,11 @@ extern bool uentry_isGlobalMarker (uentry) /*@*/ ;
 extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@only@*/ fileloc p_loc);
 
 # ifdef DOANNOTS
-typedef enum { AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,
-		 AN_CONST, AN_LAST
-	       } ancontext;
+typedef enum 
+{
+  AN_UNKNOWN, AN_FCNRETURN, AN_FCNPARAM, AN_SUFIELD, AN_TDEFN, AN_GSVAR,
+  AN_CONST, AN_LAST
+} ancontext;
 
 extern void initAnnots ();
 extern void printAnnots (void);

@@ -92,6 +92,11 @@ static /*@only@*/ /*@notnull@*/ uentry
   uentry_makeVariableAux (cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f,
 			  /*@exposed@*/ sRef p_s, bool p_priv, vkind p_kind);
 
+static /*@only@*/ /*@notnull@*/ 
+uentry uentry_makeConstantAux (cstring p_n, ctype p_t, 
+			       /*@keep@*/ fileloc p_f, bool p_priv, bool p_macro,
+			       /*@only@*/ multiVal p_m) ;
+
 static void uentry_convertVarFunction (uentry ue) /*@modifies ue@*/
 {
   if (uentry_isVariable (ue) 
@@ -3101,9 +3106,9 @@ uentry_isSpecialFunction (uentry ue)
 ** constants
 */
 
-/*@only@*/ /*@notnull@*/ 
+static /*@only@*/ /*@notnull@*/ 
 uentry uentry_makeConstantAux (cstring n, ctype t, 
-			       /*@keep@*/ fileloc f, bool priv,
+			       /*@keep@*/ fileloc f, bool priv, bool macro,
 			       /*@only@*/ multiVal m)
 {
   uentry e = uentry_alloc ();
@@ -3127,6 +3132,7 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
   e->info->uconst->access = typeIdSet_undefined;
+  e->info->uconst->macro = macro;
 
   uentry_setSpecDef (e, f);
 
@@ -3142,7 +3148,17 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
 
 /*@notnull@*/ uentry uentry_makeConstant (cstring n, ctype t, fileloc f)
 {
-  return (uentry_makeConstantAux (n, t, f, FALSE, multiVal_unknown ()));
+  return (uentry_makeConstantAux (n, t, f, FALSE, FALSE, multiVal_unknown ()));
+}
+
+
+{
+  return (uentry_makeConstantAux (n, t, f, priv, FALSE, val));
+}
+
+/*@notnull@*/ uentry uentry_makeMacroConstant (cstring n, ctype t, fileloc f)
+{
+  return (uentry_makeConstantAux (n, t, f, FALSE, TRUE, multiVal_unknown ()));
 }
 
 /*@notnull@*/ uentry uentry_makeIdConstant (idDecl t)

@@ -7119,8 +7119,7 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
 			    {
 			      fileloc loc = fileloc_makePreproc (g_currentloc);
 			      DPRINTF (("Make constant: %s", sname));
-			      le = uentry_makeConstant (sname,
-							ctype_unknown, loc);
+			      le = uentry_makeMacroConstant (sname, ctype_unknown, loc);
 			      (void) usymtab_addEntry (le);
 			    }
 
