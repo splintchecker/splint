@@ -864,7 +864,7 @@ extern void /*@alt void * @*/
 extern void /*@alt char * @*/
   strcpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2) 
      /*@modifies *s1@*/ 
-     /*@requires MaxSet(s1) >= MaxRead(s2) @*/
+     /*@requires maxSet(s1) >= maxRead(s2) @*/
      /*@ensures MaxRead(s1) == MaxRead (s2) /\ MaxRead(result) == MaxRead(s2) /\ MaxSet(result) == MaxSet(s1); @*/;
 
 extern void /*@alt char * @*/
