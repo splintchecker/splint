@@ -199,7 +199,7 @@ void cppDoDefine (cstring str)
 void cppDoUndefine (cstring str)
 {
   int sym_length;
-  HASHNODE *hp;
+  hashNode hp;
   char *buf = cstring_toCharsSafe (str);
 
   sym_length = cppReader_checkMacroName (&g_cppState, buf,

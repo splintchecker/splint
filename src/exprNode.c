@@ -9293,6 +9293,7 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 		    {
 		      lastRef = errorRef;
 		      errorRef = s;
+		      DPRINTF (("Setting ERROR: %s", sRef_unparseFull (s)));
 		      deadRef = sRef_isPossiblyDead (errorRef);
 		      unuseable = sRef_isUnuseable (errorRef);
 		      errorMaybe = TRUE;
@@ -9308,6 +9309,7 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 
 		  if (!sRef_isPartial (s))
 		    {
+		      DPRINTF (("Defining! %s", sRef_unparseFull (s)));
 		      sRef_setDefined (s, fileloc_undefined);
 		    }
 		}
@@ -9388,6 +9390,8 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 			      sRef_unparseOpt (errorRef),
 			      cstring_makeLiteral (errorMaybe ? "may be " : "")),
 		     loc);
+
+		  DPRINTF (("Error: %s", sRef_unparseFull (errorRef)));
 		}
 	      
 	      sRef_setDefined (errorRef, loc);

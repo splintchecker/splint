@@ -382,7 +382,7 @@ lintfcn:
 	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +fcnconstraint
 
 linttest: 
-	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude cgrammar.c -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +keep
+	${LCLINTNEW} -f lclint.lclintrc $(CPPFLAGS) +singleinclude cpphash.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse -mts file -mts filerw +partial
 
 lint: 
 	../bin/lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -exportlocal -constuse 

@@ -58,14 +58,15 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # include "cpplib.h"
 # include "cpphash.h"
 
-typedef /*@null@*/ /*@only@*/ HASHNODE *o_HASHNODE;
+typedef /*@null@*/ /*@only@*/ hashNode o_hashNode;
+typedef /*@null@*/ /*@only@*/ hashNode n_hashNode;
 
-static o_HASHNODE hashtab[CPP_HASHSIZE]; 
-static o_HASHNODE ohashtab[CPP_HASHSIZE];
+static o_hashNode hashtab[CPP_HASHSIZE]; 
+static o_hashNode ohashtab[CPP_HASHSIZE];
 
-static void HashNode_delete (/*@null@*/ /*@only@*/ HASHNODE *);
+static void hashNode_delete (/*@null@*/ /*@only@*/ hashNode);
 
-/* p_prev need not be defined, but isn't defined by HashNode_copy */
+/* p_prev need not be defined, but isn't defined by hashNode_copy */
 
 /*@function static unsigned int hashStep (unsigned, char) modifies nothing ; @*/
 # define hashStep(old, c) (((old) << 2) + (unsigned int) (c))
@@ -73,12 +74,9 @@ static void HashNode_delete (/*@null@*/ /*@only@*/ HASHNODE *);
 /*@function static unsigned int makePositive (unsigned int) modifies nothing ; @*/
 # define makePositive(v) ((v) & 0x7fffffff) /* make number positive */
 
-typedef /*@null@*/ HASHNODE n_HASHNODE;
-
-static /*@null@*/ HASHNODE *
-   HashNode_copy (/*@null@*/ HASHNODE *, 
-		  /*@null@*/ /*@dependent@*/ n_HASHNODE **p_hdr, 
-		  /*@dependent@*/ /*@null@*/ /*@special@*/ HASHNODE *p_prev) 
+static /*@null@*/ hashNode hashNode_copy (/*@null@*/ hashNode, 
+					  /*@null@*/ /*@dependent@*/ n_hashNode *p_hdr, 
+					  /*@dependent@*/ /*@null@*/ /*@special@*/ hashNode p_prev) 
      /*@*/ ;
 
 void cppReader_saveHashtab ()
@@ -87,7 +85,7 @@ void cppReader_saveHashtab ()
 
   for (i = 0; i < CPP_HASHSIZE; i++) 
     {
-      ohashtab[i] = HashNode_copy (hashtab[i], &ohashtab[i], NULL);
+      ohashtab[i] = hashNode_copy (hashtab[i], &ohashtab[i], NULL);
     }
 }
 
@@ -96,12 +94,12 @@ void cppReader_restoreHashtab ()
   int i;
 
   for (i = 0; i < CPP_HASHSIZE; i++) {
-    /* HashNode_delete (hashtab[i]); */
-    hashtab[i] = HashNode_copy (ohashtab[i], &hashtab[i], NULL);
+    /* hashNode_delete (hashtab[i]); */
+    hashtab[i] = hashNode_copy (ohashtab[i], &hashtab[i], NULL);
   }  
 }
 
-static void HashNode_delete (/*@only@*/ /*@null@*/ HASHNODE *node) 
+static void hashNode_delete (/*@only@*/ /*@null@*/ hashNode node) 
 {
   if (node == NULL) 
     {
@@ -109,7 +107,7 @@ static void HashNode_delete (/*@only@*/ /*@null@*/ HASHNODE *node)
     } 
   else 
     {
-      HashNode_delete (node->next);
+      hashNode_delete (node->next);
       
       if (node->type == T_MACRO)
 	{
@@ -135,8 +133,8 @@ static void HashNode_delete (/*@only@*/ /*@null@*/ HASHNODE *node)
     }
 }
 
-/*@null@*/ HASHNODE *HashNode_copy (HASHNODE *node, HASHNODE **hdr, 
-				    /*@dependent@*/ HASHNODE *prev)
+/*@null@*/ hashNode hashNode_copy (hashNode node, hashNode *hdr, 
+				   /*@dependent@*/ hashNode prev)
 {
   if (node == NULL) 
     {
@@ -144,9 +142,9 @@ static void HashNode_delete (/*@only@*/ /*@null@*/ HASHNODE *node)
     } 
   else 
     {
-      HASHNODE *res = dmalloc (sizeof (*res));
+      hashNode res = dmalloc (sizeof (*res));
       
-      res->next = HashNode_copy (node->next, hdr, res);
+      res->next = hashNode_copy (node->next, hdr, res);
       res->prev = prev;
       
       res->bucket_hdr = hdr;
@@ -270,10 +268,10 @@ hashf (const char *name, int len, int hashsize)
 ** Otherwise, compute the hash code.  
 */
 
-/*@null@*/ HASHNODE *cppReader_lookup (char *name, int len, int hash)
+/*@null@*/ hashNode cppReader_lookup (char *name, int len, int hash)
 {
   const char *bp;
-  HASHNODE *bucket;
+  hashNode bucket;
 
   if (len < 0)
     {
@@ -306,9 +304,9 @@ hashf (const char *name, int len, int hashsize)
   return NULL;
 }
 
-/*@null@*/ HASHNODE *cppReader_lookupExpand (char *name, int len, int hash)
+/*@null@*/ hashNode cppReader_lookupExpand (char *name, int len, int hash)
 {
-  HASHNODE *node = cppReader_lookup (name, len, hash);
+  hashNode node = cppReader_lookup (name, len, hash);
 
   DPRINTF (("Lookup expand: %s", name));
 
@@ -345,7 +343,7 @@ hashf (const char *name, int len, int hashsize)
    If #undef freed the DEFINITION, that would crash.  */
 
 void
-cppReader_deleteMacro (HASHNODE *hp)
+cppReader_deleteMacro (hashNode hp)
 {
   if (hp->prev != NULL) 
     {
@@ -401,12 +399,14 @@ cppReader_deleteMacro (HASHNODE *hp)
    If HASH is >= 0, it is the precomputed hash code.
    Otherwise, compute the hash code.  */
 
-HASHNODE *cppReader_install (char *name, int len, enum node_type type, 
+hashNode cppReader_install (char *name, int len, enum node_type type, 
 			     int ivalue, char *value, int hash)
 {
-  HASHNODE *hp;
+  hashNode hp;
   int i, bucket;
-  char *p, *q;
+  char *p;
+
+  DPRINTF (("Install: %s", name));
 
   if (len < 0) {
     p = name;
@@ -426,8 +426,7 @@ HASHNODE *cppReader_install (char *name, int len, enum node_type type,
 
   i = sizeof (*hp) + len + 1;
 
-  
-  hp = (HASHNODE *) dmalloc (size_fromInt (i));
+  hp = (hashNode) dmalloc (sizeof (*hp));
   bucket = hash;
   hp->bucket_hdr = &hashtab[bucket];
 
@@ -438,6 +437,7 @@ HASHNODE *cppReader_install (char *name, int len, enum node_type type,
     {
       hp->next->prev = hp;
     }
+
 
   hashtab[bucket] = hp;
 
@@ -454,27 +454,16 @@ HASHNODE *cppReader_install (char *name, int len, enum node_type type,
       hp->value.cpval = value;
     }
   
-  {
-    char *tmp = ((char *) hp) + sizeof (*hp);
-    p = tmp;
-    q = name;
+  hp->name = cstring_clip (cstring_fromCharsNew (name), len);
 
-    for (i = 0; i < len; i++)
-      {
-	*p++ = *q++;
-      }
-    
-    tmp[len] = '\0';
-    hp->name = cstring_fromChars (tmp);
-  }
-
-  /*@-mustfree@*/ /*@-uniondef@*/ /*@-compdef@*/
+  DPRINTF (("Name: *%s*", hp->name));
+  /*@-mustfree@*/ /*@-uniondef@*/ /*@-compdef@*/ /*@-compmempass@*/
   return hp;
-  /*@=mustfree@*/ /*@=uniondef@*/ /*@=compdef@*/
+  /*@=mustfree@*/ /*@=uniondef@*/ /*@=compdef@*/ /*@=compmempass@*/
 }
 
-HASHNODE *cppReader_installMacro (char *name, int len, 
-				  struct definition *defn, int hash)
+hashNode cppReader_installMacro (char *name, int len, 
+				 struct definition *defn, int hash)
 {
   return cppReader_install (name, len, T_MACRO, 0, (char  *) defn, hash);
 }

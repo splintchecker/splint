@@ -442,7 +442,7 @@ static int open_include_file (cppReader *p_pfile,
 
 static void push_macro_expansion (cppReader *,
 				  /*@owned@*/ char *, size_t,
-				  /*@dependent@*/ HASHNODE *);
+				  /*@dependent@*/ hashNode);
 
 /* Last arg to output_line_command.  */
 enum file_change_code {
@@ -969,7 +969,7 @@ cppReader_nullCleanup (/*@unused@*/ cppBuffer *pbuf,
 void
 cppReader_macroCleanup (cppBuffer *pbuf, /*@unused@*/ cppReader *pfile)
 {
-  HASHNODE *macro = pbuf->hnode;
+  hashNode macro = pbuf->hnode;
 
   if (macro->type == T_DISABLED)
     {
@@ -2149,7 +2149,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
 {
   int hashcode;
   MACRODEF mdef;
-  HASHNODE *hp;
+  hashNode hp;
   
   DPRINTF (("Define aux: %d", noExpand));
 
@@ -2236,7 +2236,7 @@ do_defineAux (cppReader *pfile, struct directive *keyword,
       ** that for this new definition now.
       */
 
-      HASHNODE *hn;
+      hashNode hn;
 
       if (CPPOPTIONS (pfile)->debug_output && (keyword != NULL))
 	{
@@ -2749,7 +2749,7 @@ static ob_mstring monthnames[] = {
  */
 
 static void
-special_symbol (HASHNODE *hp, cppReader *pfile)
+special_symbol (hashNode hp, cppReader *pfile)
 {
   cstring buf = cstring_undefined;
   size_t len;
@@ -3147,7 +3147,7 @@ unsafe_chars (char c1, char c2)
    an argument list follows; arguments come from the input stack.  */
 
 static void
-macroexpand (cppReader *pfile, /*@dependent@*/ HASHNODE *hp)
+macroexpand (cppReader *pfile, /*@dependent@*/ hashNode hp)
 {
   int nargs;
   DEFINITION *defn = hp->value.defn;
@@ -3661,7 +3661,7 @@ macroexpand (cppReader *pfile, /*@dependent@*/ HASHNODE *hp)
 
 static void
 push_macro_expansion (cppReader *pfile, char *xbuf, size_t xbuf_len,
-		      /*@dependent@*/ HASHNODE *hp)
+		      /*@dependent@*/ hashNode hp)
 {
   cppBuffer *mbuf = cppReader_pushBuffer (pfile, xbuf, xbuf_len);
 
@@ -4307,8 +4307,9 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
   if (token == CPP_STRING) {
     char *fname = pfile->token_buffer + old_written;
     char *end_name;
-    static HASHNODE *fname_table[FNAME_HASHSIZE];
-    HASHNODE *hp, **hash_bucket;
+    static hashNode fname_table[FNAME_HASHSIZE];
+    hashNode hp; 
+    hashNode *hash_bucket;
     char *p;
     size_t num_start;
     int fname_length;
@@ -4376,7 +4377,7 @@ do_line (cppReader *pfile, /*@unused@*/ struct directive *keyword)
 
     if (hp == 0) {
       /* Didn't find it; cons up a new one.  */
-      hp = (HASHNODE *) dmalloc (sizeof (*hp) + fname_length + 1);
+      hp = (hashNode) dmalloc (sizeof (*hp));
 
       hp->prev = NULL;
       hp->bucket_hdr = NULL;
@@ -4423,7 +4424,7 @@ do_undef (cppReader *pfile, struct directive *keyword, char *buf, char *limit)
 {
 
   int sym_length;
-  HASHNODE *hp;
+  hashNode hp;
   char *orig_buf = buf;
 
   SKIP_WHITE_SPACE (buf);
@@ -4648,7 +4649,7 @@ eval_if_expression (cppReader *pfile,
 		    /*@unused@*/ char *buf,
 		    /*@unused@*/ int length)
 {
-  HASHNODE *save_defined;
+  hashNode save_defined;
   HOST_WIDE_INT value;
   size_t old_written = cppReader_getWritten (pfile);
 
@@ -4713,7 +4714,7 @@ do_xifdef (cppReader *pfile, struct directive *keyword,
     }
   else if (token == CPP_NAME)
     {
-      HASHNODE *hp = cppReader_lookup (ident, ident_length, -1);
+      hashNode hp = cppReader_lookup (ident, ident_length, -1);
       skip = (keyword->type == T_IFDEF) 
 	? (hp == NULL) : (hp != NULL);
 
@@ -5619,7 +5620,7 @@ get_next:
 	case 'Y': case 'Z':
         letter:
           {
-	    HASHNODE *hp;
+	    hashNode hp;
 	    char *ident;
 	    size_t before_name_written = cppReader_getWritten (pfile);
 	    int ident_len;
