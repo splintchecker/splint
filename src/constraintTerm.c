@@ -205,7 +205,7 @@ static cstring constraintTerm_getName (constraintTerm term)
       s = message ("%s", exprNode_unparse (term->value.expr) );
       break;
     case INTLITERAL:
-      s = message (" %ld ", term->value.intlit);
+      s = message (" %d ", (int) term->value.intlit);
       break;
       
     case SREF:
