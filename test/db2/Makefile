@@ -5,11 +5,11 @@
 ###
 
 .SUFFIXES: .lcl .lcs .lh .h .c .o
-.PHONY: check
+.PHONY: check clean
 
 SHELL = /bin/csh -f
 
-LCLINT = lclint
+LCLINT = lclint -booltype "bool"
 LCL = $(LCLINT) -specundef +lh +quiet -nof
 LCLINTLH = $(LCLINT) +lh
 LCSFILES = dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs 
