@@ -560,7 +560,7 @@ static /*@observer@*/ cstring uentry_reDefDecl (uentry old, uentry unew)  /*@*/
 
 
 /*drl7x*/
-constraintList uentry_getFcnPreconditions (uentry ue)
+/*@only@*/ constraintList uentry_getFcnPreconditions (uentry ue)
 {
   if (uentry_isValid (ue))
     {
