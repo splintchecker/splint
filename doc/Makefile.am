@@ -7,4 +7,6 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 ## Include them in the distribution
 EXTRA_DIST = splint.1 freebsd.html linux.html sunos.html
 
+man_MANS = splint.1 
+
 all:

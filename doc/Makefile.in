@@ -90,11 +90,16 @@ AUTOMAKE_OPTIONS = 1.5 foreign
 
 #this is just a hack to get make dist to work.
 EXTRA_DIST = splint.1 freebsd.html linux.html sunos.html
+
+man_MANS = splint.1 
 subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 DIST_SOURCES =
+
+NROFF = nroff
+MANS = $(man_MANS)
 DIST_COMMON = Makefile.am Makefile.in
 all: all-am
 
@@ -107,6 +112,45 @@ Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	  CONFIG_HEADERS= CONFIG_LINKS= \
 	  CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
 uninstall-info-am:
+
+man1dir = $(mandir)/man1
+install-man1: $(man1_MANS) $(man_MANS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
+	done
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
+	done
 tags: TAGS
 TAGS:
 
@@ -134,9 +178,10 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile
+all-am: Makefile $(MANS)
 
 installdirs:
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
 
 install: install-am
 install-exec: install-exec-am
@@ -177,13 +222,13 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-exec-am:
 
 install-info: install-info-am
 
-install-man:
+install-man: install-man1
 
 installcheck-am:
 
@@ -195,15 +240,18 @@ mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-generic
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-man
+
+uninstall-man: uninstall-man1
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am info info-am install \
 	install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic uninstall uninstall-am uninstall-info-am
+	install-man1 install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic uninstall uninstall-am \
+	uninstall-info-am uninstall-man uninstall-man1
 
 
 all:
