@@ -44,7 +44,7 @@ UNITTESTS = \
   args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
   compoundliterals compoundstmt constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
-  funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
+  funcpointer functionmacro glob globals impabstract info init innerarray inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
   macros macrosef malloc merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
@@ -470,6 +470,12 @@ info:
 init:
 	-$(SPLINTR) init.c -expect 14
 	-$(SPLINTRN) init.c +checks -exportlocal -exportheadervar -expect 17
+
+### evans 2003-09-16
+.PHONY: innerarray
+innerarray:
+	-$(SPLINTR) innerarray.c -expect 10
+
 
 
 .PHONY: inparam

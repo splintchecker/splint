@@ -501,11 +501,67 @@ ctbase_unparse (ctbase c)
 	  return (message ("%t *", c->contents.base));
 	}
     case CT_FIXEDARRAY:
-      return (message ("%t [%d]", 
-		       c->contents.farray->base, 
-		       (int) c->contents.farray->size));
+      /*
+      ** C prints out array declarations backwards, if
+      ** base is an array need to print out in reverse order.
+      */
+
+      if (ctype_isArray (c->contents.farray->base)) 
+	{
+	  ctype base = c->contents.farray->base;
+	  cstring res = message ("[%d]", (int) c->contents.farray->size);
+
+	  while (ctype_isArray (base)) 
+	    {
+	      if (ctype_isFixedArray (base)) 
+		{
+		  res = message ("%q[%d]", 
+				 res, (int) ctype_getArraySize (base));
+		}
+	      else
+		{
+		  res = message ("%q[]", res);
+		}
+
+	      base = ctype_baseArrayPtr (base);
+	    }
+
+	  return (message ("%t %q", base, res));
+	} 
+      else 
+	{
+	  return (message ("%t [%d]", 
+			   c->contents.farray->base, 
+			   (int) c->contents.farray->size));
+	}
     case CT_ARRAY:
-      return (message ("%t []", c->contents.base));
+      if (ctype_isArray (c->contents.base)) 
+	{
+	  ctype base = c->contents.base;
+	  cstring res = cstring_makeLiteral ("[]");
+
+	  while (ctype_isArray (base)) 
+	    {
+	      if (ctype_isFixedArray (base)) 
+		{
+		  res = message ("%q[%d]", 
+				 res, (int) ctype_getArraySize (base));
+		}
+	      else
+		{
+		  res = message ("%q[]", res);
+		}
+
+	      base = ctype_baseArrayPtr (base);
+	    }
+
+	  return (message ("%t %q", base, res));
+
+	}
+      else
+	{
+	  return (message ("%t []", c->contents.base));
+	}
     case CT_FCN:
       return (message ("[function (%q) returns %t]",
 		       uentryList_unparseParams (c->contents.fcn->params),

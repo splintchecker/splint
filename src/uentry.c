@@ -753,6 +753,10 @@ void uentry_checkParams (uentry ue)
 		  
 		  if (ctype_isFixedArray (ct))
 		    {
+		      DPRINTF (("Array: %s / %s",
+				ctype_unparse (ct),
+				ctype_unparse (ctype_baseArrayPtr (ct))));
+
 		      if (ctype_isArray (ctype_baseArrayPtr (ct))
 			  && !ctype_isFixedArray (ctype_baseArrayPtr (ct)))
 			{
@@ -3068,7 +3072,6 @@ uentry_isSpecialFunction (uentry ue)
 /*@notnull@*/ uentry uentry_makeParam (idDecl t, int i)
 {
   ctype ct = idDecl_getCtype (t);
-  ctype base = ct;
   fileloc loc = setLocation ();
   sRef pref = sRef_makeParam (i, ct, stateInfo_makeLoc (loc, SA_CREATED));
   uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, loc, pref);
@@ -3078,26 +3081,22 @@ uentry_isSpecialFunction (uentry ue)
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
   uentry_implicitParamAnnots (ue);
 
-  /* Parameter type [][] or [x][] is invalid, but [][x] is okay */
+  if (ctype_isArray (ct)) 
+    {
+      /* Parameter type [][] or [x][] is invalid, but [][x] is okay */
+      ctype base = ctype_baseArrayPtr (ct);
 
-  while (ctype_isFixedArray (base)) 
-    {
-      base = ctype_baseArrayPtr (base);
-    }
-  
-  DPRINTF (("Base: %s", ctype_unparse (base)));
-  
-  if (ctype_isIncompleteArray (base)) 
-    {
-      base = ctype_baseArrayPtr (base);
-      DPRINTF (("Base: %s", ctype_unparse (base)));
-      if (ctype_isArray (base))
+      DPRINTF (("Check array: %s / Base: %s", ctype_unparse (ct),
+		ctype_unparse (base)));
+      
+      if (ctype_isIncompleteArray (base)) 
 	{
 	  if (!uentry_hasName (ue)) 
 	    {
 	      voptgenerror 
 		(FLG_INCOMPLETETYPE, 
-		 message ("Unnamed function parameter %d is incomplete type (inner array must have bounds): %s",
+		 message ("Unnamed function parameter %d is incomplete type "
+			  "(inner array must have bounds): %s",
 			  i + 1,
 			  ctype_unparse (ct)),
 		 uentry_whereLast (ue));
@@ -3106,7 +3105,8 @@ uentry_isSpecialFunction (uentry ue)
 	    {
 	      voptgenerror 
 		(FLG_INCOMPLETETYPE, 
-		 message ("Function parameter %q is incomplete type (inner array must have bounds): %s",
+		 message ("Function parameter %q is incomplete type "
+			  "(inner array must have bounds): %s",
 			  uentry_getName (ue),
 			  ctype_unparse (ct)),
 		 uentry_whereLast (ue));

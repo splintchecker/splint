@@ -1823,7 +1823,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
       llfatalbug (cstring_makeLiteral ("Maximum definition size exceeded."));
     }
 
-  return defn;
+  /*@i1@*/ return defn; /* Spurious warning here */
 }
 
 /*
@@ -1887,7 +1887,6 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
   defn->pattern = NULL;
   defn->nargs = nargs;
   defn->predefined = NULL;
-
   exp_p = defn->expansion = (char *) defn + sizeof (*defn);
 
   defn->line = 0;
@@ -2170,7 +2169,7 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
       llfatalbug (cstring_makeLiteral ("Maximum definition size exceeded."));
     }
 
-  return defn;
+  /*@i1@*/ return defn; /* Spurious warning here */
 }
 
 /*
@@ -6669,7 +6668,7 @@ get_next:
 
         case '\\':
 	  c2 = cppReader_peekC (pfile);
-	  //! allow other stuff here if a flag is set?
+	  /* allow other stuff here if a flag is set? */
 	  DPRINTF (("Got continuation!"));
 	  if (c2 != '\n')
 	    goto randomchar;

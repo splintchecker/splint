@@ -4,7 +4,7 @@ arrayinit.c:1:12: Initializer block for x has 4 elements, but declared as int
 arrayinit.c:2:12: Initializer block for a has 2 elements, but declared as int
                      [3]: 1, 2
 arrayinit.c:3:16: Initializer block for aa has 2 elements, but declared as int
-                     [3] [3]: { 1, 2, 3 }, { 4, 5 }
+                     [3][3]: { 1, 2, 3 }, { 4, 5 }
 arrayinit.c:4:18: Initializer block for aa[1] has 2 elements, but declared as
                      int [3]: 4, 5
 arrayinit.c:10:15: String literal with 4 characters is assigned to char [3] (no
