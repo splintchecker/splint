@@ -100,6 +100,20 @@ extern void checkValueConstant (qtype p_t, idDecl p_id, exprNode p_e) ;
 extern void declareStaticFunction (/*@only@*/ idDecl p_tid) 
    /*@globals internalState@*/ ;
 
+   /*drl
+     added to header 1/19/2001
+     (added to clabstract earilier
+   */
+   
+constraintList getFunctionConstraints (void);
+
+constraintList getEnsuresConstraints (void);
+
+void setEnsuresConstraints (constraintList c);
+
+void setFunctionConstraints (constraintList c);
+sRef checkbufferConstraintClausesId (uentry ue);
+/* end drl*/
 # else
 # error "Multiple include"
 # endif

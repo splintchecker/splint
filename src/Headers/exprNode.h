@@ -346,8 +346,10 @@ extern bool exprNode_isLabelMarker (exprNode p_e) /*@*/ ;
 /* evs 2000-08-22 */
 fileloc exprNode_getNextSequencePoint (exprNode p_e) /*@*/ ;
 
-/*drl 09-08-2008 */
+/*drl 09-08-2000 */
 exprNode exprNode_fakeCopy (exprNode e);
+/*drl 01-20-2001*/
+exprNode exprNode_createNew(ctype c);
 # else
 # error "Multiple include"
 # endif

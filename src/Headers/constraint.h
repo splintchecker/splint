@@ -17,6 +17,7 @@ struct _constraint {
   arithType       ar;
   constraintExpr  expr;
   bool post;
+  exprNode generatingExpr;
 } ;
 
 abst_typedef struct _constraintTerm * constraintTerm;
@@ -105,6 +106,13 @@ constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer);
 
 constraint constraint_makeMaxSetSideEffectPostDecrement (exprNode e, fileloc sequencePoint);
 bool constraint_search (constraint c, constraintExpr old);
+
+constraint makeConstraintParse3 (constraintExpr l, lltok relOp, constraintExpr r);
+
+constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e);
+
+bool constraint_hasMaxSet(constraint c);
+
 /*@=czechfcns*/
 //#warning take this out
 #include "constraintList.h"

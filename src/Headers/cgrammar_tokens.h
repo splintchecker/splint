@@ -66,6 +66,13 @@ typedef union
  /*@only@*/ exprNodeList alist;
  /*@only@*/ sRefSet srset; 
  /*@only@*/ cstringList cstringlist;
+  /*drl
+    added 1/19/2001
+  */
+  constraint con;
+  constraintList conL;
+  constraintExpr conE;
+  /* drl */
 } YYSTYPE;
 #define	BADTOK	258
 #define	SKIPTOK	259

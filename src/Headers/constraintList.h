@@ -31,7 +31,7 @@ extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@
 extern constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@only@*/constraintList new);
 
 
-extern constraintList constraintList_copy (constraintList p_s);
+extern constraintList constraintList_copy (constraintList p_s) /*@*/ ;
 
 //extern /*@only@*/ cstring constraintList_unparse (constraintList p_s) ;
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
@@ -61,6 +61,8 @@ extern constraintList constraintList_doSRefFixConstraintParam (constraintList pr
 extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall);
 
 constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall);
+
+constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e);
 # define constraintListBASESIZE SMALLBASESIZE
 
 # else
