@@ -5830,7 +5830,13 @@ uentry_getParams (uentry l)
       {
 	ctype ct = l->utype;
 
-	llassert (ctype_isFunction (ct));
+	/*drl 12/10/2002 changed to fix bug involving multiple redefines of library functions in macros.  Bug was reported by  Malcolm Parsons
+
+	Old code was  simplly llassert (ctype_isFunction (ct) );
+	*/
+	
+	llassert (ctype_isFunction (ct) || context_inMacro() );
+	
 	return (ctype_argsFunction (ct));
       }
     BADDEFAULT;
