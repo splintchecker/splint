@@ -17,63 +17,63 @@ typedef enum
   CTT_INTLITERAL
 } constraintTermType;
 
-struct _constraintTerm {
+struct s_constraintTerm {
   /*@only@*/ fileloc loc;
   constraintTermValue value;
   constraintTermType kind;
 } ;
 
-abst_typedef struct _constraintTerm *constraintTerm;
+abst_typedef struct s_constraintTerm *constraintTerm;
 
 /*@i311 shouldn't need this...never null */
-extern bool constraintTerm_isDefined (constraintTerm t) /*@*/ ;
+extern bool constraintTerm_isDefined (constraintTerm p_t) /*@*/ ;
 
 extern constraintTermType constraintTerm_getKind (constraintTerm) ;
 extern /*@exposed@*/ sRef constraintTerm_getSRef (constraintTerm) ;
 
-void constraintTerm_free (/*@only@*/ constraintTerm term);
+void constraintTerm_free (/*@only@*/ constraintTerm p_term);
 
-constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/ ;
+constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm p_term) /*@modifies p_term@*/ ;
 
-/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/ exprNode e) /*@*/;
+/*@only@*/ constraintTerm constraintTerm_makeExprNode (/*@dependent@*/ exprNode p_e) /*@*/;
 
-constraintTerm constraintTerm_copy (constraintTerm term) /*@*/;
+constraintTerm constraintTerm_copy (constraintTerm p_term) /*@*/;
 
-bool constraintTerm_similar (constraintTerm term1, constraintTerm term2) /*@*/;
+bool constraintTerm_similar (constraintTerm p_term1, constraintTerm p_term2) /*@*/;
 
-bool constraintTerm_canGetValue (constraintTerm term)/*@*/;
-long constraintTerm_getValue (constraintTerm term) /*@*/;
+bool constraintTerm_canGetValue (constraintTerm p_term)/*@*/;
+long constraintTerm_getValue (constraintTerm p_term) /*@*/;
 
-fileloc constraintTerm_getFileloc (constraintTerm t) /*@*/;
-
-
-bool constraintTerm_isIntLiteral (constraintTerm term) /*@*/;
-
-constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef s) /*@*/;
-
-/*@unused@*/ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2) /*@*/;
-
-constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fileloc loc) /*@modifies term@*/;
-
-constraintTerm constraintTerm_makeIntLiteral (long i) /*@*/;
-
-bool constraintTerm_isStringLiteral (constraintTerm c) /*@*/;
-cstring constraintTerm_getStringLiteral (constraintTerm c) /*@*/;
+fileloc constraintTerm_getFileloc (constraintTerm p_t) /*@*/;
 
 
-constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
+bool constraintTerm_isIntLiteral (constraintTerm p_term) /*@*/;
+
+constraintTerm constraintTerm_makesRef  (/*@temp@*/ /*@observer@*/ sRef p_s) /*@*/;
+
+/*@unused@*/ bool constraintTerm_probSame (constraintTerm p_term1, constraintTerm p_term2) /*@*/;
+
+constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm p_term, fileloc p_loc) /*@modifies p_term@*/;
+
+constraintTerm constraintTerm_makeIntLiteral (long p_i) /*@*/;
+
+bool constraintTerm_isStringLiteral (constraintTerm p_c) /*@*/;
+cstring constraintTerm_getStringLiteral (constraintTerm p_c) /*@*/;
+
+
+constraintTerm constraintTerm_doSRefFixBaseParam (/*@returned@*/ constraintTerm p_term, exprNodeList p_arglist) /*@modifies p_term@*/;
 
 extern cstring constraintTerm_unparse (constraintTerm)  /*@*/ ;
 
-extern void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f);
-extern /*@only@*/ constraintTerm constraintTerm_undump ( FILE *f);
+extern void constraintTerm_dump ( /*@observer@*/ constraintTerm p_t,  FILE * p_f);
+extern /*@only@*/ constraintTerm constraintTerm_undump ( FILE * p_f);
 extern bool constraintTerm_isInitBlock (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
 extern int constraintTerm_getInitBlockLength (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
-extern bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm c) /*@*/;
-extern ctype constraintTerm_getCType (constraintTerm term);
+extern bool constraintTerm_isExprNode (/*@observer@*/ /*@temp@*/ constraintTerm p_c) /*@*/;
+extern ctype constraintTerm_getCType (constraintTerm p_term);
 
-extern /*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm t);
-extern /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t);
+extern /*@exposed@*/ exprNode constraintTerm_getExprNode (constraintTerm p_t);
+extern /*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm p_t);
 
 /*drl added 12/19/2002*/
 extern bool constraintTerm_isConstantOnly (constraintTerm p_term);
