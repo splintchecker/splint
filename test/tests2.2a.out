@@ -98,12 +98,12 @@ bitops.c:6:9: Variable s2 declared but not used
 Finished LCLint checking --- 5 code errors found, as expected
 
 isalpha.c: (in function f)
-isalpha.c:5:19: Function isalpha expects arg 1 to be unsigned char gets char: c
+isalpha.c:5:19: Function isalpha expects arg 1 to be int gets char: c
 
 Finished LCLint checking --- 1 code error found, as expected
 
 isalpha.c: (in function f)
-isalpha.c:5:19: Function isalpha expects arg 1 to be unsigned char gets char: c
+isalpha.c:5:19: Function isalpha expects arg 1 to be int gets char: c
 
 Finished LCLint checking --- 1 code error found, as expected
 

@@ -1,4 +1,4 @@
-%PASSED Output from LCLint 2.5m
+%PASSED Output from LCLint 2.5q
 %LCLimports 
 %LCLSortTable
 %LCLsort bool immutable nil nil
