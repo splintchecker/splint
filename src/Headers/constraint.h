@@ -1,61 +1,12 @@
-typedef union constraintTermValue_
-{
-  constraintExpr constrExpr;
-  exprNode expr;
-  sRef     sref;
-  int      intlit;
-} constraintTermValue;
+#ifndef __constraint_h__
 
-
-typedef enum
-{
- EXPRNODE, SREF,
- CONSTRAINTEXPR,
- INTLITERAL
-} constraintTermType;
-
+#define __constraint_h__
 
 typedef enum
 {
   LT, LTE, GT, GTE, EQ, NONNEGATIVE, POSITIVE
 }
 arithType;
-
-typedef enum
-{
-  //BUFFSIZE, STRINGLEN,
- VALUE, CALLSAFE,
- MAXSET, MINSET, MAXREAD, MINREAD,
- NULLTERMINATED,
- UNDEFINED
-}
-constraintType;
-
-typedef enum
-{
-  PLUS,
-  MINUS
-}
-constraintExprOp;
-
-
-struct _constraintTerm {
-  constraintType constrType;
-  fileloc loc;
-  constraintTermValue value;
-  constraintTermType kind;
-};
-
-abst_typedef struct _constraintTerm * constraintTerm;
-
-struct constraintExpr_ {
-
-  constraintTerm term;
-  constraintExprOp op;
-  struct constraintExpr_ * expr;
-};
-# define constraintExpr_undefined ((constraintExpr)NULL)
-
 
 //abst_typedef struct constr_ * constr;
 
@@ -67,6 +18,8 @@ struct _constraint {
   constraintExpr  expr;
   bool post;
 } ;
+
+abst_typedef struct _constraintTerm * constraintTerm;
 
 //constraint constraint_create (exprNode e1, exprNode e2,  arithType restriction, constraintType kind);
 
@@ -101,7 +54,6 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode p_t1, exprNode p_t2, fi
 constraint constraint_makeEnsureMinReadAtMost (exprNode po, exprNode ind, fileloc sequencePoint);
 
 constraint constraint_makeSideEffectPostIncrement (exprNode t1,  fileloc p_sequencePoint);
-cstring constraintType_print (constraintType c1);
 
 constraint constraint_copy (constraint c);
 
@@ -114,13 +66,14 @@ cstring constraintTerm_print (constraintTerm term);
 cstring arithType_print (arithType ar);
 
 cstring constraintExpr_print (constraintExpr ex);
-
+fileloc constraint_getFileloc (constraint c);
 cstring constraint_print (constraint c);
 /*@=czechfcns*/
 #warning take this out
 #include "constraintList.h"
 
+#include "constraintExpr.h"
 #include "constraintTerm.h"
 
-
+#endif
 
