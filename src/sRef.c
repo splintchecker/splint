@@ -9091,3 +9091,23 @@ void sRef_resetLen(sRef p_s) {
 		llfatalbug (message ("sRef_setLen passed an invalid sRef\n"));
 	}
 }
+
+/*drl7x 11/28/2000 */
+
+bool sRef_isFixedArray (sRef p_s) {
+  ctype c;
+  c = sRef_getType (p_s);
+  return ( ctype_isFixedArray (c) );
+}
+
+int sRef_getArraySize (sRef p_s) {
+  ctype c;
+  llassert (sRef_isFixedArray(p_s) );
+
+  c = sRef_getType (p_s);
+
+  return (ctype_getArraySize (c) );
+}
+
+
+

@@ -203,7 +203,21 @@ constraint constraint_makeWriteSafeInt (exprNode po, int ind)
   ret->expr =  constraintExpr_makeValueInt (ind);
   /*@i1*/return ret;
 }
-	
+
+
+constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
+{
+  constraint ret = constraint_makeNew();
+
+ 
+  ret->lexpr = constraintExpr_makeSRefMaxset (s);
+  ret->ar = GTE;
+  ret->expr =  constraintExpr_makeValueInt (ind);
+  ret->post = TRUE;
+  /*@i1*/return ret;
+}
+
+
 constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
 {
   constraint ret = constraint_makeNew();
@@ -214,7 +228,8 @@ constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
   ret->expr =  constraintExpr_makeValueExpr (ind);
   /*@i1*/return ret;
 }
-			       
+
+
 constraint constraint_makeReadSafeInt ( exprNode po, int ind)
 {
   constraint ret = constraint_makeNew();
@@ -246,24 +261,49 @@ constraint constraint_makeEnsureMaxReadAtLeast (exprNode e1, exprNode t2, filelo
 }
 
 
-/* make constraint ensures e1 == e2 */
-
-constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
+static constraint constraint_makeEnsuresOp (exprNode e1, exprNode e2, fileloc sequencePoint,  arithType  ar)
 {
   constraint ret = constraint_makeNew();
   exprNode e;
   
   e = exprNode_fakeCopy(e1);
   ret->lexpr = constraintExpr_makeValueExpr (e);
-  ret->ar = EQ;
+  ret->ar = ar;
   ret->post = TRUE;
   e = exprNode_fakeCopy(e2);
   ret->expr =  constraintExpr_makeValueExpr (e);
   
   ret->lexpr = constraintExpr_setFileloc (ret->lexpr, sequencePoint);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
-//   fileloc_incColumn (  ret->lexpr->term->loc);
   return ret;
+}
+
+
+/* make constraint ensures e1 == e2 */
+
+constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+  return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, EQ) );
+}
+
+/*make constraint ensures e1 < e2 */
+constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+ return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, LT) );
+}
+
+constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+ return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, LTE) );
+}
+
+constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+ return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, GT) );
+}
+
+constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
+{
+ return ( constraint_makeEnsuresOp (e1, e2, sequencePoint, GTE) );
 }
 
 

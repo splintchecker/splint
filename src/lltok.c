@@ -69,6 +69,30 @@ bool lltok_isNot_Op (lltok tok)
 {
   return (tok.tok ==  TEXCL);
 }
+/*drl7x added this function 11/20/00 */
+
+bool lltok_isLt_Op (lltok tok)
+{
+  return (tok.tok ==  TLT);
+}
+
+bool lltok_isGt_Op (lltok tok)
+{
+  return (tok.tok ==  TGT);
+}
+  
+bool lltok_isGe_Op (lltok tok)
+{
+  return (tok.tok ==  GE_OP);
+}
+
+bool lltok_isLe_Op (lltok tok)
+{
+  return (tok.tok ==  LE_OP);
+}
+
+/* end drl7x added */
+
 
 cstring
 lltok_unparse (lltok tok)

@@ -328,7 +328,7 @@ namedDeclBase
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
      context_popLoc ();
 
-     printf("Done nameDeclBase\n");
+     //     printf("Done nameDeclBase\n");
    }
 
 plainNamedDeclBase
@@ -405,7 +405,7 @@ optGlobBufConstraintsRest
 
 optGlobBufConstraintsAux
 : {
-  TPRINTF ( ("doing optGlobBufConstraintsAux\n") );
+  DPRINTF ( ("doing optGlobBufConstraintsAux\n") );
 context_setProtectVars (); enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
 
@@ -438,9 +438,9 @@ relationalOp
 
 BufConstraintExpr
  : BufConstraintTerm 
- | BufUnaryOp TLPAREN BufConstraintExpr TRPAREN {$$ = constraintExpr_parseMakeUnaryOp ($1, $3);  TPRINTF( ("Got BufConstraintExpr UNary Op ") ); }
+ | BufUnaryOp TLPAREN BufConstraintExpr TRPAREN {$$ = constraintExpr_parseMakeUnaryOp ($1, $3);  DPRINTF( ("Got BufConstraintExpr UNary Op ") ); }
  | TLPAREN BufConstraintExpr BufBinaryOp BufConstraintExpr TRPAREN {
-   TPRINTF( ("Got BufConstraintExpr BINary Op ") );
+   DPRINTF( ("Got BufConstraintExpr BINary Op ") );
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
 
 BufConstraintTerm

@@ -2377,3 +2377,22 @@ ctype_widest (ctype c1, ctype c2)
       return c1;
     }
 }
+
+/*drl 11/28/2000 */
+/* requires that the type is an fixed array */
+/* return the size of the array */
+
+int ctype_getArraySize (ctype c)
+{
+  ctentry cte = ctype_getCtentry (c);
+  ctbase ctb;
+  llassert ( (ctentry_getKind (cte) ==  CTK_COMPLEX) || (ctentry_getKind(cte) == CTK_ARRAY) );
+
+  ctb = cte->ctbase;
+
+  llassert (ctbase_isDefined (ctb) );
+  
+  llassert (ctb->type == CT_FIXEDARRAY);
+
+  return (ctb->contents.farray->size);
+}

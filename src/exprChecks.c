@@ -896,6 +896,7 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
   constraintList c, t;
   /* drl added 8-8-2000 */
 
+  return;
   exprNode_generateConstraints (body);
   
   c =   uentry_getFcnPreconditions (ue);
@@ -922,15 +923,19 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 
    if (c)
      {
-       TPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
+       DPRINTF((message ("The Function %s has the preconditions %s", uentry_unparse(ue), constraintList_printDetailed(c) ) ) );
      }
    else
      {
-       TPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
+       DPRINTF((message ("The Function %s has no preconditions", uentry_unparse(ue) ) ) );
      }
 
-   printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
-   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
+   ConPrint (message ("Unable to resolve function constraints:\n%s", constraintList_printDetailed(body->requiresConstraints) ), g_currentloc);
+
+   ConPrint (message ("LCLint has found function post conditions:\n%s", constraintList_printDetailed(body->ensuresConstraints) ), g_currentloc);
+  
+     //  printf ("The required constraints are:\n%s", constraintList_printDetailed(body->requiresConstraints) );
+     //   printf ("The ensures constraints are:\n%s", constraintList_printDetailed(body->ensuresConstraints) );
    
    context_exitInnerPlain();
    /* exprNode_free (body); */

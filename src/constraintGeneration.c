@@ -14,8 +14,9 @@
 # include "exprNodeSList.h"
 
 # include "exprData.i"
+# include "exprDataQuite.i"
 
-void /*@alt bool@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
+bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
 static bool exprNode_handleError( exprNode p_e);
 
 //static cstring exprNode_findConstraints ( exprNode p_e);
@@ -31,9 +32,10 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e);
 extern constraintList reflectChanges (constraintList pre2, constraintList post1);
 
 void mergeResolve (exprNode parent, exprNode child1, exprNode child2);
+exprNode makeDataTypeConstraints (exprNode e);
+constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
+constraintList checkCall (exprNode fcn, exprNodeList arglist);
 
-
-     
 bool exprNode_isUnhandled (exprNode e)
 {
   llassert( exprNode_isDefined(e) );
@@ -93,7 +95,7 @@ bool exprNode_handleError( exprNode e)
    return FALSE;
 }
 
-void /*@alt bool@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
+bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
 {
   if (exprNode_isError (e) )
     return FALSE;
@@ -109,7 +111,8 @@ void /*@alt bool@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
 	return FALSE;
     }
 
-
+  
+  //  e = makeDataTypeConstraints (e);
   
   DPRINTF((message ("exprNode_generateConstraints Analysising %s at %s", exprNode_unparse( e),
 		    fileloc_unparse(exprNode_getfileloc(e) ) ) ) );
@@ -123,6 +126,17 @@ void /*@alt bool@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
       //    llassert(FALSE);
       return FALSE;
     }
+  
+  {
+    constraintList c;
+
+    c = constraintList_makeFixedArrayConstraints (e->uses);
+  e->requiresConstraints = reflectChanges (e->requiresConstraints, c);
+  
+  //  e->ensuresConstraints = constraintList_mergeEnsures(c, e->ensuresConstraints);
+  
+  }    
+
   /*  printf ("%s", (message ("%s", constraintList_printDetailed (e->requiresConstraints) ) ) );
       printf ("%s", (message ("%s", constraintList_printDetailed (e->ensuresConstraints) ) ) ); */
   return FALSE;
@@ -167,6 +181,7 @@ bool exprNode_stmt (exprNode e)
     }
   e->requiresConstraints = constraintList_new();
   e->ensuresConstraints  = constraintList_new();
+  //  e = makeDataTypeConstraints(e);
   
  
   DPRINTF(( "STMT:") );
@@ -222,6 +237,7 @@ bool exprNode_stmtList  (exprNode e)
 
   e->requiresConstraints = constraintList_new();
   e->ensuresConstraints  = constraintList_new();
+  //  e = makeDataTypeConstraints(e);
   
   /*Handle case of stmtList with only one statement:
    The parse tree stores this as stmt instead of stmtList*/
@@ -263,6 +279,68 @@ exprNode doIf (exprNode e, exprNode test, exprNode body)
   return e;
 }
 
+constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
+{
+  constraintList ret;
+  ret = constraintList_new();
+ 
+  sRefSet_elements (s, el)
+    {
+    llassert (el);
+    if (sRef_isFixedArray(el) )
+      {
+	int s;
+	constraint con;
+	s = sRef_getArraySize(el);
+	DPRINTF( (message("%s is a fixed array with size %d",
+			  sRef_unparse(el), s) ) );
+	con = constraint_makeSRefWriteSafeInt (el, (s - 1));
+	ret = constraintList_add(ret, con);
+      }
+    else
+      {
+	DPRINTF( (message("%s is not a fixed array",
+			  sRef_unparse(el)) ) );
+      }
+    }
+  end_sRefSet_elements
+
+    return ret;
+}
+
+exprNode makeDataTypeConstraints (exprNode e)
+{
+  constraintList c;
+  DPRINTF(("makeDataTypeConstraints"));
+
+  c = constraintList_makeFixedArrayConstraints (e->uses);
+  
+  e->ensuresConstraints = constraintList_addList (e->ensuresConstraints, c);
+  
+/*   sRefSet_elements (e->uses, el) */
+/*     llassert (el); */
+/*     if (sRef_isFixedArray(el) ) */
+/*       { */
+/* 	int s; */
+/* 	constraint con; */
+/* 	s = sRef_getArraySize(el); */
+/* 	DPRINTF( (message("%s is a fixed array with size %d", */
+/* 			  sRef_unparse(el), s) ) ); */
+/* 	con = constraint_makeSRefWriteSafeInt (el, (s - 1)); */
+/* 	e->ensuresConstraints = constraintList_add(e->ensuresConstraints, */
+/* 						   con); */
+/*       } */
+/*     else */
+/*       { */
+/* 	DPRINTF( (message("%s is not a fixed array", */
+/* 			  sRef_unparse(el)) ) ); */
+/*       } */
+/*   end_sRefSet_elements */
+
+ return e;
+}
+
+
 bool exprNode_multiStatement (exprNode e)
 {
   
@@ -278,7 +356,8 @@ bool exprNode_multiStatement (exprNode e)
   e->ensuresConstraints = constraintList_new();
   e->trueEnsuresConstraints = constraintList_new();
   e->falseEnsuresConstraints = constraintList_new();
-  
+
+  //  e = makeDataTypeConstraints(e);
 
   DPRINTF((message ("exprNode_multistatement Analysising %s %s at", exprNode_unparse( e),
 		    fileloc_unparse(exprNode_getfileloc(e) ) ) ) );
@@ -453,6 +532,25 @@ bool lltok_isBoolean_Op (lltok tok)
 	  return TRUE;	  	
 	}
 
+   if (lltok_isGt_Op (tok) )
+     {
+       return TRUE;
+     }
+   if (lltok_isLt_Op (tok) )
+     {
+       return TRUE;
+     }
+
+   if (lltok_isLe_Op (tok) )
+     {
+       return TRUE;
+     }
+   
+   if (lltok_isGe_Op (tok) )
+     {
+       return TRUE;
+     }
+   
    return FALSE;
 
 }
@@ -460,41 +558,87 @@ bool lltok_isBoolean_Op (lltok tok)
 
 void exprNode_booleanTraverse (exprNode e, bool definatelv, bool definaterv,  fileloc sequencePoint)
 {
-  constraint cons;
-  exprNode t1, t2;
-  exprData data;
-  lltok tok;
-  constraintList tempList;
-  data = e->edata;
+ constraint cons;
+exprNode t1, t2;
+exprData data;
+lltok tok;
+constraintList tempList;
+data = e->edata;
 
-  tok = exprData_getOpTok (data);
+tok = exprData_getOpTok (data);
 
-  
-  t1 = exprData_getOpA (data);
-  t2 = exprData_getOpB (data);
-  
-  if (lltok_isEq_Op (tok) )
-    {
-      cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
-      e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
-    }
-  
-  if (lltok_isAnd_Op (tok) )
 
-    {
-      //true ensures 
-      tempList = constraintList_copy (t1->trueEnsuresConstraints);
-      tempList = constraintList_addList (tempList, t2->trueEnsuresConstraints);
-      e->trueEnsuresConstraints = constraintList_addList(e->trueEnsuresConstraints, tempList);
-      
+t1 = exprData_getOpA (data);
+t2 = exprData_getOpB (data);
+
+
+/* arithmetic tests */
+
+if (lltok_isEq_Op (tok) )
+{
+  cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
+  e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+}
+ 
+
+ if (lltok_isLt_Op (tok) )
+   {
+     cons =  constraint_makeEnsureLessThan (t1, t2, sequencePoint);
+     e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+     cons = constraint_makeEnsureGreaterThanEqual (t1, t2, sequencePoint);
+     e->falseEnsuresConstraints = constraintList_add(e->falseEnsuresConstraints, cons);
+   }
+ 
+   
+if (lltok_isGe_Op (tok) )
+{
+  
+  cons = constraint_makeEnsureGreaterThanEqual (t1, t2, sequencePoint);
+  e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+  
+  cons =  constraint_makeEnsureLessThan (t1, t2, sequencePoint);
+  e->falseEnsuresConstraints = constraintList_add(e->falseEnsuresConstraints, cons);
+  
+}
+
+
+  if (lltok_isGt_Op (tok) )
+{
+  cons =  constraint_makeEnsureGreaterThan (t1, t2, sequencePoint);
+  e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+  cons = constraint_makeEnsureLessThanEqual (t1, t2, sequencePoint);
+  e->falseEnsuresConstraints = constraintList_add(e->falseEnsuresConstraints, cons);
+}
+
+if (lltok_isLe_Op (tok) )
+{
+   cons = constraint_makeEnsureLessThanEqual (t1, t2, sequencePoint);
+  e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
+  
+  cons =  constraint_makeEnsureGreaterThan (t1, t2, sequencePoint);
+  e->falseEnsuresConstraints = constraintList_add(e->falseEnsuresConstraints, cons);
+}
+  
+
+
+/*Logical operations */
+
+ if (lltok_isAnd_Op (tok) )
+   
+   {
+     //true ensures 
+     tempList = constraintList_copy (t1->trueEnsuresConstraints);
+     tempList = constraintList_addList (tempList, t2->trueEnsuresConstraints);
+     e->trueEnsuresConstraints = constraintList_addList(e->trueEnsuresConstraints, tempList);
+     
       //false ensures: fens t1 or tens t1 and fens t2
-      tempList = constraintList_copy (t1->trueEnsuresConstraints);
-      tempList = constraintList_addList (tempList, t2->falseEnsuresConstraints);
-      tempList = constraintList_logicalOr (tempList, t1->falseEnsuresConstraints);
+     tempList = constraintList_copy (t1->trueEnsuresConstraints);
+     tempList = constraintList_addList (tempList, t2->falseEnsuresConstraints);
+     tempList = constraintList_logicalOr (tempList, t1->falseEnsuresConstraints);
       e->falseEnsuresConstraints =constraintList_addList(e->falseEnsuresConstraints, tempList);
       
-    }
-  
+   }
+ 
   if (lltok_isOr_Op (tok) )
     {
       //false ensures 
@@ -519,7 +663,6 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
   bool handledExprNode;
   exprData data;
   constraint cons;
-  constraintList tempList;
 
      if (exprNode_handleError (e))
      {
@@ -534,7 +677,8 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
    e->trueEnsuresConstraints = constraintList_new();;
    e->falseEnsuresConstraints = constraintList_new();;
 
-   
+   //   e = makeDataTypeConstraints (e);
+ 
    handledExprNode = TRUE;
    
   data = e->edata;

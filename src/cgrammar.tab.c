@@ -3169,7 +3169,7 @@ case 27:
      yyval.ntyp = idDecl_replaceCtype (yyvsp[-7].ntyp, ctype_makeFunction (idDecl_getCtype (yyvsp[-7].ntyp), yyvsp[-4].entrylist));
      context_popLoc ();
 
-     printf("Done nameDeclBase\n");
+     //     printf("Done nameDeclBase\n");
    ;
     break;}
 case 28:
@@ -3280,7 +3280,7 @@ case 47:
 case 49:
 #line 407 "cgrammar.y"
 {
-  TPRINTF ( ("doing optGlobBufConstraintsAux\n") );
+  DPRINTF ( ("doing optGlobBufConstraintsAux\n") );
 context_setProtectVars (); enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
 
@@ -3311,12 +3311,12 @@ case 54:
     break;}
 case 61:
 #line 441 "cgrammar.y"
-{yyval.sr = constraintExpr_parseMakeUnaryOp (yyvsp[-3].tok, yyvsp[-1].sr);  TPRINTF( ("Got BufConstraintExpr UNary Op ") ); ;
+{yyval.sr = constraintExpr_parseMakeUnaryOp (yyvsp[-3].tok, yyvsp[-1].sr);  DPRINTF( ("Got BufConstraintExpr UNary Op ") ); ;
     break;}
 case 62:
 #line 442 "cgrammar.y"
 {
-   TPRINTF( ("Got BufConstraintExpr BINary Op ") );
+   DPRINTF( ("Got BufConstraintExpr BINary Op ") );
    yyval.sr = constraintExpr_parseMakeBinaryOp (yyvsp[-3].sr, yyvsp[-2].tok, yyvsp[-1].sr); ;
     break;}
 case 63:

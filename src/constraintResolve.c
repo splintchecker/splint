@@ -53,6 +53,27 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
   //return ret;
 }
 
+					    
+/* constraintList constraintList_resolveRequires (constraintList requires, constraintList ensures) */
+/* { */
+  
+/*   constraintList ret; */
+/*   constraintList temp; */
+/*   ret = constraintList_new(); */
+  
+/*   ret = reflectChangesEnsures (list1, list2); */
+/*   ret = constraintList_fixConflicts (ret, list2); */
+/*   ret = constraintList_subsumeEnsures (ret, list2); */
+/*   list2 = constraintList_subsumeEnsures (list2, ret); */
+/*   temp = constraintList_copy(list2); */
+
+/*   temp = constraintList_addList (temp, ret); */
+/*   return temp; */
+/*   //ret = constraintList_addList (ret, list2); */
+/*   //return ret; */
+/* } */
+
+
 constraintList checkCall (exprNode fcn, exprNodeList arglist)
 {
   constraintList preconditions;
@@ -170,7 +191,17 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
 	{
 	  temp = substitute (el, post1);
 	  if (!resolve (temp, post1) )
-	    ret = constraintList_add (ret, temp);
+	    {
+	      // try inequality substitution
+	      constraint temp2;
+	      
+	      // the inequality substitution may cause us to lose information
+	      //so we don't want to store the result but we do it anyway
+	      temp2 = constraint_copy (temp);
+	      temp2 = inequalitySubstitute (temp, post1);
+	      if (!resolve (temp2, post1) )
+		  ret = constraintList_add (ret, temp2);
+	    }
 	}
     } end_constraintList_elements;
 
@@ -323,7 +354,7 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
 
     case LT:
     case LTE:
-      llassert(FALSE); 
+      //      llassert(FALSE); 
       if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
 	return TRUE;
     }
@@ -385,7 +416,7 @@ bool constraint_search (constraint c, constraintExpr old)
   return ret;
 }
 
-
+//adjust file locs and stuff
 constraint constraint_adjust (constraint substitute, constraint old)
 {
   fileloc loc1, loc2, loc3;
@@ -416,6 +447,39 @@ constraint constraint_adjust (constraint substitute, constraint old)
 
   return substitute;
   
+}
+
+constraint  inequalitySubstitute  (constraint c, constraintList p)
+{
+  if (c->ar != GTE)
+    return c;
+  
+  constraintList_elements (p, el)
+    {
+       if ( el->ar == LT)
+	 //	 if (!constraint_conflict (c, el) )
+	   {
+	     constraint temp;
+	     temp = constraint_copy(el);
+	     
+	     //	     temp = constraint_adjust(temp, c);
+
+	     if (constraintExpr_same (el->lexpr, c->expr) )
+	       {
+		 DPRINTF((message ("Replacing %s in %s with  %s",
+				   constraintExpr_print (c->expr),
+				   constraint_print (c),
+				   constraintExpr_print (el->expr) )
+			  ));
+		 c->expr = constraintExpr_copy (el->expr);
+	       }
+	     
+	   }
+    }
+  end_constraintList_elements;
+
+  c = constraint_simplify(c);
+  return c;
 }
 
 constraint substitute (constraint c, constraintList p)
