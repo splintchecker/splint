@@ -482,6 +482,7 @@ constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequenc
 constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
   constraintExpr t1, t2;
+  constraint t3;
 
   t1 = constraintExpr_makeValueExpr (e1);
   t2 = constraintExpr_makeValueExpr (e2);
@@ -489,8 +490,11 @@ constraint constraint_makeEnsureLessThan (exprNode e1, exprNode e2, fileloc sequ
   /*change this to e1 <= (e2 -1) */
 
   t2 = constraintExpr_makeDecConstraintExpr (t2);
-  
- return ( constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, LTE));
+
+  t3 =  constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, LTE);
+
+  t3 = constraint_simplify(t3);
+  return (t3);
 }
 
 constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
@@ -501,6 +505,7 @@ constraint constraint_makeEnsureLessThanEqual (exprNode e1, exprNode e2, fileloc
 constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc sequencePoint)
 {
   constraintExpr t1, t2;
+  constraint t3;
 
   t1 = constraintExpr_makeValueExpr (e1);
   t2 = constraintExpr_makeValueExpr (e2);
@@ -509,8 +514,11 @@ constraint constraint_makeEnsureGreaterThan (exprNode e1, exprNode e2, fileloc s
   /* change this to e1 >= (e2 + 1) */
   t2 = constraintExpr_makeIncConstraintExpr (t2);
   
+  t3 =  constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, GTE);
+
+  t3 = constraint_simplify(t3);
   
- return ( constraint_makeEnsuresOpConstraintExpr (t1, t2, sequencePoint, GTE));
+  return t3;
 }
 
 constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, fileloc sequencePoint)
@@ -983,7 +991,7 @@ constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exp
   precondition->expr = constraintExpr_doSRefFixConstraintParam (precondition->expr, arglist);
 
   precondition->fcnPre = FALSE;
-  return precondition;
+  return constraint_simplify(precondition);
 }
 
 constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @*/

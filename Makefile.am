@@ -29,7 +29,7 @@
 AUTOMAKE_OPTIONS = 1.5 foreign
 
 binaryfixscript = ./fixBinaryDist.sh
-SUBDIRS =   lib imports test doc src
+SUBDIRS =   src lib imports test doc
 
 binaryDir = bin
 binaryDirFiles =  $(binaryDir)/Makefile.am $(binaryDir)/Makefile.in

@@ -1270,18 +1270,16 @@ optCompleteType
 
 optStructInvariant
 : /* empty */ { $$ = constraintList_undefined; }
-/* don't want to have support for structure invariant until we're
-   sure it's stable
+/*  drl commenting before a CVS commit 
    |  QINVARIANT BufConstraintList QENDMACRO { $$ = $2 }
 */
-
 suSpc
  : NotType CSTRUCT newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList  DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    optStructInvariant 
-   { ctype ct; ct = declareStruct ($3, $8); /* setGlobalStructInfo(ct, $12);*/ $$ = ct; } 
+   { ctype ct; ct = declareStruct ($3, $8); setGlobalStructInfo(ct, $12); $$ = ct; } 
  | NotType CUNION  newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); } 

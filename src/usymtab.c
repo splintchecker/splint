@@ -2009,9 +2009,9 @@ void usymtab_load (FILE *f)
     I'm trying to do this without breaking older libraries*/
   
   /*check for "optional" start buffer constraints message*/
-  if (cstring_compareLit(s, "start_Buffer_Constraints") )
+  if (cstring_compareLit(cstring_fromChars(s), "start_Buffer_Constraints\n") == 0 )
     {
-      fgets (s, MAX_DUMP_LINE_LENGTH, f);
+      (void)fgets (s, MAX_DUMP_LINE_LENGTH, f);
     }
   
   while (s != NULL && *s != ';')

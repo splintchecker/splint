@@ -927,7 +927,7 @@ context_resetAllFlags (void)
    */
 
   /* commenting ou until some output issues are fixed */
-  /* gc.flags[FLG_ORCONSTRAINT] = TRUE;*/
+  gc.flags[FLG_ORCONSTRAINT] = TRUE; 
   
   gc.flags[FLG_CONSTRAINTLOCATION] = TRUE;
 
@@ -4911,12 +4911,15 @@ static struct sInfo globalStructInfo;
 /*drl 1/6/2001: I didn't think these functions were solid enough to include in the
   stable  release of splint.  I coomented them out so that they won't break anything
   but didn't delete them because they will be fixed and included later
+
+
 */
 
-/*
+/*@-paramuse@*/
+
 void  setGlobalStructInfo(ctype ct, constraintList list)
 {
-  int i;
+  /* int i;
   uentryList f;
 
   f =  ctype_getFields (ct);
@@ -4928,7 +4931,7 @@ void  setGlobalStructInfo(ctype ct, constraintList list)
 
       globalStructInfo.ngetUe = 0;
       
-      / *abstraction violation fix it * /
+      /* abstraction violation fix it * /
       globalStructInfo.t   = dmalloc(f->nelements * sizeof(struct getUe) );
 
       globalStructInfo.ngetUe = f->nelements;
@@ -4947,11 +4950,12 @@ void  setGlobalStructInfo(ctype ct, constraintList list)
 	}
       end_uentryList_elements;
     }
+  */
 }
 
-*/
+/*
 
-bool hasInvariants (ctype ct) /*@*/
+bool hasInvariants (ctype ct) /*@* /
 {
   if ( ctype_sameName(globalStructInfo.ct, ct) )
 
@@ -4962,3 +4966,8 @@ bool hasInvariants (ctype ct) /*@*/
     return FALSE;
   
 }
+
+
+*/
+
+/*@=paramuse@*/

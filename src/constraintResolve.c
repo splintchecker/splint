@@ -384,12 +384,22 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
   constraint temp;
 
   llassert(constraint_isUndefined (c->or ) );
+
+  DPRINTF((message("doResolve:: call on constraint c = : %q and constraintList %q",
+		   constraint_printOr(c), constraintList_print(post1)
+		   )
+	   ));
   
   if (!resolveOr (c, post1) )
     {
       
       temp = constraint_substitute (c, post1);
       
+      DPRINTF((message("doResolve:: after substitute temp is %q",
+		   constraint_printOr(temp)
+		       )
+	       ));
+  
       if (!resolveOr (temp, post1) )
 	{
 	  /* try inequality substitution */
@@ -413,11 +423,57 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
 		  if (!resolveOr (temp2, post1) )
 		    {
 		      if (!constraint_same (temp, temp2) )
-			temp = constraint_addOr (temp, temp2);
-		      
+			{
+			  /* drl added 8/28/2002*/
+			  /*make sure that the information from
+			    a post condition like i = i + 1 is transfered
+			  */
+			  constraint tempSub;
+			  tempSub = constraint_substitute (temp2, post1);
+
+			  DPRINTF((
+				   message("doResolve: adding %s ",
+					   constraint_printOr(tempSub)
+					   )
+				   ));
+			  
+			  DPRINTF((
+				   message("doResolve: not adding %s ",
+					   constraint_printOr(temp2)
+					   )
+				   ));
+			  
+			  temp = constraint_addOr (temp, tempSub);
+			  constraint_free(tempSub);
+			  
+			}
 		      if (!constraint_same (temp, temp3) && !constraint_same (temp3, temp2) )
-			temp = constraint_addOr (temp, temp3);
-		      
+			{
+			 /* drl added 8/28/2002*/
+			  /*make sure that the information from
+			    a post condition like i = i + 1 is transfered
+			  */
+			  constraint tempSub;
+			  
+			  tempSub = constraint_substitute (temp3, post1);
+
+			  DPRINTF((
+				   message("doResolve: adding %s ",
+					   constraint_printOr(tempSub)
+					   )
+				   ));
+
+			  
+			  DPRINTF((
+				   message("doResolve: not adding %s ",
+					   constraint_printOr(temp3)
+					   )
+				   ));
+
+			  temp = constraint_addOr (temp, tempSub);
+
+			  constraint_free(tempSub);
+			}
 		      *resolved = FALSE;
 		      
 		      constraint_free(temp2);
@@ -1292,20 +1348,22 @@ static constraint  inequalitySubstituteUnsound  (/*@returned@*/ constraint c, co
 	     
 	     temp = constraint_adjust(temp, ret);
 
-	     DPRINTF((message ("Substituting %s in the constraint %s",
-			       constraint_print (temp), constraint_print (ret)
+	     DPRINTF((message ("constraint_substitute :: Substituting in %s using %s",
+			       constraint_print (ret), constraint_print (temp)
 			       ) ) );
 			       
 	  
 	     ret = constraint_searchandreplace (ret, temp->lexpr, temp->expr);
-	     DPRINTF(( message ("The new constraint is %s", constraint_print (ret) ) ));
+	     DPRINTF(( message (" constraint_substitute :: The new constraint is %s", constraint_print (ret) ) ));
 	     constraint_free(temp);
 	   }
     }
   end_constraintList_elements;
-  DPRINTF(( message ("The finial new constraint is %s", constraint_print (ret) ) ));
 
   ret = constraint_simplify(ret);
+
+  DPRINTF(( message (" constraint_substitute :: The final new constraint is %s", constraint_print (ret) ) ));
+
   return ret;
 }
 
