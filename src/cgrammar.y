@@ -309,6 +309,8 @@ extern void yyerror (char *);
 %type <expr> stmtErr stmtListErr compoundStmtErr expressionStmtErr 
 %type <expr> iterationStmtErr initializerList initializer ifPred whilePred forPred iterWhilePred
 
+%type <expr> designator designatorList designation
+
 %type <typequal> storageSpecifier typeQualifier typeModifier globQual
 %type <tquallist> optGlobQuals
 %type <qtyp> completeType completeTypeSpecifier optCompleteType
@@ -1018,7 +1020,24 @@ init
  : assignExpr                      
  | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); }
  | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); }
+ | designation init                { $$ = exprNode_undefined; }
 
+/*
+** Splint parses these (added in ISO C99), but no checking yet...
+*/
+
+designation
+ : designatorList TASSIGN          { $$ = $1; }
+ | newId TCOLON                    { $$ = exprNode_undefined; 
+                                     /* gcc extension, obsolete since 2.5 */ }
+
+designatorList
+ : designator                      { $$ = exprNode_undefined; } 
+ | designatorList designator       { $$ = exprNode_undefined; }
+
+designator
+ : TLSQBR constantExpr TRSQBR      { $$ = exprNode_undefined; }
+ | TDOT newId                      { $$ = exprNode_undefined; }
 
 initList
  : init 
