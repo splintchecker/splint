@@ -38,6 +38,18 @@ metaStateSpecifier_create (/*@only@*/ sRef sr, /*@observer@*/ metaStateInfo msin
   return res;
 }
 
+sRef
+metaStateSpecifier_getSref (metaStateSpecifier m)
+{
+  return m->sr;
+}
+
+metaStateInfo
+metaStateSpecifier_getMetaStateInfo (metaStateSpecifier m)
+{
+  return m->msinfo;
+}
+
 metaStateSpecifier 
 metaStateSpecifier_copy (metaStateSpecifier m)
 {

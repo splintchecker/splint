@@ -23,7 +23,7 @@ struct hashnode {
   ** of the chain and gets deleted. 
   */
 
-  /*@dependent@*/ struct hashnode **bucket_hdr;
+  /*@null@*/ /*@dependent@*/ struct hashnode **bucket_hdr;
 
   enum node_type type;		/* type of special token */
   int length;			/* length of token, for quick comparison */

@@ -183,6 +183,7 @@ static /*@only@*/ cstring sRef_unparseWithArgs (sRef p_s, uentryList p_args);
 static /*@only@*/ cstring sRef_unparseNoArgs (sRef p_s);
 
 static /*@exposed@*/ sRef sRef_findDerivedPointer (sRef p_s);
+static /*@exposed@*/ sRef sRef_findDerivedArrayFetch (/*@notnull@*/ sRef, bool, int, bool) ;
 static /*@exposed@*/ sRef sRef_findDerivedField (/*@notnull@*/ sRef p_rec, cstring p_f);
 static /*@exposed@*/ sRef
   sRef_getDeriv (/*@notnull@*/ /*@returned@*/ sRef p_set, sRef p_guide);
@@ -465,6 +466,16 @@ sRef_addDeriv (/*@notnull@*/ sRef s, /*@notnull@*/ /*@exposed@*/ sRef t)
 	{
 	  return;
 	}
+
+      /* This sometimes fails: (evans 2001-07-12)
+      if (sRef_isArrayFetch (t))
+	{
+	  DPRINTF (("Derived fetch: %s / %s / %s",
+		    sRef_unparseFull (s), sRef_unparseFull (t),
+		    sRef_unparseFull (t->info->arrayfetch->arr)));
+	  llassert (t->info->arrayfetch->arr == s);
+	}
+      */
 
       if (sRef_isFileOrGlobalScope (s))
 	{
@@ -4990,6 +5001,8 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
   sRef_checkMutable (s);
   if (sRef_isInvalid (s)) return;
 
+  DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
+
   if (s->defstate != SS_DEFINED && fileloc_isDefined (loc))
     {
       s->definfo = stateInfo_updateLoc (s->definfo, loc);
@@ -5002,10 +5015,23 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
   if (s->kind == SK_PTR)
     {
       sRef p = s->info->ref;
-      
-      if (p->defstate == SS_ALLOCATED)
+      sRef arr;
+
+      if (p->defstate == SS_ALLOCATED
+	  || p->defstate == SS_SPECIAL) /* evans 2001-07-12: shouldn't need this */
 	{
 	  sRef_setDefinedAux (p, loc, clear);
+	}
+
+      /* 
+      ** Defines a[0] also:
+      */
+
+      arr = sRef_findDerivedArrayFetch (p, FALSE, 0, FALSE);
+
+      if (sRef_isValid (arr))
+	{
+	  sRef_setDefinedAux (arr, loc, clear);
 	}
     }
   else if (s->kind == SK_ARRAYFETCH) 
@@ -5015,11 +5041,12 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 	{
 	  sRef p = s->info->arrayfetch->arr;
 	  sRef ptr = sRef_constructPointer (p);
-	  
+
 	  if (sRef_isValid (ptr))
 	    {
 	      if (ptr->defstate == SS_ALLOCATED 
-		  || ptr->defstate == SS_UNDEFINED)
+		  || ptr->defstate == SS_UNDEFINED
+		  || ptr->defstate == SS_SPECIAL) /* evans 2001-07-12: shouldn't need this */
 		{
 		  sRef_setDefinedAux (ptr, loc, clear);
 		}
@@ -5029,7 +5056,8 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 	    {
 	      ;
 	    }
-	  else if (p->defstate == SS_ALLOCATED || p->defstate == SS_PDEFINED)
+	  else if (p->defstate == SS_ALLOCATED || p->defstate == SS_PDEFINED
+		   || p->defstate == SS_SPECIAL) /* evans 2001-07-12: shouldn't need this */
 	    {
 	      p->defstate = SS_DEFINED;
 	    }
@@ -5087,6 +5115,7 @@ void sRef_setPartialDefinedComplete (sRef s, fileloc loc)
 
 void sRef_setDefinedComplete (sRef s, fileloc loc)
 {
+  DPRINTF (("Set defined complete: %s", sRef_unparseFull (s)));
   sRef_innerAliasSetComplete (sRef_setDefined, s, loc);
 }
 
@@ -6396,6 +6425,16 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
   
   if (sRef_isValid (s))
     {
+      /* evans 2001-07-12: this is bogus, clean-up hack */
+      if (s->info->arrayfetch->arr != arr)
+	{
+	  sRef res;
+	  check (sRefSet_delete (arr->deriv, s));
+	  res = sRef_buildArrayFetch (arr);
+	  sRef_copyState (res, s);
+	  return res;
+	}
+
       sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);
       return s;
     }
@@ -6443,7 +6482,19 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       
   if (sRef_isValid (s))
     {
+      /* evans 2001-07-12: this is bogus, clean-up hack */
+      if (s->info->arrayfetch->arr != arr)
+	{
+	  sRef res;
+	  check (sRefSet_delete (arr->deriv, s));
+	  res = sRef_buildArrayFetchKnown (arr, i);
+	  sRef_copyState (res, s);
+	  return res;
+	}
+
       sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);      
+
+      llassert (s->info->arrayfetch->arr == arr);
       return s;
     }
   else
@@ -6622,26 +6673,16 @@ static /*@exposed@*/ sRef sRef_constructDerefAux (sRef t, bool isdead)
       
       if (sRef_isValid (s))
 	{
+	  DPRINTF (("Found array fetch: %s", sRef_unparseFull (s)));
 	  return s;
 	}
       else
 	{
 	  sRef ret = sRef_constructPointer (t);
 
-	  /*
-	  ** This is necessary to prevent infinite depth
-	  ** in checking complete destruction.  
-	  */
+	  DPRINTF (("Constructed pointer: %s", sRef_unparseFull (ret)));
 
-	  if (isdead)
-	    {
-	      /* ret->defstate = SS_UNKNOWN;  */
-	      return ret; 
-	    }
-	  else
-	    {
-	      return ret;
-	    }
+	  return ret;
 	}
     }
   else
@@ -8249,7 +8290,6 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
       inner = s->info->ref;
       aliases = usymtab_allAliases (inner);
       ct = sRef_getType (inner);
-
       
       sRefSet_realElements (aliases, current)
 	{
@@ -8272,27 +8312,37 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
       aliases = usymtab_allAliases (inner);
       ct = sRef_getType (inner);
 
+      DPRINTF (("Array fetch: %s", sRefSet_unparse (aliases)));
+
       sRefSet_realElements (aliases, current)
 	{
 	  if (sRef_isValid (current))
 	    {
 	      current = sRef_updateSref (current);
-	      
+	      DPRINTF (("Current: %s", sRef_unparseFull (current)));
+
 	      if (ctype_equal (ct, sRef_getType (current)))
 		{
-		  		  
 		  if (s->info->arrayfetch->indknown)
 		    {
 		      sRef af = sRef_makeArrayFetchKnown (current, s->info->arrayfetch->ind);
-		      
+		      DPRINTF (("Defining: %s", sRef_unparseFull (af)));
+		      llassert (af->info->arrayfetch->arr == current);
 		      ((*predf)(af, loc));
 		    }
 		  else
 		    {
 		      sRef af = sRef_makeArrayFetch (current);
-		      
+		      llassert (af->info->arrayfetch->arr == current);
+		      DPRINTF (("Defining: %s", sRef_unparseFull (af)));
 		      ((*predf)(af, loc));
 		    }
+		}
+	      else
+		{
+		  DPRINTF (("Type mismatch: %s / %s",
+			    ctype_unparse (ct),
+			    ctype_unparse (sRef_getType (current))));
 		}
 	    }
 	} end_sRefSet_realElements;

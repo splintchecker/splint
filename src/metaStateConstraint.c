@@ -51,6 +51,16 @@ metaStateConstraint metaStateConstraint_copy (metaStateConstraint m)
 				     metaStateExpression_copy (m->rspec));
 }
 
+/*@observer@*/ metaStateSpecifier metaStateConstraint_getSpecifier (metaStateConstraint m)
+{
+  return m->lspec;
+}
+
+/*@observer@*/ metaStateExpression metaStateConstraint_getExpression (metaStateConstraint m) 
+{
+  return m->rspec;
+}
+
 void metaStateConstraint_free (/*@only@*/ metaStateConstraint m) 
 {
   metaStateSpecifier_free (m->lspec);

@@ -10,6 +10,7 @@ bool employee_setName (employee *e, char na [])
     {
       if (i == maxEmployeeName) 
 	{
+	  e->name[0] = '\0';
 	  return FALSE;
 	}
     }

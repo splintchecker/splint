@@ -10,5 +10,9 @@
 
 # include "employee.lh"
 
+/*@-incondefs@*/ /*@-redecl@*/
+extern bool employee_setName (/*@special@*/ employee *p_e, char  /* na */[]) /*@defines p_e->name@*/;
+/*@=incondefs@*/ /*@=redecl@*/
+
 # define employee_initMod()  bool_initMod()
 # endif

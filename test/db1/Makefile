@@ -9,7 +9,7 @@
 
 SHELL = /bin/csh -f
 
-LCLINT = lclint
+LCLINT = lclint -booltype bool
 LCL = $(LCLINT) -specundef +lh +quiet -nof
 LCLINTLH = $(LCLINT) +lh
 LCSFILES = bool.lcs dbase.lcs employee.lcs empset.lcs erc.lcs eref.lcs ereftab.lcs 
@@ -23,7 +23,7 @@ test:
 
 check: $(LCSFILES)
 	$(LCLINT) -showcol -weak +showscan $(MODULES) -expect 16
-	$(LCLINT) -showcol +strict -modfilesystem +showscan +showsummary $(MODULES) -expect 330
+	$(LCLINT) -showcol +strict -modfilesystem +showscan +showsummary $(MODULES) -expect 333
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

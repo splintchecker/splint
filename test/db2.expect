@@ -1,4 +1,5 @@
 
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
 < reading spec empset.lcl >
@@ -8,7 +9,7 @@
 < preprocessing >
 < checking employee.c >
 employee.c: (in function employee_setName)
-employee.c:14: Parameter 1 (e->name) to function strcpy is declared unique but
+employee.c:17: Parameter 1 (e->name) to function strcpy is declared unique but
                   may be aliased externally by parameter 2 (na)
 < checking eref.c >
 eref.c: (in function eref_alloc)
@@ -26,8 +27,8 @@ eref.c: (in function eref_initMod)
 eref.c:84: Storage eref_Pool.conts reachable from global is fresh (should be
               unqualified)
    eref.c:62: Fresh storage eref_Pool.conts allocated
-eref.c:84: Global storage *(eref_Pool.conts) contains 4 undefined fields when
-              call returns: ssNum, salary, gen, j
+eref.c:84: Global storage *(eref_Pool.conts) contains 5 undefined fields when
+              call returns: ssNum, name, salary, gen, j
 eref.c:84: Storage eref_Pool.status reachable from global is fresh (should be
               unqualified)
    eref.c:70: Fresh storage eref_Pool.status allocated
@@ -59,6 +60,7 @@ erc.c:141: Fresh storage returned as unqualified (should be only): result
 
 Finished LCLint checking --- 15 code errors found, as expected
 
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
 < reading spec empset.lcl >
@@ -68,7 +70,7 @@ Finished LCLint checking --- 15 code errors found, as expected
 < preprocessing >
 < checking employee.c >
 employee.c: (in function employee_setName)
-employee.c:14: Parameter 1 (e->name) to function strcpy is declared unique but
+employee.c:17: Parameter 1 (e->name) to function strcpy is declared unique but
                   may be aliased externally by parameter 2 (na)
 < checking eref.c >
 eref.c: (in function eref_initMod)
@@ -78,8 +80,8 @@ eref.c:62: Implicitly only storage eref_Pool.conts (type employee *) not
 eref.c:70: Implicitly only storage eref_Pool.status (type eref_status *) not
     released before assignment: eref_Pool.status = (eref_status *)malloc(size *
     sizeof(eref_status))
-eref.c:84: Global storage *(eref_Pool.conts) contains 4 undefined fields when
-              call returns: ssNum, salary, gen, j
+eref.c:84: Global storage *(eref_Pool.conts) contains 5 undefined fields when
+              call returns: ssNum, name, salary, gen, j
 eref.c:84: Global storage eref_Pool contains 1 undefined field when call
               returns: status
 < checking empset.c >
@@ -139,4 +141,24 @@ drive.c:163: Fresh storage em3 not released before return
 < checking macros bool.h >
 < global checks >
 
-Finished LCLint checking --- 25 code errors found, expected 28
+Finished LCLint checking --- 25 code errors found, as expected
+
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
+< reading spec employee.lcl >
+< reading spec eref.lcl >
+< reading spec empset.lcl >
+< reading spec ereftab.lcl >
+< reading spec erc.lcl >
+< reading spec dbase.lcl >
+< preprocessing >
+< checking employee.c >
+< checking eref.c >
+< checking empset.c >
+< checking ereftab.c >
+< checking erc.c >
+< checking dbase.c >
+< checking drive.c >
+< checking macros bool.h >
+< global checks >
+
+Finished LCLint checking --- no code errors found

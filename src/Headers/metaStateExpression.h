@@ -20,6 +20,9 @@ metaStateExpression_create (/*@only@*/ metaStateSpecifier) ;
 extern /*@notnull@*/ metaStateExpression
 metaStateExpression_createMerge (/*@only@*/ metaStateSpecifier, /*@only@*/ metaStateExpression) ;
 
+extern /*@observer@*/ metaStateSpecifier
+metaStateExpression_getSpecifier (metaStateExpression) /*@*/ ;
+
 extern metaStateExpression metaStateExpression_copy (metaStateExpression) ;
 
 extern cstring metaStateExpression_unparse (metaStateExpression) /*@*/ ;

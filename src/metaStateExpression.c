@@ -80,6 +80,12 @@ metaStateExpression metaStateExpression_copy (metaStateExpression m)
     }
 }
 
+metaStateSpecifier metaStateExpression_getSpecifier (metaStateExpression m)
+{
+  llassert (m != NULL);
+  return m->spec;
+}
+
 void metaStateExpression_free (/*@only@*/ metaStateExpression m) 
 {
   llassert (m != NULL);
@@ -92,5 +98,4 @@ void metaStateExpression_free (/*@only@*/ metaStateExpression m)
 
   sfree (m);
 }
-
 

@@ -82,14 +82,18 @@ LSLGenShiftOnly (/*@only@*/ ltoken tok)
 extern ltoken
 LSLGenTopPopShiftStack (void)
 {
+  ltoken res;
+
   if (LSLGenIsEmptyShiftStack ())
     {
       lclfatalbug ("LSLGenTopPopShiftStack: Empty stack");
     }
 
-  /*@-retalias@*/
-  return Shifts[--shiftIndex];
-  /*@=retalias@*/
+  res = Shifts[--shiftIndex];
+  Shifts[shiftIndex] = ltoken_undefined;
+  /*@-retalias@*/ /*@-dependenttrans@*/
+  return res;
+  /*@=retalias@*/ /*@=dependenttrans@*/
 }
 
 void

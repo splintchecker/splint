@@ -67,11 +67,10 @@ unsigned int lsllex (YYSTYPE *lval)
 
 ltoken LSLScanNextToken (void)
 {
-  
   if (nextToken < lastToken)
     {	
       /*@-retalias@*/
-            return TokenList[nextToken++];
+      return TokenList[nextToken++];
       /*@=retalias@*/
     }
   else

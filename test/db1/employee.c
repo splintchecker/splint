@@ -8,7 +8,8 @@ bool employee_setName (employee *e, char na [])
   
   for (i = 0; na[i] != '\0'; i++)
     {
-      if (i == maxEmployeeName) return FALSE;
+      if (i == maxEmployeeName) 
+	return FALSE; /* e->name is not defined (new error - 2001-07-12) */
     }
 
   strcpy (e->name, na);

@@ -81,7 +81,7 @@ stateCombinationTable stateCombinationTable_create (int size)
 
 	  s->value = i;
 	  llassert (cstring_isUndefined (s->msg));
-
+	  
 	  res->rows[i]->entries[j] = s;
 	}
     }

@@ -4156,6 +4156,8 @@ void usymtab_checkFinalScope (bool isReturn)
 					{
 					  ss (sr);
 					}
+
+				      DPRINTF (("Storage: %s", sRef_unparseFull (sr)));
 				    }  
 				}
 			    }

@@ -17,6 +17,9 @@ struct s_metaStateSpecifier {
 extern metaStateSpecifier
 metaStateSpecifier_create (/*@only@*/ sRef, /*@observer@*/ metaStateInfo) ;
 
+extern /*@exposed@*/ sRef metaStateSpecifier_getSref (metaStateSpecifier) /*@*/ ;
+extern /*@observer@*/ metaStateInfo metaStateSpecifier_getMetaStateInfo (metaStateSpecifier) /*@*/ ;
+
 extern cstring metaStateSpecifier_unparse (metaStateSpecifier) /*@*/ ;
 extern metaStateSpecifier metaStateSpecifier_copy (metaStateSpecifier) /*@*/ ;
 extern void metaStateSpecifier_free (/*@only@*/ metaStateSpecifier) ;

@@ -24,8 +24,8 @@ test:
 ### Note there is a .lclint file used for checking!
 
 check: $(LCSFILES)
-	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal 
-	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal +strictlib -expect 77
+	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
+	$(LCLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
 
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also

@@ -284,7 +284,7 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
   ctype ct;
   alkind fkind = sRef_getAliasKind (fref);
   alkind tkind = sRef_getAliasKind (tref);
-
+  
   DPRINTF (("Check completely defined: %s [%s] / %s [%s]",
 	    exprNode_unparse (fexp), sRef_unparseFull (fref),
 	    exprNode_unparse (texp), sRef_unparseFull (tref)));
@@ -766,6 +766,8 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 
   ct = ctype_realType (sRef_getType (fref));
 
+  DPRINTF (("Here: %s", ctype_unparse (ct)));
+
   if (!(sRef_isAnyDefined (fref) 
 	|| sRef_isPdefined (fref)
 	|| sRef_isAllocated (fref)
@@ -867,6 +869,9 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 			{
 			  sRef rb = sRef_getRootBase (fref);
 			  sRef_showStateInfo (fref);
+
+			  DPRINTF (("fref: %s", sRef_unparseFull (fref)));
+			  DPRINTF (("rb: %s", sRef_unparseFull (rb)));
 			  sRef_setDefinedComplete (rb, loc);
 			}
 		    }
@@ -891,7 +896,7 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
     {
       return YES;
     }
-  else if (ctype_isPointer (ct))
+  else if (ctype_isPointer (ct) || ctype_isArray (ct)) /* evans 2001-07-12 added ctype_isArray */
     {
       ctype tct = ctype_realType (sRef_getType (tref));
 
@@ -901,6 +906,8 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 	}
       else
 	{
+	  DPRINTF (("Here fref: %s", sRef_unparseFull (fref)));
+
 	  if (ctype_isAP (tct) || ctype_isUnknown (tct))
 	    {
 	      sRef fptr = sRef_constructDeref (fref);
@@ -916,10 +923,6 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 	      return YES;
 	    }
 	}
-    }
-  else if (ctype_isArray (ct))
-    {
-      return YES;
     }
   else if (ctype_isStruct (ct))
     {

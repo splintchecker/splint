@@ -1604,6 +1604,7 @@ uentry_setPreconditions (uentry ue, /*@only@*/ functionConstraint preconditions)
 	if (functionConstraint_isDefined (ue->info->fcn->preconditions))
 	  {
 	    BADBRANCH; /* should conjoin constraints? */
+	    /*@notreached@*/ 
 	    ue->info->fcn->preconditions = functionConstraint_conjoin (ue->info->fcn->preconditions, preconditions);
 	  }
 	else
@@ -1653,6 +1654,7 @@ uentry_setPostconditions (uentry ue, /*@only@*/ functionConstraint postcondition
 	else
 	  {
 	    BADBRANCH; /* should conjoin */
+	    /*@notreached@*/ 
 	    ue->info->fcn->postconditions = functionConstraint_conjoin (ue->info->fcn->postconditions, postconditions);
 	  }	    
       }
@@ -9055,14 +9057,26 @@ static void uentry_mergeConstraints (uentry spec, uentry def)
 	      llassert (uentry_isFunction (spec));
 	      spec->info->fcn->preconditions = functionConstraint_conjoin (spec->info->fcn->preconditions,
 									   def->info->fcn->preconditions);
-	      def->info->fcn->preconditions = functionConstraint_undefined;
 	    }
 	  else
 	    {
-	      BADBRANCH;
-	    }
-	}
+	      if (optgenerror 
+		  (FLG_INCONDEFS,
+		   message
+		   ("Preconditions for %q redeclared. Dropping previous precondition: %q",
+		    uentry_getName (spec),
+		    functionConstraint_unparse (spec->info->fcn->preconditions)),
+		   uentry_whereLast (def)))
+		{
+		  uentry_showWhereSpecified (spec);
+		}
 
+	      functionConstraint_free (spec->info->fcn->preconditions);
+	      spec->info->fcn->preconditions = def->info->fcn->preconditions;
+	    }
+	  
+	  def->info->fcn->preconditions = functionConstraint_undefined;
+	}
 
       if (functionConstraint_isDefined (def->info->fcn->postconditions))
 	{
@@ -9079,7 +9093,20 @@ static void uentry_mergeConstraints (uentry spec, uentry def)
 	    }
 	  else
 	    {
-	      BADBRANCH;
+	      if (optgenerror 
+		  (FLG_INCONDEFS,
+		   message
+		   ("Postconditions for %q redeclared. Dropping previous postcondition: %q",
+		    uentry_getName (spec),
+		    functionConstraint_unparse (spec->info->fcn->postconditions)),
+		   uentry_whereLast (def)))
+		{
+		  uentry_showWhereSpecified (spec);
+		}
+	      
+	      functionConstraint_free (spec->info->fcn->postconditions);
+	      spec->info->fcn->postconditions = def->info->fcn->postconditions;
+	      def->info->fcn->postconditions = functionConstraint_undefined;
 	    }
 	}
     }

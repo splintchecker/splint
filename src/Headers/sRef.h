@@ -293,7 +293,7 @@ extern int sRef_lexLevel (sRef p_s) /*@*/ ;
 extern void sRef_setOrigAliasKind (sRef p_s, alkind p_kind);
 
 extern /*@exposed@*/ sRef 
-  sRef_fixBase (/*@returned@*/ sRef p_s, /*@returned@*/ sRef p_base)
+  sRef_fixBase (/*@returned@*/ sRef p_s, /*@returned@*/ sRef p_base) 
   /*@modifies p_s, p_base@*/ ;
 
 extern void sRef_showNotReallyDefined (sRef p_s) /*@modifies g_msgstream@*/ ;

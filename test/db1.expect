@@ -1,4 +1,5 @@
 
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
@@ -9,7 +10,7 @@
 < preprocessing >
 < checking employee.c >
 employee.c: (in function employee_equal)
-employee.c:24: Function strncmp expects arg 3 to be size_t gets int:
+employee.c:25: Function strncmp expects arg 3 to be size_t gets int:
                   maxEmployeeName
 < checking eref.c >
 < checking empset.c >
@@ -56,6 +57,7 @@ drive.c:123: Return value (type db_status) ignored: hire(e)
 
 Finished LCLint checking --- 16 code errors found, as expected
 
+< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
@@ -88,32 +90,38 @@ ereftab.h:4: Name EREFTAB_H is reserved for future ANSI library extensions.
 bool.h:20: Modifies list for bool_initMod uses global internal state, not
               included in globals list.
    bool.h:20: Declaration of bool_initMod
+employee.h:12: Declaration parameter has name: p_e
+employee.c:5: Definition parameter name e does not match name of corresponding
+                 parameter in declaration: p_e
+   employee.h:12: Previous declaration of p_e
 employee.c: (in function employee_setName)
-employee.c:11: Body of if statement is not a block: return FALSE
-employee.c:14: Parameter 1 (e->name) to function strcpy is declared unique but
+employee.c:12: Undefined storage e->name corresponds to storage listed in
+                  defines clause
+employee.c:12: Body of if statement is not a block: return FALSE
+employee.c:15: Parameter 1 (e->name) to function strcpy is declared unique but
                   may be aliased externally by parameter 2 (na)
 employee.c: (in function employee_equal)
-employee.c:24: Function strncmp expects arg 3 to be size_t gets int:
+employee.c:25: Function strncmp expects arg 3 to be size_t gets int:
                   maxEmployeeName
 employee.c: (in function employee_sprint)
-employee.c:29: Read-only string literal storage used as initial value for
+employee.c:30: Read-only string literal storage used as initial value for
                   unqualified storage: gender[0] = "male"
-employee.c:29: Read-only string literal storage used as initial value for
+employee.c:30: Read-only string literal storage used as initial value for
                   unqualified storage: gender[1] = "female"
-employee.c:29: Read-only string literal storage used as initial value for
+employee.c:30: Read-only string literal storage used as initial value for
                   unqualified storage: gender[2] = "?"
-employee.c:30: Read-only string literal storage used as initial value for
+employee.c:31: Read-only string literal storage used as initial value for
                   unqualified storage: jobs[0] = "manager"
-employee.c:30: Read-only string literal storage used as initial value for
+employee.c:31: Read-only string literal storage used as initial value for
                   unqualified storage: jobs[1] = "non-manager"
-employee.c:30: Read-only string literal storage used as initial value for
+employee.c:31: Read-only string literal storage used as initial value for
                   unqualified storage: jobs[2] = "?"
-employee.c:33: Array fetch using non-integer, gender: gender[e.gen]
-employee.c:33: Array fetch using non-integer, job: jobs[e.j]
+employee.c:34: Array fetch using non-integer, gender: gender[e.gen]
+employee.c:34: Array fetch using non-integer, job: jobs[e.j]
 employee.h: (in macro employee_initMod)
-employee.h:10: Called procedure bool_initMod may access internal state, but
+employee.h:14: Called procedure bool_initMod may access internal state, but
                   globals list does not include globals internalState
-employee.h:10: Undocumented modification of internal state possible from call
+employee.h:14: Undocumented modification of internal state possible from call
                   to bool_initMod: bool_initMod()
 < checking eref.c >
 eref.h:9: Constant exported, but not specified: used
@@ -191,8 +199,8 @@ eref.c:78: Undocumented modification of eref_Pool.size: eref_Pool.size = size
 eref.c:82: Undocumented use of global eref_Pool
 eref.c:82: Undocumented modification of eref_Pool.status[]:
               eref_Pool.status[i] = avail
-eref.c:84: Global storage *(eref_Pool.conts) contains 4 undefined fields when
-              call returns: ssNum, salary, gen, j
+eref.c:84: Global storage *(eref_Pool.conts) contains 5 undefined fields when
+              call returns: ssNum, name, salary, gen, j
 eref.c:84: Global storage eref_Pool contains 1 undefined field when call
               returns: status
 eref.h: (in macro eref_free)
@@ -640,6 +648,8 @@ unreachable                  1           0
 forempty                     1           0
 forblock                    11           0
 ifblock                     22           0
+redecl                       0           7
+incondefs                    0           1
 usedef                       1           0
 noeffect                    11           0
 exporttype                   5           0
@@ -652,7 +662,7 @@ retvalother                  1           0
 retvalbool                  16           0
 macroparens                  4           0
 usereleased                  1           0
-compdef                      2           0
+compdef                      3           0
 compdestroy                  1           0
 mustfree                     3           0
 branchstate                  2           1
@@ -666,11 +676,12 @@ modfilesys                   0          25
 modnomods                    4           0
 moduncon                    20           0
 modunconnomods               1           0
-ansireserved                10           0
+namechecks                  11           6
+protoparammatch              1           0
 nullret                      1           0
 nullstate                    1           0
 sizeoftype                   7           0
-formalarray                  0          17
+formalarray                  0          24
 type                         1           0
 enumindex                   24           0
 enumint                     15           0
@@ -682,6 +693,6 @@ paramuse                     1           0
 typeuse                      1           0
 varuse                       4           0
                           ========  =========
-Total                      330          52
+Total                      333          73
 
-Finished LCLint checking --- 330 code errors found, as expected
+Finished LCLint checking --- 333 code errors found, as expected

@@ -49,7 +49,8 @@ UNITTESTS = help sizeoftest bufferTest simplebufferConstraintTests  moreBufferTe
    charlit clauses commentchar compdestroy controldepth csyntax czechnames czechoslovaknames deadparam \
    decl enum exports external fields fileio flags forbody format freearray funcpointer glob globals impabstract \
    init inparam internal iter keep libs linked lintcomments list macros macrosef merge metastate modifies \
-   modtest moduncon mongoincludes null nullret nullassign observer oldstyle outglob outparam preds prefixes \
+   modtest moduncon mongoincludes mystrncat null nullret nullassign observer oldstyle \
+   outglob outparam preds prefixes \
    printflike rc refcounts release repexpose returned sharing slovaknames specclauses special stack \
    staticarray strings structassign tainted typequals ud ulstypes union unreachable unused ullint void warnuse \
    tests2.2 tests2.2a tests2.4 tests2.5 
@@ -60,6 +61,8 @@ INTEGTESTS = db1 db2 db3
 INTEGEXPECTS  = $(addsuffix .expect, $(INTEGTESTS))
 
 LCLINTTESTS = $(UNITTESTS) $(INTEGTESTS)
+
+QUICKTESTS = db3
 
 all: fulltest
 test: fulltest
@@ -91,6 +94,13 @@ expects:
            $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).expect ; \
 	   cat $(test).expect ; ) 
 
+quicktest:
+	@$(foreach test, $(QUICKTESTS),  \
+	   echo "Checking "$(test)"... " ; \
+           $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).out ; \
+	   $(DIFF) $(test).expect $(test).out ; \
+	   if ($$status) echo "*** FAIL ***" ; \
+	   ) 
 fulltest:
 	@echo ''
 	@echo 'Testing '$(LCLINTP)
@@ -115,8 +125,6 @@ fulltest:
 	   echo "Checking "$(test)"... "; \
            $(MAKE) -e $(test) |& $(CLEANOUTPUT) > $(test).out ; \
 	   $(DIFF) $(test).expect $(test).out ; )
-
-quicktest: $(LCLINTTESTS)
 
 ###
 ### Unit Tests
@@ -411,6 +419,9 @@ mongoincludes:
 	$(LCLINTR) mongoincludes.c -includenest 3 -expect 4
 	$(LCLINTR) mongoincludes.c -includenest 4 -expect 1
 	$(LCLINTR) mongoincludes.c -includenest 5 -expect 0
+
+mystrncat:
+	$(LCLINTR) mystrncat.c +fcnconstraint -expect 4 
 
 null: 
 	$(LCLINTR) null1.c -expect 14

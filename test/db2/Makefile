@@ -23,7 +23,7 @@ test:
 
 check: $(LCSFILES)
 	$(LCLINT) -exportlocal -showcol -allimponly -macrovarprefixexclude +showscan $(MODULES) -expect 15
-	$(LCLINT) -exportlocal -showcol +allimponly +showscan $(MODULES) -expect 28
+	$(LCLINT) -exportlocal -showcol +allimponly +showscan $(MODULES) -expect 25
 	$(LCLINT) -exportlocal -showcol -memchecks -macrovarprefixexclude +showscan $(MODULES)
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also

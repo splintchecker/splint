@@ -7,7 +7,7 @@
 # ifndef READER_H
 # define READER_H
 
-extern /*@null@*/ char *reader_readLine (FILE *p_f, /*@returned@*/ char *p_s, int p_max) 
+extern /*@null@*/ char *reader_readLine (FILE *p_f, /*@returned@*/ /*@out@*/ char *p_s, int p_max) 
    /*@modifies *p_f, p_s@*/ ;
 
 extern int reader_getInt (char **p_s) /*@modifies *p_s@*/ ;

@@ -1363,7 +1363,10 @@ void llbugaux (cstring file, int line, /*@only@*/ cstring s)
   printCodePoint ();
 
   (void) fflush (stderr);
-  perror ("Possible system error diagnostic: ");
+  if (errno != 0)
+    {
+      perror ("Possible system error diagnostic: ");
+    }
   (void) fflush (stderr);
 
   printBugReport ();

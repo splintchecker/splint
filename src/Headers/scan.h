@@ -11,7 +11,7 @@
 extern unsigned int lsllex (YYSTYPE *p_lval);
 /*@=redecl@*/ /*@=type@*/ /*@=incondefs@*/
 
-extern ltoken LSLScanNextToken(void) /*@modifies internalState@*/ ;	       
+extern /*@only@*/ ltoken LSLScanNextToken(void) /*@modifies internalState@*/ ;	       
 extern void LSLScanFreshToken(ltoken p_tok) /*@modifies internalState@*/ ;
 extern /*@exposed@*/ inputStream LSLScanSource (void) /*@*/ ;	   
 extern void LSLScanInit (void) /*@modifies internalState@*/ ;

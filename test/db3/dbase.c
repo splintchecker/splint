@@ -32,7 +32,7 @@ void db_initMod (void)
 {
   if (initDone)
     {
-      return;
+      /*@-compdef@*/ return; /*@=compdef@*/
     }
   
   bool_initMod ();
@@ -43,11 +43,11 @@ void db_initMod (void)
   
   employeeKinds_all (ek)
     {
-      db[(int)ek] = erc_create ();
+      /*@-mustfree@*/ db[(int)ek] = erc_create (); /*@=mustfree@*/
     } end_employeeKinds_all ;
   
-  initDone = TRUE;
-}
+  initDone = TRUE; /*@-compdef@*/ /* db[] is really defined */
+} /*@=compdef@*/
 
 static eref db_ercKeyGet(erc c, int key)  /*@*/
 {

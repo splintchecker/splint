@@ -22,7 +22,7 @@ list_addh (/*@temp@*/ list l,
 	smalloc (sizeof (*l->next));
       l->next->this = e;
     }
-}
+} /* l->next->next not defined */
 
 void
 list_addh2 (/*@temp@*/ list l, 
@@ -36,6 +36,6 @@ list_addh2 (/*@temp@*/ list l,
   new = (list) smalloc (sizeof (*l->next));
   new->this = e;
   l->next = new;
-}
+} /* l->next->next not defined */
 
       

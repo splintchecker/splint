@@ -56,6 +56,9 @@ metaStateInfo_create (/*@only@*/ cstring p_name,
 		      /*@only@*/ stateCombinationTable p_mergetable,
 		      /*@only@*/ fileloc p_loc) ;
 
+extern bool metaStateInfo_equal (metaStateInfo p_m1, metaStateInfo p_m2) /*@*/ ;
+# define metaStateInfo_equal(m1,m2) ((m1) == (m2))
+
 extern void metaStateInfo_setDefaultRefValue (metaStateInfo p_info, int p_val) 
      /*@modifies p_info@*/ ;
 
