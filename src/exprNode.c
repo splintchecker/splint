@@ -676,7 +676,13 @@ exprNode_isUnknownConstant (/*@notnull@*/ exprNode e)
   while (e->kind == XPR_PARENS)
     {
       e = exprData_getUopNode (e->edata);
-      llassert (exprNode_isDefined (e));
+      
+      if (!exprNode_isDefined (e))
+	{
+	  return FALSE;
+	}
+
+      /* evans 2002-02-05: was llassert (exprNode_isDefined (e)); but this can fail */
     }
 
   if (e->kind == XPR_CONST)
