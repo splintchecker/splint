@@ -2,43 +2,6 @@
 
 #define __constraintExpr_h__
 
-typedef union constraintTermValue_
-{
-  exprNode expr;
-  sRef     sref;
-  int      intlit;
-} constraintTermValue;
-
-typedef enum
-{
-  ERRORBADCONSTRAINTTERMTYPE,
- EXPRNODE, SREF,
- INTLITERAL
-} constraintTermType;
-
-struct _constraintTerm {
-  fileloc loc;
-  constraintTermValue value;
-  constraintTermType kind;
-};
-
-
-typedef enum
-{
-  PLUS,
-  MINUS
-}
-constraintExprBinaryOpKind;
-
-typedef enum
-{
- VALUE, CALLSAFE,
- MAXSET, MINSET, MAXREAD, MINREAD,
- NULLTERMINATED,
- UNDEFINED
-}
-constraintExprUnaryOpKind;
-
 typedef enum
 {
   binaryexpr,
@@ -47,56 +10,55 @@ typedef enum
 }
 constraintExprKind;
 
-typedef struct constraintExprBinaryOp_
-{
-  constraintExpr expr1;
-  constraintExprBinaryOpKind binaryOp;
-  constraintExpr expr2;
-} constraintExprBinaryOp;
-
-
-typedef struct constraintExprUnaryOp_
-{
-  constraintExpr expr;
-  constraintExprUnaryOpKind unaryOp;
-} constraintExprUnaryOp;
-
-
-typedef union constraintExprData_
-{
-  constraintExprBinaryOp binaryOp;
-  constraintExprUnaryOp unaryOp;
-  constraintTerm term;
-} *constraintExprData;
-
-
 struct constraintExpr_ {
   constraintExprKind kind;
   constraintExprData data;
 };
 
+
+/*@constant null constraintExpr constraintExpr_undefined; @*/
 # define constraintExpr_undefined ((constraintExpr)NULL)
 
-//constraintTerm constraintTerm_copy (constraintTerm term);
+extern /*@falsenull@*/ bool constraintExpr_isDefined (constraintExpr p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraintExpr_isUndefined (constraintExpr p_e) /*@*/ ;
+extern /*@truenull@*/ bool constraintExpr_isError (constraintExpr p_e) /*@*/ ;
+
+# define constraintExpr_isDefined(e)        ((e) != constraintExpr_undefined)
+# define constraintExpr_isUndefined(e)      ((e) == constraintExpr_undefined)
+# define constraintExpr_isError(e)          ((e) == constraintExpr_undefined)
+
+
+
+/*@constant null constraintExprData constraintExprData_undefined; @*/
+# define constraintExprData_undefined ((constraintExprData)NULL)
+
+extern /*@falsenull@*/ bool constraintExprData_isDefined (constraintExprData p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraintExprData_isUndefined (constraintExprData p_e) /*@*/ ;
+extern /*@truenull@*/ bool constraintExprData_isError (constraintExprData p_e) /*@*/ ;
+
+# define constraintExprData_isDefined(e)      ((e) != constraintExprData_undefined)
+# define constraintExprData_isUndefined(e)    ((e) == constraintExprData_undefined)
+# define constraintExprData_isError(e)        ((e) == constraintExprData_undefined)
+
 
 int constraintExpr_getValue (constraintExpr expr) /*@*/;
 
-constraintExpr constraintExpr_setFileloc (constraintExpr expr, fileloc loc);
+constraintExpr constraintExpr_setFileloc (constraintExpr expr, fileloc loc) /*@modifies expr@*/;
 
-constraintExpr constraintExpr_copy (constraintExpr expr);
+constraintExpr constraintExpr_copy (constraintExpr expr) /*@*/;
 
 cstring constraintExpr_unparse (constraintExpr ex) /*@*/;
 extern cstring constraintExpr_print (constraintExpr expr) /*@*/;
 
 
-bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2);
-bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2);
-constraintExpr constraintExpr_searchandreplace (constraintExpr c, constraintExpr old, constraintExpr new );
-bool constraintExpr_canGetValue (constraintExpr expr);
+bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2) /*@*/;
+bool constraintExpr_same (constraintExpr expr1, constraintExpr expr2) /*@*/;
+constraintExpr constraintExpr_searchandreplace (constraintExpr c, constraintExpr old, constraintExpr new ) /*@modifies c@*/;
+bool constraintExpr_canGetValue (constraintExpr expr) /*@*/;
 
-int constraintExpr_compare (constraintExpr expr1, constraintExpr expr2);
+int constraintExpr_compare (constraintExpr expr1, constraintExpr expr2) /*@*/;
 
-constraintExpr constraintExpr_makeValueInt (int i);
+//constraintExpr constraintExpr_makeValueInt (int i);
 
 constraintExpr constraintExpr_makeIntLiteral (int i);
 
@@ -106,50 +68,16 @@ constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr);
 
 constraintExpr  constraintExpr_makeMaxReadExpr (exprNode expr);
 
-constraintExpr  constraintExpr_makeMinSetExpr (exprNode expr);
-
-constraintExpr  constraintExpr_makeMinReadExpr (exprNode expr);
-
 constraintExpr constraintExpr_makeIncConstraintExpr (constraintExpr expr);
 
 constraintExpr constraintExpr_makeDecConstraintExpr (constraintExpr expr);
 
-constraintExpr constraintExpr_simplify (constraintExpr c);
+constraintExpr constraintExpr_simplify (constraintExpr c) /*@modifies c@*/;
 
+constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, constraintExpr expr) /*@modifies lexpr@*/;
 
-constraintExpr constraintExpr_solveBinaryExpr (constraintExpr lexpr, constraintExpr expr);
+bool constraintExpr_search (constraintExpr c, constraintExpr old) /*@*/;
 
-bool constraintExpr_search (constraintExpr c, constraintExpr old);
-/*   jjjkkkk   */
-
-constraintExprData constraintExprData_copy (constraintExprData data, constraintExprKind kind);
-
-
-constraintExprData constraintExprData_termSetTerm (/*@out@*/ constraintExprData data, constraintTerm term);
-
-constraintTerm constraintExprData_termGetTerm (constraintExprData data) /*@*/;
-
-constraintExprUnaryOpKind constraintExprData_unaryExprGetOp (constraintExprData data) /*@*/;
-
-constraintExpr  constraintExprData_unaryExprGetExpr (constraintExprData data) /*@*/;
-
-constraintExprData  constraintExprData_unaryExprSetOp (constraintExprData data, constraintExprUnaryOpKind op);
-
-
-constraintExprData  constraintExprData_unaryExprSetExpr (constraintExprData data, constraintExpr expr);
-
-
-constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data) /*@*/;
-
-constraintExpr  constraintExprData_binaryExprGetExpr1 (constraintExprData data)/*@*/;
-
-constraintExpr  constraintExprData_binaryExprGetExpr2 (constraintExprData data)/*@*/;
-
-constraintExprData  constraintExprData_binaryExprSetExpr1 (constraintExprData data, constraintExpr expr);
-
-constraintExprData  constraintExprData_binaryExprSetExpr2 (constraintExprData data, constraintExpr expr);
-
-constraintExprData  constraintExprData_binaryExprSetOp (constraintExprData data, constraintExprBinaryOpKind op);
 fileloc constraintExpr_getFileloc (constraintExpr expr);
 
 constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (constraintExpr expr, int literal);
@@ -171,10 +99,20 @@ constraintExpr constraintExpr_parseMakeBinaryOp (constraintExpr expr1, lltok op,
 
 bool constraintExpr_hasMaxSet (constraintExpr expr);
 
-constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
-						/*@out@*/ bool * propagate,
-						  /*@out@*/ int *literal);
+//static constraintExpr constraintExpr_propagateConstants (constraintExpr expr,
+//						/*@out@*/ bool * propagate,
+//						  /*@out@*/ int *literal);
 
 constraintExpr constraintExpr_makeSRefMaxRead(sRef s);
+
+constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term@*/;
+
+constraintExpr 
+constraintExpr_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist) /*@modifies e@*/;
+
+
+#else
+
+# error "Multiple include"
 
 #endif

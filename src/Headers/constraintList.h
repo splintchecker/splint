@@ -25,10 +25,10 @@ struct _constraintList
 
 # define end_constraintList_elements }}
 
-extern /*@only@*/ constraintList constraintList_new(void);
-extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) ;
+extern /*@only@*/ constraintList constraintList_makeNew(void) /*@*/;
+extern constraintList constraintList_add (/*@returned@*/ constraintList p_s, /*@only@*/ constraint p_el) /*@modifies p_s@*/ ;
 
-extern constraintList constraintList_addList (/*@returned@*/ constraintList s, /*@only@*/constraintList new);
+extern constraintList constraintList_addList (/*@returned@*/ constraintList p_s, /*@only@*/constraintList new) /*@modifies p_s@*/  ;
 
 
 extern constraintList constraintList_copy (constraintList p_s) /*@*/ ;
@@ -39,30 +39,30 @@ extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
 
 
-extern cstring constraintList_print (constraintList s);
+extern cstring constraintList_print (constraintList s) /*@*/;
 
 extern cstring
-constraintList_printDetailed (constraintList s);
+constraintList_printDetailed (constraintList s) /*@*/;
 
 
 extern constraintList
 constraintList_logicalOr (constraintList l1, constraintList l2);
 
-extern constraintList constraintList_preserveOrig (constraintList c);
+extern constraintList constraintList_preserveOrig (/*@returned@*/ constraintList c);
 
 /*@constant int constraintListBASESIZE;@*/
 
-extern constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist);
+extern constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
 
-extern constraintList constraintList_togglePost (constraintList c);
+extern constraintList constraintList_togglePost (/*@returned@*/ constraintList c) /*@modifies c@*/;
 
-extern constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist);
+extern constraintList constraintList_doSRefFixConstraintParam (/*@returned@*/ constraintList preconditions, exprNodeList arglist) /*@modifies preconditions@*/;
 
-extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall);
+extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall) /*@*/;
 
-constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall);
+constraintList constraintList_doFixResult (/*@returned@*/ constraintList postconditions, exprNode fcnCall) /*@modifies postconditions@*/;
 
-constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e);
+constraintList constraintList_addGeneratingExpr (/*@returned@*/ constraintList c, exprNode e) /*@modifies c@*/;
 # define constraintListBASESIZE SMALLBASESIZE
 
 # else

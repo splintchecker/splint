@@ -35,7 +35,7 @@ extern bool constraintList_empty (/*@sef@*/ constraintList);
 extern /*@falsenull@*/ bool constraintList_isDefined (constraintList p_t);
 # define constraintList_isDefined(s) ((s) != (constraintList) 0)
 
-extern /*@only@*/ constraintList constraintList_new(void);
+extern /*@only@*/ constraintList constraintList_makeNew(void);
 extern constraintList constraintList_push (/*@returned@*/ constraintList p_s, 
 				       /*@keep@*/ constraint p_el) ;
 

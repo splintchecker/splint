@@ -27,7 +27,7 @@ abst_typedef struct _constraintList  *constraintList;
 
 /* DRL modified 9 26 00 */
 
-abst_typedef struct constraintExpr_ * constraintExpr;
+abst_typedef /*@null@*/ struct constraintExpr_ * constraintExpr;
 
 /*@-cppnames@*/
 typedef int bool;

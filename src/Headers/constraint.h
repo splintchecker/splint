@@ -8,9 +8,6 @@ typedef enum
 }
 arithType;
 
-//abst_typedef struct constr_ * constr;
-
-
 struct _constraint {
   constraint     orig;
   constraint     or;
@@ -21,13 +18,19 @@ struct _constraint {
   exprNode generatingExpr;
 } ;
 
-abst_typedef struct _constraintTerm * constraintTerm;
+/*@constant null constraint constraint_undefined; @*/
 
-//constraint constraint_create (exprNode e1, exprNode e2,  arithType restriction, constraintType kind);
+# define constraint_undefined ((constraint)NULL)
 
+extern /*@falsenull@*/ bool constraint_isDefined (constraint p_e) /*@*/ ;
+extern /*@unused@*/ /*@truenull@*/ bool constraint_isUndefined (constraint p_e) /*@*/ ;
+extern /*@truenull@*/ bool constraint_isError (constraint p_e) /*@*/ ;
+
+# define constraint_isDefined(e)        ((e) != constraint_undefined)
+# define constraint_isUndefined(e)      ((e) == constraint_undefined)
+# define constraint_isError(e)          ((e) == constraint_undefined)
 
 constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant);
-
 
 constraint constraint_createReadSafe (exprNode p_e1, exprNode p_e2);
 
@@ -37,12 +40,11 @@ constraint constraint_makeInc_Op (exprNode p_e1);
 /*@-czechfcns*/
 bool constraint_resolve (/*@unused@*/ constraint c);
      
-/*@out@*/ constraintTerm new_constraintTermExpr (void);
 
-/*@special@*/ constraintExpr makeConstraintExpr (/*@only@*/ /*@notnull@*/ constraintTerm term)
- /*@post:isnull result->expr@*/
-     /*@post:notnull result->t1@*/
-     /*@defines result->expr, result->t1, result->c1@, result->op*/;
+///*@special@*/ constraintExpr makeConstraintExpr (/*@only@*/ /*@notnull@*/ constraintTerm term)
+// /*@post:isnull result->expr@*/
+//     /*@post:notnull result->t1@*/
+//     /*@defines result->expr, result->t1, result->c1@, result->op*/;
      
 constraintExpr makeConstraintExprIntlit (int p_i);
 
@@ -120,16 +122,18 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 constraintList exprNode_traversRequiresConstraints (exprNode e);
 constraintList exprNode_traversEnsuresConstraints (exprNode e);
 
+/*@notnull@*/ constraint constraint_makeNew (void) /*@*/;
 
 
 /*@=czechfcns*/
 //#warning take this out
-#include "constraintList.h"
 
-#include "constraintExpr.h"
-#include "constraintTerm.h"
 #include "constraintResolve.h"
 #include "constraintOutput.h"
+
+#else
+
+#error Multiple include
 
 #endif
 
