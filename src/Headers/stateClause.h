@@ -113,6 +113,10 @@ extern bool stateClause_hasRequires (stateClause p_cl) /*@*/ ;
 extern bool stateClause_setsMetaState (stateClause p_cl) /*@*/ ;
 extern qual stateClause_getMetaQual (stateClause p_cl) /*@*/ ;
 
+extern bool stateClause_hasEmptyReferences (stateClause p_s);
+
+extern bool stateClause_isMetaState (stateClause p_s);
+
 # else
 # error "Multiple include"
 # endif

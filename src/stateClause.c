@@ -60,6 +60,7 @@ bool stateClause_isMetaState (stateClause s)
   else
     return FALSE;
 }
+/*end drl added*/
 
 stateClause 
 stateClause_create (lltok tok, qual q, sRefSet s) 

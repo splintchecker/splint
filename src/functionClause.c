@@ -57,6 +57,7 @@ extern functionClause functionClause_createState (stateClause node) /*@*/
       (!stateClause_isMetaState (node) ) )
     {
       DPRINTF((message("functionClause_createState:: Returning functionClause_undefined" ) ));
+      stateClause_free (node);
       return functionClause_undefined;
     }
   else
