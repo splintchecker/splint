@@ -6,8 +6,8 @@
 typedef enum
 {
   BINARYOP_UNDEFINED,
-  PLUS,
-  MINUS
+  BINARYOP_PLUS,
+  BINARYOP_MINUS
 }
 constraintExprBinaryOpKind;
 
