@@ -2051,37 +2051,65 @@ constraintExpr sRef_fixConstraintParam ( sRef s, exprNodeList args)
   if (sRef_isInvalid (s))
     llfatalbug(("Invalid sRef"));
 
-  if (s->kind == SK_RESULT)
+  switch (s->kind)
     {
-      ce = constraintExpr_makeTermsRef (s);
-      return ce;
+    case SK_RESULT:
+      {
+	ce = constraintExpr_makeTermsRef (s);
+	return ce;
+      }
+    case SK_FIELD:
+      {
+	sRef temp;
+	
+	temp = (sRef_makeField (sRef_fixBaseParam (s->info->field->rec, args),
+			      s->info->field->field));
+	ce = constraintExpr_makeTermsRef (temp);
+	return ce;
     }
-  if (s->kind != SK_PARAM)
-    {
-      if (s->kind != SK_CVAR)
+    case SK_PTR:
+      {
+	sRef temp;
+	temp = (sRef_makePointer (sRef_fixBaseParam (s->info->ref, args)));
+	ce = constraintExpr_makeTermsRef (temp);
+	return ce;
+      }
+
+    case SK_ARRAYFETCH:
+       {
+	sRef temp;
+	temp = sRef_fixBaseParam (s, args);
+	ce = constraintExpr_makeTermsRef (temp);
+	return ce;
+      }
+    case SK_CVAR:
+       ce = constraintExpr_makeTermsRef (s);
+       return ce;
+    case SK_PARAM:
+      if (exprNodeList_size (args) > s->info->paramno)
 	{
-	  llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %s for function with arguments %s", sRef_unparse (s), exprNodeList_unparse(args) ) ));
+	  exprNode e = exprNodeList_nth (args, s->info->paramno);
+	  
+	  if (exprNode_isError (e))
+	    {
+	      llassert (FALSE);
+	    }
+	  
+	  ce = constraintExpr_makeExprNode (e);
 	}
+      else
+	{
+	  llassert(FALSE);
+	}
+      return ce;
+    default:
+      llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %s for function with arguments %s", sRef_unparse (s), exprNodeList_unparse(args) ) ));
       ce = constraintExpr_makeTermsRef (s);
       return ce;
     }
+
   
-  if (exprNodeList_size (args) > s->info->paramno)
-    {
-      exprNode e = exprNodeList_nth (args, s->info->paramno);
-      
-      if (exprNode_isError (e))
-	{
-	  llassert (FALSE);
-	}
-      
-      ce = constraintExpr_makeExprNode (e);
-    }
-  else
-    {
-      llassert(FALSE);
-    }
-  return ce;
+
 }
 
 /*@exposed@*/ sRef

@@ -897,9 +897,9 @@ void exprNode_checkFunctionBody (exprNode body)
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
   constraintList c, t;
+ constraintList c2, fix;
 
-
-  //  return;
+ //  return;
   
   exprNode_generateConstraints (body);
   
@@ -916,9 +916,16 @@ void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
        
        t = reflectChanges (body->requiresConstraints, constraintList_copy (c) );
        body->requiresConstraints = constraintList_copy (t);
+
+       c2  =  constraintList_copy (c);
+       fix =  constraintList_makeFixedArrayConstraints (body->uses);
+       c2  =  reflectChanges (c2, constraintList_copy(fix) );
+
+       t = reflectChanges (body->requiresConstraints, constraintList_copy (c2) );
+       body->requiresConstraints = constraintList_copy (t);
        
        DPRINTF ( (message ("The body has the required cosntraints: %s", constraintList_printDetailed (t) ) ) );
-   t = constraintList_mergeEnsures (c, body->ensuresConstraints);
+       t = constraintList_mergeEnsures (c, body->ensuresConstraints);
 
    body->ensuresConstraints = constraintList_copy (t);
    

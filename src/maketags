@@ -1,0 +1,3 @@
+#!/bin/sh
+
+etags *.y Headers/* *.c *.h *.l  *.i

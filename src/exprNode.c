@@ -222,13 +222,6 @@ static void exprNode_resetSref (/*@notnull@*/ exprNode e)
   e->sref = defref;
 }
 
-exprNode exprNode_fakeCopy (exprNode e)
-{
-  /*@-temptrans@*/ /*@-retalias@*/
-  return e;
-  /*@=temptrans@*/ /*@=retalias@*/
-}
-
 static bool isFlagKey (char key)
 {
   return (key == '-' || key == '+' || key == ' ' || key == '#');
@@ -9994,3 +9987,20 @@ fileloc exprNode_getNextSequencePoint (exprNode e)
  }
 
 
+/*drl added
+ */
+exprNode exprNode_fakeCopy (exprNode e)
+{
+  /*@-temptrans@*/ /*@-retalias@*/
+  return e;
+  /*@=temptrans@*/ /*@=retalias@*/
+}
+
+exprNode exprNode_createNew(ctype c)
+{
+  exprNode ret;
+
+  ret = exprNode_createPlain (c);
+
+  return ret;
+}

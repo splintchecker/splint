@@ -289,6 +289,7 @@ void setFunctionSpecialClause (lltok stok, sRefSet s,
 
   DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
 }
+
 /*drl
  */
 constraintList getFunctionConstraints (void)
@@ -2132,6 +2133,12 @@ sRef checkSpecClausesId (uentry ue)
       return uentry_getSref (ue);
     }
 }
+/*drl:1/19/2001
+  oops to 1/8/2000
+  date is wronge ..
+  don;t know what the real date is...
+  
+*/
 
 /*drl
   added 1/8/2000

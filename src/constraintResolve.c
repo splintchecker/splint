@@ -79,6 +79,28 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
 /*   //return ret; */
 /* } */
 
+void checkArgumentList (exprNode temp, exprNodeList arglist, fileloc sequencePoint)
+{
+  temp->requiresConstraints = constraintList_new();
+  temp->ensuresConstraints = constraintList_new();
+  temp->trueEnsuresConstraints = constraintList_new();
+  temp->falseEnsuresConstraints = constraintList_new();
+  
+  exprNodeList_elements (arglist, el)
+    {
+      exprNode_exprTraverse (el, FALSE, FALSE, sequencePoint);
+      el->requiresConstraints = exprNode_traversRequiresConstraints(el);
+      el->ensuresConstraints  = exprNode_traversEnsuresConstraints(el);
+
+      temp->requiresConstraints = constraintList_addList(temp->requiresConstraints,
+							    el->requiresConstraints);
+      
+      temp->ensuresConstraints = constraintList_addList(temp->ensuresConstraints,
+							   el->ensuresConstraints);
+    }
+  end_exprNodeList_elements;
+  
+}
 
 constraintList checkCall (exprNode fcn, exprNodeList arglist)
 {
@@ -160,7 +182,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
    llassert(!exprNode_isError (child1)  && ! exprNode_isError(child2) );
    
-  DPRINTF( (message ("Child constraints are %s %s and %s %s",
+   DPRINTF( (message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
 		     constraintList_print (child1->ensuresConstraints),
 		     constraintList_print (child2->requiresConstraints),
@@ -404,9 +426,12 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
 bool constraint_isAlwaysTrue (constraint c)
 {
   constraintExpr l, r;
+  bool lHasConstant, rHasConstant;
+  int lConstant, rConstant;
+  
   l = c->lexpr;
   r = c->expr;
-
+    
   if (constraintExpr_canGetValue(l) && constraintExpr_canGetValue(r) )
     {
       int cmp;
@@ -425,15 +450,68 @@ bool constraint_isAlwaysTrue (constraint c)
 	  return (cmp < 0);
 
 	default:
-	  llassert(FALSE);
+	  BADEXIT;
 	  break;
 	}
     }
+
+  if (constraintExpr_similar (l,r) )
+    {
+      switch (c->ar)
+	{
+	case EQ:
+	case GTE:
+	case LTE:
+	  return TRUE;
+	  
+	case GT:
+	case LT:
+	  break;
+	default:
+	  BADEXIT;
+	  break;
+	}
+    }
+
+  l = constraintExpr_copy (c->lexpr);
+  r = constraintExpr_copy (c->expr);
+
+  //  l = constraintExpr_propagateConstants (l, &lHasConstant, &lConstant);
+  r = constraintExpr_propagateConstants (r, &rHasConstant, &rConstant);
+
+  if (constraintExpr_similar (l,r) )
+    {
+      DPRINTF(( message("constraint_IsAlwaysTrue: after removing constants  %s and %s are similar", constraintExpr_unparse(l), constraintExpr_unparse(r) ) ));
+      if (rHasConstant)
+	{
+	  DPRINTF(( message("constraint_IsAlwaysTrue: rconstant is  %d", rConstant ) ));
+	  switch (c->ar)
+	    {
+	    case EQ:
+	      return (rConstant == 0);
+	    case LT:
+	      return (rConstant > 0);
+	    case LTE:
+	      return (rConstant >= 0);
+	    case GTE:
+	      return (rConstant <= 0);
+	    case GT:
+	      return (rConstant < 0);
+	      
+	    default:
+	      BADEXIT;
+	      break;
+	    }
+	}
+      
+    }  
   else
     {
+      DPRINTF(( message("Constraint %s is not always true", constraint_print(c) ) ));
       return FALSE;
     }
-      BADEXIT;
+  
+  BADEXIT;
 }
 
 bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2)
