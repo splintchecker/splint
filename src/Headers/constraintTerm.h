@@ -3,7 +3,8 @@
 
 #define __constraintTerm_h__
 
-constraintTerm constraintTerm_simplify (constraintTerm term);
+
+constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term);
 
 constraintTerm constraintTerm_makeExprNode (/*@only@*/ exprNode e);
 
@@ -49,8 +50,8 @@ constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeL
 constraintExpr 
 constraintTerm_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist);
 
-constraintTerm constraintTerm_setFileloc (constraintTerm term, fileloc loc);
-cstring constraintTerm_print (constraintTerm term);
+constraintTerm constraintTerm_setFileloc (/*@returned@*/ constraintTerm term, fileloc loc);
+
 constraintTerm constraintTerm_makeIntLiteral (int i);
 
 bool constraintTerm_isStringLiteral (constraintTerm c);

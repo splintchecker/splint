@@ -72,14 +72,14 @@ fileloc constraint_getFileloc (constraint c);
 cstring constraint_print (constraint c) /*@*/;
 constraint constraint_makeWriteSafeInt (exprNode po, int ind);
 
-exprNode exprNode_copyConstraints (exprNode dst, exprNode src);
+exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src);
 
 constraint constraint_makeEnsureEqual (exprNode e1, exprNode e2, fileloc sequencePoint);
 
 constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc sequencePoint);
 
-constraint constraint_preserveOrig (constraint c);
-constraint constraint_doSRefFixBaseParam (constraint precondition,
+/*@only@*/ constraint constraint_preserveOrig (/*@returned@*/ /*@only@*/ constraint c) /*@modifies c @*/;
+/*@only@*/ constraint constraint_doSRefFixBaseParam (/*@returned@*/ /*@only@*/ constraint precondition,
 						   exprNodeList arglist);
 
 cstring  constraint_printDetailed (constraint c);
@@ -120,5 +120,7 @@ bool constraint_hasMaxSet(constraint c);
 #include "constraintExpr.h"
 #include "constraintTerm.h"
 #include "constraintResolve.h"
+#include "constraintOutput.h"
+
 #endif
 

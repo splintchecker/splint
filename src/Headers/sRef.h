@@ -629,9 +629,9 @@ extern bool sRef_isNotNullTerminated(sRef p_s);
                == BB_NOTNULLTERMINATED) : FALSE)
 
      /*drl7x 11/28/00*/
-extern  bool sRef_isFixedArray (sRef p_s);
+extern  bool sRef_isFixedArray (sRef p_s) /*@*/;
 
-extern int sRef_getArraySize (sRef p_s);
+extern long int sRef_getArraySize (sRef p_s) /*@*/;
 
 extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
 /* end modifications */

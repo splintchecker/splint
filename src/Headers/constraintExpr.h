@@ -78,14 +78,14 @@ struct constraintExpr_ {
 
 //constraintTerm constraintTerm_copy (constraintTerm term);
 
-int constraintExpr_getValue (constraintExpr expr);
+int constraintExpr_getValue (constraintExpr expr) /*@*/;
 
 constraintExpr constraintExpr_setFileloc (constraintExpr expr, fileloc loc);
 
 constraintExpr constraintExpr_copy (constraintExpr expr);
 
-cstring constraintExpr_unparse (constraintExpr ex);
-extern cstring constraintExpr_print (constraintExpr expr);
+cstring constraintExpr_unparse (constraintExpr ex) /*@*/;
+extern cstring constraintExpr_print (constraintExpr expr) /*@*/;
 
 
 bool constraintExpr_similar (constraintExpr expr1, constraintExpr expr2);
@@ -138,7 +138,7 @@ constraintExprData  constraintExprData_unaryExprSetOp (constraintExprData data, 
 constraintExprData  constraintExprData_unaryExprSetExpr (constraintExprData data, constraintExpr expr);
 
 
-constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data);
+constraintExprBinaryOpKind  constraintExprData_binaryExprGetOp (constraintExprData data); /*@*/
 
 constraintExpr  constraintExprData_binaryExprGetExpr1 (constraintExprData data)/*@*/;
 
