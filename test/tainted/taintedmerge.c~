@@ -1,0 +1,12 @@
+char *f (/*@tainted@*/ char *s)
+{
+  char t[50];
+
+  strcpy (t, "test");
+
+  (void) system (t);
+
+  strcat (t, s);
+  
+  (void) system (t); /* error */
+}
