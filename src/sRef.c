@@ -2039,6 +2039,51 @@ sRef_closeEnough (sRef s1, sRef s2)
   BADEXIT;
 }
 
+/*
+  drl add 12/24/2000
+  s is an sRef of a formal paramenter in a function call constraint
+  we trys to return a constraint expression derived from the actual parementer of a function call.
+*/
+constraintExpr sRef_fixConstraintParam ( sRef s, exprNodeList args)
+{
+  constraintExpr ce;
+
+  if (sRef_isInvalid (s))
+    llfatalbug(("Invalid sRef"));
+
+  if (s->kind == SK_RESULT)
+    {
+      ce = constraintExpr_makeTermsRef (s);
+      return ce;
+    }
+  if (s->kind != SK_PARAM)
+    {
+      if (s->kind != SK_CVAR)
+	{
+	  llcontbug ((message("Trying to do fixConstraintParam on nonparam, nonglobal: %s for function with arguments %s", sRef_unparse (s), exprNodeList_unparse(args) ) ));
+	}
+      ce = constraintExpr_makeTermsRef (s);
+      return ce;
+    }
+  
+  if (exprNodeList_size (args) > s->info->paramno)
+    {
+      exprNode e = exprNodeList_nth (args, s->info->paramno);
+      
+      if (exprNode_isError (e))
+	{
+	  llassert (FALSE);
+	}
+      
+      ce = constraintExpr_makeExprNode (e);
+    }
+  else
+    {
+      llassert(FALSE);
+    }
+  return ce;
+}
+
 /*@exposed@*/ sRef
 sRef_fixBaseParam (/*@returned@*/ sRef s, exprNodeList args)
 {

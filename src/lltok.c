@@ -48,6 +48,12 @@ bool lltok_isInc_Op (lltok tok)
   return (tok.tok == INC_OP);
 }
 
+bool lltok_isDec_Op  (lltok tok)
+{
+  return (tok.tok == DEC_OP);
+}
+
+
 /* DRL added this function 10/23/2000 for boolean stuff */
 bool lltok_isEq_Op (lltok tok)
 {

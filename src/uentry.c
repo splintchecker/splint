@@ -572,12 +572,20 @@ constraintList uentry_getFcnPreconditions (uentry ue)
 
 	  //llassert (uentry_isFunction (ue));
 	  //llassert ((ue->info->fcn->preconditions));
-
+  //llassert ((ue->info->fcn->preconditions));
 	  if (!uentry_isFunction (ue))
 	    {
-	      BPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
+	      TPRINTF ( (message ("called uentry_getFcnPreconditions on nonfunction %s",
 				  uentry_unparse (ue) ) ) );
-	      return constraintList_undefined;
+	      	  if (!uentry_isSpecified (ue) )
+		    {
+		      TPRINTF((message ("called uentry_getFcnPreconditions on nonfunction %s",
+					uentry_unparse (ue) ) ));
+		      return constraintList_undefined;
+		    }
+	  
+
+		  return constraintList_undefined;
 	    }
 
 	  if (ue->info->fcn->preconditions)
@@ -596,6 +604,51 @@ constraintList uentry_getFcnPreconditions (uentry ue)
   
 }
 
+
+/*drl
+  12/28/2000
+*/
+constraintList uentry_getFcnPostconditions (uentry ue)
+{
+  if (uentry_isValid (ue))
+    {
+	{
+	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	    {
+	      uentry_makeVarFunction (ue);
+	    }
+
+	  //llassert (uentry_isFunction (ue));
+	  //llassert ((ue->info->fcn->preconditions));
+	  /* if (!uentry_isSpecified (ue) )
+	    {
+	      TPRINTF((message ("called uentry_getFcnPostconditions on nonfunction %s",
+				  uentry_unparse (ue) ) ));
+	      //    return constraintList_undefined;
+	      }*/
+	  
+	  if (!uentry_isFunction (ue))
+	    {
+	      /*llcontbug*/ TPRINTF( (message ("called uentry_getFcnPostconditions on nonfunction %s",
+				  uentry_unparse (ue) ) ) );
+	      return constraintList_undefined;
+	    }
+
+	  if (ue->info->fcn->postconditions)
+	    {
+	   return constraintList_copy (ue->info->fcn->postconditions);
+	    }
+	  else
+	    {
+	      return NULL;
+	    }
+	}
+	
+    }
+  
+  return constraintList_undefined;
+  
+}
 
 
 static /*@only@*/ fileloc setLocation (void)
@@ -905,6 +958,10 @@ uentry_makeFunctionAux (cstring n, ctype t,
 
   /*drl 11 29 2000*/
   e->info->fcn->preconditions = NULL;
+  /*end drl*/
+  
+  /*drl 12 28 2000*/
+  e->info->fcn->postconditions = NULL;
   /*end drl*/
   
   checkGlobalsModifies (e, mods);
@@ -1286,6 +1343,44 @@ uentry_setPreconditions (uentry ue, /*@owned@*/ constraintList preconditions)
 	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
 	  
 	  ue->info->fcn->preconditions = preconditions;
+	}
+	
+    }
+  else
+    {
+      //
+    }
+}
+
+/*
+  drl
+  added 12/28/2000
+*/
+void
+uentry_setPostconditions (uentry ue, /*@owned@*/ constraintList postconditions)
+{
+  if (sRef_modInFunction ())
+    {
+      llparseerror
+	(message ("Postcondition list not in function context.  "
+		  "A postcondition list can only appear following the parameter list "
+		  "in a function declaration or header."));
+
+      /*@-mustfree@*/ return; /*@=mustfree@*/ 
+    }
+
+  if (uentry_isValid (ue))
+    {
+	{
+	  if (uentry_isVariable (ue) && ctype_isFunction (uentry_getType (ue)))
+	    {
+	      uentry_makeVarFunction (ue);
+	    }
+	  
+	  llassertfatal (uentry_isFunction (ue));
+	  //	  llassert (sRefSet_isUndefined (ue->info->fcn->mods));
+	  
+	  ue->info->fcn->postconditions = postconditions;
 	}
 	
     }
@@ -2907,6 +3002,11 @@ void uentry_makeVarFunction (uentry ue)
   /*drl*/
   ue->info->fcn->preconditions = constraintList_undefined;
   /*end */
+
+  /*drl 12/28/2000*/
+  ue->info->fcn->postconditions = constraintList_undefined;
+  /*end */
+
   
   if (ctype_isFunction (ue->utype))
     {
@@ -3947,6 +4047,10 @@ static uentry
 
   /*drl 111  30 2000*/
   e->info->fcn->preconditions = NULL;
+    /* end drl */
+
+  /*drl 12  28 2000*/
+  e->info->fcn->postconditions = NULL;
     /* end drl */
   
   return (e);
@@ -5925,6 +6029,11 @@ ufinfo_copy (ufinfo u)
 
   /*drl 11 30 2000 */
   ret->preconditions = u->preconditions? constraintList_copy(u->preconditions): NULL;
+  /* end drl */
+  
+
+  /*drl 11 30 2000 */
+  ret->postconditions = u->postconditions? constraintList_copy(u->postconditions): NULL;
   /* end drl */
   
   return ret;
