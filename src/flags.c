@@ -886,8 +886,8 @@ identifyFlag (cstring s)
   
   if (cstring_equalLit (s, "accessunspec"))
     {
-      flagWarning 
-	(cstring_makeLiteralTemp
+      llerror_flagWarning 
+	(cstring_makeLiteral
 	 ("accessunspec flag is not supported by LCLint version 2.0 or "
 	  "later.  It has been replaced by accessmodule, accessfile and "
 	  "accessfunction to provide more precise control of accessibility "
@@ -899,8 +899,8 @@ identifyFlag (cstring s)
 
   if (cstring_equalLit (s, "staticmods"))
     {
-      flagWarning 
-	(cstring_makeLiteralTemp
+      llerror_flagWarning 
+	(cstring_makeLiteral
 	 ("staticmods flag is obsolete.  You probably "
 	  "want impcheckmodstatics.  For more information, "
 	  "see lclint -help impcheckmodstatics"));
@@ -910,26 +910,26 @@ identifyFlag (cstring s)
 
   if (cstring_equalLit (s, "bool"))
     {
-      flagWarning
-	(cstring_makeLiteralTemp ("bool flag is obsolete.  It never really "
-				  "made sense in the first place."));
+      llerror_flagWarning
+	(cstring_makeLiteral ("bool flag is obsolete.  It never really "
+			      "made sense in the first place."));
       
       return SKIP_FLAG;
     }
   
   if (cstring_equalLit (s, "ansi"))
     {
-      flagWarning
-	(cstring_makeLiteralTemp ("ansi flag is obsolete.  You probably "
-				  "want noparams and/or oldstyle."));
+      llerror_flagWarning
+	(cstring_makeLiteral ("ansi flag is obsolete.  You probably "
+			      "want noparams and/or oldstyle."));
       
       return SKIP_FLAG;
     }
     
   if (cstring_equalLit (s, "stdio"))
     {
-      flagWarning 
-	(cstring_makeLiteralTemp
+      llerror_flagWarning 
+	(cstring_makeLiteral
 	 ("stdio flag is obsolete.  You may "
 	  "want strictlib or one of the gloabls "
 	  "checking flags.  For more information, "

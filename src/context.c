@@ -2583,21 +2583,16 @@ context_setValue (flagcode flag, int val)
       if (val <= 0)
 	{
 	  
-	  cstring warn = message ("Value for %s must be a positive "
-				  "number (given %d)",
-				  flagcode_unparse (flag), val);
-	  
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("Value for %s must be a positive "
+				    "number (given %d)",
+				    flagcode_unparse (flag), val));
 	  return;
 	}
       if (flag == FLG_LINELEN && val < MINLINELEN)
 	{
-	  cstring warn = message ("Value for %s must be at least %d (given %d)",
-				  flagcode_unparse (flag), 
-				  MINLINELEN, val);
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("Value for %s must be at least %d (given %d)",
+				    flagcode_unparse (flag), 
+				    MINLINELEN, val));
 	  val = MINLINELEN;
 	}
       break;
@@ -2611,12 +2606,9 @@ context_setValue (flagcode flag, int val)
       if (val < 0)
 	{
 	  
-	  cstring warn = message ("Value for %s must be a non-negative "
-				  "number (given %d)",
-				  flagcode_unparse (flag), val);
-	  
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("Value for %s must be a non-negative "
+				    "number (given %d)",
+				    flagcode_unparse (flag), val));
 	  return;
 	}
 
@@ -2704,9 +2696,7 @@ context_setString (flagcode flag, cstring val)
 
 	      if (cstring_getChar (tval, n) != '\"')
 		{
-		  cstring msg = message ("Setting -systemdirs to string with unmatching quotes: %s", val);
-		  flagWarning (msg);
-		  cstring_free (msg);
+		  llerror_flagWarning (message ("Setting -systemdirs to string with unmatching quotes: %s", val));
 		}
 	      else
 		{
@@ -2745,13 +2735,10 @@ context_setString (flagcode flag, cstring val)
   if (cstring_length (val) >= 1
       && cstring_firstChar (val) == '"')
     {
-      cstring s = message
-		   ("setting %s to string beginning with \".  You probably "
-		    "don't meant to have the \"'s.",
-		    flagcode_unparse (flag));
-
-      flagWarning (s);
-      cstring_free (s);
+      llerror_flagWarning (message
+		       ("setting %s to string beginning with \".  You probably "
+			"don't meant to have the \"'s.",
+			flagcode_unparse (flag)));
     }
 
   if (flag == FLG_BOOLTYPE)
@@ -3377,10 +3364,10 @@ context_userSetFlag (flagcode f, bool b)
     {
       if (gc.flags[FLG_EXPORTHEADER])
 	{
-	  flagWarning (cstring_makeLiteralTemp
-		       ("setting +neverinclude after +exportheader.  "
-			"Turning off exportheader, since headers are not checked "
-			"when +neverinclude is used."));
+	  llerror_flagWarning (cstring_makeLiteral
+			   ("setting +neverinclude after +exportheader.  "
+			    "Turning off exportheader, since headers are not checked "
+			    "when +neverinclude is used."));
 
 	  gc.flags[FLG_EXPORTHEADER] = FALSE;
 	}
@@ -3391,10 +3378,10 @@ context_userSetFlag (flagcode f, bool b)
 	{
 	  if (gc.flags[FLG_NEVERINCLUDE])
 	    {
-	      flagWarning (cstring_makeLiteralTemp
-			   ("setting +exportheader after +neverinclude.  "
-			    "Not setting exportheader, since headers are not checked "
-			    "when +neverinclude is used."));
+	      llerror_flagWarning (cstring_makeLiteral
+			       ("setting +exportheader after +neverinclude.  "
+				"Not setting exportheader, since headers are not checked "
+				"when +neverinclude is used."));
 	      gc.flags[FLG_EXPORTHEADER] = FALSE;
 	      return;
 	    }
@@ -3410,11 +3397,9 @@ context_userSetFlag (flagcode f, bool b)
 	  && !flagcode_isIdemFlag (f)
 	  && !flagcode_hasArgument (f))
 	{
-	  cstring warn = message ("setting %s%s redundant with current value", 
-				  cstring_makeLiteralTemp (b ? "+" : "-"),
-				  flagcode_unparse (f));
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("setting %s%s redundant with current value", 
+				    cstring_makeLiteralTemp (b ? "+" : "-"),
+				    flagcode_unparse (f)));
 	}
     }
 
@@ -3422,10 +3407,8 @@ context_userSetFlag (flagcode f, bool b)
     {
       if (!context_getFlag (FLG_WARNUSE))
 	{
-	  cstring warn = message ("flag +%s is canceled by -warnuse",
-				  flagcode_unparse (f));
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("flag +%s is canceled by -warnuse",
+				    flagcode_unparse (f)));
 	  
 	}
     }
@@ -3436,29 +3419,34 @@ context_userSetFlag (flagcode f, bool b)
       if (gc.library != FLG_ANSILIB
 	  && gc.library != f)
 	{
-	  cstring warn = message ("selecting library %s after library %s was "
-				  "selected (only one library may be used)",
-				  flagcode_unparse (f),
-				  flagcode_unparse (gc.library));
-	  flagWarning (warn);
-	  cstring_free (warn);
+	  llerror_flagWarning (message ("selecting library %s after library %s was "
+					"selected (only one library may be used)",
+					flagcode_unparse (f),
+					flagcode_unparse (gc.library)));
 	}
 
       if (f == FLG_UNIXLIB)
 	{
 	  if (context_getFlag (FLG_WARNUNIXLIB))
 	    {
-	      flagWarning (cstring_makeLiteralTemp 
-			   ("selecting unix library.  Unix library is "
-			    "ad hoc addition to POSIX library.  Recommend "
-			    "use +posixlib to select POSIX library instead. "
-			    "Use -warnunixlib to suppress this message."));
+	      llerror_flagWarning (cstring_makeLiteral
+				   ("selecting unix library.  Unix library is "
+				    "ad hoc addition to POSIX library.  Recommend "
+				    "use +posixlib to select POSIX library instead. "
+				    "Use -warnunixlib to suppress this message."));
 	    }
 	}
       
       gc.library = f;
     }
-  
+
+  if (flagcode_isNameChecksFlag (f) && b && !context_maybeSet (FLG_NAMECHECKS))
+    {
+      llerror_flagWarning (message
+			   ("setting +%s will not produce warnings with -namechecks. Must set +namechecks also.",
+			    flagcode_unparse (f)));
+    }
+
   gc.setGlobally[f] = TRUE;
   context_setFlag (f, b);
 }
