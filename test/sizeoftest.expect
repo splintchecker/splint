@@ -7,4 +7,4 @@ sizeof.c:6:2: Possible out-of-bounds store:
      needed to satisfy precondition:
     requires maxSet(x @ sizeof.c:6:2) >= 3
 
-Finished checking --- 1 code warning
+Finished checking --- 1 code warning, as expected
