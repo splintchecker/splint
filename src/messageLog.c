@@ -159,9 +159,6 @@ bool messageLog_add (messageLog s, fileloc fl, cstring mess)
     {
       if (msgentry_equal (msg, s->elements[ind + 1]))
 	{
-	  DPRINTF (("Messages equivalent: %s / %s",
-		    msgentry_unparse (msg),
-		    msgentry_unparse (s->elements[ind+1])));
 	  msgentry_free (msg);
 	  return FALSE;
 	}

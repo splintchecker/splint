@@ -378,10 +378,6 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
 	} end_mtLoseReferenceList_elements ;
     }
   
-  /*@-usedef@*/
-  DPRINTF (("metastate: %s", metaStateInfo_unparse (msinfo)));
-  /*@=usedef@*/
-
   tmerge = stateCombinationTable_create (nvalues);
 
   /* Default merge is to make all incompatible mergers errors. */

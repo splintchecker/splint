@@ -1745,14 +1745,14 @@ void context_enterTrueClause (exprNode e)
 
 void context_enterSwitch (exprNode e)
 {
-  
+  DPRINTF (("Enter switch: %s", exprNode_unparse (e)));
   usymtab_switchBranch (e);
   context_enterCondClauseAux (SWITCHCLAUSE);
 }
 
 void context_exitSwitch (exprNode e, bool allpaths)
 {
-    usymtab_exitSwitch (e, allpaths);
+  usymtab_exitSwitch (e, allpaths);
   
   while (clause_isCase (clauseStack_top (gc.clauses)))
     {

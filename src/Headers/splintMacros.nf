@@ -121,14 +121,12 @@
 	(void)printf arg; printf("\n"); /*@=formatconst@*/ /*@=mustfree@*/ /*@=null@*/ (void) fflush (stdout); \
 	} while (FALSE)
 
+/*
+** DPRINTF does nothing, just a marker to save TPRINTF's
+*/
 
-# if DEBUGPRINT
-/*@notfunction@*/
-# define DPRINTF(s) /*@access cstring@*/ TPRINTF(s) /*@noaccess cstring@*/
-# else
 /*@notfunction@*/
 # define DPRINTF(s)   
-# endif
 
 /*@notfunction@*/
 # define INTCOMPARERETURN(x,y) \

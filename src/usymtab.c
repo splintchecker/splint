@@ -758,8 +758,6 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
     }
   }
 
-  DPRINTF (("Using symtab: %s", usymtab_unparseLocalAux (st)));
-
   eindex = usymtab_getIndex (st, ename);
       
   if (eindex != NOT_FOUND)
@@ -2586,6 +2584,8 @@ usymtab_newCase (/*@unused@*/ exprNode pred, exprNode last)
   bool mustReturn = usymtab_mustEscape (utab);
   usymtab stab = utab;
 
+  DPRINTF (("New case!"));
+
   /*
   ** Find last case (or outer switch)
   */
@@ -2595,9 +2595,7 @@ usymtab_newCase (/*@unused@*/ exprNode pred, exprNode last)
       stab = stab->env;
       llassert (stab != GLOBAL_ENV);
     }
-
-  /* ??? */
-
+  
   while (stab->kind == US_CBRANCH)
     {
       stab = stab->env;

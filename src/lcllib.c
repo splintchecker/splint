@@ -31,6 +31,11 @@
 **
 */
 
+/*
+ * Herbert 02/17/2002:
+ * - fixed the recognition of Posix headers for OS/2
+ */
+
 # include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
@@ -124,7 +129,16 @@ lcllib_isSkipHeader (cstring sname)
 
   /*@access cstring@*/
   llassert (cstring_isDefined (xname));
+# if defined (OS2)
+  {
+    /* Posixlibs use forward slashes, so we use them here, too */
+    cstring_replaceAll (xname, '\\', '/');
+    libname = strrchr (xname, '/');
+    DPRINTF (("libname: %s", libname));
+  }
+# else
   libname = strrchr (xname, CONNECTCHAR);
+# endif
   matchname = libname;
 
   if (libname == NULL) 
@@ -170,10 +184,15 @@ lcllib_isSkipHeader (cstring sname)
 
   for (i = 0; i < NUMPOSIXLIBS; i++)
     {
-      if (strchr (posixlibs[i], CONNECTCHAR) != NULL)
+      if (strchr (posixlibs[i], CONNECTCHAR) != NULL
+# if defined (OS2)
+	  || strchr (posixlibs[i], ALTCONNECTCHAR) != NULL
+# endif
+	  )
 	{
 	  char *ptr;
 	  
+	  DPRINTF (("xname: %s, posix: %s", xname, posixlibs[i]));
 	  if ((ptr = strstr (xname, posixlibs[i])) != NULL) 
 	    {
 	      if (ptr[strlen (posixlibs[i])] == '\0')

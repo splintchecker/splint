@@ -37,6 +37,8 @@
  * Herbert 06/12/2000:
  * - added OS/2 specific includes before osd_getPid()
  * - handle files like in WIN32 for OS/2 in osd_fileExists()
+ * Herbert 02/17/2002:
+ * - added OS/2 support to absolute file names
  */
 
 /*@-allmacros*/
@@ -45,14 +47,12 @@
 # include <sys/stat.h>
 /* Fix suggested by Lars Rasmussen */
 # include <errno.h>
-# ifdef WIN32
-# include <direct.h>
-# define getcwd _getcwd
-# endif
 
 /* POSIX platforms should defined getpid in unistd.h */
 # if defined (WIN32) || (defined(OS2) && defined(__IBMC__))
 # include <process.h>
+# include <direct.h>
+# define getcwd _getcwd
 # else
 # include <unistd.h>
 # endif
@@ -776,7 +776,7 @@ osd_dirAbsolute (char *str)
   
   DPRINTF (("Absolute for: %s", str));
 
-# ifdef WIN32
+# if defined (WIN32) || defined (OS2) || defined (MSDOS)
   if (strlen (str) > 1 && str[1] == ':')
     {
       /*
@@ -861,7 +861,7 @@ static /*@only@*/ cstring osd_cwd = cstring_undefined;
 
 static void osd_setWorkingDirectory (void)
 {
-# ifdef UNIX
+# if defined (UNIX) || defined (OS2)
   char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
   char *cwd = getcwd (buf, MAXPATHLEN);
 
@@ -890,7 +890,7 @@ void osd_initMod (void)
 
 cstring osd_absolutePath (cstring cwd, cstring filename)
 {
-# ifdef UNIX
+# if defined (UNIX) || defined (OS2)
   /* Setup the current working directory as needed.  */
   cstring cwd2 = cstring_isDefined (cwd) ? cwd : osd_cwd;
   char *abs_buffer;
@@ -911,7 +911,11 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
   {
     const char *src_p;
 
-    if (filename[0] != '/')
+    if (!osd_isConnectChar (filename[0])
+# ifdef OS2
+	&& !(isalpha (filename[0]) && filename[1] == ':')
+# endif
+	)
       {
         src_p = cwd2;
 
@@ -920,7 +924,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 	    continue;
 	  }
 
-        *(endp-1) = '/';                        /* overwrite null */
+        *(endp-1) = CONNECTCHAR;                        /* overwrite null */
       }
 
     src_p = filename;
@@ -946,29 +950,29 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 	{
 	  break;
 	}
-      else if (inp[0] == '/' && outp[-1] == '/')
+      else if (osd_isConnectChar (inp[0]) && osd_isConnectChar (outp[-1]))
 	{
 	  inp++;
 	  continue;
 	}
-      else if (inp[0] == '.' && outp[-1] == '/')
+      else if (inp[0] == '.' && osd_isConnectChar (outp[-1]))
 	{
 	  if (inp[1] == '\0')
 	    {
 	      break;
 	    }
-	  else if (inp[1] == '/')
+	  else if (osd_isConnectChar (inp[1]))
 	    {
 	      inp += 2;
 	      continue;
 	    }
 	  else if ((inp[1] == '.') 
-		   && (inp[2] == '\0' || inp[2] == '/'))
+		   && (inp[2] == '\0' || osd_isConnectChar (inp[2])))
 	    {
-	      inp += (inp[2] == '/') ? 3 : 2;
+	      inp += (osd_isConnectChar (inp[2])) ? 3 : 2;
 	      outp -= 2;
 	
-	      while (outp >= abs_buffer && *outp != '/')
+	      while (outp >= abs_buffer && !osd_isConnectChar (*outp))
 		{
 		  outp--;
 		}
@@ -1002,7 +1006,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
      the last character of the returned string is *not* a slash.  */
   
   *outp = '\0';
-  if (outp[-1] == '/')
+  if (osd_isConnectChar (outp[-1]))
     *--outp  = '\0';
   
   /*@noaccess cstring@*/
@@ -1029,7 +1033,7 @@ cstring osd_absolutePath (cstring cwd, cstring filename)
 
 cstring osd_outputPath (cstring filename)
 {
-# ifdef UNIX
+# if defined (UNIX) || defined (OS2)
   char *rel_buffer;
   char *rel_buf_p;
   cstring cwd_p = osd_cwd;
@@ -1051,7 +1055,7 @@ cstring osd_outputPath (cstring filename)
       path_p++;
     }
   
-  if ((*cwd_p == '\0') && (*path_p == '\0' || *path_p == '/'))  /* whole pwd matched */
+  if ((*cwd_p == '\0') && (*path_p == '\0' || osd_isConnectChar (*path_p)))  /* whole pwd matched */
     {
       if (*path_p == '\0')             /* input *is* the current path! */
 	return cstring_makeLiteral (".");
@@ -1072,7 +1076,7 @@ cstring osd_outputPath (cstring filename)
         {
           --cwd_p;
           --path_p;
-          while (*cwd_p != '/')         /* backup to last slash */
+          while (!osd_isConnectChar (*cwd_p))         /* backup to last slash */
             {
               --cwd_p;
               --path_p;
@@ -1085,7 +1089,7 @@ cstring osd_outputPath (cstring filename)
       /* Find out how many directory levels in cwd were *not* matched.  */
       while (*cwd_p != '\0')
 	{
-	  if (*cwd_p++ == '/')
+	  if (osd_isConnectChar (*cwd_p++))
 	    unmatched_slash_count++;
 	}
       
@@ -1110,7 +1114,7 @@ cstring osd_outputPath (cstring filename)
 
           *rel_buf_p++ = '.';
           *rel_buf_p++ = '.';
-          *rel_buf_p++ = '/';
+          *rel_buf_p++ = CONNECTCHAR;
         }
       
       /* Then tack on the unmatched part of the desired file's name.  */
@@ -1127,7 +1131,7 @@ cstring osd_outputPath (cstring filename)
       /*@=usereleased@*/ /*@i523! shouldn't need these */
       --rel_buf_p;
 
-      if (*(rel_buf_p-1) == '/')
+      if (osd_isConnectChar (*(rel_buf_p-1)))
         *--rel_buf_p = '\0';
 
       return rel_buffer;
