@@ -1,5 +1,5 @@
 extern /*@null@*/ /*@out@*/ /*@only@*/ void *mymalloc (size_t size) /*@*/
-     /*@ensures MaxSet(result) == (size - 1) @*/ ;
+     /*@LEnsures MaxSet(result) == (size - 1) @*/ ;
   
 void t()
 {
