@@ -2023,7 +2023,7 @@ describeVars (void)
   {
     cstring dirs = context_getString (FLG_SYSTEMDIRS);
     llmsg (message 
-	   ("systemdirs = %s (set by include envirnoment variable or -systemdirs)",
+	   ("systemdirs = %s (set by -systemdirs)",
 	    dirs));
 
   }

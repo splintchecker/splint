@@ -1,4 +1,4 @@
-state filerw
+attribute filerw
    context reference FILE *
    oneof rw_none, rw_read, rw_write, rw_either
    annotations

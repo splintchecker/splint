@@ -1,5 +1,5 @@
 /*
-** A global state is not assosicated with a reference, but rather the
+** A global attribute is not assosicated with a reference, but rather the
 ** global state of an execution.
 **
 ** Annotations are used in pre and post conditions (requires/ensures
@@ -7,8 +7,7 @@
 **
 */
 
-
-global state sockets
+global attribute sockets
    oneof uninitialized, initialized
    annotations
       sockets_initialized clause ==> initialized

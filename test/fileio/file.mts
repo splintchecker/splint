@@ -1,4 +1,4 @@
-state file
+attribute file
    context reference FILE *
    oneof unopen, open
    annotations

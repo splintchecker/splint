@@ -38,7 +38,7 @@ mttok_unparse (mttok tok)
   switch (tok->tok)
     {
     case EOF:               lit = "<EOF>"; break;
-    case MT_STATE:          lit = "state"; break;
+    case MT_STATE:          lit = "attribute"; break;
     case MT_GLOBAL:         lit = "global"; break;
     case MT_CONTEXT:        lit = "context"; break;
     case MT_ONEOF:          lit = "oneof"; break;

@@ -47,7 +47,7 @@ static void mtscanner_initMod (void)
   llassert (cstringTable_isUndefined (tokenTable));
   tokenTable = cstringTable_create (MT_TOKENTABLESIZE);
 
-  cstringTable_insert (tokenTable, cstring_makeLiteral ("state"), MT_STATE);
+  cstringTable_insert (tokenTable, cstring_makeLiteral ("attribute"), MT_STATE);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("global"), MT_GLOBAL);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("context"), MT_CONTEXT);
   cstringTable_insert (tokenTable, cstring_makeLiteral ("oneof"), MT_ONEOF);

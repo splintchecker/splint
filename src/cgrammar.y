@@ -1113,7 +1113,9 @@ stateQualifier
  | QNOTNULL      { $$ = qual_createNotNull (); }
  | QEXPOSED      { $$ = qual_createExposed (); }
  | QOBSERVER     { $$ = qual_createObserver (); }
+ | QNULLTERMINATED { $$ = qual_createNullTerminated (); } 
  | CANNOTATION   { $$ = qual_createMetaState ($1); }
+
 
 paramQualifier
  : QRETURNED     { $$ = qual_createReturned (); }
