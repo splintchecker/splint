@@ -60,7 +60,13 @@ ULSuffix                ({U}{L}|{L}{U})
 */
 
 # include "lclintMacros.nf"
+# if defined(OS2) && defined(__IBMC__)
+   /* needed for isatty()... */
+# include <io.h>
+# else
 # include <unistd.h>
+# endif
+
 # include "basic.h"
 
 # include "cgrammar.h"
@@ -68,11 +74,6 @@ ULSuffix                ({U}{L}|{L}{U})
 
 # include "fileIdList.h"
 # include "portab.h"
-
-# if defined(OS2) && defined(__IBMC__)
-   /* needed for isatty()... */
-# include <io.h>
-# endif
 
 static bool lastWasString = FALSE;
 static char savechar = '\0';

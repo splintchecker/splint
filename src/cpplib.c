@@ -7548,7 +7548,7 @@ static bool cpp_skipIncludeFile (cstring fname)
       fname = removePreDirs (fname);
 
 # if defined (WIN32) || defined (OS2)
-      cstring_replaceAll (fname, '/', '\\');
+      cstring_replaceAll (fname, '\\', '/');
 # endif
 
       if (fileTable_exists (context_fileTable (), fname))

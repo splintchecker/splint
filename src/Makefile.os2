@@ -21,7 +21,7 @@ O=.o
 E=
 
 
-include ../config.inc
+include ../os2/config.inc
 
 .SUFFIXES:
 .SUFFIXES: $E $O .h .c .l .check
@@ -30,37 +30,51 @@ include ../config.inc
 ### object files needed for building lclint:
 ###  note that there is no dependency checking done!
 ###
-OBJ=abstract$O aliasChecks$O aliasTable$O cgrammar$O checking$O \
-    clabstract$O clause$O clauseStack$O context$O cprim$O cscanner$O \
-    cstring$O cstringSList$O ctype$O ctypeList$O cvar$O \
-    declaratorInvNodeList$O declaratorNodeList$O ekind$O enumNameList$O \
-    enumNameSList$O exprChecks$O exprNode$O exprNodeList$O \
-    exprNodeSList$O fcnNodeList$O fileIdList$O fileStack$O fileTable$O \
-    fileloc$O filelocList$O filelocStack$O flagMarker$O flagMarkerList$O \
-    flags$O general$O globSet$O globals$O guardSet$O hashTable$O \
-    idDecl$O idDeclList$O importNodeList$O imports$O indxMap$O \
-    initDeclNodeList$O intSet$O interfaceNodeList$O lclctypes$O lclinit$O \
-    lcllib$O lclscan$O lclscanline$O lclsyntable$O lcltokentable$O \
-    letDeclNodeList$O lh$O llerror$O llgrammar$O llmain$O lltok$O \
-    lslOpList$O lslOpSet$O lslinit$O lslparse$O lsymbol$O lsymbolList$O \
-    lsymbolSet$O ltoken$O ltokenList$O macrocache$O mapping$O message$O \
-    messageLog$O multiVal$O nameChecks$O osd$O out$O pairNodeList$O \
-    paramNodeList$O pcpp$O programNodeList$O qtype$O qual$O qualList$O \
-    quantifierNodeList$O replaceNodeList$O sRef$O sRefSet$O sRefSetList$O \
-    sRefTable$O scan$O scanline$O shift$O sigNodeSet$O signature$O \
-    sort$O sortList$O sortSet$O sortSetList$O source$O specialClauses$O \
-    stDeclNodeList$O storeRefNodeList$O structNames$O symtable$O  \
-    syntable$O termNodeList$O tokentable$O traitRefNodeList$O typeIdSet$O \
+FIRSTOBJ=cgrammar$O llgrammar$O signature$O
+OBJ=$(FIRSTOBJ) abstract$O aliasTable$O annotationInfo$O annotationTable$O  \
+    checking$O clabstract$O clause$O clauseStack$O constraint$O \
+    constraintExpr$O constraintExprData$O constraintGeneration$O \
+    constraintList$O constraintOutput$O constraintResolve$O constraintTerm$O \
+    context$O cpperror$O cppexp$O cpphash$O cpplib$O cppmain$O cprim$O \
+    cscanner$O cstring$O cstringList$O cstringSList$O cstringTable$O ctype$O \
+    ctypeList$O cvar$O declaratorInvNodeList$O declaratorNodeList$O ekind$O \
+    enumNameList$O enumNameSList$O exprChecks$O exprData$O exprNode$O \
+    exprNodeList$O exprNodeSList$O fcnNodeList$O fileLib$O fileIdList$O \
+    fileTable$O fileloc$O filelocList$O filelocStack$O flagMarker$O \
+    flagMarkerList$O flagSpec$O flags$O forjunk$O functionClause$O \
+    functionClauseList$O functionConstraint$O general$O genericTable$O \
+    globalsClause$O globSet$O globals$O guardSet$O idDecl$O idDeclList$O \
+    importNodeList$O imports$O initDeclNodeList$O inputStream$O intSet$O \
+    interfaceNodeList$O lclctypes$O lclinit$O lcllib$O lclscan$O \
+    lclscanline$O lclsyntable$O lcltokentable$O letDeclNodeList$O lh$O \
+    llerror$O llmain$O lltok$O lslOpList$O lslOpSet$O lslinit$O \
+    lslparse$O lsymbol$O lsymbolList$O lsymbolSet$O ltoken$O ltokenList$O \
+    macrocache$O mapping$O message$O messageLog$O metaStateConstraint$O \
+    metaStateConstraintList$O metaStateExpression$O metaStateInfo$O \
+    metaStateSpecifier$O metaStateTable$O modifiesClause$O mtAnnotationDecl$O \
+    mtAnnotationList$O mtAnnotationsNode$O mtContextNode$O \
+    mtDeclarationNode$O mtDeclarationPiece$O mtDeclarationPieces$O \
+    mtDefaultsDecl$O mtDefaultsDeclList$O mtDefaultsNode$O mtLoseReference$O \
+    mtLoseReferenceList$O mtMergeClause$O mtMergeClauseList$O mtMergeItem$O \
+    mtMergeNode$O mtTransferAction$O mtTransferClause$O \
+    mtTransferClauseList$O mtValuesNode$O mtgrammar$O mtreader$O mtscanner$O \
+    mttok$O multiVal$O nameChecks$O osd$O pairNodeList$O paramNodeList$O \
+    programNodeList$O qtype$O qual$O qualList$O quantifierNodeList$O \
+    randomNumbers$O reader$O replaceNodeList$O sRef$O sRefSet$O sRefSetList$O \
+    sRefTable$O scan$O scanline$O shift$O sigNodeSet$O \
+    sort$O sortList$O sortSet$O sortSetList$O stateClause$O stateClauseList$O \
+    stateCombinationTable$O stateInfo$O stateValue$O stDeclNodeList$O \
+    storeRefNodeList$O structNames$O symtable$O syntable$O termNodeList$O \
+    tokentable$O traitRefNodeList$O transferChecks$O typeIdSet$O \
     typeNameNodeList$O uentry$O uentryList$O usymIdSet$O usymtab$O \
-    usymtab_interface$O varDeclarationNodeList$O varKinds$O varNodeList$O \
-    ynm$O 
-
+    usymtab_interface$O valueTable$O varDeclarationNodeList$O varKinds$O \
+    varNodeList$O warnClause$O ynm$O 
 
 ###
 ### main (and only) target: lclint with all optimizations.
 ###
 
-all : lclint$E
+all: Headers\\flag_codes.gen lclint$E
 lclint$E : $(OBJ) 
 	$(CC) $(OFLAG) $(OBJ) $(LINKFLAGS)
 
@@ -71,15 +85,15 @@ lclint$E : $(OBJ)
 localconstants:
 	cmd /c if exist Headers\local_constants.last del Headers\local_constants.last
 	cmd /c if exist Headers\local_constants.h ren Headers\local_constants.h local_constants.last
-	echo /* local_constants.h - created automatically by gmake localconstants */ > Headers\local_constants.h
-	echo /*@constant observer char *DEFAULT_CPPCMD;@*/ >> Headers\local_constants.h 
-	echo # define DEFAULT_CPPCMD $(DEFAULT_CPPCMD) >> Headers\local_constants.h
-	echo /*@constant observer char *SYSTEM_LIBDIR;@*/ >> Headers\local_constants.h 
-	echo # define SYSTEM_LIBDIR $(SYSTEM_LIBDIR) >> Headers\local_constants.h 
-	echo /*@constant observer char *DEFAULT_LARCHPATH;@*/ >> Headers\local_constants.h 
-	echo # define DEFAULT_LARCHPATH $(DEFAULT_LARCHPATH) >> Headers\local_constants.h 
-	echo /*@constant observer char *DEFAULT_LCLIMPORTDIR;@*/ >> Headers\local_constants.h 
-	echo # define DEFAULT_LCLIMPORTDIR $(DEFAULT_LCLIMPORTDIR) >> Headers\local_constants.h 
+	$(ECHO) "/* local_constants.h - created automatically by gmake localconstants */" > Headers\local_constants.h
+	$(ECHO) "/*@constant observer char *DEFAULT_CPPCMD;@*/" >> Headers\local_constants.h 
+	$(ECHO) -E "# define DEFAULT_CPPCMD \"$(DEFAULT_CPPCMD)\"" >> Headers\local_constants.h
+	$(ECHO) "/*@constant observer char *SYSTEM_LIBDIR;@*/" >> Headers\local_constants.h 
+	$(ECHO) -E "# define SYSTEM_LIBDIR \"$(SYSTEM_LIBDIR)\"" >> Headers\local_constants.h 
+	$(ECHO) "/*@constant observer char *DEFAULT_LARCHPATH;@*/" >> Headers\local_constants.h 
+	$(ECHO) -E "# define DEFAULT_LARCHPATH \"$(DEFAULT_LARCHPATH)\"" >> Headers\local_constants.h 
+	$(ECHO) "/*@constant observer char *DEFAULT_LCLIMPORTDIR;@*/" >> Headers\local_constants.h 
+	$(ECHO) -E "# define DEFAULT_LCLIMPORTDIR \"$(DEFAULT_LCLIMPORTDIR)\"" >> Headers\local_constants.h 
 
 ###
 ### grammars
@@ -94,7 +108,7 @@ signature.c : signature.c.der signature.y
 ifdef BISON
 	$(BISON) $(YFLAGS) -p lsl signature.y
 	$(CAT) bison.head signature.tab.c > signature.c
-	$(MV) Headers\signature_gen.h Headers\signature_gen.bak
+	-$(MV) Headers\signature_gen.h Headers\signature_gen.bak
 	$(CAT) bison.head signature.tab.h > Headers\signature_gen.h
 else
 	(CP) signature.c.der signature.c
@@ -104,7 +118,7 @@ cgrammar.c : cgrammar.c.der cgrammar.y
 ifdef BISON
 	$(BISON) $(YFLAGS) cgrammar.y
 	$(CAT) bison.head cgrammar.tab.c > cgrammar.c
-	$(MV) Headers\cgrammar_tokens.h Headers\cgrammar_tokens.bak
+	-$(MV) Headers\cgrammar_tokens.h Headers\cgrammar_tokens.bak
 	$(CAT) bison.head cgrammar.tab.h > Headers\cgrammar_tokens.h
 else
 	$(CP) cgrammar.c.der cgrammar.c
@@ -116,9 +130,9 @@ llgrammar.c  : llgrammar.c.der llgrammar.y
 ifdef BISON
 	$(BISON) $(YFLAGS) -p yl llgrammar.y
 	$(CAT) bison.head llgrammar.tab.c > llgrammar.c
-	$(MV) Headers\llgrammar_gen2.h Headers\llgrammar_gen2.bak
+	-$(MV) Headers\llgrammar_gen2.h Headers\llgrammar_gen2.bak
 	$(CAT) bison.head llgrammar.tab.h > Headers\llgrammar_gen2.h
-	$(MV) Headers\llgrammar_gen.h Headers\llgrammar_gen.bak
+	-$(MV) Headers\llgrammar_gen.h Headers\llgrammar_gen.bak
 	$(CAT) bison.head llgrammar.tab.h > Headers\llgrammar_gen.h
 else
 	$(CP) llgrammar.c.der llgrammar.c
@@ -133,12 +147,39 @@ else
 endif
 
 ###
+### compile without warnings
+### 
+signature.o : signature.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
+cgrammar.o : cgrammar.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
+cscanner.o : cscanner.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
+mtgrammar.o : mtgrammar.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
+llgrammar.o : llgrammar.c
+	$(CC) $(CPPFLAGS) -c $*.c
+
+
+###
 ### header files dependant on grammars
 ###
 
 Headers\signature2.h : signature.c
 Headers\cgrammar2.h : cgrammar.c
 Headers\llgrammar.h : llgrammar.c
+
+###
+### generated headers
+###
+
+Headers\\flag_codes.gen: flags.def
+	grep "FLG_" $< >$@
+	touch flags.c
 
 ###
 ### defaults
@@ -148,7 +189,7 @@ Headers\llgrammar.h : llgrammar.c
 SINGLEFLAGS = +neverinclude -supcounts +partial -showsummary -load lclint.lcd
 
 .c$O:
-	$(CC) $(CPPFLAGS) -c $*.c 
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $*.c 
 
 ###
 ### cleaning
@@ -181,7 +222,6 @@ up:
 
 lint: 
 	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint
-
 
 
 

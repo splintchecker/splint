@@ -16,7 +16,7 @@
 # ifndef CONSTANTS_H
 # define CONSTANTS_H
 
-# if defined(MSDOS) || defined(OS2)
+# if defined(MSDOS) 
 /*@constant observer char *RCFILE; @*/
 # define RCFILE         "lclint.rc"
 # else
