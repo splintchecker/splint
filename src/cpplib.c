@@ -3461,6 +3461,14 @@ special_symbol (hashNode hp, cppReader *pfile)
 	quote_string (pfile, string);
 	return;
       }
+    case T_FUNC: /* added in ISO C99 */
+      {
+	/* We don't know the actual name of the function, but it doesn't matter */
+	char *string = "** function-name **";
+	cpplib_reserve (pfile, 3 + 4 * strlen (string));
+	quote_string (pfile, string);
+	return;
+      }
 
     case T_INCLUDE_LEVEL:
       true_indepth = 0;
@@ -3698,6 +3706,7 @@ initialize_builtins (cppReader *pfile)
   cpplib_installBuiltin ("__DATE__", ctype_string, -1, T_DATE, 0, NULL, -1);
   cpplib_installBuiltin ("__FILE__", ctype_string, -1, T_FILE, 0, NULL, -1);
   cpplib_installBuiltin ("__BASE_FILE__", ctype_string, -1, T_BASE_FILE, 0, NULL, -1);
+  cpplib_installBuiltin ("__func__", ctype_string, -1, T_FUNC, 0, NULL, -1);
   cpplib_installBuiltin ("__INCLUDE_LEVEL__", ctype_int, -1, T_INCLUDE_LEVEL, 0, NULL, -1);
   cpplib_installBuiltin ("__VERSION__", ctype_string, -1, T_VERSION, 0, NULL, -1);
 #ifndef NO_BUILTIN_SIZE_TYPE
