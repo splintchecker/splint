@@ -1,9 +1,19 @@
 typedef union constraintTermValue_
 {
+  constraintExpr constrExpr;
   exprNode expr;
   sRef     sref;
   int      intlit;
 } constraintTermValue;
+
+
+typedef enum
+{
+ EXPRNODE, SREF,
+ CONSTRAINTEXPR,
+ INTLITERAL
+} constraintTermType;
+
 
 typedef enum
 {
@@ -13,10 +23,10 @@ arithType;
 
 typedef enum
 {
- BUFFSIZE, STRINGLEN, VALUE, CALLSAFE,
+  //BUFFSIZE, STRINGLEN,
+ VALUE, CALLSAFE,
  MAXSET, MINSET, MAXREAD, MINREAD,
  NULLTERMINATED,
- INCOP,
  UNDEFINED
 }
 constraintType;
@@ -27,13 +37,6 @@ typedef enum
   MINUS
 }
 constraintExprOp;
-
-
-typedef enum
-{
-EXPRNODE, SREF,
-INTLITERAL
-} constraintTermType;
 
 
 struct _constraintTerm {
@@ -53,18 +56,17 @@ struct constraintExpr_ {
 };
 # define constraintExpr_undefined ((constraintExpr)NULL)
 
-typedef struct constraintExpr_ * constraintExpr;
-abst_typedef struct constr_ * constr;
+
+//abst_typedef struct constr_ * constr;
 
 
 struct _constraint {
+  constraint     orig;
   constraintExpr lexpr;
   arithType       ar;
   constraintExpr  expr;
   bool post;
 } ;
-
-#define max_constraints 100
 
 //constraint constraint_create (exprNode e1, exprNode e2,  arithType restriction, constraintType kind);
 

@@ -23,6 +23,9 @@ abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
 
 abst_typedef /*@null@*/ struct _constraint *constraint;
 
+/* DRL modified 9 26 00 */
+
+abst_typedef struct constraintExpr_ * constraintExpr;
 
 /*@-cppnames@*/
 typedef int bool;

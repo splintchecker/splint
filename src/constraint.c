@@ -26,10 +26,15 @@ constraint constraint_copy (constraint c)
 {
   constraint ret;
   ret = constraint_makeNew();
-  ret->lexpr = c->lexpr;
+  ret->lexpr = constraintExpr_copy (c->lexpr);
   ret->ar = c->ar;
-  ret->expr = c->expr;
+  ret->expr =  constraintExpr_copy (c->expr);
   ret->post = c->post;
+  /*@i33 fix this*/
+  if (c->orig != NULL)
+    ret->orig = constraint_copy (c->orig);
+  else
+    ret->orig = NULL;
   return ret;
 }
 
@@ -49,6 +54,7 @@ bool constraint_resolve (/*@unused@*/ constraint c)
   ret->expr = NULL;
   ret->ar = LT;
   ret->post = FALSE;
+  ret->orig = NULL;
   /*@i23*/return ret;
 }
 /*@-czechfcns@*/
@@ -76,7 +82,7 @@ constraintExpr constraintExpr_copy (constraintExpr expr)
     {
       ret->expr = NULL;
     }
-  
+  return ret;
 }
 
 constraintExpr constraintExpr_makeMaxSetExpr (exprNode expr)
@@ -227,8 +233,7 @@ constraintExpr makeMaxSetPostOpInc (exprNode e)
 {
   constraintExpr ret;
   ret = constraintExpr_makeValueExpr (e);
-  ret->term  = constraintTerm_makeMaxSetexpr (e);
-  ret->op = MINUS;
+  ret->op = PLUS;
   ret->expr =  makeConstraintExprIntlit (1);
   return ret;
 }
@@ -239,7 +244,7 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
   //constraintTerm term;
   exprNode t2;
   e = exprNode_fakeCopy(e);
-  ret->lexpr = constraintExpr_makeMaxSetExpr(e);
+  ret->lexpr = constraintExpr_makeValueExpr (e);
   ret->ar = EQ;
   ret->post = TRUE;
   ret->expr = makeMaxSetPostOpInc(e);
@@ -334,6 +339,22 @@ cstring constraintExpr_print (constraintExpr ex)
 }
 
 
+cstring  constraint_printDetailed (constraint c)
+{
+  cstring st = cstring_undefined;
+
+  if (!c->post)
+    {
+      
+    st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisy %s", constraint_print (c), constraint_print(c->orig) );
+    }
+  else
+    {
+    st = message ("Function Post condition:\nBased on the constraint %s this function appears to have the post condition %s", constraint_print (c), constraint_print(c->orig) );
+    }
+  return st;
+}
+
 cstring  constraint_print (constraint c)
 {
   cstring st = cstring_undefined;
@@ -356,6 +377,37 @@ cstring  constraint_print (constraint c)
   return st;
 }
 
+bool constraint_hasTerm (constraint c, constraintTerm term)
+{
+  DPRINTF((message ("Constraint %s", constraint_print (c) ) ) );
+  
+  if (constraintExpr_includesTerm (c->lexpr, term) )
+    return TRUE;
+
+  if (constraintExpr_includesTerm (c->expr, term) )
+    return TRUE;
+
+  return FALSE;
+}
+
+bool constraintExpr_includesTerm (constraintExpr expr, constraintTerm term)
+{
+  if (constraintTerm_hasTerm (expr->term, term) )
+    return TRUE;
+
+  if ( (expr->expr) != NULL)
+    {
+      return ( constraintExpr_includesTerm (expr->expr, term) );
+    }
+  return FALSE;
+
+}
+
+constraint constraint_preserveOrig (constraint c)
+{
+  c->orig = constraint_copy (c);
+  return c;
+}
 /*@=fcnuse*/
 /*@=assignexpose*/
 /*@=czechfcns@*/

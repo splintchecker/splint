@@ -94,13 +94,14 @@ void /*@alt bool@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
   
   if (exprNode_isMultiStatement ( e) )
     {
-      return  exprNode_multiStatement(e);
+      exprNode_multiStatement(e);
     }
   else
     {
       llassert(FALSE);
     }
-
+  printf ("%s", (message ("%s", constraintList_printDetailed (e->requiresConstraints) ) ) );
+  printf ("%s", (message ("%s", constraintList_printDetailed (e->ensuresConstraints) ) ) );
   return FALSE;
 }
 
@@ -178,9 +179,9 @@ bool exprNode_stmt (exprNode e)
   loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
   notError = exprNode_exprTraverse (snode, FALSE, FALSE, loc);
   e->requiresConstraints = exprNode_traversRequiresConstraints(snode);
-  printf ("%s\n", constraintList_print(e->requiresConstraints) );
+  // printf ("%s\n", constraintList_print(e->requiresConstraints) );
   e->ensuresConstraints  = exprNode_traversEnsuresConstraints(snode);
-  printf ("Ensures that:\n %s\n", constraintList_print(e->ensuresConstraints) );
+  // printf ("Ensures that:\n %s\n", constraintList_print(e->ensuresConstraints) );
   llassert(notError);
   return notError;
   
@@ -217,7 +218,7 @@ bool exprNode_stmtList  (exprNode e)
   exprNode_stmt (stmt2);
 
   mergeResolve (e, stmt1, stmt2 );
-  TPRINTF ( (message ("smtlist constraints are: pre: %s \n and \t post %s\n",
+  DPRINTF ( (message ("smtlist constraints are: pre: %s \n and \t post %s\n",
 		      constraintList_print(e->requiresConstraints),
 		      constraintList_print(e->ensuresConstraints) ) ) );
   return TRUE;
@@ -356,8 +357,8 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       e->requiresConstraints = constraintList_add(e->requiresConstraints, cons);
       cons = constraint_makeEnsureMaxReadAtLeast (t1, t2, sequencePoint);
       e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
-      cons = constraint_makeEnsureMinReadAtMost (t1, t2, sequencePoint);
-      e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+      //      cons = constraint_makeEnsureMinReadAtMost (t1, t2, sequencePoint);
+      // e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
        
       exprNode_exprTraverse (exprData_getPairA (data), FALSE, TRUE, sequencePoint);
       exprNode_exprTraverse (exprData_getPairB (data), FALSE, TRUE, sequencePoint);
@@ -393,7 +394,7 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
     case XPR_PARENS: 
       exprNode_exprTraverse (exprData_getUopNode (e->edata), definatelv, definaterv, sequencePoint);
       //    e->constraints = constraintList_exprNodemerge (exprData_getUopNode (e->edata), exprNode_undefined);
-      break;
+      break; 
     case XPR_ASSIGN:
       exprNode_exprTraverse (exprData_getOpA (data), TRUE, definaterv, sequencePoint ); 
       lltok_unparse (exprData_getOpTok (data));
@@ -455,18 +456,21 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
       lltok_unparse (exprData_getUopTok (data));
       if (lltok_isInc_Op (exprData_getUopTok (data) ) )
 	{
-	  TPRINTF(("doing ++"));
+	  DPRINTF(("doing ++"));
 	  t1 = exprData_getUopNode (data);
 	  cons = constraint_makeMaxSetSideEffectPostIncrement (t1, sequencePoint );
 	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
-	  cons = constraint_makeMaxReadSideEffectPostIncrement (t1, sequencePoint );
-	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
+	  //	  cons = constraint_makeMaxReadSideEffectPostIncrement (t1, sequencePoint );
+	  //e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
 	}
       break;
     default:
       handledExprNode = FALSE;
     }
 
+  e->requiresConstraints =  constraintList_preserveOrig ( e->requiresConstraints);
+  e->ensuresConstraints  =  constraintList_preserveOrig ( e->ensuresConstraints);
+  
   return handledExprNode; 
 }
 

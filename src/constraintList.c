@@ -120,6 +120,41 @@ constraintList_print (constraintList s)
   return st;
 }
 
+
+cstring
+constraintList_printDetailed (constraintList s)
+{
+  int i;
+  cstring st = cstring_undefined;
+  bool first = TRUE;
+
+  if (s->nelements == 0)
+    st = cstring_makeLiteral("<List Empty>");
+  
+  for (i = 0; i < s->nelements; i++)
+    {
+      cstring type = cstring_undefined;
+      constraint current = s->elements[i];
+
+      if (current != NULL)
+	{
+	  cstring temp1 = constraint_printDetailed (current);
+	  type = message ("%s %s\n", type, temp1 );
+	}
+
+      if (first)
+	{
+	  st = type;
+	  first = FALSE;
+	}
+      else
+	{
+	  st = message ("%s %s", st, type);
+	}
+    }
+  return st;
+}
+
 void
 constraintList_free (constraintList s)
 {
@@ -146,4 +181,12 @@ constraintList_copy (constraintList s)
   return ret;
 }
 
-
+constraintList constraintList_preserveOrig (constraintList c)
+{
+  constraintList_elements (c, el);
+  {
+    el = constraint_preserveOrig (el);
+  }
+  end_constraintList_elements;
+  return c;
+}

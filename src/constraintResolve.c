@@ -89,11 +89,10 @@ bool satifies (constraint pre, constraint post)
     {
       return FALSE;
     }
-  if (post->expr->expr == NULL)
+  if (post->expr == NULL)
     return FALSE;
+
   return rangeCheck (pre->ar, pre->expr, post->ar, post->expr);
-  
-  return TRUE;
 }
 
 constraintExpr constraintExpr_simplify (constraintExpr expr)
@@ -101,18 +100,30 @@ constraintExpr constraintExpr_simplify (constraintExpr expr)
   
   expr->term = constraintTerm_simplify (expr->term);
   if (expr->expr == NULL)
-    return expr;
+    {
+      if ( (expr->term->kind == CONSTRAINTEXPR) &&  (expr->term->constrType == VALUE) )
+	{
+	  expr->op =  expr->term->value.constrExpr->op;
+	  expr->expr = expr->term->value.constrExpr->expr;
+	  expr->term = expr->term->value.constrExpr->term;
+	}
+	  
+      return expr;
+    }
   
     expr->expr = constraintExpr_simplify (expr->expr);
-  if ( (expr->term->constrType == INTLITERAL) && (expr->expr->term->constrType == INTLITERAL)  )
-    {
-      TPRINTF( ("EVENTUAL IMPLEMENTATION OF LITERAL MERGE " ));
 
-      TPRINTF ( (message ("Expression is %s ", constraintExpr_print (expr) ) ) );
+    
+    
+  if ( (expr->term->kind == INTLITERAL) && (expr->expr->term->kind == INTLITERAL)  )
+    {
+      DPRINTF( ("INTLITERAL MERGE " ));
+
+      DPRINTF ( (message ("Expression is %s ", constraintExpr_print (expr) ) ) );
       
       if (expr->op == PLUS )
 	{
-	  TPRINTF( (message ("Adding %d and %d ", expr->term->value.intlit,
+	  DPRINTF( (message ("Adding %d and %d ", expr->term->value.intlit,
 			     expr->expr->term->value.intlit) ) );
     	  expr->term->value.intlit += expr->expr->term->value.intlit;
 	}
@@ -124,6 +135,7 @@ constraintExpr constraintExpr_simplify (constraintExpr expr)
 
       expr->expr = expr->expr->expr;
     }
+  
   return expr;
   
 }
@@ -165,7 +177,7 @@ constraint solveforterm (constraint c)
     p = c->lexpr;
     while (p->expr != NULL)
       {
-	TPRINTF( (message("Moving %s", constraintExpr_print (c->expr) ) ) );
+	DPRINTF( (message("Moving %s", constraintExpr_print (c->expr) ) ) );
 	c->expr = termMove(c->expr, p);
 	p->op = p->expr->op;
 	#warning memleak
@@ -189,24 +201,57 @@ bool resolve (constraint c, constraintList p)
     {
       if ( satifies (c, el) )
 	{
-	  TPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
+	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
 	  return TRUE;
 	}
     }
   end_constraintList_elements;
-  TPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
+  DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
   return FALSE;
+}
+
+
+constraintTerm  constraintTerm_substituteTerm (constraintTerm term, constraintTerm oldterm, constraintExpr replacement)
+{
+  if ( constraintTerm_similar (term, oldterm) )
+    {
+      // do the substitution
+      term->kind = CONSTRAINTEXPR;
+      term->value.constrExpr = constraintExpr_copy (replacement);
+    }
+  return term;    
+}
+
+constraintExpr constraintExpr_substituteTerm (constraintExpr expr, constraintTerm oldterm, constraintExpr replacement)
+{
+   expr->term = constraintTerm_substituteTerm (expr->term, oldterm, replacement);
+   if (expr->expr != NULL)
+     expr->expr = constraintExpr_substituteTerm (expr->expr, oldterm, replacement);
+
+   return expr;
+}
+constraint constraint_substituteTerm (constraint c, constraintTerm oldterm, constraintExpr replacement)
+{
+  c->lexpr = constraintExpr_substituteTerm (c->lexpr, oldterm, replacement);
+  c->expr   = constraintExpr_substituteTerm (c->expr, oldterm, replacement);
+  return c;
 }
 
 constraint substitute (constraint c, constraintList p)
 {
   constraintList_elements (p, el)
     {
-      if (constraintTerm_same(c->lexpr->term, el->lexpr->term) )
-	{
-	  if ( el->ar == EQ)
+      if ( el->ar == EQ)
+	if (constraint_hasTerm (c, el->lexpr->term) )
+	  //	    constraintTerm_same(c->lexpr->term, el->lexpr->term) )
+	  {
 	    {
-	      c->lexpr = constraintExpr_copy (el->expr);
+	      DPRINTF((message ("doing substitute for %s", constraint_print (c) ) ) );
+	      c = constraint_substituteTerm (c, el->lexpr->term, el->expr); 
+	      DPRINTF((message ("substituted constraint is now %s", constraint_print (c) ) ) );
+	      // c->lexpr = constraintExpr_copy (el->expr);
+	      c = constraint_simplify(c);
+	      c = constraint_simplify(c);
 	      c = constraint_simplify(c);
 	      return c;
 	    }
@@ -250,7 +295,7 @@ bool constraintExpr_hasTerm (constraint c, constraintTerm term)
 
       p = p->expr->expr;
     }
-  TPRINTF((
+  DPRINTF((
 	   message ("constraintExpr_hasTerm returned fallse for %s %S",
 		    constraint_print(c), constraintTerm_print(term)
 		    )
@@ -262,10 +307,10 @@ constraintExpr solveEq (constraint c, constraintTerm t)
 {
   constraintExpr p;
   c = constraint_copy (c);
-  TPRINTF(("\ndoing solveEq\n"));
+  DPRINTF(("\ndoing solveEq\n"));
   if (! constraintTerm_same (c->expr->term, t) )
     {
-      TPRINTF ( (message ("\n\nconstraintTerms: %s %s not same ", constraintTerm_print(c->expr->term),
+      DPRINTF ( (message ("\n\nconstraintTerms: %s %s not same ", constraintTerm_print(c->expr->term),
 			  constraintTerm_print(t) )
 		 ) );
       return NULL;
@@ -274,7 +319,7 @@ constraintExpr solveEq (constraint c, constraintTerm t)
   p = c->expr;
   while (p->expr != NULL)
     {
-      TPRINTF( (message("\n\nMoving %s", constraintExpr_print (c->expr) ) ) );
+      DPRINTF( (message("\n\nMoving %s", constraintExpr_print (c->expr) ) ) );
       c->lexpr = termMove(c->lexpr, p);
       p->expr = p->expr->expr;
     }
@@ -285,13 +330,13 @@ constraintExpr solveEq (constraint c, constraintTerm t)
 
 constraint updateConstraint (constraint c, constraintList p)
 {
-  TPRINTF(("start updateConstraints"));
+  DPRINTF(("start updateConstraints"));
   constraintList_elements (p, el)
     {
       
       if (constraintTerm_same(c->lexpr->term, el->lexpr->term) )
 	{
-	  TPRINTF((""));
+	  DPRINTF((""));
 	  if ( el->ar == EQ)
 	    {
 	      	  TPRINTF((""));
@@ -314,7 +359,7 @@ constraint updateConstraint (constraint c, constraintList p)
   end_constraintList_elements;
   c = constraint_simplify(c);
   
-  TPRINTF(("end updateConstraints"));
+  DPRINTF(("end updateConstraints"));
   return c;
 }
 
@@ -340,7 +385,7 @@ constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
 void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 {
   constraintList temp;
-  TPRINTF( (message ("magically merging constraint into parent:%s for children:  %s and %s", exprNode_unparse (parent), exprNode_unparse (child1), exprNode_unparse(child2) )
+  DPRINTF( (message ("magically merging constraint into parent:%s for children:  %s and %s", exprNode_unparse (parent), exprNode_unparse (child1), exprNode_unparse(child2) )
 	    ) );
   llassert (!exprNode_isError (child1)  || !exprNode_isError(child2) );
   if (exprNode_isError (child1) )
@@ -357,7 +402,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 
   llassert(!exprNode_isError(child2) );
   
-  TPRINTF( (message ("Child constraints are %s %s and %s %s",
+  DPRINTF( (message ("Child constraints are %s %s and %s %s",
 		     constraintList_print (child1->requiresConstraints),
 		     constraintList_print (child1->ensuresConstraints),
 		     constraintList_print (child2->requiresConstraints),
@@ -380,10 +425,11 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
   parent->ensuresConstraints = constraintList_copy (child2->ensuresConstraints);
   parent->ensuresConstraints = constraintList_addList (parent->ensuresConstraints, temp);
   
-  TPRINTF( (message ("Parent constraints are %s and %s ",
+  DPRINTF( (message ("Parent constraints are %s and %s ",
 		     constraintList_print (parent->requiresConstraints),
 		     constraintList_print (parent->ensuresConstraints)
 		     ) ) );
  
 }
+
 

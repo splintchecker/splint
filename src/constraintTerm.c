@@ -51,7 +51,39 @@ constraintTerm constraintTerm_simplify (constraintTerm term)
 	}
 
     }
+
+  if (term->kind == CONSTRAINTEXPR )
+    {
+      if ( (term->constrType == MAXREAD) || (term->constrType == MAXSET) )
+	{
+	  // ms(var + intlit) = ms (var) - intlit
+	  if (term->value.constrExpr->expr == NULL)
+	    return term;
+
+	  if (term->value.constrExpr->expr->term->kind == INTLITERAL)
+	    {
+	      if (term->constrType == MAXREAD) 
+		term->value.constrExpr->term->constrType = MAXREAD;
+	      else if (term->constrType == MAXSET) 
+		term->value.constrExpr->term->constrType = MAXSET;
+	      else
+		llassert(FALSE);
+
+	      term->constrType = VALUE;
+
+	      if (term->value.constrExpr->op == PLUS)
+		term->value.constrExpr->op = MINUS;
+	      else
+		term->value.constrExpr->op = PLUS;
+	    }
+	  
+	}
+      
+    }
+  
+
   return term;
+
 }
 
 constraintTerm constraintTerm_copy (constraintTerm term)
@@ -219,13 +251,29 @@ cstring constraintTerm_print (constraintTerm term)
       s = cstring_makeLiteral("Not Implemented\n");
       llassert(FALSE);
       break;
+    case CONSTRAINTEXPR:
+      s = message ("%s ", constraintExpr_print (term->value.constrExpr) );
     }
-  s = message (" %s %s ", constraintType_print (term->constrType), s);
+  s = message (" %s  ( %s ) ", constraintType_print (term->constrType), s);
   return s;
   
 }
 
 
+bool constraintTerm_hasTerm (constraintTerm term, constraintTerm searchTerm)
+{
+  if (term->kind == CONSTRAINTEXPR)
+    return (constraintExpr_includesTerm (term->value.constrExpr, searchTerm) );
+
+  if ( (term->kind == EXPRNODE) && (searchTerm->kind == EXPRNODE) )
+    {
+      return sRef_same (term->value.expr->sref, searchTerm->value.expr->sref);
+    }
+  return FALSE;
+    
+}
+
+/* same and similar are similar but not the same*/
 
 bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
 {
@@ -248,12 +296,44 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
  
  if (sRef_same (term1->value.expr->sref, term2->value.expr->sref) )
    {
-     TPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+     DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
      return TRUE;
    }
  else
    {
-     TPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+     DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+     return FALSE;
+   }     
+    
+}
+
+bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
+{
+  llassert (term1 !=NULL && term2 !=NULL);
+
+  //  if (term1->constrType != term2->constrType)
+  //    {
+  //      return FALSE;
+  //    }
+  if ( (term1->kind != term2->kind) || (term1->kind != EXPRNODE) )
+    {
+      return FALSE;
+    }
+      
+ DPRINTF ( (message
+	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
+	     )
+	    )
+	   );
+ 
+ if (sRef_same (term1->value.expr->sref, term2->value.expr->sref) )
+   {
+     DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+     return TRUE;
+   }
+ else
+   {
+     DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
      return FALSE;
    }     
     
