@@ -1,197 +1,196 @@
 
 /*  A Bison parser, made from cgrammar.y
- by  GNU Bison version 1.25
-  */
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define	BADTOK	258
-#define	SKIPTOK	259
-#define	CTOK_ELIPSIS	260
-#define	CASE	261
-#define	DEFAULT	262
-#define	CIF	263
-#define	CELSE	264
-#define	SWITCH	265
-#define	WHILE	266
-#define	DO	267
-#define	CFOR	268
-#define	GOTO	269
-#define	CONTINUE	270
-#define	BREAK	271
-#define	RETURN	272
-#define	TSEMI	273
-#define	TLBRACE	274
-#define	TRBRACE	275
-#define	TCOMMA	276
-#define	TCOLON	277
-#define	TASSIGN	278
-#define	TLPAREN	279
-#define	TRPAREN	280
-#define	TLSQBR	281
-#define	TRSQBR	282
-#define	TDOT	283
-#define	TAMPERSAND	284
-#define	TEXCL	285
-#define	TTILDE	286
-#define	TMINUS	287
-#define	TPLUS	288
-#define	TMULT	289
-#define	TDIV	290
-#define	TPERCENT	291
-#define	TLT	292
-#define	TGT	293
-#define	TCIRC	294
-#define	TBAR	295
-#define	TQUEST	296
-#define	CSIZEOF	297
-#define	CALIGNOF	298
-#define	ARROW_OP	299
-#define	CTYPEDEF	300
-#define	COFFSETOF	301
-#define	INC_OP	302
-#define	DEC_OP	303
-#define	LEFT_OP	304
-#define	RIGHT_OP	305
-#define	LE_OP	306
-#define	GE_OP	307
-#define	EQ_OP	308
-#define	NE_OP	309
-#define	AND_OP	310
-#define	OR_OP	311
-#define	MUL_ASSIGN	312
-#define	DIV_ASSIGN	313
-#define	MOD_ASSIGN	314
-#define	ADD_ASSIGN	315
-#define	SUB_ASSIGN	316
-#define	LEFT_ASSIGN	317
-#define	RIGHT_ASSIGN	318
-#define	AND_ASSIGN	319
-#define	XOR_ASSIGN	320
-#define	OR_ASSIGN	321
-#define	CSTRUCT	322
-#define	CUNION	323
-#define	CENUM	324
-#define	VA_ARG	325
-#define	VA_DCL	326
-#define	QGLOBALS	327
-#define	QMODIFIES	328
-#define	QNOMODS	329
-#define	QCONSTANT	330
-#define	QFUNCTION	331
-#define	QITER	332
-#define	QDEFINES	333
-#define	QUSES	334
-#define	QALLOCATES	335
-#define	QSETS	336
-#define	QRELEASES	337
-#define	QPRECLAUSE	338
-#define	QPOSTCLAUSE	339
-#define	QALT	340
-#define	QUNDEF	341
-#define	QKILLED	342
-#define	QENDMACRO	343
-#define	LLMACRO	344
-#define	LLMACROITER	345
-#define	LLMACROEND	346
-#define	TENDMACRO	347
-#define	QSWITCHBREAK	348
-#define	QLOOPBREAK	349
-#define	QINNERBREAK	350
-#define	QSAFEBREAK	351
-#define	QINNERCONTINUE	352
-#define	QFALLTHROUGH	353
-#define	QLINTNOTREACHED	354
-#define	QLINTFALLTHROUGH	355
-#define	QLINTFALLTHRU	356
-#define	QARGSUSED	357
-#define	QPRINTFLIKE	358
-#define	QLINTPRINTFLIKE	359
-#define	QSCANFLIKE	360
-#define	QMESSAGELIKE	361
-#define	QNOTREACHED	362
-#define	QCONST	363
-#define	QVOLATILE	364
-#define	QINLINE	365
-#define	QEXTENSION	366
-#define	QEXTERN	367
-#define	QSTATIC	368
-#define	QAUTO	369
-#define	QREGISTER	370
-#define	QOUT	371
-#define	QIN	372
-#define	QYIELD	373
-#define	QONLY	374
-#define	QTEMP	375
-#define	QSHARED	376
-#define	QREF	377
-#define	QUNIQUE	378
-#define	QCHECKED	379
-#define	QUNCHECKED	380
-#define	QCHECKEDSTRICT	381
-#define	QCHECKMOD	382
-#define	QKEEP	383
-#define	QKEPT	384
-#define	QPARTIAL	385
-#define	QSPECIAL	386
-#define	QOWNED	387
-#define	QDEPENDENT	388
-#define	QRETURNED	389
-#define	QEXPOSED	390
-#define	QNULL	391
-#define	QOBSERVER	392
-#define	QISNULL	393
-#define	QEXITS	394
-#define	QMAYEXIT	395
-#define	QNEVEREXIT	396
-#define	QTRUEEXIT	397
-#define	QFALSEEXIT	398
-#define	QLONG	399
-#define	QSIGNED	400
-#define	QUNSIGNED	401
-#define	QSHORT	402
-#define	QUNUSED	403
-#define	QSEF	404
-#define	QNOTNULL	405
-#define	QRELNULL	406
-#define	QABSTRACT	407
-#define	QCONCRETE	408
-#define	QMUTABLE	409
-#define	QIMMUTABLE	410
-#define	QTRUENULL	411
-#define	QFALSENULL	412
-#define	QEXTERNAL	413
-#define	QREFCOUNTED	414
-#define	QREFS	415
-#define	QNEWREF	416
-#define	QTEMPREF	417
-#define	QKILLREF	418
-#define	QRELDEF	419
-#define	CGCHAR	420
-#define	CBOOL	421
-#define	CINT	422
-#define	CGFLOAT	423
-#define	CDOUBLE	424
-#define	CVOID	425
-#define	QANYTYPE	426
-#define	QINTEGRALTYPE	427
-#define	QUNSIGNEDINTEGRALTYPE	428
-#define	QSIGNEDINTEGRALTYPE	429
-#define	QNULLTERMINATED	430
-#define	QSETBUFFERSIZE	431
-#define	QBUFFERCONSTRAINT	432
-#define	QENSURESCONSTRAINT	433
-#define	QSETSTRINGLENGTH	434
-#define	QMAXSET	435
-#define	QMAXREAD	436
-#define	QTESTINRANGE	437
-#define	IDENTIFIER	438
-#define	NEW_IDENTIFIER	439
-#define	TYPE_NAME_OR_ID	440
-#define	CCONSTANT	441
-#define	ITER_NAME	442
-#define	ITER_ENDNAME	443
-#define	TYPE_NAME	444
+#define	BADTOK	257
+#define	SKIPTOK	258
+#define	CTOK_ELIPSIS	259
+#define	CASE	260
+#define	DEFAULT	261
+#define	CIF	262
+#define	CELSE	263
+#define	SWITCH	264
+#define	WHILE	265
+#define	DO	266
+#define	CFOR	267
+#define	GOTO	268
+#define	CONTINUE	269
+#define	BREAK	270
+#define	RETURN	271
+#define	TSEMI	272
+#define	TLBRACE	273
+#define	TRBRACE	274
+#define	TCOMMA	275
+#define	TCOLON	276
+#define	TASSIGN	277
+#define	TLPAREN	278
+#define	TRPAREN	279
+#define	TLSQBR	280
+#define	TRSQBR	281
+#define	TDOT	282
+#define	TAMPERSAND	283
+#define	TEXCL	284
+#define	TTILDE	285
+#define	TMINUS	286
+#define	TPLUS	287
+#define	TMULT	288
+#define	TDIV	289
+#define	TPERCENT	290
+#define	TLT	291
+#define	TGT	292
+#define	TCIRC	293
+#define	TBAR	294
+#define	TQUEST	295
+#define	CSIZEOF	296
+#define	CALIGNOF	297
+#define	ARROW_OP	298
+#define	CTYPEDEF	299
+#define	COFFSETOF	300
+#define	INC_OP	301
+#define	DEC_OP	302
+#define	LEFT_OP	303
+#define	RIGHT_OP	304
+#define	LE_OP	305
+#define	GE_OP	306
+#define	EQ_OP	307
+#define	NE_OP	308
+#define	AND_OP	309
+#define	OR_OP	310
+#define	MUL_ASSIGN	311
+#define	DIV_ASSIGN	312
+#define	MOD_ASSIGN	313
+#define	ADD_ASSIGN	314
+#define	SUB_ASSIGN	315
+#define	LEFT_ASSIGN	316
+#define	RIGHT_ASSIGN	317
+#define	AND_ASSIGN	318
+#define	XOR_ASSIGN	319
+#define	OR_ASSIGN	320
+#define	CSTRUCT	321
+#define	CUNION	322
+#define	CENUM	323
+#define	VA_ARG	324
+#define	VA_DCL	325
+#define	QGLOBALS	326
+#define	QMODIFIES	327
+#define	QNOMODS	328
+#define	QCONSTANT	329
+#define	QFUNCTION	330
+#define	QITER	331
+#define	QDEFINES	332
+#define	QUSES	333
+#define	QALLOCATES	334
+#define	QSETS	335
+#define	QRELEASES	336
+#define	QPRECLAUSE	337
+#define	QPOSTCLAUSE	338
+#define	QALT	339
+#define	QUNDEF	340
+#define	QKILLED	341
+#define	QENDMACRO	342
+#define	LLMACRO	343
+#define	LLMACROITER	344
+#define	LLMACROEND	345
+#define	TENDMACRO	346
+#define	QSWITCHBREAK	347
+#define	QLOOPBREAK	348
+#define	QINNERBREAK	349
+#define	QSAFEBREAK	350
+#define	QINNERCONTINUE	351
+#define	QFALLTHROUGH	352
+#define	QLINTNOTREACHED	353
+#define	QLINTFALLTHROUGH	354
+#define	QLINTFALLTHRU	355
+#define	QARGSUSED	356
+#define	QPRINTFLIKE	357
+#define	QLINTPRINTFLIKE	358
+#define	QSCANFLIKE	359
+#define	QMESSAGELIKE	360
+#define	QNOTREACHED	361
+#define	QCONST	362
+#define	QVOLATILE	363
+#define	QINLINE	364
+#define	QEXTENSION	365
+#define	QEXTERN	366
+#define	QSTATIC	367
+#define	QAUTO	368
+#define	QREGISTER	369
+#define	QOUT	370
+#define	QIN	371
+#define	QYIELD	372
+#define	QONLY	373
+#define	QTEMP	374
+#define	QSHARED	375
+#define	QREF	376
+#define	QUNIQUE	377
+#define	QCHECKED	378
+#define	QUNCHECKED	379
+#define	QCHECKEDSTRICT	380
+#define	QCHECKMOD	381
+#define	QKEEP	382
+#define	QKEPT	383
+#define	QPARTIAL	384
+#define	QSPECIAL	385
+#define	QOWNED	386
+#define	QDEPENDENT	387
+#define	QRETURNED	388
+#define	QEXPOSED	389
+#define	QNULL	390
+#define	QOBSERVER	391
+#define	QISNULL	392
+#define	QEXITS	393
+#define	QMAYEXIT	394
+#define	QNEVEREXIT	395
+#define	QTRUEEXIT	396
+#define	QFALSEEXIT	397
+#define	QLONG	398
+#define	QSIGNED	399
+#define	QUNSIGNED	400
+#define	QSHORT	401
+#define	QUNUSED	402
+#define	QSEF	403
+#define	QNOTNULL	404
+#define	QRELNULL	405
+#define	QABSTRACT	406
+#define	QCONCRETE	407
+#define	QMUTABLE	408
+#define	QIMMUTABLE	409
+#define	QTRUENULL	410
+#define	QFALSENULL	411
+#define	QEXTERNAL	412
+#define	QREFCOUNTED	413
+#define	QREFS	414
+#define	QNEWREF	415
+#define	QTEMPREF	416
+#define	QKILLREF	417
+#define	QRELDEF	418
+#define	CGCHAR	419
+#define	CBOOL	420
+#define	CINT	421
+#define	CGFLOAT	422
+#define	CDOUBLE	423
+#define	CVOID	424
+#define	QANYTYPE	425
+#define	QINTEGRALTYPE	426
+#define	QUNSIGNEDINTEGRALTYPE	427
+#define	QSIGNEDINTEGRALTYPE	428
+#define	QNULLTERMINATED	429
+#define	QSETBUFFERSIZE	430
+#define	QBUFFERCONSTRAINT	431
+#define	QENSURESCONSTRAINT	432
+#define	QSETSTRINGLENGTH	433
+#define	QMAXSET	434
+#define	QMAXREAD	435
+#define	QTESTINRANGE	436
+#define	IDENTIFIER	437
+#define	NEW_IDENTIFIER	438
+#define	TYPE_NAME_OR_ID	439
+#define	CCONSTANT	440
+#define	ITER_NAME	441
+#define	ITER_ENDNAME	442
+#define	TYPE_NAME	443
 
 #line 19 "cgrammar.y"
 
@@ -298,7 +297,7 @@ typedef union
 #define	YYFLAG		-32768
 #define	YYNTBASE	190
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 444 ? yytranslate[x] : 433)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 443 ? yytranslate[x] : 433)
 
 static const short yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -326,26 +325,26 @@ static const short yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-    76,    77,    78,    79,    80,    81,    82,    83,    84,    85,
-    86,    87,    88,    89,    90,    91,    92,    93,    94,    95,
-    96,    97,    98,    99,   100,   101,   102,   103,   104,   105,
-   106,   107,   108,   109,   110,   111,   112,   113,   114,   115,
-   116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
-   126,   127,   128,   129,   130,   131,   132,   133,   134,   135,
-   136,   137,   138,   139,   140,   141,   142,   143,   144,   145,
-   146,   147,   148,   149,   150,   151,   152,   153,   154,   155,
-   156,   157,   158,   159,   160,   161,   162,   163,   164,   165,
-   166,   167,   168,   169,   170,   171,   172,   173,   174,   175,
-   176,   177,   178,   179,   180,   181,   182,   183,   184,   185,
-   186,   187,   188,   189
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+    77,    78,    79,    80,    81,    82,    83,    84,    85,    86,
+    87,    88,    89,    90,    91,    92,    93,    94,    95,    96,
+    97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
+   107,   108,   109,   110,   111,   112,   113,   114,   115,   116,
+   117,   118,   119,   120,   121,   122,   123,   124,   125,   126,
+   127,   128,   129,   130,   131,   132,   133,   134,   135,   136,
+   137,   138,   139,   140,   141,   142,   143,   144,   145,   146,
+   147,   148,   149,   150,   151,   152,   153,   154,   155,   156,
+   157,   158,   159,   160,   161,   162,   163,   164,   165,   166,
+   167,   168,   169,   170,   171,   172,   173,   174,   175,   176,
+   177,   178,   179,   180,   181,   182,   183,   184,   185,   186,
+   187,   188,   189
 };
 
 #if YYDEBUG != 0
@@ -2597,7 +2596,8 @@ static const short yycheck[] = {     0,
    185,    -1,    -1,    -1,   189
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/gnu/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -2614,46 +2614,66 @@ static const short yycheck[] = {     0,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -2663,8 +2683,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -2745,12 +2765,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-int yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -2762,7 +2782,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -2777,10 +2797,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -2790,7 +2810,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/gnu/share/bison.simple"
+#line 217 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -2810,6 +2830,15 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_ARG
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
+
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
 
 int
 yyparse(YYPARSE_PARAM_ARG)
@@ -2839,6 +2868,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -2923,18 +2953,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -5457,7 +5501,7 @@ case 663:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/gnu/share/bison.simple"
+#line 543 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -5652,6 +5696,30 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
 #line 1738 "cgrammar.y"
 

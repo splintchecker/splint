@@ -46,6 +46,8 @@ include Makefile.sys
 
 CHECK = 0 ### set to 1
 
+LCLINT = //tmp/lclint-2.5q/bin/lclint
+
 ###
 ### source files
 ###
@@ -311,7 +313,7 @@ $(CHECKS): lclint.lcd
 ### 
 
 lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude -nestcomments -mustfree -namechecks -abstract -boolops -protoparammatch  $(ALLSRC) -dump lclint
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +singleinclude -nestcomments -mustfree -namechecks -abstract -boolops -protoparammatch -unqualifiedtrans -dependenttrans $(ALLSRC) -dump lclint
 
 
 

@@ -25,8 +25,8 @@ GRAMSRC    = cgrammar.c cscanner.c
 
 GENERALSRC =     constraint.c \
     constraintTerm.c \
-    constraintExpr.c \
     constraintExprData.c \
+    constraintExpr.c \
     constraintResolve.c \
     constraintOutput.c \
     constraintList.c \
