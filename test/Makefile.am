@@ -60,7 +60,7 @@ UNITEXPECTS = $(addsuffix .expect, $(UNITTESTS))
 
 SUBDIRTESTS = metastate mergestate tainted fileio \
    simplebufferConstraintTests moreBufferTests moreBufferTests2 globalbufferannotation \
-   maxset strchr for manual
+   maxset strchr sizeoftest for manual
 
 ### warnuse doesn't work yet!
 SUBDIRTESTS += tests2.2
@@ -919,6 +919,7 @@ freearray:
 sizeof:
 	-$(SPLINTR) +bounds sizeof.c -expect 1
 
+
 .PHONY: buffertest
 buffertest:
 	-$(SPLINTR) +bounds buffertest1.c -expect 5
@@ -1228,6 +1229,8 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./simplebufferConstraintTests/test3.c \
               ./simplebufferConstraintTests/test7.c \
               ./sizeoftest/sizeof.c \
+              ./sizeoftest/Makefile.c \
+              ./sizeoftest/sizeofConst.c \
               ./strchr/strchr.c \
               ./suppressfile/test.c \
               ./tainted/sprintf.c \
