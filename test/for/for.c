@@ -1,11 +1,11 @@
 void f()
 {
-int i;
+int j, i;
 char s[11];
 char t[11];
-for (i = 0; i <= 10; i++)
+for (j = 0; j <= 10; j++)
   {
-    s[i] = '\0';
+    s[j] = '\0';
   }
 
 for (i = 0; i <= 11; i++)
