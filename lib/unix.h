@@ -903,9 +903,9 @@ truncate (const char *name, off_t length)
 /*@constant int ENEEDAUTH@*/
 /*@constant int ELAST@*/
 
-/*________________________________________________________________________
- * tar.h
- */
+/*
+** tar.h
+*/
 
 /*@unchecked@*/ extern char *TMAGIC;
 /*@constant int TMAGLEN@*/
@@ -957,9 +957,9 @@ struct ipc_perm {
 /*@constant int IPC_SET@*/
 /*@constant int IPC_STAT@*/
 
-/*________________________________________________________________________
- * sys/msg.h
- */
+/*
+** sys/msg.h
+*/
 
  struct msqid_ds {
 	struct	ipc_perm msg_perm;	/* msg queue permission bits */
@@ -1002,9 +1002,9 @@ msgrcv (int id, /*@out@*/ void *ptr, size_t nbytes, long type, int flags)
 msgsnd (int id, const void *ptr, size_t nbytes, int flag)
 	/*@modifies errno@*/;
 
-/*________________________________________________________________________
- * sys/sem.h
- */
+/*
+** sys/sem.h
+*/
 
  struct semid_ds {
 	struct ipc_perm sem_perm;
@@ -1066,9 +1066,9 @@ semget (key_t key, int nsems, int flag)
 semop (int id, struct sembuf *semoparray, size_t nops)
 	/*@modifies errno@*/;
 
-/*________________________________________________________________________
- * sys/shm.h
- */
+/*
+** sys/shm.h
+*/
 
  struct shmid_ds {
 	struct ipc_perm shm_perm;
@@ -1095,25 +1095,155 @@ semop (int id, struct sembuf *semoparray, size_t nops)
 /*@constant int SHM_W@*/
 /*@constant int SHM_UNLOCK@*/
 
-	void *
-shmat (int id, /*@null@*/ void *addr, int flag)
-	/*@modifies errno@*/;
+void * shmat (int id, /*@null@*/ void *addr, int flag)
+     /*@modifies errno@*/ ;
+     
+extern int shmctl (int id, int cmd, /*@out@*/ struct shmid_ds *buf)
+     /*@modifies errno, *buf@*/ ;
 
-	extern int
-shmctl (int id, int cmd, /*@out@*/ struct shmid_ds *buf)
-	/*@modifies errno, *buf@*/;
+extern int shmdt (void *addr)
+     /*@modifies errno@*/ ;
 
-	extern int
-shmdt (void *addr)
-	/*@modifies errno@*/;
+extern int shmget (key_t key, int size, int flag)
+     /*@modifies errno@*/ ;
 
-	extern int
-shmget (key_t key, int size, int flag)
-	/*@modifies errno@*/;
+# if 0
+     /*
+     ** this is in stdio.h!
+     */
 
-/*________________________________________________________________________
- * syslog.h
- */
+/*
+** stdio.h
+*/
+
+/*
+** evans 2001-12-30: added from http://www.opengroup.org/onlinepubs/007908799/xsh/stdio.h.html
+*/
+
+/*@constant unsignedintegraltype BUFSIZ@*/ 
+/*@constant unsignedintegraltype FILENAME_MAX@*/
+/*@constant unsignedintegraltype FOPEN_MAX@*/
+/*@constant bool _IOFBF@*/
+/*@constant bool _IOLBF@*/
+/*@constant bool _IONBF@*/
+/*@constant unsignedintegraltype L_ctermid@*/
+/*@constant unsignedintegraltype L_cuserid@*/
+/*@constant unsignedintegraltype L_tmpnam@*/
+/*@constant unsignedintegraltype SEEK_CUR@*/
+/*@constant unsignedintegraltype SEEK_END@*/
+/*@constant unsignedintegraltype SEEK_SET@*/
+/*@constant unsignedintegraltype TMP_MAX@*/
+
+/* EOF */
+/* NULL */
+
+/*@constant observer char *P_tmpdir@*/
+
+/*@dependent@*/ char *ctermid (/*@returned@*/ /*@null@*/ char *) /*@*/ ;
+   /* Result may be static pointer if parameter is NULL, otherwise is fresh. */
+
+char *cuserid (/*@null@*/ /*@returned@*/ char *) 
+  /*@warn legacy "cuserid is obsolete"@*/ /*@*/ ;
+
+/*@null@*/ FILE *fdopen (int, const char *)
+  /*@modifies errno, fileSystem@*/ ;
+
+int fileno (/*@notnull@*/ FILE *)
+  /*:errorcode -1:*/ 
+  /*@modifies errno@*/ ;
+
+void flockfile (/*@notnull@*/ FILE *f)
+   /*@modifies f, fileSystem@*/ ;
+
+int fseeko (FILE *stream, off_t offset, int whence)
+   /*:errorcode -1:*/
+   /*@modifies stream, errno@*/ ;
+
+off_t ftello(FILE *stream)
+   /*:errorcode -1:*/ /*@modifies errno*/ ;
+
+int ftrylockfile(FILE *stream)
+   /*:errorcode !0:*/
+   /*@modifies stream, fileSystem, errno*/ ;
+
+void funlockfile (FILE *stream)
+   /*@modifies stream, fileSystem*/ ;
+
+int getc_unlocked(FILE *stream)
+   /*@warn multithreaded "getc_unlocked is a thread unsafe version of getc"@*/
+   /*@modifies *stream, fileSystem, errno@*/ ;
+
+int getchar_unlocked (void)
+   /*@warn multithreaded "getchar_unlocked is a thread unsafe version of getchar"@*/
+   /*@globals stdin@*/
+   /*@modifies *stdin, fileSystem@*/ ;
+
+int getopt (int, char * const[], const char)
+   /*@warn legacy@*/ ;
+
+int getw (FILE *stream)
+   /*:errorcode EOF:*/
+   /*@modifies fileSystem, *stream, errno@*/ ;
+
+int pclose(FILE *stream)
+   /*:errorcode -1:*/
+   /*@modifies *stream, errno@*/ ;
+
+/*@null@*/ FILE *popen (const char *command, const char *mode)
+   /*:errorcode NULL:*/
+   /*@modifies fileSystem, errno@*/ ;
+
+int putc_unlocked (int, FILE *stream)
+   /*@warn multithreaded "putc_unlocked is a thread unsafe version of putc"@*/
+   /*:errorcode EOF:*/
+   /*@modifies fileSystem, *stream, errno@*/ ;
+
+int putchar_unlocked(int)
+   /*@warn multithreaded "putchar_unlocked is a thread unsafe version of putchar"@*/
+   /*:errorcode EOF:*/
+   /*@modifies fileSystem, *stdout, errno@*/ ;
+
+int putw(int, FILE *stream)
+   /*:errorcode EOF:*/
+   /*@modifies fileSystem, *stdout, errno@*/ ;
+
+int remove (const char *)
+   /*@modifies fileSystem@*/ ;
+
+int rename (const char *, const char *)
+   /*@modifies fileSystem@*/ ;
+
+void rewind (FILE *stream)
+   /*@modifies *stream@*/ ;
+
+void setbuf (FILE *stream, /*@null@*/ char *buf);
+     int      setvbuf(FILE *, char *, int, size_t);
+     int      snprintf(char *, size_t, const char *, ...);
+     int      sprintf(char *, const char *, ...);
+     int      sscanf(const char *, const char *, int ...);
+     char    *tempnam(const char *, const char *);
+     FILE    *tmpfile(void);
+     char    *tmpnam(char *);
+     int      ungetc(int, FILE *);
+     int      vfprintf(FILE *, const char *, va_list);
+     int      vprintf(const char *, va_list);
+     int      vsnprintf(char *, size_t, const char *, va_list);
+     int      vsprintf(char *, const char *, va_list);
+
+
+     The following external variables are defined: 
+
+
+     extern char  *optarg;    )
+     extern int    opterr;    )
+     extern int    optind;    ) (LEGACY)
+     extern int    optopt;    )
+
+# endif
+
+/*
+** syslog.h
+*/
 
 /*@constant int LOG_EMERG@*/
 /*@constant int LOG_ALERT@*/

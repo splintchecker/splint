@@ -3823,5 +3823,13 @@ static flaglist flags =
     "Use of a declarator that is implementation optional, not required by ISO99.",
     0, 0
   }, 
+  {
+    FK_WARNUSE, FK_NONE, modeFlag,
+    "legacy",
+    FLG_LEGACY,
+    "legacy declaration in Unix Standard",
+    "Use of a declarator that is marked as a legacy entry in the Unix Standard.",
+    0, 0
+  }, 
 
 } ;

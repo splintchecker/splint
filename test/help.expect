@@ -255,6 +255,7 @@ Finished checking --- no code processed
    lclexpect                   
    lclimportdir                
    lcs                         
+   legacy                      
    lh                          
    libmacros                   
    likelybool                  
@@ -1080,4 +1081,5 @@ unixstandard --- function is not required in Standard UNIX Specification
 superuser --- function is restricted to superusers
 implementationoptional --- declarator is implementation optional (ISO99 does
 not require an implementation to provide it)
+legacy --- legacy declaration in Unix Standard
 
