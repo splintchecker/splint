@@ -39,7 +39,7 @@ UNITTESTS = \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims blocks break cases cast charlit clauses commentchar compdestroy \
   constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-  decl enum exports external fields flags forbody format freearray \
+  decl divzero enum exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init inparam internal iter keep libs \
   linked lintcomments list loopexec \
   macros macrosef merge mergenull modifies modtest moduncon \
@@ -336,6 +336,10 @@ decl:
 	-$(SPLINTR) decl.c -expect 2
 	-$(SPLINTRN) decl.c +strict -exportlocal -expect 5
 	-$(SPLINTR) decl2 -expect 4
+
+.PHONY: divzero
+divzero:
+	-$(SPLINTR) divzero.c -varuse -expect 0
 
 .PHONY: enum
 enum:
