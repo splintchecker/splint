@@ -63,6 +63,9 @@ extern bool flagcode_isInvalid (flagcode p_f) /*@*/ ;
 extern bool flagcode_isSkip (flagcode p_f) /*@*/ ;
 # define flagcode_isSkip(f) ((f) == SKIP_FLAG)
 
+extern bool flagcode_isModeName (flagcode p_f) /*@*/ ;
+# define flagcode_isModeName(f) ((f) == MODENAME_FLAG)
+
 extern bool flagcode_isValid (flagcode p_f) /*@*/ ;
 # define flagcode_isValid(f) ((f) != INVALID_FLAG)
 
@@ -88,9 +91,7 @@ extern bool flagcode_hasArgument (flagcode p_f) /*@*/ ;
 /*@constant observer cstring DEFAULT_MODE;@*/
 # define DEFAULT_MODE (cstring_makeLiteralTemp ("standard"))
 
-extern void flags_initMod (void) /*@modifies internalState@*/ ;
-
-extern bool isMode (cstring p_s) /*@*/ ;
+extern bool flags_isModeName (cstring p_s) /*@*/ ;
 extern /*@only@*/ cstring describeModes (void) /*@modifies g_messagestream@*/ ;
 extern void summarizeErrors (void) /*@modifies g_messagestream@*/ ;
 
@@ -100,7 +101,14 @@ extern bool flagcode_isModeFlag (flagcode p_f) /*@*/ ;
 extern bool flagcode_isSpecialFlag (flagcode p_f) /*@*/ ;
 extern bool flagcode_isGlobalFlag (flagcode p_f) /*@*/ ;
 extern bool flagcode_isMessageControlFlag (flagcode p_f) /*@*/ ;
- 
+extern bool flagcode_isHelpFlag (flagcode p_f) /*@*/ ;
+
+extern void flags_initMod (void) /*@modifies internalState@*/ ;
+
+extern bool flags_processFlags (int p_argc, char **p_argv)
+     /*@requires maxRead(p_argv) >= p_argc - 1@*/
+     /* returns true if normal, false if execution should exit */ ;
+
 # else
 # error "Multiple include"
 # endif

@@ -16,6 +16,7 @@
 
 typedef enum  
 { 
+  MODENAME_FLAG = -3,
   SKIP_FLAG = -2,
   INVALID_FLAG = -1,
 # include "flag_codes.gen"

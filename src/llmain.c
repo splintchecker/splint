@@ -650,8 +650,6 @@ int main (int argc, char *argv[])
 # endif
 {
   bool first_time = TRUE;
-  bool showhelp = FALSE;
-  bool allhelp = TRUE;
   bool expsuccess;
   inputStream sourceFile = inputStream_undefined;
  
@@ -696,7 +694,14 @@ int main (int argc, char *argv[])
   if (argc <= 1)
     {
       showHelp ();
-      llexit (LLGIVEUP);
+      llexit (LLSUCCESS);
+    }
+  
+  /* -help must be the first flag to get help */
+  if (flagcode_isHelpFlag (flags_identifyFlag (argv[1])))
+    {
+      flags_processHelp (argc - 1, argv + 1);
+      llexit (LLSUCCESS);
     }
 
   setCodePoint ();
@@ -759,6 +764,7 @@ int main (int argc, char *argv[])
       {
 	/* Put C_INCLUDE_PATH directories in sysdirs */
 	cstring cincval = osd_getEnvironmentVariable (cstring_makeLiteralTemp ("C_INCLUDE_PATH"));
+
 	if (cstring_isDefined (cincval))
 	  {
 	    context_setString (FLG_SYSTEMDIRS, cstring_copy (cincval));
@@ -919,273 +925,9 @@ int main (int argc, char *argv[])
   }
   
   setCodePoint ();
-  
-  for (i = 1; i < argc; i++)
-    {
-      char *thisarg;
-      flagcode opt;
-      
-      thisarg = argv[i];
-      
-      if (showhelp)
-	{
-	  if (allhelp)
-	    {
-	      showHerald ();
-	    }
-	  
-	  allhelp = FALSE;
-	  
-	  if (*thisarg == '-' || *thisarg == '+')
-	    {
-	      thisarg++;	/* skip '-' */
-	    }
-	  if (mstring_equal (thisarg, "modes"))
-	    {
-	      llmsg (describeModes ());
-	    }
-	  else if (mstring_equal (thisarg, "vars")
-		   || mstring_equal (thisarg, "env"))
-	    {
-	      describeVars ();
-	    }
-	  else if (mstring_equal (thisarg, "annotations"))
-	    {
-	      printAnnotations ();
-	    }
-	  else if (mstring_equal (thisarg, "parseerrors"))
-	    {
-	      printParseErrors ();
-	    }
-	  else if (mstring_equal (thisarg, "comments"))
-	    {
-	      printComments ();
-	    }
-	  else if (mstring_equal (thisarg, "prefixcodes"))
-	    {
-	      describePrefixCodes ();
-	    }
-	  else if (mstring_equal (thisarg, "references") 
-		   || mstring_equal (thisarg, "refs"))
-	    {
-	      printReferences ();
-	    }
-	  else if (mstring_equal (thisarg, "mail"))
-	    {
-	      printMail ();
-	    }
-	  else if (mstring_equal (thisarg, "maintainer")
-		   || mstring_equal (thisarg, "version"))
-	    {
-	      printMaintainer ();
-	    }
-	  else if (mstring_equal (thisarg, "flags"))
-	    {
-	      if (i + 1 < argc)
-		{
-		  char *next = argv[i + 1];
-		  
-		  if (specialFlagsHelp (next))
-		    {
-		      i++;
-		    }
-		  else
-		    {
-		      flagkind k = identifyCategory (cstring_fromChars (next));
-		      
-		      if (k != FK_NONE)
-			{
-			  printCategory (k);
-			  i++;
-			}
-		    }
-		}
-	      else
-		{
-		  printFlags ();
-		}
-	    }
-	  else
-	    {
-	      cstring s = describeFlag (cstring_fromChars (thisarg));
-	      
-	      if (cstring_isDefined (s))
-		{
-		  llmsg (s);
-		}
-	    }
-	}
-      else
-	{
-	  if (*thisarg == '-' || *thisarg == '+')
-	    {
-	      bool set = (*thisarg == '+');
-	      cstring flagname;
-	      
-	      thisarg++;	/* skip '-' */
-	      flagname = cstring_fromChars (thisarg);
 
-	      DPRINTF (("Flag: %s", flagname));
-	      opt = flags_identifyFlag (flagname);
-	      DPRINTF (("Flag: %s", flagcode_unparse (opt)));
-
-	      if (flagcode_isMessageControlFlag (opt))
-		{
-		  /*
-		  ** Processed on first pass
-		  */
-
-		  if (flagcode_hasArgument (opt))
-		    {
-		      ++i;
-		    }
-		}
-	      else if (flagcode_isInvalid (opt))
-		{
-		  DPRINTF (("Invalid: %s", flagname));
-
-		  if (isMode (flagname))
-		    {
-		      context_setMode (flagname);
-		    }
-		  else
-		    {
-		      DPRINTF (("Error!"));
-		      voptgenerror (FLG_BADFLAG,
-				    message ("Unrecognized option: %s", 
-					     cstring_fromChars (thisarg)),
-				    g_currentloc);
-		    }
-		}
-	      else
-		{
-		  context_userSetFlag (opt, set);
-		  
-		  if (flagcode_hasArgument (opt))
-		    {
-		      if (opt == FLG_HELP)
-			{
-			  showhelp = TRUE;
-			}
-		      else if (flagcode_isPassThrough (opt)) /* -D or -U */
-			{ 
-			  passThroughArgs = cstringSList_add 
-			    (passThroughArgs, cstring_fromChars (thisarg));
-			}
-		      else if (flagcode_hasNumber (opt))
-			{
-			  if (++i < argc)
-			    {
-			      setValueFlag (opt, cstring_fromChars (argv[i]));
-			    }
-			  else
-			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a number",
-				  flagcode_unparse (opt)));
-			    }
-			} 
-		      else if (flagcode_hasChar (opt))
-			{
-			  if (++i < argc)
-			    {
-			      setValueFlag (opt, cstring_fromChars (argv[i]));
-			    }
-			  else
-			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a character",
-				  flagcode_unparse (opt)));
-			    }
-			} 
-		      else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
-			{
-			  cstring dir = cstring_suffix (cstring_fromChars (thisarg), 1); /* skip over I */
-			  
-			  switch (opt)
-			    {
-			    case FLG_INCLUDEPATH:
-			      cppAddIncludeDir (dir);
-			      /*@switchbreak@*/ break;
-			    case FLG_SPECPATH:
-			      /*@-mustfree@*/
-			      g_localSpecPath = cstring_toCharsSafe
-				(message ("%s%h%s", 
-					  cstring_fromChars (g_localSpecPath), 
-					  PATH_SEPARATOR,
-					  dir));
-			      /*@=mustfree@*/
-			      /*@switchbreak@*/ break;
-			      BADDEFAULT;
-			    }
-			}
-		      else if (flagcode_hasString (opt)
-			       || opt == FLG_INIT || opt == FLG_OPTF)
-			{
-			  if (++i < argc)
-			    {
-			      cstring arg = cstring_fromChars (argv[i]);
-			      
-			      if (opt == FLG_OPTF)
-				{
-				  ; /* -f already processed */
-				}
-			      else if (opt == FLG_INIT)
-				{
-# ifndef NOLCL
-				  initFile = inputStream_create 
-				    (arg, 
-				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
-				     FALSE);
-# endif
-				  break;
-				}
-			      else
-				{
-				  DPRINTF (("String flag: %s / %s",
-					    flagcode_unparse (opt), arg));
-				  if (opt == FLG_MTSFILE)
-				    {
-				      /*
-				      ** arg identifies mts files
-				      */
-				      cstring tmp =  message ("%s%s", arg, MTS_EXTENSION);
-				      addLarchPathFile (mtfiles, tmp);
-				      cstring_free (tmp);
-				      tmp = message ("%s%s", arg, XH_EXTENSION);
-				      addXHFile (xfiles, tmp);
-				      cstring_free (tmp);
-				    }
-				  else
-				    {
-				      setStringFlag (opt, cstring_copy (arg));
-				    }
-				}
-			    }
-			  else
-			    {
-			      llfatalerror 
-				(message
-				 ("Flag %s must be followed by a string",
-				  flagcode_unparse (opt)));
-			    }
-			}
-		      else
-			{
-			  /* no argument */
-			}
-		    }
-		}
-	    }
-	  else /* its a filename */
-	    {
-	      DPRINTF (("Adding filename: %s", thisarg));
-	      fl = cstringSList_add (fl, cstring_fromChars (thisarg));
-	    }
-	}
-    }
+  /* argv[0] is the program name, don't pass it to flags_processFlags */
+  flags_processFlags (argc - 1, argv + 1);
 
   showHerald (); 
   
@@ -2451,7 +2193,7 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 	    {
 	      DPRINTF (("Invalid: %s", thisflag));
 
-	      if (isMode (cstring_fromChars (thisflag)))
+	      if (flags_isModeName (cstring_fromChars (thisflag)))
 		{
 		  context_setMode (cstring_fromChars (thisflag));
 		}
@@ -2487,7 +2229,20 @@ loadrc (/*:open:*/ FILE *rcfile, cstringSList *passThroughArgs)
 		  else if (opt == FLG_INCLUDEPATH 
 			   || opt == FLG_SPECPATH)
 		    {
-		      cstring dir = cstring_suffix (cstring_fromChars (thisflag), 1); /* skip over I/S */
+		      cstring dir;
+
+		      /*
+		      ** Either -I<dir> or -I <dir>
+		      */
+
+		      if (cstring_length (thisflag) > 1)
+			{
+			  dir = cstring_suffix (cstring_fromChars (thisflag), 1); /* skip over I/S */
+			}
+		      else
+			{
+			  BADBRANCH; /*@!!!!@*/
+			}
 		      		      
 		      switch (opt)
 			{

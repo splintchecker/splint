@@ -221,6 +221,11 @@ bool flagcode_isNameChecksFlag (flagcode f)
   return (flags[f].main == FK_NAMES);
 }
 
+bool flagcode_isHelpFlag (flagcode f)
+{
+  return f == FLG_HELP;
+}
+
 bool flagcode_isMessageControlFlag (flagcode f)
 {
   /*
@@ -845,7 +850,7 @@ describeFlag (cstring flagname)
     }
   else
     {
-      if (isMode (flagname))
+      if (flags_isModeName (flagname))
 	{
 	  cstring_free (oflagname);
 
@@ -996,22 +1001,22 @@ flags_identifyFlagAux (cstring s, bool quiet)
 
   if (cstring_firstChar (s) == 'I')
     {
-      return FLG_INCLUDEPATH; /* no space after -I */
+      return FLG_INCLUDEPATH; /* no space required after -I */
     }
 
   if (cstring_firstChar (s) == 'S') 
     {
-      return FLG_SPECPATH;    /* no space after -S */
+      return FLG_SPECPATH;    /* no space required after -S */
     }
 
   if (cstring_firstChar (s) == 'D') 
     {
-      return FLG_DEFINE;      /* no space after -D */
+      return FLG_DEFINE;      /* no space required after -D */
     }
 
   if (cstring_firstChar (s) == 'U') 
     {
-      return FLG_UNDEFINE;    /* no space after -D */
+      return FLG_UNDEFINE;    /* no space required after -D */
     }
 
   cflag = canonicalizeFlag (s);
@@ -1233,6 +1238,9 @@ flags_identifyFlagAux (cstring s, bool quiet)
 	  
 	  res = SKIP_FLAG;
 	}
+      else if (flags_isModeName (cflag))
+	{
+	  res = MODENAME_FLAG;
       else
 	{
 	  res = INVALID_FLAG;
@@ -1394,7 +1402,7 @@ listModes (void)
 # endif
 
 bool
-isMode (cstring s)
+flags_isModeName (cstring s)
 {
   allModes (modename)
     {
@@ -1541,3 +1549,289 @@ bool flagcode_isNamePrefixFlag (flagcode f)
     }
 }
 	
+bool flags_processFlags (bool inCommandLine, int argc, char **argv)
+{
+  int i;
+
+  for (i = 0; i < argc; i++)
+    {
+      char *thisarg = argv[i];
+      
+      if (*thisarg == '-' || *thisarg == '+')
+	{
+	  bool set = (*thisarg == '+');
+	  cstring flagname = cstring_fromChars (thisarg + 1); /* skip '-' or '+' */
+	  flagcode opt = flags_identifyFlag (flagname);
+
+	  DPRINTF (("Flag: %s", flagcode_unparse (opt)));
+	  
+	  if (flagcode_isInvalid (opt))
+	    {
+	      DPRINTF (("Error!"));
+	      voptgenerror (FLG_BADFLAG,
+			    message ("Unrecognized option: %s", 
+				     cstring_fromChars (thisarg)),
+			    g_currentloc);
+	    }
+	  else if (flagcode_isHelpFlag (opt))
+	    {
+	      if (inCommandLine)
+		{
+		  voptgenerror (FLG_BADFLAG,
+				message ("Help flag must be first on the command line: %s", 
+					 cstring_fromChars (thisarg)),
+				g_currentloc);
+		}
+	      else
+		{
+		  voptgenerror (FLG_BADFLAG,
+				message ("Help flags can only be used on the command line: %s", 
+					 cstring_fromChars (thisarg)),
+				g_currentloc);
+		}
+	    }
+	  else if (flagcode_isModeNameFlag (opt))
+	    {
+	      context_setMode (flagname);
+	    }
+	  else if (flagcode_isMessageControlFlag (opt))
+	    {
+	      /*
+	      ** Processed on first pass
+	      */
+	      
+	      if (flagcode_hasArgument (opt))
+		{
+		  ++i;
+		}
+	    }
+	  else
+	    {
+	      /*
+	      ** A normal control flag
+	      */
+
+	      context_userSetFlag (opt, set);
+	      
+	      if (flagcode_hasArgument (opt))
+		{
+		  if (flagcode_isPassThrough (opt)) /* -D or -U */
+		    { 
+		      /*
+		      ** Following space is optional
+		      */
+
+		      flags_recordPassThroughArg (flagname);
+
+		      passThroughArgs = cstringSList_add 
+			(passThroughArgs, cstring_fromChars (thisarg));
+		    }
+		  else if (flagcode_hasNumber (opt))
+			{
+			  if (++i < argc)
+			    {
+			      setValueFlag (opt, cstring_fromChars (argv[i]));
+			    }
+			  else
+			    {
+			      llfatalerror 
+				(message
+				 ("Flag %s must be followed by a number",
+				  flagcode_unparse (opt)));
+			    }
+			} 
+		      else if (flagcode_hasChar (opt))
+			{
+			  if (++i < argc)
+			    {
+			      setValueFlag (opt, cstring_fromChars (argv[i]));
+			    }
+			  else
+			    {
+			      llfatalerror 
+				(message
+				 ("Flag %s must be followed by a character",
+				  flagcode_unparse (opt)));
+			    }
+			} 
+		      else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
+			{
+			  cstring dir = cstring_suffix (cstring_fromChars (thisarg), 1); /* skip over I */
+			  
+			  switch (opt)
+			    {
+			    case FLG_INCLUDEPATH:
+			      cppAddIncludeDir (dir);
+			      /*@switchbreak@*/ break;
+			    case FLG_SPECPATH:
+			      /*@-mustfree@*/
+			      g_localSpecPath = cstring_toCharsSafe
+				(message ("%s%h%s", 
+					  cstring_fromChars (g_localSpecPath), 
+					  PATH_SEPARATOR,
+					  dir));
+			      /*@=mustfree@*/
+			      /*@switchbreak@*/ break;
+			      BADDEFAULT;
+			    }
+			}
+		      else if (flagcode_hasString (opt)
+			       || opt == FLG_INIT || opt == FLG_OPTF)
+			{
+			  if (++i < argc)
+			    {
+			      cstring arg = cstring_fromChars (argv[i]);
+			      
+			      if (opt == FLG_OPTF)
+				{
+				  ; /* -f already processed */
+				}
+			      else if (opt == FLG_INIT)
+				{
+# ifndef NOLCL
+				  initFile = inputStream_create 
+				    (arg, 
+				     cstring_makeLiteralTemp (LCLINIT_SUFFIX),
+				     FALSE);
+# endif
+				  break;
+				}
+			      else
+				{
+				  DPRINTF (("String flag: %s / %s",
+					    flagcode_unparse (opt), arg));
+				  if (opt == FLG_MTSFILE)
+				    {
+				      /*
+				      ** arg identifies mts files
+				      */
+				      cstring tmp =  message ("%s%s", arg, MTS_EXTENSION);
+				      addLarchPathFile (mtfiles, tmp);
+				      cstring_free (tmp);
+				      tmp = message ("%s%s", arg, XH_EXTENSION);
+				      addXHFile (xfiles, tmp);
+				      cstring_free (tmp);
+				    }
+				  else
+				    {
+				      setStringFlag (opt, cstring_copy (arg));
+				    }
+				}
+			    }
+			  else
+			    {
+			      llfatalerror 
+				(message
+				 ("Flag %s must be followed by a string",
+				  flagcode_unparse (opt)));
+			    }
+			}
+		      else
+			{
+			  /* no argument */
+			}
+		    }
+		}
+	    }
+	  else /* its a filename */
+	    {
+	      DPRINTF (("Adding filename: %s", thisarg));
+	      fl = cstringSList_add (fl, cstring_fromChars (thisarg));
+	    }
+	}
+    }
+}
+
+void flags_processHelp (int argc, char **argv)
+{
+  
+
+      if (showhelp)
+	{
+	  if (allhelp)
+	    {
+	      showHerald ();
+	    }
+	  
+	  allhelp = FALSE;
+	  
+	  if (*thisarg == '-' || *thisarg == '+')
+	    {
+	      thisarg++;	/* skip '-' */
+	    }
+	  if (mstring_equal (thisarg, "modes"))
+	    {
+	      llmsg (describeModes ());
+	    }
+	  else if (mstring_equal (thisarg, "vars")  || mstring_equal (thisarg, "env"))
+	    {
+	      describeVars ();
+	    }
+	  else if (mstring_equal (thisarg, "annotations"))
+	    {
+	      printAnnotations ();
+	    }
+	  else if (mstring_equal (thisarg, "parseerrors"))
+	    {
+	      printParseErrors ();
+	    }
+	  else if (mstring_equal (thisarg, "comments"))
+	    {
+	      printComments ();
+	    }
+	  else if (mstring_equal (thisarg, "prefixcodes"))
+	    {
+	      describePrefixCodes ();
+	    }
+	  else if (mstring_equal (thisarg, "references") 
+		   || mstring_equal (thisarg, "refs"))
+	    {
+	      printReferences ();
+	    }
+	  else if (mstring_equal (thisarg, "mail"))
+	    {
+	      printMail ();
+	    }
+	  else if (mstring_equal (thisarg, "maintainer")
+		   || mstring_equal (thisarg, "version"))
+	    {
+	      printMaintainer ();
+	    }
+	  else if (mstring_equal (thisarg, "flags"))
+	    {
+	      if (i + 1 < argc)
+		{
+		  char *next = argv[i + 1];
+		  
+		  if (specialFlagsHelp (next))
+		    {
+		      i++;
+		    }
+		  else
+		    {
+		      flagkind k = identifyCategory (cstring_fromChars (next));
+		      
+		      if (k != FK_NONE)
+			{
+			  printCategory (k);
+			  i++;
+			}
+		    }
+		}
+	      else
+		{
+		  printFlags ();
+		}
+	    }
+	  else
+	    {
+	      cstring s = describeFlag (cstring_fromChars (thisarg));
+	      
+	      if (cstring_isDefined (s))
+		{
+		  llmsg (s);
+		}
+	    }
+	}
+      else
+	{
