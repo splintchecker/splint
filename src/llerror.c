@@ -595,9 +595,12 @@ void
 llgenindentmsg (/*@only@*/ cstring s, fileloc fl)
 {
   cstring flstring = fileloc_unparse (fl);
-
+  int indentspaces = context_getLocIndentSpaces ();
   prepareMessage ();
-  (void) printIndentMessage (g_warningstream, message ("%q: %q", flstring, s), context_getIndentSpaces ());
+  
+  (void) printIndentMessage (g_warningstream, message ("%q: %q", flstring, s),
+			     indentspaces);
+
   closeMessage ();
 }
 

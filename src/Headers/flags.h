@@ -42,8 +42,8 @@ extern /*@only@*/ cstring  describeFlag (cstring p_flagname);
 extern flagcode flags_identifyFlag (cstring p_s) /*@modifies g_warningstream@*/ ;
 extern flagcode flags_identifyFlagQuiet (cstring p_s) /*@modifies nothing@*/ ;
 
-extern void setValueFlag (flagcode p_opt, cstring p_arg);
-extern void setStringFlag (flagcode p_opt, /*@only@*/ cstring p_arg);
+extern void flags_setValueFlag (flagcode p_opt, /*@only@*/ cstring p_arg);
+extern void flags_setStringFlag (flagcode p_opt, /*@only@*/ cstring p_arg);
 
 extern /*@observer@*/ cstring flagcode_unparse (flagcode p_code) /*@*/ ;
 extern int flagcode_valueIndex (flagcode p_f) /*@*/ ;

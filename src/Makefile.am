@@ -41,7 +41,7 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
-       pointers.c	
+       pointers.c cscannerHelp.c	
 
 SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
@@ -302,7 +302,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
-	  echo '* Expect 154 shift/reduce conflicts and 116 reduce/reduce conflicts.'; \
+	  echo '* Expect 157 shift/reduce conflicts and 117 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \

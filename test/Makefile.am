@@ -631,9 +631,9 @@ nullassign:
 
 .PHONY: numabstract
 numabstract:
-	-$(SPLINTR) numabstract.c -expect 8
-	-$(SPLINTR) numabstract.c +numabstractlit -expect 7
-	-$(SPLINTR) numabstract.c -numabstractcast -expect 7
+	-$(SPLINTR) numabstract.c -expect 11
+	-$(SPLINTR) numabstract.c +numabstractlit -expect 9
+	-$(SPLINTR) numabstract.c -numabstractcast -expect 10
 
 #
 # Before 2.4, expected one more because error was reported both as 

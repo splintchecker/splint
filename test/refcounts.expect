@@ -6,7 +6,7 @@ refcounts.c:24:10: New reference returned as temp reference: rp_create2()
 refcounts.c: (in function rp_f)
 refcounts.c:32:3: Kill reference parameter r2 (type rp) not released before
                      assignment: r2 = rp_temp()
-   refcounts.c:27:50: Storage r2 becomes newref
+   refcounts.c:27:50: Storage r2 becomes killref
 refcounts.c: (in function rp_ref)
 refcounts.c:48:10: Reference counted storage returned without modifying
                       reference count: x

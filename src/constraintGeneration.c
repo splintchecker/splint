@@ -1021,17 +1021,17 @@ static bool lltok_isBoolean_Op (lltok tok)
     I don't want to violate the abstraction
     maybe this should go in lltok.c */
   
-  if (lltok_isEq_Op (tok))
+  if (lltok_isEqOp (tok))
 	{
 	  return TRUE;
 	}
-      if (lltok_isAnd_Op (tok))
+      if (lltok_isAndOp (tok))
 
 	{
 
 	  return TRUE;	  	  
 	}
-   if (lltok_isOr_Op (tok))
+   if (lltok_isOrOp (tok))
 	{
 	  return TRUE;	  	
 	}
@@ -1077,7 +1077,7 @@ static void exprNode_booleanTraverse (/*@dependent@*/ exprNode e, /*@unused@*/ b
   
   /* arithmetic tests */
   
-  if (lltok_isEq_Op (tok))
+  if (lltok_isEqOp (tok))
     {
       cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
       e->trueEnsuresConstraints = constraintList_add(e->trueEnsuresConstraints, cons);
@@ -1120,7 +1120,7 @@ static void exprNode_booleanTraverse (/*@dependent@*/ exprNode e, /*@unused@*/ b
   
   /* Logical operations */
   
-  if (lltok_isAnd_Op (tok))
+  if (lltok_isAndOp (tok))
     {
       /* true ensures  */
       tempList = constraintList_copy (t1->trueEnsuresConstraints);
@@ -1137,7 +1137,7 @@ static void exprNode_booleanTraverse (/*@dependent@*/ exprNode e, /*@unused@*/ b
       /* evans - was constraintList_addList - memory leak detected by splint */
       e->falseEnsuresConstraints = constraintList_addListFree (e->falseEnsuresConstraints, tempList);
     }
-  else if (lltok_isOr_Op (tok))
+  else if (lltok_isOrOp (tok))
     {
       /* false ensures */
       tempList = constraintList_copy (t1->falseEnsuresConstraints);
@@ -1369,14 +1369,14 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       tok = (exprData_getUopTok (data));
       exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint);
       /*handle * pointer access */
-      if (lltok_isInc_Op (tok))
+      if (lltok_isIncOp (tok))
 	{
 	  DPRINTF(("doing ++(var)"));
 	  t1 = exprData_getUopNode (data);
 	  cons = constraint_makeMaxSetSideEffectPostIncrement (t1, sequencePoint);
 	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
 	}
-      else if (lltok_isDec_Op (tok))
+      else if (lltok_isDecOp (tok))
 	{
 	  DPRINTF(("doing --(var)"));
 	  t1 = exprData_getUopNode (data);
@@ -1395,7 +1395,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
 	    }
   	      e->requiresConstraints = constraintList_add(e->requiresConstraints, cons);
 	}
-      else if (lltok_isNot_Op (tok))
+      else if (lltok_isNotOp (tok))
 	/* ! expr */
 	{
 	  constraintList_free(e->trueEnsuresConstraints);
@@ -1432,14 +1432,14 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       exprNode_exprTraverse (exprData_getUopNode (data), TRUE, 
 			     definaterv, sequencePoint);
       
-      if (lltok_isInc_Op (exprData_getUopTok (data)))
+      if (lltok_isIncOp (exprData_getUopTok (data)))
 	{
 	  DPRINTF(("doing ++"));
 	  t1 = exprData_getUopNode (data);
 	  cons = constraint_makeMaxSetSideEffectPostIncrement (t1, sequencePoint);
 	  e->ensuresConstraints = constraintList_add (e->ensuresConstraints, cons);
 	}
-       if (lltok_isDec_Op (exprData_getUopTok (data)))
+       if (lltok_isDecOp (exprData_getUopTok (data)))
 	{
 	  DPRINTF(("doing --"));
 	  t1 = exprData_getUopNode (data);

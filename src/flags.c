@@ -1267,7 +1267,7 @@ flags_identifyFlagAux (cstring s, bool quiet)
   return res;
 }
 
-void setValueFlag (flagcode opt, cstring arg)
+void flags_setValueFlag (flagcode opt, cstring arg)
 {
   switch (opt)
     {
@@ -1276,6 +1276,7 @@ void setValueFlag (flagcode opt, cstring arg)
     case FLG_LIMIT:  
     case FLG_LINELEN:
     case FLG_INDENTSPACES:
+    case FLG_LOCINDENTSPACES:
     case FLG_BUGSLIMIT:
     case FLG_EXTERNALNAMELEN:
     case FLG_INTERNALNAMELEN:
@@ -1317,11 +1318,11 @@ void setValueFlag (flagcode opt, cstring arg)
 	  }
       }
       break;
-    BADDEFAULT;
+      BADDEFAULT;
     }
 }
 
-void setStringFlag (flagcode opt, /*@only@*/ cstring arg)
+void flags_setStringFlag (flagcode opt, /*@only@*/ cstring arg)
 {
   switch (opt)
     {
@@ -1787,7 +1788,7 @@ flags_processFlags (bool inCommandLine,
 		    {
 		      if (++i < argc)
 			{
-			  setValueFlag (opt, cstring_fromChars (argv[i]));
+			  flags_setValueFlag (opt, cstring_fromCharsNew (argv[i]));
 			}
 		      else
 			{
@@ -1803,7 +1804,7 @@ flags_processFlags (bool inCommandLine,
 		    {
 		      if (++i < argc)
 			{
-			  setValueFlag (opt, cstring_fromChars (argv[i]));
+			  flags_setValueFlag (opt, cstring_fromCharsNew (argv[i]));
 			}
 		      else
 			{
@@ -1863,7 +1864,7 @@ flags_processFlags (bool inCommandLine,
 				}
 			      else
 				{
-				  setStringFlag (opt, cstring_copy (arg));
+				  flags_setStringFlag (opt, cstring_copy (arg));
 				}
 			    }
 			}

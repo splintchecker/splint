@@ -4,6 +4,7 @@ mystrncat.c:12:13: Passed storage buffer not completely defined (*buffer is
                       undefined): mystrncat (buffer, ...)
 mystrncat.c:13:13: Passed storage b not completely defined (*b is undefined):
                       mystrncat (b, ...)
+   mystrncat.c:10:3: Storage *b allocated
 mystrncat.c:12:3: Possible out-of-bounds store:
     mystrncat(buffer, str, sizeof((buffer)) - 1)
     Unable to resolve constraint:

@@ -42,7 +42,7 @@ immutable.c: (in function immutable_create)
 immutable.c:7:6: Arrow access from possibly null pointer res: res->x
    immutable.c:5:19: Storage res may become null
 immutable.c:8:10: Fresh storage returned as unqualified (should be only): res
-   immutable.c:5:54: Fresh storage res allocated
+   immutable.c:5:54: Fresh storage res created
 
 Finished checking --- 2 code warnings, as expected
 

@@ -52,6 +52,7 @@ extern void yyerror (char *);
 # include "splintMacros.nf"
 # include "basic.h"
 # include "cscanner.h"
+# include "cscannerHelp.h"
 # include "cgrammar.h"
 # include "exprChecks.h"
 
@@ -505,13 +506,13 @@ metaStateConstraint
 ;
 
 metaStateSpecifier
-  : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
-    { cscanner_clearExpectingMetaStateName ();
+  : BufConstraintSrefExpr { cscannerHelp_expectingMetaStateName (); } TCOLON metaStateName
+    { cscannerHelp_clearExpectingMetaStateName ();
       $$ = metaStateSpecifier_create ($1, $4); 
       lltok_free ($3); 
     }
-  | CTOK_ELIPSIS { cscanner_expectingMetaStateName (); } TCOLON metaStateName
-    { cscanner_clearExpectingMetaStateName ();
+  | CTOK_ELIPSIS { cscannerHelp_expectingMetaStateName (); } TCOLON metaStateName
+    { cscannerHelp_clearExpectingMetaStateName ();
       $$ = metaStateSpecifier_createElipsis ($4); 
       lltok_free2 ($1, $3);
     }
@@ -871,7 +872,7 @@ primaryExpr
  | NEW_IDENTIFIER { $$ = exprNode_fromUIO ($1); } 
  | cconstantExpr
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
- | TYPE_NAME_OR_ID { $$ = exprNode_fromIdentifier (coerceId ($1)); } 
+ | TYPE_NAME_OR_ID { $$ = exprNode_fromIdentifier (cscannerHelp_coerceId ($1)); } 
  | QEXTENSION { $$ = exprNode_makeError (); }
  | TLPAREN { exprChecks_inCompoundStatementExpression (); } 
    compoundStmt TRPAREN 
@@ -1119,11 +1120,11 @@ typeDecl
 ;
 
 IsType
- : { g_expectingTypeName = TRUE; }
+ : { cscannerHelp_setExpectingTypeName (); }
 ;
 
 PushType
- : { g_expectingTypeName = TRUE; context_pushLoc (); }
+ : { cscannerHelp_setExpectingTypeName (); context_pushLoc (); }
 ;
 
 namedInitializerList
@@ -1462,7 +1463,7 @@ suSpc
 ;
 
 NotType
- : { g_expectingTypeName = FALSE; }
+: { cscannerHelp_clearExpectingTypeName (); }
 ;
 
 structDeclList
@@ -1528,7 +1529,7 @@ optNamedDecl
    { 
      qtype qt = qtype_unknown ();
      qtype_adjustPointers ($1, qt);
-     $$ = idDecl_create (cstring_copy (cscanner_observeLastIdentifier ()), qt);
+     $$ = idDecl_create (cstring_copy (cscannerHelp_observeLastIdentifier ()), qt);
    }
  | pointers optNamedDecl 
    { $$ = $2; qtype_adjustPointers ($1, idDecl_getTyp ($$)); }
@@ -1944,7 +1945,7 @@ iterArgList
 iterArgExpr
   : assignIterExpr  { $$ = exprNode_iterExpr ($1); }
   | id              { $$ = exprNode_iterId ($1); }
-  | TYPE_NAME_OR_ID { uentry ue = coerceIterId ($1);
+  | TYPE_NAME_OR_ID { uentry ue = cscannerHelp_coerceIterId ($1);
 
 		      if (uentry_isValid (ue)) 
 			{
@@ -1952,7 +1953,7 @@ iterArgExpr
 			}
 		      else
 			{
-			  $$ = exprNode_iterNewId (cstring_copy (cscanner_observeLastIdentifier ()));
+			  $$ = exprNode_iterNewId (cstring_copy (cscannerHelp_observeLastIdentifier ()));
 			}
 		    }
   | NEW_IDENTIFIER  { $$ = exprNode_iterNewId ($1); }
@@ -2191,7 +2192,7 @@ void yyerror (/*@unused@*/ char *s)
 	    }
 	}
 
-      cscanner_swallowMacro ();
+      cscannerHelp_swallowMacro ();
       context_exitAllClausesQuiet ();
     }
   else

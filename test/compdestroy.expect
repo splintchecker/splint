@@ -17,7 +17,7 @@ Finished checking --- 2 code warnings, as expected
 compdestroy.c: (in function sip_free)
 compdestroy.c:16:13: Possibly dead storage x->ips[] passed as out parameter:
                         x->ips[i]
-   compdestroy.c:15:13: Storage x->ips[] becomes probably dead
+   compdestroy.c:15:13: Storage x->ips[] possibly released
 compdestroy.c:19:9: Only storage x->ips[] (type oip) derived from released
                        storage may not have been released: x->ips
 compdestroy.c: (in function sip_free2)
@@ -29,7 +29,7 @@ Finished checking --- 3 code warnings, as expected
 compdestroy.c: (in function sip_free)
 compdestroy.c:16:13: Possibly dead storage x->ips[] passed as out parameter:
                         x->ips[i]
-   compdestroy.c:15:13: Storage x->ips[] becomes probably dead
+   compdestroy.c:15:13: Storage x->ips[] possibly released
 compdestroy.c:19:9: Only storage x->ips[] (type oip) derived from released
                        storage may not have been released: x->ips
 compdestroy.c: (in function sip_free2)

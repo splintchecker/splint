@@ -24,10 +24,6 @@ empset.c:135: Variable e declared but not used
 ereftab.c: (in function ereftab_lookup)
 ereftab.c:34: Undocumented modification of t possible from call to
                  erc_iterStart: erc_iterStart(t)
-erc.c: (in function erc_member)
-erc.c:47: Operands of == are abstract type (eref): tmpc->val == er
-erc.c: (in function erc_delete)
-erc.c:78: Operands of == are abstract type (eref): elem->val == er
 erc.c: (in function erc_sprint)
 erc.c:141: Function malloc expects arg 1 to be size_t gets int:
               erc_size(c) * (employeePrintSize + 1) + 1
@@ -47,7 +43,7 @@ drive.c:118: Buffer overflow possible with sprintf.  Recommend using snprintf
                 instead: sprintf
 drive.c:123: Return value (type db_status) ignored: hire(e)
 
-Finished checking --- 21 code warnings, as expected
+Finished checking --- 19 code warnings, as expected
 
 employee.h:2: Name EMPLOYEE_H is reserved for future library extensions. Macros
     beginning with E and a digit or uppercase letter may be added to <errno.h>.
@@ -278,14 +274,15 @@ erc.c:13: Argument to exit has implementation defined behavior: 1
 erc.c:18: Null storage c->vals derivable from return value: c
    erc.c:16: Storage c->vals becomes null
 erc.c:18: Fresh storage returned as unqualified (should be only): c
-   erc.c:8: Fresh storage c allocated
+   erc.c:8: Fresh storage c created
 erc.c: (in function erc_clear)
 erc.c:34: Function returns with null storage derivable from parameter c->vals
    erc.c:32: Storage c->vals becomes null
 erc.c: (in function erc_final)
 erc.c:39: Implicitly temp storage c passed as only param: free (c)
 erc.c: (in function erc_member)
-erc.c:47: Operands of == are abstract type (eref): tmpc->val == er
+erc.c:47: Object equality comparison (==) on objects of abstract type (eref):
+             tmpc->val == er
 erc.c:47: Body of if statement is not a block: return TRUE
 erc.c:47: Body of for statement is not a block:
              if (tmpc->val == er) return TRUE
@@ -293,26 +290,28 @@ erc.c: (in function erc_insert)
 erc.c:55: Parameter to sizeof is type ercElem: sizeof(ercElem)
 erc.c:60: Argument to exit has implementation defined behavior: 1
 erc.c: (in function erc_delete)
-erc.c:78: Operands of == are abstract type (eref): elem->val == er
+erc.c:78: Object equality comparison (==) on objects of abstract type (eref):
+             elem->val == er
 erc.c:83: Implicitly only storage prev->next (type struct _elem *) not released
              before assignment: prev->next = elem->next
 erc.c:84: Clauses exit with elem referencing implicitly only storage in true
              branch, local storage in false branch
-   erc.c:81: Storage elem becomes implicitly only
+   erc.c:81: Storage elem becomes implicitly only (through alias c->vals)
 erc.c:87: Released storage c->vals reachable from parameter at return point
-   erc.c:85: Storage c->vals is released
+   erc.c:85: Storage c->vals released
 erc.c: (in function erc_iterStart)
 erc.c:98: Parameter to sizeof is type ercList: sizeof(ercList)
 erc.c:103: Argument to exit has implementation defined behavior: 1
 erc.c:107: Fresh storage returned as unqualified (should be only): result
-   erc.c:98: Fresh storage result allocated
+   erc.c:98: Fresh storage result created
 erc.c:108: Suspect object listed in modifies of erc_iterStart not modified: c
    erc.lcl:49: Specification of erc_iterStart
 erc.c: (in function erc_yield)
 erc.c:117: Implicitly temp storage it passed as only param: free (it)
 erc.c:117: Unreachable code: free(it)
 erc.c:118: Variable it is released in true branch, but live in continuation.
-   erc.c:117: Storage it is released
+   erc.c:118: in true branch:
+   erc.c:117: Storage it released
 erc.c:121: Only storage *it->next assigned to unqualified: *(it) = (*it)->next
 erc.c: (in function erc_join)
 erc.c:130: Body of for statement is not a block: erc_insert(c1, tmpc->val);
@@ -323,7 +322,7 @@ erc.c:146: Argument to exit has implementation defined behavior: 1
 erc.c:151: Undocumented modification of c possible from call to erc_iterStart:
               erc_iterStart(c)
 erc.c:159: Fresh storage returned as unqualified (should be only): result
-   erc.c:140: Fresh storage result allocated
+   erc.c:140: Fresh storage result created
 erc.h: (in macro erc_choose)
 erc.h:15: Macro parameter used without parentheses: c
 erc.h: (in macro erc_initMod)
@@ -630,7 +629,7 @@ compdef                      3           0
 incondefs                    0           1
 sizeoftype                   7           0
 formalarray                  0          24
-abstract                     2           0
+abstractcompare              2           0
 mustfreeonly                 3           0
 usereleased                  1           0
 compdestroy                  1           0

@@ -1,7 +1,7 @@
 
 sample.c:11: Fresh storage x not released before
                 return
-   sample.c:5: Fresh storage x allocated
+   sample.c:5: Fresh storage x created
 sample.c:5: Variable x declared but not used
 
 Finished checking --- 2 code warnings, as expected
@@ -63,7 +63,7 @@ only.c:13: Variable x used after being released
 only.c:14: Implicitly temp storage z returned as only:
               z
 only.c:14: Fresh storage m not released before return
-   only.c:9: Fresh storage m allocated
+   only.c:9: Fresh storage m created
 
 Finished checking --- 6 code warnings, as expected
 
@@ -71,10 +71,12 @@ stack.c:12: Stack-allocated storage &loc reachable
                from return value: &loc
 stack.c:12: Stack-allocated storage *x reachable from
                parameter x
-   stack.c:10: Storage *x becomes stack
+   stack.c:10: Storage *x becomes stack-allocated
+   storage
 stack.c:12: Stack-allocated storage glob reachable
                from global glob
-   stack.c:9: Storage glob becomes stack
+   stack.c:9: Storage glob becomes stack-allocated
+   storage
 
 Finished checking --- 3 code warnings, as expected
 
@@ -95,9 +97,10 @@ exposure.c:6: Return value exposes rep of
                  employee: e->name
 exposure.c:6: Released storage e->name reachable
                  from parameter at return point
-   exposure.c:6: Storage e->name is released
+   exposure.c:6: Storage e->name released
 exposure.c:23: Suspect modification of observer
                   name: *name = toupper(*name)
+   exposure.c:22: Storage *name becomes observer
 
 Finished checking --- 4 code warnings, as
 expected

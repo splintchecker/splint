@@ -12,14 +12,14 @@ union.c:66:3: Implicitly temp storage p assigned to implicitly only:
                  u->st.ip = p
 union.c: (in function ut_mangle1)
 union.c:73:2: Released storage u->ox reachable from parameter at return point
-   union.c:72:9: Storage u->ox is released
+   union.c:72:9: Storage u->ox released
 union.c: (in function ut_mangle2)
 union.c:78:2: Released storage u->st.ip reachable from parameter at return
                  point
-   union.c:77:9: Storage u->st.ip is released
+   union.c:77:9: Storage u->st.ip released
 union.c: (in function ut_mangle3)
 union.c:84:2: Released storage u->st.ip reachable from parameter at return
                  point
-   union.c:82:9: Storage u->st.ip is released
+   union.c:82:9: Storage u->st.ip released
 
 Finished checking --- 8 code warnings, as expected

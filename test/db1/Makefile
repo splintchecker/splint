@@ -25,8 +25,10 @@ test:
 ### Removed +showscan, produces different results on different platforms
 ###
 
+### evans 2002-12-17: 2 fewer weak errors because of -abstractcompare default in weak
+
 check: $(LCSFILES)
-	-$(SPLINT) -showcol -weak $(MODULES) -expect 21
+	-$(SPLINT) -showcol -weak $(MODULES) -expect 19
 	-$(SPLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 338
 
 # evans 2002-07-09: 5 bufferoverflowhigh warnings for using sprintf

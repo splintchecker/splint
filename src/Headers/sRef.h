@@ -640,6 +640,10 @@ extern int sRef_getLen(sRef p_s);
 #define sRef_getLen(p_s) \
    ((p_s)->bufinfo.len)
 
+extern /*@falsewhennull@*/ bool sRef_hasExpInfoLoc (sRef) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_hasStateInfoLoc (sRef) /*@*/ ;
+extern /*@falsewhennull@*/ bool sRef_hasAliasInfoLoc (sRef) /*@*/ ;
+
 extern bool sRef_hasBufStateInfo(sRef p_s);
 # define sRef_hasBufStateInfo(p_s) \
     (sRef_isValid(p_s)) 

@@ -154,6 +154,9 @@ extern int context_getLineLen (void) /*@*/ ;
 extern int context_getIndentSpaces (void) /*@*/ ;
 # define context_getIndentSpaces() ((int)context_getValue(FLG_INDENTSPACES))
 
+extern int context_getLocIndentSpaces (void) /*@*/ ;
+# define context_getLocIndentSpaces() ((int)context_getValue(FLG_LOCINDENTSPACES))
+
 extern int context_getValue (flagcode p_flag) /*@*/ ;
 extern void context_setValueAndFlag (flagcode p_flag, int p_val) 
    /*@modifies internalState@*/ ;

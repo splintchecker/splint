@@ -15,6 +15,6 @@ outparam.c:44:3: Variable t3 used before definition
 outparam.c:47:5: Arrow access from possibly null pointer t4: t4->a
    outparam.c:46:8: Storage t4 may become null
 outparam.c:48:13: Fresh storage t4 not released before return
-   outparam.c:46:3: Fresh storage t4 allocated
+   outparam.c:46:3: Fresh storage t4 created
 
 Finished checking --- 12 code warnings, as expected

@@ -101,10 +101,7 @@ void stateValue_updateValueLoc (stateValue s, int value, fileloc loc)
 	    fileloc_unparse (loc)));
 
   s->value = value;
-  
-  if (fileloc_isDefined (loc)) {
-    s->info = stateInfo_updateLoc (s->info, loc);
-  }
+  s->info = stateInfo_updateLoc (s->info, SA_CHANGED, loc);
 }
 		  
 void stateValue_update (stateValue res, stateValue val)

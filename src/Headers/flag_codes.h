@@ -27,7 +27,7 @@ typedef enum
 # define NUMFLAGS       (LAST_FLAG)
 
 /*@constant int NUMVALUEFLAGS; @*/
-# define NUMVALUEFLAGS       14
+# define NUMVALUEFLAGS       15
 
 /*@constant int NUMSTRINGFLAGS; @*/
 # define NUMSTRINGFLAGS      28

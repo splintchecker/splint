@@ -517,13 +517,13 @@ constraintExpr constraintExpr_makeExprNode (exprNode e)
    case XPR_PREOP:
       t = exprData_getUopNode (data);
       tok =  exprData_getUopTok (data);
-      if (lltok_isInc_Op (tok) )
+      if (lltok_isIncOp (tok))
 	{
 	  constraintExpr temp;
 	  temp = constraintExpr_makeExprNode(t);
 	  ret = constraintExpr_makeIncConstraintExpr(temp);
 	}
-      else if (lltok_isDec_Op (tok) )
+      else if (lltok_isDecOp (tok))
 	{
 	  constraintExpr temp;
 	  temp = constraintExpr_makeExprNode(t);

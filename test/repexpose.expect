@@ -19,7 +19,7 @@ repexpose.c:19:12: Storage *globstring reachable from global is kept (should be
 repexpose.c: (in function abst_name)
 repexpose.c:26:18: Released storage a->name reachable from parameter at return
                       point
-   repexpose.c:26:10: Storage a->name is released
+   repexpose.c:26:10: Storage a->name released
 repexpose.c: (in function abst_parent)
 repexpose.c:45:15: Dependent storage b->parent returned as only: b->parent
 repexpose.c:45:25: Only storage a not released before return
@@ -52,7 +52,7 @@ repexpose.c: (in function abst_name)
 repexpose.c:26:10: Function returns reference to parameter a: a->name
 repexpose.c:26:18: Released storage a->name reachable from parameter at return
                       point
-   repexpose.c:26:10: Storage a->name is released
+   repexpose.c:26:10: Storage a->name released
 repexpose.c: (in function abst_aval)
 repexpose.c:37:10: Function returns reference to parameter a: (&(a->val))
 repexpose.c: (in function abst_parent)
@@ -102,7 +102,7 @@ repexpose.c:26:10: Function returns reference to parameter a: a->name
 repexpose.c:26:10: Return value exposes rep of abst: a->name
 repexpose.c:26:18: Released storage a->name reachable from parameter at return
                       point
-   repexpose.c:26:10: Storage a->name is released
+   repexpose.c:26:10: Storage a->name released
 repexpose.c: (in function abst_aval)
 repexpose.c:37:10: Function returns reference to parameter a: (&(a->val))
 repexpose.c:37:10: Return value exposes rep of abst: (&(a->val))

@@ -189,7 +189,8 @@ static void sinfo_free (/*@special@*/ /*@temp@*/ /*@notnull@*/ sRef p_s)
 static /*@null@*/ sinfo sinfo_copy (/*@notnull@*/ sRef p_s) /*@*/ ;
 static void sRef_setPartsFromUentry (sRef p_s, uentry p_ue)
    /*@modifies p_s@*/ ;
-static bool checkDeadState (/*@notnull@*/ sRef p_el, bool p_tbranch, fileloc p_loc);
+static bool checkDeadState (/*@notnull@*/ sRef p_el, /*@null@*/ sRef p_e2, 
+			    bool p_tbranch, fileloc p_loc);
 static /*@dependent@*/ sRef sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef p_t) /*@*/ ;
 
 static void 
@@ -655,22 +656,19 @@ static void sRef_setTypeState (sRef s)
     }
 }
 
-static bool
-  sRef_hasAliasInfoLoc (sRef s)
+bool sRef_hasAliasInfoLoc (sRef s)
 {
   return (sRef_isReasonable (s) && (s->aliasinfo != NULL)
 	  && (fileloc_isDefined (s->aliasinfo->loc)));
 }
 
-static /*@falsewhennull@*/ bool
-sRef_hasStateInfoLoc (sRef s)
+/*@falsewhennull@*/ bool sRef_hasStateInfoLoc (sRef s)
 {
   return (sRef_isReasonable (s) && (s->definfo != NULL) 
 	  && (fileloc_isDefined (s->definfo->loc)));
 }
 
-static /*@falsewhennull@*/ bool
-sRef_hasExpInfoLoc (sRef s)
+/*@falsewhennull@*/ bool sRef_hasExpInfoLoc (sRef s)
 {
   return (sRef_isReasonable (s) 
 	  && (s->expinfo != NULL) && (fileloc_isDefined (s->expinfo->loc)));
@@ -2459,9 +2457,11 @@ static /*@exposed@*/ sRef sRef_undumpBody (char **c)
   switch (p)
     {
     case 'g':
-      return (sRef_makeGlobal (usymId_fromInt (reader_getInt (c)), ctype_unknown, stateInfo_currentLoc ()));
+      return (sRef_makeGlobal (usymId_fromInt (reader_getInt (c)), 
+			       ctype_unknown, stateInfo_currentLoc ()));
     case 'p':
-      return (sRef_makeParam (reader_getInt (c), ctype_unknown, stateInfo_makeLoc (g_currentloc)));
+      return (sRef_makeParam (reader_getInt (c), ctype_unknown, 
+			      stateInfo_makeLoc (g_currentloc, SA_DECLARED)));
     case 'r':
       return (sRef_makeResult (ctype_undump (c)));
     case 'a':
@@ -3381,7 +3381,8 @@ static bool sRef_isZerothArrayFetch (/*@notnull@*/ sRef s)
 	}
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+      s->state = context_createValueTable (s, 
+					   stateInfo_makeLoc (g_currentloc, SA_CREATED));
       return s;
     }
 }
@@ -3554,7 +3555,7 @@ sRef_makeObject (ctype o)
   s->info = (sinfo) dmalloc (sizeof (*s->info));
   s->info->object = o;
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
   return s;
 }
 
@@ -3573,7 +3574,7 @@ sRef sRef_makeExternal (sRef t)
   s->type = t->type;
   s->info->ref = t; /* sRef_copy (t); */ /*@i32 was exposed@*/
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_DECLARED));
   return s;
 }
 
@@ -3589,7 +3590,7 @@ sRef sRef_makeExternal (sRef t)
       
       s->type = t->type;
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
       return s;
     }
   else
@@ -3727,6 +3728,7 @@ sRef_mergeStateQuietReverse (/*@dependent@*/ sRef res, /*@dependent@*/ sRef othe
       if (other->defstate != SS_UNKNOWN)
 	{
 	  res->defstate = other->defstate;
+	  res->definfo = stateInfo_update (res->definfo, other->definfo);
 	}
     }
 
@@ -3740,7 +3742,8 @@ sRef_mergeStateQuietReverse (/*@dependent@*/ sRef res, /*@dependent@*/ sRef othe
     }
   else
     {
-      if (sRef_getNullState (other) != NS_UNKNOWN && sRef_getNullState (other) != sRef_getNullState (res))
+      if (sRef_getNullState (other) != NS_UNKNOWN 
+	  && sRef_getNullState (other) != sRef_getNullState (res))
 	{
 	  changed = TRUE;
 	  sRef_updateNullState (res, other);
@@ -3862,6 +3865,7 @@ sRef_mergeStateAux (/*@notnull@*/ sRef res, /*@notnull@*/ sRef other,
 	      res->defstate = SS_DEAD;
 	    }
 	  
+	  res->definfo = stateInfo_update (res->definfo, other->definfo);
 	  sRef_clearDerived (other);
 	  sRef_clearDerived (res);
 	}
@@ -4128,13 +4132,16 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 		       el->defstate == SS_PDEFINED)
 		{
 		  el->defstate = SS_ALLOCATED;
+		  el->definfo = stateInfo_update (el->definfo, e2->definfo);
 		  sRef_clearDerived (el);
 		}
 	      else if ((el->defstate == SS_DEAD || sRef_isKept (el)) &&
 		       (e2->defstate == SS_DEFINED && !sRef_isKept (e2)))
 		{
-		  
-		  if (checkDeadState (el, TRUE, loc))
+		  DPRINTF (("Checking dead: %s / %s", sRef_unparseFull (el),
+			    sRef_unparseFull (e2)));
+
+		  if (checkDeadState (el, e2, TRUE, loc))
 		    {
 		      if (sRef_isThroughArrayFetch (el))
 			{
@@ -4146,8 +4153,10 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 	      else if ((e2->defstate == SS_DEAD || sRef_isKept (e2)) &&
 		       (el->defstate == SS_DEFINED && !sRef_isKept (el)))
 		{
-		  
-		  if (checkDeadState (e2, FALSE, loc))
+		  DPRINTF (("Checking dead: %s / %s", sRef_unparseFull (el),
+			    sRef_unparseFull (e2)));
+
+		  if (checkDeadState (e2, el, FALSE, loc))
 		    {
 		      if (sRef_isThroughArrayFetch (el))
 			{
@@ -4161,12 +4170,14 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 		{
 		  DPRINTF (("set pdefined: %s", sRef_unparseFull (el)));
 		  el->defstate = SS_PDEFINED;
+		  el->definfo = stateInfo_update (el->definfo, e2->definfo);
 		}
 	      else if (e2->defstate == SS_DEFINED &&
 		       el->defstate == SS_PDEFINED)
 		{
 		  DPRINTF (("set pdefined: %s", sRef_unparseFull (e2)));
 		  e2->defstate = SS_PDEFINED;
+		  e2->definfo = stateInfo_update (e2->definfo, el->definfo);
 		}
 	      else
 		{
@@ -4205,7 +4216,8 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 	    }
 	  else /* not defined */
 	    {
-	      (void) checkDeadState (el, TRUE, loc);
+	      DPRINTF (("Checking dead: %s", sRef_unparseFull (el)));
+	      (void) checkDeadState (el, e2, TRUE, loc);
 	    }
 	}
     } end_sRefSet_allElements;
@@ -4214,7 +4226,8 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
     {
       if (sRef_isReasonable (el))
 	{
-	  (void) checkDeadState (el, FALSE, loc);
+	  DPRINTF (("Checking dead: %s", sRef_unparseFull (el)));
+	  (void) checkDeadState (el, sRef_undefined, FALSE, loc);
 	}
     } end_sRefSet_allElements;
     
@@ -4226,7 +4239,7 @@ sRef_mergeDerivs (/*@only@*/ sRefSet res, sRefSet other,
 ** Returns TRUE is there is an error.
 */
 
-static bool checkDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
+static bool checkDeadState (/*@notnull@*/ sRef el, sRef e2, bool tbranch, fileloc loc)
 {
   /*
   ** usymtab_isGuarded --- the utab should still be in the
@@ -4243,7 +4256,8 @@ static bool checkDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
 
   
   if ((sRef_isDead (el) || sRef_isKept (el))
-      && !sRef_isDeepUnionField (el) && !sRef_isThroughArrayFetch (el))
+      && !sRef_isDeepUnionField (el) 
+      && !sRef_isThroughArrayFetch (el))
     {
        
       if (!tbranch)
@@ -4278,10 +4292,21 @@ static bool checkDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
 	      sRef_showStateInfo (el);
 	    }
 
+	  if (sRef_isValid (e2))
+	    {
+	      if (sRef_isKept (e2))
+		{
+		  sRef_showAliasInfo (e2);      
+		}
+	      else
+		{
+		  sRef_showStateInfo (e2);
+		}
+	    }
+
 	  /* prevent further errors */
 	  el->defstate = SS_UNKNOWN; 
-	  sRef_setAliasKind (el, AK_ERROR, fileloc_undefined);
-	  
+	  sRef_setAliasKind (el, AK_ERROR, fileloc_undefined);	  
 	  return FALSE;
 	}
     }
@@ -4292,14 +4317,13 @@ static bool checkDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
 static void 
 checkDerivDeadState (/*@notnull@*/ sRef el, bool tbranch, fileloc loc)
 {
-  
-  if (checkDeadState (el, tbranch, loc))
+  if (checkDeadState (el, sRef_undefined, tbranch, loc))
     {
       sRefSet_allElements (el->deriv, t)
 	{
 	  if (sRef_isReasonable (t))
 	    {
-	      	      checkDerivDeadState (t, tbranch, loc);
+	      checkDerivDeadState (t, tbranch, loc);
 	    }
 	} end_sRefSet_allElements;
     }
@@ -4342,7 +4366,7 @@ static sRefSet
 	    {
 	      if (!opt)
 		{
-		  		  checkDerivDeadState (el, (cl == FALSECLAUSE), loc);
+		  checkDerivDeadState (el, (cl == FALSECLAUSE), loc);
 		}
 
 	      ret = sRefSet_insert (ret, el);
@@ -4394,6 +4418,8 @@ sRef sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef a, /*@exposed@*/ sRef b)
       if (a->defstate == b->defstate)
 	{
 	  s->defstate = a->defstate;
+	  s->definfo = stateInfo_update (s->definfo, a->definfo);
+	  s->definfo = stateInfo_update (s->definfo, b->definfo);
 	}
       else
 	{
@@ -4406,7 +4432,7 @@ sRef sRef_makeConj (/*@exposed@*/ /*@returned@*/ sRef a, /*@exposed@*/ sRef b)
       s->aliaskind = alkind_resolve (a->aliaskind, b->aliaskind);
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_MERGED));
       return s;
     }
   else
@@ -4506,7 +4532,7 @@ sRef_makeResult (ctype c)
   s->aliaskind = AK_UNKNOWN;
   sRef_setNullStateN (s, NS_UNKNOWN);
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_DECLARED));
 
   DPRINTF (("Result: [%p] %s", s, sRef_unparseFull (s)));
   return s;
@@ -4591,10 +4617,11 @@ sRef_makeUnsafe (sRef s)
 {
   if (sRef_isInvalid (s)) return (cstring_undefined);
 
-  return (message ("[%p] %q - %q [%s] { %q } < %q >", 
+  return (message ("[%p] %q - %q { %q } [%s] { %q } < %q >", 
 		   s,
 		   sRef_unparseDebug (s), 
 		   sRef_unparseState (s),
+		   stateInfo_unparse (s->definfo),
 		   exkind_unparse (s->oexpkind),
 		   sRefSet_unparseDebug (s->deriv),
 		   valueTable_unparse (s->state)));
@@ -4983,7 +5010,7 @@ void sRef_setAliasKind (sRef s, alkind kind, fileloc loc)
       if ((kind != s->aliaskind && kind != s->oaliaskind)
 	  && fileloc_isDefined (loc))
 	{
-	  s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+	  s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, stateAction_fromAlkind (kind), loc);
 	}
       
       s->aliaskind = kind;
@@ -5055,7 +5082,7 @@ void sRef_setExKind (sRef s, exkind exp, fileloc loc)
     {
       if (s->expkind != exp)
 	{
-	  s->expinfo = stateInfo_updateLoc (s->expinfo, loc);
+	  s->expinfo = stateInfo_updateLoc (s->expinfo, stateAction_fromExkind (exp), loc);
 	}
       
       s->expkind = exp;
@@ -5115,11 +5142,7 @@ void sRef_setUndefined (sRef s, fileloc loc)
   if (sRef_isReasonable (s))
     {
       s->defstate = SS_UNDEFINED;
-
-      if (fileloc_isDefined (loc))
-	{
-	  s->definfo = stateInfo_updateLoc (s->definfo, loc);
-	}
+      s->definfo = stateInfo_updateLoc (s->definfo, SA_UNDEFINED, loc);
 
       sRef_clearDerived (s);
     }
@@ -5132,11 +5155,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 
   DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
 
-  if (s->defstate != SS_DEFINED && fileloc_isDefined (loc))
-    {
-      s->definfo = stateInfo_updateLoc (s->definfo, loc);
-    }
-  
+  s->definfo = stateInfo_updateLoc (s->definfo, SA_DEFINED, loc);  
   s->defstate = SS_DEFINED;
   
   DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
@@ -5236,7 +5255,7 @@ static void sRef_setDefinedAux (sRef s, fileloc loc, bool clear)
 	  el->defstate = SS_DEFINED;
 	} end_sRefSet_elements ;
     }
-
+  
   DPRINTF (("Set defined: %s", sRef_unparseFull (s)));
 }
 
@@ -5341,12 +5360,7 @@ void sRef_setPdefined (sRef s, fileloc loc)
 	  return;
 	}
       
-      if (s->defstate != SS_PDEFINED && fileloc_isDefined (loc))
-	{
-	  s->definfo = stateInfo_updateLoc (s->definfo, loc);
-	}
-
-      DPRINTF (("set pdefined: %s", sRef_unparseFull (s)));
+      s->definfo = stateInfo_updateLoc (s->definfo, SA_PDEFINED, loc);
       s->defstate = SS_PDEFINED;
       
       /* e.g., if x is allocated, *x = 3 defines x */
@@ -5374,13 +5388,16 @@ static void sRef_setStateAux (sRef s, sstate ss, fileloc loc)
 {
   sRef_checkMutable (s);
 
+  DPRINTF (("Set state: %s => %s", sRef_unparseFull (s), sstate_unparse (ss)));
+
   if (sRef_isReasonable (s))
     {
       /* if (s->defstate == SS_RELDEF) return; */
 
       if (s->defstate != ss && fileloc_isDefined (loc))
 	{
-	  s->definfo = stateInfo_updateLoc (s->definfo, loc);
+	  s->definfo = stateInfo_updateLoc (s->definfo, 
+					    stateAction_fromSState (ss), loc);
 	}
 
       s->defstate = ss;
@@ -5424,11 +5441,7 @@ static void sRef_setAllocatedShallow (sRef s, fileloc loc)
       if (s->defstate == SS_DEAD || s->defstate == SS_UNDEFINED)
 	{
 	  s->defstate = SS_ALLOCATED;
-	  
-	  if (fileloc_isDefined (loc))
-	    {
-	      s->definfo = stateInfo_updateLoc (s->definfo, loc);
-	    }
+	  s->definfo = stateInfo_updateLoc (s->definfo, SA_ALLOCATED, loc);
 	}
     }
 }
@@ -5458,7 +5471,7 @@ void sRef_setShared (sRef s, fileloc loc)
     {
       if (s->aliaskind != AK_SHARED && fileloc_isDefined (loc))
 	{
-	  s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+	  s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_SHARED, loc);
 	}
 
       s->aliaskind = AK_SHARED;
@@ -5473,7 +5486,7 @@ void sRef_setLastReference (sRef s, /*@exposed@*/ sRef ref, fileloc loc)
   if (sRef_isReasonable (s))
     {
       s->aliaskind = sRef_getAliasKind (ref);
-      s->aliasinfo = stateInfo_updateRefLoc (s->aliasinfo, ref, loc);
+      s->aliasinfo = stateInfo_updateRefLoc (s->aliasinfo, ref, stateAction_fromAlkind (s->aliaskind), loc);
     }
 }
 
@@ -5486,7 +5499,7 @@ void sRef_setNullStateAux (/*@notnull@*/ sRef s, nstate ns, fileloc loc)
 
   if (fileloc_isDefined (loc))
     {
-      s->nullinfo = stateInfo_updateLoc (s->nullinfo, loc);
+      s->nullinfo = stateInfo_updateLoc (s->nullinfo, stateAction_fromNState (ns), loc);
     }
 }
 
@@ -5622,7 +5635,7 @@ void sRef_setOnly (sRef s, fileloc loc)
     {
       sRef_checkMutable (s);
       s->aliaskind = AK_ONLY;
-      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_ONLY, loc);
     }
 }
 
@@ -5633,7 +5646,7 @@ void sRef_setDependent (sRef s, fileloc loc)
       sRef_checkMutable (s);
       DPRINTF (("Setting dependent: %s", sRef_unparseFull (s)));
       s->aliaskind = AK_DEPENDENT;
-      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_DEPENDENT, loc);
     }
 }
 
@@ -5643,7 +5656,7 @@ void sRef_setOwned (sRef s, fileloc loc)
     {
       sRef_checkMutable (s);
       s->aliaskind = AK_OWNED;
-      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_OWNED, loc);
     }
 }
 
@@ -5669,7 +5682,7 @@ void sRef_setKept (sRef s, fileloc loc)
 
       sRef_checkMutable (s);
       s->aliaskind = AK_KEPT;
-      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_KEPT, loc);
     }
 }
 
@@ -5705,7 +5718,7 @@ void sRef_setFresh (sRef s, fileloc loc)
     {
       sRef_checkMutable (s);
       s->aliaskind = AK_FRESH;
-      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, loc);
+      s->aliasinfo = stateInfo_updateLoc (s->aliasinfo, SA_CREATED, loc);
       DPRINTF (("SetFresh: %s", sRef_unparseFull (s)));
     }
 }
@@ -5735,8 +5748,8 @@ void sRef_kill (sRef s, fileloc loc)
       
       s->aliaskind = s->oaliaskind;
       s->defstate = SS_DEAD;
-      s->definfo = stateInfo_updateLoc (s->definfo, loc);
-
+      s->definfo = stateInfo_updateLoc (s->definfo, SA_KILLED, loc);
+      DPRINTF (("State info: %s", stateInfo_unparse (s->definfo)));
       sRef_clearDerived (s);
     }
 }
@@ -5765,7 +5778,9 @@ void sRef_maybeKill (sRef s, fileloc loc)
       
       s->aliaskind = s->oaliaskind;
       s->defstate = SS_HOFFA; 
-      s->definfo = stateInfo_updateLoc (s->definfo, loc);
+      s->definfo = stateInfo_updateLoc (s->definfo, SA_PKILLED, loc);
+      DPRINTF (("State info: %s / %s", sRef_unparse (s), 
+		stateInfo_unparse (s->definfo)));
       sRef_clearDerived (s); 
     }
 
@@ -5884,7 +5899,7 @@ sRef sRef_copy (sRef s)
 
       t->deriv = sRefSet_newDeepCopy (s->deriv);
       t->state = valueTable_copy (s->state);
-
+      
       DPRINTF (("Made copy: %s => %s", sRef_unparseFull (s), sRef_unparseFull (t)));
       return t;
     }
@@ -6314,7 +6329,7 @@ sRef_buildNCField (/*@exposed@*/ sRef rec, /*@exposed@*/ cstring f)
 	      
 	      s->oaliaskind = s->aliaskind;
 	      s->oexpkind = s->expkind;
-	      
+
 	      DPRINTF (("sref: %s", sRef_unparseFull (s)));
 	    }
 	  else
@@ -6428,9 +6443,11 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	  
 	  if (ctype_isMutable (s->type))
 	    {
-	      sRef_setExKind (s, sRef_getExKind (sp), fileloc_undefined);
-	      	      
+	      s->expkind = sRef_getExKind (sp);
+	      s->expinfo = stateInfo_copy (sp->expinfo);
+	      
 	      s->aliaskind = sp->aliaskind;
+	      s->aliasinfo = stateInfo_copy (sp->aliasinfo);
 	    }
 
 	  s->defstate = sp->defstate;
@@ -6474,8 +6491,9 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	      */
 	    }
 
-	  sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);
-
+	  s->expkind = sRef_getExKind (arr);
+	  s->expinfo = stateInfo_copy (arr->expinfo);
+	  
 	  if (arr->aliaskind == AK_LOCAL || arr->aliaskind == AK_FRESH)
 	    {
 	      s->aliaskind = AK_LOCAL;
@@ -6592,6 +6610,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
   if (sRef_isObserver (arr)) 
     {
       s->expkind = XO_OBSERVER;
+      s->expinfo = stateInfo_copy (arr->expinfo);
     }
 }  
 
@@ -6623,7 +6642,9 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	  return res;
 	}
 
-      sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);
+      s->expkind = sRef_getExKind (arr);
+      s->expinfo = stateInfo_copy (arr->expinfo);
+
       return s;
     }
   else
@@ -6649,7 +6670,8 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       
       if (valueTable_isUndefined (s->state))
 	{
-	  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+	  s->state = context_createValueTable 
+	    (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
 	}
       
       return (s);
@@ -6688,7 +6710,9 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
 	  return res;
 	}
 
-      sRef_setExKind (s, sRef_getExKind (arr), g_currentloc);      
+      s->expkind = sRef_getExKind (arr);
+      s->expinfo = stateInfo_copy (arr->expinfo);
+
       llassert (s->info->arrayfetch->arr == arr);
       return s;
     }
@@ -6711,7 +6735,7 @@ void sRef_setArrayFetchState (/*@notnull@*/ /*@exposed@*/ sRef s,
       sRef_addDeriv (arr, s);
 
       llassert (valueTable_isUndefined (s->state));
-      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
       return (s);
     }
 }
@@ -6821,8 +6845,9 @@ sRef_setStateFromUentry (sRef s, uentry ue)
 
       if (sRef_isReasonable (s))
 	{
-	  
-	  sRef_setExKind (s, sRef_getExKind (t), g_currentloc);
+	  s->expkind = sRef_getExKind (t);
+	  s->expinfo = stateInfo_copy (t->expinfo);	  
+
 	  s->oaliaskind = s->aliaskind;
 	  s->oexpkind = s->expkind;
 
@@ -6919,14 +6944,17 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
   if (t->defstate == SS_UNDEFINED)
     {
       s->defstate = SS_UNUSEABLE;
+      s->definfo = stateInfo_copy (t->definfo);
     }
   else if ((t->defstate == SS_ALLOCATED) && !ctype_isSU (st))
     {
       s->defstate = SS_UNDEFINED;
+      s->definfo = stateInfo_copy (t->definfo);
     }
   else
     {
       s->defstate = t->defstate;
+      s->definfo = stateInfo_copy (t->definfo);
     }
   
   if (t->aliaskind == AK_LOCAL || t->aliaskind == AK_FRESH)
@@ -6938,7 +6966,9 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
       s->aliaskind = AK_UNKNOWN;
     }
 
-  sRef_setExKind (s, sRef_getExKind (t), fileloc_undefined);
+  s->expkind = sRef_getExKind (t);
+  s->expinfo = stateInfo_copy (t->expinfo);
+
   sRef_setTypeState (s);
 
   s->oaliaskind = s->aliaskind;
@@ -6946,9 +6976,10 @@ sRef_constructPointerAux (/*@notnull@*/ /*@exposed@*/ sRef t)
 
   if (valueTable_isUndefined (s->state))
     {
-      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+      s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
     }
 
+  DPRINTF (("pointer: %s", sRef_unparseFull (s)));
   return s;
 }
 
@@ -6991,7 +7022,7 @@ sRef_clearDerivedComplete (sRef s)
 {
   sRef res = sRef_buildPointer (s); 
 
-  DPRINTF (("Res: %s", sRef_unparse (res)));
+  DPRINTF (("Res: %s", sRef_unparseFull (res)));
   return res;
 }
 
@@ -7298,7 +7329,7 @@ sRef_makeType (ctype ct)
   s->oaliaskind = s->aliaskind;
   s->oexpkind = s->expkind;
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
 
   DPRINTF (("Create: %s", sRef_unparseFull (s)));
   return s;
@@ -7336,7 +7367,7 @@ sRef_makeConst (ctype ct)
   s->oexpkind = s->expkind;
 
   llassert (valueTable_isUndefined (s->state));
-  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc));
+  s->state = context_createValueTable (s, stateInfo_makeLoc (g_currentloc, SA_CREATED));
 
   return s;
 }
@@ -7751,9 +7782,14 @@ sRef_showRefLost (sRef s)
 void
 sRef_showRefKilled (sRef s)
 {
-  if (sRef_hasStateInfoLoc (s))
+  if (sRef_isValid (s)) 
     {
-      stateInfo_display (s->definfo, sRef_unparse (s));
+      DPRINTF (("Killed: %s", sRef_unparseFull (s)));
+      if (context_getLocIndentSpaces () == 0) {
+	stateInfo_display (s->definfo, message ("  Storage %q", sRef_unparseOpt (s)));
+      } else {
+	stateInfo_display (s->definfo, message ("Storage %q", sRef_unparseOpt (s)));
+      }
     }
 }
 
@@ -7772,49 +7808,25 @@ sRef_showStateInconsistent (sRef s)
 void
 sRef_showStateInfo (sRef s)
 {
-  if (sRef_hasStateInfoLoc (s))
-    {
-      if (s->defstate == SS_DEAD)
-	{
-	  llgenindentmsg 
-	    (message ("Storage %qis released", sRef_unparseOpt (s)),
-	     sRef_getStateInfoLoc (s));
-	}
-      else if (s->defstate == SS_ALLOCATED || s->defstate == SS_DEFINED)
-	{
-	  llgenindentmsg 
-	    (message ("Storage %qis %s", sRef_unparseOpt (s), 
-		      sstate_unparse (s->defstate)),
-	     sRef_getStateInfoLoc (s));
-	}
-      else if (s->defstate == SS_UNUSEABLE)
-	{
-	  llgenindentmsg 
-	    (message ("Storage %qbecomes inconsistent (clauses merge with"
-		      "%qreleased on one branch)",
-		      sRef_unparseOpt (s), 
-		      sRef_unparseOpt (s)),
-	     sRef_getStateInfoLoc (s));
-	}
-      else 
-	{
-	  llgenindentmsg (message ("Storage %qbecomes %s", 
-				   sRef_unparseOpt (s), 
-				   sstate_unparse (s->defstate)),
-			  sRef_getStateInfoLoc (s));
-	}
+  if (sRef_isValid (s)) {
+    if (context_getLocIndentSpaces () == 0) {
+      stateInfo_display (s->definfo, message ("   Storage %q", sRef_unparseOpt (s)));
+    } else {
+      stateInfo_display (s->definfo, message ("Storage %q", sRef_unparseOpt (s)));
     }
+  }
 }
 
 void
 sRef_showExpInfo (sRef s)
 {
-  if (sRef_hasExpInfoLoc (s))
-    {
-      llgenindentmsg (message ("Storage %qbecomes %s", sRef_unparseOpt (s), 
-			       exkind_unparse (s->expkind)),
-		      sRef_getExpInfoLoc (s));
+  if (sRef_isValid (s)) {
+    if (context_getLocIndentSpaces () == 0) {
+      stateInfo_display (s->expinfo, message ("   Storage %q", sRef_unparseOpt (s)));
+    } else {
+      stateInfo_display (s->expinfo, message ("Storage %q", sRef_unparseOpt (s)));
     }
+  }
 }
 
 void
@@ -7911,24 +7923,23 @@ sRef_showNullInfo (sRef s)
 void
 sRef_showAliasInfo (sRef s)
 {
-  if (sRef_hasAliasInfoLoc (s))
+  if (sRef_isValid (s)) 
     {
       if (sRef_isFresh (s))
 	{
-	  llgenindentmsg 
-	    (message ("Fresh storage %qallocated", sRef_unparseOpt (s)),
-	     sRef_getAliasInfoLoc (s));
+	  if (context_getLocIndentSpaces () == 0) {
+	    stateInfo_display (s->aliasinfo, message ("   Fresh storage %q", sRef_unparseOpt (s)));
+	  } else {
+	    stateInfo_display (s->aliasinfo, message ("Fresh storage %q", sRef_unparseOpt (s)));
+	  }
 	}
-      else 
+      else
 	{
-	  if (!sRef_isRefCounted (s))
-	    {
-	      llgenindentmsg 
-		(message ("Storage %qbecomes %s", 
-			  sRef_unparseOpt (s),
-			  alkind_unparse (sRef_getAliasKind (s))),
-		 sRef_getAliasInfoLoc (s));
-	    }
+	  if (context_getLocIndentSpaces () == 0) {
+	    stateInfo_display (s->aliasinfo, message ("   Storage %q", sRef_unparseOpt (s))); 
+	  } else {
+	    stateInfo_display (s->aliasinfo, message ("Storage %q", sRef_unparseOpt (s)));
+	  }
 	}
     }
 }
@@ -9857,9 +9868,11 @@ void sRef_reflectAnnotation (sRef s, annotationInfo a, fileloc loc)
       if (!valueTable_isDefined (s->state))
 	{
 	  s->state = valueTable_create (1);
-	  valueTable_insert (s->state, 
-			     cstring_copy (metaStateInfo_getName (annotationInfo_getState (a))),
-			     stateValue_create (annotationInfo_getValue (a), stateInfo_makeLoc (loc)));
+	  valueTable_insert
+	    (s->state, 
+	     cstring_copy (metaStateInfo_getName (annotationInfo_getState (a))),
+	     stateValue_create (annotationInfo_getValue (a), 
+				stateInfo_makeLoc (loc, SA_DECLARED)));
 	}
       else
 	{
@@ -9867,8 +9880,9 @@ void sRef_reflectAnnotation (sRef s, annotationInfo a, fileloc loc)
 	  valueTable_update 
 	    (s->state,
 	     metaStateInfo_getName (annotationInfo_getState (a)),
-	     stateValue_create (annotationInfo_getValue (a), stateInfo_makeLoc (loc)));
-	  DPRINTF (("state info: %s", stateInfo_unparse (stateInfo_makeLoc (loc))));
+	     stateValue_create (annotationInfo_getValue (a),
+				stateInfo_makeLoc (loc, SA_DECLARED)));
+	  
 	  DPRINTF (("sref: %s", sRef_unparse (s)));
 	  DPRINTF (("sref: %s", sRef_unparseFull (s)));
 	}
@@ -9904,7 +9918,8 @@ void sRef_setMetaStateValue (sRef s, cstring key, int value, fileloc loc)
 	  DPRINTF (("inserting state: %s: %s %d", sRef_unparse (s), key, value));
 	  s->state = valueTable_create (1);
 	  valueTable_insert (s->state, cstring_copy (key),
-			     stateValue_create (value, stateInfo_makeLoc (loc)));
+			     stateValue_create (value, 
+						stateInfo_makeLoc (loc, SA_CHANGED)));
 	}
       else
 	{
@@ -9913,12 +9928,14 @@ void sRef_setMetaStateValue (sRef s, cstring key, int value, fileloc loc)
 	  if (valueTable_contains (s->state, key))
 	    {
 	      valueTable_update 
-		(s->state, key, stateValue_create (value, stateInfo_makeLoc (loc)));
+		(s->state, key, stateValue_create (value,
+						   stateInfo_makeLoc (loc, SA_CHANGED)));
 	    }
 	  else
 	    {
 	      valueTable_insert 
-		(s->state, cstring_copy (key), stateValue_create (value, stateInfo_makeLoc (loc)));
+		(s->state, cstring_copy (key),
+		 stateValue_create (value, stateInfo_makeLoc (loc, SA_CHANGED)));
 	    }
 
 	  DPRINTF (("After: %s", sRef_unparseFull (s)));

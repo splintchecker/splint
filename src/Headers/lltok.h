@@ -31,17 +31,18 @@ extern int lltok_getTok (lltok p_t) /*@*/ ;
 extern bool lltok_isSemi (lltok p_tok);
 
 /* DRL added 10/23/2000 for boolean stuff */
-extern bool lltok_isEq_Op (lltok p_tok);
+extern bool lltok_isEqOp (lltok p_tok);
+extern bool lltok_isNotEqOp (lltok p_tok);
 
 extern bool lltok_isMult (lltok p_tok);
 
-extern bool lltok_isInc_Op (lltok p_tok);
+extern bool lltok_isIncOp (lltok p_tok);
 
-extern bool lltok_isAnd_Op (lltok p_tok);
+extern bool lltok_isAndOp (lltok p_tok);
 
-extern bool lltok_isOr_Op (lltok p_tok);
+extern bool lltok_isOrOp (lltok p_tok);
 
-extern bool lltok_isNot_Op (lltok p_tok);
+extern bool lltok_isNotOp (lltok p_tok);
 
 /*drl7x added this function 11/20/00 */
 
@@ -63,7 +64,7 @@ bool lltok_isMinus_Op (lltok p_tok);
 /*drl
   added 1/14/2001
 */
-bool lltok_isDec_Op  (lltok p_tok);
+bool lltok_isDecOp  (lltok p_tok);
 bool lltok_isAmpersand_Op (lltok p_tok);
 
 extern bool lltok_isExcl_Op (lltok p_tok);

@@ -2,10 +2,10 @@
 fields.c: (in function pair_create1)
 fields.c:37:10: Storage p->z reachable from return value is owned (should be
                    dependent)
-   fields.c:34:3: Storage p->z becomes owned
+   fields.c:34:3: Storage p->z becomes owned (through alias p->y)
 fields.c: (in function mangle)
 fields.c:43:2: Released storage p->x reachable from parameter at return point
-   fields.c:42:9: Storage p->x is released
+   fields.c:42:9: Storage p->x released
 fields.c: (in function mangle2)
 fields.c:49:2: Storage p->y reachable from parameter is dependent (should be
                   owned)

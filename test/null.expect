@@ -6,12 +6,13 @@ null1.c:19:20: Implicitly temp storage x returned as only: x
 null1.c:19:20: Possibly null storage x returned as non-null: x
    null1.c:10:35: Storage x may become null
 null1.c:19:22: Fresh storage y not released before return
-   null1.c:12:41: Fresh storage y allocated
+   null1.c:12:41: Fresh storage y created
 null1.c:31:4: Dereference of possibly null pointer y: *y
    null1.c:12:12: Storage y may become null
 null1.c:34:5: Possibly null storage z passed as non-null param: g (z)
    null1.c:25:7: Storage z may become null
 null1.c:34:5: Passed storage z not completely defined (*z is undefined): g (z)
+   null1.c:25:3: Storage *z allocated
 null1.c:39:14: Dereference of null pointer z: *z
    null1.c:25:7: Storage z becomes null
 null1.c:43:22: Dereference of possibly null pointer z4: *z4
@@ -27,17 +28,18 @@ null1.c:59:23: Dereference of possibly null pointer z5: *z5
 null1.c:67:10: Possibly null storage z returned as non-null: z
    null1.c:25:7: Storage z may become null
 null1.c:67:12: Fresh storage z3 not released before return
-   null1.c:27:3: Fresh storage z3 allocated
+   null1.c:27:3: Fresh storage z3 created
 
 Finished checking --- 15 code warnings, as expected
 
 null1.c: (in function f)
 null1.c:19:20: Implicitly temp storage x returned as only: x
 null1.c:19:22: Fresh storage y not released before return
-   null1.c:12:41: Fresh storage y allocated
+   null1.c:12:41: Fresh storage y created
 null1.c:34:5: Passed storage z not completely defined (*z is undefined): g (z)
+   null1.c:25:3: Storage *z allocated
 null1.c:67:12: Fresh storage z3 not released before return
-   null1.c:27:3: Fresh storage z3 allocated
+   null1.c:27:3: Fresh storage z3 created
 
 Finished checking --- 4 code warnings, as expected
 
@@ -81,14 +83,16 @@ null3.c:53:3: Only storage gip (type int *) not released before assignment (z
    null3.c:5:17: Storage gip becomes only
 null3.c:55:3: Only storage gnip (type nip) not released before assignment:
                  gnip = aip
-   null3.c:53:3: Storage gnip becomes only
+   ??? null3.c:53:3: Storage gnip becomes kept [[[ look into this one, seems odd ]]]
 null3.c:60:14: Returned storage y not completely defined (*y is undefined): y
+   null3.c:24:42: Storage *y allocated
 null3.c:60:16: Function returns with non-null global gip referencing null
                   storage
    null3.c:53:9: Storage gip may become null
 null3.c:65:14: Possibly null storage y returned as non-null: y
    null3.c:24:12: Storage y may become null
 null3.c:65:14: Returned storage y not completely defined (*y is undefined): y
+   null3.c:24:42: Storage *y allocated
 null3.c:65:16: Function returns with non-null global gip referencing null
                   storage
    null3.c:53:9: Storage gip may become null
@@ -119,14 +123,16 @@ null3.c:53:3: Only storage gip (type int *) not released before assignment (z
    null3.c:5:17: Storage gip becomes only
 null3.c:55:3: Only storage gnip (type nip) not released before assignment:
                  gnip = aip
-   null3.c:53:3: Storage gnip becomes only
+   null3.c:53:3: Storage gnip becomes kept
 null3.c:60:14: Returned storage y not completely defined (*y is undefined): y
+   null3.c:24:42: Storage *y allocated
 null3.c:60:16: Function returns with non-null global gip referencing null
                   storage
    null3.c:53:9: Storage gip may become null
 null3.c:65:14: Possibly null storage y returned as non-null: y
    null3.c:24:12: Storage y may become null
 null3.c:65:14: Returned storage y not completely defined (*y is undefined): y
+   null3.c:24:42: Storage *y allocated
 null3.c:65:16: Function returns with non-null global gip referencing null
                   storage
    null3.c:53:9: Storage gip may become null

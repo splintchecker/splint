@@ -554,7 +554,7 @@ int main (int argc, char *argv[])
 		    if (++i < argc)
 		      {
 			fname = cstring_fromChars (argv[i]);
-			setStringFlag (opt, fname);
+			flags_setStringFlag (opt, fname);
 		      }
 		    else
 		      {

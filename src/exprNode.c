@@ -30,6 +30,7 @@
 # include "basic.h"
 # include "cgrammar.h"
 # include "cscanner.h"
+# include "cscannerHelp.h"
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
@@ -1036,7 +1037,7 @@ exprNode_fromIdentifier (/*@observer@*/ uentry c)
 
   if (context_justPopped ()) /* watch out! c could be dead */
     { 
-      uentry ce = usymtab_lookupSafe (cscanner_observeLastIdentifier ());
+      uentry ce = usymtab_lookupSafe (cscannerHelp_observeLastIdentifier ());
 
       if (uentry_isValid (ce)) 
         {
@@ -10192,16 +10193,20 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 		    {
 		      lastRef = errorRef;
 		      errorRef = s;
+		      DPRINTF (("Setting ERROR: %s", sRef_unparseFull (s)));
 		      deadRef = sRef_isDead (errorRef);
 		      unuseable = sRef_isUnuseable (errorRef);
 		      errorMaybe = FALSE;
 		    }
 
+		  /*
 		  if (!sRef_isPartial (s))
 		    {
 		      DPRINTF (("Defining! %s", sRef_unparseFull (s)));
-		      sRef_setDefined (s, fileloc_undefined);
+		      sRef_setDefined (s, loc);
+		      DPRINTF (("Defining! %s", sRef_unparseFull (s)));
 		    }
+		  */
 		}
 
 	      s = sRef_getBaseSafe (s);
@@ -10213,6 +10218,7 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 		  && sRef_isPointer (errorRef))
 		{
 		  errorRef = lastRef;
+		  DPRINTF (("errorRef: %s", sRef_unparseFull (errorRef)));
 		}
 	      
 	      if (deadRef)
@@ -10236,7 +10242,7 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 		    }
 		  else
 		    {
-		      DPRINTF (("HERE: %s", sRef_unparse (errorRef)));
+		      DPRINTF (("HERE: %s", sRef_unparseFull (errorRef)));
 
 		      if (optgenerror
 			  (FLG_USERELEASED,
@@ -10273,13 +10279,16 @@ exprNode_checkUse (exprNode e, /*@exposed@*/ sRef s, fileloc loc)
 		{
 		  DPRINTF (("HERE: %s", sRef_unparseFull (errorRef)));
 
-		  voptgenerror 
-		    (FLG_USEDEF,
-		     message ("%q %q%qused before definition", 
-			      sRef_unparseKindName (errorRef),
-			      sRef_unparseOpt (errorRef),
-			      cstring_makeLiteral (errorMaybe ? "may be " : "")),
-		     loc);
+		  if (optgenerror 
+		      (FLG_USEDEF,
+		       message ("%q %q%qused before definition", 
+				sRef_unparseKindName (errorRef),
+				sRef_unparseOpt (errorRef),
+				cstring_makeLiteral (errorMaybe ? "may be " : "")),
+		       loc))
+		    {
+		      ;
+		    }
 
 		  DPRINTF (("Error: %s", sRef_unparseFull (errorRef)));
 		}
@@ -10875,12 +10884,24 @@ abstractOpError (ctype tr1, ctype tr2, lltok op,
 	    } 
 	  else 
 	    {
-	      return optgenerror
-		(FLG_ABSTRACT,
-		 message ("Operands of %s are abstract type (%t): %s %s %s",
-			  lltok_unparse (op), tr1, 
-			  exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
-		 loc1);
+	      if (lltok_isEqOp (op) || lltok_isNotEqOp (op))
+		{
+		  return optgenerror
+		    (FLG_ABSTRACTCOMPARE,
+		     message ("Object equality comparison (%s) on objects of abstract type (%t): %s %s %s",
+			      lltok_unparse (op), tr1, 
+			      exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
+		     loc1);
+		}
+	      else
+		{
+		  return optgenerror
+		    (FLG_ABSTRACT,
+		     message ("Operands of %s are abstract type (%t): %s %s %s",
+			      lltok_unparse (op), tr1, 
+			      exprNode_unparse (e1), lltok_unparse (op), exprNode_unparse (e2)),
+		     loc1);
+		}
 	    }
 	}
       else

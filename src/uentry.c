@@ -3072,7 +3072,7 @@ uentry_isSpecialFunction (uentry ue)
   ctype ct = idDecl_getCtype (t);
   ctype base = ct;
   fileloc loc = setLocation ();
-  sRef pref = sRef_makeParam (i, ct, stateInfo_makeLoc (loc));
+  sRef pref = sRef_makeParam (i, ct, stateInfo_makeLoc (loc, SA_CREATED));
   uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, loc, pref);
 
   DPRINTF (("Make param: %s", uentry_unparseFull (ue)));
@@ -10060,20 +10060,43 @@ branchStateError (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other,
 		sRef_stateAltVerb (res->sref), clause_nameFlip (cl, !flip)),
        loc))
     {
+      DPRINTF (("Here: %s / %s", sRef_unparseFull (res->sref), sRef_unparseFull (other->sref)));
+
       if (sRef_isDead (res->sref))
 	{
-	  sRef_showStateInfo (res->sref);
-	  sRef_showStateInfo (other->sref);
+	  if (sRef_hasStateInfoLoc (res->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, flip)), loc);
+	    sRef_showStateInfo (res->sref);
+	  }
+
+	  if (sRef_hasStateInfoLoc (other->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, !flip)), loc);
+	    sRef_showStateInfo (other->sref);
+	  }
 	}
       else if (sRef_isKept (res->sref))
 	{
-	  sRef_showAliasInfo (res->sref);
-	  sRef_showAliasInfo (other->sref);
+	  if (sRef_hasAliasInfoLoc (res->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, flip)), loc);
+	    sRef_showAliasInfo (res->sref);
+	  }
+
+	  if (sRef_hasAliasInfoLoc (other->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, !flip)), loc);
+	    sRef_showAliasInfo (other->sref);
+	  }
 	}
       else /* dependent */
 	{
-	  sRef_showAliasInfo (res->sref);
-	  sRef_showAliasInfo (other->sref);
+	  if (sRef_hasAliasInfoLoc (res->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, flip)), loc);
+	    sRef_showAliasInfo (res->sref);
+	  }
+
+	  if (sRef_hasAliasInfoLoc (other->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, !flip)), loc);
+	    sRef_showAliasInfo (other->sref);
+	  }
 	}
       
       sRef_setAliasKind (res->sref, AK_ERROR, fileloc_undefined);
@@ -10114,11 +10137,27 @@ static void
     {
       if (sRef_isDead (other->sref))
 	{
-	  sRef_showStateInfo (other->sref);
+	  if (sRef_hasStateInfoLoc (other->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, flip)), loc);
+	    sRef_showStateInfo (other->sref);
+	  }
+
+	  if (sRef_hasStateInfoLoc (res->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, !flip)), loc);
+	    sRef_showStateInfo (res->sref);
+	  }
 	}
       else /* kept */
 	{
-	  sRef_showAliasInfo (other->sref);
+	  if (sRef_hasAliasInfoLoc (other->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, flip)), loc);
+	    sRef_showAliasInfo (other->sref);
+	  }
+
+	  if (sRef_hasAliasInfoLoc (res->sref)) {
+	    llgenindentmsg (message ("%s:", clause_nameFlip (cl, !flip)), loc);
+	    sRef_showAliasInfo (res->sref);
+	  }
 	}
       
       sRef_setAliasKind (res->sref, AK_ERROR, fileloc_undefined);
@@ -10210,7 +10249,7 @@ uentry_mergeAliasStates (/*@notnull@*/ uentry res, /*@notnull@*/ uentry other,
 			}
 		      else 
 			{
-			  branchStateError (res, other, flip, cl, loc);
+			  branchStateError (res, other, !flip, cl, loc); /* evans 2002-12-15: changed flip to !flip */
 			}
 		    }
 		}

@@ -1392,11 +1392,12 @@ mystrncat:
 noeffect:
 	${SPLINTP} noeffect.c +allmacros +checks -expect 3
 
+
 .PHONY: numabstract
 numabstract:
-	-$(SPLINTR) numabstract.c -expect 8
-	-$(SPLINTR) numabstract.c +numabstractlit -expect 7
-	-$(SPLINTR) numabstract.c -numabstractcast -expect 7
+	-$(SPLINTR) numabstract.c -expect 11
+	-$(SPLINTR) numabstract.c +numabstractlit -expect 9
+	-$(SPLINTR) numabstract.c -numabstractcast -expect 10
 
 ###
 ### 2002-01-01: null1.c: expect increased to 15 because out must be defined

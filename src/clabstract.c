@@ -1863,12 +1863,14 @@ void setNewStyle ()              { flipNewStyle = TRUE; }
   uentryList_elements (params, current)
     {
       uentry_setParam (current);
-      uentry_setSref (current, sRef_makeParam (paramno, ctype_unknown, stateInfo_makeLoc (uentry_whereLast (current))));
+      uentry_setSref (current, sRef_makeParam 
+		      (paramno, ctype_unknown, 
+		       stateInfo_makeLoc (uentry_whereLast (current), SA_DECLARED)));
       paramno++;
     } end_uentryList_elements;
 
   setGenericParamList (params);
-  g_expectingTypeName = TRUE; 
+  cscannerHelp_setExpectingTypeName ();
 
   return params;
 }
@@ -1885,7 +1887,7 @@ void setNewStyle ()              { flipNewStyle = TRUE; }
       
       setGenericParamList (params);
       flipOldStyle = FALSE;
-      g_expectingTypeName = TRUE; 
+      cscannerHelp_setExpectingTypeName ();
     }
  
   return (params); 
@@ -1905,7 +1907,9 @@ doVaDcl ()
       if (i >= 0)
 	{
 	  fileloc loc = context_getSaveLocation ();
-	  e = uentry_makeVariableSrefParam (id, c, loc, sRef_makeParam (i, c, stateInfo_makeLoc (loc)));
+	  e = uentry_makeVariableSrefParam 
+	    (id, c, loc, 
+	     sRef_makeParam (i, c, stateInfo_makeLoc (loc, SA_DECLARED)));
 	}
       else
 	{

@@ -155,7 +155,7 @@ static bool canGetForTimes (/*@notnull@*/ exprNode forPred, /*@notnull@*/ exprNo
     }
   
   tok = (exprData_getUopTok (inc->edata));
-  if (lltok_isInc_Op (tok) )
+  if (lltok_isIncOp (tok) )
       {
 	t1 = exprData_getUopNode (test->edata);
 	t2 = exprData_getUopNode (inc->edata);
@@ -293,7 +293,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
     }
   
   tok = (exprData_getUopTok (inc->edata));
-  if (lltok_isInc_Op (tok) )
+  if (lltok_isIncOp (tok) )
       {
 	t1 = exprData_getUopNode (test->edata);
 	t2 = exprData_getUopNode (inc->edata);

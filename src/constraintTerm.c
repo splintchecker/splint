@@ -651,7 +651,7 @@ void constraintTerm_dump (/*@observer@*/ constraintTerm t,  FILE *f)
 
 	    ostr2 = str2;
 	    t = ctype_undump(&str2) ;
-	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc));
+	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc, SA_CREATED));
 	    free (ostr2);
 	  }
 	else if (strcmp (term, "sRef_dump" ) == 0 )

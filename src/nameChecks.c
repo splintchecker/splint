@@ -1336,7 +1336,20 @@ checkAnsiName (uentry ue)
 	 uentry_whereLast (ue));
     }
 
-  DPRINTF (("Here..."));
+  /*
+  ** evans - 2002-12-16: added this check (even though it is not required by ISO)
+  */
+
+  if (fchar == 'S' && schar == 'A' && tchar == '_')
+    {
+      hasError |= optgenerror2
+	(FLG_ISORESERVED, FLG_NAMECHECKS,
+	 message 
+	 ("Name %s may be defined as a macro by Linux library. "
+	  "It is not research by the ISO specification, but may produce conflicts on some systems.",
+	  name),
+	 uentry_whereLast (ue));
+    }
 
   if ((uentry_isVisibleExternally (ue) && !uentry_isAnyTag (ue))
       || context_getFlag (FLG_ISORESERVEDLOCAL))

@@ -1,5 +1,4 @@
 
-
 void func () {
   char *c;
   c = strchr("dfdfedfd", 'e');

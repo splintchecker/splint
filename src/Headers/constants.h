@@ -112,6 +112,14 @@
 # define DEFAULT_INDENTSPACES 3
 
 /*
+** Setting this to 0 means emacs compile mode will
+** jump to the locations in message hints.
+*/
+
+/*@constant int DEFAULT_LOCINDENTSPACES=3; @*/
+# define DEFAULT_LOCINDENTSPACES 3
+
+/*
 ** These constants are based on implementation limits in ANSI standard,
 ** Section 3.1. 
 */

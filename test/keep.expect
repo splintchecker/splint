@@ -10,7 +10,10 @@ keep.c:36:10: Keep storage x not transferred before return
    keep.c:34:39: Storage x becomes keep
 keep.c: (in function f6)
 keep.c:44:5: Variable x is kept in true branch, but not kept in continuation.
+   keep.c:44:5: in true branch:
    keep.c:43:11: Storage x becomes kept
+   keep.c:44:5: in continuation:
+   keep.c:39:26: Storage x becomes keep
 keep.c:46:7: Kept storage x passed as keep param: f2 (x)
    keep.c:44:5: Storage x becomes kept
 keep.c: (in function f7)

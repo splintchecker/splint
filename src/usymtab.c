@@ -529,9 +529,10 @@ usymtab_addEntryBase (/*@notnull@*/ usymtab s, /*@only@*/ uentry e)
       
       if (uentry_isVar (e))
 	{
-	  uentry_setSref (e, sRef_makeCvar (globScope, thisentry, 
-					    uentry_getType (e),
-					    stateInfo_makeLoc (uentry_whereLast (e))));
+	  uentry_setSref 
+	    (e, sRef_makeCvar (globScope, thisentry, 
+			       uentry_getType (e),
+			       stateInfo_makeLoc (uentry_whereLast (e), SA_DECLARED)));
 	}
       
       usymtab_addEntryQuiet (s, e);
@@ -569,9 +570,10 @@ usymtab_addEntryAlways (/*@notnull@*/ usymtab s, /*@only@*/ uentry e)
 
   if (uentry_isVar (e) && !uentry_isGlobalMarker (e))
     {
-      uentry_setSref (e, sRef_makeCvar (globScope, thisentry, 
-					uentry_getType (e),
-					stateInfo_makeLoc (uentry_whereLast (e))));
+      uentry_setSref 
+	(e, sRef_makeCvar (globScope, thisentry, 
+			   uentry_getType (e),
+			   stateInfo_makeLoc (uentry_whereLast (e), SA_DECLARED)));
     }
   
   usymtab_addEntryQuiet (s, e);
@@ -612,7 +614,8 @@ usymtab_addEntryAux (/*@notnull@*/ usymtab st, /*@keep@*/ uentry e, bool isSref)
 
       if (uentry_isStatic (e))
 	{
-	  sRef sr = sRef_makeCvar (st->lexlevel, thisentry, ct, stateInfo_makeLoc (uentry_whereLast (e)));
+	  sRef sr = sRef_makeCvar (st->lexlevel, thisentry, ct,
+				   stateInfo_makeLoc (uentry_whereLast (e), SA_DECLARED));
 
 	  if (sRef_isStack (sr) || sRef_isLocalState (sr))
 	    {
@@ -624,7 +627,9 @@ usymtab_addEntryAux (/*@notnull@*/ usymtab st, /*@keep@*/ uentry e, bool isSref)
 	}
       else
 	{
-	  uentry_setSref (e, sRef_makeCvar (st->lexlevel, thisentry, ct, stateInfo_makeLoc (uentry_whereLast (e))));
+	  uentry_setSref 
+	    (e, sRef_makeCvar (st->lexlevel, thisentry, ct,
+			       stateInfo_makeLoc (uentry_whereLast (e), SA_DECLARED)));
 	}
     }
 
@@ -941,7 +946,9 @@ usymtab_supEntryAux (/*@notnull@*/ usymtab st,
 	      ct = ctype_getReturnType (ct);
 	    }
 	  
-	  uentry_setSref (ce, sRef_makeCvar (st->lexlevel, eindex, ct, stateInfo_makeLoc (uentry_whereLast (ce))));
+	  uentry_setSref
+	    (ce, sRef_makeCvar (st->lexlevel, eindex, ct,
+				stateInfo_makeLoc (uentry_whereLast (ce), SA_DECLARED)));
 	}
     }
   else /* no previous entry */

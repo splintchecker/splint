@@ -20,7 +20,7 @@ linked2.c:23:15: Possibly null storage nn passed as non-null param:
                     node_free1 (nn)
    linked2.c:21:13: Storage nn may become null
 linked2.c:23:15: Dependent storage nn passed as only param: node_free1 (nn)
-   linked2.c:23:15: Storage nn becomes dependent
+   linked2.c:23:15: Storage nn becomes dependent (through alias n->next)
 
 Finished checking --- 3 code warnings, as expected
 

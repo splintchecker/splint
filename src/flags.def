@@ -473,6 +473,15 @@ static flaglist flags =
     0, 0
   },
   {
+    FK_ABSTRACT, FK_NONE, modeFlag,
+    "abstractcompare",
+    FLG_ABSTRACTCOMPARE,
+    "object equality comparison on abstract type operands",
+    "An object comparison (== or !=) is used on operands of abstract type.",
+    0, 0
+  },
+
+  {
     FK_ABSTRACT, FK_NONE, plainFlag,
     "numabstract",
     FLG_NUMABSTRACT,
@@ -3285,6 +3294,20 @@ static flaglist flags =
     "indentspaces",
     FLG_INDENTSPACES,
     "set number of spaces to indent sub-messages",
+    NULL, 0, 0
+  },
+  {
+    FK_FORMAT, FK_DISPLAY, valueFlag,
+    "locindentspaces",
+    FLG_LOCINDENTSPACES,
+    "set number of spaces to indent sub-messages that start with file locations",
+    NULL, 0, 0
+  },
+  {
+    FK_FORMAT, FK_DISPLAY, plainFlag,
+    "showdeephistory",
+    FLG_SHOWDEEPHISTORY,
+    "show all available information about storage mentioned in warnings",
     NULL, 0, 0
   },
   {

@@ -34,8 +34,11 @@
 abst_typedef /*@null@*/ struct s_ctbase *ctbase;
 
 /*@function static bool ctuid_isAnyUserType (sef ctuid p_cid) @*/
+/*@i888@*/
+/*@-macrofcndecl@*/ /*@-macroparams@*/
 # define ctuid_isAnyUserType(cid) \
    ((cid) == CT_ABST || (cid) == CT_USER || (cid) == CT_NUMABST)
+/*@=macrofcndecl@*/ /*@=macroparams@*/
 
 /*@private@*/ typedef struct {
   ctkind kind;

@@ -8,16 +8,18 @@
 */
 
 /*@-declundef@*/ /* Don't always check cscanner.c */
-extern /*@observer@*/ cstring cscanner_observeLastIdentifier (void) ;
-extern void cscanner_expectingMetaStateName (void) /*@modifies internalState@*/ ;
-extern void cscanner_clearExpectingMetaStateName (void) /*@modifies internalState@*/ ;
 extern void cscanner_swallowMacro (void) /*@modifies internalState, fileSystem@*/ ;
+
+extern int cscanner_input (void) /*@modifies internalState, fileSystem@*/ ;
+extern void cscanner_unput (int) /*@modifies internalState, fileSystem@*/ ;
+
+extern int cscanner_returnFloat (ctype p_ct, double p_f) /*@modifies internalState@*/ ;
+extern int cscanner_returnInt (ctype p_ct, long p_i) /*@modifies internalState@*/ ;
+extern int cscanner_returnChar (char p_c) /*@modifies internalState@*/ ;
 
 /*
 ** These are all exported by bison, but not declared:
 */
-
-# ifdef S_SPLINT_S
 
 /*@-namechecks@*/
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
@@ -40,4 +42,3 @@ extern /*@unused@*/ int yynerrs;
 /*@=namechecks@*/
 /*@=declundef@*/
 
-# endif

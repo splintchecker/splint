@@ -9,8 +9,14 @@ numabstract.c:19:3: Assignment of oranges to int: i = o
 numabstract.c:20:3: Assignment of apples to int: i = a2 + a
 numabstract.c:21:10: Operands of + are different numabstract types (apples,
                         oranges): a + o
+numabstract.c: (in function comparing)
+numabstract.c:26:7: Operands of < have incompatible types (apples, int): a < 3
+numabstract.c:30:7: Operands of < are different numabstract types (apples,
+                       oranges): a < o
+numabstract.c:34:7: Operands of == are different numabstract types (apples,
+                       oranges): a == o
 
-Finished checking --- 8 code warnings, as expected
+Finished checking --- 11 code warnings, as expected
 
 numabstract.c: (in function adding)
 numabstract.c:13:3: Assignment of char to apples: a2 = 'a'
@@ -21,8 +27,13 @@ numabstract.c:19:3: Assignment of oranges to int: i = o
 numabstract.c:20:3: Assignment of apples to int: i = a2 + a
 numabstract.c:21:10: Operands of + are different numabstract types (apples,
                         oranges): a + o
+numabstract.c: (in function comparing)
+numabstract.c:30:7: Operands of < are different numabstract types (apples,
+                       oranges): a < o
+numabstract.c:34:7: Operands of == are different numabstract types (apples,
+                       oranges): a == o
 
-Finished checking --- 7 code warnings, as expected
+Finished checking --- 9 code warnings, as expected
 
 numabstract.c: (in function adding)
 numabstract.c:13:3: Assignment of char to apples: a2 = 'a'
@@ -33,5 +44,11 @@ numabstract.c:19:3: Assignment of oranges to int: i = o
 numabstract.c:20:3: Assignment of apples to int: i = a2 + a
 numabstract.c:21:10: Operands of + are different numabstract types (apples,
                         oranges): a + o
+numabstract.c: (in function comparing)
+numabstract.c:26:7: Operands of < have incompatible types (apples, int): a < 3
+numabstract.c:30:7: Operands of < are different numabstract types (apples,
+                       oranges): a < o
+numabstract.c:34:7: Operands of == are different numabstract types (apples,
+                       oranges): a == o
 
-Finished checking --- 7 code warnings, as expected
+Finished checking --- 10 code warnings, as expected

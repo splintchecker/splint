@@ -28,6 +28,7 @@ sharing1.c:48:14: Possibly null storage y3 passed as non-null param:
    sharing1.c:37:13: Storage y3 may become null
 sharing1.c:48:14: Passed storage y3 not completely defined (*y3 is undefined):
                      f2 (y3, ...)
+   sharing1.c:37:33: Storage *y3 allocated
 sharing1.c:48:18: Parameter 2 (y3) to function f2 is declared only but is
                      aliased by parameter 1 (y3)
 sharing1.c:50:4: Variable y3 used after being released
@@ -36,6 +37,7 @@ sharing1.c:51:12: Possibly null storage y passed as non-null param: f (y, ...)
    sharing1.c:35:12: Storage y may become null
 sharing1.c:51:12: Passed storage y not completely defined (*y is undefined):
                      f (y, ...)
+   sharing1.c:35:32: Storage *y allocated
 sharing1.c:52:12: Shared storage globshared1 passed as only param:
                      f (globshared1, ...)
    sharing1.c:4:19: Storage globshared1 becomes shared
@@ -45,10 +47,10 @@ sharing1.c:56:9: Shared storage globshared2 passed as only param:
 sharing1.c:59:11: Variable y used after being released
    sharing1.c:51:12: Storage y released
 sharing1.c:59:13: Fresh storage y2 not released before return
-   sharing1.c:36:33: Fresh storage y2 allocated
+   sharing1.c:36:33: Fresh storage y2 created
 sharing1.c:59:13: Function returns with global globonly referencing released
                      storage
-   sharing1.c:57:9: Storage globonly is released
+   sharing1.c:57:9: Storage globonly released
 
 Finished checking --- 21 code warnings, as expected
 
@@ -58,7 +60,7 @@ sharing3.c: (in function string_free1)
 sharing3.c:32:9: Implicitly temp storage s passed as only param: free (s)
 sharing3.c: (in function string_free3)
 sharing3.c:45:2: Fresh storage t not released before return
-   sharing3.c:42:29: Fresh storage t allocated
+   sharing3.c:42:29: Fresh storage t created
 
 Finished checking --- 3 code warnings, as expected
 
@@ -95,7 +97,7 @@ sharing4.c:42:12: Only storage only3 not released before return
    sharing4.c:12:72: Storage only3 becomes only
 sharing4.c:42:12: Function returns with global globonly3 referencing released
                      storage
-   sharing4.c:21:9: Storage globonly3 is released
+   sharing4.c:21:9: Storage globonly3 released
 
 Finished checking --- 13 code warnings, as expected
 
@@ -130,7 +132,7 @@ sharing4.c:42:12: Only storage only3 not released before return
    sharing4.c:12:72: Storage only3 becomes only
 sharing4.c:42:12: Function returns with global globonly3 referencing released
                      storage
-   sharing4.c:21:9: Storage globonly3 is released
+   sharing4.c:21:9: Storage globonly3 released
 
 Finished checking --- 12 code warnings, as expected
 
@@ -147,7 +149,7 @@ sharing5.c:27:4: Dereference of possibly null pointer localp: *localp
    sharing5.c:26:12: Storage localp may become null
 sharing5.c:32:3: Fresh storage localp (type char **) not released before
                     assignment: localp = &only3
-   sharing5.c:26:3: Fresh storage localp allocated
+   sharing5.c:26:3: Fresh storage localp created
 sharing5.c:33:2: Only storage only3 not released before return
    sharing5.c:4:73: Storage only3 becomes only
 
