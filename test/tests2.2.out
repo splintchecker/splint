@@ -48,7 +48,7 @@ Finished LCLint checking --- no code errors found
 extension.c:2:18: Parse Error: New function scope inside function. (For help on
                parse errors, see lclint -help parseerrors.)
 *** Cannot continue.
-Unclosed file at exit: /tmp/cl50AAA.c
+Unclosed file at exit: /tmp/cl33AAA.c
 
 Finished LCLint checking --- no code errors found
 

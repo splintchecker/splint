@@ -613,7 +613,7 @@ unreachable:
 	$(LCLINTR) switch.c -expect 4
 
 unsignedcompare:
-	${LCLINT} +posixlib unsignedcompare.c -expect 2
+	${LCLINTR} +posixlib unsignedcompare.c -expect 4
 
 
 ###
