@@ -916,6 +916,10 @@ context_resetAllFlags (void)
    */
   gc.flags[FLG_ORCONSTRAINT] = TRUE;
   gc.flags[FLG_CONSTRAINTLOCATION] = TRUE;
+
+  /*drl 1/18/2002*/
+  gc.flags[FLG_WARNSYSFILES] = TRUE;
+
   /*
   ** On by default for Win32, but not Unix (to support MS/VC++ error message format).
   */

@@ -4087,6 +4087,13 @@ static flaglist flags =
     NULL, 0, 0
   },
   {
+    FK_DISPLAY, FK_FILES, plainFlag,
+    "warnsysfiles",
+    FLG_WARNSYSFILES,
+    "Splint has been run on a system file, by default no errors are reported for system files.  Use +systemdirerrors if you want splint to report errors in system files.  A file is considered a system file if it is in a system directory or a subdirectory of a system directory.  The sysdirs flag can be used to control the directories treated as system directories.",
+    NULL, 0, 0
+  },
+  {
     FK_DISPLAY, FK_NONE, globalFlag,
     "stats",
     FLG_STATS,

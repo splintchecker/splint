@@ -114,6 +114,8 @@ static /*@only@*/ /*@null@*/ inputStream initFile = inputStream_undefined;
 static fileIdList preprocessFiles (fileIdList, bool)
   /*@modifies fileSystem@*/ ;
 
+  void warnSysFiles(fileIdList files) /*@*/;
+
 # ifndef NOLCL
 
 static
@@ -1355,6 +1357,7 @@ int main (int argc, char *argv[])
       context_setPreprocessing ();
       dercfiles = preprocessFiles (xfiles, TRUE);
       tfiles = preprocessFiles (cfiles, FALSE);
+      warnSysFiles(cfiles);
       dercfiles = fileIdList_append (dercfiles, tfiles);
       fileIdList_free (tfiles);
 
@@ -2780,3 +2783,16 @@ char *specFullName (char *specfile, /*@out@*/ char **inpath)
   return specname;
 }
 # endif
+
+void warnSysFiles(fileIdList files)
+{
+  fileIdList_elements (files, file)
+    {
+      
+      if (fileTable_isSystemFile (context_fileTable (), file) )
+	{
+	  voptgenerror (FLG_WARNSYSFILES, message ("Warning %s is a considered a system file. No errors in this file will be reported.", fileTable_rootFileName (file) ), g_currentloc);
+	}
+    } 
+  end_fileIdList_elements;
+}
