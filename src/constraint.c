@@ -63,6 +63,15 @@ static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
 /*    return ret; */
 /*  } */
 
+
+static void
+advanceField (char **s)
+{
+  checkChar (s, '@');
+}
+
+
+
 constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconstant)    
 {
   char *t;
@@ -269,7 +278,7 @@ constraint constraint_setFcnPre (/*@returned@*/ constraint c )
   else
     {
       c->fcnPre = TRUE;
-      TPRINTF(( message("Warning Setting fcnPre directly") ));
+      //      TPRINTF(( message("Warning Setting fcnPre directly") ));
     }
   return c;
 }
@@ -609,7 +618,7 @@ constraint constraint_makeMaxSetSideEffectPostIncrement (exprNode e, fileloc seq
 }
 
 
-void constraint_free (/*@only@*/ /*@notnull@*/ constraint c)
+void constraint_free (/*@only@*/ constraint c)
 {
   llassert(constraint_isDefined (c) );
 
@@ -944,9 +953,17 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
       c->orig = NULL;
       c->orig = constraint_copy (c);
       if (c->orig->orig == NULL)
-	c->orig->orig = temp;
+	{
+	  c->orig->orig = temp;
+	  temp = NULL;
+	}
       else
-	llcontbug((message("Expected c->orig->orig to be null" ) ));
+	{
+	  llcontbug((message("Expected c->orig->orig to be null" ) ));
+	  constraint_free(c->orig->orig);
+	  c->orig->orig = temp;
+	  temp = NULL;
+	}
     }
   else
     {
@@ -982,3 +999,83 @@ bool constraint_hasOrig( /*@observer@*/ /*@temp@*/ constraint c)
   else
     return TRUE;
 }
+
+
+constraint constraint_undump (FILE *f)
+{
+  constraint c;
+  bool           fcnPre;
+  bool post;
+  arithType       ar;
+  
+  constraintExpr lexpr;
+  constraintExpr  expr;
+  //  /*@kept@*/ exprNode generatingExpr;
+
+  char * s;
+
+  char *os;
+
+  s = mstring_create (MAX_DUMP_LINE_LENGTH);
+
+  os = s;
+  
+  s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  /*@i33*/ /*this should probably be wrappered...*/
+  
+  fcnPre = (bool) getInt (&s);
+  advanceField(&s);
+  post = (bool) getInt (&s);
+  advanceField(&s);
+  ar = (arithType) getInt (&s);
+
+  s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  checkChar (&s, 'l');
+
+  lexpr = constraintExpr_undump (f);
+
+  s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  checkChar (&s, 'r');
+  expr = constraintExpr_undump (f);
+
+  c = constraint_makeNew();
+  
+  c->fcnPre = fcnPre; 
+  c->post = post;
+  c->ar = ar;
+
+  c->lexpr = lexpr;
+  c->expr =  expr;
+
+  free(os);
+  return c;
+}
+
+
+void constraint_dump (/*@observer@*/ constraint c,  FILE *f)
+{
+  bool           fcnPre;
+  bool post;
+  arithType       ar;
+  
+  constraintExpr lexpr;
+  constraintExpr  expr;
+  //  /*@kept@*/ exprNode generatingExpr;
+
+  fcnPre = c->fcnPre;
+  post   = c->post;
+  ar     = c->ar;
+  lexpr = c->lexpr;
+  expr = c->expr;
+  
+  fprintf(f, "%d@%d@%d\n", (int) fcnPre, (int) post, (int) ar);
+  fprintf(f,"l\n");
+  constraintExpr_dump (lexpr, f);
+  fprintf(f,"r\n");
+  constraintExpr_dump (expr, f);
+}
+
+

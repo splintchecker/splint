@@ -20,7 +20,7 @@
 
 /*@access exprNode, constraintTermValue @*/
 
-static bool constraintTerm_same (constraintTerm term1, constraintTerm term2) ;
+/*@unused@*/ static bool constraintTerm_same (constraintTerm term1, constraintTerm term2) ;
 
 void constraintTerm_free (/*@only@*/ constraintTerm term)
 {
@@ -395,3 +395,171 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
    }     
     
 }
+
+void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
+{
+  fileloc loc;
+  constraintTermValue value;
+  constraintTermType kind;
+  uentry u;
+  
+  loc = t->loc;
+
+  value = t->value;
+
+  kind  = t->kind;
+
+  fprintf(f, "%d\n", (int) kind);
+  
+  switch (kind)
+    {
+      
+    case EXPRNODE:
+      u = exprNode_getUentry(t->value.expr);
+      fprintf(f, "%s\n", uentry_rawName (u) );
+      break;
+      
+    case SREF:
+      {
+	sRef s;
+
+	s =  t->value.sref;
+	
+	if (sRef_isResult (s ) )
+	  {
+	    fprintf(f, "Result\n");
+	  }
+	else if (sRef_isParam (s ) )
+	  {
+	    int param;
+	    ctype ct;
+	    cstring ctString;
+
+	    
+	    ct =  sRef_getType (s); 
+	    param = sRef_getParam(s);
+
+	    ctString =  ctype_dump(ct);
+	    
+	    fprintf(f, "Param %s %d\n", ctString, (int) param );
+	    cstring_free(ctString);
+	  }
+	else
+	  {
+	    u = sRef_getUentry(s);
+	    fprintf(f, "%s\n", uentry_rawName (u) );
+	  }
+	
+      }
+      break;
+      
+    case INTLITERAL:
+      fprintf (f, "%d\n", t->value.intlit);
+      break;
+      
+    default:
+      BADEXIT;
+    }
+  
+}
+
+
+/*@only@*/ constraintTerm constraintTerm_undump ( FILE *f)
+{
+  fileloc loc;
+  constraintTermType kind;
+  constraintTerm ret;
+  
+  uentry ue;
+  
+  char * str;
+  char * os;
+
+  str = mstring_create (MAX_DUMP_LINE_LENGTH);
+  os = str;
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  kind = (constraintTermType) getInt(&str);
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  switch (kind)
+    {
+      
+    case SREF:
+      {
+	sRef s;
+	char * term;
+	term = getWord(&str);
+	
+	if (strcmp (term, "Result") == 0 )
+	  {
+	    s = sRef_makeResult();
+	  }
+	else if (strcmp (term, "Param" ) == 0 )
+	  {
+	    int param;
+	    char *str2, *ostr2;
+	    
+	    ctype t;
+
+	    checkChar(&str, ' ');
+	    str2  = getWord(&str);
+	    param = getInt(&str);
+
+	    ostr2 = str2;
+	    t = ctype_undump(&str2) ;
+	    s = sRef_makeParam (param, t );
+	    free (ostr2);
+	  }
+	else  //This must be an identified that we can search for
+	  // in usymTab
+	  {
+	    
+	    ue = usymtab_lookup (term);
+	    s = uentry_getSref(ue);
+	  }
+	
+	ret = constraintTerm_makesRef(s);
+
+	free(term);
+      }
+      break;
+
+    case EXPRNODE:
+      {
+	sRef s;
+	char * term;
+		
+	term = getWord(&str);
+	//This must be an identifier that we can search for
+	  // in usymTab
+	
+	ue = usymtab_lookup (term);
+	s = uentry_getSref(ue);
+	ret = constraintTerm_makesRef(s);
+
+	free (term);
+      }
+      break;
+      
+      
+    case INTLITERAL:
+      {
+	int i;
+
+	i = getInt(&str);
+	ret = constraintTerm_makeIntLiteral (i);
+      }
+      break;
+      
+    default:
+      BADEXIT;
+    }
+  free (os);
+
+  return ret;
+}
+
+
+
+

@@ -13,7 +13,7 @@
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-# include "exprDataQuite.i"
+//# include "constraintExpr.h"
 
 
 /*@-czechfcns@*/
@@ -22,7 +22,9 @@
 
 /*@access exprNode @*/
 
+
 static /*@only@*/ constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/constraintExpr expr, int literal);
+
 
 /*@only@*/ static constraintExpr 
 doSRefFixConstraintParamTerm (/*@only@*/ constraintExpr e, /*@temp@*/ /*@observer@*/ exprNodeList arglist) /*@modifies e@*/;
@@ -448,6 +450,17 @@ constraintExpr constraintExpr_makeExprNode (/*@exposed@*/ exprNode e)
   return  oldconstraintExpr_makeTermExprNode(e); //constraintExpr_makeExprNode (e);
 }
 
+constraintExpr constraintExpr_makeTerm (/*@only@*/  constraintTerm t)
+{
+  constraintExpr ret;
+
+  ret = constraintExpr_alloc();
+  ret->kind = term;
+  ret->data = dmalloc (sizeof *(ret->data) );
+  ret->data = constraintExprData_termSetTerm (ret->data, t);
+
+  return ret;
+}
 
 constraintExpr constraintExpr_makeTermsRef ( sRef s)
 {
@@ -461,7 +474,7 @@ constraintExpr constraintExpr_makeTermsRef ( sRef s)
   return ret;
 }
 
-/*@special@*/ static constraintExpr constraintExpr_makeUnaryOp (void) /*@allocates result->data@*/ /*@defines result->kind@*/
+/*@special@*/ static constraintExpr makeUnaryOpGeneric (void) /*@allocates result->data@*/ /*@defines result->kind@*/
 {
   constraintExpr ret;
   ret = constraintExpr_alloc();
@@ -473,7 +486,7 @@ constraintExpr constraintExpr_makeTermsRef ( sRef s)
 /*@only@*/ static constraintExpr constraintExpr_makeUnaryOpConstraintExpr (/*@only@*/ constraintExpr cexpr)
 {
   constraintExpr ret;
-  ret = constraintExpr_makeUnaryOp();
+  ret = makeUnaryOpGeneric();
 
   /*@-uniondef@*/ 
   /*@-compdef@*/
@@ -486,12 +499,23 @@ constraintExpr constraintExpr_makeTermsRef ( sRef s)
   /*@=uniondef@*/
 }
 
+
+/*@only@*/ static constraintExpr constraintExpr_makeUnaryOp (/*@only@*/ constraintExpr cexpr,   constraintExprUnaryOpKind Op )
+{
+  constraintExpr ret;
+  ret = makeUnaryOpGeneric();
+
+  ret->data = constraintExprData_unaryExprSetExpr (ret->data, cexpr);
+  ret->data = constraintExprData_unaryExprSetOp (ret->data, Op);
+
+  return ret;
+}
+
 /*@only@*/
 static constraintExpr constraintExpr_makeMaxSetConstraintExpr (/*@only@*/ constraintExpr c)
 {
   constraintExpr ret;
-  ret = constraintExpr_makeUnaryOpConstraintExpr (c);
-  ret->data = constraintExprData_unaryExprSetOp (ret->data, MAXSET);
+  ret = constraintExpr_makeUnaryOp (c, MAXSET);
   return ret;
 }
 
@@ -672,7 +696,7 @@ constraintExpr constraintExpr_parseMakeBinaryOp (/*@only@*/ constraintExpr expr1
   return ret;
 }
 
-/*@only@*/
+static /*@only@*/
 constraintExpr constraintExpr_makeBinaryOpConstraintExprIntLiteral (/*@only@*/ constraintExpr expr, int literal)
 {
   constraintExpr ret;
@@ -1630,5 +1654,175 @@ bool constraintExpr_isBinaryExpr (/*@observer@*/ constraintExpr c)
   else
     return FALSE;
 }
+
+static void  binaryExpr_dump (/*@observer@*/ constraintExprData data,  FILE *f)
+{
+  constraintExpr expr1;
+  constraintExprBinaryOpKind binaryOp;
+  constraintExpr expr2;
+
+
+  binaryOp = constraintExprData_binaryExprGetOp (data);
+
+  fprintf(f, "%d\n", (int) binaryOp);
+  
+  expr1 = constraintExprData_binaryExprGetExpr1 (data);
+  expr2 = constraintExprData_binaryExprGetExpr2 (data);
+
+  fprintf(f, "e1\n");
+
+  constraintExpr_dump(expr1, f);
+
+  fprintf(f, "e2\n");
+  constraintExpr_dump(expr2, f);
+}
+
+
+static constraintExpr  binaryExpr_undump (FILE *f)
+{
+  constraintExpr expr1;
+  constraintExprBinaryOpKind binaryOp;
+  constraintExpr expr2;
+
+  constraintExpr ret;
+
+  
+
+  char * str;
+  char * os;
+
+  str = mstring_create (MAX_DUMP_LINE_LENGTH);
+  os = str;
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  
+  binaryOp = (constraintExprBinaryOpKind) getInt(&str);
+  
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  checkChar (&str, 'e');
+  checkChar (&str, '1');
+  
+  expr1 = constraintExpr_undump (f);
+
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  checkChar (&str, 'e');
+  checkChar (&str, '2');  
+
+  expr2 = constraintExpr_undump (f);
+
+  ret = constraintExpr_makeBinaryOpConstraintExpr (expr1, expr2);
+  ret->data = constraintExprData_binaryExprSetOp(ret->data, binaryOp);
+
+  free(os);
+  return ret;
+}
+
+
+
+static void  unaryExpr_dump (/*@observer@*/ constraintExprData data,  FILE *f)
+{
+
+  constraintExpr expr;
+  constraintExprUnaryOpKind unaryOp;
+
+  unaryOp = constraintExprData_unaryExprGetOp (data);
+
+  fprintf(f, "%d\n", (int) unaryOp);
+  
+  expr = constraintExprData_unaryExprGetExpr (data);
+
+  constraintExpr_dump(expr, f);  
+}
+
+static  constraintExpr  unaryExpr_undump ( FILE *f)
+{
+
+  constraintExpr expr;
+  constraintExprUnaryOpKind unaryOp;
+  constraintExpr ret;
+  
+  char * str;
+  char * os;
+
+  str = mstring_create (MAX_DUMP_LINE_LENGTH);
+  os = str;
+  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  unaryOp = (constraintExprUnaryOpKind) getInt(&str);
+  
+  expr = constraintExpr_undump (f);
+
+  ret = constraintExpr_makeUnaryOp (expr, unaryOp);
+
+  free(os);
+  
+  return ret;
+}
+
+void  constraintExpr_dump (/*@observer@*/ constraintExpr expr,  FILE *f)
+{
+  constraintExprKind kind;
+  constraintTerm t;
+  
+  
+  kind = expr->kind;
+  
+  fprintf(f,"%d\n", (int) kind);
+  
+  switch (kind)
+    {
+    case term:
+      t = constraintExprData_termGetTerm (expr->data);
+      constraintTerm_dump (t, f);
+      break;      
+    case unaryExpr:
+      unaryExpr_dump (expr->data, f);
+      break;           
+    case binaryexpr:
+      binaryExpr_dump  (expr->data, f);
+      break;
+    }  
+}
+
+/*@only@*/ constraintExpr  constraintExpr_undump (FILE *f)
+{
+  constraintExprKind kind;
+  constraintTerm t;
+  constraintExpr ret;
+  
+  char * s;
+  char * os;
+  
+  s = mstring_create (MAX_DUMP_LINE_LENGTH);
+
+  os = s;
+  
+  s = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+
+  kind = (constraintExprKind) getInt(&s);
+
+  free (os);
+  
+  switch (kind)
+    {
+    case term:
+      t = constraintTerm_undump (f);
+      ret = constraintExpr_makeTerm(t);
+      break;      
+    case unaryExpr:
+      ret = unaryExpr_undump (f);
+      break;           
+    case binaryexpr:
+      ret = binaryExpr_undump  (f);
+      break;
+    }
+
+  return ret;
+
+}
+
+
 
 

@@ -8,20 +8,20 @@
 # include <ctype.h> /* for isdigit */
 # include "lclintMacros.nf"
 # include "basic.h"
-# include "cgrammar.h"
+
 # include "cgrammar_tokens.h"
 
 # include "exprChecks.h"
 # include "aliasChecks.h"
 # include "exprNodeSList.h"
 
-# include "exprDataQuite.i"
+//# include "exprDataQuite.i"
 
 /*@access exprNode @*/
 
 extern void forLoopHeuristics( exprNode e, exprNode forPred, exprNode forBody);
 
-bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
+//bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
 static bool exprNode_handleError( exprNode p_e);
 
 //static cstring exprNode_findConstraints ( exprNode p_e);
@@ -35,7 +35,7 @@ static constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
 
 exprNode makeDataTypeConstraints (/*@returned@*/ exprNode e);
 
-constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
+//constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
 
 //bool exprNode_testd()
 //{
@@ -65,7 +65,6 @@ static bool exprNode_isUnhandled (exprNode e)
     case XPR_VAARG:
     case XPR_ITERCALL:
     case XPR_ITER:
-    case XPR_CAST:
     case XPR_GOTO:
     case XPR_CONTINUE:
     case XPR_BREAK:
@@ -465,7 +464,7 @@ static exprNode doWhile (/*@returned@*/ exprNode e, exprNode test, exprNode body
   return doIf (e, test, body);
 }
 
-constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
+/*@only@*/ constraintList constraintList_makeFixedArrayConstraints (/*@observer@*/ sRefSet s)
 {
   constraintList ret;
   constraint con;
@@ -818,6 +817,8 @@ t1 = exprData_getOpA (data);
 t2 = exprData_getOpB (data);
 
 
+ tempList = constraintList_undefined;
+ 
 /* arithmetic tests */
 
 if (lltok_isEq_Op (tok) )
@@ -869,6 +870,7 @@ if (lltok_isLe_Op (tok) )
 
 /*Logical operations */
 
+
  if (lltok_isAnd_Op (tok) )
    
    {
@@ -904,6 +906,8 @@ if (lltok_isLe_Op (tok) )
 
 
       e->trueEnsuresConstraints =constraintList_addListFree(e->trueEnsuresConstraints, tempList);
+      tempList = constraintList_undefined;
+
       
     }
  else
@@ -948,8 +952,6 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
   
   switch (e->kind)
     {
-
-      
     case XPR_WHILEPRED:
       t1 = exprData_getSingle (data);
       exprNode_exprTraverse (t1,  definatelv, definaterv, sequencePoint);
@@ -992,18 +994,36 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       //    e->constraints = constraintList_exprNodemerge (exprData_getUopNode (e->edata), exprNode_undefined);
       break;
     case XPR_INIT:
-     /*   //t1 = exprData_getInitId (data); */
-      t2 = exprData_getInitNode (data);
-      //exprNode_exprTraverse (t1, TRUE, FALSE, sequencePoint ); 
-      
-      exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
+      {
+	/*	
+      	idDecl t;
+	
+	uentry ue;
+	exprNode lhs;
 
-      /* this test is nessecary because some expressions generate a null expression node.  function pointer do that -- drl */
+	t = exprData_getInitId (data); 
+	ue = usymtab_lookup (idDecl_observeId (t));
+	lhs = exprNode_createId (ue);
+	*/
+	t2 = exprData_getInitNode (data);
+
+	/*	DPRINTF(( (message("initialization: %s = %s",
+			   exprNode_unparse(lhs),
+			   exprNode_unparse(t2)
+			   )
+		   ) )); 	*/
+	
+	//exprNode_exprTraverse (t1, TRUE, FALSE, sequencePoint ); 
+	
+	exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
+	
+	/* this test is nessecary because some expressions generate a null expression node.  function pointer do that -- drl */
         if ( (!exprNode_isError (e))  &&  (!exprNode_isError(t2)) )
-	{
-	  cons =  constraint_makeEnsureEqual (e, t2, sequencePoint);
-	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
-	}
+	  {
+	    cons =  constraint_makeEnsureEqual (e, t2, sequencePoint);
+	    e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+	  }
+      }
       
       break;
     case XPR_ASSIGN:
@@ -1011,7 +1031,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       t2 = exprData_getOpB (data);
       exprNode_exprTraverse (t1, TRUE, definaterv, sequencePoint ); 
       //lltok_unparse (exprData_getOpTok (data));
-      #warning check this for += -= etc
+
       exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
 
       /* this test is nessecary because some expressions generate a null expression node.  function pointer do that -- drl */
@@ -1024,26 +1044,30 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
     case XPR_OP:
       t1 = exprData_getOpA (data);
       t2 = exprData_getOpB (data);
-      
-       exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint );
       tok = exprData_getOpTok (data);
-      exprNode_exprTraverse (t2, definatelv, definaterv, sequencePoint );
-
-      #warning fix definatelv and definaterv
       
+
       if (tok.tok == ADD_ASSIGN)
 	{
+	  exprNode_exprTraverse (t1, TRUE, definaterv, sequencePoint );
+	  exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
+
 	  cons = constraint_makeAddAssign (t1, t2,  sequencePoint );
 	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
 	}
-
-      if (tok.tok == SUB_ASSIGN)
+      else if (tok.tok == SUB_ASSIGN)
 	{
+	  exprNode_exprTraverse (t1, TRUE, definaterv, sequencePoint );
+	  exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
+
 	  cons = constraint_makeSubtractAssign (t1, t2,  sequencePoint );
 	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
 	}
-
-      
+      else
+	{
+	  exprNode_exprTraverse (t1, definatelv, definaterv, sequencePoint );
+	  exprNode_exprTraverse (t2, definatelv, definaterv, sequencePoint );
+	}
       
       if (lltok_isBoolean_Op (tok) )
 	exprNode_booleanTraverse (e, definatelv, definaterv, sequencePoint);
@@ -1078,8 +1102,11 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
 
       
       mergeResolve (e, t1, fcn);
+
+      exprNode_free(t1);
       
       //      e->constraints = constraintList_add (e->constraints, constraint_create (e,exprNode_undefined, GT,  CALLSAFE ) );
+      
       break;
       
     case XPR_RETURN:
@@ -1192,9 +1219,16 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
 	}
       break;
     case XPR_CAST:
-      llassert(FALSE);
-       exprNode_exprTraverse (exprData_getCastNode (data), definatelv, definaterv, sequencePoint );
+      {
+	t2 =  exprData_getCastNode (data);
+	DPRINTF (( message ("Examining cast (%q)%s", 
+			    qtype_unparse (exprData_getCastType (data)),
+			    exprNode_unparse (t2) )
+		   ));
+	exprNode_exprTraverse (t2, definatelv, definaterv, sequencePoint );
+      }
       break;
+      
     case XPR_COND:
       {
 	exprNode pred, true, false;
@@ -1286,7 +1320,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  /*@ob
       exprNode_exprTraverse (t2, definatelv, definaterv, sequencePoint );
       mergeResolve (e, t1, t2);
       break;
-      
+
     default:
       handledExprNode = FALSE;
     }

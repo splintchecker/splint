@@ -336,13 +336,19 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 	      //so we don't want to store the result but we do it anyway
 	      temp2 = constraint_copy (temp);
 	      //	          if (context_getFlag (FLG_ORCONSTRAINT) )
-	         temp2 = inequalitySubstitute (temp2, post1); 
-		      if (!resolve (temp2, post1) )
-			{
-			  temp2 = inequalitySubstituteUnsound (temp2, post1); 
-			  if (!resolve (temp2, post1) )
-			      ret = constraintList_add (ret, temp2);
-			}
+	      temp2 = inequalitySubstitute (temp2, post1); 
+	      if (!resolve (temp2, post1) )
+		{
+		  temp2 = inequalitySubstituteUnsound (temp2, post1); 
+		  if (!resolve (temp2, post1) )
+		    ret = constraintList_add (ret, temp2);
+		  else
+		    constraint_free(temp2);
+		}
+	      else
+		{
+		  constraint_free(temp2);
+		}
 	    }
 	  constraint_free(temp);
 	}
@@ -459,9 +465,10 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
       if (next != NULL)
 	constraint_free(next);
 
-      /*we don't need to free ret when resolved is false*/
-      //      constraint_free(ret);
-      /*@i1*/ return NULL;
+      /*we don't need to free ret when resolved is false because ret is null*/
+      llassert(ret == NULL);
+      
+       return NULL;
     }
 
   while (next != NULL)
@@ -474,12 +481,13 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
       if (*resolved)
 	{
 	  /* curr is null so we don't try to free it*/
-	  //constraint_free(curr);
+	  llassert(curr == NULL);
 	  
 	  if (next != NULL)
 	    constraint_free(next);
+
 	  constraint_free(ret);
-	  /*@i1*/ return NULL;
+	  return NULL;
 	}
       ret = constraint_addOr (ret, curr);
       constraint_free(curr);
@@ -509,6 +517,12 @@ static /*@only@*/ constraint doResolveOr (constraint c, constraintList post1, /*
 	{
 	  ret = constraintList_add(ret, temp);
 	}
+      else
+	{
+     /*we don't need to free ret when resolved is false because ret is null*/
+	  llassert(temp == NULL);
+	}
+      
     } end_constraintList_elements;
 
     DPRINTF((message ("reflectChangesOr: returning %s", constraintList_print(ret) ) ) );
@@ -528,6 +542,8 @@ static /*@only@*/ constraintList reflectChangesEnsures (/*@observer@*/ constrain
 
 	  if (!resolve (temp, post1) )
 	    ret = constraintList_add (ret, temp);
+	  else
+	    constraint_free(temp);  
 	}
       else
 	{

@@ -285,7 +285,6 @@ static /*@only@*/ constraintExpr constraintExpr_searchAndAdd (/*@only@*/ constra
   
   if ( constraintExpr_similar (c, find) )
     {
-      #warning mem leak
 
       constraintExpr new;
       

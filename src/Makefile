@@ -187,7 +187,7 @@ else
 endif
 
 updateversion:
-	@$(MV) Headers/herald.h Headers/herald.last
+	-@$(MV) Headers/herald.h Headers/herald.last
 	@echo '/* herald.h - created automatically by gmake updateversion */' > Headers/herald.h
 	@echo '/*@constant observer char *LCL_VERSION;@*/' >> Headers/herald.h
 	@echo '# define LCL_VERSION "LCLint '`cat $(VERSION_NUMBER)`' --- '`cat DATE`'"' \
@@ -328,7 +328,7 @@ $(CHECKS): lclint.lcd
 #	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -allimponly -modglobsnomods -uniondef -exportlocal -exportheader -abstract -namechecks -protoparammatch -boolops $(ALLSRC) -dump  lclint
 
 lint: 
-	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -nestcomments -fcnuse -uniondef +allimponly -branchstate -exportlocal -exportheader -abstract -namechecks -protoparammatch -temptrans -boolops $(ALLSRC) -dump  lclint
+	$(LCLINT) -f lclint.lclintrc $(CPPFLAGS) +forcehints +singleinclude -exportlocal -exportheader -abstract -namechecks -protoparammatch -temptrans -boolops $(ALLSRC) -dump  lclint
 
 
 myall:

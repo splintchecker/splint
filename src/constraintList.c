@@ -146,7 +146,16 @@ static void constraintList_freeShallow (/*@only@*/ constraintList c)
     return s;
 }
 
-cstring
+
+extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList s) /*@*/
+{
+  return (constraintList_print(s));
+
+
+}
+
+
+/*@only@*/ cstring
 constraintList_print (constraintList s) /*@*/
 {
   int i;
@@ -246,10 +255,11 @@ constraintList_printDetailed (constraintList s)
 	{
 	  st = type;
 	  first = FALSE;
+	  type = NULL;
 	}
       else
 	{
-	  st = message ("%s %s", st, type);
+	  st = message ("%q %q", st, type);
 	}
     }
   return st;
@@ -440,6 +450,50 @@ constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
     }
   end_constraintList_elements_private;
   return c;
+}
+
+/*@only@*/ constraintList constraintList_undump (FILE *f)
+{
+  constraintList ret;
+  char *s = mstring_create (MAX_DUMP_LINE_LENGTH);
+  char *os;
+  
+  ret = constraintList_makeNew();
+
+  os = s;
+  s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
+
+  while (s != NULL && *s != ';')
+    {
+      constraint temp;
+      char * c;
+
+      c =  getWord(&s);
+      
+      if (strcmp (c, "C") != 0)
+	{
+	  llfatalbug(message("Error reading library.  File may be corrupted"));
+	}
+
+      temp = constraint_undump (f);
+      ret = constraintList_add (ret, temp);
+      s = fgets (os, MAX_DUMP_LINE_LENGTH, f);
+      free(c);
+    }
+  free(s);
+
+  return ret;
+}
+
+
+void constraintList_dump (/*@observer@*/ constraintList c,  FILE *f)
+{
+  constraintList_elements (c, el)
+    {
+      fprintf(f, "C\n");
+      constraint_dump (el, f);
+    }
+  end_constraintList_elements; ;
 }
 
 
