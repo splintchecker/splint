@@ -24,7 +24,7 @@
 ## To report a bug: splint-bug@splint.org
 ## 
 
-AUTOMAKE_OPTIONS = 1.5 foreign
+AUTOMAKE_OPTIONS = 1.6.3 foreign
 
 binaryDir = bin
 

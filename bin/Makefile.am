@@ -1,17 +1,8 @@
 ## Note: starting comments with ## means they don't end up in Makefile
 
-AUTOMAKE_OPTIONS = 1.5 foreign
+AUTOMAKE_OPTIONS = 1.6.3 foreign no-dependencies
 
 SUFFIXES = .h .c .o .l .check
-
-# Check files before compiling; requires splint!
-CHECK = 1
-
-# Some preferences
-### We use the no-lines option to prevent confusion with splint flag settings.
-### Should fix splint to avoid this...
-YFLAGS = -v -t -d --debug --no-lines
-LFLAGS = -L
 
 binaryDir = bin
 
