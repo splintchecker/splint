@@ -4753,3 +4753,165 @@ valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
 
 
 
+/*drl 12/30/01 these are some ugly functions that were added to facilitate struct annotations */
+
+
+/*drl added */
+static ctype lastStruct;
+
+ctype context_setLastStruct (/*@returned@*/ ctype s) /*@globals lastStruct@*/
+{
+  lastStruct = s;
+  return s;
+}
+
+ctype context_getLastStruct (/*@returned@*/ /*ctype s*/) /*@globals lastStruct@*/
+{
+  return lastStruct;
+}
+
+
+/*@unused@*/ static int sInfoNum = 0;
+
+
+struct getUe {
+  /*@unused@*/  uentry ue;
+  /*@unused@*/ sRef s;
+};
+
+struct sInfo {
+  /*@unused@*/ ctype ct;
+  /*@unused@*/ constraintList inv;
+ /*@unused@*/ int ngetUe;
+ /*@unused@*/ struct getUe * t ;
+};
+
+
+static struct sInfo globalStructInfo;
+
+
+/*drl 1/6/2001: I didn't think these functions were solid enough to include in the
+  stable  release of splint.  I coomented them out so that they won't break anything
+  but didn't delete them because they will be fixed and included later
+*/
+
+/*
+void  setGlobalStructInfo(ctype ct, constraintList list)
+{
+  int i;
+  uentryList f;
+
+  f =  ctype_getFields (ct);
+  
+  if (constraintList_isDefined(list) )
+    {
+      globalStructInfo.ct = ct;
+      globalStructInfo.inv = list;
+
+      globalStructInfo.ngetUe = 0;
+      
+      / *abstraction violation fix it * /
+      globalStructInfo.t   = dmalloc(f->nelements * sizeof(struct getUe) );
+
+      globalStructInfo.ngetUe = f->nelements;
+
+      i = 0;
+      
+      uentryList_elements(f, ue)
+	{
+	  globalStructInfo.t[i].ue = ue;
+	  globalStructInfo.t[i].s = uentry_getSref(ue);
+	  TPRINTF(( message(" setGlobalStructInfo:: adding ue=%s and sRef=%s",
+			    uentry_unparse(ue), sRef_unparse( uentry_getSref(ue) )
+			    )
+		    ));
+	  i++;
+	}
+      end_uentryList_elements;
+    }
+}
+
+*/
+
+bool hasInvariants (ctype ct) /*@*/
+{
+  if ( ctype_sameName(globalStructInfo.ct, ct) )
+
+    return TRUE;
+
+  else
+    
+    return FALSE;
+  
+}
+
+/*drl 1/6/2001: I didn't think these functions were solid enough to include in the
+  stable  release of splint.  I coomented them out so that they won't break anything
+  but didn't delete them because they will be fixed and included later
+*/
+
+/*
+constraintList getInvariants (ctype ct)
+{
+  
+  llassert(hasInvariants(ct) );
+
+  return  globalStructInfo.inv;
+}
+*/
+
+/*
+static int getSref (ctype ct, sRef s)
+{
+  int i;
+
+  i = 0;
+
+  / *
+    DEBUGGIN INFO
+    
+    fprintf(stderr, "getSref: ct = %s (%x)\n",  ctype_unparse(ct), ct );
+    
+    fprintf(stderr,"getSref: s =  (%s) %X \n", sRef_unparse(s),  s);
+  * /
+  
+  while (i < globalStructInfo.ngetUe)
+    {
+      DPRINTF(( message(" getSref:: comparing ue=%s and sRef=%s",
+			uentry_unparse(globalStructInfo.t[i].ue),
+			sRef_unparse(globalStructInfo.t[i].s)
+			)
+		));
+
+      / *
+      fprintf (stderr, " globalStructInfo.t[i].s = %x\n ",
+	       globalStructInfo.t[i].s );
+      * /
+      
+      if (sRef_same(globalStructInfo.t[i].s,s) )
+	return i;
+      
+      i++;
+    }
+  return -1;  
+}
+
+  
+sRef fixSref (ctype ct, sRef base, sRef fix)
+{
+  int index;
+  uentry ue;
+  cstring name;
+  index = getSref(ct, fix);
+
+  if (index < 0) 
+    return fix;
+
+  ue =  globalStructInfo.t[index].ue;
+  name = uentry_getName(ue);
+  fix = sRef_buildField(base, name );
+  cstring_free(name);
+  return fix;
+}
+
+*/

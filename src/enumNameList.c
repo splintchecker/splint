@@ -55,6 +55,7 @@ enumNameList_single (/*@keep@*/ enumName t)
   s->nelements = 1;
   s->nspace = enumNameListBASESIZE - 1;
   s->elements = (enumName *) dmalloc (sizeof (*s->elements) * enumNameListBASESIZE);
+        /*drl bee: dm*/
   s->elements[0] = t;
 
   return (s);
@@ -69,6 +70,8 @@ enumNameList_match (enumNameList e1, enumNameList e2)
 
   for (i = 0; i < e1->nelements; i++)
     {
+            /*drl bee: si*/
+            /*drl bee: si*/
       if (!cstring_equal (e1->elements[i], e2->elements[i]))
 	return FALSE;
     }
@@ -91,6 +94,8 @@ enumNameList_grow (enumNameList s)
 
   for (i = 0; i < s->nelements; i++)
     {
+            /*drl bee: si*/
+            /*drl bee: si*/
       newelements[i] = s->elements[i];
     }
 
@@ -105,6 +110,7 @@ enumNameList_addh (enumNameList s, /*@keep@*/ enumName el)
     enumNameList_grow (s);
 
   s->nspace--;
+  /*drl bee: si*/
   s->elements[s->nelements] = el;
   s->nelements++;
 }
@@ -166,10 +172,12 @@ enumNameList_unparse (enumNameList s)
     {
       if (i == 0) 
 	{
+	        /*drl bee: si*/
 	  st = cstring_copy (s->elements[i]);
 	}
       else
 	{
+	        /*drl bee: si*/
 	  st = message ("%q, %s", st, s->elements[i]);
 	}
     }
@@ -186,6 +194,7 @@ cstring enumNameList_unparseBrief (enumNameList s)
     {
       if (i == 0)
 	{
+	        /*drl bee: si*/
 	  st = cstring_copy (s->elements[i]);
 	}
       else if (i == 3 && s->nelements > 5)
@@ -195,6 +204,7 @@ cstring enumNameList_unparseBrief (enumNameList s)
 	}
       else
 	{
+	        /*drl bee: si*/
 	  st = message ("%q, %s", st, s->elements[i]);
 	}
     }
@@ -212,9 +222,11 @@ enumNameList_dump (enumNameList s)
     {
       if (i == 0)
 	{
+	        /*drl bee: si*/
 	  st = cstring_copy (s->elements[i]);
 	}
       else
+	      /*drl bee: si*/
 	st = message ("%q,%s", st, s->elements[i]);
     }
   return st;

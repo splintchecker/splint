@@ -26,6 +26,13 @@ int (*compar)(const void *, const void *)) /*@*/
      extern /*@null@*/ /*@only@*/ void *calloc (size_t nobj, size_t size) /*@*/
   /*@ensures MaxSet(result) == (nobj - 1); @*/ ;
 
+  /*
+    This is defined in ansi.h
+    We include it here for reference
+
+    drl 1/4/2002
+  */
+
   /*@-redef@*/
 typedef /*@concrete@*/ struct 
 {
@@ -33,6 +40,7 @@ typedef /*@concrete@*/ struct
   int rem;
 } div_t ;
 /*@=redef@*/
+
 
 
 extern div_t div (int num, int denom) /*@*/ ;
@@ -58,12 +66,13 @@ char *ecvt(double value, int ndigit, /*@out@*/ int *decpt, /*@out@*/ int *sign)
      /*@modifies fileSystem, errno @*/
      ;
      char *initstate(unsigned int seed, char *state, size_t size)
-     /*@modifies interalState, state @*/ /*@requires maxSet(state) >= (size - 1) @*/ /*drl added 09-20-001*/
+     /*@modifies internalState, state @*/ /*@requires maxSet(state) >= (size - 1) @*/ /*drl added 09-20-001*/
      ;
-     
+
+     /*drl 1/4/2002: specifying the array sizes is meaningless but we include
+       them to be consistent with the unix specification at opengroup.org */
      /*@-fixedformalarray@*/
      long int jrand48 (unsigned short int xsubi[3]) /*@modifies internalState@*/ /*@requires maxSet(xsubi) >= 2 @*/ ; 
-     /*@=fixedformalarray@*/
      
      char *l64a(long value) /*@ensures maxRead(result) <= 5 /\ maxSet(result) <= 5 @*/ ;
      extern long int labs (long int n) /*@*/ ; 
@@ -71,9 +80,14 @@ char *ecvt(double value, int ndigit, /*@out@*/ int *decpt, /*@out@*/ int *sign)
           /*@-fixedformalarray@*/
 extern     void lcong48 (unsigned short int param[7]) /*@modifies internalState@*/ /*@requires maxRead(param) >= 6 @*/ ; 
 
-     /*@=fixedformalarray@*/
+    /*@=fixedformalarray@*/
 
-/*also in ansi.h */
+  /*
+    This is already defined in ansi.h
+    We include it here for reference but
+    comment it out to avoid a warning
+    drl 1/4/2002
+  */
 
 /*@-redef@*/
 typedef /*@concrete@*/ struct 
@@ -117,16 +131,17 @@ extern int mbtowc (/*@null@*/ /*@out@*/ wchar_t *pwc, /*@null@*/ char *s, size_t
 
      long int mrand48 (void) /*@modifies internalState@*/ ;
 
+
+          /*drl 1/4/2002: specifying the array size is meaningless but we include
+       it to be consistent with the unix specification at opengroup.org */
      /*@-fixedformalarray@*/
  long int nrand48 (unsigned short int xsubi[3]) /*@modifies internalState, xsubi @*/
 
      /*@requires maxSet(xsubi) >= 2 /\ maxRead(xsubi) >= 2 @*/
      ;
-
-      /*@=fixedformalarray@*/
+     /*@=fixedformalarray@*/
      
      extern /*@dependent@*/ /*check dependent */ char *ptsname(int fildes) /*drl added 09-20-01*/ ;
-     
 
 	extern int
 	putenv (/*@kept@*/ const char *string)
@@ -158,12 +173,14 @@ extern char *realpath(const char *file_name, /*@out@*/ char *resolved_name)
      //     *@requires maxSet(resolved_name) >=  (PATH_MAX - 1) @*/
      ;
 
-     /*@-fixedformalarray@*/ 
+     /*drl 1/4/2002: specifying the array sizes is meaningless but we include
+       them to be consistent with the unix specification at opengroup.org */
+     /*@-fixedformalarray@*/
 unsigned short int *seed48 (unsigned short int seed16v[3]) /*@modifies internalState@*/
      /*@requires maxRead(seed16v) >= 2 @*/
      ; 
+     /*@=fixedformalarray@*/
 
- /*@=fixedformalarray@*/
      void setkey(const char *key) /*@requires maxRead(key) >= 63 @*/
      /*@modifies internalState, errno@*/ 
      ;

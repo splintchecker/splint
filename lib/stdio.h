@@ -185,12 +185,12 @@ extern char * ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
   /*@modifies fileSystem, *stdin, errno@*/
   /*drl added errno 09-19-001 */ ;
 
-  extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf) 
+  extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
     /*@modifies fileSystem, *stream, *buf@*/ 
      // *@requires maxSet(buf) >= (BUFSIZ - 1) @*/
      ;
 
-    extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf, 
+     extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
             int mode, size_t size)
       /*@modifies fileSystem, *stream, *buf@*/  /*@requires maxSet(buf) >= (size - 1) @*/ ;
 

@@ -181,6 +181,10 @@ extern double trunc (double x) /*@*/ ;
 /*@constant int WORD_BIT@*/
 /*@constant int LONG_BIT@*/
 
+/*@-incondefs@*/ /* some constant are also declared in posix.h*/
+
+/*@constant long NAME_MAX@*/
+
 /*@constant long NGROUPS_MAX@*/
 
 /*@constant long MAX_CANON@*/
@@ -190,7 +194,8 @@ extern double trunc (double x) /*@*/ ;
 
 /*@constant int PID_MAX@*/
 /*@constant int SYSPID_MAX@*/
-
+/*@constant long PIPE_BUF@*/
+/*@=incondefs@*/
 /*@constant int PIPE_MAX@*/
 /*@constant int PROC_MAX@*/
 /*@constant int STD_BLK@*/
@@ -493,11 +498,22 @@ connect (int s, struct sockaddr *name, int namelen)
 
 int getpeername (int s, /*@out@*/ struct sockaddr *name, size_t *namelen)
 	/*@modifies *name, *namelen, errno@*/;
+	
+	typedef /*@unsignedintegraltype@*/ socklen_t;
 
-int getsockname (int s, struct sockaddr *address, size_t *address_len)
-  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
+#ifdef STRICT
+
+int getsockname (int s, /*@out@*/ struct sockaddr *address, socklen_t *address_len)
+     /*@i556@*/  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
   /*@modifies *address, *address_len, errno@*/;
 
+#else  
+int getsockname (int s, /*@out@*/ struct sockaddr *address, socklen_t  /*@alt size_t@*/ *address_len)
+     /*@i556@*/  /*: can't do this? requires maxSet(address) >= (*address_len) @*/ 
+  /*@modifies *address, *address_len, errno@*/;
+
+#endif
+  
 int getsockopt (int s, int level, int optname, /*@out@*/ void *optval, size_t *optlen)
 	/*@modifies *optval, *optlen, errno@*/;
 
@@ -1784,7 +1800,7 @@ typedef /*@abstract@*/ DIR;
 /*:i32 need to check annotations on these */
 
 int closedir (DIR *) /*:errorcode -1*/ ; 
-/*@null@*/ DIR *opendir(const char *) ;
+/*@null@*/ /*@dependent@*/ DIR *opendir(const char *)  /*@modifies errno, fileSystem@*/ ;
 struct dirent *readdir(DIR *);
 int readdir_r(DIR *, struct dirent *, struct dirent **);
 void rewinddir(DIR *);
@@ -1826,13 +1842,13 @@ int usleep (useconds_t useconds) /*@modifies systemState, errno@*/
 
 
      /* drl added 10-27-001 */
-     /*@i23*/
-     
-     /*not sure what the exact size of this is
+         /*not sure what the exact size of this is
        also can IPv6 use this function?
       */
+     /*I'm going to assume that the address had the format:
+       "###.###.###.###" which is 16 bytes*/
      
-     char *inet_ntoa(struct in_addr in)
+       /*@kept@*/ char *inet_ntoa(struct in_addr in)
      /*@ensures maxSet(result) <= 15 /\ maxRead(result) <= 15 @*/
      ;
 

@@ -156,7 +156,8 @@ extern void yyerror (char *);
 %token <tok> QSETS
 %token <tok> QRELEASES 
 %token <tok> QPRECLAUSE 
-%token <tok> QPOSTCLAUSE 
+%token <tok> QPOSTCLAUSE
+%token <tok> QINVARIANT
 %token <tok> QALT 
 %token <tok> QUNDEF QKILLED
 %token <tok> QENDMACRO
@@ -278,7 +279,14 @@ extern void yyerror (char *);
 
 %type <conL> BufConstraintList
 
+%type <conL> optStructInvariant
+
 %type <tok>  BufUnaryOp
+
+/*drl 1/6/2002 either /\ or && */
+%type <tok> constraintSeperator
+
+
 
 %type <enumnamelist> enumeratorList 
 %type <cstringlist> fieldDesignator
@@ -478,8 +486,12 @@ metaStateName
 
 /*drl*/
 
+constraintSeperator
+: TCAND
+| AND_OP
+
 BufConstraintList
-: BufConstraint TCAND BufConstraintList { $$ = constraintList_add ($3, $1); }
+: BufConstraint constraintSeperator BufConstraintList { $$ = constraintList_add ($3, $1); }
 | BufConstraint { $$ = constraintList_single ($1); } 
 
 BufConstraint
@@ -1228,12 +1240,20 @@ optCompleteType
  : /* empty */                             { $$ = qtype_unknown (); }
  | completeTypeSpecifier                   { $$ = $1; }
 
+
+optStructInvariant
+: /* empty */ { $$ = constraintList_undefined; }
+/* don't want to have support for structure invariant until we're
+   sure it's stable
+   |  QINVARIANT BufConstraintList QENDMACRO { $$ = $2 }
+*/
+
 suSpc
  : NotType CSTRUCT newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
-   structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
+   structDeclList  DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
-   { $$ = declareStruct ($3, $8); }
+   optStructInvariant { {ctype ct; ct = declareStruct ($3, $8); /* setGlobalStructInfo(ct, $12);*/ $$ = ct;} } 
  | NotType CUNION  newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); } 
@@ -1437,6 +1457,7 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
+
 
 iterBody
  : iterDefStmtList { $$ = $1; }

@@ -988,11 +988,11 @@ ctype_isDirectInt (ctype c)
 static bool
   ctype_isForcePred (ctype * c, bool (pred) (ctype))
 {
-  if (ctype_isConj (*c))
+  /*drl bee: pbr */  if (ctype_isConj (*c))
     {
       ctype cbr = ctype_getConjA (*c);
 
-      if ((*pred) (cbr))
+     /*drl bee: si*/   if ((*pred) (cbr))
 	{
 	  if ((*pred) (ctype_getConjB (*c)))
 	    {

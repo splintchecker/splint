@@ -389,10 +389,10 @@ int fflush (/*@null@*/ FILE *stream)
 /*@null@*/ FILE *freopen (char *filename, char *mode, FILE *stream) 
   /*@modifies *stream, fileSystem, errno@*/ ;
 
-void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf) 
+  extern void setbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf) 
    /*@modifies fileSystem, *stream, *buf@*/ ;
 
-int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ char *buf, 
+   extern int setvbuf (FILE *stream, /*@null@*/ /*@exposed@*/ /*@out@*/ char *buf, 
 		    int mode, size_t size)
    /*@modifies fileSystem, *stream, *buf@*/ ;
 
@@ -462,8 +462,8 @@ int fgetc (FILE *stream)
 /*@null@*/ char *
   fgets (/*@returned@*/ /*@out@*/ char *s, int n, FILE *stream)
      /*@modifies fileSystem, *s, *stream, errno@*/
-     /*@requires MaxSet(s) >= (n -1); @*/
-     /*@ensures MaxRead(s) <= (n -1) /\ MaxRead(s) >= 0; @*/
+     /*@requires maxSet(s) >= (n -1); @*/
+     /*@ensures maxRead(s) <= (n -1) /\ maxRead(s) >= 0; @*/
      ;
 
 int fputc (int /*@alt char@*/ c, FILE *stream)
@@ -557,9 +557,9 @@ void srand (unsigned int seed) /*@modifies internalState@*/ ;
 */
 
 /*@null@*/ /*@only@*/ void *calloc (size_t nobj, size_t size) /*@*/
-     /*@ensures MaxSet(result) == (nobj - 1); @*/ ;
+     /*@ensures maxSet(result) == (nobj - 1); @*/ ;
 /*@null@*/ /*@out@*/ /*@only@*/ void *malloc (size_t size) /*@*/
-     /*@ensures MaxSet(result) == (size - 1); @*/ ;
+     /*@ensures maxSet(result) == (size - 1); @*/ ;
 
 /*end drl changed */
      
@@ -569,7 +569,7 @@ void srand (unsigned int seed) /*@modifies internalState@*/ ;
 /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@special@*/ void *p, 
 	    size_t size) /*@releases p@*/ /*@modifies *p@*/
-     /*@ensures MaxSet(result) == (size - 1) @*/;
+     /*@ensures maxSet(result) == (size - 1) @*/;
 # endif
 
 /*
@@ -583,7 +583,7 @@ void srand (unsigned int seed) /*@modifies internalState@*/ ;
 
 /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@out@*/ /*@returned@*/ void *p, size_t size) 
-     /*@modifies *p@*/ /*@ensures MaxSet(result) >= (size - 1) @*/;
+     /*@modifies *p@*/ /*@ensures maxSet(result) >= (size - 1) @*/;
 
 void free (/*@null@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies p@*/ ;
 
@@ -858,13 +858,13 @@ size_t wcstombs (/*@out@*/ char *s, wchar_t *pwcs, size_t n)
 void /*@alt void * @*/
   memcpy (/*@unique@*/ /*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n) 
   /*@modifies *s1@*/
-     /*@requires MaxRead(s2) >= (n - 1) /\ MaxSet(s1) >= (n - 1); @*/
+     /*@requires maxRead(s2) >= (n - 1) /\ maxSet(s1) >= (n - 1); @*/
      ;
 
 void /*@alt void * @*/
   memmove (/*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n)
   /*@modifies *s1@*/
-  /*@requires MaxRead(s2) >= (n - 1) /\ MaxSet(s1) >= (n - 1); @*/
+  /*@requires maxRead(s2) >= (n - 1) /\ maxSet(s1) >= (n - 1); @*/
    ;
 
   
@@ -876,22 +876,22 @@ void /*@alt char * @*/
   strcpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2) 
      /*@modifies *s1@*/ 
      /*@requires maxSet(s1) >= maxRead(s2) @*/
-     /*@ensures MaxRead(s1) == MaxRead (s2) /\ MaxRead(result) == MaxRead(s2) /\ MaxSet(result) == MaxSet(s1); @*/;
+     /*@ensures maxRead(s1) == maxRead (s2) /\ maxRead(result) == maxRead(s2) /\ maxSet(result) == maxSet(s1); @*/;
 
 void /*@alt char * @*/
   strncpy (/*@unique@*/ /*@out@*/ /*@returned@*/ char *s1, char *s2, size_t n) 
-  /*@modifies *s1@*/      /*@requires MaxSet(s1) >= ( n - 1 ); @*/ /*@ensures MaxRead (s2) >= MaxRead(s1) /\ MaxRead (s1) <= n; @*/; 
+  /*@modifies *s1@*/      /*@requires maxSet(s1) >= ( n - 1 ); @*/ /*@ensures maxRead (s2) >= maxRead(s1) /\ maxRead (s1) <= n; @*/; 
 
 void /*@alt char * @*/
   strcat (/*@unique@*/ /*@returned@*/ char *s1, char *s2) 
-     /*@modifies *s1@*/ /*@requires MaxSet(s1) >= (MaxRead(s1) + MaxRead(s2) );@*/
-     /*@ensures MaxRead(result) == (MaxRead(s1) + MaxRead(s2) );@*/;
+     /*@modifies *s1@*/ /*@requires maxSet(s1) >= (maxRead(s1) + maxRead(s2) );@*/
+     /*@ensures maxRead(result) == (maxRead(s1) + maxRead(s2) );@*/;
 
 void /*@alt char * @*/
   strncat (/*@unique@*/ /*@returned@*/ char *s1, char *s2, size_t n)
      /*@modifies *s1@*/ 
-     /*@requires MaxSet(s1) >= ( MaxRead(s1) + n); @*/
-      /*@ensures MaxRead(s1) >= (MaxRead(s1) + n); @*/;
+     /*@requires maxSet(s1) >= ( maxRead(s1) + n); @*/
+      /*@ensures maxRead(s1) >= (maxRead(s1) + n); @*/;
 
      /*drl end*/
      
@@ -906,10 +906,10 @@ size_t strxfrm (/*@out@*/ /*@null@*/ char *s1, char *s2, size_t n)
 
 # ifdef STRICT
 /*@exposed@*/ /*@null@*/ char *
-strchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
+strchr (/*@returned@*/ char *s, char c) /*@*/ /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 @*/ ;
 # else
 /*@exposed@*/ /*@null@*/ char *
-  strchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0; @*/ ;
+  strchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/ /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0; @*/ ;
 # endif
 
 size_t strcspn (char *s1, char *s2) /*@*/ ;
@@ -918,17 +918,17 @@ size_t strcspn (char *s1, char *s2) /*@*/ ;
 
 # ifdef STRICT
 /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, char c) /*@*/  /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
+  strrchr (/*@returned@*/ char *s, char c) /*@*/  /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 @*/ ;
 # else
 /*@null@*/ /*@exposed@*/ char *
-  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/  /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
+  strrchr (/*@returned@*/ char *s, int /*@alt char@*/ c) /*@*/  /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 @*/ ;
 # endif
 
 size_t strspn (char *s, char *t) /*@*/ ;
 
 /*@null@*/ /*@exposed@*/  char *
   strstr (/*@returned@*/ /*@unique@*/ char *s, char *t) /*@*/
-       /*@ensures MaxSet(result) >= 0 /\ MaxSet(result) <= MaxSet(s) /\ MaxRead (result) <= MaxRead(s) /\ MaxRead(result) >= 0 @*/ ;
+       /*@ensures maxSet(result) >= 0 /\ maxSet(result) <= maxSet(s) /\ maxRead (result) <= maxRead(s) /\ maxRead(result) >= 0 /\ maxRead(result) >= maxRead(t) /\ maxSet(result) >= maxRead(t)@*/ ;
 
 /*@null@*/ /*@exposed@*/ char *
   strtok (/*@returned@*/ /*@null@*/ char *s, char *t)
@@ -936,12 +936,12 @@ size_t strspn (char *s, char *t) /*@*/ ;
 
 void /*@alt void *@*/ memset (/*@out@*/ /*@returned@*/ void *s, 
 				     int c, size_t n)
-     /*@modifies *s@*/ /*@requires MaxSet(s) >= (n - 1) @*/ /*@ensures MaxRead(s) >= (n - 1) @*/ ;
+     /*@modifies *s@*/ /*@requires maxSet(s) >= (n - 1) @*/ /*@ensures maxRead(s) >= (n - 1) @*/ ;
 
 /*@observer@*/ char *strerror (int errnum) /*@*/ ;
 
 /*drl */
-size_t strlen (char *s) /*@*/ /*@ensures result == MaxRead(s); @*/; 
+size_t strlen (char *s) /*@*/ /*@ensures result == maxRead(s); @*/; 
 
 /*
 ** time.h
@@ -973,10 +973,10 @@ time_t time (/*@null@*/ /*@out@*/ time_t *tp)
   /*@modifies *tp@*/ ;
 
 /*@observer@*/ char *asctime (struct tm *timeptr) 
-  /*@modifies errno*/ /*@ensures MaxSet(result) == 25 /\  MaxRead(result) == 25; @*/ ;
+  /*@modifies errno*/ /*@ensures maxSet(result) == 25 /\  maxRead(result) == 25; @*/ ;
 
 /*@observer@*/ char *ctime (time_t *tp) /*@*/
-     /*@ensures MaxSet(result) == 25 /\  MaxRead(result) == 25; @*/;
+     /*@ensures maxSet(result) == 25 /\  maxRead(result) == 25; @*/;
 
 /*@null@*/ /*@observer@*/ struct tm *gmtime (time_t *tp) /*@*/ ;
 

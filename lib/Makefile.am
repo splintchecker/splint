@@ -27,25 +27,25 @@ $(SPLINT):
 	cd $(top_builddir)/src; $(MAKE)
 
 ansi.lcd: ansi.h $(SPLINT)
-	-$(SPLINT) -nolib +impconj ansi.h -dump ansi
+	-$(SPLINT) -nof -nolib +impconj ansi.h -dump ansi
 	@touch $@
 
 ansistrict.lcd: ansi.h $(SPLINT)
-	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h -dump ansistrict
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT ansi.h -dump ansistrict
 	@touch $@
 
 posix.lcd: ansi.h posix.h $(SPLINT)
-	-$(SPLINT) -nolib +impconj ansi.h posix.h -dump posix
+	-$(SPLINT) -nof -nolib +impconj ansi.h posix.h -dump posix
 	@touch $@
 
 posixstrict.lcd: ansi.h posix.h $(SPLINT)
-	-$(SPLINT) -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
+	-$(SPLINT) -nof -nolib +impconj -DSTRICT ansi.h posix.h -dump posixstrict
 	@touch $@
 
 unix.lcd: ansi.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -incondefs -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
+	-$(SPLINT) -nof -incondefs -nolib +impconj ansi.h posix.h unix.h stdio.h stdlib.h -dump unix
 	@touch $@
 
 unixstrict.lcd: ansi.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -incondefs -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
+	-$(SPLINT) -nof -incondefs -nolib +impconj -DSTRICT ansi.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
 	@touch $@

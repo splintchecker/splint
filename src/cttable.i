@@ -53,7 +53,7 @@ static void cttable_reset (void)
 
       for (i = 0; i < cttab.size; i++)
 	{
-	  ctentry_free (cttab.entries[i]);
+	  /*drl bee: si*/   ctentry_free (cttab.entries[i]);
 	}
       
       /*@-compdestroy@*/ 
@@ -156,7 +156,7 @@ ctentry_dump (ctentry c)
 
 
 static /*@only@*/ ctentry
-ctentry_undump (/*@dependent@*/ char *s)
+ctentry_undump (/*@dependent@*/ char *s) /*@requires maxRead(s) >= 2 @*/
 {
   int base, ptr, array;
   ctkind kind;
@@ -254,7 +254,7 @@ cttable_unparse (void)
   /*@access ctbase@*/
   for (i = 0; i < cttab.size; i++)
     {
-      ctentry cte = cttab.entries[i];
+     /*drl bee: si*/    ctentry cte = cttab.entries[i];
       if (ctentry_isInteresting (cte))
 	{
 	  if (ctbase_isUA (cte->ctbase))
@@ -280,7 +280,7 @@ cttable_print (void)
   /*@access ctbase@*/
   for (i = 0; i < cttab.size; i++)
     {
-      ctentry cte = cttab.entries[i];
+   /*drl bee: si*/     ctentry cte = cttab.entries[i];
 
       if (TRUE) /* ctentry_isInteresting (cte)) */
 	{
@@ -334,7 +334,7 @@ cttable_dump (FILE *fout)
     {
       cstring s;
 
-      s = ctentry_dump (cttab.entries[i]);
+   /*drl bee: si*/     s = ctentry_dump (cttab.entries[i]);
       DPRINTF (("[%d] = %s", i, ctentry_unparse (cttab.entries[i])));
       llassert (cstring_length (s) < MAX_DUMP_LINE_LENGTH);
       fputline (fout, cstring_toCharsSafe (s));
@@ -387,7 +387,7 @@ static void cttable_load (FILE *f)
     {
       ctype ct;
 
-      cte = ctentry_undump (s);
+  /*drl bee: tcf*/      cte = ctentry_undump (s);
       ct = cttable_addFull (cte);
 
       DPRINTF (("Type: %d: %s", ct, ctype_unparse (ct)));
@@ -498,7 +498,7 @@ cttable_grow ()
 
   for (i = 0; i < cttab.size; i++)
     {
-      newentries[i] = cttab.entries[i];
+      /*drl bee: dm*/  /*drl bee: si*/  newentries[i] = cttab.entries[i];
     }
 
   /*@-compdestroy@*/
@@ -515,7 +515,7 @@ cttable_addDerived (ctkind ctk, /*@keep@*/ ctbase cnew, ctype base)
   if (cttab.nspace == 0)
     cttable_grow ();
   
-  cttab.entries[cttab.size] = 
+  /*drl bee: si*/  cttab.entries[cttab.size] = 
     ctentry_make (ctk, cnew, base, ctype_dne, ctype_dne, cstring_undefined);
 
   cttab.nspace--;
@@ -561,7 +561,7 @@ cttable_addComplex (/*@only@*/ ctbase cnew)
   if (cttab.nspace == 0)
     cttable_grow ();
   
-  cttab.entries[cttab.size] = ctentry_make (CTK_COMPLEX, cnew, ctype_undefined, 
+  /*drl bee: si*/  cttab.entries[cttab.size] = ctentry_make (CTK_COMPLEX, cnew, ctype_undefined, 
 					    ctype_dne, ctype_dne,
 					    cstring_undefined);
   cttab.nspace--;
@@ -578,7 +578,7 @@ cttable_addFull (ctentry cnew)
       cttable_grow ();
     }
 
-  cttab.entries[cttab.size] = cnew;
+  /*drl bee: si*/  cttab.entries[cttab.size] = cnew;
   cttab.nspace--;
 
   return (cttab.size++);
@@ -607,7 +607,7 @@ cttable_addFullSafe (/*@only@*/ ctentry cnew)
   if (cttab.nspace == 0)
     cttable_grow ();
 
-  cttab.entries[cttab.size] = cnew;
+  /*drl bee: si*/  cttab.entries[cttab.size] = cnew;
 
   cttab.nspace--;
   

@@ -86,6 +86,7 @@ static long unsigned size_toLongUnsigned (size_t x)
 }
 
 /*@out@*/ void *dimalloc (size_t size, const char *name, int line)
+     /*@ensures maxSet(result) == (size - 1); @*/ 
 {
   /*
   static void *lastaddr = 0;
@@ -306,7 +307,7 @@ mstring_append (/*@only@*/ char *s1, char c)
 }
 
 extern 
-char *mstring_copy (char *s1)
+char *mstring_copy (char *s1) /*@ensures maxRead(result) == maxRead(s1) /\  maxSet(result) == maxSet(s1) @*/
 {
   if (s1 == NULL)
     {
@@ -354,7 +355,7 @@ fputline (FILE *out, char *s)
   check (fputc ('\n', out) == (int) '\n');
 }
 
-unsigned int int_toNonNegative (int x)
+unsigned int int_toNonNegative (int x) /*@*/
 {
   llassert (x >= 0);
   return (unsigned) x;
@@ -382,7 +383,7 @@ longUnsigned_fromInt (int x)
   return (long unsigned) x;
 }
 
-size_t size_fromInt (int x)
+size_t size_fromInt (int x) /*@ensures result==x@*/
 {
   size_t res = (size_t) x;
 

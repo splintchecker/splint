@@ -68,7 +68,7 @@ cstring cstring_suffix (cstring s, int n)
   return (s + n);
 }
 
-cstring cstring_prefix (cstring s, int n) 
+cstring cstring_prefix (cstring s, int n) /*@requires maxRead(s) >= n /\ maxSet(s) >= n @*/ /*@ensures maxRead(result) == n /\ maxSet(result) == n @*/
 {
   cstring t;
   char c;
@@ -137,7 +137,7 @@ cstring cstring_beforeChar (cstring s, char c)
   return cstring_undefined;
 }
 
-void cstring_setChar (cstring s, int n, char c) 
+void cstring_setChar (cstring s, int n, char c) /*@requires maxRead(s) >= (n - 1) /\ maxSet(s) >= (n - 1) @*/
 {
   llassert (cstring_isDefined (s));
   llassert (n > 0 && n <= cstring_length (s));
@@ -157,7 +157,7 @@ char cstring_lastChar (cstring s)
   return (s[length - 1]);
 }
 
-/*@only@*/ cstring cstring_copy (cstring s) 
+/*@only@*/ cstring cstring_copy (cstring s) /*@ensures maxSet(result) == maxRead(s) /\ maxRead(result) == maxRead(s) @*/
 {
   if (cstring_isDefined (s))
     {
@@ -169,7 +169,7 @@ char cstring_lastChar (cstring s)
     }
 }
 
-/*@only@*/ cstring cstring_copyLength (char *s, int len)
+/*@only@*/ cstring cstring_copyLength (char *s, int len) /*@requires maxSet(s) >= (len - 1) @*/
 {
   char *res = mstring_create (len + 1);
 
@@ -212,7 +212,7 @@ void cstring_replaceAll (cstring s, char old, char snew)
           }
 }
 
-void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew)
+void cstring_replaceLit (/*@unique@*/ cstring s, char *old, char *snew) /*@requires maxRead(snew) >= 0 /\ maxRead(old) >= 0 /\ maxRead(old) >= maxRead(snew) @*/
 {
   
   llassert (strlen (old) >= strlen (snew));
@@ -260,7 +260,7 @@ void cstring_stripChars (cstring s, const char *clist)
 
       for (i = 0; i < size; i++)
 	{
-	  char c = s[i];
+/*drl bee: is*/ 	  char c = s[i];
 	  
 	  if (strchr (clist, c) != NULL)
 	    {
@@ -271,10 +271,10 @@ void cstring_stripChars (cstring s, const char *clist)
 
 	      for (j = i; j < size; j++)
 		{
-		  s[j] = s[j+1];
+	/*drl bee: is*/ 	/*drl bee: is*/   s[j] = s[j+1];
 		}
 
-	      s[size] = '\0'; 
+	  /*drl bee: is*/     s[size] = '\0'; 
 	      i--;
 	    }
 	}
@@ -322,7 +322,7 @@ static char lookLike (char c) /*@*/
 cmpcode cstring_genericEqual (cstring s, cstring t,
 			      int nchars,
 			      bool caseinsensitive,
-			      bool lookalike)
+			      bool lookalike)  /*@requires maxRead(s) >= nchars /\ maxRead(t) >= nchars @*/
 {
   if (s == t) return CGE_SAME;
   else if (cstring_isUndefined (s))
@@ -368,6 +368,8 @@ cmpcode cstring_genericEqual (cstring s, cstring t,
 	  t++;
 	}
 
+  /*drl bee: ib*/
+      /*drl bee: ib*/ 
       if (*s == '\0' && *t != '\0')
 	{
 	  return CGE_DISTINCT;
@@ -546,7 +548,7 @@ int cstring_length (cstring s)
 }
 
 cstring
-cstring_capitalize (cstring s)
+cstring_capitalize (cstring s) /*@requires maxSet(s) >= 0 @*/
 {
   if (!cstring_isEmpty (s))
     {
@@ -560,7 +562,7 @@ cstring_capitalize (cstring s)
 }
 
 cstring
-cstring_capitalizeFree (cstring s)
+cstring_capitalizeFree (cstring s) /*@requires maxSet(s) >= 0 /\ maxRead(s) >= 0 @*/
 {
   if (!cstring_isEmpty (s))
     {
@@ -581,7 +583,7 @@ cstring_clip (cstring s, int len)
   else
     {
       llassert (s != NULL);
-      *(s + len) = '\0';
+    /*drl bee: mrms*/   *(s + len) = '\0';
     }
 
   return s;
@@ -599,7 +601,7 @@ cstring_elide (cstring s, int len)
       cstring sc = cstring_create (len);
      
       strncpy (sc, s, size_fromInt (len));
-      *(sc + len - 1) = '\0';
+     /*drl bee: mrms*/  *(sc + len - 1) = '\0';
       *(sc + len - 2) = '.';      
       *(sc + len - 3) = '.';      
       *(sc + len - 4) = '.';      
@@ -608,7 +610,7 @@ cstring_elide (cstring s, int len)
 }
 
 /*@only@*/ cstring
-cstring_fill (cstring s, int n)
+cstring_fill (cstring s, int n) /*@requires n >= 0 @*/
 {
   cstring t = cstring_create (n + 1);
   cstring ot = t;
@@ -619,6 +621,8 @@ cstring_fill (cstring s, int n)
     {
       for (i = 0; i < n; i++)
 	{
+	/*drl bee: is*/
+	  /*drl bee: is*/ 
 	  *t++ = *s++;
 	}
       *t = '\0';
@@ -627,10 +631,13 @@ cstring_fill (cstring s, int n)
     {
       for (i = 0; i < len; i++)
 	{
+	/*drl bee: is*/
+/*drl bee: is*/ 
 	  *t++ = *s++;
 	}
       for (i = 0; i < n - len; i++)
 	{
+/*drl bee: is*/ 
 	  *t++ = ' ';
 	}
       *t = '\0';
@@ -648,7 +655,7 @@ cstring_downcase (cstring s)
       cstring ot = t;
       char c;
       
-      while ((c = *s) != '\0')
+ /*drl bee: lhnt*/      while ((c = *s) != '\0')
 	{
 	  if (c >= 'A' && c <= 'Z')
 	    {
@@ -657,7 +664,7 @@ cstring_downcase (cstring s)
 	  *t++ = c;
 	  s++;
 	}
-      *t = '\0';
+     /*drl bee: is*/  *t = '\0';
       
       return ot;
     }
@@ -679,13 +686,13 @@ cstring_appendChar (/*@only@*/ cstring s1, char c)
     {  
       strcpy (s, s1);
       *(s + l) = c;
-      *(s + l + 1) = '\0';
+      /*drl bee: dm*/ *(s + l + 1) = '\0';
       sfree (s1); 
     }
   else
     {
       *(s) = c;
-      *(s + 1) = '\0';
+     /*drl bee: dm*/  *(s + 1) = '\0';
     } 
 
   return s;
@@ -719,7 +726,7 @@ cstring_concatChars (cstring s, char *t)
 # endif
 
 /*@only@*/ cstring 
-cstring_concatLength (cstring s1, char *s2, int len)
+cstring_concatLength (cstring s1, char *s2, int len) /*@requires maxSet(s2) >= (len - 1) @*/
 {
   cstring tmp = cstring_copyLength (s2, len);
   cstring res = cstring_concat (s1, tmp);
@@ -730,13 +737,13 @@ cstring_concatLength (cstring s1, char *s2, int len)
 }
 
 /*@only@*/ cstring 
-cstring_concat (cstring s, cstring t)
+cstring_concat (cstring s, cstring t) /*@requires maxSet(s) >= 0 @*/
 {
   char *ret = mstring_create (cstring_length (s) + cstring_length (t));
 
   if (cstring_isDefined (s))
     {
-      strcpy (ret, s);
+    /*drl bee: sl*/   strcpy (ret, s);
     }
   if (cstring_isDefined (t))
     {
@@ -761,7 +768,7 @@ cstring_prependChar (char c, /*@temp@*/ cstring s1)
   int l = cstring_length (s1);
   char *s = (char *) dmalloc (sizeof (*s) * (l + 2));
   
-  *(s) = c;
+/*drl bee: dm*/   *(s) = c;
 
   if (cstring_isDefined (s1)) 
     {
@@ -770,7 +777,7 @@ cstring_prependChar (char c, /*@temp@*/ cstring s1)
       /*@=mayaliasunique@*/ 
     }
 
-  *(s + l + 1) = '\0';
+ /*drl bee: dm*/ *(s + l + 1) = '\0';
   return s;
 }
 
@@ -782,7 +789,7 @@ cstring_hasNonAlphaNumBar (cstring s)
 
   if (cstring_isUndefined (s)) return FALSE;
 
-  while ((c = (int) *s) != (int) '\0')
+/*drl bee: lhnt*/  while ((c = (int) *s) != (int) '\0')
     {
       if ((isalnum (c) == 0) && (c != (int) '_')
 	  && (c != (int) '.') && (c != (int) CONNECTCHAR))
@@ -801,7 +808,7 @@ cstring_create (int n)
 {
   char *s = dmalloc (sizeof (*s) * (n + 1));
 
-  *s = '\0';
+ /*drl bee: dm*/ *s = '\0';
   return s;
 }
 
@@ -867,7 +874,7 @@ cstring cstring_bsearch (cstring key, char **table, int nentries)
       if (mid != 0 && mid < nentries - 1)
 	{
 	  llassert (cstring_compare (key, table[mid - 1]) > 0);
-	  llassert (cstring_compare (key, table[mid + 1]) < 0);
+	/*drl bee: ndv*/  llassert (cstring_compare (key, table[mid + 1]) < 0);
 	}
 
       return res;
@@ -881,7 +888,7 @@ extern /*@observer@*/ cstring cstring_advanceWhiteSpace (cstring s)
   if (cstring_isDefined (s)) {
     char *t = s;
 
-    while (*t != '\0' && isspace ((int) *t)) {
+ /*drl bee: lhnt*/   while (*t != '\0' && isspace ((int) *t)) {
       t++;
     }
 

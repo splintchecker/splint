@@ -2166,6 +2166,50 @@ constraintList exprNode_getPostConditions (exprNode fcn, exprNodeList arglist, e
   return postconditions;
 }
 
+/*
+comment this out for now
+we'll include it in a production release when its stable...
+
+  void findStructs ( exprNodeList arglist)
+{
+
+  ctype ct, rt;
+  
+  TPRINTF((
+	   message("doing findStructs: %s", exprNodeList_unparse(arglist) )
+	   ));
+
+
+  exprNodeList_elements(arglist, expr)
+    {
+      ct = exprNode_getType(expr);
+
+      rt =  ctype_realType (ct);
+      
+      if ( ctype_isStruct (rt ) )
+	TPRINTF(( message("Found structure %s", exprNode_unparse(expr) )
+		  ));
+      if (hasInvariants(ct) )
+	{
+	  constraintList invars;
+
+	  invars = getInvariants(ct);
+
+
+	  TPRINTF(( message ("findStructs has invariants %s ", constraintList_print (invars) )
+		    ));
+	  
+	  invars = constraintList_doSRefFixStructConstraint(invars, exprNode_getSref(expr), ct );
+
+	  
+	  TPRINTF(( message ("findStructs finded invariants to be %s ", constraintList_print (invars) )
+		    ));
+	}
+    }
+  end_exprNodeList_elements;
+}
+
+*/
 
 /*drl moved out of constraintResolve.c 07-02-001 */
 constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
@@ -2191,6 +2235,14 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
     }
   DPRINTF (( message("Done checkCall\n") ));
   DPRINTF (( message("Returning list %q ", constraintList_printDetailed(preconditions) ) ));
+
+  /*
+    drl we're going to comment this out for now
+    we'll include it if we're sure it's working
+    
+    findStructs(arglist);
+  */
+  
   return preconditions;
 }
 

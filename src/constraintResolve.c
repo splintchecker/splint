@@ -439,7 +439,7 @@ static /*@only@*/ constraint doResolve (/*@only@*/ constraint c, constraintList 
     }
   constraint_free(c);
   
-  *resolved = TRUE;
+  /*drl bee: pbr*/ *resolved = TRUE;
   return NULL;
 }
 
@@ -454,7 +454,7 @@ static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c
 
 
   
-  *resolved = FALSE;
+   /*drl bee: pbr*/ *resolved = FALSE;
 
 
   ret = constraint_copy(c);
@@ -488,7 +488,7 @@ static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c
 
       curr = doResolve (curr, post1, resolved);
       
-      if (*resolved)
+    /*drl bee: pbr*/    if (*resolved)
 	{
 	  /* curr is null so we don't try to free it*/
 	  llassert(curr == NULL);

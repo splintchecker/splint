@@ -83,7 +83,7 @@ hbucket_unparse (hbucket h)
       
       for (i = 0; i < h->size; i++)
 	{
-	  s = message ("%q %s:%d", s, h->entries[i]->key, h->entries[i]->val);
+	/*drl bee: si*/  s = message ("%q %s:%d", s, h->entries[i]->key, h->entries[i]->val);
 	}
     }
 
@@ -98,7 +98,7 @@ hbucket_single (/*@only@*/ hentry e)
   h->size = 1;
   h->nspace = HBUCKET_BASESIZE - 1;
   h->entries = (hentry *) dmalloc (HBUCKET_BASESIZE * sizeof (*h->entries));
-  h->entries[0] = e;
+ /*drl bee: dm*/ h->entries[0] = e;
   
   return (h);
 }
@@ -116,7 +116,8 @@ hbucket_grow (/*@notnull@*/ hbucket h)
   
   for (i = 0; i < h->size; i++) 
     {
-      newentries[i] = h->entries[i]; 
+   /*drl bee: dm*/
+      /*drl bee: si*/  newentries[i] = h->entries[i]; 
     }
  
   /*@i32@*/ sfree (h->entries);
@@ -147,7 +148,7 @@ hbucket_add (/*@notnull@*/ hbucket h, /*@only@*/ hentry e)
     }
   
   llassert (e->val != HBUCKET_DNE);
-  h->entries[h->size] = e;
+ /*drl bee: si*/ h->entries[h->size] = e;
   h->size++;
   h->nspace--;
 }
@@ -170,7 +171,7 @@ hbucket_lookup (hbucket h, cstring key)
       
       for (i = 0; i < h->size; i++)
 	{
-	  if (cstring_equal (h->entries[i]->key, key))
+	/*drl bee: si*/  if (cstring_equal (h->entries[i]->key, key))
 	    {
 	      return h->entries[i]->val;
 	    }
@@ -199,7 +200,7 @@ cstringTable_free (/*@only@*/ cstringTable h)
 
   for (i = 0; i < h->size; i++)
     {
-      hbucket_free (h->buckets[i]);
+ /*drl bee: si*/     hbucket_free (h->buckets[i]);
     }
 
   sfree (h->buckets);
@@ -216,7 +217,7 @@ cstringTable_countCollisions (cstringTable h)
 
   for (i = 0; i < h->size; i++)
     {
-      nc += hbucket_ncollisions (h->buckets[i]);
+  /*drl bee: si*/    nc += hbucket_ncollisions (h->buckets[i]);
     }
 
   return (nc);
@@ -233,7 +234,7 @@ cstringTable_countEmpty (cstringTable h)
 
   for (i = 0; i < h->size; i++)
     {
-      if (hbucket_isEmpty (h->buckets[i]))
+    /*drl bee: si*/    if (hbucket_isEmpty (h->buckets[i]))
 	{
 	  nc++;
 	}
@@ -255,7 +256,7 @@ cstringTable_hashValue (/*@notnull@*/ cstringTable h, cstring key)
 
   for (p = cstring_toCharsSafe (key); *p != '\0'; p++)
     {
-      hash_value = (hash_value << 1) ^ g_randomNumbers[*p % 256];
+    /*drl bee: nm*/    hash_value = (hash_value << 1) ^ g_randomNumbers[*p % 256];
     }
 
   return (hash_value % h->size);
@@ -281,7 +282,7 @@ cstringTable_create (int size)
   /*@+loopexec@*/
   for (i = 0; i < size; i++)
     {
-      h->buckets[i] = hbucket_undefined;
+     /*drl bee: dm*/   h->buckets[i] = hbucket_undefined;
     }
   /*@-loopexec@*/
   return h;
@@ -296,7 +297,7 @@ cstring cstringTable_unparse (cstringTable h)
     {
       for (i = 0; i < h->size; i++)
 	{
-	  hbucket hb = h->buckets[i];
+	  /*drl bee: si*/  hbucket hb = h->buckets[i];
 	  
 	  if (hb != NULL)
 	    {
@@ -348,15 +349,15 @@ cstringTable_rehash (/*@notnull@*/ cstringTable h)
   /*@+loopexec@*/
   for (i = 0; i < newsize; i++)
     {
-      h->buckets[i] = hbucket_undefined;
+     /*drl bee: dm*/   h->buckets[i] = hbucket_undefined;
     }
   /*@=loopexec@*/
   
   for (i = 0; i < oldsize; i++)
     {
-      hbucket bucket = oldbuckets[i];
+     /*drl bee: dm*/   hbucket bucket = oldbuckets[i];
 
-      oldbuckets[i] = NULL;
+    /*drl bee: dm*/    oldbuckets[i] = NULL;
 
       if (!hbucket_isNull (bucket))
 	{
@@ -364,7 +365,7 @@ cstringTable_rehash (/*@notnull@*/ cstringTable h)
 	  
 	  for (j = 0; j < bucket->size; j++)
 	    {
-	      cstringTable_addEntry (h, bucket->entries[j]);
+	  /*drl bee: si*/      cstringTable_addEntry (h, bucket->entries[j]);
 	    }
 	  
 	  /* 
@@ -391,9 +392,9 @@ cstringTable_addEntry (/*@notnull@*/ cstringTable h, /*@only@*/ hentry e)
   ** instead reveals a bug I don't want to deal with right now!
   */
 
-  if (hbucket_isNull (h->buckets[hindex]))
+   /*drl bee: si*/ if (hbucket_isNull (h->buckets[hindex]))
     {
-      h->buckets[hindex] = hbucket_single (e); 
+      /*drl bee: si*/  h->buckets[hindex] = hbucket_single (e); 
       h->nentries++;
     }
   else
@@ -432,11 +433,11 @@ cstringTable_insert (cstringTable h, cstring key, int value)
   e = hentry_create (key, value);
   hindex = cstringTable_hashValue (h, key);
 
-  hb = h->buckets[hindex];
+  /*drl bee: si*/  hb = h->buckets[hindex];
   
   if (hbucket_isNull (hb))
     {
-      h->buckets[hindex] = hbucket_single (e);
+       /*drl bee: si*/ h->buckets[hindex] = hbucket_single (e);
     }
   else
     {
@@ -470,9 +471,9 @@ cstringTable_update (cstringTable h, cstring key, int newval)
       
       for (i = 0; i < hb->size; i++)
 	{
-	  if (cstring_equal (hb->entries[i]->key, key))
+	  /*drl bee: si*/  if (cstring_equal (hb->entries[i]->key, key))
 	    {
-	      hb->entries[i]->val = newval;
+	  /*drl bee: si*/      hb->entries[i]->val = newval;
 	      return;
 	    }
 	}
@@ -500,9 +501,9 @@ cstringTable_replaceKey (cstringTable h, cstring oldkey, /*@only@*/ cstring newk
       
       for (i = 0; i < hb->size; i++)
 	{
-	  if (cstring_equal (hb->entries[i]->key, oldkey))
+	  /*drl bee: si*/  if (cstring_equal (hb->entries[i]->key, oldkey))
 	    {
-	      hb->entries[i]->key = newkey;
+	  /*drl bee: si*/      hb->entries[i]->key = newkey;
 	      return;
 	    }
 	}
@@ -525,11 +526,12 @@ cstringTable_remove (cstringTable h, cstring key)
       
       for (i = 0; i < hb->size; i++)
 	{
-	  if (cstring_equal (hb->entries[i]->key, key))
+	  /*drl bee: si*/  if (cstring_equal (hb->entries[i]->key, key))
 	    {
 	      if (i < hb->size - 1)
 		{
-		  hb->entries[i] = hb->entries[hb->size - 1];
+		  /*drl bee: si*/
+  /*drl bee: si*/  hb->entries[i] = hb->entries[hb->size - 1];
 		}
 	      
 	      hb->size--;

@@ -744,7 +744,7 @@ void constraint_printError (constraint c, fileloc loc)
 	}
     }
 
-  fileloc_free (errorLoc);
+  fileloc_free(errorLoc);
 }
 
 static cstring constraint_printDeep (constraint c)
@@ -752,7 +752,7 @@ static cstring constraint_printDeep (constraint c)
   cstring genExpr;
   cstring st = cstring_undefined;
 
-  st = constraint_print (c);
+  st = constraint_print(c);
   
   if (c->orig != constraint_undefined)
     {
@@ -940,6 +940,18 @@ constraint constraint_doFixResult (constraint postcondition, /*@dependent@*/ exp
 
   return postcondition;
 }
+/*Commenting out temporally
+  
+/ *@only@* /constraint  constraint_doSRefFixInvarConstraint(constraint invar, sRef s, ctype ct )
+{
+
+  invar = constraint_copy (invar);
+  invar->lexpr = constraintExpr_doSRefFixInvarConstraint (invar->lexpr, s, ct);
+  invar->expr = constraintExpr_doSRefFixInvarConstraint (invar->expr, s, ct);
+
+  return invar;
+}
+*/
 
 /*@only@*/ constraint constraint_doSRefFixConstraintParam (constraint precondition,
 						   exprNodeList arglist)

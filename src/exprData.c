@@ -481,7 +481,7 @@ void exprData_free (/*@only@*/ exprData data, exprKind kind)
   return (data->offset->field);
 }
 
-/*@exposed@*/ exprNode exprData_getSingle (exprData data)
+/*@exposed@*/ exprNode exprData_getSingle (exprData data) /*@*/
 {
   exprNode ret;
   llassert (data != exprData_undefined);

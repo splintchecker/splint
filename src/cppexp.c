@@ -238,7 +238,7 @@ struct operation {
 /* maybe needs to actually deal with floating point numbers */
 
 struct operation
-cppReader_parseNumber (cppReader *pfile, char *start, int olen)
+cppReader_parseNumber (cppReader *pfile, char *start, int olen) /*@requires maxRead(start) >= (olen - 1) @*/
 {
   struct operation op;
   char *p = start;
@@ -256,7 +256,7 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen)
 
   for (i = 0; i < len; i++)
     {
-      if (p[i] == '.') {
+       /*drl bee: is*/ if (p[i] == '.') {
 	/* It's a float since it contains a point.  */
 	cppReader_errorLit
 	  (pfile,
@@ -276,6 +276,11 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen)
     }
   else if (*p == '0')
     {
+      /*@i3434*/
+      /* drl: see if there is a reason that we shouldn't do
+       p++;
+       len--; */
+      
       base = 8;
     }
   else
@@ -330,7 +335,7 @@ cppReader_parseNumber (cppReader *pfile, char *start, int olen)
 		/*@innerbreak@*/ break;
 	      }
 
-	    c = *p++;
+	  /*drl bee: ltc*/    c = *p++;
 	  }
 	/* Don't look for any more digits after the suffixes.  */
 	break;
@@ -504,7 +509,7 @@ struct operation cppexp_lex (cppReader *pfile)
 	  }
 	
 	++ptr;
-	while (ptr < tok_end && ((c = *ptr++) != '\''))
+	 /*drl bee: hda*/ while (ptr < tok_end && ((c = *ptr++) != '\''))
 	  {
 	    if (c == '\\')
 	      {
@@ -535,7 +540,7 @@ struct operation cppexp_lex (cppReader *pfile)
 	      }
 	  }
 
-	token_buffer[num_chars] = 0;
+	 /*drl bee: dad*/ token_buffer[num_chars] = 0;
 
 	if (c != '\'')
 	  cppReader_errorLit (pfile,
@@ -617,8 +622,8 @@ struct operation cppexp_lex (cppReader *pfile)
         {
 	  for (toktab = tokentab2; toktab->operator != NULL; toktab++)
 	    {
-	      if (tok_start[0] == toktab->operator[0]
-		  && tok_start[1] == toktab->operator[1])
+	     /*drl bee: hda*/   if (tok_start[0] == /*drl bee: hda*/  toktab->operator[0]
+		  && /*drl bee: hda*/  tok_start[1] ==  /*drl bee: hda*/ toktab->operator[1])
 		{
 		  /*@loopbreak@*/ break;
 		}
@@ -660,7 +665,7 @@ struct operation cppexp_lex (cppReader *pfile)
 int
 cppReader_parseEscape (cppReader *pfile, char **string_ptr)
 {
-  char c = *(*string_ptr)++;
+  /*drl bee: pbr*/  char c = *(*string_ptr)++;
 
   switch (c)
     {
@@ -714,7 +719,7 @@ cppReader_parseEscape (cppReader *pfile, char **string_ptr)
 
 	    else
 	      {
-		(*string_ptr)--;
+	 /*drl bee: pbr*/ 	(*string_ptr)--;
 		/*@loopbreak@*/ break;
 	      }
 	  }

@@ -695,4 +695,28 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 
 
 
+/* drl added sometime before 10/17/001*/
+ctype constraintTerm_getCType (constraintTerm term)
+{
+  ctype ct;
+  
+  switch (term->kind)
+    {
+    case EXPRNODE:
+      ct = exprNode_getType (term->value.expr);
+      break;
+
+    case INTLITERAL:
+      /*@i888*/ /* hack */
+      ct = ctype_signedintegral;
+      break;
+      
+    case SREF:
+      ct = sRef_getType (term->value.sref) ;
+      break;
+    default:
+      BADEXIT;
+    }
+  return ct;
+}
 

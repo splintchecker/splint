@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.12 2001/11/29 06:20:46 drl7x Exp $
+ * $Id: posix.h,v 1.13 2002/01/07 03:37:25 drl7x Exp $
  */
 
 /*
@@ -92,8 +92,11 @@ struct dirent {
 extern int closedir (DIR *dirp)
    /*@modifies errno@*/;
 
-extern /*@null@*/ DIR *opendir (const char *dirname)
-   /*@modifies errno@*/;
+   /*drl 1/4/2001 added the dependent annotation as suggested by
+     Ralf Wildenhues */
+   
+   extern /*@null@*/ /*@dependent@*/ DIR *opendir (const char *dirname)
+   /*@modifies errno, fileSystem@*/;
 
 extern /*@null@*/ struct dirent *readdir (DIR *dirp)
    /*@modifies errno@*/;

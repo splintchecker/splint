@@ -277,7 +277,7 @@ static bool ctuid_isAP (ctuid c) /*@*/
 
 static typeId ctbase_typeId (ctbase p_c);
 static /*@only@*/ cstring ctbase_dump (ctbase p_c);
-static /*@only@*/ ctbase ctbase_undump (char **p_c);
+static /*@only@*/ ctbase ctbase_undump (char **p_c) /*@requires maxRead(*p_c) >= 2 @*/;
 static int ctbase_compare (ctbase p_c1, ctbase p_c2, bool p_strict);
 static bool ctbase_matchArg (ctbase p_c1, ctbase p_c2);
 static /*@notnull@*/ /*@only@*/ ctbase 
@@ -789,7 +789,7 @@ ctbase_unparseDeclaration (ctbase c, /*@only@*/ cstring name) /*@*/
   BADEXIT;
 }
 
-static ctbase ctbase_undump (d_char *c)
+static ctbase ctbase_undump (d_char *c) /*@requires maxRead(*c) >= 2 @*/
 {
   ctbase res;
   char p = **c;
@@ -943,7 +943,7 @@ static ctbase ctbase_undump (d_char *c)
       llerror (FLG_SYNTAX, 
 	       message ("Bad Library line (type): %s", cstring_fromChars (*c)));
 
-      while (**c != '\0')
+  /*drl bee: pbr*/      while (**c != '\0')
 	{
 	  (*c)++;
 	}

@@ -612,6 +612,7 @@ struct skeyword s_parsetable[] = {
   { "testinRange", QTESTINRANGE},
   { "requires", QPRECLAUSE } ,
   { "ensures", QPOSTCLAUSE } ,
+  { "invariant", QINVARIANT} ,
   { NULL, BADTOK } 
 } ;
 

@@ -303,6 +303,8 @@ flagcode_recordError (flagcode f)
 	}
       else
 	{
+	  /*drl bee: ec*/
+	  /*drl bee: ec*/
 	  flags[f].nreported = flags[f].nreported + 1;
 	}
     }
@@ -317,7 +319,8 @@ flagcode_recordSuppressed (flagcode f)
 {
   llassertprint (f != INVALID_FLAG, ("flagcode: %s", flagcode_unparse (f)));
 
-  flags[f].nsuppressed = flags[f].nsuppressed + 1;
+  /*drl bee: ec*/
+    /*drl bee: ec*/   flags[f].nsuppressed = flags[f].nsuppressed + 1;
 }
 
 int
@@ -333,6 +336,7 @@ flagcodeHint (flagcode f)
 {
   llassert (f != INVALID_FLAG);
 
+  /*drl bee: ec*/
   if (mstring_isDefined (flags[f].hint))
     {
       return (cstring_fromChars (flags[f].hint));
@@ -365,6 +369,7 @@ flagkind identifyCategory (cstring s)
 
   for (i = 0; categories[i].kind != FK_NONE; i++)
     {
+        /*drl bee: mRug*/
       if (mstring_isDefined (categories[i].name))
 	{
 	  if (cstring_equalLit (s, categories[i].name))
@@ -383,6 +388,7 @@ static /*@observer@*/ cstring categoryName (flagkind kind)
 
   for (i = 0; categories[i].kind != FK_NONE; i++)
     {
+        /*drl bee: mrUg*/
       if (categories[i].kind == kind)
 	{
 	  return (cstring_fromChars (categories[i].name));
@@ -398,6 +404,7 @@ static int categoryIndex (flagkind kind)
 
   for (i = 0; categories[i].kind != FK_NONE; i++)
     {
+        /*drl bee: mRug*/
       if (categories[i].kind == kind)
 	{
 	  return i;
@@ -412,7 +419,7 @@ void printCategory (flagkind kind)
   int index = categoryIndex (kind);
 
   llassert (index >= 0);
-
+        /*drl bee: mRug*/
   llmsg (message ("%s (%d flags)\n\3%s\n\n", 
 		  cstring_fromChars (categories[index].name), 
 		  categorySize (kind),
@@ -435,6 +442,7 @@ listAllCategories (void)
 
   for (i = 0; categories[i].kind != FK_NONE; i++)
     {
+              /*drl bee: mRug*/
       flagkind kind = categories[i].kind ;
 
       if (categories[i].describe != NULL)
@@ -677,6 +685,7 @@ describeFlagCode (flagcode flag)
 
   context_resetAllFlags ();
   
+  /*drl bee: mRug*/
   f = flags[flag];
   ret = cstring_copy (cstring_fromChars (f.desc));
   
@@ -915,7 +924,8 @@ canonicalizeFlag (cstring s)
       NULL
       } ;
   char *current;
-
+  
+  /*drl bee: ia*/
   while ((current = transform[i]) != NULL)
     {
       if (cstring_containsLit (s, current))
@@ -1414,7 +1424,9 @@ extern int flagcode_valueIndex (flagcode f)
   for (i = 0; i < NUMVALUEFLAGS; i++)
     {
       /* static valueFlags must be defined */
-      /*@-usedef@*/ if (f == valueFlags[i]) /*@=usedef@*/
+      /*@-usedef@*/
+      /*drl bee: sta*/
+      if (f == valueFlags[i]) /*@=usedef@*/
 	{
 	  return i;
 	}
@@ -1457,6 +1469,7 @@ extern int flagcode_stringIndex (flagcode f)
 
   for (i = 0; i < NUMSTRINGFLAGS; i++)
     {
+              /*drl bee: sta*/
       /*@-usedef@*/ if (f == stringFlags[i]) /*@=usedef@*/
 	{
 	  return i;

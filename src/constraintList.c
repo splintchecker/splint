@@ -524,6 +524,25 @@ constraintList constraintList_addGeneratingExpr (constraintList c,/*@dependent@*
   constraintList_free(postconditions);
   return ret;
 }
+/*
+Commenting out because function is not yet stable
+  
+/ *@only@* / constraintList constraintList_doSRefFixStructConstraint(constraintList invars, sRef s, ctype ct )
+{
+  constraintList ret;
+  ret = constraintList_makeNew();
+  
+  constraintList_elements (invars, el)
+    {
+      ret = constraintList_add(ret, constraint_doSRefFixInvarConstraint (el, s, ct) );
+    }
+  end_constraintList_elements;
+
+  / *  constraintList_free (invars);* /
+
+  return ret;
+}
+*/
 
 /*@only@*/ constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, /*@temp@*/ /*@observer@*/ exprNodeList arglist)
 {

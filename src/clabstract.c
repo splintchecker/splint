@@ -2260,9 +2260,37 @@ sRef fixStateClausesId (cstring s)
 	}
       else
 	{
+	  /*@i222@*/
+	  /*drl handle structure invariant */
+
+	  /*@i222@*/
+	  /*check that we're in a structure */
+	  /*@unused@*/	  uentryList ueL;
+	  /*@unused@*/ uentry ue2;
+	  /*@unused@*/ ctype ct;
 	  fileloc loc = fileloc_decColumn (g_currentloc, cstring_length (s));
 	  ret = sRef_undefined; 
-	  
+
+	  /*drl commenting this out for now 
+	  ct = context_getLastStruct ( ct );
+
+	  llassert( ctype_isStruct(ct) );
+
+	  ueL =  ctype_getFields (ct);
+
+	  ue2 = uentryList_lookupField (ueL, s);
+
+	  if (!uentry_isUndefined(ue2) )
+	    {
+	      ret = uentry_getSref(ue2);
+	      
+	      DPRINTF((
+		       message("Got field in structure in the annotation constraint: %s (or sref: %s)", s, sRef_unparse(ret) )
+		       ));
+	      
+	      return ret;
+	    }
+	  */
 	  voptgenerror 
 	    (FLG_UNRECOG, 
 	     message ("Unrecognized identifier in function clause: %s", s), 
