@@ -9888,11 +9888,11 @@ exprNode_matchLiteral (ctype expected, exprNode e)
 	    }
 	  else if (multiVal_isChar (m))
 	    {
-	      char val = multiVal_forceChar (m);	  
+	      /*signed? */ char val = multiVal_forceChar (m);	   
 	      
 	      if (ctype_isChar (expected))
 		{
-		  if (ctype_isUnsigned (expected) && ((int)val) < 0)
+		  if (ctype_isUnsigned (expected) && ((int) val) < 0)
 		    {
 		      return FALSE;
 		    }

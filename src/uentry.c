@@ -3074,35 +3074,46 @@ uentry_isSpecialFunction (uentry ue)
   uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, loc, pref);
 
   DPRINTF (("Make param: %s", uentry_unparseFull (ue)));
+  DPRINTF (("Base: %s [%d]", ctype_unparse (base), ctype_isFixedArray (base)));
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
   uentry_implicitParamAnnots (ue);
 
-  /* Parameter type [][] or [x][] is invalid */
+  /* Parameter type [][] or [x][] is invalid, but [][x] is okay */
 
-  while (ctype_isFixedArray (base)) {
-    base = ctype_baseArrayPtr (base);
-  }
-  
-  if (ctype_isIncompleteArray (base)) {
-    base = ctype_baseArrayPtr (base);
-
-    if (ctype_isArray (base)) {
-      if (!uentry_hasName (ue)) {
-	(void) optgenerror (FLG_INCOMPLETETYPE, 
-			    message ("Unnamed function parameter %d is incomplete type (inner array must have bounds): %s",
-				     i + 1,
-				     ctype_unparse (ct)),
-			    uentry_whereLast (ue));
-      } else {
-	(void) optgenerror (FLG_INCOMPLETETYPE, 
-			    message ("Function parameter %q is incomplete type (inner array must have bounds): %s",
-				     uentry_getName (ue),
-				     ctype_unparse (ct)),
-			    uentry_whereLast (ue));
-      }
+  while (ctype_isFixedArray (base)) 
+    {
+      base = ctype_baseArrayPtr (base);
     }
-  }
-
+  
+  DPRINTF (("Base: %s", ctype_unparse (base)));
+  
+  if (ctype_isIncompleteArray (base)) 
+    {
+      base = ctype_baseArrayPtr (base);
+      DPRINTF (("Base: %s", ctype_unparse (base)));
+      if (ctype_isArray (base))
+	{
+	  if (!uentry_hasName (ue)) 
+	    {
+	      voptgenerror 
+		(FLG_INCOMPLETETYPE, 
+		 message ("Unnamed function parameter %d is incomplete type (inner array must have bounds): %s",
+			  i + 1,
+			  ctype_unparse (ct)),
+		 uentry_whereLast (ue));
+	    } 
+	  else 
+	    {
+	      voptgenerror 
+		(FLG_INCOMPLETETYPE, 
+		 message ("Function parameter %q is incomplete type (inner array must have bounds): %s",
+			  uentry_getName (ue),
+			  ctype_unparse (ct)),
+		 uentry_whereLast (ue));
+	    }
+	}
+    }
+  
   DPRINTF (("Param: %s", uentry_unparseFull (ue)));
   return ue;
 }

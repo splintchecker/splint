@@ -402,7 +402,7 @@ extern bool cppReader_isTraditional (/*@special@*/ cppReader *p_pfile)
     /*@uses p_pfile->opts@*/
    /*@modifies nothing@*/ ; 
 
-#define cppReader_isTraditional(PFILE) (CPPOPTIONS(PFILE)-> traditional)
+#define cppReader_isTraditional(PFILE) (CPPOPTIONS(PFILE)->traditional)
 
 extern bool cppReader_isPedantic (cppReader *) /*@*/; 
 #define cppReader_isPedantic(PFILE) (CPPOPTIONS (PFILE)->pedantic)

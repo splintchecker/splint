@@ -204,12 +204,12 @@ lltok_unparse (lltok tok)
     case TRBRACE:    lit = "}"; break;
     case TCOMMA:     lit = ","; break;
     case TCOLON:     lit = ":"; break;
-    case TASSIGN:        lit = "="; break;
+    case TASSIGN:    lit = "="; break;
     case TLPAREN:    lit = "("; break;
     case TRPAREN:    lit = ")"; break;
     case TLSQBR:     lit = "["; break;
     case TRSQBR:     lit = "]"; break;
-    case TDOT:       lit = "->"; break;
+    case TDOT:       lit = "."; break; /* evans 2003-05-31: Fix reported by psanzani. */
     case TAMPERSAND: lit = "&"; break;
     case TEXCL:      lit = "!"; break;
     case TTILDE:     lit = "~"; break;

@@ -238,6 +238,10 @@ static int cpp_peekN (cppReader *p_pfile, int p_n) /*@*/ ;
 # define cppBuffer_get(BUFFER) \
   ((BUFFER)->cur < (BUFFER)->rlimit ? *(BUFFER)->cur++ : EOF)
 
+/*@function static int cppBuffer_reachedEOF (sef cppBuffer *p_b) modifies nothing; @*/
+# define cppBuffer_reachedEOF(b) \
+  ((b)->cur < (b)->rlimit ? FALSE : TRUE)
+
 /* Append string STR (of length N) to PFILE's output buffer.  Make space. */
 /*@function static void cppReader_puts (sef cppReader *p_file, char *p_str, sef size_t p_n)
                      modifies *p_file; @*/
@@ -294,6 +298,9 @@ static void cppBuffer_forward (cppBuffer *p_buf, int p_n) /*@modifies *p_buf@*/ 
 
 /*@function static int cppReader_getC (cppReader *p_pfile) modifies *p_pfile; @*/
 # define cppReader_getC(pfile)   (cppBuffer_get (cppReader_getBufferSafe (pfile)))
+
+/*@function static int cppReader_reachedEOF (sef cppReader *p_pfile) modifies *p_pfile; @*/
+# define cppReader_reachedEOF(pfile)   (cppBuffer_reachedEOF (cppReader_getBufferSafe (pfile)))
 
 /*@function static int cppReader_peekC (cppReader *) modifies nothing;@*/
 # define cppReader_peekC(pfile)  (cpplib_bufPeek (cppReader_getBufferSafe (pfile)))
@@ -6110,14 +6117,18 @@ get_next:
 				      &start_line, &start_column);
 	  old_written = cpplib_getWritten (pfile);
 	string:
-	  DPRINTF (("Put char: %c", c));
+	  DPRINTF (("Reading string: %c", c));
 	  cppReader_putChar (pfile, c);
 	  while (TRUE)
 	    {
-	      int cc = cppReader_getC (pfile);
-	      DPRINTF (("cc: %c", c));
-	      if (cc == EOF)
+	      /* evans-2003-06-07
+	      ** Because of ISO8859-1 characters in string literals, we need a special test here.
+	      */
+
+	      if (cppReader_reachedEOF (pfile)) 
 		{
+		  
+		  DPRINTF (("Matches EOF!"));
 		  if (cppBuffer_isMacro (CPPBUFFER (pfile)))
 		    {
 		      /* try harder: this string crosses a macro expansion
@@ -6131,13 +6142,14 @@ get_next:
 		      CPPBUFFER (pfile) = next_buf;
 		      continue;
 		    }
+		  
 		  if (!cppReader_isTraditional (pfile))
 		    {
 		      cpp_setLocation (pfile);
 
 		      setLine (long_toInt (start_line));
 		      setColumn (long_toInt (start_column));
-
+		      
 		      if (pfile->multiline_string_line != long_toInt (start_line)
 			  && pfile->multiline_string_line != 0)
 			{
@@ -6157,59 +6169,64 @@ get_next:
 			     message ("Unterminated string or character constant"));
 			}
 		    }
-		  /*@loopbreak@*/ break;
-		}
-	      DPRINTF (("putting char: %c", cc));
-	      cppReader_putChar (pfile, cc);
-	      switch (cc)
+		  /*@loopbreak@*/ break;		  
+		} 
+	      else
 		{
-		case '\n':
-		  /* Traditionally, end of line ends a string constant with
-		     no error.  So exit the loop and record the new line.  */
-		  if (cppReader_isTraditional (pfile))
-		    goto while2end;
-		  if (c == '\'')
+		  int cc = cppReader_getC (pfile); 
+		  DPRINTF (("cc: %c [%d] [%d]", cc, cc, EOF));
+		  DPRINTF (("putting char: %c", cc));
+		  cppReader_putChar (pfile, cc);
+		  switch (cc)
 		    {
-		      goto while2end;
+		    case '\n':
+		      /* Traditionally, end of line ends a string constant with
+			 no error.  So exit the loop and record the new line.  */
+		      if (cppReader_isTraditional (pfile))
+			goto while2end;
+		      if (c == '\'')
+			{
+			  goto while2end;
+			}
+		      if (cppReader_isPedantic (pfile)
+			  && pfile->multiline_string_line == 0)
+			{
+			  cppReader_pedwarnWithLine
+			    (pfile, long_toInt (start_line),
+			     long_toInt (start_column),
+			     cstring_makeLiteral ("String constant runs past end of line"));
+			}
+		      if (pfile->multiline_string_line == 0)
+			{
+			  pfile->multiline_string_line = start_line;
+			}
+		      
+		      /*@switchbreak@*/ break;
+		      
+		    case '\\':
+		      cc = cppReader_getC (pfile);
+		      if (cc == '\n')
+			{
+			  /* Backslash newline is replaced by nothing at all.  */
+			  cppReader_adjustWritten (pfile, -1);
+			  pfile->lineno++;
+			}
+		      else
+			{
+			  /* ANSI stupidly requires that in \\ the second \
+			     is *not* prevented from combining with a newline.  */
+			  NEWLINE_FIX1(cc);
+			  if (cc != EOF)
+			    cppReader_putChar (pfile, cc);
+			}
+		      /*@switchbreak@*/ break;
+		      
+		    case '\"':
+		    case '\'':
+		      if (cc == c)
+			goto while2end;
+		      /*@switchbreak@*/ break;
 		    }
-		  if (cppReader_isPedantic (pfile)
-		      && pfile->multiline_string_line == 0)
-		    {
-		      cppReader_pedwarnWithLine
-			(pfile, long_toInt (start_line),
-			 long_toInt (start_column),
-			 cstring_makeLiteral ("String constant runs past end of line"));
-		    }
-		  if (pfile->multiline_string_line == 0)
-		    {
-		      pfile->multiline_string_line = start_line;
-		    }
-
-		  /*@switchbreak@*/ break;
-
-		case '\\':
-		  cc = cppReader_getC (pfile);
-		  if (cc == '\n')
-		    {
-		      /* Backslash newline is replaced by nothing at all.  */
-		      cppReader_adjustWritten (pfile, -1);
-		      pfile->lineno++;
-		    }
-		  else
-		    {
-		      /* ANSI stupidly requires that in \\ the second \
-			 is *not* prevented from combining with a newline.  */
-		      NEWLINE_FIX1(cc);
-		      if (cc != EOF)
-			cppReader_putChar (pfile, cc);
-		    }
-		  /*@switchbreak@*/ break;
-
-		case '\"':
-		case '\'':
-		  if (cc == c)
-		    goto while2end;
-		  /*@switchbreak@*/ break;
 		}
 	    }
 	while2end:

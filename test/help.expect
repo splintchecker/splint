@@ -270,10 +270,10 @@ Finished checking --- no code processed
    legacy                      
    lh                          
    libmacros                   
-   likely-boundsread           
-   likely-boundswrite          
    likelybool                  
    likelybounds                
+   likelyboundsread            
+   likelyboundswrite           
    limit                       
    linelen                     
    lintcomments                
@@ -299,7 +299,7 @@ Finished checking --- no code processed
    macroparams                 
    macroparens                 
    macroredef                  
-   macroreturn                 
+   macroret                    
    macrostmt                   
    macrounrecog                
    macrovarprefix              
@@ -364,7 +364,6 @@ Finished checking --- no code processed
    nullptrarith                
    nullret                     
    nullstate                   
-   nullterminated              
    nullterminated              
    numabstract                 
    numabstractcast             

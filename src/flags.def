@@ -1920,7 +1920,7 @@ static flaglist flags =
   },
   {
     FK_BOUNDS, FK_MEMORY, plainFlag,
-    "likely-boundsread",
+    "likelyboundsread",
     FLG_LIKELYBOUNDSREAD,
     "likely out of bounds read",
     "A memory read references memory beyond the allocated storage.",
@@ -1928,7 +1928,7 @@ static flaglist flags =
   },
   {
     FK_BOUNDS, FK_MEMORY, plainFlag,
-    "likely-boundswrite",
+    "likelyboundswrite",
     FLG_LIKELYBOUNDSWRITE,
     "likely buffer overflow from an out of bounds write",
     "A memory write may write to an address beyond the allocated buffer.",
@@ -1995,16 +1995,6 @@ static flaglist flags =
     NULL,
     0, 0
   },
-  
-  {
-    FK_BOUNDS, FK_MEMORY, plainFlag,
-    "nullterminated",
-    FLG_NULLTERMINATEDWARNING,
-    "misuse of nullterminated allocation",
-    "A user annotated non-nullterminated buffer is used/referenced as a nullterminated one.",
-    0, 0
-  },
-  
   {
     FK_BOUNDS, FK_DISPLAY, plainFlag,
     "showconstraintparens",
@@ -2127,7 +2117,7 @@ static flaglist flags =
   },
   {
     FK_MACROS, FK_CONTROL, modeFlag,
-    "macroreturn",
+    "macroret",
     FLG_MACRORETURN,
     "return statement in macro body",
     "The body of a macro declared as a function uses a return statement. "

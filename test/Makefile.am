@@ -49,7 +49,7 @@ UNITTESTS = \
   macros macrosef merge mergenull modifies modtest moduncon \
   mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
-  returned sharing shifts sizesigns slovaknames \
+  returned russian sharing shifts sizesigns slovaknames \
   specclauses \
   special stack staticarray strings \
   stringliteral \
@@ -733,6 +733,11 @@ repexpose:
 .PHONY: returned
 returned:
 	${SPLINTR} returned.c -expect 1
+
+### russian added 2003-06-07: bug reported in pre-processing non-standard characters.
+.PHONY: russian
+russian:
+	${SPLINTR} russian.c 
 
 .PHONY: sharing
 sharing: 
