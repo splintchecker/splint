@@ -1,6 +1,6 @@
 /*;-*-C-*-;
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2002 University of Virginia,
+** Copyright (C) 1994-2003 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
