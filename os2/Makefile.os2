@@ -36,14 +36,14 @@
 ###
 
 LCL_VERSION=3.0.0.16
-LCL_DATE=25 Sep 2001
+LCL_DATE=28 Sep 2001
 
 # this gets written into the binary, add your name, your compiler settings
 #  etc. if you like.
-TODAY=Monday 25 Sep 19:40 MEST 2001
+TODAY=Monday 28 Sep 23:43 MEST 2001
 ME=herbert
 MACHINE=i586
-COMPILE_MSG=\# define LCL_COMPILE \"Compiled using $(CC)\\n on OS/2 $(TODAY) $(MACHINE) by $(ME),\\n OS/2 specific subversion is 4\"
+COMPILE_MSG=\# define LCL_COMPILE \"Compiled using $(CC)\\n on OS/2 $(TODAY) $(MACHINE) by $(ME),\\n OS/2 specific subversion is 5\"
 
 ### Directory containing system include files:
 
@@ -81,7 +81,7 @@ INSTALLDIR = \\usr\\bin
 ### this should be the complete path for the directory where this
 ### Makefile is, with no trailing / or spaces.
 
-BASEDIR = e:\\usr\\src\\lclint-$(LCL_VERSION)
+# BASEDIR = e:\\usr\\src\\lclint-$(LCL_VERSION)
 
 ###
 ### Then, run:
@@ -183,27 +183,6 @@ FLEX      = flex
 YFLAGS    = -v -t -d
 LFLAGS    =
 
-###
-### is the test suite available? (must be full path here)
-###
-
-TESTDIR   = $(BASEDIR)/test
-
-### 
-### if this Makefile is used with one of the
-### standard installation packages, no changes should be 
-### necessary below this line.
-###
-
-.PHONY: install dobinaries dolibraries doimports test 
-
-###
-### set this to a different directory
-### to install binaries elsewhere
-###
-
-RELEASEDIR      = $(BASEDIR)/bin
-
 all: 
 	@$(ECHO)
 	@$(ECHO) "Creating configuration file. Syntax error message can be ignored..."
@@ -212,15 +191,16 @@ all:
 	@$(ECHO)
 	@$(ECHO) "Creating local constants header file. Syntax error messages can be ignored..."
 	@$(ECHO)
-	$(MAKE) ARGV=$(ARGV) -f Makefile.os2 --directory=$(BASEDIR)\\src --warn-undefined-variables localconstants 
+	$(MAKE) ARGV=$(ARGV) -f Makefile.os2 --directory=..\\src --warn-undefined-variables localconstants 
 	@$(ECHO)
 	@$(ECHO) "Now building lclint executable file..."
 	@$(ECHO)
-	$(MAKE) -f Makefile.os2 --directory=$(BASEDIR)\\src --warn-undefined-variables
+	$(MAKE) -f Makefile.os2 --directory=..\\src --warn-undefined-variables
 	@$(ECHO)
 	@$(ECHO) "Now moving lclint executable file to bin directory..."
 	@$(ECHO)
-	$(MV) $(BASEDIR)\src\lclint$E $(RELEASEDIR)\lclint$E
+	@if not exist ..\\bin mkdir ..\\bin
+	$(MV) ..\src\lclint$E ..\\bin\\lclint$E
 
 configinc:
 	$(ECHO) "CC=$(CC)" >config.inc
@@ -242,44 +222,12 @@ configinc:
 	$(ECHO) "MV=$(MV)" >>config.inc
 	$(ECHO) "CP=$(CP)" >>config.inc
 	$(ECHO) "ECHO=\"$(ECHO)\"" >>config.inc
-	$(CP) $(BASEDIR)\src\Headers\herald.h $(BASEDIR)\src\Headers\herald.last
-	$(ECHO) "/* herald.h - created automatically from herald.os2 and Makefile.os2 */" >$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_VERSION;@*/" >>$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "# define LCL_VERSION \"LCLint $(LCL_VERSION) --- $(LCL_DATE)\"" >>$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_PARSE_VERSION;@*/" >>$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "# define LCL_PARSE_VERSION \"LCLint $(LCL_VERSION)\"" >>$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "/*@constant observer char *LCL_COMPILE;@*/" >>$(BASEDIR)\src\Headers\herald.h
-	$(ECHO) "$(COMPILE_MSG)" >>$(BASEDIR)\src\Headers\herald.h
-
-###
-### locations of standard LCLint files
-###
-### this should NOT have to be edited if you use the standard
-###    installation package
-
-LCLINTBINDIR = $(BASEDIR)/bin
-
-LCLINTLIB = $(BASEDIR)/lib
-LCLINTIMPORTS = $(BASEDIR)/imports
-
-###
-### uses recursive make calls directly, so installation
-### will continue even if there are errors!
-###
-
-install: 
-	$(MAKE) dobinaries   -f Makefile.os2
-	$(MAKE) dolibraries  -f Makefile.os2
-	$(MAKE) doimports    -f Makefile.os2
-
-dobinaries:
-	$(INSTALL) $(INSTALLFLAGS) $(LCLINTBINDIR)\lclint$E $(INSTALLDIR)
-
-dolibraries:
-	-mkdir$E $(LIBDIR)
-	$(CP) $(LCLINTLIB)\\* $(LIBDIR)
-
-doimports:
-	-mkdir$E $(IMPORTSDIR)
-	$(CP) $(LCLINTIMPORTS)\\* $(IMPORTSDIR)
+	$(CP) ..\src\Headers\herald.h ..\src\Headers\herald.last
+	$(ECHO) "/* herald.h - created automatically from herald.os2 and Makefile.os2 */" >..\src\Headers\herald.h
+	$(ECHO) "/*@constant observer char *LCL_VERSION;@*/" >>..\src\Headers\herald.h
+	$(ECHO) "# define LCL_VERSION \"LCLint $(LCL_VERSION) --- $(LCL_DATE)\"" >>..\src\Headers\herald.h
+	$(ECHO) "/*@constant observer char *LCL_PARSE_VERSION;@*/" >>..\src\Headers\herald.h
+	$(ECHO) "# define LCL_PARSE_VERSION \"LCLint $(LCL_VERSION)\"" >>..\src\Headers\herald.h
+	$(ECHO) "/*@constant observer char *LCL_COMPILE;@*/" >>..\src\Headers\herald.h
+	$(ECHO) "$(COMPILE_MSG)" >>..\src\Headers\herald.h
 

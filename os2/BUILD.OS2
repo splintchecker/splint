@@ -14,24 +14,24 @@ My fixes can be found at:
 
   http://www.fh-wedel.de/pub/fh-wedel/staff/di/lclint/index.html
 
-Edit the makefile "Makefile.os2" and the compile batch "makeos2.cmd" 
-in the "lclint-?.?\os2" directory. During make execution all important 
-settings will be written to a config file read by any sub makefile. In
-any case you will have to set the variable `$BASEDIR' in Makefile.os2 
-and `%base%' in makeos2.cmd according to your setup.
+You may want to set the correct date and version to be written into the 
+lclint.exe binary in the Makefile.os2 file, although it is not strictly 
+necessary. This should be enough to build the program. During make 
+execution then some information will be written to a config file read 
+by the sub makefile in the src/ directory.
 
-Then use the batch file makeos2.cmd from inside the os2/ directory
-to build lclint. The options to that batch file are:
+Use the batch file makeos2.cmd from inside the os2/ directory to build 
+lclint. The options to that batch file are:
 
   makeos2 [--emx|-e|--gcc|-g|--icc|-i|--oldconf|-o|--test|-t|--package|-p]
 
-Like with make, this batch should be called from inside the os2
-directory. The options starting with "e" build LCLint using emx/gcc with 
-debug code. The letter "g" stands for gcc using the OMF object format 
-and optimization rather than debug code. For IBMs icc compiler use "i".
-Each of the above options will create a new configuration. To continue
-a build with an existing configuration use "o". Finally "t" runs the
-"quicktest" part of the test suite (other tests are not yet supported).
+This batch should be called from inside the os2 directory. The options 
+starting with "e" build LCLint using emx/gcc with debug code. The letter 
+"g" stands for gcc using the OMF object format and optimization rather 
+than debug code. For IBMs icc compiler use "i".  Each of the above 
+options will create a new configuration. To continue a build with an 
+existing configuration use "o". Finally "t" runs the "quicktest" part 
+of the test suite (other tests are not yet supported).
 
 If you experience problems with the automatic configuration file creation
 from within Makefile.os2 you may alternatively call makeos2.cmd with the
@@ -39,6 +39,11 @@ from within Makefile.os2 you may alternatively call makeos2.cmd with the
 IBMC, else edit it by hand). In that case you may also want to edit the
 local_constants.h and herald.h files from this directory to have it match 
 your setup.
+
+After building the program you may want to testrun it, using the batch
+file `run_lclint.cmd' or go through the test suite using `makeos2 -t'. 
+Before that you will need to set the environment variables in the 
+`setenv.cmd' file that is called from the other two batches.
 
 Please, be aware that you need the flex library in order to build lclint.
 As far as I remember the OS/2 version of flex comes with this library for
@@ -51,13 +56,14 @@ emx/gcc. However you can compile the lib with IBM's compiler, too. To
 do this, you will have to get the flex sources from one of the usual 
 ftp sites and compile at least the library. 
 
-To compile the flex library using IBM's VisualAge C++ compiler, you only
-need to perform the following steps:
+To compile the flex library using IBM's VisualAge C++ compiler, you 
+only need to perform the following steps:
 
 - enter the flex source directory.
 - enter "icc -c -Q -O libmain.c" and "icc -c -Q -O libyywrap.c"
-- enter "ilib fl.lib" from the command line (the library must not exist)
-  and "y", "+libmain.obj+libyywrap.obj" and "<enter>" from the ilib prompt.
+- enter "ilib fl.lib" from the command line (the library must not 
+  exist) and "y", "+libmain.obj+libyywrap.obj" and "<enter>" from the 
+  ilib prompt.
 - copy fl.lib somewhere where it gets found, I suggest "ibmcpp\lib".
 
 When using emx/gcc you can either produce code using the OMF object format

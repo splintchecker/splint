@@ -1,7 +1,6 @@
 @echo off
 setlocal
-set version=3.0.0.16
-set base=e:\usr\src\lclint-%version%
+call setenv.cmd
 if "%1"=="" goto icc
 if "%1"=="--icc" goto icc
 if "%1"=="-i" goto icc
@@ -35,29 +34,28 @@ sh -c "export TODAY=`date.exe`; export LCL_DATE=`date.exe | cut -d ' ' -f 2,3,6`
 goto end
 
 :oldconf
-if not exist %base%\src\Headers\local_constants.h copy local_constants.h %base%\src\Headers\local_constants.h
-if not exist %base%\src\Headers\heral.h copy local_constants.h %base%\src\Headers\herald.h
+if not exist ..\src\Headers\local_constants.h copy local_constants.h ..\src\Headers\local_constants.h
+if not exist ..\src\Headers\heral.h copy local_constants.h ..\src\Headers\herald.h
 make -f Makefile.os2 --directory=../src --warn-undefined-variables %2 %3 %4 %5 %6 %7 %8 %9 
+if not exist ..\bin mv ..\src\lclint.exe ..\bin
 if errorlevel 0 mv ..\src\lclint.exe ..\bin
 goto end
 
 :test
-set LARCH_PATH=%base%\lib
-set LCLIMPORTDIR=%base%\imports
 cd ..\test
 echo it's %LARCH_PATH% and %LCLIMPORTDIR%
-make LCLINT=%base%\bin\lclint %2 -e -f Makefile-test.os2
+make LCLINT=%basedir%\bin\lclint %2 %3 %4 %4 %5 %6 %7 %8 %9 -e -f Makefile-test.os2
 cd ..\os2
 goto end
 
 :package
-cd %base%\..
+cd %basedir%\..
 rm -f lclint-%version%-os2-*.tar*
 tar cvf lclint-%version%-os2-bin.tar lclint-%version%\bin lclint-%version%\imports lclint-%version%\lib lclint-%version%\os2 lclint-%version%\test lclint-%version%\BUFFERCHECKING lclint-%version%\LICENSE lclint-%version%\README
 tar cvf lclint-%version%-os2-all.tar lclint-%version%
 cd \export\lclint
-tar cvf %base%\..\lclint-%version%-os2-add.tar lclint-%version%
-gzip %base%\..\lclint-%version%-os2-*.tar
+tar cvf %basedir%\..\lclint-%version%-os2-add.tar lclint-%version%
+gzip %basedir%\..\lclint-%version%-os2-*.tar
 goto end
 
 :end

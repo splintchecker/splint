@@ -95,6 +95,7 @@ The following things specific to the OS/2 version of lclint have changed /
 fixed since the first official release:
 
 version 3.0.0.16:
+- Finally fully united the OS/2 port with the main source tree.
 - Bugfixes.
 
 version 3.0.0.14:

@@ -1,7 +1,7 @@
 CC=icc -q -W2 -Dunlink=unlink -O+ -G5 -Gf+ -Gi+ -Gs+ 
 CFLAGS=
 CPPFLAGS=-I.\Headers -DSTDC_HEADERS=1 -DOS2 
-BISON=
+BISON=bison
 FLEX=flex
 YFLAGS=-v -t -d
 LFLAGS=
