@@ -105,16 +105,15 @@ static ctype ctypeType;
 static ctype filelocType; 
 static bool initMod = FALSE;
 
-static void exprNode_defineConstraints(/*@sef@*/ /*@special@*/ /*@notnull@*/ exprNode p_e)
-     /*@defines p_e->requiresConstraints,  p_e->ensuresConstraints,  p_e->trueEnsuresConstraints,  p_e->falseEnsuresConstraints @*/
-     ;
-     
-# define exprNode_defineConstraints(e)  \
-do{					  (e)->requiresConstraints = constraintList_makeNew(); \
-					  (e)->ensuresConstraints = constraintList_makeNew(); \
-					  (e)->trueEnsuresConstraints = constraintList_makeNew(); \
-					    (e)->falseEnsuresConstraints = constraintList_makeNew(); } while(FALSE)
-
+static void exprNode_defineConstraints(/*@sef@*/ /*@special@*/ /*@notnull@*/ exprNode e)
+   /*@defines e->requiresConstraints,  e->ensuresConstraints, 
+              e->trueEnsuresConstraints,  e->falseEnsuresConstraints @*/ 
+{
+  e->requiresConstraints = constraintList_makeNew (); 
+  e->ensuresConstraints = constraintList_makeNew (); 
+  e->trueEnsuresConstraints = constraintList_makeNew (); 
+  e->falseEnsuresConstraints = constraintList_makeNew (); 
+}
 
 /*
 ** must occur after library has been read
@@ -9964,9 +9963,12 @@ checkOneRepExpose (sRef ysr, sRef base,
 		   sRef s2b)
 {
   if (!(sRef_isOnly (ysr) || sRef_isKeep (ysr) 
-	|| sRef_isOwned (ysr) || sRef_isExposed (ysr)))
+	|| sRef_isOwned (ysr) 
+	|| sRef_isExposed (ysr)))
     {
-      if (sRef_isAnyParam (base) && !sRef_isExposed (base))
+      if (sRef_isAnyParam (base) && !sRef_isExposed (base)
+	  && !sRef_isObserver (base)) /* evans 2001-07-11: added isObserver */
+
 	{
 	  if (sRef_isIReference (ysr))
 	    {

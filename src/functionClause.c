@@ -27,6 +27,7 @@
 
 # include "lclintMacros.nf"
 # include "basic.h"
+# include "mtincludes.h"
 
 static /*@only@*/ /*@notnull@*/ /*@special@*/ functionClause  /*@i32 need special? @*/
 functionClause_alloc (functionClauseKind kind) /*@defines result->kind@*/
@@ -72,6 +73,20 @@ extern functionClause functionClause_createRequires (constraintList node) /*@*/
   return res;
 }
 
+extern functionClause functionClause_createMetaEnsures (metaStateConstraint node) /*@*/ 
+{ 
+  functionClause res = functionClause_alloc (FCK_MTENSURES);
+  res->val.mtconstraint = node;
+  return res;
+}
+
+extern functionClause functionClause_createMetaRequires (metaStateConstraint node) /*@*/ 
+{ 
+  functionClause res = functionClause_alloc (FCK_MTREQUIRES);
+  res->val.mtconstraint = node;
+  return res;
+}
+
 extern functionClause functionClause_createWarn (warnClause node) /*@*/ 
 { 
   functionClause res = functionClause_alloc (FCK_WARN);
@@ -100,6 +115,10 @@ extern functionClause functionClause_createWarn (warnClause node) /*@*/
       return message ("ensures %q", constraintList_unparse (p->val.ensures));
     case FCK_REQUIRES:
       return message ("requires %q", constraintList_unparse (p->val.requires));
+    case FCK_MTENSURES:
+      return message ("ensures %q", metaStateConstraint_unparse (p->val.mtconstraint));
+    case FCK_MTREQUIRES:
+      return message ("requires %q", metaStateConstraint_unparse (p->val.mtconstraint));
     case FCK_DEAD:
       BADBRANCH;
     }
@@ -179,6 +198,26 @@ extern constraintList functionClause_takeRequires (functionClause fc)
   return res;
 }
 
+extern metaStateConstraint functionClause_getMetaConstraint (functionClause node)
+{
+  llassert (functionClause_isDefined (node));
+  llassert (node->kind == FCK_MTENSURES || node->kind == FCK_MTREQUIRES);
+
+  return node->val.mtconstraint;
+}
+
+extern metaStateConstraint functionClause_takeMetaConstraint (functionClause fc)
+{
+  metaStateConstraint res;
+  llassert (functionClause_isDefined (fc));
+  llassert (fc->kind == FCK_MTENSURES || fc->kind == FCK_MTREQUIRES);
+
+  res = fc->val.mtconstraint;
+  fc->val.mtconstraint = NULL;
+  fc->kind = FCK_DEAD;
+  return res;
+}
+
 extern warnClause functionClause_getWarn (functionClause node)
 {
   llassert (functionClause_isDefined (node));
@@ -238,6 +277,10 @@ extern void functionClause_free (/*@only@*/ functionClause node)
 	  break;
 	case FCK_REQUIRES:
 	  constraintList_free (node->val.requires);
+	  break;
+	case FCK_MTENSURES:
+	case FCK_MTREQUIRES:
+	  metaStateConstraint_free (node->val.mtconstraint);
 	  break;
 	case FCK_DEAD:
 	  /* Nothing to release */

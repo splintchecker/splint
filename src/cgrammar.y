@@ -47,6 +47,8 @@ extern void yyerror (char *);
 
 # include "lclintMacros.nf"
 # include "basic.h"
+# include "cscanner.h"
+# include "mtincludes.h"
 # include "cgrammar.h"
 # include "exprChecks.h"
 
@@ -89,6 +91,11 @@ extern void yyerror (char *);
   /*@only@*/ warnClause warnclause;
   /*@only@*/ stateClause stateclause;
 
+  /*@only@*/ metaStateConstraint msconstraint;
+  /*@only@*/ metaStateSpecifier msspec;
+  /*@only@*/ metaStateExpression msexpr;
+  /*@observer@*/ metaStateInfo msinfo;
+
   /*@only@*/ sRefList srlist;
   /*@only@*/ globSet globset;
   /*@only@*/ qtype qtyp;
@@ -105,6 +112,7 @@ extern void yyerror (char *);
   /*@only@*/ exprNodeList alist;
   /*@only@*/ sRefSet srset; 
   /*@only@*/ cstringList cstringlist;
+
   /*drl
     added 1/19/2001
   */
@@ -211,11 +219,16 @@ extern void yyerror (char *);
 %type <warnclause> warnClause warnClausePlain
 %type <funcclause> conditionClause conditionClausePlain
 %type <stateclause> stateClause stateClausePlain
+%type <msconstraint> metaStateConstraint 
+%type <msspec> metaStateSpecifier
+%type <msexpr> metaStateExpression
 
 %type <sr> globId globIdListExpr
 %type <globset> globIdList
 
 %token <ctyp>  TYPE_NAME 
+%token <msinfo> METASTATE_NAME 
+%type <msinfo> metaStateName
 %type <cname> enumerator newId  /*@-varuse@*/ /* yacc declares yytranslate here */
 %type <count> pointers /*@=varuse@*/
 
@@ -246,7 +259,7 @@ extern void yyerror (char *);
 %type <sr>    mExpr modListExpr specClauseListExpr
 
 /*drl*/
-%type <con>    BufConstraint
+%type <con> BufConstraint
 %type <tok> relationalOp
 %type <tok> BufBinaryOp
 %type <tok> bufferModifier
@@ -426,7 +439,23 @@ macroDef
  | LLMACRO TENDMACRO /* no stmt */ { exprChecks_checkEmptyMacroBody (); } 
 
 fcnDefHdr
-  : fcnDefHdrAux { clabstract_declareFunction ($1); }
+ : fcnDefHdrAux { clabstract_declareFunction ($1); }
+
+metaStateConstraint
+ : metaStateSpecifier TASSIGN metaStateExpression 
+   { $$ = metaStateConstraint_create ($1, $3); }
+
+metaStateSpecifier
+ : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
+   { cscanner_clearExpectingMetaStateName ();
+     $$ = metaStateSpecifier_create ($1, $4); }
+
+metaStateExpression
+: metaStateSpecifier { $$ = metaStateExpression_create ($1); }
+| metaStateSpecifier TBAR metaStateExpression { $$ = metaStateExpression_createMerge ($1, $3); }
+
+metaStateName
+: METASTATE_NAME
 
 /*drl*/
 
@@ -456,29 +485,41 @@ BufConstraintExpr
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
 
 BufConstraintTerm
-: BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef($1);} 
- | CCONSTANT {  char *t; int c;
-  t =  cstring_toCharsSafe (exprNode_unparse($1));
-  c = atoi( t );
-  $$ = constraintExpr_makeIntLiteral (c);
-}
-
+ : BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef($1);} 
+ | CCONSTANT 
+   {  
+     /* char *t; int c;
+	t =  cstring_toCharsSafe (exprNode_unparse($1));
+	c = atoi( t );
+     */
+     
+     $$ = constraintExpr_makeIntLiteral (exprNode_getLongValue ($1));
+   }
 
 BufConstraintSrefExpr
-: id                               { /*@-onlytrans@*/ $$ = checkbufferConstraintClausesId ($1); /*@=onlytrans@*/ /*@i523@*/ }
-| NEW_IDENTIFIER                   { $$ = fixStateClausesId ($1); }
-| BufConstraintSrefExpr TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
-|  BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR {
-  char *t; int c; 
-  t =  cstring_toCharsSafe (exprNode_unparse($3)); /*@i5234 yuck!@*/
-  c = atoi( t );
-  $$ = sRef_makeArrayFetchKnown($1, c); }
-| TMULT  BufConstraintSrefExpr               { $$ = sRef_constructPointer ($2); }
-| TLPAREN BufConstraintSrefExpr TRPAREN     { $$ = $2; }  
-|  BufConstraintSrefExpr TDOT newId          { cstring_markOwned ($3);
- $$ = sRef_buildField ($1, $3); }
-|  BufConstraintSrefExpr ARROW_OP newId      { cstring_markOwned ($3);
- $$ = sRef_makeArrow ($1, $3); }
+: id            
+  { /*@-onlytrans@*/ $$ = checkbufferConstraintClausesId ($1); /*@=onlytrans@*/ /*@i523@*/ }
+| NEW_IDENTIFIER                   
+  { $$ = fixStateClausesId ($1); }
+| BufConstraintSrefExpr TLSQBR TRSQBR       
+  { $$ = sRef_makeAnyArrayFetch ($1); }
+| BufConstraintSrefExpr  TLSQBR CCONSTANT TRSQBR 
+  {
+    /*
+    char *t; int c; 
+    t =  cstring_toCharsSafe (exprNode_unparse($3)); 
+    c = atoi( t );
+    */
+    $$ = sRef_makeArrayFetchKnown ($1, exprNode_getLongValue ($3));
+  }
+| TMULT  BufConstraintSrefExpr               
+  { $$ = sRef_constructPointer ($2); }
+| TLPAREN BufConstraintSrefExpr TRPAREN     
+  { $$ = $2; }  
+| BufConstraintSrefExpr TDOT newId          
+  { cstring_markOwned ($3); $$ = sRef_buildField ($1, $3); }
+| BufConstraintSrefExpr ARROW_OP newId      
+  { cstring_markOwned ($3); $$ = sRef_makeArrow ($1, $3); }
 
 /*
 | BufConstraintTerm TLSQBR TRSQBR       { $$ = sRef_makeAnyArrayFetch ($1); }
@@ -1027,6 +1068,33 @@ conditionClausePlain
      else if (lltok_isRequires ($1))
        {
 	 $$ = functionClause_createRequires ($3);
+       }
+     else
+       {
+	 BADBRANCH;
+       }
+   }
+ | startConditionClause
+   {
+     context_setProtectVars (); 
+     enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+   } 
+   metaStateConstraint optSemi IsType
+   {
+     context_exitFunctionHeader ();
+     exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+     DPRINTF (("done optGlobBufConstraintsAux\n"));
+
+     if (lltok_isEnsures ($1)) 
+       {
+	 $$ = functionClause_createMetaEnsures ($3);
+       }
+     else if (lltok_isRequires ($1))
+       {
+	 $$ = functionClause_createMetaRequires ($3);
        }
      else
        {

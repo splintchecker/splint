@@ -114,6 +114,8 @@ static /*@only@*/ cstring makeIdentifier (char *);
 /* yes, this is exported! */
 bool g_expectingTypeName = TRUE; /* beginning of file can be type name! */
 
+static bool expectingMetaStateName = FALSE;
+
 static int returnInt (ctype, long);
 static int returnFloat (ctype, double);
 static int returnChar (char);
@@ -2513,7 +2515,24 @@ static int processIdentifier (cstring id)
 	    }
 	  else 
 	    {
-	      annotationInfo ainfo = context_lookupAnnotation (id);
+	      annotationInfo ainfo;
+
+	      if (expectingMetaStateName) 
+		{
+		  metaStateInfo msinfo = context_lookupMetaStateInfo (id);
+
+		  if (metaStateInfo_isDefined (msinfo))
+		    {
+		      yylval.msinfo = msinfo;
+		      return METASTATE_NAME;
+		    }
+		  else
+		    {
+		      TPRINTF (("Not meta state name: %s", cstring_toCharsSafe (id)));
+		    }
+		}
+	      
+	      ainfo = context_lookupAnnotation (id);
 	      
 	      if (annotationInfo_isDefined (ainfo)) 
 		{
@@ -2952,4 +2971,17 @@ processSpec (int tok)
       setTokLengthT (length);
       return (processIdentifier (makeIdentifier (yytext)));
     }
+}
+
+void cscanner_expectingMetaStateName ()
+{
+  llassert (!expectingMetaStateName);
+  llassert (context_inFunctionHeader ());
+  expectingMetaStateName = TRUE;
+}
+
+void cscanner_clearExpectingMetaStateName ()
+{
+  llassert (expectingMetaStateName);
+  expectingMetaStateName = FALSE;
 }

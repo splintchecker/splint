@@ -2033,11 +2033,12 @@ sRef checkStateClausesId (uentry ue)
 sRef checkbufferConstraintClausesId (uentry ue)
 {
   cstring s = uentry_rawName (ue);
+
   if (cstring_equalLit (s, "result"))
     {
       if (optgenerror 
 	  (FLG_SYNTAX, 
-	   message ("Special clause list uses %s which is a variable and has special "
+	   message ("Function clause list uses %s which is a variable and has special "
 		    "meaning in a modifies list.  (Special meaning assumed.)", s), 
 	   g_currentloc))
 	{
@@ -2045,7 +2046,7 @@ sRef checkbufferConstraintClausesId (uentry ue)
 	}
     }
   
-  return sRef_saveCopy( uentry_getSref (ue) );
+  return sRef_saveCopy (uentry_getSref (ue)); /*@i523 why the saveCopy? */
 }
 
 void checkModifiesId (uentry ue)
