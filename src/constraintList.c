@@ -63,7 +63,7 @@ constraintList_grow (constraintList s)
   s->elements = newelements;
 }
 
-constraintList_exprNodemerge()
+void constraintList_exprNodemerge()
 {
 }
 constraintList 
@@ -78,41 +78,47 @@ constraintList_add (constraintList s, constraint el)
   return s;
 }
 
-/*  cstring */
-/*  constraintList_unparse (constraintList s) */
-/*  { */
-/*    int i; */
-/*    cstring st = cstring_undefined; */
-/*    bool first = TRUE; */
+constraintList constraintList_addList (constraintList s, constraintList new)
+{
+  constraintList_elements(new, elem)
+    s = constraintList_add (s, elem);
+  end_constraintList_elements
+    return s;
+}
 
-/*    for (i = 0; i < s->nelements; i++) */
-/*      { */
-/*        cstring type = cstring_undefined; */
-/*        constraint current = s->elements[i]; */
+cstring
+constraintList_print (constraintList s)
+{
+  int i;
+  cstring st = cstring_undefined;
+  bool first = TRUE;
 
-/*        if (current->isObj) */
-/*  	{ */
-/*  	  type = cstring_makeLiteral ("obj "); */
-/*  	} */
+  if (s->nelements == 0)
+    st = cstring_makeLiteral("<List Empty>");
+  
+  for (i = 0; i < s->nelements; i++)
+    {
+      cstring type = cstring_undefined;
+      constraint current = s->elements[i];
 
-/*        if (current->type != NULL) */
-/*  	{ */
-/*  	  type = message (": %q%q", type, lclTypeSpecNode_unparse (current->type)); */
-/*  	} */
+      if (current != NULL)
+	{
+	  cstring temp1 = constraint_print(current);
+	  type = message ("%q %q\n", type, temp1 );
+	}
 
-/*        if (first) */
-/*  	{ */
-/*  	  st = type; */
-/*  	  first = FALSE; */
-/*  	} */
-/*        else */
-/*  	{ */
-/*  	  st = message ("%q, %q", st, type); */
-/*  	} */
-/*      } */
-
-/*    return st; */
-/*  } */
+      if (first)
+	{
+	  st = type;
+	  first = FALSE;
+	}
+      else
+	{
+	  st = message ("%q, %q", st, type);
+	}
+    }
+  return st;
+}
 
 void
 constraintList_free (constraintList s)
@@ -139,3 +145,5 @@ constraintList_copy (constraintList s)
 
   return ret;
 }
+
+

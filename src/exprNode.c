@@ -408,7 +408,9 @@ static /*@notnull@*/ /*@special@*/ exprNode
   e->mustBreak = FALSE;
   e->isJumpPoint = FALSE;
   e->environment =  environmentTable_undefined;
-  e->constraints =  constraintList_undefined;
+  e->requiresConstraints = constraintList_new();
+  e->ensuresConstraints  = constraintList_new();
+  
   return (e);
 }
 
@@ -9970,7 +9972,6 @@ fileloc exprNode_getNextSequencePoint (exprNode e)
 
   if (exprNode_isDefined (e) && e->kind == XPR_STMT) {
     lltok t = exprData_getUopTok (e->edata);
-    printf ("!!!!!!!!!!!!!!!!!!Tok is \n\n%s\n", lltok_unparse(t) );
     return lltok_getLoc (t);
   } else {
     llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));
