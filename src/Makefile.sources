@@ -23,13 +23,13 @@ LCLINTSRC = exprNode.c exprChecks.c llmain.c
 GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y
 GRAMSRC    = cgrammar.c cscanner.c 
 
-GENERALSRC =     constraint.c \
-    constraintTerm.c \
+GENERALSRC =    constraintTerm.c \
     constraintExprData.c \
     constraintExpr.c \
+    constraint.c \
     constraintList.c \
-    constraintGeneration.c \
     constraintResolve.c \
+    constraintGeneration.c \
     constraintOutput.c \
     forjunk.c \
     cstring.c fileloc.c message.c source.c \

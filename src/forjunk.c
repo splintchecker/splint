@@ -160,7 +160,10 @@ static constraintList getLessThanConstraints (constraintList c)
       
       if (el->ar == LT || el->ar == LTE)
 	{
-	  ret = constraintList_add (ret, el);
+	  constraint temp;
+	  temp = constraint_copy(el);
+
+	  ret = constraintList_add (ret, temp);
 	}
     }
   end_constraintList_elements;
@@ -177,7 +180,9 @@ static constraintList getIncConstraints (constraintList c)
     {
       if (incVar (el) )
 	{
-	  ret = constraintList_add (ret, el);
+	  constraint temp;
+	  temp = constraint_copy(el);
+	  ret = constraintList_add (ret, temp);
 	}
     }
   end_constraintList_elements;

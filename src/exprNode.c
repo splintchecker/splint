@@ -9968,10 +9968,10 @@ long exprNode_getLongValue (exprNode e) {
   return value;
 }
 
-fileloc exprNode_getfileloc (exprNode p_e)
+/*@observer@*/ fileloc exprNode_getfileloc (exprNode p_e)
 {
   if (exprNode_isDefined (p_e) )
-    return fileloc_copy ( p_e->loc );
+    return ( p_e->loc );
   else
     return fileloc_undefined;
 }
@@ -9997,7 +9997,7 @@ fileloc exprNode_getNextSequencePoint (exprNode e)
 
 /*drl added
  */
-exprNode exprNode_fakeCopy (exprNode e)
+exprNode exprNode_fakeCopy (/*@returned@*/ exprNode e)
 {
   /*@-temptrans@*/ /*@-retalias@*/
   return e;

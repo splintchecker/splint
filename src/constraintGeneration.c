@@ -34,12 +34,9 @@ static void  exprNode_multiStatement (exprNode p_e);
 constraintList exprNode_traversTrueEnsuresConstraints (exprNode e);
 constraintList exprNode_traversFalseEnsuresConstraints (exprNode e);
 
-void mergeResolve (exprNode parent, exprNode child1, exprNode child2);
 exprNode makeDataTypeConstraints (exprNode e);
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
-constraintList checkCall (exprNode fcn, exprNodeList arglist);
 
-void checkArgumentList (exprNode temp, exprNodeList arglist, fileloc sequencePoint);
 
 //bool exprNode_testd()
 //{
@@ -194,7 +191,7 @@ void exprNode_stmt (exprNode e)
 {
   exprNode snode;
   fileloc loc;
-  char * s;
+  cstring s;
   
   if (exprNode_isError(e) )
     {
@@ -878,7 +875,7 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 	
       //      cons = constraint_makeEnsureMinReadAtMost (t1, t2, sequencePoint);
       // e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
-       
+      
       exprNode_exprTraverse (exprData_getPairA (data), FALSE, TRUE, sequencePoint);
       exprNode_exprTraverse (exprData_getPairB (data), FALSE, TRUE, sequencePoint);
       
@@ -1125,7 +1122,9 @@ void exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
   e->ensuresConstraints  = constraintList_addGeneratingExpr ( e->ensuresConstraints, e);
 
-  DPRINTF((message ("ensures constraint for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
+  DPRINTF((message ("ensures constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
+
+  DPRINTF((message ("Requires constraints for %s are %s", exprNode_unparse(e), constraintList_printDetailed(e->ensuresConstraints) ) ));
   
   return; // handledExprNode; 
 }
@@ -1409,7 +1408,7 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
 
 
 /* walk down the tree and get all requires Constraints in each subexpression*/
-constraintList exprNode_traversRequiresConstraints (exprNode e)
+/*@only@*/ constraintList exprNode_traversRequiresConstraints (exprNode e)
 {
   exprNode t1;
 
@@ -1549,7 +1548,7 @@ constraintList exprNode_traversRequiresConstraints (exprNode e)
 
 
 /* walk down the tree and get all Ensures Constraints in each subexpression*/
-constraintList exprNode_traversEnsuresConstraints (exprNode e)
+/*@only@*/ constraintList exprNode_traversEnsuresConstraints (exprNode e)
 {
   exprNode t1;
 
