@@ -1253,7 +1253,8 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
 /*@constant size_t INTPTR_MIN@*/
 /*@constant size_t INTPTR_MAX@*/
 
-/*drl added  the __func__ identifier from C99
+/*drl 3/5/2003
+  added  the __func__ identifier from C99
   This won't follow the same semantics as
   __func__ in C99
 
@@ -1266,3 +1267,23 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
   an arbitary value.
 */
 static const char _ _func_ _[] = "function-name";
+
+
+/* drl 3/5/2003
+   added limited supported for _Bool */
+
+/*__Bool shouled really be a basic type but edited the grammar and ripping
+  apart the rest of Splint would probably break too much stuff...
+*/
+
+typedef /*@unsignedintegraltype@*/  _Bool;
+
+/*support stdbool.h */
+
+#define bool _Bool
+
+#define true 1
+
+#define false 0
+
+#define __bool_true_false_are_defined 1
