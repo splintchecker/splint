@@ -59,31 +59,17 @@ extern functionClause functionClause_createState (stateClause node) /*@*/
   return res;
 }
 
-extern functionClause functionClause_createEnsures (constraintList node) /*@*/ 
+extern functionClause functionClause_createEnsures (functionConstraint node) /*@*/ 
 { 
   functionClause res = functionClause_alloc (FCK_ENSURES);
-  res->val.ensures = node;
+  res->val.constraint = node;
   return res;
 }
 
-extern functionClause functionClause_createRequires (constraintList node) /*@*/ 
+extern functionClause functionClause_createRequires (functionConstraint node) /*@*/ 
 { 
   functionClause res = functionClause_alloc (FCK_REQUIRES);
-  res->val.requires = node;
-  return res;
-}
-
-extern functionClause functionClause_createMetaEnsures (metaStateConstraint node) /*@*/ 
-{ 
-  functionClause res = functionClause_alloc (FCK_MTENSURES);
-  res->val.mtconstraint = node;
-  return res;
-}
-
-extern functionClause functionClause_createMetaRequires (metaStateConstraint node) /*@*/ 
-{ 
-  functionClause res = functionClause_alloc (FCK_MTREQUIRES);
-  res->val.mtconstraint = node;
+  res->val.constraint = node;
   return res;
 }
 
@@ -112,13 +98,9 @@ extern functionClause functionClause_createWarn (warnClause node) /*@*/
     case FCK_STATE:
       return stateClause_unparse (p->val.state);
     case FCK_ENSURES:
-      return message ("ensures %q", constraintList_unparse (p->val.ensures));
+      return message ("ensures %q", functionConstraint_unparse (p->val.constraint));
     case FCK_REQUIRES:
-      return message ("requires %q", constraintList_unparse (p->val.requires));
-    case FCK_MTENSURES:
-      return message ("ensures %q", metaStateConstraint_unparse (p->val.mtconstraint));
-    case FCK_MTREQUIRES:
-      return message ("requires %q", metaStateConstraint_unparse (p->val.mtconstraint));
+      return message ("requires %q", functionConstraint_unparse (p->val.constraint));
     case FCK_DEAD:
       BADBRANCH;
     }
@@ -158,62 +140,42 @@ extern stateClause functionClause_takeState (functionClause fc)
   return res;
 }
 
-extern constraintList functionClause_getEnsures (functionClause node)
+extern functionConstraint functionClause_getEnsures (functionClause node)
 {
   llassert (functionClause_isDefined (node));
   llassert (node->kind == FCK_ENSURES);
 
-  return node->val.ensures;
+  return node->val.constraint;
 }
 
-extern constraintList functionClause_takeEnsures (functionClause fc)
+extern functionConstraint functionClause_takeEnsures (functionClause fc)
 {
-  constraintList res;
+  functionConstraint res;
   llassert (functionClause_isDefined (fc));
   llassert (fc->kind == FCK_ENSURES);
 
-  res = fc->val.ensures;
-  fc->val.ensures = NULL;
+  res = fc->val.constraint;
+  fc->val.constraint = NULL;
   fc->kind = FCK_DEAD;
   return res;
 }
 
-extern constraintList functionClause_getRequires (functionClause node)
+extern functionConstraint functionClause_getRequires (functionClause node)
 {
   llassert (functionClause_isDefined (node));
   llassert (node->kind == FCK_REQUIRES);
 
-  return node->val.requires;
+  return node->val.constraint;
 }
 
-extern constraintList functionClause_takeRequires (functionClause fc)
+extern functionConstraint functionClause_takeRequires (functionClause fc)
 {
-  constraintList res;
+  functionConstraint res;
   llassert (functionClause_isDefined (fc));
   llassert (fc->kind == FCK_REQUIRES);
 
-  res = fc->val.requires;
-  fc->val.requires = NULL;
-  fc->kind = FCK_DEAD;
-  return res;
-}
-
-extern metaStateConstraint functionClause_getMetaConstraint (functionClause node)
-{
-  llassert (functionClause_isDefined (node));
-  llassert (node->kind == FCK_MTENSURES || node->kind == FCK_MTREQUIRES);
-
-  return node->val.mtconstraint;
-}
-
-extern metaStateConstraint functionClause_takeMetaConstraint (functionClause fc)
-{
-  metaStateConstraint res;
-  llassert (functionClause_isDefined (fc));
-  llassert (fc->kind == FCK_MTENSURES || fc->kind == FCK_MTREQUIRES);
-
-  res = fc->val.mtconstraint;
-  fc->val.mtconstraint = NULL;
+  res = fc->val.constraint;
+  fc->val.constraint = NULL;
   fc->kind = FCK_DEAD;
   return res;
 }
@@ -273,14 +235,10 @@ extern void functionClause_free (/*@only@*/ functionClause node)
 	  stateClause_free (node->val.state);
 	  break;
 	case FCK_ENSURES:
-	  constraintList_free (node->val.ensures);
+	  functionConstraint_free (node->val.constraint);
 	  break;
 	case FCK_REQUIRES:
-	  constraintList_free (node->val.requires);
-	  break;
-	case FCK_MTENSURES:
-	case FCK_MTREQUIRES:
-	  metaStateConstraint_free (node->val.mtconstraint);
+	  functionConstraint_free (node->val.constraint);
 	  break;
 	case FCK_DEAD:
 	  /* Nothing to release */

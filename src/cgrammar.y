@@ -91,6 +91,8 @@ extern void yyerror (char *);
   /*@only@*/ warnClause warnclause;
   /*@only@*/ stateClause stateclause;
 
+  /*@only@*/ functionConstraint fcnconstraint; 
+
   /*@only@*/ metaStateConstraint msconstraint;
   /*@only@*/ metaStateSpecifier msspec;
   /*@only@*/ metaStateExpression msexpr;
@@ -220,6 +222,7 @@ extern void yyerror (char *);
 %type <funcclause> conditionClause conditionClausePlain
 %type <stateclause> stateClause stateClausePlain
 %type <msconstraint> metaStateConstraint 
+%type <fcnconstraint> functionConstraint
 %type <msspec> metaStateSpecifier
 %type <msexpr> metaStateExpression
 
@@ -269,7 +272,7 @@ extern void yyerror (char *);
 %type <conE> BufConstraintTerm
 %type <sr> BufConstraintSrefExpr
 
-%type <conL>    BufConstraintList
+%type <conL> BufConstraintList
 
 %type <tok>  BufUnaryOp
 
@@ -446,7 +449,7 @@ metaStateConstraint
    { $$ = metaStateConstraint_create ($1, $3); }
 
 metaStateSpecifier
- : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
+  : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
    { cscanner_clearExpectingMetaStateName ();
      $$ = metaStateSpecifier_create ($1, $4); }
 
@@ -461,7 +464,7 @@ metaStateName
 
 BufConstraintList
 : BufConstraint TCAND BufConstraintList { $$ = constraintList_add ($3, $1); }
-| BufConstraint {constraintList c; c = constraintList_makeNew(); c = constraintList_add (c, $1); $$ = c}
+| BufConstraint { $$ = constraintList_single ($1); } 
 
 BufConstraint
 :  BufConstraintExpr relationalOp BufConstraintExpr {
@@ -1053,7 +1056,7 @@ conditionClausePlain
      enterParamsTemp (); 
      sRef_setGlobalScopeSafe (); 
    } 
-   BufConstraintList optSemi IsType
+   functionConstraint optSemi IsType
    {
      context_exitFunctionHeader ();
      exitParamsTemp ();
@@ -1074,33 +1077,10 @@ conditionClausePlain
 	 BADBRANCH;
        }
    }
- | startConditionClause
-   {
-     context_setProtectVars (); 
-     enterParamsTemp (); 
-     sRef_setGlobalScopeSafe (); 
-   } 
-   metaStateConstraint optSemi IsType
-   {
-     context_exitFunctionHeader ();
-     exitParamsTemp ();
-     sRef_clearGlobalScopeSafe (); 
-     context_releaseVars ();
-     DPRINTF (("done optGlobBufConstraintsAux\n"));
 
-     if (lltok_isEnsures ($1)) 
-       {
-	 $$ = functionClause_createMetaEnsures ($3);
-       }
-     else if (lltok_isRequires ($1))
-       {
-	 $$ = functionClause_createMetaRequires ($3);
-       }
-     else
-       {
-	 BADBRANCH;
-       }
-   }
+functionConstraint
+ : BufConstraintList   { $$ = functionConstraint_createBufferConstraint ($1); }
+ | metaStateConstraint { $$ = functionConstraint_createMetaStateConstraint ($1); } 
  
 exitsQualifier
  : QEXITS        { $$ = qual_createExits (); }

@@ -163,8 +163,6 @@ constraintList constraintList_addListFree (/*@returned@*/ constraintList s, /*@o
 extern /*@only@*/ cstring constraintList_unparse ( /*@observer@*/ constraintList s) /*@*/
 {
   return (constraintList_print(s));
-
-
 }
 
 
@@ -400,7 +398,13 @@ constraintList constraintList_preserveCallInfo (/*@returned@*/ constraintList c,
   return c;
 }
 
-
+constraintList constraintList_single (constraint c)
+{
+  constraintList res;
+  res = constraintList_makeNew();
+  res = constraintList_add (res, c);
+  return res;
+}
 
 constraintList constraintList_addGeneratingExpr (constraintList c,/*@dependent@*/ exprNode e)
 {

@@ -867,7 +867,7 @@ extern void /*@alt char * @*/
   /*@modifies *s1@*/      /*@requires MaxSet(s1) >= ( n - 1 ); @*/ /*@ensures MaxRead (s2) >= MaxRead(s1) /\ MaxRead (s1) <= n; @*/; 
 
 extern void /*@alt char * @*/
-  strcat (/*@unique@*/ /*returned*/ /*@out@*/ char *s1, char *s2) 
+  strcat (/*@unique@*/ /*@returned@*/ /*@out@*/ char *s1, char *s2) 
      /*@modifies *s1@*/ /*@requires MaxSet(s1) >= (MaxRead(s1) + MaxRead(s2) );@*/
      /*@ensures MaxRead(result) == (MaxRead(s1) + MaxRead(s2) );@*/;
 
