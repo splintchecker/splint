@@ -10,60 +10,60 @@ restricts access to exprData
 
 static void fakeQuite1 (int x)
 {
-void** f;
+void* f;
 
 x = 1;
 
 x = x +6;
 
 llfatalbug ("fake function fakeQuite1 called");
-f = fakeQuite1;
+f = (void *) fakeQuite1;
 
-f = exprData_freeShallow;
-f = exprData_free;
-f =  exprData_getInitNode;
-f =  exprData_getInitId;
-f =  exprData_getIterSname;
-f =  exprData_getIterAlist;
-f =  exprData_getIterBody;
-f =  exprData_getIterEname;
-f =  exprData_getIterCallIter;
-f =  exprData_getIterCallArgs;
-f =  exprData_getCastNode;
-f =  exprData_getCastTok;
-f =  exprData_getCastType;
-f =  exprData_getId;
-f =  exprData_getTok;
-f =  exprData_getOffsetType;
-f =  exprData_getOffsetName;
-f =  exprData_makeOp;
-f =  exprData_makeUop;
-f =  exprData_makeSingle;
-f =  exprData_makeTok;
-f =  exprData_makeIter;
-f =  exprData_makeCall;
-f =  exprData_makeIterCall;
-f =  exprData_makeField;
-f =  exprData_makeOffsetof;
-f =  exprData_makeSizeofType;
-f =  exprData_makeCast;
-f =  exprData_makeInit;
-f =  exprData_makeCond;
-f =  exprData_makeFor;
-f =  exprData_getPairA;
-f =  exprData_getPairB;
-f =  exprData_getFcn;
-f =  exprData_getArgs;
-f =  exprData_getTriplePred;
-f =  exprData_getTripleInit;
-f =  exprData_getTripleTrue;
-f =  exprData_getTripleTest;
-f =  exprData_getTripleFalse;
-f =  exprData_getTripleInc;
-f =  exprData_getFieldNode;
-f =  exprData_getFieldName;
-f =  exprData_getUopTok;
-f =  exprData_getLiteral;
-f =  exprData_getType;
+f = (void *)  exprData_free;
+f = (void *) exprData_freeShallow;
+f =   (void *) exprData_getInitNode;
+f = (void *)   exprData_getInitId;
+f = (void *)   exprData_getIterSname;
+f = (void *)   exprData_getIterAlist;
+f = (void *)   exprData_getIterBody;
+f = (void *)   exprData_getIterEname;
+f = (void *)   exprData_getIterCallIter;
+f = (void *)   exprData_getIterCallArgs;
+f = (void *)   exprData_getCastNode;
+f =  (void *)  exprData_getCastTok;
+f =  (void *)  exprData_getCastType;
+f =  (void *)  exprData_getId;
+f =  (void *)  exprData_getTok;
+f = (void *)   exprData_getOffsetType;
+f = (void *)   exprData_getOffsetName;
+f = (void *)   exprData_makeOp;
+f = (void *)   exprData_makeUop;
+f = (void *)   exprData_makeSingle;
+f = (void *)   exprData_makeTok;
+f = (void *)   exprData_makeIter;
+f = (void *)   exprData_makeCall;
+f = (void *)   exprData_makeIterCall;
+f = (void *)   exprData_makeField;
+f = (void *)   exprData_makeOffsetof;
+f = (void *)   exprData_makeSizeofType;
+f = (void *)   exprData_makeCast;
+f = (void *)   exprData_makeInit;
+f = (void *)   exprData_makeCond;
+f = (void *)   exprData_makeFor;
+f = (void *)   exprData_getPairA;
+f = (void *)   exprData_getPairB;
+f = (void *)   exprData_getFcn;
+f = (void *)   exprData_getArgs;
+f = (void *)   exprData_getTriplePred;
+f = (void *)   exprData_getTripleInit;
+f = (void *)   exprData_getTripleTrue;
+f = (void *)   exprData_getTripleTest;
+f = (void *)   exprData_getTripleFalse;
+f = (void *)   exprData_getTripleInc;
+f = (void *)   exprData_getFieldNode;
+f = (void *)   exprData_getFieldName;
+f = (void *)   exprData_getUopTok;
+f = (void *)   exprData_getLiteral;
+f = (void *)   exprData_getType;
 }
 /*@end@*/

@@ -16,12 +16,9 @@
 # include "exprNodeSList.h"
 //# include "exprData.i"
 
-#include "constraintExpr.h"
 
+/*@access constraint @*/
 
-
-
-constraintList reflectChangesOr (constraintList pre2, constraintList post1);
 
 constraint  inequalitySubstituteUnsound  (constraint c, constraintList p);
 
@@ -49,7 +46,7 @@ constraintList constraintList_mergeEnsures (constraintList list1, constraintList
   constraintList ret;
   constraintList temp;
 
-  //ret = constraintList_new();
+  //ret = constraintList_makeNew();
 
   llassert(list1);
   llassert(list2);
@@ -101,10 +98,10 @@ constraintList constraintList_mergeRequires (constraintList list1, constraintLis
 
 void checkArgumentList (exprNode temp, exprNodeList arglist, fileloc sequencePoint)
 {
-  temp->requiresConstraints = constraintList_new();
-  temp->ensuresConstraints = constraintList_new();
-  temp->trueEnsuresConstraints = constraintList_new();
-  temp->falseEnsuresConstraints = constraintList_new();
+  temp->requiresConstraints = constraintList_makeNew();
+  temp->ensuresConstraints = constraintList_makeNew();
+  temp->trueEnsuresConstraints = constraintList_makeNew();
+  temp->falseEnsuresConstraints = constraintList_makeNew();
   
   exprNodeList_elements (arglist, el)
     {
@@ -140,7 +137,7 @@ constraintList checkCall (exprNode fcn, exprNodeList arglist)
     }
   else
     {
-      preconditions = constraintList_new();
+      preconditions = constraintList_makeNew();
     }
   
   return preconditions;
@@ -164,7 +161,7 @@ constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode f
     }
   else
     {
-      postconditions = constraintList_new();
+      postconditions = constraintList_makeNew();
     }
   
   return postconditions;
@@ -194,8 +191,8 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
        else
 	 {
 	   llassert(exprNode_isError(child2) );
-	   parent->requiresConstraints = constraintList_new();
-	   parent->ensuresConstraints = constraintList_new();
+	   parent->requiresConstraints = constraintList_makeNew();
+	   parent->ensuresConstraints = constraintList_makeNew();
 	   return;
 	 }
      }
@@ -209,8 +206,8 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 		     constraintList_print (child2->ensuresConstraints)
 		     ) ) );
  
-  parent->requiresConstraints = constraintList_new();
-  parent->ensuresConstraints = constraintList_new();
+  parent->requiresConstraints = constraintList_makeNew();
+  parent->ensuresConstraints = constraintList_makeNew();
 
   parent->requiresConstraints = constraintList_copy (child1->requiresConstraints);
 
@@ -237,7 +234,7 @@ void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
 constraintList constraintList_subsumeEnsures (constraintList list1, constraintList list2)
 {
   constraintList ret;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (list1, el)
     {
       
@@ -262,7 +259,7 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
   
   constraintList ret;
   constraint temp;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   DPRINTF((message ("reflectChanges: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
   
   constraintList_elements (pre2, el)
@@ -409,7 +406,7 @@ constraintList reflectChangesOr (constraintList pre2, constraintList post1)
   bool resolved;
   constraintList ret;
   constraint temp;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   DPRINTF((message ("reflectChangesOr: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
   
   constraintList_elements (pre2, el)
@@ -430,7 +427,7 @@ constraintList reflectChangesEnsures (constraintList pre2, constraintList post1)
 {  
   constraintList ret;
   constraint temp;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (pre2, el)
     {
       if (!resolve (el, post1) )
@@ -504,7 +501,7 @@ bool conflict (constraint c, constraintList list)
 constraintList constraintList_fixConflicts (/*@returned@*/constraintList list1, constraintList list2)
 {
   constraintList ret;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   llassert(list1);
   constraintList_elements (list1, el)
     {
@@ -637,7 +634,6 @@ bool constraint_isAlwaysTrue (constraint c)
 	}
     }
 
-  return FALSE;
   l = constraintExpr_copy (c->lexpr);
   r = constraintExpr_copy (c->expr);
 
@@ -925,6 +921,38 @@ constraint substitute (constraint c, constraintList p)
   return ret;
 }
 
+/* we try to do substitutions on each constraint in target using the constraint in sublist*/
+
+constraintList constraintList_substitute (constraintList target, constraintList subList)
+{
+
+  constraintList ret;
+
+  ret = constraintList_makeNew();
+  
+  constraintList_elements(target, el)
+  { 
+    el = substitute(el, subList);
+    ret = constraintList_add (ret, el);
+  }
+  end_constraintList_elements;
+#warning mem leak
+  return ret;
+}
+
+constraint constraint_solveWithFlag (constraint c, bool *b)
+{
+#warning abstraction
+  *b = FALSE;
+  if (c->lexpr->kind == binaryexpr)
+    {
+      *b = TRUE;
+      DPRINTF( (message ("Solving %s\n", constraint_print(c) ) ) );
+      c->expr = constraintExpr_solveBinaryExpr (c->lexpr, c->expr);
+      DPRINTF( (message ("Solved and got %s\n", constraint_print(c) ) ) );
+    }
+  return c;
+}
 
 constraint constraint_solve (constraint c)
 {
@@ -966,16 +994,23 @@ static constraint  constraint_swapLeftRight (constraint c)
   return c;
 }
 
+
+
 constraint constraint_simplify (constraint c)
 {
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
-  
-  c = constraint_solve (c);
-  
-  c->lexpr = constraintExpr_simplify (c->lexpr);
-  c->expr  = constraintExpr_simplify (c->expr);
 
+#warning check this 5/11/01
+
+  if (c->lexpr->kind == binaryexpr)
+    {
+      c = constraint_solve (c);
+      
+      c->lexpr = constraintExpr_simplify (c->lexpr);
+      c->expr  = constraintExpr_simplify (c->expr);
+    }
+  
   if (constraintExpr_isLit(c->lexpr) && (!constraintExpr_isLit(c->expr) ) )
     {
       c = constraint_swapLeftRight(c);
@@ -992,6 +1027,28 @@ constraint constraint_simplify (constraint c)
 
 bool fileloc_closer (fileloc  loc1, fileloc  loc2, fileloc  loc3)
 {
+
+  if  (!fileloc_isDefined (loc1) )
+    return FALSE;
+
+  if  (!fileloc_isDefined (loc2) )
+    return FALSE;
+
+  if  (!fileloc_isDefined (loc3) )
+    return TRUE;
+
+  
+  
+  
+  if (fileloc_equal (loc2, loc3) )
+    return FALSE;
+
+  if (fileloc_equal (loc1, loc2) )
+    return TRUE;
+
+    if (fileloc_equal (loc1, loc3) )
+    return FALSE;
+
    if ( fileloc_lessthan (loc1, loc2) )
      {
        if (fileloc_lessthan (loc2, loc3) )

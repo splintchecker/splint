@@ -118,10 +118,10 @@ bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e)
   if (exprNode_isError (e) )
     return FALSE;
   
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints = constraintList_new();
-  e->trueEnsuresConstraints = constraintList_new();
-  e->falseEnsuresConstraints = constraintList_new();
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints = constraintList_makeNew();
+  e->trueEnsuresConstraints = constraintList_makeNew();
+  e->falseEnsuresConstraints = constraintList_makeNew();
 
   if (exprNode_isUnhandled (e) )
     {
@@ -203,8 +203,8 @@ bool exprNode_stmt (exprNode e)
     {
       return FALSE;
     }
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints  = constraintList_new();
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints  = constraintList_makeNew();
   //  e = makeDataTypeConstraints(e);
   
  
@@ -276,8 +276,8 @@ bool exprNode_stmtList  (exprNode e)
       return FALSE;
     }
 
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints  = constraintList_new();
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints  = constraintList_makeNew();
   //  e = makeDataTypeConstraints(e);
   
   /*Handle case of stmtList with only one statement:
@@ -321,6 +321,12 @@ exprNode doIf (exprNode e, exprNode test, exprNode body)
   
   test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
 
+  test->trueEnsuresConstraints = constraintList_substitute(test->trueEnsuresConstraints, test->ensuresConstraints);
+  
+  DPRINTF ((message ("doIf: test ensures %s ", constraintList_print(test->ensuresConstraints) ) ) );
+    
+  DPRINTF ((message ("doIf: test true ensures %s ", constraintList_print(test->trueEnsuresConstraints) ) ) );
+    
   e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
   e->requiresConstraints = reflectChanges (e->requiresConstraints,
 					   test->ensuresConstraints);
@@ -396,7 +402,7 @@ constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
 {
   constraintList ret;
   constraint con;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
  
   sRefSet_elements (s, el)
     {
@@ -521,10 +527,10 @@ bool exprNode_multiStatement (exprNode e)
   exprNode forPred, forBody;
   exprNode test;
   //  constraintList t, f;
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints = constraintList_new();
-  e->trueEnsuresConstraints = constraintList_new();
-  e->falseEnsuresConstraints = constraintList_new();
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints = constraintList_makeNew();
+  e->trueEnsuresConstraints = constraintList_makeNew();
+  e->falseEnsuresConstraints = constraintList_makeNew();
 
   //  e = makeDataTypeConstraints(e);
 
@@ -820,10 +826,10 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
   DPRINTF((message ("exprNode_exprTraverset Analysising %s %s at", exprNode_unparse( e),
 		    fileloc_unparse(exprNode_getfileloc(e) ) ) ) );
   
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints = constraintList_new();
-  e->trueEnsuresConstraints = constraintList_new();;
-  e->falseEnsuresConstraints = constraintList_new();;
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints = constraintList_makeNew();
+  e->trueEnsuresConstraints = constraintList_makeNew();;
+  e->falseEnsuresConstraints = constraintList_makeNew();;
   
   if (exprNode_isUnhandled (e) )
      {
@@ -1128,7 +1134,7 @@ constraintList exprNode_traversTrueEnsuresConstraints (exprNode e)
 
    if (exprNode_handleError (e))
      {
-       ret = constraintList_new();
+       ret = constraintList_makeNew();
        return ret;
      }
   ret = constraintList_copy (e->trueEnsuresConstraints );
@@ -1267,7 +1273,7 @@ constraintList exprNode_traversFalseEnsuresConstraints (exprNode e)
 
    if (exprNode_handleError (e))
      {
-       ret = constraintList_new();
+       ret = constraintList_makeNew();
        return ret;
      }
   ret = constraintList_copy (e->falseEnsuresConstraints );
@@ -1407,7 +1413,7 @@ constraintList exprNode_traversRequiresConstraints (exprNode e)
 
    if (exprNode_handleError (e))
      {
-       ret = constraintList_new();
+       ret = constraintList_makeNew();
        return ret;
      }
   ret = constraintList_copy (e->requiresConstraints );
@@ -1550,7 +1556,7 @@ constraintList exprNode_traversEnsuresConstraints (exprNode e)
 
    if (exprNode_handleError (e))
      {
-       ret = constraintList_new();
+       ret = constraintList_makeNew();
        return ret;
      }
    

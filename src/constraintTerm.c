@@ -20,8 +20,9 @@
 
 //#include "constraintExpr.h"
 
+/*@access exprNode @*/
 
-constraintTerm new_constraintTermExpr (void)
+static/*@out@*/ constraintTerm new_constraintTermExpr (void)
 {
   constraintTerm ret;
   ret = dmalloc (sizeof (* ret ) );
@@ -61,7 +62,7 @@ cstring constraintTerm_getStringLiteral (constraintTerm c)
   return (cstring_copy ( multiVal_forceString (exprNode_getValue (c->value.expr) ) ) );
 }
 
-constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term)
+constraintTerm constraintTerm_simplify (/*@returned@*/ constraintTerm term) /*@modifies term@*/
 {
   if (term->kind == EXPRNODE)
     {
@@ -106,7 +107,7 @@ constraintTerm constraintTerm_copy (constraintTerm term)
   constraintTerm ret;
   ret = new_constraintTermExpr();
   ret->loc = fileloc_copy (term->loc);
-  ret->value= term->value;
+  constraintTermValue_copy (ret->value, term->value);
   ret->kind = term->kind;
   return ret;
 }
@@ -140,49 +141,17 @@ cstring constraintTerm_getName (constraintTerm term)
       s = message ("%s", sRef_unparse (term->value.sref) );
 
       break;
+    default:
+      BADEXIT;
+      /*@notreached@*/
+      break;
     }
   
   return s;
 }
 
-constraintExpr 
-constraintTerm_doFixResult (constraintExpr e, exprNode fcnCall)
-{
-  constraintTerm t;
-  sRef s;
-  constraintExprData data = e->data;
-  
-  constraintExprKind kind = e->kind;
-  
-  constraintExpr ret;
-
-  llassert(kind == term);
-
-  t = constraintExprData_termGetTerm (data);
-  llassert (t != NULL);
-
-  ret = e;
-  switch (t->kind)
-    {
-    case EXPRNODE:
-      break;
-    case INTLITERAL:
-      break;
-      
-    case SREF:
-      s = t->value.sref;
-      if (s->kind == SK_RESULT)
-	{
-	  ret = constraintExpr_makeExprNode(fcnCall);
-	}
-      break;
-    }
-  return ret;
-  
-}
-
 constraintTerm 
-constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist)
+constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist) /*@modifies term->value@*/
 {
   llassert (term != NULL);
   
@@ -202,47 +171,10 @@ constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist)
       //      s = message ("%s ", sRef_unparse (term->value.sref) );
 
       break;
+    default:
+      BADEXIT;
     }
   return term;
-  
-}
-
-constraintExpr 
-constraintTerm_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist)
-{
-  constraintTerm t;
-  
-  constraintExprData data = e->data;
-  
-  constraintExprKind kind = e->kind;
-  
-  constraintExpr ret;
-
-  llassert(kind == term);
-
-  t = constraintExprData_termGetTerm (data);
-  llassert (t != NULL);
-
-  ret = e;
-  switch (t->kind)
-    {
-    case EXPRNODE:
-      /*@i334*/  //wtf
-      //   s = message ("%s @ %s ", exprNode_unparse (term->value.expr),
-      //	   fileloc_unparse (term->loc) );
-      break;
-    case INTLITERAL:
-      //  s = message (" %d ", term->value.intlit);
-       break;
-      
-    case SREF:
-      ret = sRef_fixConstraintParam (t->value.sref, arglist);
-      
-      //      s = message ("%s ", sRef_unparse (term->value.sref) );
-
-      break;
-    }
-  return ret;
   
 }
 
@@ -268,6 +200,8 @@ cstring constraintTerm_print (constraintTerm term)  /*@*/
       s = message ("%s ", sRef_unparseDebug (term->value.sref) );
 
       break;
+    default:
+      BADEXIT;
     }
   
   return s;
@@ -329,17 +263,17 @@ bool constraintTerm_same (constraintTerm term1, constraintTerm term2)
     
 }
 
-sRef constraintTerm_getsRef (constraintTerm t)
+/*@exposed@*/ sRef constraintTerm_getsRef (constraintTerm t)
 {
   llassert (t != NULL);
   if (t->kind == EXPRNODE)
     {
-      return t->value.expr->sref;
+      return exprNode_getSref(t->value.expr);
     }
 
   if (t->kind == SREF)
     {
-      /*@i34*/  return t->value.sref;
+      return t->value.sref;
     }
 
   return sRef_undefined;

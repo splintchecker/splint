@@ -19,8 +19,7 @@
 /*@-fcnuse*/
 /*@-assignexpose*/
 
-/*@notnull@*/ constraint constraint_makeNew (void);
-
+/*@access exprNode @*/
 
 constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant)
      
@@ -94,7 +93,7 @@ constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode cconsta
   return ret;
 }
 
-constraint constraint_same (constraint c1, constraint c2)
+bool constraint_same (constraint c1, constraint c2)
 {
   
   if (c1->ar != c2->ar)
@@ -148,7 +147,7 @@ constraint constraint_copy (constraint c)
 {
   constraint ret;
 
-  llassert (c);
+  llassert (constraint_isDefined(c) );
   
   ret = constraint_makeNew();
   ret->lexpr = constraintExpr_copy (c->lexpr);
@@ -231,7 +230,7 @@ constraint constraint_addGeneratingExpr (/*@returned@*/ constraint c, exprNode e
 
 fileloc constraint_getFileloc (constraint c)
 {
-  if (c->generatingExpr)
+  if (exprNode_isDefined(c->generatingExpr) )
     return (exprNode_getfileloc (c->generatingExpr) );
 	    
   return (constraintExpr_getFileloc (c->lexpr) );
@@ -277,7 +276,7 @@ constraint constraint_makeWriteSafeInt (exprNode po, int ind)
  
   ret->lexpr =constraintExpr_makeMaxSetExpr(po);
   ret->ar = GTE;
-  ret->expr =  constraintExpr_makeValueInt (ind);
+  ret->expr =  constraintExpr_makeIntLiteral (ind);
   /*@i1*/return ret;
 }
 
@@ -286,7 +285,7 @@ constraint constraint_makeSRefSetBufferSize (sRef s, int size)
  constraint ret = constraint_makeNew();
  ret->lexpr = constraintExpr_makeSRefMaxset (s);
  ret->ar = EQ;
- ret->expr =  constraintExpr_makeValueInt (size);
+ ret->expr =  constraintExpr_makeIntLiteral (size);
  ret->post = TRUE;
  /*@i1*/return ret;
 }
@@ -298,7 +297,7 @@ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
  
   ret->lexpr = constraintExpr_makeSRefMaxset (s);
   ret->ar = GTE;
-  ret->expr =  constraintExpr_makeValueInt (ind);
+  ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
   /*@i1*/return ret;
 }
@@ -338,7 +337,7 @@ constraint constraint_makeReadSafeInt ( exprNode po, int ind)
   
   ret->lexpr = constraintExpr_makeMaxReadExpr(po);
   ret->ar    = GTE;
-  ret->expr  = constraintExpr_makeValueInt (ind);
+  ret->expr  = constraintExpr_makeIntLiteral (ind);
   return ret;
 }
 
@@ -349,7 +348,7 @@ constraint constraint_makeSRefReadSafeInt (sRef s, int ind)
  
   ret->lexpr = constraintExpr_makeSRefMaxRead (s);
   ret->ar = GTE;
-  ret->expr =  constraintExpr_makeValueInt (ind);
+  ret->expr =  constraintExpr_makeIntLiteral (ind);
   ret->post = TRUE;
   /*@i1*/return ret;
 }
@@ -657,7 +656,7 @@ cstring  constraint_printOr (constraint c) /*@*/
 
   temp = temp->or;
   
-  while (temp)
+  while ( constraint_isDefined(temp) ) 
     {
       ret = cstring_concat (ret, cstring_makeLiteral (" OR ") );
       ret = cstring_concat (ret, constraint_print(temp) );

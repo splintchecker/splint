@@ -32,7 +32,7 @@
 # include "lclintMacros.nf"
 # include "llbasic.h"
 
-constraintList constraintList_new ()
+constraintList constraintList_makeNew ()
 {
   constraintList s = (constraintList) dmalloc (sizeof (*s));
 
@@ -63,13 +63,12 @@ constraintList_grow (constraintList s)
   s->elements = newelements;
 }
 
-/*  void constraintList_exprNodemerge(void) */
-/*  { */
-/*  } */
+
 constraintList 
 constraintList_add (constraintList s, constraint el)
 {
-  el = constraint_simplify (el);
+  /*drl7x */
+  //   el = constraint_simplify (el);
   if (resolve (el, s) )
     return s;
   
@@ -196,7 +195,7 @@ constraintList_logicalOr (constraintList l1, constraintList l2)
 		      constraintList_print(l1), 
 		      constraintList_print(l2)) ) );
   
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (l1, el)
     {
       temp = substitute (el, l2);
@@ -242,7 +241,7 @@ constraintList_free (constraintList s)
 constraintList
 constraintList_copy (constraintList s)
 {
-  constraintList ret = constraintList_new ();
+  constraintList ret = constraintList_makeNew ();
 
   constraintList_elements (s, el)
     {
@@ -278,7 +277,7 @@ constraintList constraintList_addGeneratingExpr (constraintList c, exprNode e)
 constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall)
 {
   constraintList ret;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (postconditions, el)
     {
       ret = constraintList_add (ret, constraint_doFixResult (el, fcnCall) );
@@ -291,7 +290,7 @@ constraintList constraintList_doFixResult (constraintList postconditions, exprNo
 constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist)
 {
   constraintList ret;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
 
   constraintList_elements (preconditions, el)
     {
@@ -305,7 +304,7 @@ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions,
 						   exprNodeList arglist)
 {
   constraintList ret;
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
 
   constraintList_elements (preconditions, el)
     {

@@ -401,8 +401,8 @@ static /*@notnull@*/ /*@special@*/ exprNode
   e->mustBreak = FALSE;
   e->isJumpPoint = FALSE;
   e->environment =  environmentTable_undefined;
-  e->requiresConstraints = constraintList_new();
-  e->ensuresConstraints  = constraintList_new();
+  e->requiresConstraints = constraintList_makeNew();
+  e->ensuresConstraints  = constraintList_makeNew();
   
   return (e);
 }

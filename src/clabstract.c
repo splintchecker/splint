@@ -631,14 +631,14 @@ static /*@dependent@*/ uentryList currentParamList;
    of constraints.
    Currently the only constraints gnerated are MaxSet(p) >= 0 for all pointers
 */
-void  setImplictfcnConstraints ()
+void  setImplictfcnConstraints (void)
 {
   uentryList params;
   sRef s;
   constraint c;
   params = currentParamList;
 
-  implicitFcnConstraints  = constraint_makeNew();
+  implicitFcnConstraints  = constraintList_makeNew();
   
   uentryList_elements (params, el)
     {

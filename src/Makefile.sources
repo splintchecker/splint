@@ -23,11 +23,7 @@ LCLINTSRC = exprNode.c exprChecks.c llmain.c
 GRAMS      = cgrammar.y cscanner.l llgrammar.y signature.y
 GRAMSRC    = cgrammar.c cscanner.c 
 
-GENERALSRC = cstring.c fileloc.c message.c source.c \
-    fileTable.c hashTable.c llerror.c messageLog.c \
-    flagMarker.c aliasTable.c ynm.c sRefTable.c \
-    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c \
-    constraint.c \
+GENERALSRC =     constraint.c \
     constraintTerm.c \
     constraintExpr.c \
     constraintExprData.c \
@@ -36,6 +32,10 @@ GENERALSRC = cstring.c fileloc.c message.c source.c \
     constraintList.c \
     constraintGeneration.c \
     forjunk.c \
+    cstring.c fileloc.c message.c source.c \
+    fileTable.c hashTable.c llerror.c messageLog.c \
+    flagMarker.c aliasTable.c ynm.c sRefTable.c \
+    ekind.c usymtab.c multiVal.c lltok.c sRef.c lcllib.c \
     exprData.c
 
 ###

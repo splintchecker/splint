@@ -91,7 +91,7 @@ static constraintList getLessThanConstraints (constraintList c)
 {
   constraintList ret;
 
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (c, el)
     {
       if (el->ar == LT || el->ar == LTE)
@@ -108,7 +108,7 @@ static constraintList getIncConstraints (constraintList c)
 {
   constraintList ret;
 
-  ret = constraintList_new();
+  ret = constraintList_makeNew();
   constraintList_elements (c, el)
     {
       if (incVar (el) )
@@ -293,7 +293,7 @@ constraintList constraintList_searchAndAdd (constraintList list,
   constraintList newConstraints;
   constraintList ret;
   
-  newConstraints = constraintList_new();
+  newConstraints = constraintList_makeNew();
   
   constraintList_elements (list, el)
     {

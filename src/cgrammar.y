@@ -448,7 +448,7 @@ context_setProtectVars (); enterParamsTemp ();
 
 BufConstraintList
 : BufConstraint BufConstraintList{ $$ = constraintList_add ($2, $1); }
-| BufConstraint {constraintList c; c = constraintList_new(); c = constraintList_add (c, $1); $$ = c}
+| BufConstraint {constraintList c; c = constraintList_makeNew(); c = constraintList_add (c, $1); $$ = c}
 
 BufConstraint
 :  BufConstraintExpr relationalOp BufConstraintExpr TSEMI  {
