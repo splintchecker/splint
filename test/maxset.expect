@@ -2,8 +2,8 @@
 Finished LCLint checking --- no code errors found
 
 maxsetnoannotations.c: (in function noancopy)
-maxsetnoannotations.c:2:3: Possible out-of-bounds store.  Unable to resolve
-    constraint:
+maxsetnoannotations.c:2:3: Possible out-of-bounds store:
+    Unable to resolve constraint:
     requires maxSet(a @ maxsetnoannotations.c:2:11) >= maxRead(b @
     maxsetnoannotations.c:2:13)
      needed to satisfy precondition:

@@ -1,11 +1,13 @@
 
 constannot.c: (in function foo2)
-constannot.c:11:3: Possible out-of-bounds store.  Unable to resolve constraint:
+constannot.c:11:3: Possible out-of-bounds store:
+    Unable to resolve constraint:
     requires maxSet(str @ constannot.c:11:3) >= 20
      needed to satisfy precondition:
     requires maxSet(str @ constannot.c:11:3) >= 20
 constannot.c: (in function foo3)
-constannot.c:20:3: Possible out-of-bounds store.  Unable to resolve constraint:
+constannot.c:20:3: Possible out-of-bounds store:
+    Unable to resolve constraint:
     requires <const int=20> <= 19
      needed to satisfy precondition:
     requires maxSet(buf @ constannot.c:20:8) >= <const int=20>

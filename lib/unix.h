@@ -828,7 +828,7 @@ lchown (const char *path, uid_t owner, gid_t group)
 
 	extern int
 readlink (const char *path, /*@out@*/ char *buf, int size)
-	/*@modifies *buf, errno@*/;
+     /*@modifies *buf, errno@*/ /*@ensures result <= size @*/;
 
 	extern int
 select (int mfd, fd_set /*@null@*/ *r, fd_set /*@null@*/ *w, fd_set /*@null@*/ *e, struct timeval *t)

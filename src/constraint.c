@@ -854,25 +854,24 @@ cstring  constraint_printDetailed (constraint c)
 
   if (constraint_hasMaxSet(c) )
     {
-      temp = cstring_makeLiteral("Possible out-of-bounds store.  ");
+      temp = cstring_makeLiteral("Possible out-of-bounds store:\n");
     }
   else
     {
-      temp = cstring_makeLiteral("Possible out-of-bounds read.  ");
+      temp = cstring_makeLiteral("Possible out-of-bounds read:\n");
+    }
+  
+  genExpr = exprNode_unparse (c->generatingExpr);
+  
+  if (context_getFlag (FLG_CONSTRAINTLOCATION) )
+    {
+      cstring temp2;
+      temp2 = message ("%s\n", genExpr );
+      temp = cstring_concatFree (temp, temp2);
     }
 
   st  = cstring_concatFree(temp,st);
   
-  genExpr = exprNode_unparse (c->generatingExpr);
-
-  if (context_getFlag (FLG_CONSTRAINTLOCATION) )
-    {
-      temp = message ("\nConstraint generated from expression: %s at %q\n",
-		      genExpr,
-		      fileloc_unparse( exprNode_getfileloc (c->generatingExpr) )
-		      );
-      st = cstring_concatFree (st, temp);
-    }
   return st;
 }
 

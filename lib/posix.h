@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.5 2001/07/24 03:02:05 evans Exp $
+ * $Id: posix.h,v 1.6 2001/08/15 03:18:03 drl7x Exp $
  */
 
 /*
@@ -270,12 +270,12 @@ struct passwd {
 } ;
 
 	extern /*@observer@*/ /*@null@*/ struct passwd *
-getpwnam (const char *)
-	/*@modifies errno@*/;
+	getpwnam (const char *)
+     	/*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
 
 	extern /*@observer@*/ /*@null@*/ struct passwd *
 getpwuid (uid_t uid)
-	/*@modifies errno@*/;
+	/*@modifies errno@*/  /*@ensures maxRead(result) == 0 /\ maxSet(result) == 0 @*/;
 
 /*
 ** setjmp.h
@@ -822,8 +822,10 @@ pipe (/*@out@*/ int fd[]) /* Out parameter noticed by Marc Espie. */
 
 	extern ssize_t
 read (int fd, /*@out@*/ void *buf, size_t nbyte)
-	/*@modifies errno, *buf@*/;
-
+     /*@modifies errno, *buf@*/ /*@requires maxSet(buf) >= (nbyte - 1) @*/
+     /*@ensures maxRead(buf) >= nbyte @*/;
+     /*@i33*/
+     
 	extern int
 rmdir (const char *path)
 	/*@modifies fileSystem, errno@*/;

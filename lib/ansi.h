@@ -847,13 +847,13 @@ extern size_t wcstombs (/*@out@*/ char *s, wchar_t *pwcs, size_t n)
 extern void /*@alt void * @*/
   memcpy (/*@unique@*/ /*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n) 
   /*@modifies *s1@*/
-     /*@requires MaxRead(s2) >= n /\ MaxSet(s1) >= n; @*/
+     /*@requires MaxRead(s2) >= (n - 1) /\ MaxSet(s1) >= (n - 1); @*/
      ;
 
 extern void /*@alt void * @*/
   memmove (/*@returned@*/ /*@out@*/ void *s1, void *s2, size_t n)
   /*@modifies *s1@*/
-  /*@requires MaxRead(s2) >= n /\ MaxSet(s1) >= n; @*/
+  /*@requires MaxRead(s2) >= (n - 1) /\ MaxSet(s1) >= (n - 1); @*/
    ;
 
   

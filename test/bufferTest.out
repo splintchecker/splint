@@ -1,7 +1,8 @@
 
 test4.c: (in function t)
 test4.c:6:3: Variable g used before definition
-test4.c:6:3: Possible out-of-bounds store.  Unable to resolve constraint:
+test4.c:6:3: Possible out-of-bounds store:
+    Unable to resolve constraint:
     requires maxSet(g @ test4.c:6:3) >= 100
      needed to satisfy precondition:
     requires maxSet(g @ test4.c:6:3) >= 100
@@ -9,11 +10,13 @@ test6.c:2:6: Function t defined more than once
    test4.c:15:1: Previous definition of t
 test6.c: (in function t)
 test6.c:5:4: Variable g used before definition
-test6.c:6:3: Possible out-of-bounds store.  Unable to resolve constraint:
+test6.c:6:3: Possible out-of-bounds store:
+    Unable to resolve constraint:
     requires maxSet(g @ test6.c:5:4) >= 1
      needed to satisfy precondition:
     requires maxSet(g @ test6.c:6:3) >= 0
-test6.c:6:10: Possible out-of-bounds read.  Unable to resolve constraint:
+test6.c:6:10: Possible out-of-bounds read:
+    Unable to resolve constraint:
     requires maxRead(g @ test6.c:5:4) >= 2
      needed to satisfy precondition:
     requires maxRead(g @ test6.c:6:10) >= 1
