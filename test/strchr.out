@@ -1,5 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
-gmake[4]: Entering directory `/tmp/LCLintDev/test/strchr'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -18,7 +16,3 @@ strchr.c:15:5: Possible out-of-bounds store:
     requires maxSet(p @ strchr.c:15:6) >= 0
 
 Finished LCLint checking --- 3 code errors found, expected 2
-gmake[4]: *** [check] Error 1
-gmake[4]: Leaving directory `/tmp/LCLintDev/test/strchr'
-gmake[3]: *** [strchr] Error 2
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

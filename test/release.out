@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -7,5 +6,3 @@ release.c:3:12: Unrecognized identifier: NULL
 release.c:8:17: Unrecognized identifier: malloc
 
 Finished LCLint checking --- 2 code errors found, expected 1
-gmake[3]: *** [release] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

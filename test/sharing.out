@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -39,5 +38,3 @@ sharing1.c:59:11: Variable y used after being released
    sharing1.c:51:12: Storage y released
 
 Finished LCLint checking --- 16 code errors found, expected 21
-gmake[3]: *** [sharing] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -19,5 +18,3 @@ specclauses.c:40:7: Field r.name used after being released
    specclauses.c:39:17: Storage r.name released
 
 Finished LCLint checking --- 8 code errors found, expected 6
-gmake[3]: *** [specclauses] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

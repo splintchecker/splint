@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -28,4 +27,3 @@ unused.c:7:7: Field dumb of structure struct _st declared but not used
 unused.c:16:12: Function undef exported but not declared in header file
 
 Finished LCLint checking --- 8 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

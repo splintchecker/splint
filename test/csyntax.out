@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
 csyntax.c:20:5: Function main declared with 1 arg, should have 2 (int argc,
@@ -67,5 +66,3 @@ csyntax16.c:25:2: Path with no return in function declared to return int
 csyntax16.c: (in function getbuiltout)
 csyntax16.c:43:14: Variable qpolygon used before definition
 
-gmake[3]: *** [csyntax] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

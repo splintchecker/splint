@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -11,5 +10,3 @@ compdestroy.c:27:2: Only storage x not released before return
    compdestroy.c:23:32: Storage x becomes only
 
 Finished LCLint checking --- 3 code errors found, expected 1
-gmake[3]: *** [compdestroy] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

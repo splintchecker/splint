@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -16,5 +15,3 @@ prefixes.c:20:26: Variable m_x declared but not used
 prefixes.c:20:50: Unrecognized identifier in macro definition: FALSE
 
 Finished LCLint checking --- 5 code errors found, expected 4
-gmake[3]: *** [prefixes] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

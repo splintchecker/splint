@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -14,5 +13,3 @@ staticarray.c:27:10: Implicitly temp storage outstr returned as implicitly
                         only: outstr
 
 Finished LCLint checking --- 4 code errors found, expected 3
-gmake[3]: *** [staticarray] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

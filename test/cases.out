@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -11,5 +10,3 @@ cases.c:37:13: Fall through case (no preceding break)
 cases.c:40:2: Path with no return in function declared to return int
 
 Finished LCLint checking --- 6 code errors found, expected 5
-gmake[3]: *** [cases] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

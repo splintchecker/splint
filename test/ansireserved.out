@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 ansireserved.c:9: Name EVANS is reserved for future ANSI library extensions.
     Macros beginning with E and a digit or uppercase letter may be added to
@@ -74,5 +73,3 @@ ansireserved.c:16:20: Name wctomb is reserved for the standard library
 ansireserved.c:5:5: Function atan2f declared but not defined
 
 Finished LCLint checking --- 10 code errors found, expected 12
-gmake[3]: *** [ansireserved] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,8 +1,5 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
 refcounts.c:1:52: Old style declaration uses unlisted parameter: smalloc
 *** Cannot continue.
-gmake[3]: *** [refcounts] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

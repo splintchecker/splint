@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -16,5 +15,3 @@ null1.c:67:10: Possibly null storage z returned as non-null: z
    null1.c:25:7: Storage z may become null
 
 Finished LCLint checking --- 7 code errors found, expected 14
-gmake[3]: *** [null] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

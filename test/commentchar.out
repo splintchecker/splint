@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -20,4 +19,3 @@ commentchar.c:1:26: Unrecognized identifier in modifies comment: x
 commentchar.c:6:9: Variable x initialized to type char, expects int: 'c'
 
 Finished LCLint checking --- 4 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

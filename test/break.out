@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -38,4 +37,3 @@ break.c:3:10: Suspected infinite loop.  No value used in loop test (x) is
 break.c:34:24: Break preceded by innerbreak is not in a deep loop
 
 Finished LCLint checking --- 5 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -60,4 +59,3 @@ moduncon.c:10:5: Function g exported but not declared in header file
    moduncon.c:15:1: Definition of g
 
 Finished LCLint checking --- 22 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -75,4 +74,3 @@ blocks.c:21:16: Body of if clause of if statement is empty
 blocks.c:22:9: Body of else clause of if statement is empty
 
 Finished LCLint checking --- 11 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

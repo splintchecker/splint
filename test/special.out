@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -6,5 +5,3 @@ Continuing without LCL init file: lclinit.lci
 Continuing without LSL init file: lslinit.lsi
 Unable to find CTrait.syms or CTrait.lsl.  Check LARCH_PATH environment
 variable.
-gmake[3]: *** [special] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -13,5 +12,3 @@ strings.c:25:7: Observer storage passed as only param: f3 ("hullo")
    strings.c:25:7: Storage becomes observer
 
 Finished LCLint checking --- 5 code errors found, expected 3
-gmake[3]: *** [strings] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

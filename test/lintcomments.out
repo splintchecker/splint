@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -32,4 +31,3 @@ lintcomments.c:11:13: Fall through case (no preceding break)
 lintcomments.c:24:8: Unreachable code: i++
 
 Finished LCLint checking --- 4 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

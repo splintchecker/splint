@@ -10,7 +10,7 @@
 #define DEFAULT_LCLIMPORTDIR "/usr/local/share/lclint/imports"
 
 /* gcc's private include directory */
-#define GCC_INCLUDE_DIR "/usr/cs/lib/gcc-lib/i686-pc-linux-gnu/3.0/include"
+#define GCC_INCLUDE_DIR "/usr/cs/lib/gcc-lib/i686-pc-linux-gnu/3.0/include
 
 /* the system's main include directory */
 #define GCC_INCLUDE_DIR2 "/usr/local/include"

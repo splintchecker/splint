@@ -1,6 +1,0 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
-gmake[4]: Entering directory `/tmp/LCLintDev/test/tests2.2a'
-gmake[4]: *** No targets specified and no makefile found.  Stop.
-gmake[4]: Leaving directory `/tmp/LCLintDev/test/tests2.2a'
-gmake[3]: *** [tests2.2a] Error 2
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

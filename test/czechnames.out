@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -51,4 +50,3 @@ czechnames.c:26:5: Function budweiser name is not consistent with Czech naming
                       convention.  Accessible types: pivo
 
 Finished LCLint checking --- 6 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

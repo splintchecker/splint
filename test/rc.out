@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -44,4 +43,3 @@ rc.c: (in function f)
 rc.c:3:10: Unrecognized identifier: MYSTERY
 
 Finished LCLint checking --- 1 code error found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Warning: setting +typeuse redundant with current value
 Cannot find standard library: ansi.lcd
@@ -26,4 +25,3 @@ Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
 
 Finished LCLint checking --- no code errors found
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

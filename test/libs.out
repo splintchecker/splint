@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -10,5 +9,3 @@ libs.c:20:3: Unrecognized identifier: exit
 libs.c:25:21: Parse Error: Inconsistent function parameter syntax: FILE :
                 ?. (For help on parse errors, see lclint -help parseerrors.)
 *** Cannot continue.
-gmake[3]: *** [libs] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

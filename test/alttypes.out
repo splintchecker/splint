@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -12,4 +11,3 @@ alttypes.c:25:20: Variable x inconsistently redeclared with alternate types int
    alttypes.c:24:33: Previous declaration of x: int | char | bool
 
 Finished LCLint checking --- 2 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

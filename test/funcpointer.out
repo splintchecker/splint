@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -30,5 +29,3 @@ funcpointer.c:50:11: Function (t6) called with 1 args, expects 2
 funcpointer.c:50:10: Function ((t6)(3)) called with 0 args, expects 1
 
 Finished LCLint checking --- 17 code errors found, expected 18
-gmake[3]: *** [funcpointer] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

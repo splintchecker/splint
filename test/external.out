@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -53,5 +52,3 @@ external.c:8:5: External identifier longfunction2 is not distinguishable from
    external.c:7:5: Declaration of longfunction1
 
 Finished LCLint checking --- 3 code errors found, expected 4
-gmake[3]: *** [external] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

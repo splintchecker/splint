@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -13,5 +12,3 @@ merge.c:51:4: Dereference of possibly null pointer y: *y
    merge.c:50:7: Storage y may become null
 
 Finished LCLint checking --- 4 code errors found, expected 3
-gmake[3]: *** [merge] Error 1
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'

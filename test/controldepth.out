@@ -1,4 +1,3 @@
-gmake[3]: Entering directory `/tmp/LCLintDev/test'
 
 Cannot find standard library: ansi.lcd
      Check LARCH_PATH environment variable.
@@ -19,4 +18,3 @@ controldepth.c:6:15: Maximum control nesting depth (1) exceeded
 controldepth.c:11:13: Maximum control nesting depth (1) exceeded
 
 Finished LCLint checking --- 2 code errors found, as expected
-gmake[3]: Leaving directory `/tmp/LCLintDev/test'
