@@ -221,7 +221,7 @@ extern void yyerror (char *);
 %type <entry> endIter 
 
 %type <funcclauselist> functionClauses functionClausesPlain
-%type <funcclause> functionClause functionClause functionClausePlain
+%type <funcclause> functionClause functionClausePlain
 
 %type <globsclause> globalsClause globalsClausePlain
 %type <modsclause> modifiesClause modifiesClausePlain nomodsClause
