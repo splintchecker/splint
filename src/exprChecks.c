@@ -893,7 +893,14 @@ void exprNode_checkFunctionBody (exprNode body)
       
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {
+  /* drl added 8-8-2000 */
+  exprNode_generateConstraints (body);
+  DPRINTF(("function constraints\n"));
+  // constraintList_print (body->constraints);
+  DPRINTF (("----\n"));
+  // constraintList_resolve (body->constraints);
   exprNode_free (body);
+    
   }
 
 void exprChecks_checkEmptyMacroBody (void)

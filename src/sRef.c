@@ -4985,7 +4985,7 @@ void sRef_setNullState (sRef s, nstate n, fileloc loc)
     }
 }
 
-void sRef_setNullTerminatedStateInnerComplete (sRef s, struct _bbufinfo b, fileloc loc) {
+void sRef_setNullTerminatedStateInnerComplete (sRef s, struct _bbufinfo b, /*@unused@*/ fileloc loc) {
    
   switch (b.bufstate) {
      case BB_NULLTERMINATED:
@@ -8807,7 +8807,7 @@ cstring sRef_nullMessage (sRef s)
   BADEXIT;
 }
 
-cstring sRef_ntMessage (sRef s)
+/*@observer@*/ cstring sRef_ntMessage (sRef s)
 {
   llassert (sRef_isValid (s));
 
@@ -9035,7 +9035,8 @@ struct _bbufinfo sRef_getNullTerminatedState (sRef p_s) {
    struct _bbufinfo BUFSTATE_UNKNOWN;
    BUFSTATE_UNKNOWN.bufstate = BB_NOTNULLTERMINATED;
    BUFSTATE_UNKNOWN.size = 0;
-
+   BUFSTATE_UNKNOWN.len = 0;
+   
    if (sRef_isValid(p_s))
       return p_s->bufinfo;
    return BUFSTATE_UNKNOWN; 

@@ -298,7 +298,7 @@ static /*@only@*/ /*@notnull@*/ usymtab
   u->exitCode = XK_NEVERESCAPE;
   u->kind = US_NORMAL;
 
-  return (u);
+  /*@i23@*/ return (u);
 }
 
 void
@@ -4566,7 +4566,7 @@ usymtab_freeLevel (/*@notnull@*/ /*@only@*/ usymtab u)
   int i;
 
   aliasTable_free (u->aliases);
-
+  environmentTable_free (u->environment);
   refTable_free (u->reftable, u->nentries);
 
   if (u == filetab || u == globtab)
@@ -4910,11 +4910,14 @@ usymtab_typeName (/*@notnull@*/ usymtab t)
   BADEXIT;
 }
 
-void usymtab_testInRange (sRef s, int index)
+void usymtab_testInRange (sRef s, int index) /*@globals utab;@*/
 {
+  /*@i22*/
+  /*@-globs*/
   environmentTable_testInRange (utab->environment, s, index);
+  /*@=globs*/
 }
-void usymtab_postopVar (sRef sr)
+void usymtab_postopVar (sRef sr) /*@globals utab;@*/
 {
   environmentTable_postOpvar (utab->environment, sr);
   
@@ -4922,7 +4925,7 @@ void usymtab_postopVar (sRef sr)
 /* doesn't do much check here assumes checking is done before call*/
 void usymtab_addExactValue(sRef s1, int val)
 {
-  utab->environment = environmentTable_addExactValue (utab->environment, s1, val);
+  /*@i22@*/ utab->environment = environmentTable_addExactValue (utab->environment, s1, val);
 }
   
 void usymtab_addMustAlias (sRef s, sRef al)

@@ -5,6 +5,9 @@
 **    All but the innermost storage is free'd.
 */
 
+/*@i777*/
+/*@-fcnuse*/
+
 static void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind)
 {
   /*@-compdestroy@*/ 
@@ -37,6 +40,7 @@ static void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind)
       sfree (data->op);
       break;
 
+    case XPR_STMT:
     case XPR_PREOP: 
     case XPR_POSTOP:
     case XPR_PARENS: 
@@ -48,7 +52,6 @@ static void exprData_freeShallow (/*@only@*/ exprData data, exprKind kind)
     case XPR_CASE:      
     case XPR_RETURN:
     case XPR_WHILEPRED:
-    case XPR_STMT:
     case XPR_BLOCK:
       exprNode_freeShallow (data->single);
       break;
@@ -170,6 +173,7 @@ static void exprData_free (/*@only@*/ exprData data, exprKind kind)
       sfree (data->op);
       break;
 
+    case XPR_STMT:
     case XPR_PREOP: 
     case XPR_POSTOP:
     case XPR_PARENS: 
@@ -194,7 +198,6 @@ static void exprData_free (/*@only@*/ exprData data, exprKind kind)
     case XPR_ALIGNOF:
     case XPR_RETURN:
     case XPR_WHILEPRED:
-    case XPR_STMT:
     case XPR_BLOCK:
       exprNode_free (data->single);
       break;
@@ -484,31 +487,6 @@ static /*@exposed@*/ exprNode exprData_getSingle (exprData data)
   return (ret);
 }
 
-///*@only@*/ exprData exprData_makeLiteral (/*@only@*/ cstring s)
-//{
-//  exprData ed = (exprData) dmalloc (sizeof (*ed));
-//  
-//  ed->literal = s;
-//  return ed;
-//}
-//
-///*@only@*/ exprData exprData_makeId (/*@temp@*/ uentry id)
-//{
-//  exprData ed = (exprData) dmalloc (sizeof (*ed));
-//  ed->id = cstring_copy (uentry_rawName (id));
-//  return ed;
-//}
-//
-///*@only@*/ exprData exprData_makePair (/*@keep@*/ exprNode a, /*@keep@*/ exprNode b)
-//{
-//  exprData ed = (exprData) dmalloc (sizeof (*ed));
-//
-//  ed->pair = (exprPair) dmalloc (sizeof (*ed->pair));
-//  ed->pair->a = a;
-//  ed->pair->b = b;
-//
-//  return ed;
-//}
 
 static /*@only@*/ exprData 
   exprData_makeOp (/*@keep@*/ exprNode a, /*@keep@*/ exprNode b, /*@keep@*/ lltok op)
@@ -675,6 +653,7 @@ static /*@only@*/ exprData exprData_makeFor (/*@keep@*/ exprNode init,
 
 
 
+/*@=fcnuse*/
 
 
 

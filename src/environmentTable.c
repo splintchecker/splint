@@ -29,7 +29,13 @@
 # include "basic.h"
 
 //#include "environmentTable.h"
+#include "exprData.i"
+#include "exprData.h"
+//#include "exprNode.h"
 
+/*@i777*/
+/*@-fcnuse*/
+/*@ignore@*/
 /*@constant int ATINVALID; @*/
 # define ATINVALID -1
 
@@ -44,11 +50,19 @@ static sRefSet
 static sRefSet 
   environmentTable_aliasedByAux (environmentTable p_s, sRef p_sr, int p_lim) /*@*/ ;
 
+static /*@only@*/ sRefSet environmentTable_environmentedByLimit (environmentTable p_s, sRef p_sr, int p_lim) ;
+
 environmentTable
 environmentTable_new ()
 {
   return (environmentTable_undefined);
 }
+
+environmentTable
+environmentTable_insertRelativeRange (/*@returned@*/ environmentTable p_s,
+			 /*@exposed@*/ sRef p_sr,
+			 int p_min, int p_max);
+
 
 static /*@only@*/ /*@notnull@*/ environmentTable
 environmentTable_newEmpty (void)
@@ -362,7 +376,7 @@ environmentTable_addMustAlias (/*@returned@*/ environmentTable s,
   sRefSet ss;
   
   llassert (NOENVIRONMENT (sr, al));
-
+  /*@ignore@*/
   if (environmentTable_isUndefined (s))
     {
       s = environmentTable_newEmpty ();
@@ -1071,4 +1085,73 @@ environmentTable_checkGlobs (environmentTable t)
 }
 
 
+exprNode exprNode_mergeEnvironments (exprNode ret, exprNode e1, exprNode e2)
+{
+ if (exprNode_isDefined (e1) && exprNode_isDefined (e2) )
+   {
+     ret->environment = environmentTable_mergeEnvironments (e1->environment, e2->environment);
+     return ret;
+   }
+ if (exprNode_isUndefined(e1) && exprNode_isUndefined(e2) )
+   {
+     ret->environment = environmentTable_undefined;
+   }
+ else
+   {
+     ret->environment = exprNode_isUndefined (e1) ? environmentTable_copy(e2->environment)
+       : environmentTable_copy (e1->environment);
+     return ret;
+   }
+}
 
+
+
+exprNode
+exprNode_updateForPostOp ( /*@notnull@*/ /*@returned@*/  exprNode e1)
+{
+  e1->environment = environmentTable_postOpvar (e1->environment, e1->sref);
+  return e1;
+}
+
+void updateEnvironmentForPostOp (/*@notnull@*/ exprNode e1)
+{
+  sRef s1 = e1->sref;
+  //  printf("doing updateEnvironmentForPostOp\n");
+  e1 =  exprNode_updateForPostOp (e1);
+  /*do in exprNode update exprnode*/
+  usymtab_postopVar (s1);
+}
+
+void updateEnvironment (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
+{
+  //  printf("doing updateEnvironment\n");
+   if (!context_inProtectVars ())
+    {
+      /*
+      ** depends on types of e1 and e2
+      */
+      
+      sRef s1 = e1->sref;
+      sRef s2 = e2->sref;
+      ctype t1 = exprNode_getType (e1);
+      //  printf(" for %s = %s \n", sRef_unparse(s1),  sRef_unparse(s2) );
+      // printf("type is %d\n", t1);
+      if (multiVal_isInt( e2->val) )
+	{
+	  int val =  multiVal_forceInt(e2->val);
+	  //  printf("value is %d \n", val);
+	  usymtab_addExactValue( s1, val);
+	  environmentTable_addExactValue (e1->environment, s1, val);
+	}
+      
+      /* handle pointer sRefs, record fields, arrays, etc... */
+     }
+   else
+     {
+       //       printf("context_inProtectVars\n");
+     }
+   
+}
+
+/*@=fcnuse*/
+/*@end@*/

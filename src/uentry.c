@@ -30,6 +30,8 @@
 # include "structNames.h"
 # include "nameChecks.h"
 
+/*@i223*/
+/*@-type*/
 static /*@dependent@*/ uentry posRedeclared = uentry_undefined;
 static /*@only@*/ fileloc posLoc = fileloc_undefined;
 static int nuentries = 0;
@@ -2080,9 +2082,10 @@ uentry_reflectQualifiers (uentry ue, qualList q)
 
                 } 
                 /* put other BufState Qualifiers here */
-            } else { 
+            } else {
+	      cstring s =  uentry_getName(ue);
 	      llfatalbug(message("INTERNAL Error: we have a NULL BufState \
-			struct for identifier %s\n", uentry_getName(ue) ) );
+			struct for identifier %s\n", s) );
             }
          } else if (ctype_isFunction (ct)) { /* We have to handle function */
 
@@ -2749,7 +2752,7 @@ static /*@only@*/ /*@notnull@*/
    is a pointer or array and allocate a `bbufinfo' struct accordingly */
 
   if( ctype_isArray (t) || ctype_isPointer(t)) {
-     e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
+    /*@i222@*/e->info->var->bufinfo = dmalloc( sizeof(*e->info->var->bufinfo) );
      e->info->var->bufinfo->bufstate = BB_NOTNULLTERMINATED;
      s->bufinfo.bufstate = BB_NOTNULLTERMINATED;
   } else {
@@ -3238,8 +3241,6 @@ static /*@only@*/ /*@notnull@*/ uentry
       uentry_setDefined (e, fl);
     }
 
-  DPRINTF (("Make tag: %s / %s [%d]", uentry_unparseFull (e),
-	    ctype_unparse (t), t));
   return (e);  
 }
 
@@ -3650,6 +3651,10 @@ static /*@only@*/ uentry
   sRef_setAliasKind (e->sref, aliased, loc);
 
   sRef_storeState (e->sref);
+
+  /*DRL ADDED 9-1-2000 */
+  e->info->var->bufinfo = NULL;
+  
   return (e);
 }
 
@@ -5797,8 +5802,9 @@ uvinfo_copy (uvinfo u)
   ret->nullstate = u->nullstate;
   ret->defstate = u->defstate;
   ret->checked = u->checked;
-
-  return ret;
+  //make sure line ok
+  //ret->bufinfo = u->bufinfo;
+  /*@i334@*/  return ret;
 }
 
 static /*@only@*/ udinfo
@@ -9527,8 +9533,10 @@ void uentry_checkName (uentry ue)
 void uentry_testInRange (uentry p_e, uentry cconstant)  {
   if( uentry_isValid(p_e) ) {
     if( p_e->sref != NULL) {
-      	int index = atoi(exprNode_unparse(cconstant) );
-	 usymtab_testInRange (p_e->sref, index);
+      char * t = cstring_toCharsSafe (uentry_unparse(cconstant) );
+      int index = atoi( t );
+      free (t);
+      usymtab_testInRange (p_e->sref, index);
     }//end if
   }//endif
 }
@@ -9537,7 +9545,9 @@ void uentry_setStringLength (uentry p_e, uentry cconstant)  {
 if( uentry_isValid(p_e) ) {
   if( p_e->info != NULL) {
     if( p_e->info->var != NULL) {
-      int length = atoi(exprNode_unparse(cconstant) ); 
+      char *t =  cstring_toCharsSafe (uentry_unparse(cconstant));
+      int length = atoi( t );
+      free (t);
       p_e->info->var->bufinfo->len = length; 
       p_e->sref->bufinfo.len = length;
       printf("Set string length of buff to %d \n",  p_e->sref->bufinfo.size);
@@ -9551,7 +9561,7 @@ void uentry_setBufferSize (uentry p_e, exprNode cconstant) {
 if( uentry_isValid(p_e) ) {
   if( p_e->info != NULL) {
     if( p_e->info->var != NULL) {
-      int size = atoi(exprNode_unparse(cconstant) ); 
+      int size = atoi(cstring_toCharsSafe(exprNode_unparse(cconstant) ) ); 
       p_e->info->var->bufinfo->size = size; 
       p_e->sref->bufinfo.size = size;
       printf("Set buffer size to %d \n",  p_e->sref->bufinfo.size);
@@ -9668,4 +9678,4 @@ void uentry_setLen (uentry p_e, int len)  {
   fprintf(stderr, "uentry:Error in setLen\n");
 }
 
-
+/*@=type*/

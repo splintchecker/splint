@@ -109,6 +109,7 @@ cstring qual_unparse (qual q)
     case QU_SCANFLIKE:  return cstring_makeLiteralTemp ("scanflike");
     case QU_MESSAGELIKE:return cstring_makeLiteralTemp ("messagelike");
     case QU_LAST:       return cstring_makeLiteralTemp ("< last >");
+    case  QU_SETBUFFERSIZE: return cstring_makeLiteralTemp("<qsetbuffersize>");
     }
 
   BADEXIT;

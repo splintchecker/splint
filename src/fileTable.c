@@ -555,6 +555,13 @@ fileTable_getRootName (fileTable ft, fileId fid)
       return cstring_makeLiteralTemp ("<no file table>");
     }
 
+  if (fid >= ft->nentries)
+    {
+       llcontbug (message ("fileTable_getName: called with invalid id: %d", fid));
+       // fprintf(stderr, "\nbad\n");
+      return cstring_makeLiteralTemp ("<invalid>");
+    }
+  
   fder = ft->elements[fid]->fder;
 
   if (fileId_isValid (fder))

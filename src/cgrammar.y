@@ -552,7 +552,9 @@ fcnDef
  : fcnDefHdr fcnBody 
    { 
      context_setFunctionDefined (exprNode_loc ($2)); 
-     exprNode_checkFunction (context_getHeader (), $2); 
+     exprNode_checkFunction (context_getHeader (), $2);
+     /* DRL 8 8 2000 */
+     
      context_exitFunction ();
    }
 
@@ -1346,11 +1348,11 @@ stmtList
  
 expressionStmt 
  : TSEMI { $$ = exprNode_createTok ($1); }
- | expr TSEMI { $$ = exprNode_statement ($1); }
+ | expr TSEMI { $$ = exprNode_statement ($1, $2); }
 
 expressionStmtErr
  : TSEMI { $$ = exprNode_createTok ($1); }
- | expr TSEMI { $$ = exprNode_statement ($1); }
+ | expr TSEMI { $$ = exprNode_statement ($1, $2); }
  | expr { $$ = exprNode_checkExpr ($1); } 
 
 ifPred
@@ -1530,14 +1532,14 @@ iterationStmt
  : whilePred stmt 
    { $$ = exprNode_while ($1, $2); context_exitWhileClause ($1, $2); }
  | doHeader stmt WHILE TLPAREN expr TRPAREN TSEMI 
-   { $$ = exprNode_statement (exprNode_doWhile ($2, $5)); }
+   { $$ = exprNode_statement (exprNode_doWhile ($2, $5), $7); }
  | forPred stmt 
    { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }
 
 iterationStmtErr 
  : whilePred stmtErr { $$ = exprNode_while ($1, $2); context_exitWhileClause ($1, $2); }
  | doHeader stmtErr WHILE TLPAREN expr TRPAREN TSEMI
-   { $$ = exprNode_statement (exprNode_doWhile ($2, $5)); }
+   { $$ = exprNode_statement (exprNode_doWhile ($2, $5), $7); }
  | doHeader stmtErr WHILE TLPAREN expr TRPAREN 
    { $$ = exprNode_doWhile ($2, $5); }
  | forPred stmtErr { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }

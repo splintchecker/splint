@@ -43,8 +43,8 @@ static bool exprNode_isBlock (exprNode p_e);
 static void checkGlobUse (uentry p_glob, bool p_isCall, /*@notnull@*/ exprNode p_e);
 static void exprNode_addUse (exprNode p_e, sRef p_s);
 static bool exprNode_matchArgType (ctype p_ct, exprNode p_e);
-static exprNode exprNode_fakeCopy (exprNode p_e) /*@*/ ;
-static exprNode exprNode_statementError (/*@only@*/ exprNode p_e);
+ exprNode exprNode_fakeCopy (exprNode p_e) /*@*/ ;
+static exprNode exprNode_statementError (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 static bool exprNode_matchTypes (exprNode p_e1, exprNode p_e2);
 static void checkUniqueParams (exprNode p_fcn,
 			       /*@notnull@*/ exprNode p_current, exprNodeList p_args, 
@@ -222,7 +222,7 @@ static void exprNode_resetSref (/*@notnull@*/ exprNode e)
   e->sref = defref;
 }
 
-static exprNode exprNode_fakeCopy (exprNode e)
+exprNode exprNode_fakeCopy (exprNode e)
 {
   /*@-temptrans@*/ /*@-retalias@*/
   return e;
@@ -5708,7 +5708,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 
 	      if (e2->kind == XPR_STMT)
 		{
-		  nr = exprData_getSingle (e2->edata);
+		  nr = exprData_getUopNode (e2->edata);
 		}
 
 	      if ((nr->kind == XPR_TOK 
@@ -5780,25 +5780,6 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
   return ret;
 }
 
-exprNode exprNode_mergeEnvironments (exprNode ret, exprNode e1, exprNode e2)
-{
- if (exprNode_isDefined (e1) && exprNode_isDefined (e2) )
-   {
-     ret->environment = environmentTable_mergeEnvironments (e1->environment, e2->environment);
-     return ret;
-   }
- if (exprNode_isUndefined(e1) && exprNode_isUndefined(e2) )
-   {
-     ret->environment = environmentTable_undefined;
-   }
- else
-   {
-     ret->environment = exprNode_isUndefined (e1) ? environmentTable_copy(e2->environment)
-       : environmentTable_copy (e1->environment);
-     return ret;
-   }
-}
-
 exprNode exprNode_createTok (/*@only@*/ lltok t)
 {
   exprNode ret = exprNode_create (ctype_unknown);
@@ -5807,17 +5788,17 @@ exprNode exprNode_createTok (/*@only@*/ lltok t)
   return ret;
 }
 
-exprNode exprNode_statement (/*@only@*/ exprNode e)
+exprNode exprNode_statement (/*@only@*/ exprNode e, /*@only@*/ lltok t)
 {
   if (!exprNode_isError (e))
     {
       exprNode_checkStatement(e);
     }
 
-  return (exprNode_statementError (e));
+  return (exprNode_statementError (e, t));
 }
 
-static exprNode exprNode_statementError (/*@only@*/ exprNode e)
+static exprNode exprNode_statementError (/*@only@*/ exprNode e, /*@only@*/ lltok t)
 {
   exprNode ret = exprNode_createPartialCopy (e);
 
@@ -5833,7 +5814,7 @@ static exprNode exprNode_statementError (/*@only@*/ exprNode e)
       ret->mustBreak = e->mustBreak;
     }
   
-  ret->edata = exprData_makeSingle (e);
+  ret->edata = exprData_makeUop (e, t);
   ret->kind = XPR_STMT;
 
   return ret;
@@ -6425,9 +6406,9 @@ exprNode exprNode_while (/*@keep@*/ exprNode t, /*@keep@*/ exprNode b)
 {
   exprNode ret;
   bool emptyErr = FALSE;
-    char *s;
-   s = exprNode_generateConstraints (t);
-    // printf("pred: %s\n", s);
+  char *s;
+  s = exprNode_generateConstraints (t);
+  // printf("pred: %s\n", s);
   s = exprNode_generateConstraints (b);
   //printf ("body: %s\n", s);
   //constraintList_print(b->constraints);
@@ -7984,7 +7965,8 @@ static /*@only@*/ exprNode exprNode_effect (exprNode e)
 	  break;	  
 
 	case XPR_STMT:
-	  ret = exprNode_statement (exprNode_effect (exprData_getSingle (data)));
+	  ret = exprNode_statement (exprNode_effect (exprData_getUopNode (data)),
+				    exprData_getUopTok (data));
 	  break;
 	  
 	case XPR_STMTLIST:
@@ -8333,7 +8315,7 @@ static /*@only@*/ cstring exprNode_doUnparse (exprNode e)
       break;
 
     case XPR_STMT:
-      ret = cstring_copy (exprNode_unparse (exprData_getSingle (data)));
+      ret = cstring_copy (exprNode_unparse (exprData_getUopNode (data)));
       break;
 
     case XPR_STMTLIST:
@@ -9832,53 +9814,6 @@ static void updateAliases (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
     }
 }
 
-exprNode
-exprNode_updateForPostOp ( /*@notnull@*/ /*@returned@*/  exprNode e1)
-{
-  e1->environment = environmentTable_postOpvar (e1->environment, e1->sref);
-  return e1;
-}
-
-void updateEnvironmentForPostOp (/*@notnull@*/ exprNode e1)
-{
-  sRef s1 = e1->sref;
-  //  printf("doing updateEnvironmentForPostOp\n");
-  e1 =  exprNode_updateForPostOp (e1);
-  /*do in exprNode update exprnode*/
-  usymtab_postopVar (s1);
-}
-
-void updateEnvironment (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2)
-{
-  //  printf("doing updateEnvironment\n");
-   if (!context_inProtectVars ())
-    {
-      /*
-      ** depends on types of e1 and e2
-      */
-      
-      sRef s1 = e1->sref;
-      sRef s2 = e2->sref;
-      ctype t1 = exprNode_getType (e1);
-      //  printf(" for %s = %s \n", sRef_unparse(s1),  sRef_unparse(s2) );
-      // printf("type is %d\n", t1);
-      if (multiVal_isInt( e2->val) )
-	{
-	  int val =  multiVal_forceInt(e2->val);
-	  //  printf("value is %d \n", val);
-	  usymtab_addExactValue( s1, val);
-	  environmentTable_addExactValue (e1->environment, s1, val);
-	}
-      
-      /* handle pointer sRefs, record fields, arrays, etc... */
-     }
-   else
-     {
-       //       printf("context_inProtectVars\n");
-     }
-   
-}
-			       
 exprNode exprNode_updateLocation (/*@returned@*/ exprNode e, /*@temp@*/ fileloc loc)
 {
   if (exprNode_isDefined (e))
@@ -10019,3 +9954,27 @@ long exprNode_getLongValue (exprNode e) {
   
   return value;
 }
+
+fileloc exprNode_getfileloc (exprNode p_e)
+{
+  return fileloc_copy ( p_e->loc );
+}
+
+fileloc exprNode_getNextSequencePoint (exprNode e)
+{
+  /*
+  ** Returns the location of the sequence point following e.
+  **
+  ** Only works for statements (for now).
+  */
+
+  if (exprNode_isDefined (e) && e->kind == XPR_STMT) {
+    lltok t = exprData_getUopTok (e->edata);
+    printf ("!!!!!!!!!!!!!!!!!!Tok is \n\n%s\n", lltok_unparse(t) );
+    return lltok_getLoc (t);
+  } else {
+    llcontbug (message ("Cannot get next sequence point: %s", exprNode_unparse (e)));
+    return fileloc_undefined;
+  }
+ }
+

@@ -43,6 +43,10 @@ lltok_isMult (lltok tok)
   return (tok.tok == TMULT);
 }
 
+bool lltok_isInc_Op (lltok tok)
+{
+  return (tok.tok == INC_OP);
+}
 cstring
 lltok_unparse (lltok tok)
 {
@@ -142,7 +146,10 @@ lltok_unparse (lltok tok)
     case QALLOCATES: lit = "allocates"; break;
     case QSETS:      lit = "sets"; break;
     case QRELEASES:  lit = "releases"; break;
-    BADDEFAULT;
+    case QSETBUFFERSIZE: lit = "setBufferSize"; break;
+    case QSETSTRINGLENGTH: lit = "setStringLength"; break;
+    default:  lit = "bad "; break;
+      //  BADDEFAULT;
     }
  
   return cstring_makeLiteralTemp (lit);
