@@ -1418,7 +1418,7 @@ suSpc
    structDeclList  DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    optStructInvariant 
-   { ctype ct; ct = declareStruct ($3, $8); setGlobalStructInfo(ct, $12); $$ = ct; } 
+   { ctype ct; ct = declareStruct ($3, $8); context_setGlobalStructInfo(ct, $12); $$ = ct; } 
  | NotType CUNION  newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
    structDeclList DeleteStructInnerScope { sRef_clearGlobalScopeSafe (); } 

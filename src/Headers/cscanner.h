@@ -7,6 +7,7 @@
 ** cscanner.h
 */
 
+/*@-declundef@*/ /* Don't always check cscanner.c */
 extern /*@observer@*/ cstring cscanner_observeLastIdentifier (void) ;
 extern void cscanner_expectingMetaStateName (void) /*@modifies internalState@*/ ;
 extern void cscanner_clearExpectingMetaStateName (void) /*@modifies internalState@*/ ;
@@ -18,6 +19,7 @@ extern void cscanner_swallowMacro (void) /*@modifies internalState, fileSystem@*
 
 # ifdef S_SPLINT_S
 
+/*@-namechecks@*/
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 
 extern /*@unused@*/ void yy_switch_to_buffer (YY_BUFFER_STATE);
@@ -35,5 +37,7 @@ extern /*@unused@*/ char *yytext;
 extern /*@unused@*/ void yyerror (char *);
 extern /*@unused@*/ int	yychar;	
 extern /*@unused@*/ int yynerrs;
+/*@=namechecks@*/
+/*@=declundef@*/
 
 # endif

@@ -53,6 +53,7 @@ void stateInfo_free (/*@only@*/ stateInfo a)
   else
     {
       stateInfo snew = stateInfo_makeRefLoc (newinfo->ref, newinfo->loc);
+      llassert (snew->previous == NULL);
       snew->previous = old;
       return snew;
     }

@@ -1875,12 +1875,9 @@ context_enterFunction (/*@exposed@*/ uentry e)
   sRef_enterFunctionScope ();
 }
 
-bool context_inOldSytleScope(void)
+bool context_inOldStyleScope(void)
 {
-  if (gc.kind == CX_OLDSTYLESCOPE)
-    return TRUE;
-  else
-    return FALSE;
+  return (gc.kind == CX_OLDSTYLESCOPE);
 }
 
 void
@@ -4907,9 +4904,7 @@ struct sInfo {
  /*@unused@*/ struct getUe * t ;
 };
 
-
-static struct sInfo globalStructInfo;
-
+/* unused: static struct sInfo globalStructInfo; */
 
 /*drl 1/6/2001: I didn't think these functions were solid enough to include in the
   stable  release of splint.  I coomented them out so that they won't break anything
@@ -4920,7 +4915,7 @@ static struct sInfo globalStructInfo;
 
 /*@-paramuse@*/
 
-void  setGlobalStructInfo(ctype ct, constraintList list)
+void context_setGlobalStructInfo(ctype ct, constraintList list)
 {
 # if 0
   /* int i;

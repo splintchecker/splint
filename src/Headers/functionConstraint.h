@@ -29,6 +29,12 @@ struct s_functionConstraint {
 extern /*@falsewhennull@*/ bool functionConstraint_isDefined (functionConstraint) /*@*/ ;
 # define functionConstraint_isDefined(p_info) ((p_info) != NULL)
 
+extern /*@falsewhennull@*/ bool functionConstraint_isBufferConstraint (/*@sef@*/ functionConstraint) /*@*/ ;
+# define functionConstraint_isBufferConstraint(p_con) (((p_con) != NULL) && ((p_con)->kind == FCT_BUFFER))
+
+extern void functionConstraint_addBufferConstraints (functionConstraint p_fc, /*@only@*/ constraintList) 
+  /*@modifies p_fc@*/ ;
+
 extern /*@nullwhentrue@*/ bool functionConstraint_isUndefined (functionConstraint) /*@*/ ;
 # define functionConstraint_isUndefined(p_info) ((p_info) == NULL)
 

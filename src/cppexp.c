@@ -153,7 +153,7 @@ Written by Per Bothner 1994.  */
 
 static struct operation cppexp_lex (cppReader *);
 static void integer_overflow (cppReader *);
-static long left_shift (cppReader *, long, bool p_unsignedp, size_t);
+static long left_shift (cppReader *, long, bool p_unsignedp, unsigned long);
 static long right_shift (long, bool p_unsignedp, unsigned long);
 
 /*@constant short CPPREADER_ERRORTOK@*/
@@ -798,7 +798,7 @@ integer_overflow (cppReader *pfile)
 }
 
 static long
-left_shift (cppReader *pfile, long a, bool unsignedp, size_t b)
+left_shift (cppReader *pfile, long a, bool unsignedp, unsigned long b)
 {
   if (b >= HOST_BITS_PER_LONG)
     {

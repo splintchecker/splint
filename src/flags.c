@@ -1701,26 +1701,50 @@ flags_processFlags (bool inCommandLine,
 	    }
 	  else if (opt == FLG_INCLUDEPATH || opt == FLG_SPECPATH)
 	    {
-	      cstring dir = cstring_suffix (cstring_fromChars (thisarg), 1); /* skip over I */
-	      
-	      DPRINTF (("Directory: %s", dir));
-	      
-	      switch (opt)
-		{
-		case FLG_INCLUDEPATH:
-		  cppAddIncludeDir (dir);
-		  /*@switchbreak@*/ break;
-		case FLG_SPECPATH:
-		  /*@-mustfree@*/
-		  g_localSpecPath = cstring_toCharsSafe
-		    (message ("%s%h%s", 
-			      cstring_fromChars (g_localSpecPath), 
-			      PATH_SEPARATOR,
-			      dir));
-		  /*@=mustfree@*/
-		  /*@switchbreak@*/ break;
-		  BADDEFAULT;
+	      if (mstring_length (thisarg) < 2) {
+		BADBRANCH;
+	      } else {
+		if (mstring_equal (thisarg, "-I-")) {
+		  cppAddIncludeDir (cstring_fromChars (thisarg)); /* Need to handle this specially. */
+		} else {
+		  cstring dir = cstring_suffix (cstring_fromChars (thisarg), 2); /* skip over -I */
+		  
+		  DPRINTF (("Length of thisarg [%s] %d", thisarg, cstring_length (thisarg)));
+		  
+		  if (cstring_length (dir) == 0) {
+		    DPRINTF (("space after directory: "));
+		    if (++i < argc) {
+		      dir = cstring_fromChars (argv[i]);
+		    } else {
+		      voptgenerror
+			(FLG_BADFLAG,
+			 message
+			 ("Flag %s must be followed by a directory name",
+			  flagcode_unparse (opt)),
+			 g_currentloc);
+		    }
+		  } 
+		  
+		  DPRINTF (("Got directory: [%s]", dir));
+		  
+		  switch (opt)
+		    {
+		    case FLG_INCLUDEPATH:
+		      cppAddIncludeDir (dir);
+		      /*@switchbreak@*/ break;
+		    case FLG_SPECPATH:
+		      /*@-mustfree@*/
+		      g_localSpecPath = cstring_toCharsSafe
+			(message ("%s%h%s", 
+				  cstring_fromChars (g_localSpecPath), 
+				  PATH_SEPARATOR,
+				  dir));
+		      /*@=mustfree@*/
+		      /*@switchbreak@*/ break;
+		      BADDEFAULT;
+		    }
 		}
+	      }
 	    }
 	  else if (flagcode_isModeName (opt))
 	    {

@@ -219,11 +219,9 @@ extern void functionConstraint_free (/*@only@*/ functionConstraint node)
     }
 }
 
-
-
-
-
-
-
-
+void functionConstraint_addBufferConstraints (functionConstraint fc, constraintList clist) 
+{
+  llassert (functionConstraint_isBufferConstraint (fc));
+  fc->constraint.buffer  = constraintList_addList (fc->constraint.buffer, clist);
+}
 

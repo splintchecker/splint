@@ -336,10 +336,6 @@ extern int context_getBugsLimit (void) /*@*/ ;
 # define context_getBugsLimit()  ((int)context_getValue(FLG_BUGSLIMIT))
 
 /*drl 12/30/2001 these are some ugly functions that were added to facilitate struct annotations */
-
-
-extern bool hasInvariants (ctype p_ct);
-
 /*drl 1/6/2001: I didn't think these functions were solid enough to include in the
   stable  release of splint.  I commented them out so that they won't break anything
   but didn't delete them because they will be fixed and included later
@@ -353,12 +349,14 @@ extern bool hasInvariants (ctype p_ct);
 
 /* sRef fixSref (ctype p_ct, sRef p_base, sRef p_fix); */
 
-ctype context_setLastStruct (/*@returned@*/ ctype p_s) /*@modifies internalState@*/;
-ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies internalState@*/;
+extern ctype context_setLastStruct (/*@returned@*/ ctype p_s) /*@modifies internalState@*/;
+extern ctype context_getLastStruct (/*@returned@*/ /*ctype p_s*/) /*@modifies internalState@*/;
 
 /*drl added 2/4/2002*/
 
-  bool context_inOldSytleScope(void);
+extern bool context_inOldStyleScope (void) /*@*/ ;
+extern void context_setGlobalStructInfo (ctype p_ct, constraintList p_list) /*@modifies internalState@*/ ;
+
 # else
 # error "Multiple include"
 # endif

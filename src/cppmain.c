@@ -191,12 +191,8 @@ void cppAddIncludeDir (cstring dir)
     } 
   else 
     {
-      /* -I option (Add directory to include path) */
       struct file_name_list *dirtmp = (struct file_name_list *) dmalloc (sizeof (*dirtmp));
       
-      llassert (cstring_firstChar (dir) == 'I');
-      dir = cstring_suffix (dir, 1);
-
       DPRINTF (("Add include: %s", dir));
 
       dirtmp->next = 0;		/* New one goes on the end */

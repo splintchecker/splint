@@ -11341,7 +11341,7 @@ void uentry_checkName (uentry ue)
   fileloc_free (tloc);
   uentry_setHasNameError (ue);
   
-  if (context_getFlag (FLG_REPEATUNRECOG) || (context_inOldSytleScope() ) )
+  if (context_getFlag (FLG_REPEATUNRECOG) || (context_inOldStyleScope()))
     {
       uentry_markOwned (ue);
     }
