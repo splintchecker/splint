@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -29,7 +29,7 @@
 ** where T has T_equal (or change this) and T_unparse
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 
 usymIdSet

@@ -8,7 +8,7 @@
 */
 
 /*
- * This is constants.h from Mike Smith's Win32 port of lclint.
+ * This is constants.h from Mike Smith's Win32 port of splint.
  * Modified by Herbert 04/19/97:
  * added conditional 'OS2' to conditional 'MSDOS'
  */
@@ -209,8 +209,8 @@
 ** Minimum version with compatible libraries.
 */
 
-/*@constant float LCLINT_LIBVERSION; @*/
-# define LCLINT_LIBVERSION 2.6
+/*@constant float SPLINT_LIBVERSION; @*/
+# define SPLINT_LIBVERSION 2.6
 
 /*
 ** Flex doesn't pre-process input, so remember to copy these manually

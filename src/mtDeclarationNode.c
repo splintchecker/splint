@@ -17,15 +17,15 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
 ** mtDeclarationNode.c
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 
 extern mtDeclarationNode mtDeclarationNode_create (mttok name, mtDeclarationPieces pieces) /*@*/ 
@@ -86,7 +86,7 @@ extern void mtDeclarationNode_process (mtDeclarationNode node, bool isglobal)
       mvals = mtValuesNode_getValues (mtv);
     }
 
-  /*@-usedef@*/ /*@i34 lclint should figure this out... */
+  /*@-usedef@*/ /*@i34 splint should figure this out... */
   nvalues = cstringList_size (mvals);
   /*@=usedef@*/
 

@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -27,7 +27,7 @@
 ** error reporting procedures
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include <string.h>
 # include <errno.h>
 # include "llbasic.h"
@@ -88,7 +88,7 @@ static void
 printBugReport (void)
 {
   fprintf (stderr, "     *** Please report bug to %s ***\n",
-	   LCLINT_MAINTAINER);
+	   SPLINT_MAINTAINER);
   llflush ();
   /* don't exit (EXIT_FAILURE); */
 }
@@ -1827,7 +1827,7 @@ void llparseerror (cstring s)
 
       llfatalerror
 	(message ("%q: %s (For help on parse errors, "
-		  "see lclint -help parseerrors.)",
+		  "see splint -help parseerrors.)",
 		  fileloc_unparse (g_currentloc), msg));
     }
 }

@@ -17,15 +17,15 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
 ** nameChecks.c
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "nameChecks.h"
 
@@ -1150,7 +1150,7 @@ checkCppName (uentry ue)
   static ob_mstring cppNames[NCPPNAMES] =
     {
       "and", "and_eq", "asm", 
-      "bitand", "bitor", "bool", /* gasp: "bool", is special for lclint */
+      "bitand", "bitor", "bool", /* gasp: "bool", is special for splint */
       "catch", "class", "compl", "const_class",
       "delete", "dynamic_cast", "false", "friend",
       "inline", "mutable", "namespace", "new",

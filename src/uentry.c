@@ -17,15 +17,15 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
 ** uentry.c
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "structNames.h"
 # include "nameChecks.h"
@@ -4173,7 +4173,7 @@ uentry_compare (uentry u1, uentry u2)
     {
     case KINVALID:
     case KELIPSMARKER:
-      /* bug detected by lclint:  
+      /* bug detected by splint:  
       ** uentry.c:753,14: Return value type bool does not match declared type int: TRUE 
       */
       return 0;
@@ -8539,7 +8539,7 @@ checkFunctionConformance (/*@unique@*/ /*@notnull@*/ uentry old,
 
 	      paramno++;  
 	      /*
-	       ** Forgot this!  detected by lclint:
+	       ** Forgot this!  detected by splint:
 	       ** uentry.c:1257,15: Suspected infinite loop
 	       */
 	    }

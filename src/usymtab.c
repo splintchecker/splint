@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -46,7 +46,7 @@
 **                      weird C syntax.
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "structNames.h"
 # include "exprChecks.h"
@@ -1897,7 +1897,7 @@ void usymtab_load (FILE *f)
 	{
 	  llfatalerror
 	    (cstring_makeLiteral 
-	     ("Library is in obsolete format.  Use lclint +whichlib "
+	     ("Library is in obsolete format.  Use splint +whichlib "
 	      "to see which library is being loaded."));
 	}
 

@@ -1,6 +1,6 @@
 /*;-*-C-*-;
 ** Splint - annotation-assisted static program checker
-** Copyright (C) 1994-2001 University of Virginia,
+** Copyright (C) 1994-2002 University of Virginia,
 **         Massachusetts Institute of Technology
 **
 ** This program is free software; you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -32,7 +32,7 @@
 %{
 
 # include <stdio.h>
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "lslparse.h"
 # include "signature.h"
@@ -255,7 +255,7 @@ void lslerror (char *s)
   llfatalbug 
     (cstring_makeLiteral 
      ("There has been a problem in the parser with LSL signatures. This is believed to result "
-      "from a problem with bison v. 1.25.  Please try rebuidling LCLint "
+      "from a problem with bison v. 1.25.  Please try rebuidling Splint "
       "using the pre-compiled grammar files by commenting out the "
       "BISON= line in the top-level Makefile."));
 }

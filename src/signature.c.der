@@ -112,7 +112,7 @@
 
 
 # include <stdio.h>
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "lslparse.h"
 # include "signature.h"
@@ -1220,7 +1220,7 @@ void lslerror (char *s)
   llfatalbug 
     (cstring_makeLiteral 
      ("There has been a problem in the parser with LSL signatures. This is believed to result "
-      "from a problem with bison v. 1.25.  Please try rebuidling LCLint "
+      "from a problem with bison v. 1.25.  Please try rebuidling Splint "
       "using the pre-compiled grammar files by commenting out the "
       "BISON= line in the top-level Makefile."));
 }

@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -55,7 +55,7 @@
 
 /*@end@*/
 /*@=allmacros*/
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "basic.h"
 # include "osd.h"
 # include "portab.h"
@@ -1015,7 +1015,7 @@ cstring osd_outputPath (cstring filename)
 	return cstring_makeLiteral (".");
       else
 	{
-	  /*@i324 ! lclint didn't report an errors for: return ++path_p; */
+	  /*@i324 ! splint didn't report an errors for: return ++path_p; */
 	  return cstring_fromCharsNew (++path_p);
 	}
     }

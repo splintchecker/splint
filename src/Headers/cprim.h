@@ -43,7 +43,7 @@ extern bool cprim_isAnyChar (/*@sef@*/ cprim p_c);
 
 /*
 ** only a few combiniations of type qualifiers and base types are
-** recognized in the ANSI standard.  LCLint treats these as distinct
+** recognized in the ANSI standard.  Splint treats these as distinct
 ** types.
 */
 

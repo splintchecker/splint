@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -40,7 +40,7 @@
 **	20 January 1991
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "gram.h"
 # include "lclscan.h"
@@ -1306,7 +1306,7 @@ parseLine (char *line, inputStream srce, mapping map)
 	}
       else
 	{
-	  /* evans 2001-05-27: detected by lclint after fixing external alias bug. */
+	  /* evans 2001-05-27: detected by splint after fixing external alias bug. */
 	  if (op->name != NULL) 
 	    {
 	      ltoken_free (op->name->content.opid); 

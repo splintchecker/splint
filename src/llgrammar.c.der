@@ -200,7 +200,7 @@
 
 
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "lclscan.h"
 # include "checking.h"

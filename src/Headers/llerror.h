@@ -54,7 +54,7 @@ extern /*@noreturnwhenfalse@*/ void llassertfatal (/*@sef@*/ bool p_test);
        } while (FALSE)
 
 /*
-** llassertprint and llassertprintret are in lclintMacros.nf
+** llassertprint and llassertprintret are in splintMacros.nf
 */
 
 extern void llmsg (/*@only@*/ cstring p_s) /*@modifies g_msgstream@*/ ;

@@ -45,7 +45,7 @@ Finished checking --- no warnings
 Finished checking --- no warnings
 
 extension.c:2:18: Parse Error: New function scope inside function. (For help on
-               parse errors, see lclint -help parseerrors.)
+               parse errors, see splint -help parseerrors.)
 *** Cannot continue.
 
 Finished checking --- no warnings

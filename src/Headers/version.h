@@ -9,8 +9,8 @@
 # ifndef VERSION_H
 # define VERSION_H
 
-/*@constant observer char *LCLINT_MAINTAINER; @*/
-# define LCLINT_MAINTAINER "lclint-bug@cs.virginia.edu"
+/*@constant observer char *SPLINT_MAINTAINER; @*/
+# define SPLINT_MAINTAINER "splint-bug@cs.virginia.edu"
 
 /*@constant observer char *CPP_VERSION;@*/
 # define CPP_VERSION "cygnus-2.7.2-970404"

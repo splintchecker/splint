@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -48,7 +48,7 @@
 # include <process.h>
 # endif
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
 
@@ -616,7 +616,7 @@ static void addXHFile (fileIdList files, /*@temp@*/ cstring s)
 }
 
 /*
-** Disable MSVC++ warning about return value.  Methinks humbly lclint control
+** Disable MSVC++ warning about return value.  Methinks humbly splint control
 ** comments are a mite more legible.
 */
 
@@ -846,7 +846,7 @@ int main (int argc, char *argv[])
 		readhomerc = readOptionsFile (homename, &passThroughArgs, FALSE);
 		
 		/*
-		** Try ~/.lclintrc also for historical accuracy
+		** Try ~/.splintrc also for historical accuracy
 		*/
 		
 		altname = message ("%s%h%s", home, CONNECTCHAR,
@@ -1803,7 +1803,7 @@ printParseErrors (void)
   llmsglit ("Parse Errors");
   llmsglit ("------------");
   llmsglit ("");
-  llmsglit ("LCLint will sometimes encounter a parse error for code that "
+  llmsglit ("Splint will sometimes encounter a parse error for code that "
 	    "can be parsed with a local compiler. There are a few likely "
 	    "causes for this and a number of techniques that can be used "
 	    "to work around the problem.");
@@ -1839,12 +1839,12 @@ printParseErrors (void)
 	    "header files.");
   llmsglit ("");
   llmsglit ("Otherwise, you may need to either manually define the problematic "
-	    "type (e.g., add -Dmlink_t=int to your .lclintrc file) or force "
-	    "lclint to process the header file that defines it. This is done "
+	    "type (e.g., add -Dmlink_t=int to your .splintrc file) or force "
+	    "splint to process the header file that defines it. This is done "
 	    "by setting -skipansiheaders or -skipposixheaders before "
 	    "the file that defines the type is #include'd.");
-  llmsglit ("(See lclint -help "
-	    "skipansiheaders and lclint -help skipposixheaders for a list of "
+  llmsglit ("(See splint -help "
+	    "skipansiheaders and splint -help skipposixheaders for a list of "
 	    "standard headers.)  For example, if <sys/local.h> uses a type "
 	    "defined by posix header <sys/types.h> but not defined by the "
 	    "posix library, we might do: ");
@@ -2044,15 +2044,15 @@ printFlags (void)
   llmsglit ("Flag Categories");
   llmsglit ("---------------");
   listAllCategories ();
-  llmsglit ("\nTo see the flags in a flag category, do\n   lclint -help flags <category>");
-  llmsglit ("To see a list of all flags in alphabetical order, do\n   lclint -help flags alpha");
-  llmsglit ("To see a full description of all flags, do\n   lclint -help flags full");
+  llmsglit ("\nTo see the flags in a flag category, do\n   splint -help flags <category>");
+  llmsglit ("To see a list of all flags in alphabetical order, do\n   splint -help flags alpha");
+  llmsglit ("To see a full description of all flags, do\n   splint -help flags full");
 }
 
 void
 printMaintainer (void)
 {
-  llmsg (message ("Maintainer: %s", cstring_makeLiteralTemp (LCLINT_MAINTAINER)));
+  llmsg (message ("Maintainer: %s", cstring_makeLiteralTemp (SPLINT_MAINTAINER)));
   llmsglit (LCL_COMPILE);
 }
 
@@ -2072,7 +2072,7 @@ printMail (void)
   llmsglit ("");
   llmsglit ("   lclint-interest@virginia.edu");
   llmsglit ("");
-  llmsglit ("      Informal discussions on the use and development of lclint.");
+  llmsglit ("      Informal discussions on the use and development of Splint.");
   llmsglit ("      To subscribe, send a message to majordomo@virginia.edu with body: ");
   llmsglit ("           subscribe lclint-interest");
 }
@@ -2184,7 +2184,7 @@ interrupt (int i)
 		 cstring_toCharsSafe (loc));
 	cstring_free (loc);
 	printCodePoint ();
-	fprintf (stderr, "*** Please report bug to %s\n", LCLINT_MAINTAINER);
+	fprintf (stderr, "*** Please report bug to %s\n", SPLINT_MAINTAINER);
 	exit (LLGIVEUP);
       }
     default:
@@ -2194,7 +2194,7 @@ interrupt (int i)
 	       cstring_toCharsSafe (fileloc_unparse (g_currentloc)));
       /*@=mustfree@*/
       printCodePoint ();
-      fprintf (stderr, "*** Please report bug to %s ***\n", LCLINT_MAINTAINER);
+      fprintf (stderr, "*** Please report bug to %s ***\n", SPLINT_MAINTAINER);
       exit (LLGIVEUP);
     }
 }

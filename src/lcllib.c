@@ -17,8 +17,8 @@
 ** the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ** MA 02111-1307, USA.
 **
-** For information on lclint: lclint-request@cs.virginia.edu
-** To report a bug: lclint-bug@cs.virginia.edu
+** For information on splint: splint@cs.virginia.edu
+** To report a bug: splint-bug@cs.virginia.edu
 ** For more information: http://www.splint.org
 */
 /*
@@ -31,7 +31,7 @@
 **
 */
 
-# include "lclintMacros.nf"
+# include "splintMacros.nf"
 # include "llbasic.h"
 # include "osd.h"
 
@@ -419,7 +419,7 @@ loadLCDFile (FILE *f, cstring name)
   char buf[BUFLEN];
   
   /*
-  ** Check version.  Should be >= LCLINT_LIBVERSION
+  ** Check version.  Should be >= SPLINT_LIBVERSION
   */
 
   if (reader_readLine (f, buf, BUFLEN) == NULL
@@ -442,7 +442,7 @@ loadLCDFile (FILE *f, cstring name)
 	{
 	  loadllmsg (message ("Load library %s is in obsolete Splint library format.  Attempting "
 			      "to continue anyway, but results may be incorrect.  Rebuild "
-			      "the library with this version of lclint.", 
+			      "the library with this version of splint.", 
 			      name));
 	}
       else 
@@ -459,7 +459,7 @@ loadLCDFile (FILE *f, cstring name)
 	    }
 	  else
 	    {
-	      if ((LCLINT_LIBVERSION - version) >= FLT_EPSILON)
+	      if ((SPLINT_LIBVERSION - version) >= FLT_EPSILON)
 		{
 		  cstring vname;
 		  char *nl = strchr (buf, '\n');
@@ -468,10 +468,10 @@ loadLCDFile (FILE *f, cstring name)
 
 		  vname = cstring_fromChars (buf + 9);
 
-		  loadllmsg (message ("Load library %s is in obsolete LCLint library "
+		  loadllmsg (message ("Load library %s is in obsolete Splint library "
 				      "format (version %s).  Attempting "
 				      "to continue anyway, but results may be incorrect.  Rebuild "
-				      "the library with this version of lclint.", 
+				      "the library with this version of splint.", 
 				      name, vname));
 		}
 	      else
