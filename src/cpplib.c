@@ -4931,6 +4931,11 @@ beg_of_line:
 		  /*@switchbreak@*/ break;
 		default: ;
 		  /*@-branchstate@*/ 
+#if defined (OS2) && defined (__IBMC__)
+      /* Dummy code to eleminate optimization problems with icc */
+      c = 0;
+# endif
+
 		}
 	      /*@=branchstate@*/
 	      break;
