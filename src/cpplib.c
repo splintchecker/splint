@@ -8451,8 +8451,27 @@ static bool cpp_skipIncludeFile (cstring fname)
       
       if (context_getFlag (FLG_SKIPSYSHEADERS))
 	{
-	  DPRINTF (("Skip include TRUE: %s", fname));
-	  return TRUE;
+	  /*
+	  ** 2003-04-18: Patch from Randal Parsons
+	  */
+
+	  /*
+	  ** Don't skip include file unless the file actually exists.  
+	  ** It may be in a different directory.
+	  */
+
+	  int f = open (cstring_toCharsSafe (fname), O_RDONLY, 0666);
+
+	  if (f >= 0)
+	    {
+	      check (close (f) == 0);
+	      DPRINTF (("Skip include TRUE: %s", fname));
+	      return TRUE;
+	    }
+	  else
+	    {
+	      /* Keep looking... */
+	    }
 	}
     }
 

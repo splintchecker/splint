@@ -828,7 +828,7 @@ fileTable_cleanup (fileTable ft)
 	    }
 	  else if (fileId_isValid (fe->fder)) 
 	    {
-	      /*@i423 this should use close (fd) also... */
+	      /* this should use close (fd) also... */
 	      (void) osd_unlink (fe->fname);
 	    }
 	  else if (fe->ftype == FILE_MACROS)
