@@ -105,6 +105,7 @@ typedef struct _ufinfo
   bool hasMods  BOOLBITS;
 
   constraintList preconditions;
+  constraintList postconditions;
   
 } *ufinfo ;
 
@@ -632,7 +633,8 @@ extern void uentry_tallyAnnots (uentry u, ancontext kind);
 /* start modifications */
 extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
 /*drl7x*/
-constraintList uentry_getFcnPreconditions (uentry ue);
+extern constraintList uentry_getFcnPreconditions (uentry ue);
+extern constraintList uentry_getFcnPostconditions (uentry ue);
      /*end mods*/
 
 # else

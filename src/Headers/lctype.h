@@ -351,6 +351,12 @@ extern /*@unused@*/ void ctype_printTable (void);
 
 extern ctype ctype_widest (ctype, ctype) /*@*/ ;
 
+/*
+  drl
+  modified */
+long int ctype_getArraySize (ctype c);
+/*end drl add functions */
+
 /* Should only be used in uentry.c */
 extern bool ctype_isUserBool (ctype p_ct) /*@*/ ;
 

@@ -37,7 +37,7 @@ extern constraintList constraintList_copy (constraintList p_s);
 extern void constraintList_free (/*@only@*/ constraintList p_s) ;
 
 
-extern constraintList constraintList_copy (constraintList s);
+
 
 extern cstring constraintList_print (constraintList s);
 
@@ -54,6 +54,13 @@ extern constraintList constraintList_preserveOrig (constraintList c);
 
 extern constraintList constraintList_doSRefFixBaseParam (constraintList preconditions, exprNodeList arglist);
 
+extern constraintList constraintList_togglePost (constraintList c);
+
+extern constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist);
+
+extern constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall);
+
+constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall);
 # define constraintListBASESIZE SMALLBASESIZE
 
 # else

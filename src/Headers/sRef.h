@@ -360,6 +360,13 @@ extern /*@exposed@*/ sRef
   sRef_fixBaseParam (/*@returned@*/ sRef p_s, exprNodeList p_args)
   /*@modifies p_s@*/ ;
 
+  /*
+    drl7x
+    added function
+    12/24/2000
+  */
+extern constraintExpr sRef_fixConstraintParam ( sRef p_s, exprNodeList p_args);
+  
 extern bool sRef_isUnionField (sRef p_s);
 extern void sRef_setModified (sRef p_s);
 
@@ -596,11 +603,11 @@ extern void sRef_setLen(sRef p_s, int p_len);
 
 extern int sRef_getSize(sRef p_s);
 #define sRef_getSize(p_s) \
-   (p_s->bufinfo.size)
+   ((p_s)->bufinfo.size)
 
 extern int sRef_getLen(sRef p_s);
 #define sRef_getLen(p_s) \
-   (p_s->bufinfo.len)
+   ((p_s)->bufinfo.len)
 
 extern void sRef_hasBufStateInfo(sRef p_s);
 # define sRef_hasBufStateInfo(p_s) \

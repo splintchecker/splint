@@ -32,7 +32,6 @@ extern bool lltok_isSemi (lltok p_tok);
 /* DRL added 10/23/2000 for boolean stuff */
 extern bool lltok_isEq_Op (lltok tok);
 
-
 extern bool lltok_isMult (lltok tok);
 
 extern bool lltok_isInc_Op (lltok tok);
@@ -62,6 +61,11 @@ bool  lltok_isPlus_Op (lltok tok);
 bool  lltok_isMinus_Op (lltok tok);
 
 /*end drl added */
+
+/*drl
+  added 1/14/2001
+*/
+bool lltok_isDec_Op  (lltok tok);
 
 # else
 # error "Multiple include"

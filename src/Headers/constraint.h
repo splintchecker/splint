@@ -36,9 +36,6 @@ constraint constraint_makeInc_Op (exprNode p_e1);
 bool constraint_resolve (/*@unused@*/ constraint c);
      
 /*@out@*/ constraintTerm new_constraintTermExpr (void);
-constraintTerm exprNode_makeConstraintTerm (/*@only@*/ exprNode e);
-
-constraintTerm intLit_makeConstraintTerm (int p_i);
 
 /*@special@*/ constraintExpr makeConstraintExpr (/*@only@*/ /*@notnull@*/ constraintTerm term)
  /*@post:isnull result->expr@*/
@@ -65,11 +62,11 @@ constraintExpr makePostOpInc (exprNode t1);
 
 
 bool fileloc_closer (fileloc  loc1, fileloc  loc2, fileloc  loc3);
-cstring constraintTerm_print (constraintTerm term) /*@*/;
+
 
 cstring arithType_print (arithType ar) /*@*/;
 
-cstring constraintExpr_print (constraintExpr ex) /*@*/;
+
 fileloc constraint_getFileloc (constraint c);
 cstring constraint_print (constraint c) /*@*/;
 constraint constraint_makeWriteSafeInt (exprNode po, int ind);
@@ -95,8 +92,19 @@ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, file
 /*drl add 11/28/2000 */
 constraint constraint_makeSRefWriteSafeInt (sRef s, int ind);
 
+/*drl add 11/26/2000 */
+void constraint_printError (constraint c, fileloc loc);
+constraint constraint_doSRefFixConstraintParam (constraint precondition,
+						exprNodeList arglist);
+
+constraint constraint_makeSRefSetBufferSize (sRef s, int size);
+
+constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall);
+
+constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer);
+
 /*@=czechfcns*/
-#warning take this out
+//#warning take this out
 #include "constraintList.h"
 
 #include "constraintExpr.h"

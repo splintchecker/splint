@@ -45,6 +45,20 @@ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2);
 
 
 constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist);
+
+constraintExpr 
+constraintTerm_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist);
+
+constraintTerm constraintTerm_setFileloc (constraintTerm term, fileloc loc);
+cstring constraintTerm_print (constraintTerm term);
+constraintTerm constraintTerm_makeIntLiteral (int i);
+
+bool constraintTerm_isStringLiteral (constraintTerm c);
+cstring constraintTerm_getStringLiteral (constraintTerm c);
+
+constraintExpr 
+constraintTerm_doFixResult (constraintExpr e, exprNode fcnCall);
+
 #endif
 
 
