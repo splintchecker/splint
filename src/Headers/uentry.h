@@ -589,27 +589,30 @@ extern /*@exposed@*/ uentry uentry_makeUnrecognized (cstring p_c, /*@keep@*/ fil
 extern void uentry_setNullTerminatedState (uentry p_e);
 extern void uentry_setPossiblyNullTerminatedState (uentry p_e);
 extern void uentry_setNotNullTerminated (uentry p_e);
-extern void uentry_setSize(uentry p_e, int size);
-extern void uentry_setLen(uentry p_e, int len);
+extern void uentry_setSize(uentry p_e, int p_size);
+extern void uentry_setLen(uentry p_e, int p_len);
 
+/*@i66*/
+/*@-nullderef@*/
 extern bool uentry_hasBufStateInfo (uentry p_ue);
 # define uentry_hasBufStateInfo(p_ue) \
   (((p_ue)->info->var->bufinfo != NULL) ? TRUE : FALSE)
 
-extern bool uentry_isNullTerminated(uentry p_ue);
+extern bool uentry_isNullTerminated(/*@sef@*/uentry p_ue);
 # define uentry_isNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo( (p_ue ) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_NULLTERMINATED) : FALSE)
 
-extern bool uentry_isPossiblyNullTerminated(uentry p_ue);
+extern bool uentry_isPossiblyNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isPossiblyNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo((p_ue)) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_POSSIBLYNULLTERMINATED) : FALSE)
 
-extern bool uentry_isNotNullTerminated(uentry p_ue);
+extern bool uentry_isNotNullTerminated( /*@sef@*/ uentry p_ue);
 # define uentry_isNotNullTerminated(p_ue) \
-   ( uentry_hasBufStateInfo(p_ue) ? (p_ue->info->var->bufinfo->bufstate \
+   ( uentry_hasBufStateInfo( (p_ue) ) ? ( (p_ue)->info->var->bufinfo->bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)
+/*@=nullderef@*/
 
 /* end modifications */
 
@@ -622,6 +625,9 @@ extern void initAnnots ();
 extern void printAnnots (void);
 extern void uentry_tallyAnnots (uentry u, ancontext kind);
 # endif /* DOANNOTS */
+
+/* start modifications */
+extern void uentry_setBufferSize (uentry p_e, exprNode p_cconstant);
 
 # else
 # error "Multiple include"

@@ -586,13 +586,13 @@ extern void sRef_setObserver (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 
 /* start modifications */
 /* functions for making modification to null-term info */
-extern void sRef_setNullTerminatedStateInnerComplete(sRef s, struct _bbufinfo b, fileloc loc);
-extern struct _bbufinfo sRef_getNullTerminatedState(sRef s);
+extern void sRef_setNullTerminatedStateInnerComplete(sRef p_s, struct _bbufinfo p_b, fileloc p_loc);
+extern struct _bbufinfo sRef_getNullTerminatedState(sRef p_s);
 extern void sRef_setNullTerminatedState (sRef p_s);
 extern void sRef_setPossiblyNullTerminatedState (sRef p_s);
 extern void sRef_setNotNullTerminatedState (sRef p_s);
-extern void sRef_setSize(sRef p_s, int size);
-extern void sRef_setLen(sRef p_s, int len);
+extern void sRef_setSize(sRef p_s, int p_size);
+extern void sRef_setLen(sRef p_s, int p_len);
 
 extern int sRef_getSize(sRef p_s);
 #define sRef_getSize(p_s) \
@@ -620,7 +620,8 @@ extern bool sRef_isNotNullTerminated(sRef p_s);
 # define sRef_isNotNullTerminated(p_s) \
    ( sRef_hasBufStateInfo(p_s) ? (p_s->bufinfo.bufstate \
                == BB_NOTNULLTERMINATED) : FALSE)
-
+   
+extern /*@observer@*/ cstring sRef_ntMessage (sRef p_s);     
 /* end modifications */
 
 # else

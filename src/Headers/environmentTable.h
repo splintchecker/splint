@@ -10,8 +10,6 @@
 # ifndef environmentTable_H
 # define environmentTable_H
 
-//typedef /*@only@*/ sRefSet o_sRefSet;
-//typedef /*@exposed@*/ sRef e_sRef;
 
 typedef struct environmentAt_ {
   int max;
@@ -46,7 +44,7 @@ struct _environmentTable
 /* extern void setMaximum (key, min); */
 
 environmentTable
-environmentTable_addExactValue (/*@returned@*/ environmentTable s, /*@exposed@*/ sRef sr, int val);
+environmentTable_addExactValue (/*@returned@*/ environmentTable p_s, /*@exposed@*/ sRef p_sr, int p_val);
 
 extern /*@unused@*/ /*@truenull@*/ bool environmentTable_isUndefined (environmentTable p_s);
 extern /*@unused@*/ /*@truenull@*/ bool 
@@ -100,6 +98,17 @@ extern /*@only@*/ sRefSet environmentTable_environmentedBy (environmentTable p_s
 extern void environmentTable_fixSrefs (environmentTable p_s);
 extern environmentTable environmentTable_levelUnionSeq (/*@returned@*/ environmentTable p_t1, 
 					    /*@only@*/ environmentTable p_t2, int p_level);
+
+
+extern environmentTable
+environmentTable_addRelativeRange (/*@returned@*/ environmentTable p_s,
+			 /*@exposed@*/ sRef p_sr);
+exprNode exprNode_mergeEnvironments (exprNode p_ret, exprNode p_e1, exprNode p_e2);
+
+		     
+extern void 
+environmentTable_testInRange ( environmentTable p_s,  /*@exposed@*/ sRef p_sr, int p_index);
+
 
 /*@constant int environmentTableBASESIZE; @*/
 # define environmentTableBASESIZE MIDBASESIZE

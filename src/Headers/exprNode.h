@@ -265,7 +265,7 @@ exprNode exprNode_caseMarker (/*@only@*/ exprNode p_test, bool p_fallThrough) /*
 
 extern exprNode exprNode_concat (/*@only@*/ exprNode p_e1, /*@only@*/ exprNode p_e2);
 extern exprNode exprNode_createTok (/*@only@*/ lltok p_t) /*@*/ ;
-extern exprNode exprNode_statement (/*@only@*/ exprNode p_e);
+extern exprNode exprNode_statement (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 extern exprNode exprNode_makeBlock (/*@only@*/ exprNode p_e);
 extern exprNode exprNode_if (/*@only@*/ exprNode p_pred, /*@only@*/ exprNode p_tclause);
 extern exprNode 
@@ -328,12 +328,21 @@ extern void exprNode_freeShallow (/*@only@*/ exprNode p_e);
 extern void exprNode_destroyMod (void) /*@modifies internalState@*/ ;
 extern bool exprNode_isAssign (exprNode p_e) /*@*/ ;
 
+/* added 8-15-00
+   by DRL */
+extern fileloc exprNode_getfileloc (exprNode p_e) ;
+
 /*@-exportlocal@*/
 extern bool exprNode_isDefaultMarker (exprNode p_e) /*@*/ ;
 extern bool exprNode_isCaseMarker (exprNode p_e) /*@*/ ;
 extern bool exprNode_isLabelMarker (exprNode p_e) /*@*/ ;
 /*@=exportlocal@*/
 
+/* evs 2000-08-22 */
+fileloc exprNode_getNextSequencePoint (exprNode p_e) /*@*/ ;
+
+/*drl 09-08-2008 */
+exprNode exprNode_fakeCopy (exprNode e);
 # else
 # error "Multiple include"
 # endif

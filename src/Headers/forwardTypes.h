@@ -12,12 +12,16 @@ typedef /*@only@*/ uentry o_uentry;
 abst_typedef /*@null@*/ struct _idDecl *idDecl;
 abst_typedef /*@null@*/ struct _usymtab  *usymtab;
 abst_typedef /*@null@*/ struct _exprNode *exprNode;
+
+
 abst_typedef /*@null@*/ struct _guardSet *guardSet;
 abst_typedef /*@null@*/ struct _sRefSet *sRefSet;
 abst_typedef /*@null@*/ struct _aliasTable *aliasTable;
 abst_typedef /*@null@*/ struct __fileloc *fileloc;
 
 abst_typedef /*@null@*/ struct _environmentTable *environmentTable;
+
+abst_typedef /*@null@*/ struct _constraint *constraint;
 
 
 /*@-cppnames@*/

@@ -402,6 +402,13 @@ extern void usymtab_checkDistinctName (uentry p_e, int p_scope)
   /*@globals internalState@*/
   /*@modifies *g_msgstream, p_e@*/ ;
 
+
+  /*DRL add 9/4/00 */
+extern 
+extern void usymtab_testInRange (sRef p_s, int p_index)  /*@modifies internalState;@*/;
+extern void usymtab_postopVar (sRef p_sr) /*@modifies internalState;@*/ ;
+
+
 # else
 # error "Multiple include"
 # endif
