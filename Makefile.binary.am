@@ -26,20 +26,4 @@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-binaryfixscript = ./fixBinaryDist.sh
-SUBDIRS =   lib imports test doc src
-
-binaryBuiltFiles = Makefile.binary.am configure.binary.ac
-#include these in case we're trying to build on a systems
-#without the bleeding edge versions of automake and autoconf
-binaryDerivedFiles = Makefile.binary.in configure.binary
-
-EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) preBuilt/Makefile.am preBuilt/Makefile.in
-
-bindist:
-	$(MAKE)
-	$(CP) src/splint preBuilt/splint
-	$(MAKE) -e dist dh_script=$(binaryfixscript) SUBDIRS="preBuilt lib imports  doc"
-
-dist-hook:
-	cd $(distdir); 	pwd; $(dh_script)
+SUBDIRS =  preBuilt lib imports  doc

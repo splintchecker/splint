@@ -87,7 +87,15 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-SUBDIRS = src lib imports test doc
+binaryfixscript = ./fixBinaryDist.sh
+SUBDIRS = lib imports test doc src
+
+binaryBuiltFiles = Makefile.binary.am configure.binary.ac
+#include these in case we're trying to build on a systems
+#without the bleeding edge versions of automake and autoconf
+binaryDerivedFiles = Makefile.binary.in configure.binary
+
+EXTRA_DIST = $(binaryfixscript) $(binaryBuiltFiles) $(binaryDerivedFiles) preBuilt/Makefile.am preBuilt/Makefile.in
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -99,10 +107,10 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
-DIST_COMMON = README ./stamp-h.in Makefile.am Makefile.in acinclude.m4 \
-	aclocal.m4 config.hin config/config.guess config/config.sub \
-	config/depcomp config/install-sh config/missing \
-	config/mkinstalldirs configure configure.ac
+DIST_COMMON = README ./stamp-h.in ChangeLog Makefile.am Makefile.in \
+	acinclude.m4 aclocal.m4 config.hin config/config.guess \
+	config/config.sub config/depcomp config/install-sh \
+	config/missing config/mkinstalldirs configure configure.ac
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -253,7 +261,7 @@ GZIP_ENV = --best
 distdir: $(DISTFILES)
 	-chmod -R a+w $(distdir) >/dev/null 2>&1; rm -rf $(distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/config
+	$(mkinstalldirs) $(distdir)/config $(distdir)/preBuilt
 	@for file in $(DISTFILES); do \
 	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
@@ -282,6 +290,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="${top_distdir}" distdir="$(distdir)" \
+	  dist-hook
 	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
@@ -407,6 +418,14 @@ uninstall-info: uninstall-info-recursive
 	uninstall uninstall-am uninstall-info-am \
 	uninstall-info-recursive uninstall-recursive
 
+
+bindist:
+	$(MAKE)
+	$(CP) src/splint preBuilt/splint
+	$(MAKE) -e dist dh_script=$(binaryfixscript) SUBDIRS="preBuilt lib imports  doc"
+
+dist-hook:
+	cd $(distdir); 	pwd; $(dh_script)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

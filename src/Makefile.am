@@ -236,7 +236,7 @@ IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 ## Non-built files we need to distribute
 EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             flags.def cscanner.l flex.head flex.reset $(IFILES) \
- Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
+ Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf Makefile.binary.am   Makefile.binary.in
 
 
 #Files that are used on systems that do not have bison or yacc

@@ -910,9 +910,13 @@ help:
 	-@$(SPLINTP) -asdf
 	-@$(SPLINTP) +boolint +boolint 
 	-@$(SPLINTP) -help flags alpha
-	-@$(SPLINTP) -help flags all
-	-@$(SPLINTP) -help flags full   | $(GREP) -v "    Path argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
-	-@$(SPLINTP) -help flags manual  | $(GREP) -v "    Path argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+
+#commenting these out for the release because they will almost always fail
+#since the default will only fit one system
+#Don't want to panic the user... 
+#	-@$(SPLINTP) -help flags all     | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+#	-@$(SPLINTP) -help flags full    | $(GREP) -v "^larchpath <path> "     | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
+#	-@$(SPLINTP) -help flags manual     | $(GREP) -v "^larchpath <path> "   | $(GREP) -v "^lclimportdir <directory> " | $(GREP) -v "  Path argument.  Default: " |  $(GREP) -v "  Directory argument.  Default: " | $(GREP) -v "  lclimportdir <directory> "
 
 #larch and lclimportdir have different hardcoded default paths so don't include the path in the output..
 

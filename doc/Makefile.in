@@ -87,8 +87,8 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-splintlibdir = $(pkgdatadir)/man
 
+#this is just a hack to get make dist to work.
 EXTRA_DIST = splint.1
 subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
@@ -207,7 +207,6 @@ uninstall-am: uninstall-info-am
 
 
 all:
-	@echo "Nothing to make in doc"
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

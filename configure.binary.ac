@@ -6,7 +6,7 @@ dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config])
 
 dnl Set up the source directory
-AC_CONFIG_SRCDIR([src/lclinit.c])
+#AC_CONFIG_SRCDIR([src/lclinit.c])
 
 dnl Deduce host
 AC_CANONICAL_SYSTEM
@@ -185,7 +185,7 @@ AC_DEFINE_UNQUOTED(TARGET_OS,"${target_os}")
 
 
 
-dnl AC_CONFIG_FILES([test/Makefile
+dnl AC_CONFIG_FILES([
 dnl                  test/ensuresclauses/Makefile
 dnl                  test/conditions/Makefile
 dnl                  test/db2/Makefile
@@ -200,8 +200,8 @@ dnl                  test/tests2.5/Makefile
 dnl                  test/tests2.2/Makefile
 dnl                  test/db1/Makefile])
 
-AC_CONFIG_FILES([Makefile imports/Makefile lib/Makefile src/Makefile
-                 test/Makefile doc/Makefile preBuilt/Makefile])
+AC_CONFIG_FILES([Makefile imports/Makefile lib/Makefile 
+                 doc/Makefile preBuilt/Makefile])
 AC_OUTPUT 
 
 
