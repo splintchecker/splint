@@ -1468,7 +1468,7 @@ static flaglist flags =
   },
   {
     FK_CONTROL, FK_NONE, plainFlag,
-    "emptyreturn", 
+    "emptyret", 
     FLG_EMPTYRETURN, 
     "empty return in function declared to return value",
     NULL,
