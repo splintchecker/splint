@@ -2496,8 +2496,10 @@ static int processIdentifier (cstring id)
 {
   uentry le;
 
-  DPRINTF (("Process identifier: %s / %s / %s", id, fileloc_unparse (g_currentloc),
-	    bool_unparse (context_inFunctionHeader ())));
+  if (context_getFlag (FLG_GRAMMAR))
+    {
+      lldiagmsg (message ("Process identifier: %s", id));
+    }
 
   context_clearJustPopped ();
   lastidprocessed = id; 

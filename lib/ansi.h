@@ -437,15 +437,20 @@ extern int /*@alt void@*/ sprintf (/*@out@*/ char *s, char *format, ...)
 int sscanf (/*@out@*/ char *s, char *format, ...) /*@*/ ;
    /* modifies extra arguments */
 
-extern int vfprintf (FILE *stream, char *format, va_list arg)
+int vprintf (const char *format, va_list arg)
+   /*@globals stdout@*/
+   /*@modifies fileSystem, *stdout@*/ ;
+
+int vfprintf (FILE *stream, char *format, va_list arg)
    /*@modifies fileSystem, *stream, arg, errno@*/ ;
 
-extern int vprintf (char *format, va_list arg)
-   /*@globals stdout@*/
-   /*@modifies fileSystem, arg, *stdout@*/ ;
+int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
+     /*@warn bufferoverflowhigh "Use vsnprintf instead."@*/
+     /*@modifies str@*/ ;
 
-extern int vsprintf (/*@out@*/ char *s, char *format, va_list arg)
-   /*@modifies *s, arg@*/ ;
+int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
+     /*@requires maxSet(str) >= size@*/
+     /*@modifies str@*/ ;
 
 extern int fgetc (FILE *stream) 
    /*@modifies fileSystem, *stream, errno@*/ ;
@@ -567,9 +572,9 @@ extern /*@null@*/ /*@only@*/ void *
 
 extern /*@null@*/ /*@only@*/ void *
    realloc (/*@null@*/ /*@only@*/ /*@out@*/ /*@returned@*/ void *p, size_t size) 
-     /*@modifies *p @*/ /*@ensures MaxSet(result) >= (size - 1) @*/;
+     /*@modifies *p@*/ /*@ensures MaxSet(result) >= (size - 1) @*/;
 
-extern void free (/*@null@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies *p@*/ ;
+extern void free (/*@null@*/ /*@out@*/ /*@only@*/ void *p) /*@modifies p@*/ ;
 
 /*@constant int EXIT_FAILURE; @*/ 
 /*@constant int EXIT_SUCCESS; @*/ 

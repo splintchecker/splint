@@ -2212,7 +2212,7 @@ constraintList exprNode_getPostConditions (exprNode fcn, exprNodeList arglist, e
 
   postconditions = uentry_getFcnPostconditions (temp);
 
-  if (constraintList_isDefined(postconditions) )
+  if (constraintList_isDefined (postconditions))
     {
       postconditions = constraintList_doSRefFixConstraintParam (postconditions, arglist);
       postconditions = constraintList_doFixResult (postconditions, fcnCall);

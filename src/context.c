@@ -4057,6 +4057,7 @@ bool context_anyErrors (void)
 void context_hasError (void)
 {
   gc.numerrors++;
+  DPRINTF (("num errors: %d", gc.numerrors));
 }
 
 int context_numErrors (void)

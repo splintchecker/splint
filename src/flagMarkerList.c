@@ -215,11 +215,13 @@ void flagMarkerList_checkSuppressCounts (flagMarkerList s)
   fileloc loc = fileloc_undefined;
   bool inCount = FALSE;
   int i;
-
   
   for (i = 0; i < s->nelements; i++)
     {
       flagMarker current = s->elements[i];
+      DPRINTF (("flagMarker: %s / %s",
+		flagMarker_unparse (current),
+		bool_unparse (inCount)));
 
       if (flagMarker_isIgnoreCount (current))
 	{
@@ -228,7 +230,7 @@ void flagMarkerList_checkSuppressCounts (flagMarkerList s)
 	  nexpected = flagMarker_getCount (current);
 	  loc = flagMarker_getLoc (current);
 	  nsuppressed = 0;
-	  	}
+	}
       else if (flagMarker_isIgnoreOff (current))
 	{
 	  if (inCount)

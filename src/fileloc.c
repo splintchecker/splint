@@ -177,13 +177,14 @@ fileloc_free (/*@only@*/ fileloc f)
 	    }
 	  else
 	    {
-	      	      sfree (f);  
+	      sfree (f);  
 	      /*@-branchstate@*/ 
 	    } 
 	}
       else
 	{
-	  	}
+	  ; /* Don't free g_currentloc ever! */
+	}
       /*@=branchstate@*/
     }
 }
@@ -383,6 +384,7 @@ bool fileloc_isXHFile (fileloc f1)
       && !fileloc_isBuiltin (f1)
       && !fileloc_isExternal (f1))
     {
+      DPRINTF (("Fileloc is XH: [%p] %s", f1, fileloc_unparse (f1)));
       return (fileTable_isXHFile (context_fileTable (), f1->fid));
     }
   
@@ -563,6 +565,7 @@ fileloc_createPrim (flkind kind, fileId fid, int line, int col)
   f->lineno = line;
   f->column = col;
 
+  DPRINTF (("Fileloc create: [%p] %s", f, fileloc_unparse (f)));
   return (f);
 }
 

@@ -365,8 +365,15 @@ fileTable_isXHFile (fileTable ft, fileId fid)
       return FALSE;
     }
 
-  llassert (fileTable_isDefined (ft) && fileTable_inRange (ft, fid));
-  return (ft->elements[fid]->ftype == FILE_XH);
+  if (!(fileTable_isDefined (ft) && fileTable_inRange (ft, fid)))
+    {
+      llcontbug (message ("Bad file table or id: %s %d", bool_unparse (fileTable_isDefined (ft)), fid));
+      return FALSE;
+    }
+  else
+    {
+      return (ft->elements[fid]->ftype == FILE_XH);
+    }
 }
 
 bool
@@ -376,7 +383,7 @@ fileTable_isSpecialFile (fileTable ft, fileId fid)
     {
       return FALSE;
     }
-
+  
   llassert (fileTable_isDefined (ft) && fileTable_inRange (ft, fid));
   return (ft->elements[fid]->fspecial);
 }

@@ -1490,4 +1490,3 @@ int chroot (/*@notnull@*/ /*@nullterminated@*/ const char *path)
 int fchroot (int fildes)
    /*:statusreturn@*/
    /*@warn superuser "Only super-user processes may call fchroot."@*/ ;
-

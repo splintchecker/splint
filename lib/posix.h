@@ -12,7 +12,7 @@
 /*
  * LCLint ISO C + POSIX Library
  *
- * $Id: posix.h,v 1.4 2001/07/20 00:52:10 evans Exp $
+ * $Id: posix.h,v 1.5 2001/07/24 03:02:05 evans Exp $
  */
 
 /*
@@ -327,7 +327,7 @@ kill (pid_t pid, int sig)
 
 	extern int
 sigaction (int sig, const struct sigaction *act, /*@out@*/ /*@null@*/ struct sigaction *oact)
-	/*@modifies *oact, errno, internalState@*/;
+	/*@modifies *oact, errno, systemState@*/;
 
 	extern int
 sigaddset (sigset_t *set, int signo)
@@ -355,11 +355,11 @@ sigpending (/*@out@*/ sigset_t *set)
 
 	extern int
 sigprocmask (int how, /*@null@*/ const sigset_t *set, /*@null@*/ /*@out@*/ sigset_t *oset)
-	/*@modifies *oset, errno, internalState@*/;
+	/*@modifies *oset, errno, systemState@*/;
 
 	extern int
 sigsuspend (const sigset_t *sigmask)
-	/*@modifies errno, internalState@*/;
+	/*@modifies errno, systemState@*/;
 
 /*
 ** stdio.h
@@ -452,7 +452,7 @@ stat (const char *path, /*@out@*/ struct stat *buf)
 
 	extern int
 umask (mode_t cmask)
-	/*@modifies internalState@*/;
+	/*@modifies systemState@*/;
 
 /*
 ** sys/times.h
@@ -498,13 +498,11 @@ extern int WTERMSIG (int status) /*@*/ ;
 
 /*@constant int WUNTRACED@*/
 
-	extern pid_t
-wait (/*@out@*/ /*@null@*/ int *st)
-	/*@modifies *st, errno@*/;
+pid_t wait (/*@out@*/ /*@null@*/ int *st)
+   /*@modifies *st, errno, systemState@*/;
 
-	extern pid_t
-waitpid (pid_t pid, /*@out@*/ int *st, int opt)
-	/*@modifies *st, errno@*/;
+pid_t waitpid (pid_t pid, /*@out@*/ /*@null@*/ int *st, int opt)
+   /*@modifies *st, errno, systemState@*/;
 
 /*
 ** termios.h
@@ -643,7 +641,7 @@ tcsetattr (int fd, int opt, const struct termios *p)
 
 	extern void
 tzset (void)
-	/*@globals environ@*/ /*@modifies internalState@*/;
+	/*@globals environ@*/ /*@modifies systemState@*/;
 
 /*
 ** unistd.h
@@ -694,7 +692,7 @@ access (const char *path, int mode)
 
 	extern unsigned int
 alarm (unsigned int)
-	/*@modifies internalState@*/;
+	/*@modifies systemState@*/;
 
 	extern int
 chdir (const char *path)
@@ -706,12 +704,12 @@ chown (const char *path, uid_t owner, gid_t group)
 
 	extern int
 close (int fd)
-	/*@modifies fileSystem, errno, internalState@*/;
+	/*@modifies fileSystem, errno, systemState@*/;
 	/* state: record locks are unlocked */
 
 	extern char *
 ctermid (/*@returned@*/ /*@out@*/ /*@null@*/ char *s)
-	/*@modifies *s, internalState@*/;
+	/*@modifies *s, systemState@*/;
 
 	/* cuserid is in the 1988 version of POSIX but removed in 1990 */
 	extern char *
@@ -832,11 +830,11 @@ rmdir (const char *path)
 
 	extern int
 setgid (gid_t gid)
-	/*@modifies errno, internalState@*/;
+	/*@modifies errno, systemState@*/;
 
 	extern int
 setpgid (pid_t pid, pid_t pgid)
-	/*@modifies errno, internalState@*/;
+	/*@modifies errno, systemState@*/;
 
 	extern pid_t
 setsid (void)
@@ -844,11 +842,9 @@ setsid (void)
 
 	extern int
 setuid (uid_t uid)
-	/*@modifies errno, internalState@*/;
+	/*@modifies errno, systemState@*/;
 
-	extern unsigned int
-sleep (unsigned int sec)
-	/*@*/;
+unsigned int sleep (unsigned int sec) /*@modifies systemState@*/ ;
 
 	extern long
 sysconf (int name)
@@ -860,7 +856,7 @@ tcgetpgrp (int fd)
 
 	extern int
 tcsetpgrp (int fd, pid_t pgrpid)
-	/*@modifies errno, internalState@*/;
+	/*@modifies errno, systemState@*/;
 
 	/* Q: observer ok? */
 	extern /*@null@*/ /*@observer@*/ char *
@@ -952,4 +948,5 @@ void regfree (/*@only@*/ regex_t *preg) ;
 /*@constant int	REG_TRACE@*/
 /*@constant int	REG_LARGE@*/
 /*@constant int	REG_BACKR@*/
+
 

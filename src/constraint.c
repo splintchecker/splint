@@ -21,8 +21,9 @@
 static /*@only@*/ cstring  constraint_printDetailedPostCondition (/*@observer@*/ /*@temp@*/ constraint p_c);
 
 
-static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/ /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/;
+static /*@notnull@*/ /*@special@*/ constraint constraint_makeNew (void)
+     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/
+     /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/;
      
 /*  constraint makeConstraintParse (sRef x, lltok relOp, exprNode cconstant) */
      
@@ -74,7 +75,7 @@ static constraint makeConstraintParse2 (constraintExpr l, lltok relOp, exprNode 
   char *t;
   int c;
   constraint ret;
-  ret = constraint_makeNew();
+  ret = constraint_makeNew ();
   llassert (constraintExpr_isDefined(l) );
       
   ret->lexpr = constraintExpr_copy (l);
@@ -225,7 +226,8 @@ void constraint_overWrite (constraint c1, constraint c2)
 
 
 static /*@notnull@*/  /*@special@*/ constraint constraint_makeNew (void)
-     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/ /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/
+     /*@post:isnull result->or, result->orig,  result->generatingExpr, result->fcnPre @*/ 
+     /*@defines result->or, result->generatingExpr, result->orig, result->fcnPre @*/
 {
   constraint ret;
   ret = dmalloc(sizeof (*ret) );

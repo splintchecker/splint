@@ -85,46 +85,59 @@ extern functionConstraint functionConstraint_conjoin (functionConstraint f1, fun
     }
 }
 
-extern constraintList functionConstraint_getBufferConstraint (functionConstraint node)
+extern constraintList functionConstraint_getBufferConstraints (functionConstraint node)
 {
-  llassert (functionConstraint_isDefined (node));
-
-  if (node->kind == FCT_CONJUNCT)
+  if (functionConstraint_isDefined (node))
     {
-      if (functionConstraint_hasBufferConstraint (node->constraint.conjunct.op1))
+      if (node->kind == FCT_CONJUNCT)
 	{
-	  return functionConstraint_getBufferConstraint (node->constraint.conjunct.op1);
+	  return constraintList_addListFree (functionConstraint_getBufferConstraints (node->constraint.conjunct.op1),
+					     functionConstraint_getBufferConstraints (node->constraint.conjunct.op2));
 	}
       else
 	{
-	  llassert (functionConstraint_hasBufferConstraint (node->constraint.conjunct.op2));
-	  return functionConstraint_getBufferConstraint (node->constraint.conjunct.op2);
+	  if (node->kind == FCT_BUFFER)
+	    {
+	      return constraintList_copy (node->constraint.buffer);
+	    }
+	  else
+	    {
+	      return constraintList_undefined;
+	    }
 	}
     }
-
-  llassert (node->kind == FCT_BUFFER);
-  return node->constraint.buffer;
+  else
+    {
+      return constraintList_undefined;
+    }
 }
 
-extern metaStateConstraint functionConstraint_getMetaStateConstraint (functionConstraint node)
+extern metaStateConstraintList functionConstraint_getMetaStateConstraints (functionConstraint node)
 {
-  llassert (functionConstraint_isDefined (node));
-
-  if (node->kind == FCT_CONJUNCT)
+  if (functionConstraint_isDefined (node))
     {
-      if (functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op1))
+      if (node->kind == FCT_CONJUNCT)
 	{
-	  return functionConstraint_getMetaStateConstraint (node->constraint.conjunct.op1);
+	  return metaStateConstraintList_append 
+	    (functionConstraint_getMetaStateConstraints (node->constraint.conjunct.op1),
+	     functionConstraint_getMetaStateConstraints (node->constraint.conjunct.op2));
 	}
       else
 	{
-	  llassert (functionConstraint_hasMetaStateConstraint (node->constraint.conjunct.op2));
-	  return functionConstraint_getMetaStateConstraint (node->constraint.conjunct.op2);
+	  if (node->kind == FCT_METASTATE)
+	    {
+	      return metaStateConstraintList_single (node->constraint.metastate);
+	    }
+	  else
+	    {
+	      return metaStateConstraintList_undefined;
+	    }
 	}
     }
-
-  llassert (node->kind == FCT_METASTATE);
-  return node->constraint.metastate;
+  else
+    {
+      return metaStateConstraintList_undefined;
+    }
 }
 
 extern bool functionConstraint_hasBufferConstraint (functionConstraint node)

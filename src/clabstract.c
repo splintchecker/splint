@@ -674,6 +674,13 @@ static void oldStyleDeclareFunction (/*@only@*/ uentry e)
 
   llassert (ctype_isFunction (rt));
 
+  if (uentry_hasStateClauseList (e) 
+      || uentry_hasConditions (e))
+    {
+      llfatalerror (message ("%q: Old-style function declaration uses a clause (rewrite with function parameters): %q",
+			     fileloc_unparse (g_currentloc), uentry_unparse (e)));
+    }
+
   e = usymtab_supGlobalEntryReturn (e);
 
   context_enterFunction (e);

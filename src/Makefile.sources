@@ -15,7 +15,7 @@ CPPSRC = cppmain.c cpplib.c cppexp.c cpphash.c cpperror.c
 CSRC = uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
    stateClauseList.c ctype.c cvar.c clabstract.c idDecl.c clause.c \
    globalsClause.c modifiesClause.c warnClause.c functionClause.c \
-   functionClauseList.c metaStateConstraint.c metaStateExpression.c \
+   functionClauseList.c metaStateConstraint.c metaStateConstraintList.c metaStateExpression.c \
    metaStateSpecifier.c functionConstraint.c
 
 LCLINTSRC = exprNode.c exprChecks.c llmain.c

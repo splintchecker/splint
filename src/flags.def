@@ -1325,8 +1325,9 @@ static flaglist flags =
     FK_HELP, FK_NONE, plainFlag,
     "badflag",
     FLG_BADFLAG,
-    "a flag is not recognized or used in an incorrect way",
-    NULL, 0, 0
+    "warn about bad command line flags", 
+    "A flag is not recognized or used in an incorrect way",
+    0, 0
   },
   {
     FK_HELP, FK_NONE, plainFlag,

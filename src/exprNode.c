@@ -105,6 +105,11 @@ static ctype ctypeType;
 static ctype filelocType; 
 static bool initMod = FALSE;
 
+/*@function void exprNode_swap (sef exprNode, sef exprNode)@*/
+/*@-macroassign@*/
+# define exprNode_swap(e1,e2) do { exprNode m_tmp = (e1); (e1) = (e2); (e2) = m_tmp; } while (FALSE)
+/*@=macroassign@*/
+
 static void exprNode_defineConstraints(/*@sef@*/ /*@special@*/ /*@notnull@*/ exprNode e)
    /*@defines e->requiresConstraints,  e->ensuresConstraints, 
               e->trueEnsuresConstraints,  e->falseEnsuresConstraints @*/ 
@@ -2283,8 +2288,10 @@ static void checkExpressionDefined (exprNode e1, exprNode e2, lltok op)
 	  hasError = optgenerror 
 	    (FLG_EVALORDER,
 	     message ("Expression has undefined behavior "
-		      "(value of left operand is modified "
-		      "by right operand): %s %s %s", 
+		      "(value of left operand %s is modified "
+		      "by right operand %s): %s %s %s", 
+		      exprNode_unparse (e1),
+		      exprNode_unparse (e2),
 		      exprNode_unparse (e1), lltok_unparse (op),
 		      exprNode_unparse (e2)),
 	     e2->loc);
@@ -3084,7 +3091,7 @@ void checkGlobUse (uentry glob, bool isCall, /*@notnull@*/ exprNode e)
 }  
 
 static void
-reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
+reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 {
   DPRINTF (("Reflect ensures clause: %s(%s) / %s / %s",
 	    exprNode_unparse (f), exprNodeList_unparse (args),
@@ -3138,16 +3145,17 @@ reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
 			  
 			  if (sRef_isResult (sRef_getRootBase (sel)))
 			    {
-			      ; /*@i423 what do we do about results */
+			      s = exprNode_getSref (ret);
 			    }
 			  else 
 			    {
 			      s = sRef_fixBaseParam (sel, args);
-			      DPRINTF (("Reflecting state clause on: %s / %s",
-					sRef_unparse (sel), sRef_unparse (s)));
-			      
-			      sRef_setMetaStateValueComplete (s, key, mvalue, exprNode_loc (f));
 			    }
+
+			  DPRINTF (("Reflecting state clause on: %s / %s",
+				    sRef_unparse (sel), sRef_unparse (s)));
+			  
+			  sRef_setMetaStateValueComplete (s, key, mvalue, exprNode_loc (f));
 			} end_sRefSet_elements;
 
 		      sRefSet_free (osrs);
@@ -3171,20 +3179,23 @@ reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
 			  
 			  if (sRef_isResult (sRef_getRootBase (sel)))
 			    {
-			      ; /*@i423 what do we do about results */
+			      DPRINTF (("Fix base: %s / %s",
+					sRef_unparse (sel), sRef_unparse (exprNode_getSref (ret))));
+			      s = sRef_fixBase (sel, exprNode_getSref (ret));
+			      DPRINTF (("==> %s", sRef_unparseFull (s)));
 			    }
 			  else
 			    {
 			      s = sRef_fixBaseParam (sel, args);
-			      
-			      DPRINTF (("elements: %s", sRef_unparse (s)));
-			      DPRINTF (("elements: %s", sRef_unparseFull (s)));
-			      
-			      DPRINTF (("Reflecting state clause on: %s / %s",
-					sRef_unparse (sel), sRef_unparse (s)));
-			      
-			      modf (s, eparam, exprNode_loc (f));
 			    }
+
+			  DPRINTF (("elements: %s", sRef_unparse (s)));
+			  DPRINTF (("elements: %s", sRef_unparseFull (s)));
+			  
+			  DPRINTF (("Reflecting state clause on: %s / %s",
+				    sRef_unparse (sel), sRef_unparse (s)));
+			  
+			  modf (s, eparam, exprNode_loc (f));
 			} end_sRefSet_elements;
 		    }
 		}
@@ -3197,109 +3208,132 @@ reflectEnsuresClause (uentry le, exprNode f, exprNodeList args)
 
       if (uentry_hasMetaStateEnsures (le))
 	{
-	  metaStateConstraint msc = uentry_getMetaStateEnsures (le);
-	  metaStateSpecifier msspec = metaStateConstraint_getSpecifier (msc);
-	  metaStateInfo msinfo = metaStateSpecifier_getMetaStateInfo (msspec);
-	  metaStateExpression msexpr = metaStateConstraint_getExpression (msc);
-	  cstring key = metaStateInfo_getName (msinfo);
-	  sRef mlsr = metaStateSpecifier_getSref (msspec);
-	  sRef s;
-	  sRef lastref = sRef_undefined;
-	  stateValue sval = stateValue_undefined;
+	  metaStateConstraintList mscl = uentry_getMetaStateEnsures (le);
 
-	  DPRINTF (("Meta state constraint for %s: %s", uentry_unparse (le),
-		    metaStateConstraint_unparse (msc)));
-	  DPRINTF (("Matches left: %s", sRef_unparseDebug (mlsr)));
-	  
-	  if (sRef_isResult (sRef_getRootBase (mlsr)))
+	  metaStateConstraintList_elements (mscl, msc)
 	    {
-	      s = sRef_undefined; /*@i423 what about results? */
-	    }
-	  else
-	    {
-	      s = sRef_fixBaseParam (mlsr, args);
-	      DPRINTF (("Setting state: %s", sRef_unparseFull (s)));
-	    }
-
-	  while (metaStateExpression_isDefined (msexpr)) 
-	    {
-	      metaStateSpecifier ms = metaStateExpression_getSpecifier (msexpr);
-	      sRef msr = metaStateSpecifier_getSref (ms);
-	      metaStateInfo msi = metaStateSpecifier_getMetaStateInfo (ms);
-	      sRef fs;
-
-	      DPRINTF (("Check expression: %s", metaStateExpression_unparse (msexpr)));
-
-	      if (metaStateExpression_isMerge (msexpr))
+	      metaStateSpecifier msspec = metaStateConstraint_getSpecifier (msc);
+	      metaStateInfo msinfo = metaStateSpecifier_getMetaStateInfo (msspec);
+	      metaStateExpression msexpr = metaStateConstraint_getExpression (msc);
+	      cstring key = metaStateInfo_getName (msinfo);
+	      sRef mlsr = metaStateSpecifier_getSref (msspec);
+	      sRef s;
+	      sRef lastref = sRef_undefined;
+	      stateValue sval = stateValue_undefined;
+	      
+	      DPRINTF (("Meta state constraint for %s: %s", uentry_unparse (le),
+			metaStateConstraint_unparse (msc)));
+	      DPRINTF (("Matches left: %s", sRef_unparseDebug (mlsr)));
+	      
+	      if (sRef_isResult (sRef_getRootBase (mlsr)))
 		{
-		  msexpr = metaStateExpression_getRest (msexpr);
+		  s = exprNode_getSref (ret);
 		}
 	      else
 		{
-		  msexpr = metaStateExpression_undefined;
-		}
-
-	      if (metaStateInfo_isDefined (msi))
-		{
-		  /* Must match lhs state */
-		  llassert (metaStateInfo_equal (msinfo, msi));
-		}
-
-	      llassert (sRef_isParam (sRef_getRootBase (msr)));
-	      fs = sRef_fixBaseParam (msr, args);
-
-	      if (stateValue_isDefined (sval))
-		{
-		  /* Use combination table to merge old state value with new one: */
-		  stateValue tval = sRef_getMetaStateValue (fs, key);
-		  stateCombinationTable sctable = metaStateInfo_getMergeTable (msinfo);
-		  cstring msg = cstring_undefined;
-		  int nval = stateCombinationTable_lookup (sctable, 
-							   stateValue_getValue (sval), 
-							   stateValue_getValue (tval), 
-							   &msg);
-		  DPRINTF (("Combining: %s + %s -> %d",
-			    stateValue_unparseValue (sval, msinfo),
-			    stateValue_unparseValue (tval, msinfo),
-			    nval));
-
-		  if (nval == stateValue_error)
-		    {
-		      llassert (cstring_isDefined (msg));
-		      
-		      if (optgenerror 
-			  (FLG_STATEMERGE,
-			   message
-			   ("Attributes merged in ensures clause in states that "
-			    "cannot be combined (%q is %q, %q is %q): %s",
-			    sRef_unparse (lastref),
-			    stateValue_unparseValue (sval, msinfo),
-			    sRef_unparse (fs),
-			    stateValue_unparseValue (tval, msinfo),
-			    msg),
-			   exprNode_loc (f)))
-			{
-			  sRef_showMetaStateInfo (fs, key);
-			}		    
-		    }
-
-		  stateValue_updateValueLoc (sval, nval, fileloc_undefined);
-		}
-	      else
-		{
-		  sval = sRef_getMetaStateValue (fs, key);
+		  s = sRef_fixBaseParam (mlsr, args);
 		}
 	      
-	      lastref = fs;
-
-	      if (stateValue_isError (sval))
+	      DPRINTF (("Setting state: %s", sRef_unparseFull (s)));
+	      
+	      while (metaStateExpression_isDefined (msexpr)) 
 		{
-		  break; /* Don't merge any more values if here was an error */
+		  metaStateSpecifier ms = metaStateExpression_getSpecifier (msexpr);
+		  sRef msr = metaStateSpecifier_getSref (ms);
+		  metaStateInfo msi = metaStateSpecifier_getMetaStateInfo (ms);
+		  sRef fs;
+		  
+		  DPRINTF (("Check expression: %s", metaStateExpression_unparse (msexpr)));
+		  
+		  if (metaStateExpression_isMerge (msexpr))
+		    {
+		      msexpr = metaStateExpression_getRest (msexpr);
+		    }
+		  else
+		    {
+		      msexpr = metaStateExpression_undefined;
+		    }
+		  
+		  if (metaStateInfo_isDefined (msi))
+		    {
+		      /* Must match lhs state */
+		      llassert (metaStateInfo_equal (msinfo, msi));
+		    }
+		  
+		  llassert (sRef_isParam (sRef_getRootBase (msr)));
+		  fs = sRef_fixBaseParam (msr, args);
+		  
+		  if (stateValue_isDefined (sval))
+		    {
+		      /* Use combination table to merge old state value with new one: */
+		      stateValue tval = sRef_getMetaStateValue (fs, key);
+		      
+		      if (stateValue_isDefined (tval))
+			{
+			  stateCombinationTable sctable = metaStateInfo_getMergeTable (msinfo);
+			  cstring msg = cstring_undefined;
+			  int nval = stateCombinationTable_lookup (sctable, 
+								   stateValue_getValue (sval), 
+								   stateValue_getValue (tval), 
+								   &msg);
+			  DPRINTF (("Combining: %s + %s -> %d",
+				    stateValue_unparseValue (sval, msinfo),
+				    stateValue_unparseValue (tval, msinfo),
+				    nval));
+			  
+			  if (nval == stateValue_error)
+			    {
+			      llassert (cstring_isDefined (msg));
+			      
+			      if (optgenerror 
+				  (FLG_STATEMERGE,
+				   message
+				   ("Attributes merged in ensures clause in states that "
+				    "cannot be combined (%q is %q, %q is %q): %s",
+				    sRef_unparse (lastref),
+				    stateValue_unparseValue (sval, msinfo),
+				    sRef_unparse (fs),
+				    stateValue_unparseValue (tval, msinfo),
+				    msg),
+				   exprNode_loc (f)))
+				{
+				  sRef_showMetaStateInfo (fs, key);
+				}		    
+			    }
+			  
+			  stateValue_updateValueLoc (sval, nval, fileloc_undefined);
+			}
+		      else
+			{
+			  DPRINTF (("No value for: %s:%s", sRef_unparse (fs), key));
+			}
+		    }
+		  else
+		    {
+		      sval = sRef_getMetaStateValue (fs, key);
+		    }
+		  
+		  lastref = fs;
+		  
+		  if (stateValue_isError (sval))
+		    {
+		      /*@innerbreak@*/ break; /* Don't merge any more values if here was an error */
+		    }
 		}
-	    }
+	      
+	      DPRINTF (("Setting: %s:%s <- %s", sRef_unparse (s), key, stateValue_unparse (sval)));
+	      
+	      if (stateValue_isDefined (sval))
+		{
+		  sRef_setMetaStateValueComplete (s, key, stateValue_getValue (sval), exprNode_loc (f));
+		}
+	      else
+		{
+		  DPRINTF (("Undefined state: %s", cstring_toCharsSafe (sRef_unparse (s))));
+		}
+	    } end_metaStateConstraintList_elements ;
 
-	  DPRINTF (("Setting: %s:%s <- %s", sRef_unparse (s), key, stateValue_unparse (sval)));
-	  sRef_setMetaStateValueComplete (s, key, stateValue_getValue (sval), exprNode_loc (f));
+	  metaStateConstraintList_free (mscl);
 	}
     }
 }
@@ -3361,7 +3395,7 @@ checkRequiresClause (uentry le, exprNode f, exprNodeList args)
 			  
 			  if (sRef_isResult (sRef_getRootBase (sel)))
 			    {
-			      ; /*@i423 what do we do about results */
+			      BADBRANCH;
 			    }
 			  else 
 			    {
@@ -3494,10 +3528,6 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
   checkRequiresClause (le, f, args);
   setCodePoint ();
 
-  DPRINTF (("Reflect: %s", uentry_unparseFull (le)));
-  reflectEnsuresClause (le, f, args);
-  setCodePoint ();
-
   if (uentry_isValid (le)
       && (uentry_isFunction (le) 
           || (uentry_isVariable (le)
@@ -3507,11 +3537,12 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
 
       /* f->typ is already set to the return type */
 
+      DPRINTF (("Function: %s", uentry_unparseFull (le)));
       ret->sref = uentry_returnedRef (le, args);
       DPRINTF (("Returned: %s / %s",
 		uentry_unparseFull (le),
 		sRef_unparseFull (ret->sref)));
-
+      
       if (uentry_isFunction (le) && exprNodeList_size (args) >= 1)
 	{
 	  qual nullPred = uentry_nullPred (le);
@@ -3619,6 +3650,11 @@ functionCallSafe (/*@only@*/ /*@notnull@*/ exprNode f,
       ret->sref = defref;
       exprNode_checkSetAny (ret, uentry_rawName (le));
     }
+
+  DPRINTF (("Before reflect: %s", sRef_unparseFull (ret->sref)));
+  DPRINTF (("Reflect: %s", uentry_unparseFull (le)));
+  reflectEnsuresClause (ret, le, f, args);
+  setCodePoint ();
 
   return (ret);
 }
@@ -5107,6 +5143,20 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 		     e1->loc);
 		}
 
+	      /*
+	      ** Swap terms so e1 is always the pointer
+	      */
+
+	      if (ctype_isRealPointer (tr1))
+		{
+		  ;
+		}
+	      else
+		{
+		  exprNode_swap (e1, e2);
+		}
+
+
 	      if (sRef_possiblyNull (e1->sref)
 		  && !usymtab_isGuarded (e1->sref))
 		{
@@ -5121,56 +5171,56 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 
 	      ret->sref = sRef_copy (e1->sref);
 
-     	 /* start modifications */
-	     /* added by Seejo on 4/16/2000 */
+	      /* start modifications */
+	      /* added by Seejo on 4/16/2000 */
 
-  	    /* Arithmetic operations on pointers wil modify the size/len/null terminated 
-			status */
- 	    if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
+	      /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+		 status */
+	      if ((sRef_isPossiblyNullTerminated (e1->sref)) || (sRef_isNullTerminated(e1->sref))) {
 				//if (sRef_isKnown (e->sref)) {
 				//ret->sref = sRef_makeAddress (e->sref);
 				//}
-
-	      int val;
-	      /*drl 1-4-2001
-		added ugly fixed to stop
-		program from crashing on point + int +int
-		one day I'll fix this or ask Seejo wtf the codes supposed to do. */
-
-	      if (!multiVal_isInt (e2->val) )
-		break;
-	      /*end drl*/
+		
+		int val;
+		/*drl 1-4-2001
+		  added ugly fixed to stop
+		  program from crashing on point + int +int
+		  one day I'll fix this or ask Seejo wtf the codes supposed to do. */
+		
+		if (!multiVal_isInt (e2->val) )
+		  break;
+		/*end drl*/
+		
+		val = (int) multiVal_forceInt (e2->val);
+		
+		/* Operator : + or += */
+		if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+		  if (sRef_getSize(e1->sref) >= val) {/* Incrementing the pointer by 
+							 val should not result in a 
+							 size < 0 (size = 0 is ok !) */
+		    
+		    sRef_setSize (ret->sref, sRef_getSize(e1->sref) - val);
+		    
+		    if (sRef_getLen(e1->sref) == val) { /* i.e. the character at posn val is \0 */
+		      sRef_setNotNullTerminatedState(ret->sref);
+		      sRef_resetLen (ret->sref);
+		    } else {
+		      sRef_setNullTerminatedState(ret->sref);
+		      sRef_setLen (ret->sref, sRef_getLen(e1->sref) - val);
+		    }
+		  }
+		}
+		
+		/* Operator : - or -= */
+		if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+		  if (sRef_getSize(e1->sref) >= 0) {
+		    sRef_setSize (ret->sref, sRef_getSize(e1->sref) + val);
+		    sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
+		  }
+		}
+	      }
 	      
-	      val = (int) multiVal_forceInt (e2->val);
-
-			/* Operator : + or += */
-		    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
-				if (sRef_getSize(e1->sref) >= val) {/* Incrementing the pointer by 
-																           val should not result in a 
-																		   size < 0 (size = 0 is ok !) */
-					
-					sRef_setSize (ret->sref, sRef_getSize(e1->sref) - val);
-					
-					if (sRef_getLen(e1->sref) == val) { /* i.e. the character at posn val is \0 */
-						sRef_setNotNullTerminatedState(ret->sref);
-						sRef_resetLen (ret->sref);
-					} else {
-						sRef_setNullTerminatedState(ret->sref);
-						sRef_setLen (ret->sref, sRef_getLen(e1->sref) - val);
-					}
-				}
-			}
-			
-			/* Operator : - or -= */
-			 if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
-				if (sRef_getSize(e1->sref) >= 0) {
-					sRef_setSize (ret->sref, sRef_getSize(e1->sref) + val);
-					sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
-				}
-			}
-	    }
-			
-	     /* end modifications */  
+	      /* end modifications */  
 
 	      sRef_setNullError (ret->sref);
 
@@ -5731,6 +5781,8 @@ exprNode_assign (/*@only@*/ exprNode e1,
 			      sRef_unparse (e1->sref)),
 		     g_currentloc);
 		}
+
+	      exprNode_checkAssignMod (e1, ret); /* evans 2001-07-22 */
 	    }
 	}
       else
@@ -5801,11 +5853,10 @@ exprNode_assign (/*@only@*/ exprNode e1,
       /*
       ** be careful!  this defines e1->sref.
       */
-   
-      if (!sRef_isMacroParamRef (e1->sref))
-	{
-	  exprNode_checkSet (ret, e1->sref);
-	}
+
+      /* evans 2001-07-22: removed if (!sRef_isMacroParamRef (e1->sref)) */
+
+      exprNode_checkSet (ret, e1->sref);
       
       if (isjustalloc) 
 	{
