@@ -445,7 +445,7 @@ int vfprintf (FILE *stream, char *format, va_list arg)
    /*@modifies fileSystem, *stream, arg, errno@*/ ;
 
 int vsprintf (/*@out@*/ char *str, const char *format, va_list ap)
-     /*@warn bufferoverflowhigh "Use vsnprintf instead."@*/
+     /*@warn bufferoverflowhigh "Use vsnprintf instead"@*/
      /*@modifies str@*/ ;
 
 int vsnprintf (/*@out@*/ char *str, size_t size, const char *format, va_list ap)
@@ -476,7 +476,7 @@ extern int getchar (void) /*@globals stdin@*/ /*@modifies fileSystem, *stdin@*/ 
 
 extern /*@null@*/ char *gets (/*@out@*/ char *s) 
    /*@warn bufferoverflowhigh
-           "Use of gets leads to a buffer overflow vulnerability.  Use fgets instead."@*/
+           "Use of gets leads to a buffer overflow vulnerability.  Use fgets instead"@*/
    /*@globals stdin@*/ /*@modifies fileSystem, *s, *stdin, errno@*/ ;
 
 extern int putc (int /*@alt char@*/ c, /*@sef@*/ FILE *stream)
@@ -973,3 +973,14 @@ extern /*@null@*/ /*@observer@*/ struct tm *localtime (time_t *tp)
 extern size_t strftime (/*@out@*/ char *s, size_t smax,
 			char *fmt, struct tm *timeptr)
   /*@modifies *s@*/ ;
+
+/*
+** inttypes.h
+*/
+
+typedef	char int8_t;
+typedef	short int int16_t;
+typedef	int int32_t;
+typedef	unsigned char u_int8_t;
+typedef	unsigned short int u_int16_t;
+typedef	unsigned int u_int32_t;

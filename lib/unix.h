@@ -242,10 +242,7 @@ typedef long segsz_t;
 typedef /*@abstract@*/ fd_set;
 
 /* Check ISO C99 inttypes.h ... */
-typedef unsigned int u_int32_t;
 typedef unsigned int uint32_t;
-
-typedef unsigned short int u_int16_t;
 typedef unsigned short int uint16_t;
 
 int ttyname_r (int fg, /*@out@*/ char *buffer, int len) /*@modifies buffer@*/ ;

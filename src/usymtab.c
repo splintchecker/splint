@@ -1049,7 +1049,6 @@ static /*@exposed@*/ uentry
   bool stat = (tab == globtab) && uentry_isStatic (e);
   uentry ret;
 
-    
   (void) usymtab_supEntryAux (tab, e, isref);
 
   if (stat)

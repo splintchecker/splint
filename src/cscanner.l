@@ -1239,7 +1239,6 @@ static bool processMacro (void)
       e2 = usymtab_lookupExpose (fname);
       ct = uentry_getType (e2);
 
-      
       if (uentry_isCodeDefined (e2) 
 	  && fileloc_isUser (uentry_whereDefined (e2)))
 	{

@@ -56,18 +56,23 @@ extern /*@open@*/ /*@dependent@*/ FILE *yyin;
 # define NUMLIBS 17
 
 /*@constant int NUMPOSIXLIBS; @*/
-# define NUMPOSIXLIBS 13
+# define NUMPOSIXLIBS 18
 
 static ob_mstring posixlibs[NUMPOSIXLIBS] = 
 {
-  "sys/stat",
-  "sys/types",
   "dirent",
   "fcntl",
   "grp",
   "pwd",
   "regex",
+  "sys/stat",
   "sys/times",
+  "sys/types", 
+  "netdb", /* unix */
+  "netinet/in", /* unix */
+  "sys/resource", /* unix */
+  "sys/socket", /* not posix */
+  "sys/syslog", /* not posix */
   "sys/utsname",
   "sys/wait",
   "termios",
@@ -109,6 +114,8 @@ lcllib_isSkipHeader (cstring sname)
 
   llassert (cstring_isDefined (sname));
   xname = fileLib_withoutExtension (sname, cstring_makeLiteralTemp (".h"));
+
+  DPRINTF (("Include? %s", sname));
 
   /*@access cstring@*/
   llassert (cstring_isDefined (xname));
@@ -168,6 +175,7 @@ lcllib_isSkipHeader (cstring sname)
 		{
 		  posixlib = TRUE;
 		  matchname = ptr;
+		  DPRINTF (("Found match: %s", matchname));
 		  break;
 		}
 	      else
@@ -194,6 +202,7 @@ lcllib_isSkipHeader (cstring sname)
 	{
 	  if (context_getFlag (FLG_SKIPPOSIXHEADERS))
 	    {
+	      DPRINTF (("Skipping: %s", xname));
 	      sfree (xname);
 	      return TRUE;
 	    }
