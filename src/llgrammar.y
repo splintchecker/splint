@@ -381,38 +381,46 @@ bool g_inTypeDef = FALSE;
 interface
  : externals { lhExternals ($1); } optDeclarations 
    { interfaceNodeList_free ($1); interfaceNodeList_free ($3); }
+;
 
 externals   
  : /* empty */        { $$ = interfaceNodeList_new (); }
  | externals external { $$ = interfaceNodeList_addh ($1, $2);}  
+;
 
 external
  : imports
  | uses
+;
 
 optDeclarations    
  : /* empty */              { $$ = interfaceNodeList_new (); }
  | export declarations      { $$ = consInterfaceNode ($1, $2);}  
  | private declarations     { $$ = consInterfaceNode ($1, $2);}  
+;
 
 declarations 
  : /* empty */              { $$ = interfaceNodeList_new (); }
  | declarations declaration { $$ = interfaceNodeList_addh ($1, $2);}  
+;
 
 declaration
  : export
  | private
  | uses 
+;
 
 imports   
  : LLT_IMPORTS importNameList LLT_SEMI 
    { $$ = makeInterfaceNodeImports ($2);
      /* assume subspecs are already processed, symbol table info in external file */
    }
+;
 
 uses   
  : LLT_USES traitRefNodeList LLT_SEMI  
    { $$ = makeInterfaceNodeUses ($2); readlsignatures ($$);}
+;
 
 export
  : constDeclaration
@@ -427,28 +435,34 @@ export
    { $$ = interfaceNode_makeClaim ($1); }
  | iter
    { declareIter ($1); $$ = interfaceNode_makeIter ($1); }                              
+;
 
 iter 
  : LLT_ITER varId LLT_LPAR iterParamList LLT_RPAR LLT_SEMI
    { $$ = makeIterNode ($2, $4); }
+;
  
 iterParamList      
  : /* empty */         { $$ = paramNodeList_new (); }
  | realIterParamList   { $$ = $1; }
+;
  
 realIterParamList  
  : iterParam           
    { $$ = paramNodeList_add (paramNodeList_new (),  $1); }
  | realIterParamList LLT_COMMA iterParam  
    { $$ = paramNodeList_add ($1,$3); }     
-   
+;
+
 iterParam          
  : LLT_YIELD param            { $$ = markYieldParamNode ($2); }
  | param                  { $$ = $1; }
+;
 
 private   
  : LLT_SPEC { symtable_export (g_symtab, FALSE); } private2 
    { $$ = $3; symtable_export (g_symtab, TRUE); } 
+;
 
 private2 
  : constDeclaration
@@ -459,10 +473,12 @@ private2
    { declarePrivType ($1); $$ = interfaceNode_makePrivType ($1); }
  | fcn
    { declarePrivFcn ($1, typeId_invalid); $$ = interfaceNode_makePrivFcn ($1); }
+;
 
 constDeclaration   
  : LLT_CONSTANT lclTypeSpec initDecls LLT_SEMI
    { $$ = makeConstDeclarationNode ($2, $3); } 
+;
 
 varDeclaration    
  : lclTypeSpec initDecls LLT_SEMI
@@ -471,15 +487,18 @@ varDeclaration
    { $$ = makeVarDeclarationNode ($2, $3, FALSE, FALSE); $$->qualifier = QLF_CONST; } 
  | LLT_VOLATILE lclTypeSpec initDecls LLT_SEMI
    { $$ = makeVarDeclarationNode ($2, $3, FALSE, FALSE); $$->qualifier = QLF_VOLATILE; }
+;
 
 type
  : abstract                     { $$ = makeAbstractTypeNode ($1); } 
  | exposed                      { $$ = makeExposedTypeNode ($1); } 
+;
 
 special
  : LLT_PRINTFLIKE  { $$ = qual_createPrintfLike (); }
  | LLT_SCANFLIKE   { $$ = qual_createScanfLike (); }
  | LLT_MESSAGELIKE { $$ = qual_createMessageLike (); }
+;
 
 fcn   
  : lclTypeSpec declarator globals { enteringFcnScope ($1, $2, $3); } LLT_LBRACE
@@ -500,7 +519,7 @@ fcn
 	lets, checks, requires, modifies, ensures, claims */
      symtable_exitScope (g_symtab);
    }
-
+;
 
 claim 
  : LLT_CLAIMS claimId LLT_LPAR optParamList LLT_RPAR globals
@@ -510,6 +529,7 @@ claim
      symtable_exitScope (g_symtab); } 
  | LLT_CLAIMS fcnId claimId LLT_SEMI
    { $$ = (claimNode) 0; }
+;
 
 abstract
  : LLT_MUTABLE {g_inTypeDef = TRUE; } LLT_TYPE LLT_TYPEDEF_NAME {g_inTypeDef = FALSE; } abstBody
@@ -522,6 +542,7 @@ abstract
    { $$ = makeAbstractNode ($2, $5, TRUE, TRUE, $7); } 
  | LLT_IMMUTABLE {g_inTypeDef = TRUE; } LLT_TYPE LLT_TYPEDEF_NAME {g_inTypeDef = FALSE; } abstBody
    { $$ = makeAbstractNode ($1, $4, FALSE, FALSE, $6); } 
+;
 
 exposed
  : LLT_TYPEDEF lclTypeSpec { g_inTypeDef = TRUE; setExposedType ($2); } declaratorInvs
@@ -543,32 +564,38 @@ exposed
      $$ = (exposedNode)0; 
    }
 */
+;
 
 importNameList  
  : importName        
    { $$ = importNodeList_add (importNodeList_new (),  $1); } 
  | importNameList LLT_COMMA importName  
    { $$ = importNodeList_add ($1, $3); } 
+;
 
 importName       
  : interfaceName      { $$ = importNode_makePlain ($1); }
  | simpleOp interfaceName simpleOp
    { checkBrackets ($1, $3); $$ = importNode_makeBracketed ($2); }
  | LLT_LCSTRING           { $$ = importNode_makeQuoted ($1); } 
+;
 
 interfaceNameList  
  : interfaceName                         { $$ = ltokenList_singleton ($1); } 
  | interfaceNameList LLT_COMMA interfaceName { $$ = ltokenList_push ($1, $3); }
+;
 
 interfaceName   
  : simpleIdOrTypedefName
    /* to allow module names to be the same as LCL type names */
+;
 
 traitRefNodeList   
  : traitRef
    { $$ = traitRefNodeList_add (traitRefNodeList_new (),  $1); } 
  | traitRefNodeList LLT_COMMA traitRef
    { $$ = traitRefNodeList_add ($1, $3); } 
+;
 
 traitRef   
  : traitId
@@ -579,10 +606,12 @@ traitRef
    { $$ = makeTraitRefNode ($2, (renamingNode)0); } 
  | LLT_LPAR traitIdList LLT_RPAR LLT_LPAR renaming LLT_RPAR
    { $$ = makeTraitRefNode ($2, $5); } 
+;
 
 traitIdList   
  : traitId                     { $$ = ltokenList_singleton ($1); } 
  | traitIdList LLT_COMMA traitId   { $$ = ltokenList_push ($1, $3); } 
+;
 
 renaming   
  : replaceNodeList   
@@ -590,91 +619,112 @@ renaming
  | nameList
    { $$ = makeRenamingNode ($1, replaceNodeList_new ()); } 
  | nameList LLT_COMMA replaceNodeList { $$ = makeRenamingNode ($1, $3); } 
+;
  
 nameList
  : typeName
    { $$ = typeNameNodeList_add (typeNameNodeList_new (),  $1); } 
  | nameList LLT_COMMA typeName       { $$ = typeNameNodeList_add ($1, $3); } 
+;
 
 replaceNodeList   
  : replace
    { $$ = replaceNodeList_add (replaceNodeList_new (),  $1); } 
  | replaceNodeList LLT_COMMA replace { $$ = replaceNodeList_add ($1, $3); } 
+;
 
 replace
  : typeName LLT_FOR CType            { $$ = makeReplaceNode ($2, $1, TRUE, $3, NULL, NULL); } 
  | typeName LLT_FOR name             { $$ = makeReplaceNameNode ($2, $1, $3); }
  | typeName LLT_FOR name signature   { $$ = makeReplaceNode ($2, $1, FALSE, ltoken_undefined,
 							 $3, $4); } 
+;
 
 name    
  : opId                          { $$ = makeNameNodeId ($1); } 
  | opForm                        { $$ = makeNameNodeForm ($1); } 
+;
 
 initializer : constLclExpr
+;
 
 constLclExpr : term
+;
 
 initDecls
  : initDecl 
    { $$ = initDeclNodeList_add (initDeclNodeList_new (),  $1); } 
  | initDecls LLT_COMMA initDecl      
    { $$ = initDeclNodeList_add ($1, $3); } 
+;
 
 initDecl  
  : declarator                    { $$ = makeInitDeclNode ($1, (termNode)0); } 
  | declarator LLT_EQUALS initializer { $$ = makeInitDeclNode ($1, $3); } 
+;
 
 globals   
  : /* empty */ /* has the same structure */
    { $$ = varDeclarationNodeList_new (); }
  | globals globalDecl
    { varDeclarationNodeList_addh ($1, $2); $$ = $1; }
+;
 
 globalDecl   
  : lclTypeSpec initDecls LLT_SEMI    { $$ = makeVarDeclarationNode ($1, $2, TRUE, FALSE); } 
  | LLT_INTERNAL LLT_SEMI                 { $$ = makeInternalStateNode (); }
  | LLT_FILESYS LLT_SEMI                  { $$ = makeFileSystemNode (); }
+;
 
 privateInits   
  : /* empty */                  { $$ = varDeclarationNodeList_new (); }
  | privateInits privateInit     { varDeclarationNodeList_addh ($1, $2); $$ = $1; }
+;
 
 privateInit   
  : LLT_PRIVATE lclTypeSpec initDecls LLT_SEMI
    { $$ = makeVarDeclarationNode ($2, $3, FALSE, TRUE); } 
+;
 
 optLetDecl   
  : /* empty */                 { $$ = letDeclNodeList_new (); }
  | LLT_LET beDeclList LLT_SEMI         { $$ = $2; } 
+;
 
 beDeclList   
  : beDecl                      { $$ = letDeclNodeList_add (letDeclNodeList_new (),  $1); } 
  | beDeclList LLT_COMMA beDecl     { $$ = letDeclNodeList_add ($1, $3); } 
+;
 
 beDecl   
  : varId LLT_COLON sortSpec LLT_BE term { $$ = makeLetDeclNode ($1, $3, $5); } 
  | varId                LLT_BE term { $$ = makeLetDeclNode ($1, (lclTypeSpecNode)0, $3); } 
+;
 
 sortSpec : lclTypeSpec
+;
 
 optChecks   
  : /* empty */                  { $$ = (lclPredicateNode)0; }
  | LLT_CHECKS lclPredicate LLT_SEMI     { checkLclPredicate ($1, $2); $$ = makeChecksNode ($1, $2); }
+;
 
 optRequire
  : /* empty */                  { $$ = (lclPredicateNode)0; }
  | LLT_REQUIRES lclPredicate LLT_SEMI   { checkLclPredicate ($1, $2); $$ = makeRequiresNode ($1, $2);} 
+;
 
 optModify
  : /* empty */                  { $$ = (modifyNode)0; }
  | LLT_MODIFIES LLT_NOTHING LLT_SEMI        { $$ = makeModifyNodeSpecial ($1, TRUE); } 
  | LLT_MODIFIES LLT_ANYTHING LLT_SEMI       { $$ = makeModifyNodeSpecial ($1, FALSE); } 
  | LLT_MODIFIES storeRefList LLT_SEMI   { $$ = makeModifyNodeRef ($1, $2); } 
+;
 
 storeRefList   
  : storeRef                     { $$ = storeRefNodeList_add (storeRefNodeList_new (),  $1); } 
  | storeRefList LLT_COMMA storeRef  { $$ = storeRefNodeList_add ($1, $3); } 
+;
 
 storeRef   
  : term                         { $$ = makeStoreRefNodeTerm ($1); } 
@@ -682,32 +732,39 @@ storeRef
  | LLT_OBJ lclType                  { $$ = makeStoreRefNodeType ($2, TRUE); } 
  | LLT_INTERNAL                     { $$ = makeStoreRefNodeInternal (); }
  | LLT_FILESYS                      { $$ = makeStoreRefNodeSystem (); }
+;
 
 optEnsure
  : /* empty */                  { $$ = (lclPredicateNode)0; }
  | LLT_ENSURES lclPredicate LLT_SEMI    { checkLclPredicate ($1, $2); $$ = makeEnsuresNode ($1, $2);} 
+;
 
 optClaim   
  : /* empty */                  { $$ = (lclPredicateNode)0; }
  | LLT_CLAIMS lclPredicate LLT_SEMI     { checkLclPredicate ($1, $2); $$ = makeIntraClaimNode ($1, $2);} 
+;
 
 optParamList       
  : /* empty */                  { $$ = paramNodeList_new (); }
  | realParamList                { $$ = $1; }
+;
 
 realParamList      
  : paramList
  | LLT_TELIPSIS                  { $$ = paramNodeList_add (paramNodeList_new (),  paramNode_elipsis ()); }
  | paramList LLT_COMMA LLT_TELIPSIS  { $$ = paramNodeList_add ($1, paramNode_elipsis ()); }
+;
 
 paramList   
  : param                     { $$ = paramNodeList_single ($1); }
  | paramList LLT_COMMA param     { $$ = paramNodeList_add ($1, $3); } 
+;
 
 optBody
  : /* empty */                      { $$ = (programNode)0; }
  | LLT_BODY LLT_LBRACE callExpr LLT_RBRACE      { $$ = $3; } 
  | LLT_BODY LLT_LBRACE callExpr LLT_SEMI LLT_RBRACE { $$ = $3; } 
+;
 
 callExpr   
  : stmt                             { $$ = makeProgramNode ($1); } 
@@ -731,6 +788,7 @@ callExpr
      programNodeList_addh (x, $3);
      $$ = makeProgramNodeAction (x, ACT_SEQUENCE); 
    } 
+;
 
 stmt               
  : fcnId LLT_LPAR valueList LLT_RPAR 
@@ -741,10 +799,12 @@ stmt
    { $$ = makeStmtNode ($1, $3, termNodeList_new ()); } 
  | varId LLT_EQUALS fcnId LLT_LPAR valueList LLT_RPAR
    { $$ = makeStmtNode ($1, $3, $5); }
+;
 
 valueList   
  : value                 { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | valueList LLT_COMMA value { $$ = termNodeList_push ($1, $3); } 
+;
 
 value   
  : cLiteral
@@ -757,20 +817,24 @@ value
    { $$ = makeOpCallTermNode ($1, $2, termNodeList_new (),  $3); }
  | fcnId LLT_LPAR valueList LLT_RPAR
    { $$ = makeOpCallTermNode ($1, $2, $3, $4); } 
+;
 
 abstBody   
  : LLT_SEMI                                  { $$ = (abstBodyNode)0; } 
  | LLT_LBRACE fcns LLT_RBRACE                    { $$ = makeAbstBodyNode ($1, $2); }
  | LLT_LBRACE interfaceNameList LLT_RBRACE LLT_SEMI  { $$ = makeAbstBodyNode2 ($1, $2); }
  | LLT_LBRACE LLT_RBRACE LLT_SEMI                    { $$ = (abstBodyNode)0; }
+;
 
 fcns   
  : /* empty */                           { $$ = fcnNodeList_new (); }
  | fcns fcn                              { $$ = fcnNodeList_add ($1, $2); } 
+;
 
 optTypeInv   
  : /* empty */                           { $$ = (lclPredicateNode)0; }
  | typeInv
+ ;
 
 typeInv   
  : LLT_CONSTRAINT { g_inTypeDef = FALSE; } quantifier LLT_LPAR lclPredicate LLT_RPAR
@@ -780,19 +844,23 @@ typeInv
      symtable_exitScope (g_symtab); 
      g_inTypeDef = TRUE;
    }
+;
 
 declaratorInvs     
  : declaratorInv        { $$ = declaratorInvNodeList_add (declaratorInvNodeList_new (),  $1); } 
  | declaratorInvs LLT_COMMA declaratorInv
    { $$ = declaratorInvNodeList_add ($1, $3); } 
+;
 
 declaratorInv      
  : declarator { declareForwardType ($1); } optExposedBody
    { $$ = makeDeclaratorInvNode ($1, $3); } 
+;
 
 optExposedBody   
  : /* empty */                  { $$ = (abstBodyNode)0; }
  | LLT_LBRACE optTypeInv LLT_RBRACE     { $$ = makeExposedBodyNode ($1, $2); }
+;
 
 CType   
  : LLT_VOID           { $$ = $1; ltoken_setIntField ($$, fixBits (TS_VOID, 0)); }
@@ -805,6 +873,7 @@ CType
  | LLT_SIGNED         { $$ = $1; ltoken_setIntField ($$, fixBits (TS_SIGNED, 0)); }
  | LLT_UNSIGNED       { $$ = $1; ltoken_setIntField ($$, fixBits (TS_UNSIGNED, 0)); }
  | LLT_UNKNOWN        { $$ = $1; ltoken_setIntField ($$, fixBits (TS_UNKNOWN, 0)); }
+;
 
 /*
 ** CTypes allow "unsigned short int" but we drop all C type qualifiers 
@@ -814,6 +883,7 @@ CType
 CTypes   
  : CType                       { $$ = makeCTypesNode ((CTypesNode)0, $1); }
  | CTypes CType                { $$ = makeCTypesNode ($1, $2); } 
+;
 
 /* Add abstract type names and typedef names */
 
@@ -822,6 +892,7 @@ typeSpecifier
    { $$ = makeTypeSpecifier ($1); }
  | CTypes                      
    { $$ = $1; $$->sort = sort_lookupName (lclctype_toSort ($1->intfield)); } 
+;
 
 /* Add struct and enum types */
 
@@ -862,6 +933,7 @@ specialQualifier
  | LLT_NULLTERMINATED { $$ = qual_createNullTerminated () ; }
  | LLT_UNDEF { $$ = qual_createUndef (); }
  | LLT_KILLED { $$ = qual_createKilled (); }
+;
 
 lclTypeSpec   
  : typeSpecifier                        
@@ -874,6 +946,7 @@ lclTypeSpec
    { $$ = lclTypeSpecNode_addQual ($2, $1); }
  | LLT_VERTICALBAR lclType LLT_COLON lclType LLT_VERTICALBAR
    { $$ = makeLclTypeSpecNodeConj ($2, $4); } 
+;
 
 /* 
 ** Add pointers to the right, only used in StoreRef, maybe should throw
@@ -885,10 +958,12 @@ lclType
  | lclTypeSpec pointers 
    { llassert (lclTypeSpecNode_isDefined ($1));
      $1->pointers = $2; $$ = $1; }
+;
 
 pointers   
  : LLT_MULOP          { $$ = pointers_createLt ($1); }
  | pointers LLT_MULOP { $$ = pointers_extend ($1, pointers_createLt ($2)); }
+;
 
 structOrUnionSpec  
  : LLT_STRUCT optTagId 
@@ -903,39 +978,47 @@ structOrUnionSpec
    { $$ = makeForwardstrOrUnionNode ($1, SU_STRUCT, $2); }
  | LLT_UNION tagId  
    { $$ = makeForwardstrOrUnionNode ($1, SU_UNION, $2); }
+;
 
 optTagId    
  : /* empty */ { $$ = ltoken_undefined; }
  | tagId
+ ;
 
 structDecls   
  : structDecl               { $$ = stDeclNodeList_add (stDeclNodeList_new (),  $1); } 
  | structDecls structDecl   { $$ = stDeclNodeList_add ($1, $2); } 
+;
 
 /* We don't allow specification of field size */
 
 structDecl   
  : lclTypeSpec declaratorList LLT_SEMI { $$ = makestDeclNode ($1, $2); } 
+;
 
 declaratorList   
  : declarator                       
    { $$ = declaratorNodeList_add (declaratorNodeList_new (),  $1); } 
  | declaratorList LLT_COMMA declarator  
    { $$ = declaratorNodeList_add ($1, $3); } 
+;
 
 optCOMMA           
  : /* empty */ { ; }
  | LLT_COMMA       { ; }
+;
 
 enumSpec   
  : LLT_ENUM optTagId LLT_LBRACE enumeratorList optCOMMA LLT_RBRACE
    { $$ = makeEnumSpecNode ($1, $2, $4); } 
  | LLT_ENUM tagId
    { $$ = makeEnumSpecNode2 ($1, $2); } 
+;
 
 enumeratorList   
  : simpleId                             { $$ = ltokenList_singleton ($1); } 
  | enumeratorList LLT_COMMA simpleId        { $$ = ltokenList_push ($1, $3); } 
+;
 
 /* This part of declarator rules is adapted from GCC (2.2.1)'s C grammar */
 
@@ -947,6 +1030,7 @@ enumeratorList
 declarator   
  : after_type_decl                      { $$ = makeDeclaratorNode ($1); }
  | notype_decl                          { $$ = makeDeclaratorNode ($1); }
+;
 
 notype_decl    
  : varId                                { $$ = makeTypeExpr ($1); }
@@ -955,6 +1039,7 @@ notype_decl
  | notype_decl arrayQual                { $$ = makeArrayNode ($1, $2); } 
  | notype_decl LLT_LPAR LLT_RPAR                { $$ = makeFunctionNode ($1, paramNodeList_new ()); } 
  | notype_decl LLT_LPAR realParamList LLT_RPAR  { $$ = makeFunctionNode ($1, $3); }
+;
 
 after_type_decl    
  : LLT_TYPEDEF_NAME                         { $$ = makeTypeExpr ($1); }
@@ -963,6 +1048,7 @@ after_type_decl
  | after_type_decl arrayQual                { $$ = makeArrayNode ($1, $2); } 
  | after_type_decl LLT_LPAR LLT_RPAR                { $$ = makeFunctionNode ($1, paramNodeList_new ()); } 
  | after_type_decl LLT_LPAR realParamList LLT_RPAR  { $$ = makeFunctionNode ($1, $3); }
+;
 
 /* A parameter_decl is a decl that can appear in a parameter list.  
    We disallow the old C way of giving only the id names without types.
@@ -976,6 +1062,7 @@ parameter_decl
  | parameter_decl arrayQual                 { $$ = makeArrayNode ($1, $2); } 
  | parameter_decl LLT_LPAR LLT_RPAR                 { $$ = makeFunctionNode ($1, paramNodeList_new ()); } 
  | parameter_decl LLT_LPAR realParamList LLT_RPAR   { $$ = makeFunctionNode ($1, $3); } 
+;
 
 /* param : the last production allows C types to be generated without the
    parameter name */
@@ -989,6 +1076,7 @@ param
 ** | OUT lclTypeSpec notype_decl              { $$ = makeOutParamNode ($1, $2, $3); } 
 ** | OUT lclTypeSpec optAbstDeclarator        { $$ = makeOutParamNode ($1, $2, $3); } 
 */
+;
 
 /* typeName is only used in trait parameter renaming */
 
@@ -996,12 +1084,14 @@ typeName
  : lclTypeSpec optAbstDeclarator           { $$ = makeTypeNameNode (FALSE, $1, $2); } 
  | LLT_OBJ lclTypeSpec optAbstDeclarator       { $$ = makeTypeNameNode (TRUE, $2, $3); } 
  | opForm                                  { $$ = makeTypeNameNodeOp ($1); } 
+;
 
 /* Abstract declarator is like a declarator, but with no identifier */
  
 optAbstDeclarator  
  : /* empty */                            { $$ = (abstDeclaratorNode)0; }
  | abstDeclarator                         { $$ = (abstDeclaratorNode)$1; } 
+;
 
 abstDeclarator   
  : LLT_LPAR abstDeclarator LLT_RPAR               { $$ = $2; $$->wrapped = $$->wrapped + 1; }
@@ -1012,10 +1102,12 @@ abstDeclarator
  | abstDeclarator LLT_LPAR LLT_RPAR               { $$ = makeFunctionNode ($1, paramNodeList_new ()); } 
  | LLT_LPAR realParamList LLT_RPAR                { $$ = makeFunctionNode ((typeExpr)0, $2); } 
  | abstDeclarator LLT_LPAR realParamList LLT_RPAR { $$ = makeFunctionNode ($1, $3); } 
+;
 
 arrayQual   
  : LLT_LBRACKET LLT_RBRACKET                     { $$ = makeArrayQualNode ($1, (termNode)0); } 
  | LLT_LBRACKET constLclExpr LLT_RBRACKET        { $$ = makeArrayQualNode ($1, $2); } 
+;
 
 opForm   
  : LLT_IF markerSym LLT_THEN markerSym LLT_ELSE markerSym
@@ -1063,48 +1155,60 @@ opForm
  | markerSym mapSym simpleIdOrTypedefName
    { $$ = makeOpFormNode ($1, OPF_MMAP, 
 			  opFormUnion_createAnyOp ($3), ltoken_undefined); }
+;
 
 open   
  : openSym
  | LLT_LBRACE
+;
 
 close   
  : closeSym
  | LLT_RBRACE 
+;
 
 anyOp   
  : simpleOp2
  | logicalOp
  | eqOp
+;
 
 middle   
  : /* empty */               { $$ = 0; }
  | placeList
+ ;
 
 placeList   
  : markerSym                      { $$ = 1; }
  | placeList separator markerSym  { $$ = $1 + 1; }
+;
 
 separator   
  : LLT_COMMA
  | sepSym
+;
 
 signature   
  : LLT_COLON domain mapSym sortId   { $$ = makesigNode ($1, $2, $4); } 
+;
 
 domain   
  : /* empty */               { $$ = ltokenList_new (); }
  | sortList
+ ;
 
 sortList   
  : sortId                    { $$ = ltokenList_singleton ($1); } 
  | sortList LLT_COMMA sortId     { $$ = ltokenList_push ($1, $3); } 
+;
 
 lclPredicate   
  : term                      { $$ = makeLclPredicateNode (ltoken_undefined, $1, LPD_PLAIN);} 
+;
 
 term 
  : term0                     { $$ = checkSort ($1); }
+;
 
 /* When "if <term> then <term> else <term> . <logicalOp> <term>"
    shift instead of reduce */
@@ -1114,6 +1218,7 @@ term0
    { $$ = makeIfTermNode ($1,$2,$3,$4,$5,$6); } 
  | equalityTerm
  | term0 logicalOp term0          { $$ = makeInfixTermNode ($1, $2, $3); } 
+;
 
 equalityTerm   
  : simpleOpTerm   /* was   | quantifiers LLT_LPAR term LLT_RPAR */
@@ -1126,27 +1231,33 @@ equalityTerm
    { $$ = makeInfixTermNode ($1, $2, $3);} 
  | simpleOpTerm LLT_EQUALS simpleOpTerm 
    { $$ = makeInfixTermNode ($1, $2, $3);} 
+;
 
 simpleOpTerm   
  : prefixOpTerm
  | secondary postfixOps          { $$ = makePostfixTermNode ($1, $2); } 
  | secondary infixOpPart         { $$ = CollapseInfixTermNode ($1, $2); } 
+;
 
 simpleOp2          
  : simpleOp
  | LLT_MULOP
+;
 
 prefixOpTerm   
  : secondary
  | simpleOp2 prefixOpTerm          { $$ = makePrefixTermNode ($1, $2); } 
+;
 
 postfixOps   
  : simpleOp2                       { $$ = ltokenList_singleton ($1); } 
  | postfixOps simpleOp2            { $$ = ltokenList_push ($1, $2); } 
+;
 
 infixOpPart   
  : simpleOp2 secondary             { $$ = pushInfixOpPartNode (termNodeList_new (),  $1, $2); } 
  | infixOpPart simpleOp2 secondary { $$ = pushInfixOpPartNode ($1, $2, $3); } 
+;
 
 secondary   
  : primary
@@ -1156,10 +1267,12 @@ secondary
  | primary bracketed primary { $$ = updateMatchedNode ($1, $2, $3); }
  | sqBracketed               { $$ = computePossibleSorts ($1); } 
  | sqBracketed primary       { $$ = updateSqBracketedNode ((termNode)0, $1, $2); }
+;
 
 bracketed   
  : matched LLT_COLON sortId    { $$ = $1; $$->sort = sort_lookupName (ltoken_getText ($3)); }
  | matched
+ ;
 
 sqBracketed   
  : LLT_LBRACKET args LLT_RBRACKET LLT_COLON sortId
@@ -1173,14 +1286,17 @@ sqBracketed
    }
  | LLT_LBRACKET  LLT_RBRACKET
    { $$ = makeSqBracketedNode ($1, termNodeList_new (),  $2); } 
+;
 
 matched      
  : open args  close          { $$ = makeMatchedNode ($1, $2, $3); } 
  | open close                { $$ = makeMatchedNode ($1, termNodeList_new (),  $2); } 
+;
 
 args   
  : term                      { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | args separator term       { $$ = termNodeList_push ($1, $3); } 
+;
 
 primary   
  : LLT_LPAR term0 LLT_RPAR           /* may need to make a copy of $2 */
@@ -1203,16 +1319,19 @@ primary
    { $$ = updateSqBracketedNode ($1, makeSqBracketedNode ($2, $3, $4), (termNode)0); }
  | primary LLT_COLON sortId
    { $$ = $1; $$->given = sort_lookupName (ltoken_getText ($3)); }
+;
 
 termList   
  : term0                  { $$ = termNodeList_push (termNodeList_new (),  $1); } 
  | termList LLT_COMMA term0   { $$ = termNodeList_push ($1, $3); } 
+;
 
 stateFcn   
  : preSym
  | postSym
  | anySym
  | LLT_QUOTE
+;
 
 lclPrimary   
  : cLiteral                         
@@ -1232,6 +1351,7 @@ lclPrimary
      $$ = makeOpCallTermNode ($1, $2, x, $6); 
    } 
  | LLT_SIZEOF LLT_LPAR lclTypeSpec LLT_RPAR       { $$ = makeSizeofTermNode ($1, $3); } 
+;
 
 /* removed 94-Mar-25:
 **   | MODIFIES LLT_LPAR term LLT_RPAR
@@ -1245,12 +1365,14 @@ cLiteral
  | LLT_LCSTRING  { $$ = makeLiteralTermNode ($1, sort_cstring); }
  | LLT_CCHAR     { $$ = makeLiteralTermNode ($1, sort_char); }
  | LLT_CFLOAT    { $$ = makeLiteralTermNode ($1, sort_double); }
+;
 
 quantifiers   
  : quantifier
    { $$ = quantifierNodeList_add (quantifierNodeList_new (),  $1); } 
  | quantifiers quantifier
    { $$ = quantifierNodeList_add ($1, $2); } 
+;
 
 quantifier   
  : quantifierSym { scopeInfo si = (scopeInfo) dmalloc (sizeof (*si));
@@ -1258,27 +1380,31 @@ quantifier
 		   symtable_enterScope (g_symtab, si); }
    quantifiedList 
    { $$ = makeQuantifierNode ($3, $1); } 
+;
 
 quantifiedList   
  : quantified                         { $$ = varNodeList_add (varNodeList_new (),  $1); } 
  | quantifiedList LLT_COMMA quantified    { $$ = varNodeList_add ($1, $3); } 
+;
 
 quantified   
  : varId LLT_COLON sortSpec     { $$ = makeVarNode ($1, FALSE, $3); } 
  | varId LLT_COLON LLT_OBJ sortSpec { $$ = makeVarNode ($1, TRUE, $4); } 
+;
 
 simpleIdOrTypedefName  
  : simpleId
  | LLT_TYPEDEF_NAME
+;
 
 /* a different name space from varId/fcnId/typeId */
-fcnId : simpleId
-varId : simpleId
-tagId : simpleIdOrTypedefName
-claimId : simpleIdOrTypedefName
-sortId : simpleIdOrTypedefName
-traitId : simpleIdOrTypedefName
-opId : simpleIdOrTypedefName
+fcnId : simpleId ;
+varId : simpleId ;
+tagId : simpleIdOrTypedefName ;
+claimId : simpleIdOrTypedefName ;
+sortId : simpleIdOrTypedefName ;
+traitId : simpleIdOrTypedefName ;
+opId : simpleIdOrTypedefName ;
 
 %%
 

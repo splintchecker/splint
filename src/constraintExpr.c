@@ -695,7 +695,7 @@ constraintExpr constraintExpr_parseMakeUnaryOp (lltok op, constraintExpr cexpr)
       ret->data = constraintExprData_unaryExprSetOp (ret->data, MAXREAD);
       break;
     default:
-      llfatalbug(message("Unhandled Operation in Constraint") );
+      llfatalbug (message ("Unhandled operation in constraint: %s", lltok_unparse (op)));
     }
   return ret;
 }

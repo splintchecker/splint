@@ -1176,6 +1176,7 @@ copy_rest_of_line (cppReader *pfile)
       llassert (pfile->buffer != NULL);
 
       c = cppReader_getC (pfile);
+
       switch (c)
 	{
 	case EOF:
@@ -1185,18 +1186,24 @@ copy_rest_of_line (cppReader *pfile)
 	  ** Patch from Brian St. Pierre for handling MS-DOS files.
 	  */
 
+	  DPRINTF (("Reading directive: %d", (int) c));
+
 	  if (cppReader_peekC (pfile) == '\n'
 	      || cppReader_peekC (pfile) == '\r')
 	    {
+	      DPRINTF (("Reading directive..."));
 	      if (cppReader_peekC (pfile) == '\r')
 		{
+		  DPRINTF (("Reading directive..."));
 		  cppReader_forward (pfile, 1);
 		}
              
+	      DPRINTF (("Reading directive..."));
 	      cppReader_forward (pfile, 1);
 	      continue;
 	    }
 
+	  DPRINTF (("Falling..."));
 	/*@fallthrough@*/ case '\'': case '\"':
 	  goto scan_directive_token;
 
@@ -7580,12 +7587,12 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 		{
 		  opts->first_system_include = nlist;
 		}
-
+         
 	      cppReader_addIncludeChain (pfile, nlist);
 	    }
 	}
       }
-
+    
     /* Search ordinary names for GNU include directories.  */
 
     for (p = include_defaults; p->fname != NULL; p++)
@@ -7604,9 +7611,9 @@ void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is
 
 	    if (opts->first_system_include == NULL)
 	      {
-          opts->first_system_include = nlist;
+		opts->first_system_include = nlist;
 	      }
-      
+	    
 	    cppReader_addIncludeChain (pfile, nlist);
 	  }
       }

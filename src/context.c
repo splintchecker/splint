@@ -4888,6 +4888,9 @@ ctype context_getLastStruct (/*@returned@*/ /*ctype s*/) /*@globals lastStruct@*
   return lastStruct;
 }
 
+/*
+** Why is this stuff in context.c?
+*/
 
 /*@unused@*/ static int sInfoNum = 0;
 
@@ -4919,6 +4922,7 @@ static struct sInfo globalStructInfo;
 
 void  setGlobalStructInfo(ctype ct, constraintList list)
 {
+# if 0
   /* int i;
   uentryList f;
 
@@ -4951,8 +4955,10 @@ void  setGlobalStructInfo(ctype ct, constraintList list)
       end_uentryList_elements;
     }
   */
+# endif
 }
 
+# if 0
 /*
 
 bool hasInvariants (ctype ct) /*@* /
@@ -4966,8 +4972,11 @@ bool hasInvariants (ctype ct) /*@* /
     return FALSE;
   
 }
-
-
 */
+# endif
 
 /*@=paramuse@*/
+
+
+
+

@@ -323,10 +323,12 @@ extern void yyerror (char *);
 file
  :              
  | externalDefs
+ ;
 
 externalDefs
  : externalDef { context_checkGlobalScope (); }
  | externalDefs externalDef { context_checkGlobalScope (); }
+ ;
 
 externalDef
  : fcnDef optSemi { uentry_clearDecl (); } 
@@ -337,12 +339,14 @@ externalDef
  | initializer    { uentry_checkDecl (); exprNode_free ($1); }
  | TSEMI          { uentry_clearDecl (); lltok_free ($1); /* evans 2002-02-08: okay to have a null statement */ }  
  | error          { uentry_clearDecl (); } 
+ ;
 
 constantDecl
  : QCONSTANT completeTypeSpecifier NotType namedDecl NotType optSemi IsType QENDMACRO
    { checkConstant ($2, $4); lltok_free2 ($1, $8); }
  | QCONSTANT completeTypeSpecifier NotType namedDecl NotType TASSIGN IsType init optDeclarators optSemi QENDMACRO
    { checkValueConstant ($2, $4, $8); lltok_free3 ($1, $6, $11); }
+;
 
 fcnDecl
  : QFUNCTION { context_enterFunctionHeader (); } plainFcn optSemi QENDMACRO 
@@ -351,6 +355,7 @@ fcnDecl
      context_exitFunctionHeader (); 
      lltok_free2 ($1, $5); /*!*/
    }
+;
 
 plainFcn
  : plainNamedDecl
@@ -361,11 +366,13 @@ plainFcn
    }
  | completeTypeSpecifier NotType plainNamedDecl
    { $$ = idDecl_fixBase ($3, $1); }
+;
 
 plainNamedDecl
  : plainNamedDeclBase
  | pointers plainNamedDeclBase 
    { $$ = $2; qtype_adjustPointers ($1, idDecl_getTyp ($$)); }
+;
 
 namedDeclBase
  : newId { $$ = idDecl_create ($1, qtype_unknown ()); }
@@ -420,6 +427,7 @@ namedDeclBase
      context_popLoc (); 
      lltok_free2 ($3, $5);
    }
+;
 
 plainNamedDeclBase
  : newId { $$ = idDecl_create ($1, qtype_unknown ()); }
@@ -469,6 +477,7 @@ plainNamedDeclBase
      lltok_free ($3);
      /*!! lltok_free2 ($3, $5); */
    }
+;
 
 iterDecl
  : QITER newId TLPAREN genericParamList TRPAREN 
@@ -477,19 +486,23 @@ iterDecl
    { declareCIter ($2, $4); 
      lltok_free3 ($1, $3, $5); 
    }
+;
 
 macroDef
  : LLMACRO macroBody TENDMACRO     { exprNode_checkMacroBody ($2); lltok_free2 ($1, $3); }
  | LLMACROITER iterBody TENDMACRO  { exprNode_checkIterBody ($2); lltok_free2 ($1, $3); }
  | LLMACROEND endBody TENDMACRO    { exprNode_checkIterEnd ($2); lltok_free2 ($1, $3);}
  | LLMACRO TENDMACRO /* no stmt */ { exprChecks_checkEmptyMacroBody (); lltok_free2 ($1, $2); } 
+;
 
 fcnDefHdr
  : fcnDefHdrAux { clabstract_declareFunction ($1); }
+;
 
 metaStateConstraint
  : metaStateSpecifier TASSIGN metaStateExpression 
    { $$ = metaStateConstraint_create ($1, $3); lltok_free ($2); }
+;
 
 metaStateSpecifier
   : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
@@ -502,37 +515,45 @@ metaStateSpecifier
       $$ = metaStateSpecifier_createElipsis ($4); 
       lltok_free2 ($1, $3);
     }
+;
 
 metaStateExpression
 : metaStateSpecifier { $$ = metaStateExpression_create ($1); }
 | metaStateSpecifier TBAR metaStateExpression { $$ = metaStateExpression_createMerge ($1, $3); lltok_free ($2); }
+;
 
 metaStateName
 : METASTATE_NAME
+;
 
 /*drl*/
 
 constraintSeperator
 : TCAND
 | AND_OP
+;
 
 BufConstraintList
 : BufConstraint constraintSeperator BufConstraintList { $$ = constraintList_add ($3, $1); }
 | BufConstraint { $$ = constraintList_single ($1); } 
+;
 
 BufConstraint
 :  BufConstraintExpr relationalOp BufConstraintExpr {
  $$ = makeConstraintParse3 ($1, $2, $3);
  DPRINTF(("Done BufConstraint1\n")); }
+;
 
 bufferModifier
  : QMAXSET
  | QMAXREAD
+;
 
 relationalOp
  : GE_OP
  | LE_OP
  | EQ_OP
+;
 
 BufConstraintExpr
  : BufConstraintTerm 
@@ -540,10 +561,12 @@ BufConstraintExpr
  | TLPAREN BufConstraintExpr BufBinaryOp BufConstraintExpr TRPAREN {
    DPRINTF( ("Got BufConstraintExpr BINary Op ") );
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
+;
 
 BufConstraintTerm
  : BufConstraintSrefExpr { $$ =  constraintExpr_makeTermsRef ($1);} 
  | CCONSTANT { $$ = constraintExpr_makeIntLiteral (exprNode_getLongValue ($1)); }
+;
 
 BufConstraintSrefExpr
 : id            
@@ -577,6 +600,7 @@ BufConstraintSrefExpr
  | specClauseListExpr TDOT newId          { cstring_markOwned ($3);
 					    $$ = sRef_buildField ($1, $3); }
 */
+;
 
 /*BufConstraintExpr
 : BufConstraintTerm 
@@ -598,6 +622,7 @@ functionClauses
  : { $$ = functionClauseList_new (); }
  | functionClause functionClauses
    { $$ = functionClauseList_prepend ($2, $1); }
+;
 
 /*
 ** Inside macro definitions, there are no end macros.
@@ -608,6 +633,7 @@ functionClausesPlain
    { $$ = functionClauseList_new (); }
  | functionClausePlain functionClausesPlain
    { $$ = functionClauseList_prepend ($2, $1); }
+;
 
 functionClause
  : globalsClause   { $$ = functionClause_createGlobals ($1); }
@@ -616,6 +642,7 @@ functionClause
  | stateClause     { $$ = functionClause_createState ($1); }  
  | conditionClause { $$ = $1; }
  | warnClause      { $$ = functionClause_createWarn ($1); }
+;
 
 functionClausePlain
  : globalsClausePlain   { $$ = functionClause_createGlobals ($1); }
@@ -624,9 +651,11 @@ functionClausePlain
  | stateClausePlain     { $$ = functionClause_createState ($1); }  
  | conditionClausePlain { $$ = $1; }
  | warnClausePlain      { $$ = functionClause_createWarn ($1); }
+;
 
 globalsClause
  : globalsClausePlain QENDMACRO { $$ = $1; }
+;
 
 globalsClausePlain
  : QGLOBALS { setProcessingGlobalsList (); } 
@@ -635,12 +664,15 @@ globalsClausePlain
      unsetProcessingGlobals (); 
      $$ = globalsClause_create ($1, $3); 
    }
+;
 
 nomodsClause
  : QNOMODS { $$ = modifiesClause_createNoMods ($1); }
+;
 
 modifiesClause
  : modifiesClausePlain QENDMACRO { $$ = $1; }
+;
 
 modifiesClausePlain
  : QMODIFIES 
@@ -655,22 +687,27 @@ modifiesClausePlain
      context_releaseVars ();
      $$ = modifiesClause_create ($1, $3);
    }
+;
 
 flagSpec
  : flagId 
    { $$ = flagSpec_createPlain ($1); }
  | flagId TBAR flagSpec
    { $$ = flagSpec_createOr ($1, $3); }
+;
 
 flagId
  : NEW_IDENTIFIER
+;
 
 optWarnClause
  : warnClause
  | /* empty */ { $$ = warnClause_undefined; }
+;
 
 warnClause
  : warnClausePlain QENDMACRO { $$ = $1; }
+;
 
 warnClausePlain
  : QWARN flagSpec cconstantExpr
@@ -681,22 +718,27 @@ warnClausePlain
    }
  | QWARN flagSpec
    { $$ = warnClause_create ($1, $2, cstring_undefined); }
+;
 
 globIdList
  : globIdListExpr                     { $$ = globSet_single ($1); }
  | globIdList TCOMMA globIdListExpr   { $$ = globSet_insert ($1, $3); }
+;
  
 globIdListExpr 
  : optGlobQuals globId { $$ = clabstract_createGlobal ($2, $1); }
+;
 
 optGlobQuals
  : /* empty */           { $$ = qualList_undefined; }
  | globQual optGlobQuals { $$ = qualList_add ($2, $1); }
+;
 
 globId
  : id             { $$ = uentry_getSref ($1); }
  | NEW_IDENTIFIER { $$ = clabstract_unrecognizedGlobal ($1); }
  | initializer    { $$ = clabstract_checkGlobal ($1); }
+;
 
 globQual
  : QUNDEF   { $$ = qual_createUndef (); }
@@ -704,6 +746,7 @@ globQual
  | QOUT     { $$ = qual_createOut (); }
  | QIN      { $$ = qual_createIn (); }
  | QPARTIAL { $$ = qual_createPartial (); }
+;
 
 stateTag
  : QDEFINES
@@ -711,10 +754,12 @@ stateTag
  | QALLOCATES
  | QSETS
  | QRELEASES
+;
 
 conditionTag
  : QPRECLAUSE
  | QPOSTCLAUSE
+;
 
 fcnDefHdrAux
  : namedDecl                               
@@ -726,6 +771,7 @@ fcnDefHdrAux
    }
  | completeTypeSpecifier NotType namedDecl 
    { $$ = idDecl_fixBase ($3, $1); }
+;
  
 fcnBody
  : TLBRACE { checkDoneParams (); context_enterInnerContext (); } 
@@ -742,6 +788,7 @@ fcnBody
      $$ = $4; /* oldstyle */ 
      context_exitInner ($4);
    } 
+;
  
 fcnDef
  : fcnDefHdr fcnBody 
@@ -752,30 +799,35 @@ fcnDef
      
      context_exitFunction ();
    }
+;
 
 locModifies
  : modList optSemi           { $$ = $1; }
  | optSemi                   { $$ = sRefSet_new (); }
+;
  
 modListExpr
  : id                              { $$ = uentry_getSref ($1); checkModifiesId ($1); }
  | NEW_IDENTIFIER                  { $$ = fixModifiesId ($1); }
+ | TYPE_NAME_OR_ID                 { $$ = fixModifiesId ($1); }
  | modListExpr TLSQBR TRSQBR       { $$ = modListArrayFetch ($1, sRef_undefined); }
  | modListExpr TLSQBR mExpr TRSQBR { $$ = modListArrayFetch ($1, $3); }
  | TMULT modListExpr               { $$ = modListPointer ($2); }
  | TLPAREN modListExpr TRPAREN     { $$ = $2; }  
  | modListExpr TDOT newId          { $$ = modListFieldAccess ($1, $3); }
  | modListExpr ARROW_OP newId      { $$ = modListArrowAccess ($1, $3); }
-
+;
 
 mExpr
   : modListExpr     { $$ = $1; }
   | cconstantExpr   { $$ = sRef_makeUnknown (); /* sRef_makeConstant ($1); ? */ }
     /* arithmetic? */
+;
 
 modList
   : modListExpr                { $$ = sRefSet_single ($1); }
   | modList TCOMMA modListExpr { $$ = sRefSet_insert ($1, $3); }
+;
 
 specClauseListExpr
  : id                                     
@@ -790,10 +842,12 @@ specClauseListExpr
 					    $$ = sRef_buildField ($1, $3); }
  | specClauseListExpr ARROW_OP newId      { cstring_markOwned ($3);
                                             $$ = sRef_makeArrow ($1, $3); }
+;
 
 optSpecClauseList
  : /* empty */ { $$ = sRefSet_undefined }
  | specClauseList
+ ;
 
 specClauseList
   : specClauseListExpr                       
@@ -810,6 +864,7 @@ specClauseList
 	  $$ = $1;
 	}
     }
+;
 
 primaryExpr
  : id { $$ = exprNode_fromIdentifier ($1); }
@@ -821,6 +876,7 @@ primaryExpr
  | TLPAREN { exprChecks_inCompoundStatementExpression (); } 
    compoundStmt TRPAREN 
    { exprChecks_leaveCompoundStatementExpression (); $$ = exprNode_compoundStatementExpression ($1, $3); }
+;
  
 postfixExpr
  : primaryExpr 
@@ -834,10 +890,12 @@ postfixExpr
  | postfixExpr DEC_OP { $$ = exprNode_postOp ($1, $2); }
  | TLPAREN typeExpression TRPAREN TLBRACE typeInitializerList optComma TRBRACE 
    { /* added for C99 */ $$ = exprNode_undefined; /*@i87 no checking */ }
+;
 
 argumentExprList
  : assignExpr { $$ = exprNodeList_singleton ($1); }
  | argumentExprList TCOMMA assignExpr { $$ = exprNodeList_push ($1, $3); }
+;
  
 unaryExpr
  : postfixExpr 
@@ -851,48 +909,57 @@ unaryExpr
  | TEXCL castExpr  { $$ = exprNode_preOp ($2, $1); }
  | sizeofExpr      { $$ = $1; }
  | offsetofExpr    { $$ = $1; }
+;
 
 fieldDesignator
  : fieldDesignator TDOT newId         { $$ = cstringList_add ($1, $3); lltok_free ($2); }
  | fieldDesignator TLSQBR expr TRSQBR { $$ = $1; lltok_free2 ($2, $4); }
    /* evans 2002-07-02: offsetof designators can use array indexes */
  | newId                              { $$ = cstringList_single ($1); }
+;
 
 offsetofExpr
  : COFFSETOF IsType TLPAREN typeExpression NotType TCOMMA fieldDesignator TRPAREN IsType
    { $$ = exprNode_offsetof ($4, $7); 
      lltok_free3 ($1, $3, $6); lltok_free ($8); }
+;
 
 sizeofExpr
  : IsType { context_setProtectVars (); } 
    sizeofExprAux { context_sizeofReleaseVars (); $$ = $3; }
+;
 
 sizeofExprAux 
  : CSIZEOF TLPAREN typeExpression TRPAREN { $$ = exprNode_sizeofType ($3); lltok_free3 ($1, $2, $4); } 
  | CSIZEOF unaryExpr                      { $$ = exprNode_sizeofExpr ($2); lltok_free ($1); }
  | CALIGNOF TLPAREN typeExpression TRPAREN { $$ = exprNode_alignofType ($3); lltok_free3 ($1, $2, $4); } 
  | CALIGNOF unaryExpr                      { $$ = exprNode_alignofExpr ($2); lltok_free ($1); }
+;
  
 castExpr
  : unaryExpr 
  | TLPAREN typeExpression TRPAREN castExpr 
    { $$ = exprNode_cast ($1, $4, $2); lltok_free ($3); } 
+;
  
 timesExpr
  : castExpr 
  | timesExpr TMULT castExpr { $$ = exprNode_op ($1, $3, $2); }
  | timesExpr TDIV castExpr { $$ = exprNode_op ($1, $3, $2); }
  | timesExpr TPERCENT castExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 plusExpr
  : timesExpr 
  | plusExpr TPLUS timesExpr { $$ = exprNode_op ($1, $3, $2); }
  | plusExpr TMINUS timesExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 shiftExpr
  : plusExpr 
  | shiftExpr LEFT_OP plusExpr { $$ = exprNode_op ($1, $3, $2); }
  | shiftExpr RIGHT_OP plusExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 relationalExpr
  : shiftExpr 
@@ -900,15 +967,18 @@ relationalExpr
  | relationalExpr TGT shiftExpr { $$ = exprNode_op ($1, $3, $2); }
  | relationalExpr LE_OP shiftExpr { $$ = exprNode_op ($1, $3, $2); }
  | relationalExpr GE_OP shiftExpr { $$ = exprNode_op ($1, $3, $2); }
+;
  
 equalityExpr 
  : relationalExpr 
  | equalityExpr EQ_OP relationalExpr { $$ = exprNode_op ($1, $3, $2); }
  | equalityExpr NE_OP relationalExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 bitandExpr
  : equalityExpr 
  | bitandExpr TAMPERSAND equalityExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 xorExpr
  : bitandExpr 
@@ -918,6 +988,7 @@ xorExpr
 bitorExpr
  : xorExpr 
  | bitorExpr TBAR xorExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 andExpr 
  : bitorExpr 
@@ -930,6 +1001,7 @@ andExpr
      $$ = exprNode_op ($1, $4, $2); 
      context_exitAndClause ($$, $4);
    }
+;
 
 orExpr
  : andExpr 
@@ -943,12 +1015,14 @@ orExpr
      $$ = exprNode_op ($1, $4, $2); 
      context_exitOrClause ($$, $4);
    }
+;
 
 conditionalExpr 
  : orExpr 
  | orExpr TQUEST { exprNode_produceGuards ($1); context_enterTrueClause ($1); } expr TCOLON 
    { context_enterFalseClause ($1); } conditionalExpr
    { $$ = exprNode_cond ($1, $4, $7); context_exitClause ($1, $4, $7); }
+;
 
 assignExpr
  : conditionalExpr 
@@ -963,17 +1037,21 @@ assignExpr
  | unaryExpr AND_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
  | unaryExpr XOR_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
  | unaryExpr OR_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
+;
 
 expr
  : assignExpr 
  | expr TCOMMA assignExpr { $$ = exprNode_comma ($1, $3); } 
+;
 
 optExpr
  : /* empty */ { $$ = exprNode_undefined; }
  | expr 
+ ;
 
 constantExpr
  : conditionalExpr 
+;
 
 /* instance_orTypeDecl_and_possible_initialization */
 
@@ -981,6 +1059,7 @@ initializer
  : instanceDecl { $$ = $1; }
  | VA_DCL       { doVaDcl (); $$ = exprNode_makeError (); } 
  | typeDecl     { $$ = exprNode_makeError (); }
+;
 
 instanceDecl
  : completeTypeSpecifier IsType TSEMI 
@@ -1014,6 +1093,7 @@ instanceDecl
    { $$ = exprNode_concat ($9, exprNode_makeInitialization ($3, $8)); 
      unsetProcessingVars ();
    }
+;
 
 namedInitializer
  : namedDecl NotType 
@@ -1023,6 +1103,7 @@ namedInitializer
    }
  | namedDecl NotType TASSIGN { processNamedDecl ($1); } IsType init
    { $$ = exprNode_makeInitialization ($1, $6); }
+;
 
 typeDecl
  : CTYPEDEF completeTypeSpecifier { setProcessingTypedef ($2); } 
@@ -1030,29 +1111,36 @@ typeDecl
    { clabstract_declareType ($5, $7); }
  | CTYPEDEF completeTypeSpecifier IsType TSEMI { /* in the ANSI grammar, semantics unclear */ }
  | CTYPEDEF namedInitializerList IsType TSEMI { /* in the ANSI grammar, semantics unclear */ } 
+;
 
 IsType
  : { g_expectingTypeName = TRUE; }
+;
 
 PushType
  : { g_expectingTypeName = TRUE; context_pushLoc (); }
+;
 
 namedInitializerList
  :  namedInitializerListAux IsType { $$ = $1; }
+;
 
 namedInitializerListAux
  : namedInitializer { $$ = exprNodeList_singleton ($1); }
  | namedInitializerList TCOMMA NotType namedInitializer { $$ = exprNodeList_push ($1, $4); }
+;
 
 optDeclarators
  : /* empty */      { $$ = exprNode_makeError (); }
  | optDeclarators TCOMMA NotType namedInitializer { $$ = exprNode_concat ($1, $4); }
+;
 
 init
  : assignExpr                      
  | TLBRACE initList TRBRACE        { $$ = exprNode_makeInitBlock ($1, $2); lltok_free ($3); }
  | TLBRACE initList TCOMMA TRBRACE { $$ = exprNode_makeInitBlock ($1, $2); lltok_free2 ($3, $4); }
  | designation init                { $$ = exprNode_undefined; }
+;
 
 /*
 ** Splint parses these (added in ISO C99), but no checking yet...
@@ -1062,20 +1150,24 @@ designation
  : designatorList TASSIGN          { $$ = $1; }
  | newId TCOLON                    { $$ = exprNode_undefined; 
                                      /* gcc extension, obsolete since 2.5 */ }
+;
 
 designatorList
  : designator                      { $$ = exprNode_undefined; } 
  | designatorList designator       { $$ = exprNode_undefined; }
+;
 
 designator
  : TLSQBR constantExpr TRSQBR      { $$ = exprNode_undefined; }
  | TDOT newId                      { $$ = exprNode_undefined; }
+;
 
 initList
  : init 
    { $$ = exprNodeList_singleton ($1); }
  | initList TCOMMA init 
    { $$ = exprNodeList_push ($1, $3); }
+;
 
 /*
 ** need to do the storage class global hack so tags are
@@ -1088,9 +1180,11 @@ storageSpecifier
  | QSTATIC   { setStorageClass (SCSTATIC); $$ = qual_createStatic (); }
  | QAUTO     { $$ = qual_createAuto (); }
  | QREGISTER { $$ = qual_createRegister (); }
+;
 
 stateClause
  : stateClausePlain QENDMACRO { $$ = $1; }
+;
 
 stateClausePlain
  : stateTag NotType
@@ -1106,12 +1200,15 @@ stateClausePlain
      context_releaseVars ();
      $$ = stateClause_createPlain ($1, $4);
    }
+;
 
 conditionClause
  : conditionClausePlain QENDMACRO { $$ = $1; }
+;
 
 startConditionClause
 : conditionTag NotType { $$ = $1; context_enterFunctionHeader (); } 
+;
 
 conditionClausePlain
  : startConditionClause stateQualifier
@@ -1157,10 +1254,12 @@ conditionClausePlain
 
      DPRINTF (("FunctionclauseS: %s", functionClause_unparse ($$)));
    }
+;
 
 functionConstraint
  : BufConstraintList   { $$ = functionConstraint_createBufferConstraint ($1); }
  | metaStateConstraint { $$ = functionConstraint_createMetaStateConstraint ($1); DPRINTF (("Made constraint: %s", functionConstraint_unparse ($$))); } 
+;
  
 exitsQualifier
  : QEXITS        { $$ = qual_createExits (); }
@@ -1168,12 +1267,14 @@ exitsQualifier
  | QTRUEEXIT     { $$ = qual_createTrueExit (); }
  | QFALSEEXIT    { $$ = qual_createFalseExit (); }
  | QNEVEREXIT    { $$ = qual_createNeverExit (); }
+;
 
 checkQualifier
  : QCHECKED        { $$ = qual_createChecked (); }
  | QCHECKMOD       { $$ = qual_createCheckMod (); }
  | QUNCHECKED      { $$ = qual_createUnchecked (); }
  | QCHECKEDSTRICT  { $$ = qual_createCheckedStrict (); }
+;
 
 stateQualifier
  : QOWNED        { $$ = qual_createOwned (); }
@@ -1193,25 +1294,29 @@ stateQualifier
  | QOBSERVER     { $$ = qual_createObserver (); }
  | QNULLTERMINATED { $$ = qual_createNullTerminated (); } 
  | CANNOTATION   { $$ = qual_createMetaState ($1); }
-
+;
 
 paramQualifier
  : QRETURNED     { $$ = qual_createReturned (); }
  | QSEF          { $$ = qual_createSef (); }
+;
 
 visibilityQualifier
  : QUNUSED       { $$ = qual_createUnused (); }
  | QEXTERNAL     { $$ = qual_createExternal (); }
+;
 
 returnQualifier
  : QTRUENULL     { $$ = qual_createTrueNull (); }
  | QFALSENULL    { $$ = qual_createFalseNull (); }
+;
 
 typedefQualifier
  : QABSTRACT     { $$ = qual_createAbstract (); }
  | QCONCRETE     { $$ = qual_createConcrete (); }
  | QMUTABLE      { $$ = qual_createMutable (); }
  | QIMMUTABLE    { $$ = qual_createImmutable (); }
+;
 
 refcountQualifier
  : QREFCOUNTED   { $$ = qual_createRefCounted (); }
@@ -1220,18 +1325,21 @@ refcountQualifier
  | QRELDEF       { $$ = qual_createRelDef (); }
  | QNEWREF       { $$ = qual_createNewRef (); }
  | QTEMPREF      { $$ = qual_createTempRef (); }
+;
 
 typeModifier
  : QSHORT            { $$ = qual_createShort (); }
  | QLONG             { $$ = qual_createLong (); }
  | QSIGNED           { $$ = qual_createSigned (); }
  | QUNSIGNED         { $$ = qual_createUnsigned (); }
+;
 
 definedQualifier
  : QOUT              { $$ = qual_createOut (); }
  | QIN               { $$ = qual_createIn (); }
  | QPARTIAL          { $$ = qual_createPartial (); }
  | QSPECIAL          { $$ = qual_createSpecial (); }
+;
 
 typeQualifier
  : QCONST IsType       { $$ = qual_createConst (); }
@@ -1246,6 +1354,7 @@ typeQualifier
  | visibilityQualifier IsType { $$ = $1; }
  | typedefQualifier IsType { $$ = $1; }
  | refcountQualifier IsType { $$ = $1; }
+;
 
 /*
 ** This is copied into the mtgrammar!
@@ -1266,36 +1375,43 @@ typeSpecifier
  | suSpc NotType 
  | enumSpc NotType
  | typeModifier NotType           { $$ = ctype_fromQual ($1); }
+;
 
 completeType
  : IsType completeTypeSpecifier IsType
    { $$ = qtype_resolve ($2); }
+;
 
 completeTypeSpecifier
  : completeTypeSpecifierAux { $$ = $1; }
  | completeTypeSpecifierAux QALT altType QENDMACRO  
    { $$ = qtype_mergeAlt ($1, $3); }
+;
 
 altType
  : typeExpression
  | typeExpression TCOMMA altType
    { $$ = qtype_mergeAlt ($1, $3); } 
+;
 
 completeTypeSpecifierAux
  : storageSpecifier optCompleteType        { $$ = qtype_addQual ($2, $1); }
  | typeQualifier optCompleteType           { $$ = qtype_addQual ($2, $1); } 
  | typeSpecifier optCompleteType           { $$ = qtype_combine ($2, $1); }
+;
 
 optCompleteType
  : /* empty */                             { $$ = qtype_unknown (); }
  | completeTypeSpecifier                   { $$ = $1; }
-
+;
 
 optStructInvariant
 : /* empty */ { $$ = constraintList_undefined; }
 /*  drl commenting before a CVS commit 
    |  QINVARIANT BufConstraintList QENDMACRO { $$ = $2 }
 */
+;
+
 suSpc
  : NotType CSTRUCT newId IsType TLBRACE { sRef_setGlobalScopeSafe (); } 
    CreateStructInnerScope 
@@ -1328,32 +1444,38 @@ suSpc
    { $$ = ctype_createUnnamedUnion (uentryList_new ()); } 
  | NotType CSTRUCT newId NotType { $$ = handleStruct ($3); } 
  | NotType CUNION newId NotType { $$ = handleUnion ($3); }
+;
 
 NotType
  : { g_expectingTypeName = FALSE; }
+;
 
 structDeclList
  : structDecl 
  | macroDef { $$ = uentryList_undefined; /* bogus! */ }
  | structDeclList structDecl { $$ = uentryList_mergeFields ($1, $2); }
+;
 
 structDecl
  : completeTypeSpecifier NotType structNamedDeclList IsType TSEMI 
    { $$ = fixUentryList ($3, $1); }
  | completeTypeSpecifier IsType TSEMI 
    { $$ = fixUnnamedDecl ($1); }
+;
 
 structNamedDeclList 
  : structNamedDecl NotType                            
    { $$ = idDeclList_singleton ($1); }
  | structNamedDeclList TCOMMA structNamedDecl NotType
    { $$ = idDeclList_add ($1, $3); }
+;
 
 structNamedDecl  /* hack to get around namespace problems */ 
  : namedDecl                            { $$ = $1; }
  | TCOLON IsType constantExpr           { $$ = idDecl_undefined; }
  | namedDecl TCOLON IsType constantExpr { $$ = $1; }
    /* Need the IsType in case there is a cast in the constant expression. */
+;
 
 enumSpc
  : NotType CENUM TLBRACE enumeratorList TRBRACE IsType 
@@ -1361,6 +1483,7 @@ enumSpc
  | NotType CENUM newId TLBRACE { context_pushLoc (); } enumeratorList TRBRACE IsType
    { context_popLoc (); $$ = declareEnum ($3, $6); }
  | NotType CENUM newId IsType { $$ = handleEnum ($3); }
+;
 
 enumeratorList
  : enumerator 
@@ -1368,6 +1491,7 @@ enumeratorList
  | enumeratorList TCOMMA enumerator 
    { $$ = enumNameList_push ($1, $3); }
  | enumeratorList TCOMMA
+ ;
 
 enumerator
  : newId 
@@ -1380,6 +1504,7 @@ enumerator
      usymtab_supGlobalEntry (ue);
      $$ = $1; 
    }
+;
 
 optNamedDecl
  : namedDeclBase
@@ -1392,48 +1517,58 @@ optNamedDecl
    }
  | pointers optNamedDecl 
    { $$ = $2; qtype_adjustPointers ($1, idDecl_getTyp ($$)); }
+;
 
 namedDecl
  : namedDeclBase
  | pointers namedDeclBase 
    { $$ = $2; qtype_adjustPointers ($1, idDecl_getTyp ($$)); }
+;
 
 genericParamList
  : paramTypeList       { $$ = handleParamTypeList ($1); }
  | NotType paramIdList { $$ = handleParamIdList ($2); }  
+;
 
 innerMods
  : QCONST    { $$ = qual_createConst (); }
  | QRESTRICT { $$ = qual_createRestrict (); }
  | QVOLATILE { $$ = qual_createVolatile (); }
+;
 
 innerModsList
  : innerMods { $$ = qualList_single ($1); }
  | innerModsList innerMods { $$ = qualList_add ($1, $2); }
+;
 
 pointers
  : TMULT { $$ = pointers_create ($1); }
  | TMULT innerModsList { $$ = pointers_createMods ($1, $2); }
  | TMULT pointers { $$ = pointers_extend (pointers_create ($1), $2); } 
  | TMULT innerModsList pointers { $$ = pointers_extend (pointers_createMods ($1, $2), $3); }
+;
 
 paramIdList
  : idList 
  | idList TCOMMA CTOK_ELIPSIS { $$ = uentryList_add ($1, uentry_makeElipsisMarker ()); }
+;
 
 idList
  : newId { $$ = uentryList_single (uentry_makeVariableLoc ($1, ctype_int)); }
  | idList TCOMMA newId { $$ = uentryList_add ($1, uentry_makeVariableLoc ($3, ctype_int)); }
+;
 
 paramTypeList
  : CTOK_ELIPSIS { $$ = uentryList_single (uentry_makeElipsisMarker ()); }
  | paramList 
  | paramList TCOMMA CTOK_ELIPSIS { $$ = uentryList_add ($1, uentry_makeElipsisMarker ()); }
+;
 
 paramList
  : { storeLoc (); } paramDecl { $$ = uentryList_single ($2); }
  | paramList TCOMMA { storeLoc (); } paramDecl 
    { $$ = uentryList_add ($1, $4); }
+;
 
 paramDecl
  : IsType completeTypeSpecifier optNamedDecl IsType
@@ -1462,19 +1597,23 @@ paramDecl
      $$ = makeCurrentParam (tparam);
      idDecl_free (tparam);
    } 
+;
 
 typeExpression
  : completeType
  | completeType abstractDecl  { $$ = qtype_newBase ($1, $2); }
+;
 
 abstractDecl
  : pointers { $$ = ctype_adjustPointers ($1, ctype_unknown); }
  | abstractDeclBase
  | pointers abstractDeclBase { $$ = ctype_adjustPointers ($1, $2); }
+;
 
 optAbstractDeclBase
  : /* empty */ { $$ = ctype_unknown; }
  | abstractDeclBase 
+ ;
 
 abstractDeclBase
  : IsType TLPAREN NotType abstractDecl TRPAREN 
@@ -1493,6 +1632,7 @@ abstractDeclBase
    { $$ = ctype_makeFunction ($1, uentryList_makeMissingParams ()); }  
  | abstractDeclBase IsType TLPAREN paramTypeList TRPAREN 
    { $$ = ctype_makeParamsFunction ($1, $4); }  
+;
 
 /* statement */
 
@@ -1506,18 +1646,22 @@ stmt
  | iterationStmt 
  | iterStmt
  | jumpStmt 
+;
 
 
 iterBody
  : iterDefStmtList { $$ = $1; }
+;
 
 endBody
  : iterBody
+;
 
 iterDefStmtList
  : iterDefStmt                 
  | iterDefStmtList iterDefStmt 
    { $$ = exprNode_concat ($1, $2); }
+;
 
 iterDefIterationStmt
  : iterWhilePred iterDefStmtList         
@@ -1528,6 +1672,7 @@ iterDefIterationStmt
    { $$ = exprNode_doWhile ($2, $5); }
  | forPred iterDefStmt
    { $$ = exprNode_for ($1, $2); } 
+;
 
 forPred
  : CFOR TLPAREN optExpr TSEMI optExpr TSEMI 
@@ -1535,6 +1680,7 @@ forPred
    TRPAREN 
    { $$ = exprNode_forPred ($3, $5, $8); 
      context_enterForClause ($5); }
+;
 
 partialIterStmt
  : ITER_NAME CreateInnerScope TLPAREN 
@@ -1542,6 +1688,7 @@ partialIterStmt
    iterArgList TRPAREN 
    { $$ = exprNode_iterStart ($1, $5); }
  | ITER_ENDNAME { $$ = exprNode_createId ($1); }
+;
 
 iterDefStmt
  : labeledStmt 
@@ -1557,22 +1704,27 @@ iterDefStmt
  | jumpStmt 
  | TLPAREN iterDefStmt TRPAREN { $$ = $2; }
  | error { $$ = exprNode_makeError (); }
+;
 
 iterSelectionStmt
  : ifPred { exprNode_checkIfPred ($1); } iterDefStmt 
    { /* don't: context_exitTrueClause ($1, $2); */
      $$ = exprNode_if ($1, $3); 
    }
+;
 
 openScope
  : CreateInnerScope TLBRACE { $$ = exprNode_createTok ($2); }
+;
 
 closeScope
  : DeleteInnerScopeSafe TRBRACE { $$ = exprNode_createTok ($2); }
+;
 
 macroBody
  : stmtErr    
  | stmtListErr
+;
  
 stmtErr
  : labeledStmt
@@ -1586,10 +1738,12 @@ stmtErr
  | TLPAREN stmtErr TRPAREN { $$ = exprNode_addParens ($1, $2); }
  | jumpStmt 
  | error { $$ = exprNode_makeError (); }
+;
 
 labeledStmt
  : newId TCOLON      { $$ = exprNode_labelMarker ($1); }
  | QNOTREACHED stmt  { $$ = exprNode_notReached ($2); }
+;
 
 /*
 ** We allow more than one QFALLTHROUGH token to support mixed lint/splint markers.
@@ -1598,6 +1752,7 @@ labeledStmt
 optExtraFallThroughs
  : /* empty */ { ; }
  | QFALLTHROUGH optExtraFallThroughs { ; }
+;
 
 /* Note that we can semantically check that the object to the case is
  indeed constant. In this case, we may not want to go through this effort */
@@ -1607,35 +1762,44 @@ caseStmt
    TCOLON            { $$ = exprNode_caseMarker ($2, FALSE); }
  | QFALLTHROUGH optExtraFallThroughs CASE constantExpr { context_enterCaseClause ($4); } 
    TCOLON            { $$ = exprNode_caseMarker ($4, TRUE); }
+;
 
 defaultStmt
  : DEFAULT { context_enterCaseClause (exprNode_undefined); } 
    TCOLON { $$ = exprNode_defaultMarker ($1, FALSE); }
  | QFALLTHROUGH optExtraFallThroughs DEFAULT { context_enterCaseClause (exprNode_undefined); } 
    TCOLON { $$ = exprNode_defaultMarker ($3, TRUE); }
+;
 
 compoundStmt
  : TLPAREN compoundStmt TRPAREN { $$ = $2; }
  | CreateInnerScope compoundStmtAux 
    { $$ = $2; context_exitInner ($2); }
+;
 
 compoundStmtErr
  : CreateInnerScope compoundStmtAuxErr DeleteInnerScope { $$ = $2; }
+;
 
 CreateInnerScope
  : { context_enterInnerContext (); }
+;
 
 DeleteInnerScope
  : { context_exitInnerPlain (); }
+;
 
 CreateStructInnerScope
  : { context_enterStructInnerContext (); }
+;
 
 DeleteStructInnerScope
  : { context_exitStructInnerContext (); }
+;
 
 DeleteInnerScopeSafe
  : { context_exitInnerSafe (); }
+;
 
 compoundStmtRest
  : TRBRACE { $$ = exprNode_createTok ($1); }
@@ -1652,10 +1816,12 @@ compoundStmtRest
    { $$ = exprNode_notReached (exprNode_updateLocation (exprNode_concat ($1, $2), 
 							lltok_getLoc ($3))); 
    }
+;
 
 compoundStmtAux
  : TLBRACE compoundStmtRest 
    { $$ = exprNode_makeBlock ($2); }
+;
 
 compoundStmtAuxErr
  : TLBRACE TRBRACE 
@@ -1666,35 +1832,43 @@ compoundStmtAuxErr
    { $$ = exprNode_updateLocation ($2, lltok_getLoc ($3)); }
  | TLBRACE initializerList stmtList TRBRACE 
    { $$ = exprNode_updateLocation (exprNode_concat ($2, $3), lltok_getLoc ($4)); }
+;
 
 stmtListErr
  : stmtErr 
  | stmtListErr stmtErr { $$ = exprNode_concat ($1, $2); }
+;
 
 initializerList
  : initializer { $$ = $1; }
  | initializerList initializer { $$ = exprNode_concat ($1, $2); }
+;
 
 typeInitializerList
  : typeInitializer { $$ = $1; }
  | typeInitializerList TCOMMA typeInitializer { $$ = exprNode_concat ($1, $3); }
+;
 
 typeInitializer
  : assignExpr { $$ = $1; }
  | TLBRACE typeInitializerList optComma TRBRACE { $$ = $2; } 
+;
 
 stmtList
  : stmt { $$ = $1; }
  | stmtList stmt { $$ = exprNode_concat ($1, $2); }
- 
+;
+
 expressionStmt 
  : TSEMI { $$ = exprNode_createTok ($1); }
  | expr TSEMI { $$ = exprNode_statement ($1, $2); }
+;
 
 expressionStmtErr
  : TSEMI { $$ = exprNode_createTok ($1); }
  | expr TSEMI { $$ = exprNode_statement ($1, $2); }
  | expr { $$ = exprNode_checkExpr ($1); } 
+;
 
 ifPred
  : CIF TLPAREN expr TRPAREN 
@@ -1708,6 +1882,7 @@ ifPred
  ** not ANSI: | CIF TLPAREN compoundStmt TRPAREN 
  **             { $$ = $3; context_enterTrueClause (); } 
  */
+;
 
 selectionStmt
  : ifPred stmt 
@@ -1722,14 +1897,17 @@ selectionStmt
    }
  | SWITCH TLPAREN expr { context_enterSwitch ($3); } 
    TRPAREN stmt        { $$ = exprNode_switch ($3, $6); }
+;
  
 whilePred
  : WHILE TLPAREN expr TRPAREN 
    { $$ = exprNode_whilePred ($3); context_enterWhileClause ($3); }
    /* not ANSI: | WHILE TLPAREN compoundStmt TRPAREN stmt { $$ = exprNode_while ($3, $5); } */
+;
 
 iterWhilePred
  : WHILE TLPAREN expr TRPAREN { $$ = exprNode_whilePred($3); }
+;
 
 iterStmt
  : ITER_NAME { context_enterIterClause (); } 
@@ -1740,11 +1918,13 @@ iterStmt
      $$ = exprNode_iter ($1, $6, $8, $9); 
 
    } 
+;
  
 iterArgList 
  : iterArgExpr { $$ = exprNodeList_singleton ($1); }
  | iterArgList { nextIterParam (); } TCOMMA iterArgExpr 
    { $$ = exprNodeList_push ($1, $4); }
+;
 
 iterArgExpr
   : assignIterExpr  { $$ = exprNode_iterExpr ($1); }
@@ -1761,6 +1941,7 @@ iterArgExpr
 			}
 		    }
   | NEW_IDENTIFIER  { $$ = exprNode_iterNewId ($1); }
+;
 
 /*
 ** everything is the same, EXCEPT it cannot be a NEW_IDENTIFIER 
@@ -1769,10 +1950,12 @@ iterArgExpr
 cconstantExpr
  : CCONSTANT
  | cconstantExpr CCONSTANT { $$ = exprNode_combineLiterals ($1, $2); }  
+;
 
 primaryIterExpr
  : cconstantExpr 
  | TLPAREN expr TRPAREN { $$ = exprNode_addParens ($1, $2); }
+;
  
 postfixIterExpr
  : primaryIterExpr 
@@ -1785,6 +1968,7 @@ postfixIterExpr
  | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $3, $4); }
  | postfixExpr INC_OP { $$ = exprNode_postOp ($1, $2); }
  | postfixExpr DEC_OP { $$ = exprNode_postOp ($1, $2); }
+;
  
 unaryIterExpr
  : postfixIterExpr 
@@ -1797,26 +1981,31 @@ unaryIterExpr
  | TTILDE castExpr     { $$ = exprNode_preOp ($2, $1); }
  | TEXCL castExpr      { $$ = exprNode_preOp ($2, $1); }
  | sizeofExpr          { $$ = $1; }
+;
 
 castIterExpr
  : unaryIterExpr 
  | TLPAREN typeExpression TRPAREN castExpr { $$ = exprNode_cast ($1, $4, $2); } 
+;
  
 timesIterExpr
  : castIterExpr 
  | timesExpr TMULT castExpr { $$ = exprNode_op ($1, $3, $2); }
  | timesExpr TDIV castExpr { $$ = exprNode_op ($1, $3, $2); }
  | timesExpr TPERCENT castExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 plusIterExpr
  : timesIterExpr 
  | plusExpr TPLUS timesExpr { $$ = exprNode_op ($1, $3, $2); }
  | plusExpr TMINUS timesExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 shiftIterExpr
  : plusIterExpr 
  | shiftExpr LEFT_OP plusExpr { $$ = exprNode_op ($1, $3, $2); }
  | shiftExpr RIGHT_OP plusExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 relationalIterExpr
  : shiftIterExpr 
@@ -1824,15 +2013,18 @@ relationalIterExpr
  | relationalExpr TGT shiftExpr { $$ = exprNode_op ($1, $3, $2); }
  | relationalExpr LE_OP shiftExpr { $$ = exprNode_op ($1, $3, $2); }
  | relationalExpr GE_OP shiftExpr { $$ = exprNode_op ($1, $3, $2); }
+;
  
 equalityIterExpr 
  : relationalIterExpr 
  | equalityExpr EQ_OP relationalExpr { $$ = exprNode_op ($1, $3, $2); }
  | equalityExpr NE_OP relationalExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 bitandIterExpr
  : equalityIterExpr 
  | bitandExpr TAMPERSAND equalityExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 xorIterExpr
  : bitandIterExpr 
@@ -1842,20 +2034,24 @@ xorIterExpr
 bitorIterExpr
  : xorIterExpr 
  | bitorExpr TBAR xorExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 andIterExpr 
  : bitorIterExpr 
  | andExpr AND_OP bitorExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 orIterExpr
  : andIterExpr 
  | orExpr OR_OP andExpr { $$ = exprNode_op ($1, $3, $2); }
+;
 
 conditionalIterExpr 
  : orIterExpr 
  | orExpr TQUEST { context_enterTrueClause ($1); } 
    expr TCOLON { context_enterFalseClause ($1); } conditionalExpr
    { $$ = exprNode_cond ($1, $4, $7); }
+;
 
 assignIterExpr
  : conditionalIterExpr 
@@ -1870,13 +2066,16 @@ assignIterExpr
  | unaryExpr AND_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
  | unaryExpr XOR_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
  | unaryExpr OR_ASSIGN assignExpr { $$ = exprNode_assign ($1, $3, $2); } 
+;
 
 endIter
  : ITER_ENDNAME { $$ = $1; }
  | /* empty */  { $$ = uentry_undefined; } 
+;
 
 doHeader
  : DO { context_enterDoWhileClause (); $$ = $1; }
+;
   
 iterationStmt 
  : whilePred stmt 
@@ -1885,6 +2084,7 @@ iterationStmt
    { $$ = exprNode_statement (exprNode_doWhile ($2, $5), $7); }
  | forPred stmt 
    { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }
+;
 
 iterationStmtErr 
  : whilePred stmtErr { $$ = exprNode_while ($1, $2); context_exitWhileClause ($1, $2); }
@@ -1893,6 +2093,7 @@ iterationStmtErr
  | doHeader stmtErr WHILE TLPAREN expr TRPAREN 
    { $$ = exprNode_doWhile ($2, $5); }
  | forPred stmtErr { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }
+;
  
 jumpStmt
  : GOTO newId TSEMI         { $$ = exprNode_goto ($2); }
@@ -1906,17 +2107,21 @@ jumpStmt
  | QSAFEBREAK BREAK TSEMI   { $$ = exprNode_break ($2, QSAFEBREAK); }
  | RETURN TSEMI             { $$ = exprNode_nullReturn ($1); }
  | RETURN expr TSEMI        { $$ = exprNode_return ($2); }
+;
  
 optSemi
  : 
  | TSEMI { ; } 
+;
 
 optComma
  : 
  | TCOMMA { ; } 
+;
 
 id
  : IDENTIFIER 
+;
 
 newId
  : NEW_IDENTIFIER 
@@ -1924,12 +2129,14 @@ newId
  | ITER_ENDNAME    { $$ = uentry_getName ($1); }
  | id              { $$ = uentry_getName ($1); }
  | TYPE_NAME_OR_ID { $$ = $1; } 
+;
 
 typeName
  : TYPE_NAME
  | TYPE_NAME_OR_ID { $$ = ctype_unknown; }
  | CTYPEOF TLPAREN expr TRPAREN { $$ = exprNode_getType ($3); exprNode_free ($3); }
  | CTYPEOF TLPAREN typeExpression TRPAREN { $$ = qtype_getType ($3); } 
+;
 
 %%
 

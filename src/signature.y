@@ -137,6 +137,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 %%
 
 top: operatorList { lslOpList_free ($1); } 
+  ;
  
 operatorList: operator 
               { lslOpList x = lslOpList_new ();
@@ -146,17 +147,20 @@ operatorList: operator
             | operatorList operator
               { lslOpList_add ($1, $2);
 		$$ = $1; } 
+;
 
 operator: name LST_COLON signature 
           { $$ = makelslOpNode ($1, $3); }
 /* The next production is never used in the output of lsl -syms 
           |  name
           { $$ = makelslOpNode ($1, (sigNode)0); } */
+;
  
 name: opId /* check for the case of if_then_else */
       { $$ = makeNameNodeId ($1); } 
     | opForm
       { $$ = makeNameNodeForm ($1); }
+;
  
 opForm 
      : LST_ifTOKEN LST_MARKERSYM LST_thenTOKEN LST_MARKERSYM LST_elseTOKEN LST_MARKERSYM
@@ -201,7 +205,7 @@ opForm
      | LST_MARKERSYM LST_FIELDMAPSYM LST_SIMPLEID
      { $$ = makeOpFormNode ($1, OPF_MMAP, 
 			    opFormUnion_createAnyOp ($3), ltoken_undefined); }
-			  
+;			  
 
 anyOp: LST_SIMPLEOP
        { $$ = $1; }
@@ -209,43 +213,53 @@ anyOp: LST_SIMPLEOP
        { $$ = $1; }
      | LST_EQOP
        { $$ = $1; }
+;
 
 middle: /* empty */
         { $$ = 0; }      
       | placeList
         { $$ = $1; }      
+;
  
 placeList: LST_MARKERSYM
            { $$ = 1; }      
          | placeList separator LST_MARKERSYM
            { $$ = $1 + 1; }      
+;
  
 separator: LST_COMMA
            { $$ = $1; }      
          | LST_SEPSYM
            { $$ = $1; }      
+;
 
 signature: domain LST_MAPSYM sortId
            { $$ = makesigNode ($2, $1, $3); }
+;
 
 domain: /* empty */
         { $$ = ltokenList_new (); } 
       | sortList
         { $$ = $1; }
+;
  
 sortList: sortId
           { $$ = ltokenList_singleton ($1); } 
         | sortList LST_COMMA sortId
           { $$ = ltokenList_push ($1, $3); }  
+;
 
 sortId: LST_SIMPLEID 
         { 
 	  $$ = $1; 
 	  ltoken_setText ($$, processTraitSortId (ltoken_getText ($1))); 
 	} 
+;
 
 opId: LST_SIMPLEID
       { $$ = $1; }
+;
+
 %%
 
 # include "bison.reset"

@@ -125,7 +125,7 @@ stateInfo_makeLoc (fileloc loc)
   return ret;
 }
 
-/*@only@*/ stateInfo
+/*@only@*/ /*@notnull@*/ stateInfo
 stateInfo_makeRefLoc (/*@exposed@*/ sRef ref, fileloc loc)
      /*@post:isnull result->previous@*/
 {

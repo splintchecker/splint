@@ -1010,7 +1010,8 @@ cppReader_parseExpression (cppReader *pfile)
       while (top->rprio > lprio)
 	{
 	  /*@-usedef@*/
-	  long v1 = top[-1].value, v2 = top[0].value;
+	  HOST_WIDE_INT v1 = top[-1].value;
+	  HOST_WIDE_INT v2 = top[0].value;
 	  bool unsigned1 = top[-1].unsignedp;
 	  bool unsigned2 = top[0].unsignedp;
 
@@ -1303,8 +1304,8 @@ cppReader_parseExpression (cppReader *pfile)
       if (top == limit)
 	{
 	  struct operation *new_stack;
-	  int old_size = (char *) limit - (char *) stack;
-	  size_t new_size = size_fromInt (2 * old_size);
+	  size_t old_size = size_fromInt ((char *) limit - (char *) stack);
+	  size_t new_size = 2 * old_size;
 
 	  if (stack != init_stack)
 	    {

@@ -95,7 +95,8 @@ static char savechar = '\0';
 static /*@owned@*/ cstring s_lastidprocessed = cstring_undefined;
 static int lminput (void);
 static int tokLength = 0;
-static bool inSpecPart = FALSE;
+static bool s_inSpecPart = FALSE;
+static int s_whichSpecPart;
 static bool continueLine = FALSE;
 
 static int ninput (void);
@@ -572,7 +573,8 @@ L'(\\.|[^\\'])+'       { setTokLengthT (mstring_length (yytext));
 		}
 "%}"            { /* AFTER_COMMENT_MARKER */ 
                   setTokLength (2);
-		  inSpecPart = FALSE;
+		  s_inSpecPart = FALSE;
+		  s_whichSpecPart = BADTOK;
 		  RETURN_TOK (QENDMACRO); }
 "\\"            { incColumn (); continueLine = TRUE; }
 .		{ incColumn (); 
@@ -719,8 +721,11 @@ static struct skeyword s_keytable[] = {
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
   { "testInRange", QTESTINRANGE},
+  { "isnull", QISNULL }, 
   { "MaxSet", QMAXSET},
   { "MaxRead", QMAXREAD},
+  { "maxSet", QMAXSET},
+  { "maxRead", QMAXREAD},
   { "reldef", QRELDEF } ,
   { "observer", QOBSERVER } ,
   { "exits", QEXITS } ,
@@ -2038,7 +2043,8 @@ static int handleLlSpecial (void)
     {
       tokLength = charsread;
       sfree (os);
-      inSpecPart = TRUE;
+      s_inSpecPart = TRUE;
+      s_whichSpecPart = tok;
       fileloc_free (loc);
       return tok;
     }
@@ -2670,10 +2676,12 @@ static int processIdentifier (cstring id)
   context_clearJustPopped ();
   cscanner_setLastIdentifier (id);
 
+  DPRINTF (("Context: %s", context_unparse ()));
+
   if (context_inFunctionHeader ())
     {
       int tok = commentMarkerToken (id);
-      DPRINTF (("in function decl..."));
+      DPRINTF (("in function decl: %s", id));
 
       if (tok != BADTOK)
 	{
@@ -2682,7 +2690,7 @@ static int processIdentifier (cstring id)
       else 
 	{
 	  tok = tokenMacroCode (id);
-
+	  
 	  if (tok != BADTOK)
 	    {
 	      return tok;
@@ -2721,6 +2729,8 @@ static int processIdentifier (cstring id)
 	    }
 	}
     }
+
+  DPRINTF (("Here!"));
 
   /* Consider handling: Defined by C99 as static const char __func__[] */
 
@@ -3214,18 +3224,30 @@ processSpec (int tok)
 {
   size_t length = strlen (yytext);
   
-  if (inSpecPart)
+  if (s_inSpecPart)
     {
-      setTokLengthT (length);
-      RETURN_TOK (tok);
+      if (s_whichSpecPart == QMODIFIES
+	  || s_whichSpecPart == QDEFINES
+	  || s_whichSpecPart == QUSES 
+	  || s_whichSpecPart == QALLOCATES
+	  || s_whichSpecPart == QSETS
+	  || s_whichSpecPart == QRELEASES
+	  || s_whichSpecPart == QPRECLAUSE
+	  || s_whichSpecPart == QPOSTCLAUSE
+	  || s_whichSpecPart == QINVARIANT)
+	{
+	  ; /* Allow specificiation keywords to be used as identifiers in these contexts. */
+	}
+      else 
+	{
+	  setTokLengthT (length);
+	  RETURN_TOK (tok);
+	}
     }
-  else
-    {
-      
-      context_saveLocation ();
-      setTokLengthT (length);
-      return (processIdentifier (makeIdentifier (yytext)));
-    }
+  
+  context_saveLocation ();
+  setTokLengthT (length);
+  return (processIdentifier (makeIdentifier (yytext)));
 }
 
 void cscanner_expectingMetaStateName ()

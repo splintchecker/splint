@@ -159,21 +159,25 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 file
 : {}
 | mtsDeclaration {}
+;
 
 mtsDeclaration
 : MT_STATE declarationNode MT_END 
   { mtreader_processDeclaration ($2); }
 | MT_GLOBAL MT_STATE declarationNode MT_END
   { mtreader_processGlobalDeclaration ($3); }
+;
 
 declarationNode
 : MT_IDENT declarationPieces
   { $$ = mtDeclarationNode_create ($1, $2); }
+;
 
 declarationPieces
 : { $$ = mtDeclarationPieces_create (); }
 | declarationPiece declarationPieces 
   { $$ = mtDeclarationPieces_append ($2, $1); }
+;
 
 declarationPiece
 : contextDeclaration { $$ = mtDeclarationPiece_createContext ($1); }
@@ -186,14 +190,17 @@ declarationPiece
 | preconditionsDeclaration { $$ = mtDeclarationPiece_createPreconditions ($1); }
 | postconditionsDeclaration { $$ = mtDeclarationPiece_createPostconditions ($1); }
 | loseReferenceDeclaration { $$ = mtDeclarationPiece_createLosers ($1); }
+;
 
 contextDeclaration
 : MT_CONTEXT contextSelection { $$ = $2; }
   /* ??? should it be a list? */
+;
 
 optContextSelection
 : /* empty */ { $$ = mtContextNode_createAny (); }
 | contextSelection
+;
 
 contextSelection
 : MT_PARAMETER optType { $$ = mtContextNode_createParameter ($2); }
@@ -202,6 +209,7 @@ contextSelection
 | MT_CLAUSE optType    { $$ = mtContextNode_createClause ($2); } 
 | MT_LITERAL optType   { $$ = mtContextNode_createLiteral ($2); }
 | MT_NULL optType      { $$ = mtContextNode_createNull ($2); }
+;
 
 /*
 ** Wish I could share the C grammar here...cut-and-paste instead.
@@ -210,43 +218,51 @@ contextSelection
 optType
 : /* empty */ { $$ = ctype_unknown; }
 | typeExpression { DPRINTF (("Type: %s", qtype_unparse ($1))); $$ = qtype_getType ($1); }
+;
 
 typeExpression
 : completeType
 | completeType abstractDecl  { $$ = qtype_newBase ($1, $2); }
+;
 
 completeType
 : completeTypeAux { $$ = $1; }
 | completeType MT_BAR typeExpression
   { $$ = qtype_mergeAlt ($1, $3); }
+;
 
 completeTypeAux
 : typeSpecifier optCompleteType { $$ = qtype_combine ($2, $1); }
+;
 
 optCompleteType
 : /* empty */ { $$ = qtype_unknown (); }
 | completeType { $$ = $1; }
-
+;
 
 abstractDecl
  : pointers { $$ = ctype_adjustPointers ($1, ctype_unknown); }
  | abstractDeclBase
  | pointers abstractDeclBase { $$ = ctype_adjustPointers ($1, $2); }
+;
 
 pointers
  : MT_STAR { $$ = pointers_createMt ($1); }
  | MT_STAR innerModsList { $$ = pointers_createModsMt ($1, $2); }
  | MT_STAR pointers { $$ = pointers_extend (pointers_createMt ($1), $2); }
  | MT_STAR innerModsList pointers { $$ = pointers_extend (pointers_createModsMt ($1, $2), $3); }
+;
 
 innerMods
  : MT_CONST    { $$ = qual_createConst (); }
  | MT_VOLATILE { $$ = qual_createVolatile (); }
  | MT_RESTRICT { $$ = qual_createRestrict (); }
+;
 
 innerModsList
  : innerMods { $$ = qualList_single ($1); }
  | innerModsList innerMods { $$ = qualList_add ($1, $2); }
+;
 
 abstractDeclBase
  : MT_LPAREN abstractDecl MT_RPAREN { $$ = ctype_expectFunction ($2); }
@@ -256,6 +272,7 @@ abstractDeclBase
  | abstractDeclBase MT_LBRACKET constantExpr MT_RBRACKET 
    { $$ = ctype_makeFixedArray ($1, exprNode_getLongValue ($3)); }
 */
+;
 
 typeSpecifier
 : MT_CHAR { $$ = ctype_char; } 
@@ -271,94 +288,119 @@ typeSpecifier
  /* | suSpc 
  | enumSpc
  | typeModifier NotType { $$ = ctype_fromQual ($1); } */
+;
 
 typeName
  : MT_IDENT { $$ = mtscanner_lookupType ($1); }
+;
 
 valuesDeclaration
 : MT_ONEOF valuesList { $$ = mtValuesNode_create ($2); }
+;
 
 valuesList
 : MT_IDENT { $$ = cstringList_single (mttok_getText ($1)); }
 | MT_IDENT MT_COMMA valuesList 
   { $$ = cstringList_prepend ($3, mttok_getText ($1)); }
+;
 
 defaultNode
 : MT_DEFAULT valueChoice { $$ = $2; }
+;
 
 defaultsDeclaration
 : MT_DEFAULTS defaultDeclarationList { $$ = mtDefaultsNode_create ($1, $2); }
+;
 
 defaultDeclarationList
 : contextSelection MT_ARROW valueChoice 
 { $$ = mtDefaultsDeclList_single (mtDefaultsDecl_create ($1, $3)); }
 | contextSelection MT_ARROW valueChoice defaultDeclarationList 
 { $$ = mtDefaultsDeclList_prepend ($4, mtDefaultsDecl_create ($1, $3)); }
+;
 
 annotationsDeclaration
 : MT_ANNOTATIONS annotationsDeclarationList { $$ = mtAnnotationsNode_create ($2); }
+;
 
 annotationsDeclarationList
 : annotationDeclaration { $$ = mtAnnotationList_single ($1); }
 | annotationDeclaration annotationsDeclarationList 
   { $$ = mtAnnotationList_prepend ($2, $1); }
+;
 
 annotationDeclaration
 : MT_IDENT optContextSelection MT_ARROW valueChoice 
   { $$ = mtAnnotationDecl_create ($1, $2, $4); }
+;
 
 mergeDeclaration
 : MT_MERGE mergeClauses { $$ = mtMergeNode_create ($2); }
+;
 
 mergeClauses
 : mergeClause { $$ = mtMergeClauseList_single ($1); }
 | mergeClause mergeClauses { $$ = mtMergeClauseList_prepend ($2, $1); }
+;
 
 mergeClause
 : mergeItem MT_PLUS mergeItem MT_ARROW transferAction
   { $$ = mtMergeClause_create ($1, $3, $5); }
+;
 
 mergeItem
 : valueChoice { $$ = mtMergeItem_createValue ($1); } 
 | MT_STAR { $$ = mtMergeItem_createStar ($1); } 
+;
 
 preconditionsDeclaration
 : MT_PRECONDITIONS transferClauses { $$ = $2; }
+;
 
 postconditionsDeclaration
 : MT_POSTCONDITIONS transferClauses { $$ = $2; }
+;
 
 transfersDeclaration
 : MT_TRANSFERS transferClauses { $$ = $2; }
+;
 
 loseReferenceDeclaration
 : MT_LOSEREFERENCE lostClauses { $$ = $2; }
+;
 
 lostClauses
 : lostClause { $$ = mtLoseReferenceList_single ($1); }
 | lostClause lostClauses { $$ = mtLoseReferenceList_prepend ($2, $1); }
+;
 
 lostClause
 : valueChoice MT_ARROW errorAction { $$ = mtLoseReference_create ($1, $3); }
+;
 
 transferClauses
 : transferClause { $$ = mtTransferClauseList_single ($1); }
 | transferClause transferClauses { $$ = mtTransferClauseList_prepend ($2, $1); }
+;
 
 transferClause
 : valueChoice MT_AS valueChoice MT_ARROW transferAction 
   { $$ = mtTransferClause_create ($1, $3, $5); }
+;
 
 transferAction
 : valueChoice { $$ = mtTransferAction_createValue ($1); }
 | errorAction { $$ = $1; }
+;
 
 errorAction
 : MT_ERROR { $$ = mtTransferAction_createError ($1); } 
 | MT_ERROR MT_STRINGLIT { $$ = mtTransferAction_createErrorMessage ($2); }
+;
 
 valueChoice
  : MT_IDENT 
+;
 
 %%
 
