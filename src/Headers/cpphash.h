@@ -41,21 +41,21 @@ struct s_hashNode {
 extern void cppReader_deleteMacro (/*@exposed@*/ hashNode p_hp) 
      /*@modifies internalState, p_hp@*/;
 
-extern /*@exposed@*/ hashNode cppReader_install (char *, int, 
+extern /*@exposed@*/ hashNode cpphash_install (char *, int, 
 						  enum node_type, int, 
 						  /*@only@*/ /*@null@*/ char *, int);
 
 extern void cppReader_hashCleanup (void);
-extern /*@null@*/ /*@exposed@*/ hashNode cppReader_lookup (char *, int, int); 
-extern /*@null@*/ /*@exposed@*/ hashNode cppReader_lookupExpand (char *, int, int); 
+extern /*@null@*/ /*@exposed@*/ hashNode cpphash_lookup (char *, int, int); 
+extern /*@null@*/ /*@exposed@*/ hashNode cpphash_lookupExpand (char *, int, int, bool p_forceExpand); 
 
+extern int cpphash_hashCode (const char *p_name, int p_len, int p_hashsize) /*@*/ ;
 extern void cppReader_saveHashtab (void);
 extern void cppReader_restoreHashtab (void);
-extern int hashf (const char *p_name, int p_len, int p_hashsize);
 
 extern /*@exposed@*/ hashNode 
-cppReader_installMacro (char *p_name, int p_len, 
-			/*@only@*/ struct definition *p_defn, int p_hash);
+cpphash_installMacro (char *p_name, int p_len, 
+		      /*@only@*/ struct definition *p_defn, int p_hash);
 
 # else
 # error "Multiple include"

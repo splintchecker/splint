@@ -21,10 +21,10 @@ int main(void)
 void init_arr(float arr[],
 	      long int *j)
 {
-	long i;
-
-	*j = 2L;
-	for( i=0; i < 2L; i++ ) {
-		arr[i] = (float)(i+1);
-	}
+  long i;
+  
+  *j = 2L;
+  for (i=0; i < 2L; i++) {
+    arr[i] = (float)(i+1);
+  }
 }

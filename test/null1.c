@@ -4,7 +4,7 @@ void g(/*@temp@*/ int *y);
 
 /*@truenull@*/ bool ptrpred (/*@out@*/ /*@null@*/ int *x)
 {
-  return (x == NULL);
+  return (x == NULL); /* new error detected by out undef */
 }
 
 /*@only@*/ int *f(/*@null@*/ int *x)

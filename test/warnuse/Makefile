@@ -1,14 +1,14 @@
 .PHONY: warnuse
 
-LCLINT = lclint
+SPLINT = splint
 
 all: warnuse warngets
 
 warnuse:
-	${LCLINT} warnuse.c -expect 4
-	${LCLINT} warnuse.c -warnuse -expect 1
-	${LCLINT} warnuse.c -warnuse +bufferoverflow -expect 1
-	${LCLINT} warnuse.c -bufferoverflow -expect 2
+	${SPLINT} warnuse.c -expect 4
+	${SPLINT} warnuse.c -warnuse -expect 1
+	${SPLINT} warnuse.c -warnuse +bufferoverflow -expect 1
+	${SPLINT} warnuse.c -bufferoverflow -expect 2
 
 warngets:
-	${LCLINT} warngets.c -expect 1
+	${SPLINT} warngets.c -expect 1

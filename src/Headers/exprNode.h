@@ -216,6 +216,8 @@ extern long exprNode_getLongValue (exprNode p_e) /*@*/ ;
 
 extern /*@observer@*/ cstring exprNode_unparseFirst (exprNode p_e) /*@*/ ;
 extern /*@observer@*/ guardSet exprNode_getForGuards (exprNode p_pred) /*@*/ ;
+extern bool exprNode_loopMustExec (exprNode p_forPred) /*@*/ ;
+
 extern bool exprNode_isNullValue (exprNode p_e) /*@*/ ;
 extern /*@exposed@*/ sRef exprNode_getSref (exprNode p_e) /*@*/ ;
 extern /*@exposed@*/ uentry exprNode_getUentry (exprNode p_e) 

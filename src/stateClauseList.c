@@ -359,6 +359,10 @@ void stateClauseList_checkAll (uentry ue)
 			{
 			  ; /* Okay to override in .xh files */
 			}
+		      else if (stateClause_isQual (cl))
+			{
+			  ; /* qual clauses don't interfere with definition state */
+			}
 		      else
 			{
 			  voptgenerror 

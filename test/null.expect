@@ -1,4 +1,6 @@
 
+null1.c: (in function ptrpred)
+null1.c:7:22: Out storage x not defined before return
 null1.c: (in function f)
 null1.c:19:20: Implicitly temp storage x returned as only: x
 null1.c:19:20: Possibly null storage x returned as non-null: x
@@ -27,7 +29,7 @@ null1.c:67:10: Possibly null storage z returned as non-null: z
 null1.c:67:12: Fresh storage z3 not released before return
    null1.c:27:3: Fresh storage z3 allocated
 
-Finished checking --- 14 code warnings, as expected
+Finished checking --- 15 code warnings, as expected
 
 null1.c: (in function f)
 null1.c:19:20: Implicitly temp storage x returned as only: x
@@ -39,6 +41,8 @@ null1.c:67:12: Fresh storage z3 not released before return
 
 Finished checking --- 4 code warnings, as expected
 
+null2.c: (in function ptrpred)
+null2.c:7:22: Out storage x not defined before return
 null2.c: (in function f)
 null2.c:15:10: Left operand of && is non-boolean (int *): x1 && (*x1 == 3)
 null2.c:16:19: Dereference of possibly null pointer x2: *x2
@@ -56,7 +60,7 @@ null2.c:35:14: Possibly null storage x3 returned as non-null: (x3)
    null2.c:11:21: Storage x3 may become null
 null2.c:39:10: Implicitly temp storage x1 returned as only: (x1)
 
-Finished checking --- 10 code warnings, as expected
+Finished checking --- 11 code warnings, as expected
 
 null3.c: (in function f3)
 null3.c:16:4: Dereference of possibly null pointer gnip: *gnip

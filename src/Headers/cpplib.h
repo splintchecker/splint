@@ -30,6 +30,9 @@ extern "C" {
 typedef enum cpp_token (*parseUnderflow) (cppReader *);
 typedef void (*parseCleanup) (cppBuffer *, cppReader *);
 
+/* Structure returned by create_definition */
+typedef struct s_macrodef macroDef;
+
 /* A parse_marker indicates a previous position,
    which we can backtrack to. */
 
@@ -58,7 +61,9 @@ struct arglist {
   int rest_args;
 };
 
-extern enum cpp_token cppGetToken (cppReader *);
+extern enum cpp_token cpplib_getToken (cppReader *);
+extern enum cpp_token cpplib_getTokenForceExpand (cppReader *);
+extern enum cpp_token cpplib_getTokenAux (cppReader *, bool p_forceExpand);
 extern int /*@alt void@*/ cppSkipHspace (cppReader *);
 
 /* This frees resources used by PFILE. */
@@ -194,10 +199,10 @@ struct cppReader {
 #define cppReader_fatalErrorLimit 1000
 
 /* True if we have seen a "fatal" error. */
-extern bool cppFatalErrors (cppReader *) /*@*/ ; 
-#define cppFatalErrors(READER) ((READER)->errors >= cppReader_fatalErrorLimit)
+extern bool cpplib_fatalErrors (cppReader *) /*@*/ ; 
+#define cpplib_fatalErrors(READER) ((READER)->errors >= cppReader_fatalErrorLimit)
 
-extern int cppBufPeek (cppBuffer *) /*@*/ ;
+extern int cpplib_bufPeek (cppBuffer *) /*@*/ ;
 
 /* Macros for manipulating the token_buffer. */
 
@@ -206,18 +211,22 @@ extern int cppBufPeek (cppBuffer *) /*@*/ ;
 
 /* Number of characters currently in PFILE's output buffer. */
 
-extern size_t cppReader_getWritten (/*@sef@*/ cppReader *) /*@*/ ;
-# define cppReader_getWritten(PFILE) \
+extern size_t cpplib_getWritten (/*@sef@*/ cppReader *) /*@*/ ;
+# define cpplib_getWritten(PFILE) \
   (size_fromInt ((PFILE)->limit - (PFILE)->token_buffer))
 
-extern /*@exposed@*/ char *cppReader_getPWritten (cppReader *) /*@*/ ;
-# define cppReader_getPWritten(PFILE) ((PFILE)->limit)
+extern /*@exposed@*/ char *cpplib_getPWritten (cppReader *) /*@*/ ;
+# define cpplib_getPWritten(PFILE) ((PFILE)->limit)
 
+extern /*@null@*/ macroDef 
+cpplib_createDefinition (/*@dependent@*/ cstring p_def, fileloc p_loc,
+			 bool p_predefinition, bool p_noExpand) ;
+  
 /* Make sure PFILE->token_buffer has space for at least N more characters. */
 
-extern void cppReader_reserve (/*@sef@*/ cppReader *, /*@sef@*/ size_t);
-#define cppReader_reserve(PFILE, N) \
-  (cppReader_getWritten (PFILE) + (N) > (PFILE)->token_buffer_size \
+extern void cpplib_reserve (/*@sef@*/ cppReader *, /*@sef@*/ size_t);
+#define cpplib_reserve(PFILE, N) \
+  (cpplib_getWritten (PFILE) + (N) > (PFILE)->token_buffer_size \
    && (cppReader_growBuffer (PFILE, (N)), 0))
 
 /* Append string STR (of length N) to PFILE's output buffer.
@@ -447,9 +456,7 @@ enum node_type {
  T_UNUSED	/* Used for something not defined.  */
 } ;
 
-/* Structure returned by create_definition */
-typedef struct macrodef MACRODEF;
-struct macrodef
+struct s_macrodef
 {
   /*@null@*/ struct definition *defn;
   /*@exposed@*/ /*@relnull@*/ char *symnam; /* null if defn is null */
@@ -582,9 +589,9 @@ extern void cppReader_addIncludeChain (/*@special@*/ cppReader *p_pfile,
 
 extern void cppReader_define (cppReader *p_pfile, char *p_str);
 extern void cppReader_finish (cppReader *p_pfile);
-extern void cppReader_init (/*@out@*/ cppReader *p_pfile) ; 
+extern void cpplib_init (/*@out@*/ cppReader *p_pfile) ; 
 extern void cppOptions_init (/*@out@*/ cppOptions *p_opts);
-extern void cppReader_initializeReader (cppReader *p_pfile) /*@modifies p_pfile@*/ ;
+extern void cpplib_initializeReader (cppReader *p_pfile) /*@modifies p_pfile@*/ ;
 
 extern int cppReader_startProcess (cppReader *p_pfile, cstring p_fname);
 

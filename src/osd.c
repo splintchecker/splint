@@ -166,6 +166,12 @@ osd_getPath (cstring path, cstring file, cstring *returnPath)
   fullPath = path;
   llassert (cstring_isDefined (file));
   
+  /* 2002-01-01: make sure returnPath gets defined even when there are errors.
+  **             (fixed splint checking detected this)
+  */
+
+  *returnPath = cstring_undefined;
+
   if (fullPath == NULL 
       || 
 # if defined(OS2) || defined(MSDOS) || defined(WIN32)
@@ -218,7 +224,7 @@ osd_getPath (cstring path, cstring file, cstring *returnPath)
 	    }
 	}	
     }
-  
+
   return rVal;
   /*@noaccess cstring@*/
 }
@@ -232,7 +238,8 @@ osd_getExePath (cstring path, cstring file, cstring *returnPath)
   char aPath[MAXPATHLEN];
   filestatus rVal = OSD_FILENOTFOUND;	/* assume file not found. */
   /*@access cstring@*/ 
-  
+
+  *returnPath = cstring_undefined;  
   fullPath = osd_getEnvironmentVariable (path);
   
   if (fullPath == NULL)
@@ -396,6 +403,7 @@ nextdir (d_char *current_dir, d_char *dir, size_t *len)
   if (**current_dir == '\0')
     {
       *len = 0;
+      *dir = NULL;
       return FALSE;
     }
 

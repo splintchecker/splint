@@ -1794,7 +1794,7 @@ printParseErrors (void)
 	    "other compiler extensions by using a pre-processor define. "
 	    "Alternately, you can surround the unparseable code with");
   llmsglit ("");
-  llmsglit ("   # ifndef __LCLINT__");
+  llmsglit ("   # ifndef S_SPLINT_S");
   llmsglit ("   ...");
   llmsglit ("   # endif");
   llmsglit ("");

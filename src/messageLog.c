@@ -51,7 +51,7 @@ msgentry_create (fileloc loc, cstring mess)
   return msg;
 }
 
-# ifdef __LCLINT__
+# ifdef S_SPLINT_S
 static /*@unused@*/ cstring msgentry_unparse (msgentry msg) /*@*/
 {
   return message ("%q:%s", fileloc_unparse (msg->loc), msg->msg);

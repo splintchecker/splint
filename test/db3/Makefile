@@ -24,8 +24,8 @@ test:
 ### Note there is a .splint file used for checking!
 
 check: $(LCSFILES)
-	$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
-	$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
+	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_
+	-$(SPLINTF) -showcol $(MODULES) +strict -modfilesystem +showsummary -exportconstant -exportlocal -protoparamprefix p_ +strictlib -expect 77
 
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also

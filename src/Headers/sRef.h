@@ -401,7 +401,7 @@ extern /*@dependent@*/ sRef sRef_copy (sRef p_s);
 
 extern cstring sRef_unparseState (sRef p_s) /*@*/ ;
 extern ynm sRef_isWriteable (sRef p_s) /*@*/ ;
-extern ynm sRef_isReadable (sRef p_s) /*@*/ ;
+extern ynm sRef_isValidLvalue (sRef p_s) /*@*/ ;
 extern bool sRef_isStrictReadable (sRef p_s) /*@*/ ;
 extern bool sRef_hasNoStorage (sRef p_s) /*@*/ ;
 extern void sRef_showExpInfo (sRef p_s) /*@modifies g_msgstream*/ ;

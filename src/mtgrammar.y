@@ -28,7 +28,7 @@
 # include "lclintMacros.nf"
 # include "llbasic.h"
 
-# ifndef __LCLINT__
+# ifndef S_SPLINT_S
 extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
 # endif
 

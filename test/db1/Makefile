@@ -26,8 +26,8 @@ test:
 ###
 
 check: $(LCSFILES)
-	$(SPLINT) -showcol -weak $(MODULES) -expect 16
-	$(SPLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 333
+	-$(SPLINT) -showcol -weak $(MODULES) -expect 16
+	-$(SPLINT) -showcol +strict -modfilesystem +showsummary $(MODULES) -expect 333
 
 ### The following rules generate .lh and .lcs files from .lcl files.  They also
 ### ensure that .h files appear to be updated whenever the corresponding .lh

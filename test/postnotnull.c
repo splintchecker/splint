@@ -6,7 +6,7 @@ static void foo(/*@special@*/ T* x)
      /*@defines x->x@*/
      /*@post:notnull x->x@*/ ;
      
-static void bar(/*@special@*/ T* x)
+static void bar (/*@out@*/ T* x)
      /*@post:notnull x->x@*/
 {
   foo(x);

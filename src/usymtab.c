@@ -52,6 +52,12 @@
 # include "exprChecks.h"
 # include "transferChecks.h"
 
+/* Needed to install macros when loading libraries */
+
+# include "cpplib.h"
+# include "cpperror.h"
+# include "cpphash.h"
+
 /*
 ** Keep track of type definitions inside a function.
 */
@@ -113,7 +119,7 @@ static /*@only@*/ cstring usymtab_unparseStackTab (usymtab p_t);
 static /*@exposed@*/ /*@dependent@*/ uentry 
   usymtab_getRefTab (/*@notnull@*/ usymtab p_u, int p_level, usymId p_index);
 
-# ifdef __LCLINT__
+# ifdef S_SPLINT_S
 /* These are not used anymore... */
 static /*@unused@*/ /*@only@*/ cstring 
   usymtab_unparseLocalAux (/*@notnull@*/ usymtab p_s);
@@ -375,6 +381,7 @@ usymtab_initBool ()
 	(uentry_makeConstantValue (context_getFalseName (), boolt, 
 				   fileloc_getBuiltin (), FALSE, 
 				   multiVal_makeInt (0)));
+
       usymtab_supGlobalEntry 
 	(uentry_makeConstantValue (context_getTrueName (), boolt, 
 				   fileloc_getBuiltin (), FALSE, 
@@ -1836,10 +1843,8 @@ void usymtab_dump (FILE *fout)
 		  
 	}
     }
-    
-
-  
 }
+
 
 void usymtab_load (FILE *f)
   /*@globals utab, globtab@*/
@@ -1914,6 +1919,30 @@ void usymtab_load (FILE *f)
 	{	
 	  int lastindex = utab->nentries;
 	  ue = usymtab_addEntryAlways (utab, ue);
+
+
+# if 0
+	  if (uentry_isConstant (ue)) /*@i23! isPreProcessorMacro */
+	    {
+	      cstring uname = uentry_getName (ue);
+	      
+	      /* Also check its a macro... */
+	      DPRINTF (("Installing: %s", uname));
+
+	      cpphash_installMacro 
+		(mstring_copy (cstring_toCharsSafe (uname)),
+		 cstring_length (uname),
+		 cpplib_createDefinition (message ("%s 255", uname),
+					  loc,
+					  FALSE, FALSE).defn,
+		 cpphash_hashCode (cstring_toCharsSafe (uname),
+				   cstring_length (uname),
+				   CPP_HASHSIZE));
+	      
+	      DPRINTF (("After install: %s", uname));
+	    }
+# endif
+
 	  if (utab->nentries != lastindex + 1)
 	    {
 	      DPRINTF (("No add: %s", uentry_unparseFull (ue)));
@@ -2133,7 +2162,10 @@ usymtab_handleParams (void)
 		{
 		  if (sRef_isStateSpecial (pref))
 		    {
-		      uentry_setDefState (ue, SS_ALLOCATED);
+		      uentry_setDefState (ue, SS_SPECIAL); /* ALLOCATED); */
+		      /* evans 2002-01-01: should be unnecessary, the pre clauses
+		      **    set the state if necessary.
+		      */
 		    }
 		  else
 		    {
@@ -3789,7 +3821,7 @@ void usymtab_checkFinalScope (bool isReturn)
 		  /*@innercontinue@*/ continue;
 		}
 	    }
-			    
+	  
 	  DPRINTF (("Here check final scope: %s", uentry_unparseFull (ce)));
 	  
 	  if (ctype_isFunction (uentry_getType (ce)))
@@ -3802,6 +3834,7 @@ void usymtab_checkFinalScope (bool isReturn)
 	      || sRef_isFileOrGlobalScope (rb))
 	    {
 	      /* Don't do the loseref check...but should check state! */
+	      DPRINTF (("Skipping check 1"));
 	    }
 	  else if (sRef_isDefinitelyNull (sr)
 		   || usymtab_isDefinitelyNull (sr))
@@ -3809,6 +3842,8 @@ void usymtab_checkFinalScope (bool isReturn)
 	      /*
 	      ** No state reference errors for definitely null references.
 	      */
+
+	      DPRINTF (("Skipping check 2"));
 	    }
 	  else
 	    {
@@ -3828,7 +3863,7 @@ void usymtab_checkFinalScope (bool isReturn)
 		if (stateValue_isError (fval)
 		    || sRef_isStateUndefined (sr)) /* No errors for undefined state */
 		  {
-		    ;
+		    DPRINTF (("Skipping check 3"));
 		  }
 		else 
 		  {
@@ -3871,9 +3906,11 @@ void usymtab_checkFinalScope (bool isReturn)
 	      } end_valueTable_elements;
 	    }
 
+	  DPRINTF (("Here 1"));
+
 	  if (mustFree)
 	    {
-	      DPRINTF (("Check entry: %s", uentry_unparseFull (ce)));
+	      DPRINTF (("Check mustfree entry: %s", uentry_unparseFull (ce)));
 	      
 	      if (!sRefSet_member (checked, sr) && !sRef_isFileOrGlobalScope (rb))
 		{
@@ -3997,59 +4034,57 @@ void usymtab_checkFinalScope (bool isReturn)
 		      ;
 		    }
 		}
-	      else if (mustDefine && uentry_isOut (ce))
+	    }
+
+	  DPRINTF (("entry: %s", uentry_unparseFull (ce)));
+
+	  if (mustDefine && uentry_isOut (ce)
+	      && !uentry_isOnly (ce))
+	    {
+	      if (!sRef_isReallyDefined (sr))
 		{
-		  if (!ynm_toBoolStrict (sRef_isReadable (sr)))
-		    {
-		      voptgenerror 
-			(FLG_MUSTDEFINE,
-			 message ("Out storage %q not defined before %q",
-				  uentry_getName (ce),
-				  cstring_makeLiteral 
-				  (isReturn ? "return" : "scope exit")),
-			 g_currentloc);
-		      
-		      /* uentry_showWhereDeclared (ce); */
-		    }
+		  voptgenerror 
+		    (FLG_MUSTDEFINE,
+		     message ("Out storage %q not defined before %q",
+			      uentry_getName (ce),
+			      cstring_makeLiteral 
+			      (isReturn ? "return" : "scope exit")),
+		     g_currentloc);
+		}
+	    }
+	  
+	  /*
+	  ** also check state is okay
+	  */
+	  
+	  if (usymtab_lexicalLevel () > functionScope
+	      && uentry_isVariable (ce)
+	      && (sRef_isLocalVar (sr)
+		  && (sRef_isDependent (sr) || sRef_isLocalState (sr))))
+	    {
+	      sRefSet ab = usymtab_aliasedBy (sr);
+	      
+	      /* should do something more efficient here */
+	      
+	      if (sRefSet_isEmpty (ab))
+		{
+		  /* and no local ref */
+		  DPRINTF (("Check lose ref: %s", uentry_unparseFull (ce)));
+		  checkLoseRef (ce);
 		}
 	      else
-		{
-		  ; 
-		}
-	      
-	      /*
-	      ** also check state is okay
-	      */
-	      
-	      if (usymtab_lexicalLevel () > functionScope
-		  && uentry_isVariable (ce)
-		  && (sRef_isLocalVar (sr)
-		      && (sRef_isDependent (sr) || sRef_isLocalState (sr))))
-		{
-		  sRefSet ab = usymtab_aliasedBy (sr);
-
-		  /* should do something more efficient here */
-
-		  if (sRefSet_isEmpty (ab))
-		    {
-		      /* and no local ref */
-		      DPRINTF (("Check lose ref: %s", uentry_unparseFull (ce)));
-		      checkLoseRef (ce);
-		    }
-		  else
-		    {
-		      ;
-		    }
-		  
-		  sRefSet_free (ab);
-		}
-	      else 
 		{
 		  ;
 		}
 	      
-	      checked = sRefSet_insert (checked, sr);
+	      sRefSet_free (ab);
 	    }
+	  else 
+	    {
+	      ;
+	    }
+	  
+	  checked = sRefSet_insert (checked, sr);
 	}
 
       llassert (usymtab_isDefined (stab->env));
@@ -5864,7 +5899,7 @@ usymtab_printComplete ()
   mstring_free (ind);
 }
 
-# ifdef __LCLINT__
+# ifdef S_SPLINT_S
 static /*@only@*/ cstring /*@unused@*/ 
 usymtab_unparseLocalAux (/*@notnull@*/ usymtab s)
 {

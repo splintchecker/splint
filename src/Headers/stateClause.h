@@ -99,6 +99,8 @@ extern stateClause stateClause_createSets (/*@only@*/ sRefSet p_s) /*@*/ ;
 
 extern /*@observer@*/ fileloc stateClause_loc (stateClause) /*@*/ ;
 extern bool stateClause_isMemoryAllocation (stateClause p_cl) /*@*/ ;
+extern bool stateClause_isQual (stateClause p_cl) /*@*/ ;
+
 extern void stateClause_free (/*@only@*/ stateClause p_s) ;
 extern cstring stateClause_dump (stateClause p_s) /*@*/ ;
 extern stateClause stateClause_undump (char **p_s) /*@modifies *p_s@*/ ;

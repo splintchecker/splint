@@ -186,6 +186,7 @@ Finished checking --- no code processed
    forblock                    
    forcehints                  
    forempty                    
+   forloopexec                 
    formalarray                 
    formatcode                  
    formatconst                 
@@ -242,6 +243,7 @@ Finished checking --- no code processed
    internalnamecaseinsensitive 
    internalnamelen             
    internalnamelookalike       
+   iterloopexec                
    iterprefix                  
    iterprefixexclude           
    its4low                     
@@ -345,6 +347,7 @@ Finished checking --- no code processed
    numliteral                  
    numstructfields             
    observertrans               
+   obviousloopexec             
    oldstyle                    
    onlytrans                   
    onlyunqglobaltrans          
@@ -493,6 +496,7 @@ Finished checking --- no code processed
    whichlib                    
    whileblock                  
    whileempty                  
+   whileloopexec               
    zerobool                    
 
 
@@ -556,7 +560,13 @@ declundef --- function or variable declared but never defined
 specundef --- function or variable specified but never defined
 specundecl --- function or variable specified but never declared in a source
 file
-loopexec --- assume all loops execute at least once
+loopexec --- assume all loops execute at least once (sets forloopexec,
+whileloopexec and iterloopexec)
+forloopexec --- assume all for loops execute at least once
+whileloopexec --- assume all while loops execute at least once
+iterloopexec --- assume all iterator loops execute at least once
+obviousloopexec --- assume loop that can be determined to always execute always
+does
 infloops --- likely infinite loop is detected
 infloopsuncon --- likely infinite loop is detected (may result from
 unconstrained function)

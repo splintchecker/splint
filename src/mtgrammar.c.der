@@ -108,14 +108,13 @@
 #define	MT_STRINGLIT	301
 #define	MT_IDENT	302
 
-#line 25 "mtgrammar.y"
 
 
 # include "bison.reset"
 # include "lclintMacros.nf"
 # include "llbasic.h"
 
-# ifndef __LCLINT__
+# ifndef S_SPLINT_S
 extern ctype mtscanner_lookupType (mttok p_tok) /*@modifies p_tok@*/ ;
 # endif
 
@@ -137,7 +136,6 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 # include "bison.head"
 
 
-#line 56 "mtgrammar.y"
 typedef union {
   mttok tok; 
   mtDeclarationNode mtdecl;
@@ -413,7 +411,7 @@ static const short yycheck[] = {    10,
 #define YYPURE 1
 
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -627,7 +625,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/usr/lib/bison.simple"
+
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -956,356 +954,269 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 152 "mtgrammar.y"
 {;
     break;}
 case 2:
-#line 153 "mtgrammar.y"
 {;
     break;}
 case 3:
-#line 157 "mtgrammar.y"
 { mtreader_processDeclaration (yyvsp[-1].mtdecl); ;
     break;}
 case 4:
-#line 159 "mtgrammar.y"
 { mtreader_processGlobalDeclaration (yyvsp[-1].mtdecl); ;
     break;}
 case 5:
-#line 163 "mtgrammar.y"
 { yyval.mtdecl = mtDeclarationNode_create (yyvsp[-1].tok, yyvsp[0].mtpieces); ;
     break;}
 case 6:
-#line 166 "mtgrammar.y"
 { yyval.mtpieces = mtDeclarationPieces_create (); ;
     break;}
 case 7:
-#line 168 "mtgrammar.y"
 { yyval.mtpieces = mtDeclarationPieces_append (yyvsp[0].mtpieces, yyvsp[-1].mtpiece); ;
     break;}
 case 8:
-#line 171 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createContext (yyvsp[0].mtcontext); ;
     break;}
 case 9:
-#line 172 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createValues (yyvsp[0].mtvalues); ;
     break;}
 case 10:
-#line 173 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createDefaults (yyvsp[0].mtdefaults); ;
     break;}
 case 11:
-#line 174 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createValueDefault (yyvsp[0].tok); ;
     break;}
 case 12:
-#line 175 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createAnnotations (yyvsp[0].mtannotations); ;
     break;}
 case 13:
-#line 176 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createMerge (yyvsp[0].mtmerge); ;
     break;}
 case 14:
-#line 177 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createTransfers (yyvsp[0].mttransferclauselist); ;
     break;}
 case 15:
-#line 178 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createPreconditions (yyvsp[0].mttransferclauselist); ;
     break;}
 case 16:
-#line 179 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createPostconditions (yyvsp[0].mttransferclauselist); ;
     break;}
 case 17:
-#line 180 "mtgrammar.y"
 { yyval.mtpiece = mtDeclarationPiece_createLosers (yyvsp[0].mtlosereferencelist); ;
     break;}
 case 18:
-#line 183 "mtgrammar.y"
 { yyval.mtcontext = yyvsp[0].mtcontext; ;
     break;}
 case 19:
-#line 187 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createAny (); ;
     break;}
 case 21:
-#line 191 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createParameter (yyvsp[0].ctyp); ;
     break;}
 case 22:
-#line 192 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createReference (yyvsp[0].ctyp); ;
     break;}
 case 23:
-#line 193 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createResult (yyvsp[0].ctyp); ;
     break;}
 case 24:
-#line 194 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createClause (yyvsp[0].ctyp); ;
     break;}
 case 25:
-#line 195 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createLiteral (yyvsp[0].ctyp); ;
     break;}
 case 26:
-#line 196 "mtgrammar.y"
 { yyval.mtcontext = mtContextNode_createNull (yyvsp[0].ctyp); ;
     break;}
 case 27:
-#line 203 "mtgrammar.y"
 { yyval.ctyp = ctype_unknown; ;
     break;}
 case 28:
-#line 204 "mtgrammar.y"
 { DPRINTF (("Type: %s", qtype_unparse (yyvsp[0].qtyp))); yyval.ctyp = qtype_getType (yyvsp[0].qtyp); ;
     break;}
 case 30:
-#line 208 "mtgrammar.y"
 { yyval.qtyp = qtype_newBase (yyvsp[-1].qtyp, yyvsp[0].ctyp); ;
     break;}
 case 31:
-#line 211 "mtgrammar.y"
 { yyval.qtyp = yyvsp[0].qtyp; ;
     break;}
 case 32:
-#line 213 "mtgrammar.y"
 { yyval.qtyp = qtype_mergeAlt (yyvsp[-2].qtyp, yyvsp[0].qtyp); ;
     break;}
 case 33:
-#line 216 "mtgrammar.y"
 { yyval.qtyp = qtype_combine (yyvsp[0].qtyp, yyvsp[-1].ctyp); ;
     break;}
 case 34:
-#line 219 "mtgrammar.y"
 { yyval.qtyp = qtype_unknown (); ;
     break;}
 case 35:
-#line 220 "mtgrammar.y"
 { yyval.qtyp = yyvsp[0].qtyp; ;
     break;}
 case 36:
-#line 224 "mtgrammar.y"
 { yyval.ctyp = ctype_adjustPointers (yyvsp[0].count, ctype_unknown); ;
     break;}
 case 38:
-#line 226 "mtgrammar.y"
 { yyval.ctyp = ctype_adjustPointers (yyvsp[-1].count, yyvsp[0].ctyp); ;
     break;}
 case 39:
-#line 229 "mtgrammar.y"
 { yyval.count = 1; ;
     break;}
 case 40:
-#line 230 "mtgrammar.y"
 { yyval.count = 1; ;
     break;}
 case 41:
-#line 231 "mtgrammar.y"
 { yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 42:
-#line 232 "mtgrammar.y"
 { yyval.count = 1 + yyvsp[0].count; ;
     break;}
 case 43:
-#line 235 "mtgrammar.y"
 { /* ignored for now */; ;
     break;}
 case 44:
-#line 236 "mtgrammar.y"
 { ; ;
     break;}
 case 45:
-#line 239 "mtgrammar.y"
 { ; ;
     break;}
 case 46:
-#line 240 "mtgrammar.y"
 { ; ;
     break;}
 case 47:
-#line 243 "mtgrammar.y"
 { yyval.ctyp = ctype_expectFunction (yyvsp[-1].ctyp); ;
     break;}
 case 48:
-#line 244 "mtgrammar.y"
 { yyval.ctyp = ctype_makeArray (ctype_unknown); ;
     break;}
 case 49:
-#line 245 "mtgrammar.y"
 { yyval.ctyp = ctype_makeArray (yyvsp[-2].ctyp); ;
     break;}
 case 50:
-#line 252 "mtgrammar.y"
 { yyval.ctyp = ctype_char; ;
     break;}
 case 51:
-#line 253 "mtgrammar.y"
 { yyval.ctyp = ctype_int; ;
     break;}
 case 52:
-#line 254 "mtgrammar.y"
 { yyval.ctyp = ctype_float; ;
     break;}
 case 53:
-#line 255 "mtgrammar.y"
 { yyval.ctyp = ctype_double; ;
     break;}
 case 54:
-#line 256 "mtgrammar.y"
 { yyval.ctyp = ctype_void; ;
     break;}
 case 55:
-#line 257 "mtgrammar.y"
 { yyval.ctyp = ctype_unknown; ;
     break;}
 case 56:
-#line 258 "mtgrammar.y"
 { yyval.ctyp = ctype_anyintegral; ;
     break;}
 case 57:
-#line 259 "mtgrammar.y"
 { yyval.ctyp = ctype_unsignedintegral; ;
     break;}
 case 58:
-#line 260 "mtgrammar.y"
 { yyval.ctyp = ctype_signedintegral; ;
     break;}
 case 60:
-#line 267 "mtgrammar.y"
 { yyval.ctyp = mtscanner_lookupType (yyvsp[0].tok); ;
     break;}
 case 61:
-#line 270 "mtgrammar.y"
 { yyval.mtvalues = mtValuesNode_create (yyvsp[0].cstringlist); ;
     break;}
 case 62:
-#line 273 "mtgrammar.y"
 { yyval.cstringlist = cstringList_single (mttok_getText (yyvsp[0].tok)); ;
     break;}
 case 63:
-#line 275 "mtgrammar.y"
 { yyval.cstringlist = cstringList_prepend (yyvsp[0].cstringlist, mttok_getText (yyvsp[-2].tok)); ;
     break;}
 case 64:
-#line 278 "mtgrammar.y"
 { yyval.tok = yyvsp[0].tok; ;
     break;}
 case 65:
-#line 281 "mtgrammar.y"
 { yyval.mtdefaults = mtDefaultsNode_create (yyvsp[-1].tok, yyvsp[0].mtdeflist); ;
     break;}
 case 66:
-#line 285 "mtgrammar.y"
 { yyval.mtdeflist = mtDefaultsDeclList_single (mtDefaultsDecl_create (yyvsp[-2].mtcontext, yyvsp[0].tok)); ;
     break;}
 case 67:
-#line 287 "mtgrammar.y"
 { yyval.mtdeflist = mtDefaultsDeclList_prepend (yyvsp[0].mtdeflist, mtDefaultsDecl_create (yyvsp[-3].mtcontext, yyvsp[-1].tok)); ;
     break;}
 case 68:
-#line 290 "mtgrammar.y"
 { yyval.mtannotations = mtAnnotationsNode_create (yyvsp[0].mtannotlist); ;
     break;}
 case 69:
-#line 293 "mtgrammar.y"
 { yyval.mtannotlist = mtAnnotationList_single (yyvsp[0].mtannotdecl); ;
     break;}
 case 70:
-#line 295 "mtgrammar.y"
 { yyval.mtannotlist = mtAnnotationList_prepend (yyvsp[0].mtannotlist, yyvsp[-1].mtannotdecl); ;
     break;}
 case 71:
-#line 299 "mtgrammar.y"
 { yyval.mtannotdecl = mtAnnotationDecl_create (yyvsp[-3].tok, yyvsp[-2].mtcontext, yyvsp[0].tok); ;
     break;}
 case 72:
-#line 302 "mtgrammar.y"
 { yyval.mtmerge = mtMergeNode_create (yyvsp[0].mtmergeclauselist); ;
     break;}
 case 73:
-#line 305 "mtgrammar.y"
 { yyval.mtmergeclauselist = mtMergeClauseList_single (yyvsp[0].mtmergeclause); ;
     break;}
 case 74:
-#line 306 "mtgrammar.y"
 { yyval.mtmergeclauselist = mtMergeClauseList_prepend (yyvsp[0].mtmergeclauselist, yyvsp[-1].mtmergeclause); ;
     break;}
 case 75:
-#line 310 "mtgrammar.y"
 { yyval.mtmergeclause = mtMergeClause_create (yyvsp[-4].mtmergeitem, yyvsp[-2].mtmergeitem, yyvsp[0].mttransferaction); ;
     break;}
 case 76:
-#line 313 "mtgrammar.y"
 { yyval.mtmergeitem = mtMergeItem_createValue (yyvsp[0].tok); ;
     break;}
 case 77:
-#line 314 "mtgrammar.y"
 { yyval.mtmergeitem = mtMergeItem_createStar (yyvsp[0].tok); ;
     break;}
 case 78:
-#line 317 "mtgrammar.y"
 { yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 79:
-#line 320 "mtgrammar.y"
 { yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 80:
-#line 323 "mtgrammar.y"
 { yyval.mttransferclauselist = yyvsp[0].mttransferclauselist; ;
     break;}
 case 81:
-#line 326 "mtgrammar.y"
 { yyval.mtlosereferencelist = yyvsp[0].mtlosereferencelist; ;
     break;}
 case 82:
-#line 329 "mtgrammar.y"
 { yyval.mtlosereferencelist = mtLoseReferenceList_single (yyvsp[0].mtlosereference); ;
     break;}
 case 83:
-#line 330 "mtgrammar.y"
 { yyval.mtlosereferencelist = mtLoseReferenceList_prepend (yyvsp[0].mtlosereferencelist, yyvsp[-1].mtlosereference); ;
     break;}
 case 84:
-#line 333 "mtgrammar.y"
 { yyval.mtlosereference = mtLoseReference_create (yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
     break;}
 case 85:
-#line 336 "mtgrammar.y"
 { yyval.mttransferclauselist = mtTransferClauseList_single (yyvsp[0].mttransferclause); ;
     break;}
 case 86:
-#line 337 "mtgrammar.y"
 { yyval.mttransferclauselist = mtTransferClauseList_prepend (yyvsp[0].mttransferclauselist, yyvsp[-1].mttransferclause); ;
     break;}
 case 87:
-#line 341 "mtgrammar.y"
 { yyval.mttransferclause = mtTransferClause_create (yyvsp[-4].tok, yyvsp[-2].tok, yyvsp[0].mttransferaction); ;
     break;}
 case 88:
-#line 344 "mtgrammar.y"
 { yyval.mttransferaction = mtTransferAction_createValue (yyvsp[0].tok); ;
     break;}
 case 89:
-#line 345 "mtgrammar.y"
 { yyval.mttransferaction = yyvsp[0].mttransferaction; ;
     break;}
 case 90:
-#line 348 "mtgrammar.y"
 { yyval.mttransferaction = mtTransferAction_createError (yyvsp[0].tok); ;
     break;}
 case 91:
-#line 349 "mtgrammar.y"
 { yyval.mttransferaction = mtTransferAction_createErrorMessage (yyvsp[0].tok); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/usr/lib/bison.simple"
+
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1525,7 +1436,6 @@ yyerrhandle:
     }
   return 1;
 }
-#line 354 "mtgrammar.y"
 
 
 # include "bison.reset"

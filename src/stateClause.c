@@ -98,6 +98,11 @@ bool stateClause_isEnsures (stateClause cl)
   return (cl->state == TK_AFTER);
 }
 
+bool stateClause_isQual (stateClause cl)
+{
+  return (cl->kind == SP_QUAL);
+}
+
 bool stateClause_isMemoryAllocation (stateClause cl)
 {
   switch (cl->kind)
@@ -247,9 +252,9 @@ sRefMod stateClause_getEntryFunction (stateClause cl)
 	case SP_USES:
 	  return sRef_setDefinedComplete;
 	case SP_ALLOCATES:
-	  return NULL;
+	  return sRef_setUndefined; /* evans 2002-01-01 */
 	case SP_DEFINES:
-	  return NULL;
+	  return sRef_setUndefined; /* evans 2002-01-01 */
 	case SP_SETS:
 	  return sRef_setAllocatedComplete;
 	case SP_RELEASES:

@@ -407,18 +407,13 @@ extern /*@notnull@*/ /*@only@*/ uentry
   /*@*/ ;
 
 extern /*@only@*/ /*@notnull@*/ uentry 
-  uentry_makeConstantValue (/*@temp@*/ cstring p_n, ctype p_t, /*@only@*/ fileloc p_f, 
-			    bool p_priv, multiVal p_val)
+  uentry_makeConstantValue (/*@temp@*/ cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f, 
+			    bool p_priv, /*@only@*/ multiVal p_val)
   /*@*/ ;
 
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeMacroConstant (/*@temp@*/ cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f) 
   /*@*/ ;
-
-extern /*@notnull@*/ /*@only@*/ uentry 
-  uentry_makeConstantAux (/*@temp@*/ cstring p_n, ctype p_t,
-			  /*@keep@*/ fileloc p_f, bool p_priv, bool p_macro,
-			  /*@only@*/ multiVal p_m) /*@*/ ;
 
 extern /*@notnull@*/ /*@only@*/ uentry 
   uentry_makeDatatype (/*@temp@*/ cstring p_n, ctype p_t, ynm p_mut, ynm p_abstract, 

@@ -63,8 +63,9 @@ employee.c:5: Definition parameter name e does not match name of corresponding
                  parameter in declaration: p_e
    employee.h:12: Previous declaration of p_e
 employee.c: (in function employee_setName)
-employee.c:12: Undefined storage e->name corresponds to storage listed in
-                  defines clause
+employee.c:12: Undefined storage e->name corresponds to storage listed in sets
+                  clause
+   This sub-reference is undefined: *(e->name)
 employee.c:12: Body of if statement is not a block: return FALSE
 employee.c:15: Parameter 1 (e->name) to function strcpy is declared unique but
                   may be aliased externally by parameter 2 (na)
@@ -87,9 +88,9 @@ employee.c:31: Read-only string literal storage used as initial value for
 employee.c:34: Array fetch using non-integer, gender: gender[e.gen]
 employee.c:34: Array fetch using non-integer, job: jobs[e.j]
 employee.h: (in macro employee_initMod)
-employee.h:14: Called procedure bool_initMod may access internal state, but
+employee.h:15: Called procedure bool_initMod may access internal state, but
                   globals list does not include globals internalState
-employee.h:14: Undocumented modification of internal state possible from call
+employee.h:15: Undocumented modification of internal state possible from call
                   to bool_initMod: bool_initMod()
 eref.h:9: Constant exported, but not specified: used
 eref.h:9: Constant exported, but not specified: avail

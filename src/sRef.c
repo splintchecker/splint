@@ -4597,10 +4597,17 @@ bool sRef_hasNoStorage (sRef s)
 
 bool sRef_isStrictReadable (sRef s)
 {
-  return (ynm_toBoolStrict (sRef_isReadable (s)));
+  return (ynm_toBoolStrict (sRef_isValidLvalue (s)));
 }
 
-ynm sRef_isReadable (sRef s)
+/*
+** Is this what is does?
+** Returns YES if s can be used as an rvalue,
+**         MAYBE if its not clear
+**         NO if s cannot be safely used as an rvalue.
+*/
+
+ynm sRef_isValidLvalue (sRef s)
 {
   sstate ss;
 
@@ -4610,9 +4617,9 @@ ynm sRef_isReadable (sRef s)
   
   if (sRef_isConj (s) && s->defstate == SS_UNKNOWN)
     {
-      if (ynm_toBoolStrict (sRef_isReadable (sRef_getConjA (s))))
+      if (ynm_toBoolStrict (sRef_isValidLvalue (sRef_getConjA (s))))
 	{
-	  if (ynm_toBoolStrict (sRef_isReadable (sRef_getConjB (s))))
+	  if (ynm_toBoolStrict (sRef_isValidLvalue (sRef_getConjB (s))))
 	    {
 	      return YES;
 	    }
@@ -4620,7 +4627,7 @@ ynm sRef_isReadable (sRef s)
 	}
       else
 	{
-	  if (ynm_toBoolStrict (sRef_isReadable (sRef_getConjB (s))))
+	  if (ynm_toBoolStrict (sRef_isValidLvalue (sRef_getConjB (s))))
 	    {
 	      return MAYBE;
 	    }
@@ -4644,9 +4651,9 @@ ynm sRef_isReadable (sRef s)
 			    || ss == SS_FIXED 
 			    || ss == SS_RELDEF 
 			    || ss == SS_PDEFINED 
-			    || ss == SS_PARTIAL
+			    || ss == SS_PARTIAL 
 			    || ss == SS_SPECIAL
-			    || ss == SS_ALLOCATED
+			    || ss == SS_ALLOCATED 
 			    || ss == SS_KILLED /* evans 2001-05-26: added this for killed globals */
 			    || ss == SS_UNKNOWN));
     }
@@ -7994,7 +8001,7 @@ bool sRef_isJustAllocated (sRef s)
 static bool
 sRef_isAllocatedStorage (sRef s)
 {
-  if (sRef_isValid (s) && ynm_toBoolStrict (sRef_isReadable (s)))
+  if (sRef_isValid (s) && ynm_toBoolStrict (sRef_isValidLvalue (s)))
     {
       return (ctype_isVisiblySharable (sRef_getType (s)));
     }

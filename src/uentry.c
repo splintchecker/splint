@@ -92,10 +92,10 @@ static /*@only@*/ /*@notnull@*/ uentry
   uentry_makeVariableAux (cstring p_n, ctype p_t, /*@keep@*/ fileloc p_f,
 			  /*@exposed@*/ sRef p_s, bool p_priv, vkind p_kind);
 
-static /*@only@*/ /*@notnull@*/ 
-uentry uentry_makeConstantAux (cstring p_n, ctype p_t, 
-			       /*@keep@*/ fileloc p_f, bool p_priv, bool p_macro,
-			       /*@only@*/ multiVal p_m) ;
+static /*@only@*/ /*@notnull@*/ uentry 
+  uentry_makeConstantAux (cstring p_n, ctype p_t, 
+			  /*@keep@*/ fileloc p_f, bool p_priv, bool p_macro,
+			  /*@only@*/ multiVal p_m) /*@*/ ;
 
 static void uentry_convertVarFunction (uentry ue) /*@modifies ue@*/
 {
@@ -3151,7 +3151,7 @@ uentry uentry_makeConstantAux (cstring n, ctype t,
   return (uentry_makeConstantAux (n, t, f, FALSE, FALSE, multiVal_unknown ()));
 }
 
-
+/*@notnull@*/ uentry uentry_makeConstantValue (cstring n, ctype t, fileloc f, bool priv, multiVal val)
 {
   return (uentry_makeConstantAux (n, t, f, priv, FALSE, val));
 }
@@ -4298,7 +4298,7 @@ static uentry
   e->info = (uinfo) dmalloc (sizeof (*e->info));
   e->info->uconst = (ucinfo) dmalloc (sizeof (*e->info->uconst));
   e->info->uconst->access = access;
-
+  e->info->uconst->macro = FALSE; /*@i523! fix this when macro info added to library */
   uentry_setConstantValue (e, m);
   sRef_storeState (e->sref);
 
@@ -6615,6 +6615,7 @@ ucinfo_copy (ucinfo u)
 {
   ucinfo ret = (ucinfo) dmalloc (sizeof (*ret));
   ret->access = u->access;
+  ret->macro = u->macro;
   return ret;
 }
 
@@ -10483,6 +10484,8 @@ uentry_mergeState (uentry res, uentry other, fileloc loc,
   uentry_mergeAliasStates (res, other, loc, mustReturn, flip, opt, cl);
   uentry_mergeValueStates (res, other, loc, mustReturn, flip);
   uentry_mergeSetStates (res, other, loc, flip, cl);
+
+  DPRINTF (("Merge ==> %s", uentry_unparseFull (res)));
 }
 
 void uentry_setUsed (uentry e, fileloc loc)
