@@ -6210,6 +6210,8 @@ get_next:
 		      if (cc == '\n')
 			{
 			  /* Backslash newline is replaced by nothing at all.  */
+			  pfile->lineno++; /* 2003-11-03: AMiller suggested adding this, but
+					      its not clear why it is needed. */
 			  cppReader_adjustWritten (pfile, -1);
 			  pfile->lineno++;
 			}

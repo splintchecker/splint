@@ -248,10 +248,23 @@ static flaglist flags =
     FK_OPS, FK_NONE, modeFlag,
     "realcompare",
     FLG_REALCOMPARE,
-    "dangerous comparison between reals (dangerous because of inexact "
+    "dangerous equality comparison between reals (dangerous because of inexact "
     "floating point representations)",
     "Two real (float, double, or long double) values are compared "
-    "directly using a C primitive. "
+    "directly using == or != primitive. "
+    "This may produce unexpected results since floating point "
+    "representations are inexact. Instead, compare the difference to "
+    "FLT_EPSILON or DBL_EPSILON.",
+    0, 0,
+  },
+  {
+    FK_OPS, FK_NONE, modeFlag,
+    "realrelatecompare",
+    FLG_REALRELATECOMPARE,
+    "possibly dangerous relational comparison between reals (dangerous because of inexact "
+    "floating point representations)",
+    "Two real (float, double, or long double) values are compared "
+    "directly using < or >. "
     "This may produce unexpected results since floating point "
     "representations are inexact. Instead, compare the difference to "
     "FLT_EPSILON or DBL_EPSILON.",

@@ -5829,12 +5829,24 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	    }
 	  else
 	    {
-	      voptgenerror
-		(FLG_REALCOMPARE,
-		 message ("Dangerous comparison involving %s types: %s",
-			  ctype_unparse (rtype),
-			  exprNode_unparse (ret)),
-		 ret->loc);
+	      if (opid == EQ_OP || opid == NE_OP) 
+		{
+		  voptgenerror
+		    (FLG_REALCOMPARE,
+		     message ("Dangerous equality comparison involving %s types: %s",
+			      ctype_unparse (rtype),
+			      exprNode_unparse (ret)),
+		     ret->loc);
+		}
+	      else
+		{
+		  voptgenerror
+		    (FLG_REALRELATECOMPARE,
+		     message ("Possibly dangerous relational comparison involving %s types: %s",
+			      ctype_unparse (rtype),
+			      exprNode_unparse (ret)),
+		     ret->loc);
+		}
 	    }
 	}
       /*@fallthrough@*/
