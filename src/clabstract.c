@@ -888,7 +888,7 @@ checkTypeDecl (uentry e, ctype rep)
       uentry le  = usymtab_getTypeEntry (llm);
 
       uentry_setDeclared (e, g_currentloc); 
-      uentry_setSref (e, sRef_makeGlobal (llm, uentry_getType (le)));
+      uentry_setSref (e, sRef_makeGlobal (llm, uentry_getType (le), stateInfo_currentLoc ()));
 
       DPRINTF (("Here we are: %s / %s",
 		n, context_getBoolName ()));
@@ -1731,7 +1731,7 @@ void setNewStyle ()              { flipNewStyle = TRUE; }
   uentryList_elements (params, current)
     {
       uentry_setParam (current);
-      uentry_setSref (current, sRef_makeParam (paramno, ctype_unknown));
+      uentry_setSref (current, sRef_makeParam (paramno, ctype_unknown, stateInfo_makeLoc (uentry_whereLast (current))));
       paramno++;
     } end_uentryList_elements;
 
@@ -1772,7 +1772,8 @@ doVaDcl ()
       
       if (i >= 0)
 	{
-	  e = uentry_makeVariableSrefParam (id, c, sRef_makeParam (i, c));
+	  fileloc loc = context_getSaveLocation ();
+	  e = uentry_makeVariableSrefParam (id, c, loc, sRef_makeParam (i, c, stateInfo_makeLoc (loc)));
 	}
       else
 	{

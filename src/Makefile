@@ -411,7 +411,7 @@ lint28:
 	${HOME}/lclint-2.8a/bin/lclint -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -constuse -exportlocal -supcounts
 
 lint29: 
-	${HOME}/lclint-2.9a/bin/lclint -f lclint.lclintrc $(CPPFLAGS) -larchpath .:${HOME}/lclint-2.9a/lib/ +singleinclude $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -constuse -exportlocal -supcounts
+	${HOME}/lclint-2.9a/bin/lclint -f lclint.lclintrc $(CPPFLAGS) -larchpath .:${HOME}/lclint-2.9a/lib/ +singleinclue $(ALLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -constuse -exportlocal -supcounts
 
 lintm: 
 	lclint-2.5m -f lclint.lclintrc $(CPPFLAGS) +singleinclude $(ALLSRC) -dump lclint

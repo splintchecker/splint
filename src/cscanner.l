@@ -1523,6 +1523,7 @@ static bool processMacro (void)
 	      && !uentry_isElipsisMarker (uentryList_getN 
 					  (specparams, paramno)))
 	    {
+	      fileloc sloc = context_getSaveLocation ();
 	      uentry decl = uentryList_getN (specparams, paramno);
 	      sRef sr;
 	      
@@ -1530,7 +1531,7 @@ static bool processMacro (void)
 
 	      	      	      
 	      uentry_setParam (param);
-	      sr = sRef_makeParam (paramno, uentry_getType (param));
+	      sr = sRef_makeParam (paramno, uentry_getType (param), stateInfo_makeLoc (sloc));
 
 	      if (sRef_getNullState (sr) == NS_ABSNULL)
 		{
@@ -1547,12 +1548,12 @@ static bool processMacro (void)
 		    }
 		  else
 		    {
-		      sRef_setNullState (sr, NS_UNKNOWN, g_currentloc);
+		      sRef_setNullState (sr, NS_UNKNOWN, sloc);
 		    }
 		}
 
 	      uentry_setSref (param, sr);
-	      uentry_setDeclaredForceOnly (param, context_getSaveLocation ());
+	      uentry_setDeclaredForceOnly (param, sloc);
 
 	      skipparam = isiter && uentry_isOut (uentryList_getN (specparams, paramno));
 	    }
@@ -1561,11 +1562,11 @@ static bool processMacro (void)
 	      fileloc sloc = context_getSaveLocation ();
 
 	      param = uentry_makeVariableSrefParam 
-		(paramname, ctype_unknown, sRef_makeParam (paramno, ctype_unknown));
+		(paramname, ctype_unknown, fileloc_copy (sloc), 
+		 sRef_makeParam (paramno, ctype_unknown, stateInfo_makeLoc (sloc)));
 	      cstring_free (paramname);
 
 	      sRef_setPosNull  (uentry_getSref (param), sloc);
-
 	      uentry_setDeclaredForce (param, sloc);
 
 	      skipparam = FALSE;

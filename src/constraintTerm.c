@@ -594,12 +594,12 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
   
   uentry ue;
   
-  char * str;
-  char * os;
+  char *str;
+  char *os;
 
   str = mstring_create (MAX_DUMP_LINE_LENGTH);
   os = str;
-  str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
+  str = fgets (os, MAX_DUMP_LINE_LENGTH, f);
 
   kind = (constraintTermType) reader_getInt(&str);
   str = fgets(os, MAX_DUMP_LINE_LENGTH, f);
@@ -630,7 +630,7 @@ void constraintTerm_dump ( /*@observer@*/ constraintTerm t,  FILE *f)
 
 	    ostr2 = str2;
 	    t = ctype_undump(&str2) ;
-	    s = sRef_makeParam (param, t );
+	    s = sRef_makeParam (param, t, stateInfo_makeLoc (g_currentloc));
 	    free (ostr2);
 	  }
 	else  //This must be an identified that we can search for

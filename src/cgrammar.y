@@ -451,8 +451,11 @@ metaStateConstraint
 
 metaStateSpecifier
   : BufConstraintSrefExpr { cscanner_expectingMetaStateName (); } TCOLON metaStateName
-   { cscanner_clearExpectingMetaStateName ();
-     $$ = metaStateSpecifier_create ($1, $4); }
+    { cscanner_clearExpectingMetaStateName ();
+      $$ = metaStateSpecifier_create ($1, $4); }
+  | CTOK_ELIPSIS { cscanner_expectingMetaStateName (); } TCOLON metaStateName
+    { cscanner_clearExpectingMetaStateName ();
+      $$ = metaStateSpecifier_createElipsis ($4); }
 
 metaStateExpression
 : metaStateSpecifier { $$ = metaStateExpression_create ($1); }
@@ -617,9 +620,13 @@ warnClause
 
 warnClausePlain
  : QWARN flagSpec cconstantExpr
-   { $$ = warnClause_create ($1, $2, $3); }
+   {      
+     llassert (exprNode_knownStringValue ($3));
+     $$ = warnClause_create ($1, $2, cstring_copy (multiVal_forceString (exprNode_getValue ($3)))); 
+     exprNode_free ($3);
+   }
  | QWARN flagSpec
-   { $$ = warnClause_create ($1, $2, exprNode_undefined); }
+   { $$ = warnClause_create ($1, $2, cstring_undefined); }
 
 globIdList
  : globIdListExpr                     { $$ = globSet_single ($1); }

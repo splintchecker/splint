@@ -3344,18 +3344,15 @@ void
 context_saveLocation (void)
 {
   /* was llassert (fileloc_isUndefined (gc.saveloc)) */
-      fileloc_free (gc.saveloc);
-    
-
+  fileloc_free (gc.saveloc);
   gc.saveloc = fileloc_copy (g_currentloc);
-  }
+}
 
 fileloc
 context_getSaveLocation (void)
 {
   fileloc fl = gc.saveloc;
-
-    gc.saveloc = fileloc_undefined;
+  gc.saveloc = fileloc_undefined;
   return fl;
 }
 
@@ -4390,7 +4387,7 @@ void context_addMetaState (cstring mname, metaStateInfo msinfo)
     }
 }
 
-valueTable context_createValueTable (sRef s)
+valueTable context_createValueTable (sRef s, stateInfo sinfo)
 {
   if (metaStateTable_size (gc.stateTable) > 0)
     {
@@ -4410,8 +4407,8 @@ valueTable context_createValueTable (sRef s)
 	      valueTable_insert 
 		(res,
 		 cstring_copy (metaStateInfo_getName (msi)),
-		 stateValue_createImplicit (metaStateInfo_getDefaultValue (msi, s),
-					    stateInfo_undefined));
+		 stateValue_createImplicit (metaStateInfo_getDefaultValue (msi, s), 
+					    stateInfo_copy (sinfo)));
 	    }
 	  else
 	    {
@@ -4420,16 +4417,18 @@ valueTable context_createValueTable (sRef s)
 	} 
       end_metaStateTable_elements ;
       
+      stateInfo_free (sinfo);
       DPRINTF (("Value table: %s", valueTable_unparse (res)));
       return res;
     }
   else
     {
+      stateInfo_free (sinfo);
       return valueTable_undefined;
     }
 }
 
-valueTable context_createGlobalMarkerValueTable ()
+valueTable context_createGlobalMarkerValueTable (stateInfo sinfo)
 {
   if (metaStateTable_size (gc.stateTable) > 0)
     {
@@ -4445,15 +4444,17 @@ valueTable context_createGlobalMarkerValueTable ()
 	  valueTable_insert (res,
 			     cstring_copy (metaStateInfo_getName (msi)),
 			     stateValue_create (metaStateInfo_getDefaultGlobalValue (msi),
-						stateInfo_undefined));
+						stateInfo_copy (sinfo)));
 	} 
       end_metaStateTable_elements ;
       
+      stateInfo_free (sinfo);
       DPRINTF (("Value table: %s", valueTable_unparse (res)));
       return res;
     }
   else
     {
+      stateInfo_free (sinfo);
       return valueTable_undefined;
     }
 }

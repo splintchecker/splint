@@ -3208,6 +3208,8 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 
       if (uentry_hasMetaStateEnsures (le))
 	{
+	  fileloc loc = exprNode_loc (f);
+
 	  metaStateConstraintList mscl = uentry_getMetaStateEnsures (le);
 
 	  metaStateConstraintList_elements (mscl, msc)
@@ -3215,7 +3217,7 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 	      metaStateSpecifier msspec = metaStateConstraint_getSpecifier (msc);
 	      metaStateInfo msinfo = metaStateSpecifier_getMetaStateInfo (msspec);
 	      metaStateExpression msexpr = metaStateConstraint_getExpression (msc);
-	      cstring key = metaStateInfo_getName (msinfo);
+	      cstring key = metaStateInfo_getName (msinfo);	      
 	      sRef mlsr = metaStateSpecifier_getSref (msspec);
 	      sRef s;
 	      sRef lastref = sRef_undefined;
@@ -3239,10 +3241,9 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 	      while (metaStateExpression_isDefined (msexpr)) 
 		{
 		  metaStateSpecifier ms = metaStateExpression_getSpecifier (msexpr);
-		  sRef msr = metaStateSpecifier_getSref (ms);
 		  metaStateInfo msi = metaStateSpecifier_getMetaStateInfo (ms);
-		  sRef fs;
-		  
+		  sRef msr, fs;
+
 		  DPRINTF (("Check expression: %s", metaStateExpression_unparse (msexpr)));
 		  
 		  if (metaStateExpression_isMerge (msexpr))
@@ -3260,72 +3261,167 @@ reflectEnsuresClause (exprNode ret, uentry le, exprNode f, exprNodeList args)
 		      llassert (metaStateInfo_equal (msinfo, msi));
 		    }
 		  
-		  llassert (sRef_isParam (sRef_getRootBase (msr)));
-		  fs = sRef_fixBaseParam (msr, args);
-		  
-		  if (stateValue_isDefined (sval))
+		  if (metaStateSpecifier_isElipsis (ms))
 		    {
-		      /* Use combination table to merge old state value with new one: */
-		      stateValue tval = sRef_getMetaStateValue (fs, key);
+		      /*
+		      ** For elipsis, we need to merge all the relevant elipsis parameters
+		      ** 
+		      */
 		      
-		      if (stateValue_isDefined (tval))
+		      uentryList params = uentry_getParams (le);
+		      int paramno = uentryList_size (params) - 1;
+
+		      if (!uentry_isElipsisMarker (uentryList_getN (params, paramno)))
 			{
-			  stateCombinationTable sctable = metaStateInfo_getMergeTable (msinfo);
-			  cstring msg = cstring_undefined;
-			  int nval = stateCombinationTable_lookup (sctable, 
-								   stateValue_getValue (sval), 
-								   stateValue_getValue (tval), 
-								   &msg);
-			  DPRINTF (("Combining: %s + %s -> %d",
-				    stateValue_unparseValue (sval, msinfo),
-				    stateValue_unparseValue (tval, msinfo),
-				    nval));
-			  
-			  if (nval == stateValue_error)
+			  voptgenerror 
+			    (FLG_TYPE,
+			     message ("Ensures clauses uses ... for function without ... in parameter list: %q",
+				      uentry_getName (le)),
+			     uentry_whereLast (le));
+			  /*@innerbreak@*/ break;
+			}
+
+		      while (paramno < exprNodeList_size (args))
+			{
+			  exprNode arg = exprNodeList_getN (args, paramno);
+			  fs = exprNode_getSref (arg);
+			  DPRINTF (("Merge arg: %s", exprNode_unparse (arg)));
+
+			  /* cut and pasted... gack*/
+			  if (stateValue_isDefined (sval))
 			    {
-			      llassert (cstring_isDefined (msg));
+			      /* Use combination table to merge old state value with new one: */
+			      stateValue tval = sRef_getMetaStateValue (fs, key);
 			      
-			      if (optgenerror 
-				  (FLG_STATEMERGE,
-				   message
-				   ("Attributes merged in ensures clause in states that "
-				    "cannot be combined (%q is %q, %q is %q): %s",
-				    sRef_unparse (lastref),
-				    stateValue_unparseValue (sval, msinfo),
-				    sRef_unparse (fs),
-				    stateValue_unparseValue (tval, msinfo),
-				    msg),
-				   exprNode_loc (f)))
+			      if (stateValue_isDefined (tval))
 				{
-				  sRef_showMetaStateInfo (fs, key);
-				}		    
+				  stateCombinationTable sctable = metaStateInfo_getMergeTable (msinfo);
+				  cstring msg = cstring_undefined;
+				  int nval = stateCombinationTable_lookup (sctable, 
+									   stateValue_getValue (sval), 
+									   stateValue_getValue (tval), 
+									   &msg);
+				  DPRINTF (("Combining: %s + %s -> %d",
+					    stateValue_unparseValue (sval, msinfo),
+					    stateValue_unparseValue (tval, msinfo),
+					    nval));
+				  
+				  if (nval == stateValue_error)
+				    {
+				      llassert (cstring_isDefined (msg));
+				      
+				      if (optgenerror 
+					  (FLG_STATEMERGE,
+					   message
+					   ("Attributes merged in ensures clause in states that "
+					    "cannot be combined (%q is %q, %q is %q): %s",
+					    sRef_unparse (lastref),
+					    stateValue_unparseValue (sval, msinfo),
+					    sRef_unparse (fs),
+					    stateValue_unparseValue (tval, msinfo),
+					    msg),
+					   exprNode_loc (f)))
+					{
+					  sRef_showMetaStateInfo (fs, key);
+					}		    
+				    }
+				  
+				  stateValue_updateValueLoc (sval, nval, fileloc_undefined);
+				  loc = exprNode_loc (arg);
+				}
+			      else
+				{
+				  DPRINTF (("No value for: %s:%s", sRef_unparse (fs), key));
+				}
+			    }
+			  else
+			    {
+			      sval = sRef_getMetaStateValue (fs, key);
 			    }
 			  
-			  stateValue_updateValueLoc (sval, nval, fileloc_undefined);
-			}
-		      else
-			{
-			  DPRINTF (("No value for: %s:%s", sRef_unparse (fs), key));
+			  lastref = fs;
+			  
+			  if (stateValue_isError (sval))
+			    {
+			      /*@innerbreak@*/ break; /* Don't merge any more values if here was an error */
+			    }
+			
+			  
+			  paramno++;
 			}
 		    }
 		  else
 		    {
-		      sval = sRef_getMetaStateValue (fs, key);
-		    }
+		      msr = metaStateSpecifier_getSref (ms);
 		  
-		  lastref = fs;
-		  
-		  if (stateValue_isError (sval))
-		    {
-		      /*@innerbreak@*/ break; /* Don't merge any more values if here was an error */
+		      
+		      llassert (sRef_isParam (sRef_getRootBase (msr)));
+		      fs = sRef_fixBaseParam (msr, args);
+		      
+		      if (stateValue_isDefined (sval))
+			{
+			  /* Use combination table to merge old state value with new one: */
+			  stateValue tval = sRef_getMetaStateValue (fs, key);
+			  
+			  if (stateValue_isDefined (tval))
+			    {
+			      stateCombinationTable sctable = metaStateInfo_getMergeTable (msinfo);
+			      cstring msg = cstring_undefined;
+			      int nval = stateCombinationTable_lookup (sctable, 
+								       stateValue_getValue (sval), 
+								       stateValue_getValue (tval), 
+								       &msg);
+			      DPRINTF (("Combining: %s + %s -> %d",
+					stateValue_unparseValue (sval, msinfo),
+					stateValue_unparseValue (tval, msinfo),
+					nval));
+			      
+			      if (nval == stateValue_error)
+				{
+				  llassert (cstring_isDefined (msg));
+				  
+				  if (optgenerror 
+				      (FLG_STATEMERGE,
+				       message
+				       ("Attributes merged in ensures clause in states that "
+					"cannot be combined (%q is %q, %q is %q): %s",
+					sRef_unparse (lastref),
+					stateValue_unparseValue (sval, msinfo),
+					sRef_unparse (fs),
+					stateValue_unparseValue (tval, msinfo),
+					msg),
+				       exprNode_loc (f)))
+				    {
+				      sRef_showMetaStateInfo (fs, key);
+				    }		    
+				}
+			      
+			      stateValue_updateValueLoc (sval, nval, fileloc_undefined);
+			    }
+			  else
+			    {
+			      DPRINTF (("No value for: %s:%s", sRef_unparse (fs), key));
+			    }
+			}
+		      else
+			{
+			  sval = sRef_getMetaStateValue (fs, key);
+			}
+		      
+		      lastref = fs;
+		      
+		      if (stateValue_isError (sval))
+			{
+			  /*@innerbreak@*/ break; /* Don't merge any more values if here was an error */
+			}
 		    }
 		}
-	      
+
 	      DPRINTF (("Setting: %s:%s <- %s", sRef_unparse (s), key, stateValue_unparse (sval)));
 	      
 	      if (stateValue_isDefined (sval))
 		{
-		  sRef_setMetaStateValueComplete (s, key, stateValue_getValue (sval), exprNode_loc (f));
+		  sRef_setMetaStateValueComplete (s, key, stateValue_getValue (sval), loc);
 		}
 	      else
 		{
