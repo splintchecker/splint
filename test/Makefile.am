@@ -1254,6 +1254,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./simplebufferConstraintTests/test7.c \
               ./sizeoftest/sizeof.c \
               ./sizeoftest/sizeofConst.c \
+              ./sizeoftest/Makefile \
               ./strchr/strchr.c \
               ./suppressfile/test.c \
               ./tainted/sprintf.c \
