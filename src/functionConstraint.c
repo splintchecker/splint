@@ -219,9 +219,36 @@ extern void functionConstraint_free (/*@only@*/ functionConstraint node)
     }
 }
 
-void functionConstraint_addBufferConstraints (functionConstraint fc, constraintList clist) 
+/*drl modified */
+void functionConstraint_addBufferConstraints (functionConstraint node, constraintList clist) 
 {
-  llassert (functionConstraint_isBufferConstraint (fc));
-  fc->constraint.buffer  = constraintList_addList (fc->constraint.buffer, clist);
-}
+  constraintList temp;
 
+  temp = constraintList_copy (clist);
+  
+  if (functionConstraint_isDefined (node))
+    {
+      if (node->kind == FCT_CONJUNCT)
+	{
+	  functionConstraint_addBufferConstraints (node->constraint.conjunct.op1, constraintList_copy(temp) );
+	  functionConstraint_addBufferConstraints (node->constraint.conjunct.op2,temp);
+	}
+      else
+	{
+	  if (node->kind == FCT_BUFFER)
+	    {
+	      node->constraint.buffer = constraintList_addList(node->constraint.buffer, temp);
+	    }
+	  else
+	    {
+	      constraintList_free (temp);
+	      return;
+	    }
+	}
+    }
+  else
+    {
+      constraintList_free (temp);
+      return;
+    }
+}

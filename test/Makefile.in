@@ -1392,13 +1392,6 @@ mystrncat:
 noeffect:
 	${SPLINTP} noeffect.c +allmacros +checks -expect 3
 
-
-.PHONY: numabstract
-numabstract:
-	-$(SPLINTR) numabstract.c -expect 11
-	-$(SPLINTR) numabstract.c +numabstractlit -expect 9
-	-$(SPLINTR) numabstract.c -numabstractcast -expect 10
-
 ###
 ### 2002-01-01: null1.c: expect increased to 15 because out must be defined
 ###                         checking detects one new error
@@ -1428,6 +1421,14 @@ nullret:
 nullassign:
 	-$(SPLINTR) nullassign.c -expect 2
 	-$(SPLINTR) -nullassign nullassign.c -expect 1
+
+### Added for 3.1 - evans 2002-12-14
+
+.PHONY: numabstract
+numabstract:
+	-$(SPLINTR) numabstract.c -expect 11
+	-$(SPLINTR) numabstract.c +numabstractlit -expect 9
+	-$(SPLINTR) numabstract.c -numabstractcast -expect 10
 
 #
 # Before 2.4, expected one more because error was reported both as 

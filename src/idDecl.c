@@ -247,6 +247,15 @@ void
 idDecl_addClauses (idDecl d, functionClauseList clauses)
 {
   llassert (idDecl_isDefined (d));
-  llassert (functionClauseList_isUndefined (d->clauses));
+  /*@i222*/
+  /*
+    This breaks on sometypes of functionPointers.
+    I.e.
+    void (*signal (int sig ) @requires g >= 0 @ ) (int) @requires g >= 0 @ ;
+
+    llassert (functionClauseList_isUndefined (d->clauses));
+
+  */
+  
   d->clauses = clauses;
 }

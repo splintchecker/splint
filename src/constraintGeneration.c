@@ -2242,23 +2242,23 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
 	preconditions = constraintList_makeNew();
     }
   
-  /*@i523@ drl remember to remove this code before you make a splint release. */
-  /*
   if (context_getFlag (FLG_IMPLICTCONSTRAINT) )
     {
-      
-      uentryList_elements (params, el)
+
+      /*
+      uentryList_elements (arglist, el)
 	{
-	  DPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
+	  sRef s;
+	  TPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
 	  
 	  s = uentry_getSref(el);
 	  if (sRef_isReference (s) )
 	    {
-	      DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	      TPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
 	    }
 	  else
 	    {
-	      DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	      TPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
 	    }
 	  //drl 4/26/01
 	  //chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 
@@ -2270,15 +2270,14 @@ constraintList checkCall (/*@dependent@*/ exprNode fcn, exprNodeList arglist)
 	  if (!uentry_isOut(el) )
 	    {
 	      c = constraint_makeSRefReadSafeInt (s, 0);
-	      
 	      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
 	    }
-	  
+        
 	  
 	}
-      
+      */
     }
-  */
+  
   DPRINTF ((message("Done checkCall\n")));
   DPRINTF ((message("Returning list %q ", constraintList_printDetailed(preconditions))));
 

@@ -402,6 +402,7 @@ namedDeclBase
    { setCurrentParams (uentryList_missingParams); }
    functionClauses
    { /* need to support globals and modifies here! */
+     functionClauseList fcl;
      ctype ct = ctype_makeFunction (idDecl_getCtype ($1), 
 				    uentryList_makeMissingParams ());
      
@@ -410,9 +411,21 @@ namedDeclBase
      /*drl 7/25/01 added*/
      setImplictfcnConstraints();
 
-     /*     functionClauseList_ImplictConstraints($6); */
+     DPRINTF((message("namedDeclBase PushType TLPAREN TRPAREN...:\n adding implict constraints to functionClause List: %s",
+		      functionClauseList_unparse($6)
+		      )
+	      ));
+     
+     fcl = functionClauseList_setImplictConstraints($6);
 
-     idDecl_addClauses ($$, $6);
+     idDecl_addClauses ($$, fcl);
+
+     DPRINTF((message("1 added fuctionClause List: %s to the Id",
+		      functionClauseList_unparse(fcl)
+		      )
+	      ));
+
+     
      context_popLoc ();
      lltok_free2 ($3, $4);
    }
@@ -420,11 +433,26 @@ namedDeclBase
    { setCurrentParams ($4); } 
    functionClauses
    {
+     functionClauseList fcl;
      setImplictfcnConstraints ();
-     /*        functionClauseList_ImplictConstraints($7);*/
      clearCurrentParams ();
      $$ = idDecl_replaceCtype ($1, ctype_makeFunction (idDecl_getCtype ($1), $4));
-     idDecl_addClauses ($$, $7);
+
+     DPRINTF((message("namedDeclBase PushType TLPAREN genericParamList TRPAREN...:\n adding implict constraints to functionClause List: %s",
+		      functionClauseList_unparse($7)
+		      )
+	      )) ;
+     
+     fcl = functionClauseList_setImplictConstraints($7);
+
+     idDecl_addClauses ($$, fcl);
+
+     DPRINTF((message("added fuctionClause List: %s to the Id",
+		      functionClauseList_unparse(fcl)
+		      )
+	      ));
+
+     
      context_popLoc (); 
      lltok_free2 ($3, $5);
    }

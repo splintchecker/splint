@@ -282,6 +282,19 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 
 ## Grammars
 
+signature.c.der:
+	@if test x$(BISON) = xno; then \
+	  echo "Cannot make signature.c.der because bison is not here" \
+	else \
+	  echo '* Making signature.c'; \
+	  $(BISON) $(YFLAGS) -p lsl signature.y; \
+	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
+	  $(CP) signature.c signature.c.der; \
+	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak || true; \
+	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
+	  $(RM) signature.tab.c signature.tab.h; \
+	fi
+
 Headers/signature_gen.h signature.c: signature.c.der signature.y
 	@if test x$(BISON) = xno; then \
 	  $(CP) signature.c.der signature.c; \
@@ -307,7 +320,7 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
-	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
+	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak || true; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
 	fi

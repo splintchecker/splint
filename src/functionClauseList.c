@@ -172,9 +172,25 @@ functionClauseList_free (functionClauseList s)
     }
 }
 
-void
-functionClauseList_getImplictConstraints (functionClauseList s)
+functionClauseList 
+functionClauseList_setImplictConstraints (/*@returned@*/ functionClauseList s)
 {
+  bool addedConstraints;
+
+  constraintList c;
+  
+  DPRINTF ((message ("functionClauseList_setImplictConstraints called ") ));
+  
+  addedConstraints = FALSE;
+
+
+  c = getImplicitFcnConstraints ();
+  
+  if (constraintList_isEmpty(c) )
+    {
+      return s;
+    }
+  
   functionClauseList_elements(s, el)
     {
       if (functionClause_isRequires(el))
@@ -188,12 +204,15 @@ functionClauseList_getImplictConstraints (functionClauseList s)
 		  constraintList implCons = getImplicitFcnConstraints ();
 		  
 		  DPRINTF ((message ("functionClauseList_ImplictConstraints adding the implict constraints: %s to %s",
-				     constraintList_print(implCons), constraintList_print (con->constraint.buffer))));
+		  		     constraintList_print(implCons), constraintList_print (con->constraint.buffer))));
 		  
-		  functionConstraint_addBufferConstraints (con, constraintList_copy (implCons));
+		  functionConstraint_addBufferConstraints (con, constraintList_copy (implCons) );
+
+		  addedConstraints = TRUE;
 		  
 		  DPRINTF ((message ("functionClauseList_ImplictConstraints the new constraint is %s",
 				     functionConstraint_unparse (con))));
+
 		}
 	      else
 		{
@@ -204,5 +223,20 @@ functionClauseList_getImplictConstraints (functionClauseList s)
 	}
     }
   
-  end_functionClauseList_elements 
+  end_functionClauseList_elements;
+
+  if (!addedConstraints)
+    {
+      functionConstraint fCon;
+      functionClause fClause;
+      
+      constraintList implCons = getImplicitFcnConstraints ();
+      
+      fCon = functionConstraint_createBufferConstraint(constraintList_copy (implCons) );
+      fClause = functionClause_createRequires(fCon);
+      s = functionClauseList_add(s, fClause);
+
+	
+    }
+  return s;    
 }

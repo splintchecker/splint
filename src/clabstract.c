@@ -512,41 +512,61 @@ void  setImplictfcnConstraints (void)
 
   if (constraintList_isDefined(implicitFcnConstraints) )
     constraintList_free(implicitFcnConstraints);
-   
+  
   implicitFcnConstraints  = constraintList_makeNew();
   
   uentryList_elements (params, el)
     {
       DPRINTF((message("setImplictfcnConstraints doing: %s", uentry_unparse(el) ) ));
       
-      s = uentry_getSref(el);
-      if (sRef_isReference (s) )
+      if ( uentry_isVariable (el) )
 	{
-	  DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	  s = uentry_getSref(el);
+	  if (sRef_isReference (s) )
+	    {
+	      
+	      DPRINTF((message ("%s is a pointer", sRef_unparse(s) ) ));
+	      /*drl 4/26/01
+		chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 */
+	      c = constraint_makeSRefWriteSafeInt (s, 0);
+	      
+	      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+	      
+	      /*drl 10/23/2002 added support for out*/
+
+	      if (!uentry_isOut(el) )
+		{
+		  c = constraint_makeSRefReadSafeInt (s, 0);
+		  
+		  implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
+		}
+	    }
+	  else
+	    {
+	      DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	    }
+	} /*end uentry_isVariable*/
+
+      else if (uentry_isElipsisMarker (el) )      
+	{
+	  /*just ignore these*/
+	  ;
 	}
+      
       else
 	{
-	  DPRINTF((message ("%s is NOT a pointer", sRef_unparse(s) ) ));
+	  /*just ignore this
+	    I'm not sure if this is possible though
+	  */
+	  /*@warning take this out befor@*/
+	  llassert(FALSE);
 	}
-      /*drl 4/26/01
-	chagned this from MaxSet(s) == 0 to MaxSet(s) >= 0 */
-      c = constraint_makeSRefWriteSafeInt (s, 0);
-      
-      implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
-
-      /*drl 10/23/2002 added support for out*/
-      if (!uentry_isOut(el) )
-	{
-	  c = constraint_makeSRefReadSafeInt (s, 0);
-      
-	  implicitFcnConstraints = constraintList_add(implicitFcnConstraints , c);
-	}
-       
-      
     }
+  
   end_uentryList_elements;
   DPRINTF((message("implicitFcnConstraints has been set to %s\n",
 		   constraintList_print(implicitFcnConstraints) ) ));
+  
 }
 
 

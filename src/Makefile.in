@@ -132,7 +132,7 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
-       pointers.c cscannerHelp.c
+       pointers.c cscannerHelp.c	
 
 
 SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
@@ -350,8 +350,8 @@ ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(DER_FILES) $(HE
 
 #files to run Splint on
 LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
-## cscanner.c cgrammar.c
 
+# cscanner.c cgrammar.c
 
 #ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
 LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
@@ -427,7 +427,8 @@ am__objects_9 = context.$(OBJEXT) uentry.$(OBJEXT) cprim.$(OBJEXT) \
 	functionClause.$(OBJEXT) functionClauseList.$(OBJEXT) \
 	metaStateConstraint.$(OBJEXT) metaStateConstraintList.$(OBJEXT) \
 	metaStateExpression.$(OBJEXT) metaStateSpecifier.$(OBJEXT) \
-	functionConstraint.$(OBJEXT) pointers.$(OBJEXT)
+	functionConstraint.$(OBJEXT) pointers.$(OBJEXT) \
+	cscannerHelp.$(OBJEXT)
 am__objects_10 = structNames.$(OBJEXT) transferChecks.$(OBJEXT) \
 	varKinds.$(OBJEXT) nameChecks.$(OBJEXT)
 am__objects_11 = exprData.$(OBJEXT) cstring.$(OBJEXT) fileloc.$(OBJEXT) \
@@ -509,7 +510,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/cppexp.Po ./$(DEPDIR)/cpphash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cpplib.Po ./$(DEPDIR)/cppmain.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cprim.Po ./$(DEPDIR)/cscanner.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/cstring.Po ./$(DEPDIR)/cstringList.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cscannerHelp.Po ./$(DEPDIR)/cstring.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cstringList.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cstringSList.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cstringTable.Po ./$(DEPDIR)/ctype.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ctypeList.Po ./$(DEPDIR)/cvar.Po \
@@ -701,6 +703,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cppmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cprim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cscanner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cscannerHelp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstring.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstringList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cstringSList.Po@am__quote@
@@ -1023,6 +1026,19 @@ lcl$(EXEEXT):
 	@echo "This is a fake target"; \
 	 echo "Use configure's --with-lcl option to enable lcl"
 
+signature.c.der:
+	@if test x$(BISON) = xno; then \
+	  echo "Cannot make signature.c.der because bison is not here" \
+	else \
+	  echo '* Making signature.c'; \
+	  $(BISON) $(YFLAGS) -p lsl signature.y; \
+	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
+	  $(CP) signature.c signature.c.der; \
+	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak || true; \
+	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
+	  $(RM) signature.tab.c signature.tab.h; \
+	fi
+
 Headers/signature_gen.h signature.c: signature.c.der signature.y
 	@if test x$(BISON) = xno; then \
 	  $(CP) signature.c.der signature.c; \
@@ -1041,12 +1057,12 @@ Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison
 	  $(CP) cgrammar.c.der cgrammar.c; \
 	else \
 	  echo '* Making cgrammar.c'; \
-	  echo '* Expect 154 shift/reduce conflicts and 116 reduce/reduce conflicts.'; \
+	  echo '* Expect 157 shift/reduce conflicts and 117 reduce/reduce conflicts.'; \
 	  echo '* (see cgrammar.y for explanation)'; \
 	  $(BISON) $(YFLAGS) cgrammar.y; \
 	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
 	  $(CP) cgrammar.c cgrammar.c.der; \
-	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak; \
+	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak || true; \
 	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
 	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
 	fi
@@ -1106,7 +1122,7 @@ etags:
 lintnew: splintme
 
 splintme: 
-	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude cscannerHelp.c $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
+	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
 
 valsplint:
 	valgrind -v --leak-resolution=high --num-callers=20 --show-reachable=no --leak-check=yes ./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude $(LINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw 
