@@ -5,7 +5,7 @@
 # include "eref.h"
 
 /*@-exporttype@*/ /* These types should not be exported, but are used in macros. */
-typedef struct _elem { eref val; /*@null@*/ struct _elem *next; } ercElem;
+typedef struct s_elem { eref val; /*@null@*/ struct s_elem *next; } ercElem;
 typedef ercElem *ercList;
 typedef struct { /*@null@*/ ercList vals; int size; } ercInfo;
 /*@=exporttype@*/

@@ -5,7 +5,7 @@
 ###
 
 .SUFFIXES: .lcl .lcs .lh .h .c .o
-.PHONY: check
+.PHONY: check clean
 
 SHELL = /bin/csh -f
 
