@@ -83,8 +83,10 @@ install_sh = @install_sh@
 
 AUTOMAKE_OPTIONS = 1.5 foreign
 
-DIFFFLAGS = -u
+DIFFFLAGS = 
 
+
+# -u show context
 SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
 ### This is horrible!  Can't we make top_builddir absolute?

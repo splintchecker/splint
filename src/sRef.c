@@ -5173,7 +5173,29 @@ void sRef_setPartialDefinedComplete (sRef s, fileloc loc)
 
 void sRef_setDefinedComplete (sRef s, fileloc loc)
 {
+  sRef_innerAliasSetComplete (sRef_setDefined, s, loc);
+}
+
+void sRef_setDefinedCompleteDirect (sRef s, fileloc loc)
+{
+  sRefSet aliases;
+  
+  aliases = usymtab_allAliases (s);
   DPRINTF (("Set defined complete: %s", sRef_unparseFull (s)));
+  DPRINTF (("All aliases: %s", sRefSet_unparseFull (aliases)));
+  
+  sRef_setDefined (s, loc);
+
+  sRefSet_realElements (aliases, current)
+    {
+      if (sRef_isValid (current))
+	{
+	  current = sRef_updateSref (current);
+	  sRef_setDefined (current, loc);
+	}
+    } end_sRefSet_realElements;
+  
+  sRefSet_free (aliases);
   sRef_innerAliasSetComplete (sRef_setDefined, s, loc);
 }
 
@@ -5408,8 +5430,8 @@ void sRef_setNullState (sRef s, nstate n, fileloc loc)
     }
 }
 
-void sRef_setNullTerminatedStateInnerComplete (sRef s, struct s_bbufinfo b, /*@unused@*/ fileloc loc) {
-   
+void sRef_setNullTerminatedStateInnerComplete (sRef s, struct s_bbufinfo b, /*@unused@*/ fileloc loc) 
+{
   switch (b.bufstate) {
      case BB_NULLTERMINATED:
 	  sRef_setNullTerminatedState (s);
@@ -8463,7 +8485,6 @@ sRef_innerAliasSetComplete (void (predf) (sRef, fileloc), sRef s, fileloc loc)
       inner = s->info->field->rec;
       aliases = usymtab_allAliases (inner);
       ct = sRef_getType (inner);
-
       
       sRefSet_realElements (aliases, current)
 	{
@@ -8525,8 +8546,7 @@ sRef_innerAliasSetCompleteParam (void (predf) (sRef, sRef), sRef s, sRef t)
       inner = s->info->ref;
       aliases = usymtab_allAliases (inner);
       ct = sRef_getType (inner);
-      
-      
+            
       sRefSet_realElements (aliases, current)
 	{
 	  if (sRef_isValid (current))

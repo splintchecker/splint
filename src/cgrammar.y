@@ -1502,9 +1502,9 @@ iterDefStmt
  | error { $$ = exprNode_makeError (); }
 
 iterSelectionStmt
- : ifPred iterDefStmt 
+ : ifPred { exprNode_checkIfPred ($1); } iterDefStmt 
    { /* don't: context_exitTrueClause ($1, $2); */
-     $$ = exprNode_if ($1, $2); 
+     $$ = exprNode_if ($1, $3); 
    }
 
 openScope
@@ -1633,7 +1633,12 @@ expressionStmtErr
 
 ifPred
  : CIF TLPAREN expr TRPAREN 
-   { $$ = $3; exprNode_produceGuards ($3); context_enterTrueClause ($3); }
+   { 
+     exprNode_produceGuards ($3); context_enterTrueClause ($3); 
+     exprNode_checkIfPred ($3);
+     $$ = $3;
+   }
+
  /*
  ** not ANSI: | CIF TLPAREN compoundStmt TRPAREN 
  **             { $$ = $3; context_enterTrueClause (); } 
@@ -1645,7 +1650,7 @@ selectionStmt
      context_exitTrueClause ($1, $2);
      $$ = exprNode_if ($1, $2); 
    }
- | ifPred stmt CELSE { context_enterFalseClause ($1); } stmt 
+ | ifPred stmt CELSE  { context_enterFalseClause ($1); } stmt 
    {
      context_exitClause ($1, $2, $5);
      $$ = exprNode_ifelse ($1, $2, $5); 

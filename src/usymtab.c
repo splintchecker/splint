@@ -3696,6 +3696,8 @@ checkGlobalReturn (uentry glob, sRef orig)
 	    {
 	      ctype ct = ctype_realType (uentry_getType (glob));
 
+	      DPRINTF (("Check global destroyed: %s", uentry_unparseFull (glob)));
+
 	      if (ctype_isVisiblySharable (ct))
 		{
 		  if (optgenerror 
@@ -3712,7 +3714,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 	      else
 		{
 		  sRef_protectDerivs ();
-		  (void) checkGlobalDestroyed (sr, g_currentloc);
+		  (void) transferChecks_globalDestroyed (sr, g_currentloc);
 		  sRef_clearProtectDerivs ();
 		}
 	    }
@@ -3771,7 +3773,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 		}
 	      else
 		{
-		  checkGlobReturn (glob);
+		  transferChecks_globalReturn (glob);
 		}
 	    }
 	}
@@ -3785,7 +3787,7 @@ checkGlobalReturn (uentry glob, sRef orig)
 void usymtab_checkFinalScope (bool isReturn)
   /*@globals utab@*/
 {
-  bool mustFree = context_getFlag (FLG_MUSTFREE);
+  bool mustFree = context_getFlag (FLG_MUSTFREEONLY) || context_getFlag (FLG_MUSTFREEFRESH); /*@i423 remove this mustFree */
   bool mustDefine = context_getFlag (FLG_MUSTDEFINE);
   /* bool mustNotAlias = context_getFlag (FLG_MUSTNOTALIAS); */
   sRefSet checked = sRefSet_new ();
@@ -3925,7 +3927,7 @@ void usymtab_checkFinalScope (bool isReturn)
 		      
 		      if (sRefSet_isEmpty (als))
 			{
-			  checkLocalDestroyed (sr, g_currentloc);
+			  transferChecks_localDestroyed (sr, g_currentloc);
 			}
 		      else
 			{
@@ -3954,7 +3956,7 @@ void usymtab_checkFinalScope (bool isReturn)
 			
 			if (!isReturn)
 			  {
-			    if (canLoseReference (sr, g_currentloc))
+			    if (transferChecks_canLoseReference (sr, g_currentloc))
 			      {
 				DPRINTF (("Can lose!"));
 				hasError = FALSE;
@@ -3968,7 +3970,7 @@ void usymtab_checkFinalScope (bool isReturn)
 				sRef ar = sRef_getAliasInfoRef (sr);
 				
 				if (optgenerror 
-				    (FLG_MUSTFREE,
+				    (sRef_isFresh (ar) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
 				     message
 				     ("Last reference %q to %s storage %qnot %q before %q",
 				      sRef_unparse (sr),
@@ -3986,7 +3988,7 @@ void usymtab_checkFinalScope (bool isReturn)
 			    else if (sRef_isNewRef (sr))
 			      {
 				if (optgenerror
-				    (FLG_MUSTFREE,
+				    (sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
 				     message 
 				     ("%q %q not released before %q",
 				      cstring_makeLiteral 
@@ -4004,14 +4006,14 @@ void usymtab_checkFinalScope (bool isReturn)
 			      {
 				if (ctype_isRealSU (sRef_getType (sr)))
 				  {
-				    checkStructDestroyed (sr, g_currentloc);
+				    transferChecks_structDestroyed (sr, g_currentloc);
 				  }
 				else
 				  {
 				    DPRINTF (("Here we are: %s", sRef_unparseFull (sr)));
 
 				    if (optgenerror
-					(FLG_MUSTFREE,
+					(sRef_isFresh (sr) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY,
 					 message 
 					 ("%s storage %q not %q before %q",
 					  alkind_capName (sRef_getAliasKind (sr)),
@@ -4048,6 +4050,8 @@ void usymtab_checkFinalScope (bool isReturn)
 			      cstring_makeLiteral 
 			      (isReturn ? "return" : "scope exit")),
 		     g_currentloc);
+
+		  DPRINTF (("sr: %s", sRef_unparseFull (sr)));
 		}
 	    }
 	  
@@ -4068,7 +4072,7 @@ void usymtab_checkFinalScope (bool isReturn)
 		{
 		  /* and no local ref */
 		  DPRINTF (("Check lose ref: %s", uentry_unparseFull (ce)));
-		  checkLoseRef (ce);
+		  transferChecks_loseReference (ce);
 		}
 	      else
 		{
@@ -4258,7 +4262,7 @@ void usymtab_checkFinalScope (bool isReturn)
 		{
 		  uentry param = usymtab_lookupQuiet (utab, uentry_rawName (arg));
 		  DPRINTF (("Check param return: %s", uentry_unparseFull (param)));
-		  checkParamReturn (param);
+		  transferChecks_paramReturn (param);
 		}
 	    }
 	} end_uentryList_elements;

@@ -151,6 +151,8 @@ extern /*@unused@*/ bool alkind_isRefs (alkind p_a) /*@*/ ;
 extern bool alkind_isNewRef (alkind p_a) /*@*/ ;     
 extern bool alkind_isKillRef (alkind p_a) /*@*/ ;    
 
+extern alkind alkind_resolve (alkind p_a1, alkind p_a2) /*@*/ ;
+
 # define alkind_isOwned(a)      ((a) == AK_OWNED)
 # define alkind_isStack(a)      ((a) == AK_STACK)
 # define alkind_isStatic(a)     ((a) == AK_STATIC)

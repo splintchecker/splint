@@ -6773,6 +6773,11 @@ bool exprNode_isEmptyStatement (exprNode e)
 	  && (lltok_isSemi (exprData_getTok (e->edata))));
 }
 
+void exprNode_checkIfPred (exprNode pred)
+{
+  exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred);
+}
+
 exprNode exprNode_if (/*@only@*/ exprNode pred, /*@only@*/ exprNode tclause)
 {
   exprNode ret;
@@ -6822,8 +6827,8 @@ exprNode exprNode_if (/*@only@*/ exprNode pred, /*@only@*/ exprNode tclause)
 	     message ("Predicate always exits: %s", exprNode_unparse (pred)),
 	     exprNode_loc (pred));
 	}
-
-      exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred);
+      
+      /*! exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred); */ /*@i523@*/
       exprNode_checkUse (pred, pred->sref, pred->loc);
       
       if (!exprNode_isError (tclause))
@@ -6952,7 +6957,7 @@ exprNode exprNode_ifelse (/*@only@*/ exprNode pred,
 	     exprNode_loc (pred));
 	}
       
-      exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred);
+      /*@i3423 exprNode_checkPred (cstring_makeLiteralTemp ("if"), pred);*/
       exprNode_checkUse (ret, pred->sref, pred->loc);
       
       exprNode_mergeCondUSs (ret, tclause, eclause);
@@ -10262,7 +10267,7 @@ checkOneArg (uentry ucurrent, /*@notnull@*/ exprNode current,
 	    }
 	}
       
-      checkPassTransfer (current, ucurrent, isSpec, fcn, argno, totargs);
+      transferChecks_passParam (current, ucurrent, isSpec, fcn, argno, totargs);
       exprNode_mergeUSs (fcn, current);
     }
 }
@@ -10856,11 +10861,11 @@ doAssign (/*@notnull@*/ exprNode e1, /*@notnull@*/ exprNode e2, bool isInit)
 	{
 	    DPRINTF (("Check init: %s / %s",
 		      exprNode_unparse (e1), exprNode_unparse (e2)));
-	  checkInitTransfer (e1, e2); 
+	  transferChecks_initialization (e1, e2); 
 	}
       else
 	{
-	  checkAssignTransfer (e1, e2); 
+	  transferChecks_assign (e1, e2); 
 	}
     }
   else

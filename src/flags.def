@@ -1939,12 +1939,28 @@ static flaglist flags =
   },	
   {
     FK_MEMORY, FK_LEAK, modeFlag,
+    "mustfreefresh",
+    FLG_MUSTFREEFRESH,
+    "freshly allocated storage not released before return or scope exit",
+    "A memory leak has been detected. Storage allocated locally "
+    "is not released before the last reference to it is lost.",
+    0, 0
+  },
+  {
+    FK_MEMORY, FK_LEAK, modeFlag,
+    "mustfreeonly",
+    FLG_MUSTFREEONLY,
+    "only storage not released before return or scope exit",
+    "A memory leak has been detected. Only-qualified storage is not released before the last "
+    "reference to it is lost.",
+    0, 0
+  },
+  {
+    FK_MEMORY, FK_LEAK, specialFlag,
     "mustfree",
     FLG_MUSTFREE,
-    "only storage not released before return or scope exit",
-    "A memory leak has been detected. Newly-allocated or "
-    "only-qualified storage is not released before the last "
-    "reference to it is lost.",
+    "fresh or only storage not released before return or scope exit (sets mustfreefresh and mustfreeonly)",
+    "A memory leak has been detected.",
     0, 0
   },
   {

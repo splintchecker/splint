@@ -29,6 +29,20 @@
 # include "basic.h"
 # include "transferChecks.h"
 
+/* transfer types: */
+typedef enum
+{
+  TT_FCNRETURN,
+  TT_DOASSIGN,
+  TT_FIELDASSIGN,
+  TT_FCNPASS,
+  TT_GLOBPASS,
+  TT_GLOBRETURN,
+  TT_PARAMRETURN,
+  TT_LEAVETRANS,
+  TT_GLOBINIT
+} transferKind;
+
 static void checkStructTransfer (exprNode p_lhs, sRef p_slhs, exprNode p_rhs, sRef p_srhs,
 				 fileloc p_loc, transferKind p_tt);
 static void checkMetaStateConsistent (/*@exposed@*/ sRef p_fref, sRef p_tref, 
@@ -880,10 +894,8 @@ checkCompletelyDefined (exprNode fexp, /*@exposed@*/ sRef fref, sRef ofref,
 			{
 			  sRef rb = sRef_getRootBase (fref);
 			  sRef_showStateInfo (fref);
-
-			  DPRINTF (("fref: %s", sRef_unparseFull (fref)));
-			  DPRINTF (("rb: %s", sRef_unparseFull (rb)));
-			  sRef_setDefinedComplete (rb, loc);
+			  
+			  sRef_setDefinedCompleteDirect (rb, loc);
 			}
 		    }
 		}
@@ -1278,13 +1290,14 @@ static bool
 			    fileloc p_loc, int p_depth, dscCode p_desc,
 			    bool p_hideErrors);
 
-bool checkGlobalDestroyed (sRef fref, fileloc loc)
+bool transferChecks_globalDestroyed (sRef fref, fileloc loc)
 {
+  DPRINTF (("Global destroyed: %s", sRef_unparseFull (fref)));
   return (checkCompletelyDestroyed (exprNode_undefined, fref, TRUE,
 				    loc, 0, DSC_GLOB, FALSE));
 }
 
-void checkLocalDestroyed (sRef fref, fileloc loc)
+void transferChecks_localDestroyed (sRef fref, fileloc loc)
 {
   if (sRef_isObserver (fref) || sRef_isExposed (fref)
       || sRef_isPartial (fref))
@@ -1298,7 +1311,7 @@ void checkLocalDestroyed (sRef fref, fileloc loc)
     }
 }
 
-void checkStructDestroyed (sRef fref, fileloc loc)
+void transferChecks_structDestroyed (sRef fref, fileloc loc)
 {
   DPRINTF (("Check struct destroyed: %s", sRef_unparse (fref)));
 
@@ -1377,23 +1390,38 @@ static bool
       }
   }
 
-  if (sRef_isPdefined (fref) && !context_getFlag (FLG_STRICTDESTROY))
-    {
-      DPRINTF (("Partial: %s", sRef_unparseFull (fref)));
-      hideErrors = TRUE; /* Don't report any more errors, but still change ownership. */
-    }
+  ct = ctype_realType (sRef_getType (fref));
 
+  if (sRef_isPdefined (fref) 
+      && ctype_isAP (ct)
+      && !context_getFlag (FLG_STRICTDESTROY)) 
+    {
+      /*
+      ** Don't report errors for array elements (unless strictdestroy)
+      ** when at least one appears to have been destroyed.
+      */
+
+      DPRINTF (("Partial: %s", sRef_unparseFull (fref)));
+      hideErrors = TRUE;
+      /* Don't report any more errors, but still change ownership. */
+    }
+  
   if (usymtab_isDefinitelyNull (fref)) 
     {
       DPRINTF (("Probably null!"));
       return TRUE;
     }
 
-  if (!context_getFlag (FLG_COMPDESTROY)) return TRUE;
-  if (!context_getFlag (FLG_MUSTFREE)) return TRUE;
+  /*
+  ** evans 2002-01-02: removed this
+  ** if (!context_flagOn (FLG_COMPDESTROY, loc)) 
+  ** {
+  ** return TRUE;
+  ** }
+  ** 
+  ** if (!context_getFlag (FLG_MUSTFREEONLY)) return TRUE;
+  */
   
-  ct = ctype_realType (sRef_getType (fref));
-
   DPRINTF (("Here: %s", ctype_unparse (ct)));
 
   if (!topLevel)
@@ -1601,7 +1629,7 @@ static bool
 }
 
 void
-checkReturnTransfer (exprNode fexp, uentry rval)
+transferChecks_return (exprNode fexp, uentry rval)
 {
   sRef uref = uentry_getSref (rval);
   sRef rref = sRef_makeNew (sRef_getType (uref), uref, cstring_undefined);
@@ -1827,8 +1855,8 @@ static void
 */
 
 void
-checkPassTransfer (exprNode fexp, uentry arg, bool isSpec,
-		   /*@dependent@*/ exprNode fcn, int argno, int totargs)
+transferChecks_passParam (exprNode fexp, uentry arg, bool isSpec,
+			  /*@dependent@*/ exprNode fcn, int argno, int totargs)
 {
   sRef tref = uentry_getSref (arg);
   sRef fref = exprNode_getSref (fexp);
@@ -2134,13 +2162,14 @@ checkPassTransfer (exprNode fexp, uentry arg, bool isSpec,
 	
 	{
 	  voptgenerror 
-	    (FLG_MUSTFREE,
+	    (FLG_MUSTFREEFRESH,
 	     message ("New fresh storage %q(type %s) passed as %s (not released): %s",
 		      sRef_unparseOpt (fref),
 		      ctype_unparse (sRef_getType (fref)),
 		      alkind_unparse (sRef_getAliasKind (tref)),
 		      exprNode_unparse (fexp)),
 	     exprNode_loc (fexp));
+
 	  DPRINTF (("Fresh: %s", sRef_unparseFull (fref)));
 	}
       else 
@@ -2152,7 +2181,7 @@ checkPassTransfer (exprNode fexp, uentry arg, bool isSpec,
 	      if (!alkind_isError (ak))
 		{
 		  voptgenerror 
-		    (FLG_MUSTFREE,
+		    (FLG_MUSTFREEFRESH,
 		     message ("New reference %q(type %s) passed as %s (not released): %s",
 			      sRef_unparseOpt (fref),
 			      ctype_unparse (sRef_getType (fref)),
@@ -2229,19 +2258,19 @@ checkPassTransfer (exprNode fexp, uentry arg, bool isSpec,
 }
 
 void
-checkGlobReturn (uentry glob)
+transferChecks_globalReturn (uentry glob)
 {
   sRef_protectDerivs ();
   checkGlobTrans (glob, TT_GLOBRETURN);
   sRef_clearProtectDerivs ();
 }
 
-void checkParamReturn (uentry actual)
+void transferChecks_paramReturn (uentry actual)
 {
   checkLeaveTrans (actual, TT_PARAMRETURN);
 }
 
-void checkLoseRef (uentry actual)
+void transferChecks_loseReference (uentry actual)
 {
   checkLeaveTrans (actual, TT_LEAVETRANS);
 }
@@ -2281,8 +2310,11 @@ static void
 checkGlobTrans (uentry glob, transferKind type)
 {
   sRef eref = uentry_getOrigSref (glob);
-  
-  (void) checkCompletelyDefined (exprNode_undefined, uentry_getSref (glob), uentry_getSref (glob),
+ 
+  DPRINTF (("Completely defined: %s", uentry_unparseFull (glob)));
+
+  (void) checkCompletelyDefined (exprNode_undefined, uentry_getSref (glob), 
+				 uentry_getSref (glob),
 				 exprNode_undefined, eref, 
 				 TRUE, FALSE, FALSE,
 				 g_currentloc, type, 0, TRUE);
@@ -2370,7 +2402,7 @@ static void checkStructTransfer (exprNode lhs, sRef slhs, exprNode rhs, sRef srh
 }
 
 void
-checkInitTransfer (exprNode lhs, exprNode rhs)
+transferChecks_initialization (exprNode lhs, exprNode rhs)
 {
   sRef slhs = exprNode_getSref (lhs);
   
@@ -2383,12 +2415,12 @@ checkInitTransfer (exprNode lhs, exprNode rhs)
     }
   else
     {
-      checkAssignTransfer (lhs, rhs);
+      transferChecks_assign (lhs, rhs);
     }
 }
 
 void
-checkAssignTransfer (exprNode lhs, exprNode rhs)
+transferChecks_assign (exprNode lhs, exprNode rhs)
 {
   sRef slhs = exprNode_getSref (lhs);
   sRef srhs = exprNode_getSref (rhs);
@@ -2578,82 +2610,81 @@ checkTransferAssignAux (sRef fref, exprNode fexp, /*@unused@*/ bool ffix,
       && !(sRef_same (fref, tref)) /* okay to assign to self (returned params) */
       && !(usymtab_isDefinitelyNull (tref))) 
     {
-      if (context_getFlag (FLG_MUSTFREE))
+      if (transferChecks_canLoseReference (tref, loc))
 	{
-	  if (canLoseReference (tref, loc))
+	  ; /* no error */
+	}
+      else
+	{
+	  flagcode flg = sRef_isFresh (tref) ? FLG_MUSTFREEFRESH : FLG_MUSTFREEONLY;
+
+	  if (sRef_hasLastReference (tref))
 	    {
-	      ; /* no error */
+	      if (optgenerror 
+		  (flg,
+		   message ("Last reference %q to %s storage %q(type %s) not released "
+			    "before assignment: %q",
+			    sRef_unparse (tref),
+			    alkind_unparse (tkind),
+			    sRef_unparseOpt (sRef_getAliasInfoRef (tref)),
+			    ctype_unparse (sRef_getType (tref)),
+			    generateText (fexp, texp, tref, transferType)),
+		   loc))
+		{
+		  sRef_showRefLost (tref);
+		}
 	    }
 	  else
 	    {
-	      if (sRef_hasLastReference (tref))
+	      if (context_inGlobalScope ())
 		{
-		  if (optgenerror 
-		      (FLG_MUSTFREE,
-		       message ("Last reference %q to %s storage %q(type %s) not released "
-				"before assignment: %q",
-				sRef_unparse (tref),
-				alkind_unparse (tkind),
-				sRef_unparseOpt (sRef_getAliasInfoRef (tref)),
-				ctype_unparse (sRef_getType (tref)),
-				generateText (fexp, texp, tref, transferType)),
-		       loc))
-		    {
-		      sRef_showRefLost (tref);
-		    }
+		  /* no errors for static initializations */
 		}
-	      else
+	      else 
 		{
-		  if (context_inGlobalScope ())
+		  /*
+		  ** don't report this error for a[i], since it could
+		  ** be a new element.
+		  */
+		  
+		  if (alkind_isNewRef (tkind))
 		    {
-		      /* no errors for static initializations */
+		      if (optgenerror 
+			  (flg,
+			   message 
+			   ("%q %q(type %s) not released before assignment: %q",
+			    cstring_makeLiteral
+			    (alkind_isKillRef (sRef_getOrigAliasKind (tref))
+			     ? "Kill reference parameter" : "New reference"),
+			    sRef_unparseOpt (tref),
+			    ctype_unparse (sRef_getType (tref)),
+			    generateText (fexp, texp, tref, transferType)),
+			   loc))
+			{
+			  sRef_showAliasInfo (tref);
+			  sRef_setAliasKind (tref, AK_ERROR, loc);
+			}
 		    }
-		  else 
+		  else if
+		    (!(sRef_isUnknownArrayFetch (tref)
+		       && !context_getFlag (FLG_STRICTDESTROY))
+		     && !sRef_isUnionField (tref)
+		     && !sRef_isRelDef (tref)
+		     && optgenerror 
+		     (flg,
+		      message 
+		      ("%s storage %q(type %s) not released before assignment: %q",
+		       alkind_capName (tkind),
+		       sRef_unparseOpt (tref),
+		       ctype_unparse (sRef_getType (tref)),
+		       generateText (fexp, texp, tref, transferType)),
+		      loc))
 		    {
-		      /*
-		       ** don't report this error for a[i], since it could
-		       ** be a new element.
-		       */
-		      
-		      if (alkind_isNewRef (tkind))
-			{
-			  if (optgenerror 
-			      (FLG_MUSTFREE,
-			       message 
-			       ("%q %q(type %s) not released before assignment: %q",
-				cstring_makeLiteral
-				(alkind_isKillRef (sRef_getOrigAliasKind (tref))
-				 ? "Kill reference parameter" : "New reference"),
-				sRef_unparseOpt (tref),
-				ctype_unparse (sRef_getType (tref)),
-				generateText (fexp, texp, tref, transferType)),
-			       loc))
-			    {
-			      sRef_showAliasInfo (tref);
-			      sRef_setAliasKind (tref, AK_ERROR, loc);
-			    }
-			}
-		      else if
-			(!(sRef_isUnknownArrayFetch (tref)
-			   && !context_getFlag (FLG_STRICTDESTROY))
-			 && !sRef_isUnionField (tref)
-			 && !sRef_isRelDef (tref)
-			 && optgenerror 
-			 (FLG_MUSTFREE,
-			  message 
-			  ("%s storage %q(type %s) not released before assignment: %q",
-			   alkind_capName (tkind),
-			   sRef_unparseOpt (tref),
-			   ctype_unparse (sRef_getType (tref)),
-			   generateText (fexp, texp, tref, transferType)),
-			  loc))
-			  {
-			    sRef_showAliasInfo (tref);
-			  }
-		      else
-			{
-			  ;
-			}
+		      sRef_showAliasInfo (tref);
+		    }
+		  else
+		    {
+		      ;
 		    }
 		}
 	    }
@@ -3861,7 +3892,7 @@ checkTransferAux (exprNode fexp, /*@exposed@*/ sRef fref, bool ffix,
 	      && ctype_isMutable (exprNode_getType (fexp))
 	      && (!iseitherassign || sRef_isReference (tref)))
 	    {
-	      if (canLoseReference (fref, loc))
+	      if (transferChecks_canLoseReference (fref, loc))
 		{
 		  ;
 		}
@@ -4408,7 +4439,7 @@ static /*@exposed@*/ sRef
   return sRef_undefined;
 }
 
-bool canLoseReference (/*@dependent@*/ sRef sr, fileloc loc)
+bool transferChecks_canLoseReference (/*@dependent@*/ sRef sr, fileloc loc)
 {
   bool gotone = FALSE;
   sRefSet ab = usymtab_aliasedBy (sr); /* yes, really mean aliasedBy */

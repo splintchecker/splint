@@ -302,6 +302,9 @@ extern exprNode exprNode_concat (/*@only@*/ exprNode p_e1, /*@only@*/ exprNode p
 extern exprNode exprNode_createTok (/*@only@*/ lltok p_t) /*@*/ ;
 extern exprNode exprNode_statement (/*@only@*/ exprNode p_e, /*@only@*/ lltok p_t);
 extern exprNode exprNode_makeBlock (/*@only@*/ exprNode p_e);
+
+extern void exprNode_checkIfPred (exprNode p_pred) /*@modifies g_msgstream@*/ ;
+
 extern exprNode exprNode_if (/*@only@*/ exprNode p_pred, /*@only@*/ exprNode p_tclause);
 extern exprNode 
   exprNode_ifelse (/*@only@*/ exprNode p_pred, /*@only@*/ exprNode p_tclause, 

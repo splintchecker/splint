@@ -252,13 +252,13 @@ llsuppresshint2 (char c, flagcode f1, flagcode f2)
 	    {
 	      if (cstring_isDefined (desc))
 		{
-		  llgenhint (message ("%s (Setting %h%s will suppress message)", desc,
+		  llgenhint (message ("%s (Use %h%s to inhibit warning)", desc,
 				      c,
 				      flagcode_unparse (f1)));
 		}
 	      else
 		{
-		  llgenhint (message ("(Setting %h%s will suppress message)", 
+		  llgenhint (message ("(Use %h%s to inhibit warning)", 
 				      c, flagcode_unparse (f1)));
 		}
 	    }
@@ -266,7 +266,7 @@ llsuppresshint2 (char c, flagcode f1, flagcode f2)
 	    {
 	      if (cstring_isDefined (desc))
 		{
-		  llgenhint (message ("%s (Setting either %h%s or %h%s will suppress message)", desc, 
+		  llgenhint (message ("%s (Use either %h%s or %h%s to inhibit warning)", desc, 
 				      c,
 				      flagcode_unparse (f1),
 				      c,
@@ -274,7 +274,7 @@ llsuppresshint2 (char c, flagcode f1, flagcode f2)
 		}
 	      else
 		{
-		  llgenhint (message ("(Setting either %h%s or %h%s will suppress message)", c,
+		  llgenhint (message ("(Use either %h%s or %h%s to inhibit warning)", c,
 				      flagcode_unparse (f1),
 				      c, flagcode_unparse (f2)));
 		}
@@ -301,12 +301,12 @@ llsuppresshint (char c, flagcode f)
 
 	  if (cstring_isDefined (desc))
 	    {
-	      llgenhint (message ("%s (%h%s will suppress message)", desc, c,
+	      llgenhint (message ("%s (Use %h%s to inhibit warning)", desc, c,
 				  flagcode_unparse (f)));
 	    }
 	  else
 	    {
-	      llgenhint (message ("(%h%s will suppress message)", c,
+	      llgenhint (message ("(Use %h%s to inhibit warning)", c,
 				  flagcode_unparse (f)));
 	    }
 	}

@@ -412,7 +412,7 @@ flagcode stateClause_preErrorCode (stateClause cl)
     case SP_ALLOCATES: /*@fallthrough@*/ 
     case SP_DEFINES:
     case SP_SETS:
-      return FLG_MUSTFREE;
+      return FLG_MUSTFREEONLY;
     case SP_RELEASES:
       return FLG_USEDEF;
     case SP_GLOBAL:
@@ -512,7 +512,7 @@ flagcode stateClause_postErrorCode (stateClause cl)
     case SP_SETS:     
       return FLG_COMPDEF;
     case SP_RELEASES:
-      return FLG_MUSTFREE;
+      return FLG_MUSTFREEONLY;
     case SP_GLOBAL:
       BADBRANCH;
     case SP_QUAL:

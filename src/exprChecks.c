@@ -822,7 +822,7 @@ void exprNode_checkMacroBody (/*@only@*/ exprNode e)
 		case XPR_STRINGLITERAL:	case XPR_NUMLIT:
 		case XPR_FACCESS: case XPR_OFFSETOF:
 
-		  checkReturnTransfer (e, hdr);
+		  transferChecks_return (e, hdr);
 		  break;
 
 		  /* these expressions don't */
@@ -1551,7 +1551,7 @@ static void checkSafeReturnExpr (/*@notnull@*/ exprNode e)
 		sRef_unparseFull (e->sref),
 		uentry_unparse (rval)));
 
-      checkReturnTransfer (e, rval);
+      transferChecks_return (e, rval);
 
       DPRINTF (("After return: %s / %s / %s",
 		exprNode_unparse (e),

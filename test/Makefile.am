@@ -4,7 +4,9 @@
 AUTOMAKE_OPTIONS = 1.5 foreign
 
 ## Use this to configure diff output
-DIFFFLAGS = -u
+DIFFFLAGS = 
+
+# -u show context
 
 ## Set up the splint commands
 

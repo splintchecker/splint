@@ -22,8 +22,8 @@ Finished checking --- no warnings
 Finished checking --- no warnings
 
 booltest.c: (in function f)
-booltest.c:9:12: Return value type int does not match declared type bool: i
 booltest.c:8:7: Test expression for if not bool, type int: i
+booltest.c:9:12: Return value type int does not match declared type bool: i
 
 Finished checking --- 2 code warnings, as expected
 

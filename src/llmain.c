@@ -1537,7 +1537,7 @@ int main (int argc, char *argv[])
 	      }
 	    else
 	      {
-		specErrors = message ("%d spec warning%& found\n       ",
+		specErrors = message ("%d spec warning%&\n       ",
 				      nspecErrors);
 		expsuccess = FALSE;
 	      }
@@ -1584,7 +1584,7 @@ int main (int argc, char *argv[])
 		  if (!isQuiet)
 		    {
 		      llmsg (message ("Finished checking --- "
-				      "%s%d code warning%& found", 
+				      "%s%d code warning%&", 
 				      specErrors, context_numErrors ()));
 		    }
 

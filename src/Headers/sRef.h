@@ -288,8 +288,12 @@ extern /*@only@*/ cstring sRef_unparseDebug (sRef p_s) /*@*/ ;
 extern void sRef_killComplete (sRef p_s, fileloc p_loc) /*@modifies p_s@*/ ;
 extern int sRef_getIndex (sRef p_arr) /*@*/ ;
 extern /*@dependent@*/ sRef sRef_fixOuterRef (/*@returned@*/ sRef p_s);
-extern void sRef_setDefinedComplete (sRef p_s, fileloc p_loc);
-extern void sRef_setDefinedNCComplete (sRef p_s, fileloc p_loc);
+
+/* Use this one to clear after error */
+extern void sRef_setDefinedCompleteDirect (sRef p_s, fileloc p_loc) ;
+
+extern void sRef_setDefinedComplete (sRef p_s, fileloc p_loc) ;
+extern void sRef_setDefinedNCComplete (sRef p_s, fileloc p_loc) ;
 extern int sRef_getParam (sRef p_s) /*@*/ ;
 extern int sRef_lexLevel (sRef p_s) /*@*/ ;
 extern void sRef_setOrigAliasKind (sRef p_s, alkind p_kind);

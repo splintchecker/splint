@@ -624,7 +624,7 @@ macroparens                  4           0
 usereleased                  1           0
 compdef                      3           0
 compdestroy                  1           0
-mustfree                     3           0
+mustfreeonly                 3           0
 branchstate                  2           1
 onlytrans                    1           0
 freshtrans                   3           0
