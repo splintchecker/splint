@@ -2190,8 +2190,8 @@ void context_exitClause (exprNode pred, exprNode tbranch, exprNode fbranch)
 void
 context_returnFunction (void)
 {
-    usymtab_checkFinalScope (TRUE);
-  }
+  usymtab_checkFinalScope (TRUE);
+}
 
 void
 context_exitFunction (void)
@@ -2280,7 +2280,7 @@ context_getParams (void)
 {
   if (context_inFunctionLike ())
     {
-            return (uentry_getParams (gc.cont.fcn));
+      return (uentry_getParams (gc.cont.fcn));
     }
   else
     {

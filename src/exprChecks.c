@@ -883,6 +883,8 @@ void exprNode_checkFunctionBody (exprNode body)
 		}
 	    }
 	}
+
+      exprNode_checkFunction (context_getHeader (), body);
       
       if (!checkret)
 	{
@@ -890,6 +892,7 @@ void exprNode_checkFunctionBody (exprNode body)
 	}
     }
 }
+/*drl modified */
 
 void exprNode_checkFunction (/*@unused@*/ uentry ue, /*@only@*/ exprNode body)
 {

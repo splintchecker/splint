@@ -21,6 +21,12 @@
 //#include "constraintExpr.h"
 
 
+constraintTerm new_constraintTermExpr (void)
+{
+  constraintTerm ret;
+  ret = dmalloc (sizeof (* ret ) );
+  return ret;
+}
 
 
 bool constraintTerm_isIntLiteral (constraintTerm term)
@@ -33,13 +39,35 @@ bool constraintTerm_isIntLiteral (constraintTerm term)
   return FALSE;
 }
 
+bool constraintTerm_isStringLiteral (constraintTerm c)
+{
+  llassert (c);
+  if (c->kind == EXPRNODE)
+    {
+      if (exprNode_knownStringValue(c->value.expr) )
+	{
+	  return TRUE;
+	}
+    }
+  return FALSE;
+}
+
+cstring constraintTerm_getStringLiteral (constraintTerm c)
+{
+  llassert (c);
+  llassert (constraintTerm_isStringLiteral (c) );
+  llassert (c->kind == EXPRNODE);
+  
+  return ( multiVal_forceString (exprNode_getValue (c->value.expr) ) );
+}
+
 constraintTerm constraintTerm_simplify (constraintTerm term)
 {
   if (term->kind == EXPRNODE)
     {
       if ( exprNode_knownIntValue (term->value.expr ) )
 	{
-	  int temp;
+	  long int temp;
 	  temp  = exprNode_getLongValue (term->value.expr);
 	  term->value.intlit = temp;
 	  term->kind = INTLITERAL;
@@ -117,11 +145,47 @@ cstring constraintTerm_getName (constraintTerm term)
   return s;
 }
 
+constraintExpr 
+constraintTerm_doFixResult (constraintExpr e, exprNode fcnCall)
+{
+  constraintTerm t;
+  sRef s;
+  constraintExprData data = e->data;
+  
+  constraintExprKind kind = e->kind;
+  
+  constraintExpr ret;
 
-constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist)
+  llassert(kind == term);
+
+  t = constraintExprData_termGetTerm (data);
+  llassert (t != NULL);
+
+  ret = e;
+  switch (t->kind)
+    {
+    case EXPRNODE:
+      break;
+    case INTLITERAL:
+      break;
+      
+    case SREF:
+      s = t->value.sref;
+      if (s->kind == SK_RESULT)
+	{
+	  ret = constraintExpr_makeExprNode(fcnCall);
+	}
+      break;
+    }
+  return ret;
+  
+}
+
+constraintTerm 
+constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeList arglist)
 {
   llassert (term != NULL);
-
+  
   switch (term->kind)
     {
     case EXPRNODE:
@@ -140,6 +204,45 @@ constraintTerm constraintTerm_doSRefFixBaseParam (constraintTerm term, exprNodeL
       break;
     }
   return term;
+  
+}
+
+constraintExpr 
+constraintTerm_doSRefFixConstraintParam (constraintExpr e, exprNodeList arglist)
+{
+  constraintTerm t;
+  
+  constraintExprData data = e->data;
+  
+  constraintExprKind kind = e->kind;
+  
+  constraintExpr ret;
+
+  llassert(kind == term);
+
+  t = constraintExprData_termGetTerm (data);
+  llassert (t != NULL);
+
+  ret = e;
+  switch (t->kind)
+    {
+    case EXPRNODE:
+      /*@i334*/  //wtf
+      //   s = message ("%s @ %s ", exprNode_unparse (term->value.expr),
+      //	   fileloc_unparse (term->loc) );
+      break;
+    case INTLITERAL:
+      //  s = message (" %d ", term->value.intlit);
+       break;
+      
+    case SREF:
+      ret = sRef_fixConstraintParam (t->value.sref, arglist);
+      
+      //      s = message ("%s ", sRef_unparse (term->value.sref) );
+
+      break;
+    }
+  return ret;
   
 }
 
@@ -289,7 +392,7 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
 	    )
 	   );
  
- if (sRef_sameName (s1, s2) )
+ if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
    {
      DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
      return TRUE;
@@ -301,6 +404,3 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
    }     
     
 }
-
-
-

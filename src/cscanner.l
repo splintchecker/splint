@@ -566,6 +566,7 @@ struct skeyword s_parsetable[] = {
   { "post", QPOSTCLAUSE } ,
   {"setBufferSize", QSETBUFFERSIZE},
   {"bufferConstraint", QBUFFERCONSTRAINT},
+  {"ensuresConstraint", QENSURESCONSTRAINT},
   {"setStringLength", QSETSTRINGLENGTH},
   {"testinRange", QTESTINRANGE},
   { NULL, BADTOK }
@@ -613,6 +614,7 @@ struct skeyword s_keytable[] = {
   { "nullterminated", QNULLTERMINATED }, 
   { "setBufferSize", QSETBUFFERSIZE },
   { "bufferConstraint", QBUFFERCONSTRAINT },
+  { "ensuresConstraint", QENSURESCONSTRAINT },
   { "testInRange", QTESTINRANGE},
   { "MaxSet", QMAXSET},
   { "MaxRead", QMAXREAD},

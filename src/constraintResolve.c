@@ -20,6 +20,8 @@
 
 
 
+
+
 constraintList reflectChanges (constraintList pre2, constraintList post1);
 constraint substitute (constraint c, constraintList p);
 constraint constraint_searchandreplace (constraint c, constraintExpr old, constraintExpr new);
@@ -91,7 +93,8 @@ constraintList checkCall (exprNode fcn, exprNodeList arglist)
   if (preconditions)
     {
       preconditions = constraintList_copy(preconditions);
-      preconditions = constraintList_doSRefFixBaseParam (preconditions, arglist);
+      preconditions= constraintList_togglePost (preconditions);   
+      preconditions = constraintList_doSRefFixConstraintParam (preconditions, arglist);
     }
   else
     {
@@ -99,6 +102,30 @@ constraintList checkCall (exprNode fcn, exprNodeList arglist)
     }
   
   return preconditions;
+}
+
+constraintList getPostConditions (exprNode fcn, exprNodeList arglist, exprNode fcnCall)
+{
+  constraintList postconditions;
+  uentry temp;
+  DPRINTF ( (message ("Got call that %s ( %s) ",  exprNode_unparse(fcn),   exprNodeList_unparse (arglist ) ) ) );
+
+  temp = exprNode_getUentry (fcn);
+
+  postconditions = uentry_getFcnPostconditions (temp);
+
+  if (postconditions)
+    {
+      postconditions = constraintList_copy(postconditions);
+      postconditions = constraintList_doFixResult (postconditions, fcnCall);
+      postconditions = constraintList_doSRefFixConstraintParam (postconditions, arglist);
+    }
+  else
+    {
+      postconditions = constraintList_new();
+    }
+  
+  return postconditions;
 }
 
 void mergeResolve (exprNode parent, exprNode child1, exprNode child2)
@@ -189,6 +216,8 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
   constraintList ret;
   constraint temp;
   ret = constraintList_new();
+  DPRINTF((message ("reflectChanges: lists %s and %s", constraintList_print(pre2), constraintList_print(post1) )));
+  
   constraintList_elements (pre2, el)
     {
       if (!resolve (el, post1) )
@@ -209,6 +238,7 @@ constraintList reflectChanges (constraintList pre2, constraintList post1)
 	}
     } end_constraintList_elements;
 
+    DPRINTF((message ("reflectChanges: returning %s", constraintList_print(ret) ) ) );
     return ret;
 }
 
@@ -316,6 +346,7 @@ bool resolve (constraint c, constraintList p)
 	  DPRINTF ( (message ("\n%s Satifies %s\n ", constraint_print(el), constraint_print(c) ) ) );
 	  return TRUE;
 	}
+        DPRINTF ( (message ("\n%s does not satify %s\n ", constraint_print(el), constraint_print(c) ) ) );
     }
   end_constraintList_elements;
   DPRINTF ( (message ("no constraints satify %s", constraint_print(c) ) ));
@@ -326,6 +357,9 @@ bool resolve (constraint c, constraintList p)
 /*returns true if cosntraint post satifies cosntriant pre */
 bool satifies (constraint pre, constraint post)
 {
+  if (constraint_isAlwaysTrue (pre)  )
+    return TRUE;
+  
   if (!constraintExpr_similar (pre->lexpr, post->lexpr) )
     {
       return FALSE;
@@ -361,8 +395,45 @@ bool arithType_canResolve (arithType ar1, arithType ar2)
       //      llassert(FALSE); 
       if ( (ar2 == LT) || (ar2 == LTE) || (ar2 == EQ) )
 	return TRUE;
+    default:
+      return FALSE;
     }
   return FALSE;	  
+}
+
+bool constraint_isAlwaysTrue (constraint c)
+{
+  constraintExpr l, r;
+  l = c->lexpr;
+  r = c->expr;
+
+  if (constraintExpr_canGetValue(l) && constraintExpr_canGetValue(r) )
+    {
+      int cmp;
+      cmp = constraintExpr_compare (l, r);
+      switch (c->ar)
+	{
+	case EQ:
+	  return (cmp == 0);
+	case GT:
+	  return (cmp > 0);
+	case GTE:
+	  return (cmp >= 0);
+	case LTE:
+	  return (cmp <= 0);
+	case LT:
+	  return (cmp < 0);
+
+	default:
+	  llassert(FALSE);
+	  break;
+	}
+    }
+  else
+    {
+      return FALSE;
+    }
+      BADEXIT;
 }
 
 bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintExpr expr2)
@@ -376,6 +447,8 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
   switch (ar1)
  {
  case GTE:
+      if (constraintExpr_similar (expr1, expr2) )
+	 return TRUE;
  case GT:
    if (!  (constraintExpr_canGetValue (expr1) &&
 	   constraintExpr_canGetValue (expr2) ) )
@@ -393,10 +466,26 @@ bool rangeCheck (arithType ar1, constraintExpr expr1, arithType ar2, constraintE
 	 return TRUE;
    
    return FALSE;
+ case LTE:
+   if (constraintExpr_similar (expr1, expr2) )
+	 return TRUE;
+ case LT:
+    if (!  (constraintExpr_canGetValue (expr1) &&
+	   constraintExpr_canGetValue (expr2) ) )
+     {
+       DPRINTF( ("Can't Get value"));
+       return FALSE;
+     }
+   
+   if (constraintExpr_compare (expr2, expr1) <= 0)
+     return TRUE;
+
+   return FALSE;
    
  default:
-   DPRINTF(("case not handled"));
+     llcontbug((message("Unhandled case in switch: %s", arithType_print(ar1) ) ) );
  }
+  BADEXIT;
   return FALSE;
 }
 
@@ -523,6 +612,36 @@ constraint constraint_solve (constraint c)
   return c;
 }
 
+static arithType flipAr (arithType ar)
+{
+  switch (ar)
+    {
+    case LT:
+      return GT;
+    case LTE:
+      return GTE;
+    case EQ:
+      return EQ;
+    case GT:
+      return LT;
+    case GTE:
+      return LTE;
+    default:
+      llcontbug (("unexpected value: case not handled"));
+    }
+  BADEXIT;
+}
+
+static constraint  constraint_swapLeftRight (constraint c)
+{
+  constraintExpr temp;
+  c->ar = flipAr (c->ar);
+  temp = c->lexpr;
+  c->lexpr = c->expr;
+  c->expr = temp;
+  DPRINTF(("Swaped left and right sides of constraint"));
+  return c;
+}
 
 constraint constraint_simplify (constraint c)
 {
@@ -533,7 +652,13 @@ constraint constraint_simplify (constraint c)
   
   c->lexpr = constraintExpr_simplify (c->lexpr);
   c->expr  = constraintExpr_simplify (c->expr);
-  
+
+  if (constraintExpr_isLit(c->lexpr) && (!constraintExpr_isLit(c->expr) ) )
+    {
+      c = constraint_swapLeftRight(c);
+      /*I don't think this will be an infinate loop*/
+      constraint_simplify(c);
+    }
   return c;
 }
 

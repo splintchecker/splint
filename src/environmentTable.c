@@ -31,7 +31,7 @@
 //#include "environmentTable.h"
 #include "exprData.i"
 #include "exprData.h"
-//#include "exprNode.h"
+#include "exprDataQuite.i"
 
 /*@i777*/
 /*@-fcnuse*/

@@ -165,6 +165,7 @@ void checkandsetBufState(idDecl id, exprNode is);
 %token <tok> QNULLTERMINATED
 %token <tok> QSETBUFFERSIZE
 %token <tok> QBUFFERCONSTRAINT
+%token <tok> QENSURESCONSTRAINT
 %token <tok> QSETSTRINGLENGTH
 %token <tok> QMAXSET
 %token <tok> QMAXREAD
@@ -401,7 +402,24 @@ optGlobBufConstraints
 
 
 optGlobBufConstraintsRest
- : optGlobBufConstraintsAux
+ : optGlobBufConstraintsAux optGlobEnsuresConstraintsAux
+
+
+optGlobEnsuresConstraintsAux
+: {
+  DPRINTF ( ("doing optGlobEnsuresConstraintsAux\n") );
+context_setProtectVars (); enterParamsTemp (); 
+     sRef_setGlobalScopeSafe (); 
+
+}  QENSURESCONSTRAINT BufConstraintList  QENDMACRO
+{
+  setEnsuresConstraints ($3);
+  exitParamsTemp ();
+     sRef_clearGlobalScopeSafe (); 
+     context_releaseVars ();
+  DPRINTF (("done optGlobBufConstraintsAux\n"));}
+ | /*empty*/
+
 
 optGlobBufConstraintsAux
 : {
@@ -415,7 +433,7 @@ context_setProtectVars (); enterParamsTemp ();
   exitParamsTemp ();
      sRef_clearGlobalScopeSafe (); 
      context_releaseVars ();
-  printf ("done optGlobBufConstraintsAux\n");}
+  DPRINTF (("done optGlobBufConstraintsAux\n"));}
  | /*empty*/
 
 BufConstraintList
@@ -425,7 +443,7 @@ BufConstraintList
 BufConstraint
 :  BufConstraintExpr relationalOp BufConstraintExpr TSEMI  {
  $$ = makeConstraintParse3 ($1, $2, $3);
- printf("Done BufConstraint1\n"); }
+ DPRINTF(("Done BufConstraint1\n")); }
 
 bufferModifier
  : QMAXSET
@@ -444,10 +462,9 @@ BufConstraintExpr
    $$ = constraintExpr_parseMakeBinaryOp ($2, $3, $4); }
 
 BufConstraintTerm
- : id                              { $$ = constraintExpr_makeTermsRef (
-					     uentry_getSref ($1));
-                                   checkModifiesId ($1); }
- | NEW_IDENTIFIER                  { $$ = constraintExpr_makeTermsRef(fixModifiesId ($1) ); }
+: id                              { /* $$ = constraintExpr_makeTermsRef (checkSpecClausesId ($1)); */
+ $$ = constraintExpr_makeTermsRef (checkbufferConstraintClausesId ($1));}
+ | NEW_IDENTIFIER                  { $$ = constraintExpr_makeTermsRef(fixSpecClausesId ($1) ); }
  | CCONSTANT {  char *t; int c;
   t =  cstring_toCharsSafe (exprNode_unparse($1));
   c = atoi( t );
@@ -660,7 +677,7 @@ fcnDef
  : fcnDefHdr fcnBody 
    { 
      context_setFunctionDefined (exprNode_loc ($2)); 
-     exprNode_checkFunction (context_getHeader (), $2);
+     /* exprNode_checkFunction (context_getHeader (), $2); */
      /* DRL 8 8 2000 */
      
      context_exitFunction ();

@@ -63,9 +63,9 @@ constraintList_grow (constraintList s)
   s->elements = newelements;
 }
 
-void constraintList_exprNodemerge()
-{
-}
+/*  void constraintList_exprNodemerge(void) */
+/*  { */
+/*  } */
 constraintList 
 constraintList_add (constraintList s, constraint el)
 {
@@ -134,24 +134,14 @@ constraintList_print (constraintList s) /*@*/
 void constraintList_printError (constraintList s, fileloc loc)
 {
 
-  int i;
-  cstring st = cstring_undefined;
-  bool first = TRUE;
-
-  if (s->nelements == 0)
+  constraintList_elements (s, elem)
     {
-      return;
-    }
-  
-  for (i = 0; i < s->nelements; i++)
-    {
-      constraint current = s->elements[i];
-
-      if (current != NULL)
+      if (elem != NULL)
 	{
-	  constraint_printError (current,loc);
+	  constraint_printError (elem, loc);
 	}
     }
+  end_constraintList_elements;
   return;
 }
 
@@ -267,7 +257,32 @@ constraintList constraintList_preserveOrig (constraintList c)
   return c;
 }
 
+constraintList constraintList_doFixResult (constraintList postconditions, exprNode fcnCall)
+{
+  constraintList ret;
+  ret = constraintList_new();
+  constraintList_elements (postconditions, el)
+    {
+      ret = constraintList_add (ret, constraint_doFixResult (el, fcnCall) );
+    }
+  end_constraintList_elements;
 
+  return ret;
+}
+
+constraintList constraintList_doSRefFixConstraintParam (constraintList preconditions, exprNodeList arglist)
+{
+  constraintList ret;
+  ret = constraintList_new();
+
+  constraintList_elements (preconditions, el)
+    {
+      ret = constraintList_add(ret, constraint_doSRefFixConstraintParam (el, arglist) );
+    }
+  end_constraintList_elements;
+
+  return ret;
+}
 constraintList constraintList_doSRefFixBaseParam (constraintList preconditions,
 						   exprNodeList arglist)
 {
@@ -283,5 +298,14 @@ constraintList constraintList_doSRefFixBaseParam (constraintList preconditions,
   return ret;
 }
 
+constraintList constraintList_togglePost (/*@returned@*/ constraintList c)
+{
+  constraintList_elements (c, el)
+    {
+      el->post = !el->post;
+    }
+  end_constraintList_elements;
+  return c;
+}
 
 

@@ -4622,7 +4622,17 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 				//ret->sref = sRef_makeAddress (e->sref);
 				//}
 
-			 int val = (int) multiVal_forceInt (e2->val);
+	      int val;
+	      /*drl 1-4-2001
+		added ugly fixed to stop
+		program from crashing on point + int +int
+		one day I'll fix this or ask Seejo wtf the codes supposed to do. */
+
+	      if (!multiVal_isInt (e2->val) )
+		break;
+	      /*end drl*/
+	      
+	      val = (int) multiVal_forceInt (e2->val);
 
 			/* Operator : + or += */
 		    if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
@@ -4649,7 +4659,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 					sRef_setLen (ret->sref, sRef_getLen(e1->sref) + val);
 				}
 			}
-		 }
+	    }
 			
 	     /* end modifications */  
 

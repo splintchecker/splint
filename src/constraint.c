@@ -206,6 +206,15 @@ constraint constraint_makeWriteSafeInt (exprNode po, int ind)
   /*@i1*/return ret;
 }
 
+constraint constraint_makeSRefSetBufferSize (sRef s, int size)
+{
+ constraint ret = constraint_makeNew();
+ ret->lexpr = constraintExpr_makeSRefMaxset (s);
+ ret->ar = EQ;
+ ret->expr =  constraintExpr_makeValueInt (size);
+ ret->post = TRUE;
+ /*@i1*/return ret;
+}
 
 constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
 {
@@ -219,6 +228,20 @@ constraint constraint_makeSRefWriteSafeInt (sRef s, int ind)
   /*@i1*/return ret;
 }
 
+/* drl added 01/12/2000
+   
+  makes the constraint: Ensures index <= MaxRead(buffer) */
+
+constraint constraint_makeEnsureLteMaxRead(exprNode index, exprNode buffer)
+{
+  constraint ret = constraint_makeNew();
+
+  ret->lexpr = constraintExpr_makeValueExpr (index);
+  ret->ar = LTE;
+  ret->expr = constraintExpr_makeMaxReadExpr(buffer);
+  ret->post = TRUE;
+  return ret;
+}
 
 constraint constraint_makeWriteSafeExprNode (exprNode po, exprNode ind)
 {
@@ -271,7 +294,7 @@ static constraint constraint_makeEnsuresOp (exprNode e1, exprNode e2, fileloc se
   e = exprNode_fakeCopy(e1);
   if (! (e1 && e2) )
     {
-      TPRINTF((message("Warning null exprNode, Exprnodes are %s and %s",
+      llcontbug((message("null exprNode, Exprnodes are %s and %s",
 		       exprNode_unparse(e1), exprNode_unparse(e2) )
 	       ));
     }
@@ -316,7 +339,7 @@ constraint constraint_makeEnsureGreaterThanEqual (exprNode e1, exprNode e2, file
 }
 
 
-exprNode exprNode_copyConstraints (exprNode dst, exprNode src)
+exprNode exprNode_copyConstraints (/*@returned@*/ exprNode dst, exprNode src)
 {
   dst->ensuresConstraints = constraintList_copy (src->ensuresConstraints );
   dst->requiresConstraints = constraintList_copy (src->requiresConstraints );
@@ -418,7 +441,7 @@ cstring  constraint_printDetailed (constraint c)
   if (!c->post)
     {
     if (c->orig)  
-      st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisy %s", constraint_print (c), constraint_print(c->orig) );
+      st = message ("Unresolved constraint:\nLclint is unable to resolve %s needed to satisfy %s", constraint_print (c), constraint_print(c->orig) );
     else
       st = message ("Unresolved constraint:\nLclint is unable to resolve %s", constraint_print (c));
       
@@ -466,6 +489,26 @@ constraint constraint_doSRefFixBaseParam (constraint precondition,
   return precondition;
 }
 
+
+constraint constraint_doFixResult (constraint postcondition, exprNode fcnCall)
+{
+  postcondition = constraint_copy (postcondition);
+  postcondition->lexpr = constraintExpr_doFixResult (postcondition->lexpr, fcnCall);
+  postcondition->expr = constraintExpr_doFixResult (postcondition->expr, fcnCall);
+
+  return postcondition;
+}
+
+constraint constraint_doSRefFixConstraintParam (constraint precondition,
+						   exprNodeList arglist)
+{
+
+  precondition = constraint_copy (precondition);
+  precondition->lexpr = constraintExpr_doSRefFixConstraintParam (precondition->lexpr, arglist);
+  precondition->expr = constraintExpr_doSRefFixConstraintParam (precondition->expr, arglist);
+
+  return precondition;
+}
 
 // bool constraint_hasTerm (constraint c, constraintTerm term)
 // {

@@ -54,6 +54,9 @@
 /*drl*/
 static  constraintList fcnConstraints = NULL;
 
+static constraintList fcnEnsuresConstraints = NULL;
+/*end drl*/
+
 //static  constraintList fcnPreConditions = NULL;
 
 
@@ -182,13 +185,20 @@ static void reflectModGlobs (uentry ue)
       uentry_setModifies (ue, fcnModifies);
       fcnModifies = sRefSet_undefined;
     }
-
+  /*drl added*/
   if (fcnConstraints)
     {
       uentry_setPreconditions (ue, fcnConstraints);
       fcnConstraints = constraintList_undefined;
     }
-
+  
+ if (fcnEnsuresConstraints)
+    {
+      uentry_setPostconditions (ue, fcnEnsuresConstraints);
+      fcnEnsuresConstraints = constraintList_undefined;
+    }
+ /*end drl*/
+ 
   if (uentry_isFunction (ue))
     {
       uentry_setSpecialClauses (ue, specClauses);
@@ -279,10 +289,23 @@ void setFunctionSpecialClause (lltok stok, sRefSet s,
 
   DPRINTF (("Added to specclauses: %s", specialClauses_unparse (specClauses)));
 }
-
+/*drl
+ */
 constraintList getFunctionConstraints (void)
 {
   return constraintList_copy (fcnConstraints);
+}
+
+
+constraintList getEnsuresConstraints (void)
+{
+  return constraintList_copy (fcnEnsuresConstraints);
+}
+
+void setEnsuresConstraints (constraintList c)
+{
+  #warning m leak
+  fcnEnsuresConstraints = constraintList_copy (c);
 }
 
 void setFunctionConstraints (constraintList c)
@@ -290,6 +313,7 @@ void setFunctionConstraints (constraintList c)
   #warning m leak
   fcnConstraints = constraintList_copy (c);
 }
+/* end drl*/
 
 void setFunctionModifies (sRefSet s)
 {
@@ -2109,6 +2133,28 @@ sRef checkSpecClausesId (uentry ue)
     }
 }
 
+/*drl
+  added 1/8/2000
+  based on checkSpecClausesId
+  called by grammar
+*/
+sRef checkbufferConstraintClausesId (uentry ue)
+{
+  cstring s = uentry_rawName (ue);
+  if (cstring_equalLit (s, "result"))
+    {
+      if (optgenerror 
+	  (FLG_SYNTAX, 
+	   message ("Special clause list uses %s which is a variable and has special "
+		    "meaning in a modifies list.  (Special meaning assumed.)", s), 
+	   g_currentloc))
+	{
+	  uentry_showWhereDeclared (ue);
+	}
+    }
+  
+  return uentry_getSref (ue);
+}
 
 void checkModifiesId (uentry ue)
 {

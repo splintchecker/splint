@@ -16,18 +16,7 @@
 # include "exprNodeSList.h"
 
 # include "exprData.i"
-//# include "exprDataQuite.i"
-
-#ifndef exprNode_isError
-#warning wtf
-# define exprNode_isError(e)          ((e) == exprNode_undefined)
-#else
-#warning strange
-#endif
-
-#define myexprNode_isError(e)        ((e) == exprNode_undefined)
-
-
+# include "exprDataQuite.i"
 
 bool /*@alt void@*/ exprNode_generateConstraints (/*@temp@*/ exprNode e);
 static bool exprNode_handleError( exprNode p_e);
@@ -49,8 +38,8 @@ exprNode makeDataTypeConstraints (exprNode e);
 constraintList constraintList_makeFixedArrayConstraints (sRefSet s);
 constraintList checkCall (exprNode fcn, exprNodeList arglist);
 
-bool exprNode_testd()
-{
+//bool exprNode_testd()
+//{
   /*        if ( ( (exprNode_isError  ) ) )
 	  {
 	  }
@@ -58,7 +47,7 @@ bool exprNode_testd()
 	  {
 	  }
   */
-}
+//}
 
 bool exprNode_isUnhandled (exprNode e)
 {
@@ -89,7 +78,7 @@ bool exprNode_isUnhandled (exprNode e)
     case XPR_SWITCH:
     case XPR_FTCASE:
     case XPR_CASE:
-    case XPR_INIT:
+      //    case XPR_INIT:
     case XPR_NODE:
       DPRINTF((message ("Warning current constraint generation does not handle expression %s", exprNode_unparse(e)) ) );
       return TRUE;
@@ -211,6 +200,17 @@ bool exprNode_stmt (exprNode e)
   DPRINTF(( "STMT:") );
   DPRINTF ( ( cstring_toCharsSafe ( exprNode_unparse(e)) )
 	   );
+  if (e->kind == XPR_INIT)
+    {
+      DPRINTF (("Init") );
+      DPRINTF ( (message ("%s ", exprNode_unparse (e)) ) );
+      loc = exprNode_getNextSequencePoint(e); /* reduces to an expression */
+      notError = exprNode_exprTraverse (e, FALSE, FALSE, loc);
+      e->requiresConstraints = exprNode_traversRequiresConstraints(e);
+      e->ensuresConstraints  = exprNode_traversEnsuresConstraints(e);
+      return notError;
+    }
+  
   if (e->kind != XPR_STMT)
     {
       
@@ -296,7 +296,11 @@ bool exprNode_stmtList  (exprNode e)
 
 exprNode doIf (exprNode e, exprNode test, exprNode body)
 {
+  DPRINTF ((message ("doIf: %s ", exprNode_unparse(e) ) ) );
+  
+  test->ensuresConstraints = exprNode_traversEnsuresConstraints (test);
   test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
+
   e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
   e->requiresConstraints = reflectChanges (e->requiresConstraints,
 					   test->ensuresConstraints);
@@ -320,7 +324,8 @@ constraintList constraintList_makeFixedArrayConstraints (sRefSet s)
 	s = sRef_getArraySize(el);
 	DPRINTF( (message("%s is a fixed array with size %d",
 			  sRef_unparse(el), s) ) );
-	con = constraint_makeSRefWriteSafeInt (el, (s - 1));
+	con = constraint_makeSRefSetBufferSize (el, (s - 1));
+	//con = constraint_makeSRefWriteSafeInt (el, (s - 1));
 	ret = constraintList_add(ret, con);
       }
     else
@@ -367,6 +372,46 @@ exprNode makeDataTypeConstraints (exprNode e)
 }
 
 
+void forLoopHeuristics( exprNode forPred, exprNode forBody)
+{
+  exprNode init, test, inc, t1, t2, t3 ,t4;
+  constraint con;
+  
+  init  =  exprData_getTripleInit (forPred->edata);
+  test =   exprData_getTripleTest (forPred->edata);
+  inc  =   exprData_getTripleInc (forPred->edata);
+  if (exprNode_isError(init) )
+    {
+      return;
+    }
+  if (init->kind == XPR_ASSIGN)
+    {
+      t1 = exprData_getOpA (init->edata);
+      t2 = exprData_getOpB (init->edata);
+      
+      if (! (t1->kind == XPR_VAR) )
+	return;
+    }
+  else
+    return;
+  
+  if (test->kind == XPR_FETCH)
+    {
+      t3 = (exprData_getPairA (test->edata) );
+      t4 = (exprData_getPairB (test->edata) );
+      if (sRef_sameName(t1->sref, t4->sref) )
+	{
+	  DPRINTF((message ("Found a for loop matching heuristic:%s", exprNode_unparse (forPred) ) ));
+	  con = constraint_makeEnsureLteMaxRead(t1, t3);
+	  forPred->ensuresConstraints = constraintList_add(forPred->ensuresConstraints, con);	  
+	}
+      else
+	 DPRINTF((message ("Didn't Fid a for loop matching heuristic:%s %s and %s differ", exprNode_unparse (forPred), exprNode_unparse(t1), exprNode_unparse(t3) ) ));
+	return;
+    }
+  
+}
+
 bool exprNode_multiStatement (exprNode e)
 {
   
@@ -409,6 +454,7 @@ bool exprNode_multiStatement (exprNode e)
       //first generate the constraints
       exprNode_generateConstraints (forPred);
       exprNode_generateConstraints (forBody);
+
       
       //merge the constraints: modle as if statement
       /* init
@@ -419,20 +465,23 @@ bool exprNode_multiStatement (exprNode e)
       test =   exprData_getTripleTest (forPred->edata);
       inc  =   exprData_getTripleInc (forPred->edata);
 
-      //      if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) || (exprNode_isError) ) ) )
-      //            if ( ( (myexprNode_isError (test) || (myexprNode_isError(init) ) || (myexprNode_isError) ) ) )
-
-      //if ( ( (exprNode_isError  ) ) )
-            if ( ( (exprNode_isError (test) || (exprNode_isError(init) ) ) || (exprNode_isError (inc) ) ) )
+      if ( ( (exprNode_isError (test) /*|| (exprNode_isError(init) )*/ ) || (exprNode_isError (inc) ) ) )
 	{
-	  BPRINTF ((message ("strange for statement:%s, ignoring it", exprNode_unparse(e) ) ) );
+	  TPRINTF ((message ("strange for statement:%s, ignoring it", exprNode_unparse(e) ) ) );
 	  return ret;
 	}
-      
+	    
+    forLoopHeuristics(forPred, forBody);
+	    
       test->trueEnsuresConstraints =  exprNode_traversTrueEnsuresConstraints(test);
+      DPRINTF((message ("The for loop test: %s ensures %s", exprNode_unparse(test), constraintList_print(test->trueEnsuresConstraints) ) ));
+
+      DPRINTF ((message ("The for loop pred: %s ensures %s", exprNode_unparse(forPred), constraintList_print(forPred->ensuresConstraints) ) ));
       //      e->requiresConstraints = reflectChanges (body->requiresConstraints, test->trueEnsuresConstraints);
-      e->requiresConstraints = reflectChanges (e->requiresConstraints, test->ensuresConstraints);
-      
+      e->requiresConstraints = reflectChanges (forBody->requiresConstraints, test->ensuresConstraints);
+      e->requiresConstraints = reflectChanges (e->requiresConstraints, test->trueEnsuresConstraints);
+      e->requiresConstraints = reflectChanges (e->requiresConstraints, forPred->ensuresConstraints);
+      e->ensuresConstraints = constraintList_addList(e->ensuresConstraints, forPred->ensuresConstraints);
       break;
 
     case XPR_FORPRED:
@@ -790,7 +839,22 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
     case XPR_PARENS: 
       exprNode_exprTraverse (exprData_getUopNode (e->edata), definatelv, definaterv, sequencePoint);
       //    e->constraints = constraintList_exprNodemerge (exprData_getUopNode (e->edata), exprNode_undefined);
-      break; 
+      break;
+    case XPR_INIT:
+     /*   //t1 = exprData_getInitId (data); */
+      t2 = exprData_getInitNode (data);
+      //exprNode_exprTraverse (t1, TRUE, FALSE, sequencePoint ); 
+      
+      exprNode_exprTraverse (t2, definatelv, TRUE, sequencePoint );
+
+      /* this test is nessecary because some expressions generate a null expression node.  function pointer do that -- drl */
+        if ( (!exprNode_isError (e))  &&  (!exprNode_isError(t2)) )
+	{
+	  cons =  constraint_makeEnsureEqual (e, t2, sequencePoint);
+	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
+	}
+      
+      break;
     case XPR_ASSIGN:
       t1 = exprData_getOpA (data);
       t2 = exprData_getOpB (data);
@@ -804,7 +868,6 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 	  cons =  constraint_makeEnsureEqual (t1, t2, sequencePoint);
 	  e->ensuresConstraints = constraintList_add(e->ensuresConstraints, cons);
 	}
-      
       break;
     case XPR_OP:
       t1 = exprData_getOpA (data);
@@ -838,6 +901,9 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
       e->requiresConstraints = constraintList_addList (e->requiresConstraints,
 						 checkCall (exprData_getFcn (data), exprData_getArgs (data)  ) );      
+
+      e->ensuresConstraints = constraintList_addList (e->ensuresConstraints,
+						 getPostConditions(exprData_getFcn (data), exprData_getArgs (data),e  ) );      
       //      e->constraints = constraintList_add (e->constraints, constraint_create (e,exprNode_undefined, GT,  CALLSAFE ) );
       break;
       
@@ -887,6 +953,7 @@ bool exprNode_exprTraverse (exprNode e, bool definatelv, bool definaterv,  filel
 
   e->requiresConstraints =  constraintList_preserveOrig ( e->requiresConstraints);
   e->ensuresConstraints  =  constraintList_preserveOrig ( e->ensuresConstraints);
+  DPRINTF((message ("ensures constraint for %s are %s", exprNode_unparse(e), constraintList_print(e->ensuresConstraints) ) ));
   
   return handledExprNode; 
 }
