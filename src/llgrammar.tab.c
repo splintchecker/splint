@@ -1,7 +1,6 @@
 
 /*  A Bison parser, made from llgrammar.y
- by  GNU Bison version 1.25
-  */
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
@@ -12,140 +11,140 @@
 #define yychar ylchar
 #define yydebug yldebug
 #define yynerrs ylnerrs
-#define	simpleOp	258
-#define	PREFIX_OP	259
-#define	POSTFIX_OP	260
-#define	LLT_MULOP	261
-#define	LLT_SEMI	262
-#define	LLT_VERTICALBAR	263
-#define	ITERATION_OP	264
-#define	LLT_LPAR	265
-#define	LLT_LBRACKET	266
-#define	selectSym	267
-#define	LLT_IF_THEN_ELSE	268
-#define	logicalOp	269
-#define	eqSepSym	270
-#define	equationSym	271
-#define	commentSym	272
-#define	LLT_WHITESPACE	273
-#define	LLT_EOL	274
-#define	LLT_TYPEDEF_NAME	275
-#define	quantifierSym	276
-#define	openSym	277
-#define	closeSym	278
-#define	sepSym	279
-#define	simpleId	280
-#define	mapSym	281
-#define	markerSym	282
-#define	preSym	283
-#define	postSym	284
-#define	anySym	285
-#define	LLT_COLON	286
-#define	LLT_COMMA	287
-#define	LLT_EQUALS	288
-#define	LLT_LBRACE	289
-#define	LLT_RBRACE	290
-#define	LLT_RBRACKET	291
-#define	LLT_RPAR	292
-#define	LLT_QUOTE	293
-#define	eqOp	294
-#define	LLT_CCHAR	295
-#define	LLT_CFLOAT	296
-#define	LLT_CINTEGER	297
-#define	LLT_LCSTRING	298
-#define	LLT_ALL	299
-#define	LLT_ANYTHING	300
-#define	LLT_BE	301
-#define	LLT_BODY	302
-#define	LLT_CLAIMS	303
-#define	LLT_CHECKS	304
-#define	LLT_CONSTANT	305
-#define	LLT_ELSE	306
-#define	LLT_ENSURES	307
-#define	LLT_FOR	308
-#define	LLT_FRESH	309
-#define	LLT_IF	310
-#define	LLT_IMMUTABLE	311
-#define	LLT_IMPORTS	312
-#define	LLT_CONSTRAINT	313
-#define	LLT_ISSUB	314
-#define	LLT_LET	315
-#define	LLT_MODIFIES	316
-#define	LLT_MUTABLE	317
-#define	LLT_NOTHING	318
-#define	LLT_INTERNAL	319
-#define	LLT_FILESYS	320
-#define	LLT_OBJ	321
-#define	LLT_OUT	322
-#define	LLT_SEF	323
-#define	LLT_ONLY	324
-#define	LLT_PARTIAL	325
-#define	LLT_OWNED	326
-#define	LLT_DEPENDENT	327
-#define	LLT_KEEP	328
-#define	LLT_KEPT	329
-#define	LLT_TEMP	330
-#define	LLT_SHARED	331
-#define	LLT_UNIQUE	332
-#define	LLT_UNUSED	333
-#define	LLT_EXITS	334
-#define	LLT_MAYEXIT	335
-#define	LLT_NEVEREXIT	336
-#define	LLT_TRUEEXIT	337
-#define	LLT_FALSEEXIT	338
-#define	LLT_UNDEF	339
-#define	LLT_KILLED	340
-#define	LLT_CHECKMOD	341
-#define	LLT_CHECKED	342
-#define	LLT_UNCHECKED	343
-#define	LLT_CHECKEDSTRICT	344
-#define	LLT_TRUENULL	345
-#define	LLT_FALSENULL	346
-#define	LLT_LNULL	347
-#define	LLT_LNOTNULL	348
-#define	LLT_RETURNED	349
-#define	LLT_OBSERVER	350
-#define	LLT_EXPOSED	351
-#define	LLT_REFCOUNTED	352
-#define	LLT_REFS	353
-#define	LLT_RELNULL	354
-#define	LLT_RELDEF	355
-#define	LLT_KILLREF	356
-#define	LLT_NULLTERMINATED	357
-#define	LLT_TEMPREF	358
-#define	LLT_NEWREF	359
-#define	LLT_PRIVATE	360
-#define	LLT_REQUIRES	361
-#define	LLT_RESULT	362
-#define	LLT_SIZEOF	363
-#define	LLT_SPEC	364
-#define	LLT_TAGGEDUNION	365
-#define	LLT_THEN	366
-#define	LLT_TYPE	367
-#define	LLT_TYPEDEF	368
-#define	LLT_UNCHANGED	369
-#define	LLT_USES	370
-#define	LLT_CHAR	371
-#define	LLT_CONST	372
-#define	LLT_DOUBLE	373
-#define	LLT_ENUM	374
-#define	LLT_FLOAT	375
-#define	LLT_INT	376
-#define	LLT_ITER	377
-#define	LLT_YIELD	378
-#define	LLT_LONG	379
-#define	LLT_SHORT	380
-#define	LLT_SIGNED	381
-#define	LLT_UNKNOWN	382
-#define	LLT_STRUCT	383
-#define	LLT_TELIPSIS	384
-#define	LLT_UNION	385
-#define	LLT_UNSIGNED	386
-#define	LLT_VOID	387
-#define	LLT_VOLATILE	388
-#define	LLT_PRINTFLIKE	389
-#define	LLT_SCANFLIKE	390
-#define	LLT_MESSAGELIKE	391
+#define	simpleOp	257
+#define	PREFIX_OP	258
+#define	POSTFIX_OP	259
+#define	LLT_MULOP	260
+#define	LLT_SEMI	261
+#define	LLT_VERTICALBAR	262
+#define	ITERATION_OP	263
+#define	LLT_LPAR	264
+#define	LLT_LBRACKET	265
+#define	selectSym	266
+#define	LLT_IF_THEN_ELSE	267
+#define	logicalOp	268
+#define	eqSepSym	269
+#define	equationSym	270
+#define	commentSym	271
+#define	LLT_WHITESPACE	272
+#define	LLT_EOL	273
+#define	LLT_TYPEDEF_NAME	274
+#define	quantifierSym	275
+#define	openSym	276
+#define	closeSym	277
+#define	sepSym	278
+#define	simpleId	279
+#define	mapSym	280
+#define	markerSym	281
+#define	preSym	282
+#define	postSym	283
+#define	anySym	284
+#define	LLT_COLON	285
+#define	LLT_COMMA	286
+#define	LLT_EQUALS	287
+#define	LLT_LBRACE	288
+#define	LLT_RBRACE	289
+#define	LLT_RBRACKET	290
+#define	LLT_RPAR	291
+#define	LLT_QUOTE	292
+#define	eqOp	293
+#define	LLT_CCHAR	294
+#define	LLT_CFLOAT	295
+#define	LLT_CINTEGER	296
+#define	LLT_LCSTRING	297
+#define	LLT_ALL	298
+#define	LLT_ANYTHING	299
+#define	LLT_BE	300
+#define	LLT_BODY	301
+#define	LLT_CLAIMS	302
+#define	LLT_CHECKS	303
+#define	LLT_CONSTANT	304
+#define	LLT_ELSE	305
+#define	LLT_ENSURES	306
+#define	LLT_FOR	307
+#define	LLT_FRESH	308
+#define	LLT_IF	309
+#define	LLT_IMMUTABLE	310
+#define	LLT_IMPORTS	311
+#define	LLT_CONSTRAINT	312
+#define	LLT_ISSUB	313
+#define	LLT_LET	314
+#define	LLT_MODIFIES	315
+#define	LLT_MUTABLE	316
+#define	LLT_NOTHING	317
+#define	LLT_INTERNAL	318
+#define	LLT_FILESYS	319
+#define	LLT_OBJ	320
+#define	LLT_OUT	321
+#define	LLT_SEF	322
+#define	LLT_ONLY	323
+#define	LLT_PARTIAL	324
+#define	LLT_OWNED	325
+#define	LLT_DEPENDENT	326
+#define	LLT_KEEP	327
+#define	LLT_KEPT	328
+#define	LLT_TEMP	329
+#define	LLT_SHARED	330
+#define	LLT_UNIQUE	331
+#define	LLT_UNUSED	332
+#define	LLT_EXITS	333
+#define	LLT_MAYEXIT	334
+#define	LLT_NEVEREXIT	335
+#define	LLT_TRUEEXIT	336
+#define	LLT_FALSEEXIT	337
+#define	LLT_UNDEF	338
+#define	LLT_KILLED	339
+#define	LLT_CHECKMOD	340
+#define	LLT_CHECKED	341
+#define	LLT_UNCHECKED	342
+#define	LLT_CHECKEDSTRICT	343
+#define	LLT_TRUENULL	344
+#define	LLT_FALSENULL	345
+#define	LLT_LNULL	346
+#define	LLT_LNOTNULL	347
+#define	LLT_RETURNED	348
+#define	LLT_OBSERVER	349
+#define	LLT_EXPOSED	350
+#define	LLT_REFCOUNTED	351
+#define	LLT_REFS	352
+#define	LLT_RELNULL	353
+#define	LLT_RELDEF	354
+#define	LLT_KILLREF	355
+#define	LLT_NULLTERMINATED	356
+#define	LLT_TEMPREF	357
+#define	LLT_NEWREF	358
+#define	LLT_PRIVATE	359
+#define	LLT_REQUIRES	360
+#define	LLT_RESULT	361
+#define	LLT_SIZEOF	362
+#define	LLT_SPEC	363
+#define	LLT_TAGGEDUNION	364
+#define	LLT_THEN	365
+#define	LLT_TYPE	366
+#define	LLT_TYPEDEF	367
+#define	LLT_UNCHANGED	368
+#define	LLT_USES	369
+#define	LLT_CHAR	370
+#define	LLT_CONST	371
+#define	LLT_DOUBLE	372
+#define	LLT_ENUM	373
+#define	LLT_FLOAT	374
+#define	LLT_INT	375
+#define	LLT_ITER	376
+#define	LLT_YIELD	377
+#define	LLT_LONG	378
+#define	LLT_SHORT	379
+#define	LLT_SIGNED	380
+#define	LLT_UNKNOWN	381
+#define	LLT_STRUCT	382
+#define	LLT_TELIPSIS	383
+#define	LLT_UNION	384
+#define	LLT_UNSIGNED	385
+#define	LLT_VOID	386
+#define	LLT_VOLATILE	387
+#define	LLT_PRINTFLIKE	388
+#define	LLT_SCANFLIKE	389
+#define	LLT_MESSAGELIKE	390
 
 #line 36 "llgrammar.y"
 
@@ -273,7 +272,7 @@ typedef union
 #define	YYFLAG		-32768
 #define	YYNTBASE	137
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 391 ? yytranslate[x] : 291)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 390 ? yytranslate[x] : 291)
 
 static const short yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -301,21 +300,20 @@ static const short yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-    76,    77,    78,    79,    80,    81,    82,    83,    84,    85,
-    86,    87,    88,    89,    90,    91,    92,    93,    94,    95,
-    96,    97,    98,    99,   100,   101,   102,   103,   104,   105,
-   106,   107,   108,   109,   110,   111,   112,   113,   114,   115,
-   116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
-   126,   127,   128,   129,   130,   131,   132,   133,   134,   135,
-   136
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+    77,    78,    79,    80,    81,    82,    83,    84,    85,    86,
+    87,    88,    89,    90,    91,    92,    93,    94,    95,    96,
+    97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
+   107,   108,   109,   110,   111,   112,   113,   114,   115,   116,
+   117,   118,   119,   120,   121,   122,   123,   124,   125,   126,
+   127,   128,   129,   130,   131,   132,   133,   134,   135,   136
 };
 
 #if YYDEBUG != 0
@@ -1540,7 +1538,8 @@ static const short yycheck[] = {    23,
     -1,    -1,   107,   108,    -1,    -1,    -1,    -1,    -1,   114
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/gnu/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1557,46 +1556,66 @@ static const short yycheck[] = {    23,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -1606,8 +1625,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -1688,12 +1707,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-int yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -1705,7 +1724,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -1720,10 +1739,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -1733,7 +1752,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/gnu/share/bison.simple"
+#line 217 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1753,6 +1772,15 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_ARG
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
+
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
 
 int
 yyparse(YYPARSE_PARAM_ARG)
@@ -1782,6 +1810,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -1866,18 +1895,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -3550,7 +3593,7 @@ case 404:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/gnu/share/bison.simple"
+#line 543 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3745,6 +3788,30 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
 #line 1284 "llgrammar.y"
 

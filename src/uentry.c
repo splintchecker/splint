@@ -635,7 +635,7 @@ constraintList uentry_getFcnPostconditions (uentry ue)
 	      return constraintList_undefined;
 	    }
 
-	  if (ue->info->fcn->postconditions)
+	  if (ue->info->fcn->postconditions != NULL)
 	    {
 	   return constraintList_copy (ue->info->fcn->postconditions);
 	    }
@@ -5975,9 +5975,9 @@ ufinfo_free (/*@only@*/ ufinfo u)
 
   /*@i33*/
   /*fix up if this is the right way to handle this --drl*/
-  if (u->preconditions)
+  if (u->preconditions != NULL)
     constraintList_free(u->preconditions);
-  if (u->postconditions)
+  if (u->postconditions != NULL)
     constraintList_free(u->postconditions);
 
   sfree (u);
@@ -6049,12 +6049,18 @@ ufinfo_copy (ufinfo u)
   ret->specclauses = specialClauses_copy (u->specclauses);
 
   /*drl 11 30 2000 */
-  ret->preconditions = u->preconditions? constraintList_copy(u->preconditions): NULL;
-  /* end drl */
-  
+  /* change 6/8/01 */
 
-  /*drl 11 30 2000 */
-  ret->postconditions = u->postconditions? constraintList_copy(u->postconditions): NULL;
+  if (u->preconditions != NULL)
+    ret->preconditions = constraintList_copy(u->preconditions);
+  else
+    ret->preconditions = NULL;
+  /* end drl */
+
+    if (u->postconditions != NULL)
+    ret->postconditions = constraintList_copy(u->postconditions);
+  else
+    ret->postconditions = NULL;
   /* end drl */
   
   return ret;

@@ -466,7 +466,7 @@ osd_getPid ()
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   int pid = _getpid ();
 # else
-  pid_t pid = getpid ();
+   pid_t pid = getpid ();
 # endif
 
   return (int) pid;

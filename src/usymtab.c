@@ -3721,7 +3721,7 @@ void usymtab_exitScope (exprNode expr)
 	  llassert (utab != GLOBAL_ENV);
 	}
     } else {
-      llcontbug (("exitScope: in branch: %s", usymtab_unparseStack ()));
+      llcontbug (message ("exitScope: in branch: %s", usymtab_unparseStack ()));
       /*@-branchstate@*/ 
     } /*@=branchstate@*/
   }

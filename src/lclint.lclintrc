@@ -67,7 +67,7 @@
 ### Some ANSI limits exceeded (tsk, tsk, tsk...)
 
 -controlnestdepth 25 
--numenummembers 400 
+-numenummembers 415
 
 +posixlib
      
