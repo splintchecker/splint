@@ -185,7 +185,7 @@ static enum cpp_token cpp_handleComment (cppReader *p_pfile,
 					 struct parse_marker *p_smark)
      /*@modifies p_pfile, p_smark@*/;
 
-static bool cpp_shouldCheckMacro (cppReader *p_pfile, char *p_p) /*@*/ ;
+static bool cpp_shouldCheckMacro (cppReader *p_pfile, char *p_p) /*@modifies p_p@*/ ;
 
 static bool cpp_skipIncludeFile (cstring p_fname) /*@*/ ;
 
@@ -465,9 +465,9 @@ struct directive {
    pointers to functions returning void.  */
 
 static int do_define (cppReader *, /*@null@*/ struct directive *, 
-		      char *, char *);
+		      /*@exposed@*/ char *, char *);
 static int do_defineAux (cppReader *, /*@null@*/ struct directive *,
-			 char *, char *, bool);
+			 /*@exposed@*/ char *, char *, bool);
      
 static int do_line (cppReader *, /*@null@*/ struct directive *);
 static int do_include (cppReader *, struct directive *, char *, char *);
@@ -1833,7 +1833,7 @@ static char rest_extension[] = "...";
    as for do_define.  */
 
 static /*@null@*/ MACRODEF
-create_definition (char *buf, char *limit,
+create_definition (/*@exposed@*/ char *buf, char *limit,
 		   cppReader *pfile, bool predefinition,
 		   bool noExpand)
 {
@@ -2169,7 +2169,7 @@ comp_def_part (bool first, char *beg1, int len1, char *beg2, int len2, bool last
 
 static int
 do_defineAux (cppReader *pfile, struct directive *keyword,
-	      char *buf, char *limit, bool noExpand)
+	      /*@exposed@*/ char *buf, char *limit, bool noExpand)
 {
   int hashcode;
   MACRODEF mdef;
@@ -2283,7 +2283,7 @@ nope:
 
 static int
 do_define (cppReader *pfile, struct directive *keyword,
-	   char *buf, char *limit)
+	   /*@exposed@*/ char *buf, char *limit)
 {
   DPRINTF (("Regular do define"));
   return do_defineAux (pfile, keyword, buf, limit, FALSE);
@@ -6920,7 +6920,7 @@ static void cpp_setLocation (cppReader *pfile)
     }
 }
 
-static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@*/
+static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
 {
   bool checkmacro = FALSE;
   bool hasParams = FALSE;
@@ -6988,7 +6988,6 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@*/
 
   hasParams = (c == '(');
   *p = '\0';
-
 
   if (notparseable)
     {

@@ -1,9 +1,9 @@
 
 cases.c: (in function f)
-cases.c:12:10: Fall through case (no preceeding break)
+cases.c:12:10: Fall through case (no preceding break)
 cases.c:13:11: Variable i used before definition
-cases.c:30:10: Fall through case (no preceeding break)
-cases.c:37:13: Fall through case (no preceeding break)
+cases.c:30:10: Fall through case (no preceding break)
+cases.c:37:13: Fall through case (no preceding break)
 cases.c:40:2: Path with no return in function declared to return int
 
 Finished LCLint checking --- 5 code errors found, as expected

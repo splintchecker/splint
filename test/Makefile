@@ -8,7 +8,7 @@
 
 .PHONY: all fulltest quicktest funcpointer cast abstract
 .PHONY:	version help abstptr abstract alias alttypes ansireserved 
-.PHONY: argorder args blocks break cases cast charlit 
+.PHONY: argorder args blocks branchstate break cases cast charlit 
 .PHONY: clauses commentchar 
 .PHONY: compdestroy constannot controldepth csyntax czechnames czechoslovaknames 
 .PHONY: deadparam decl enum exports external fields fileio flags forbody format funcpointer glob globals 
@@ -54,7 +54,7 @@ UNITTESTS = \
   fileio tainted  metastate \
   help sizeoftest bufferTest simplebufferConstraintTests \
   moreBufferTests globalbufferannotation maxset strchr for \
-  abstptr abstract alias alttypes ansireserved argorder args blocks break cases cast \
+  abstptr abstract alias alttypes ansireserved argorder args blocks branchstate break cases cast \
   charlit clauses commentchar compdestroy constannot controldepth csyntax czechnames czechoslovaknames deadparam \
   decl enum exports external fields flags forbody format freearray funcpointer glob globals impabstract \
   init inparam internal iter keep libs linked lintcomments list macros macrosef merge modifies \
@@ -215,6 +215,9 @@ blocks:
 	$(LCLINTR) blocks.c -ifempty +forempty +forblock -expect 3
 	$(LCLINTR) blocks.c +allempty -expect 6
 	$(LCLINTRN) blocks.c +strict -exportlocal +partial -exportheader -expect 11
+
+branchstate:
+	$(LCLINTR) branchstate.c -nof -branchstate -expect 1
 
 break:
 	$(LCLINTR) break.c -expect 4

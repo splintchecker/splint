@@ -452,7 +452,7 @@ typedef struct macrodef MACRODEF;
 struct macrodef
 {
   /*@null@*/ struct definition *defn;
-  /*@relnull@*/ /*@dependent@*/ char *symnam; /* null if defn is null */
+  /*@exposed@*/ /*@relnull@*/ char *symnam; /* null if defn is null */
   int symlen;
 };
 

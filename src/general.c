@@ -405,9 +405,15 @@ long size_toLong (size_t x)
 char
 char_fromInt (int x)
 {
-  llassert ((x >= (int)'\0') && (x <= (int)'~'));
+  /*
+  ** evans 2001-09-28 - changed assertion in response to Anthony Giorgio's comment 
+  ** that the old assertions failed for EBCDIC character set.  Now we just check 
+  ** that the result is equal.
+  */
 
-  return ((char) x);
+  char res = (char) x;
+  llassert ((int) res == x);
+  return res;
 }
 
 /*@-czechfcns@*/

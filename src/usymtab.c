@@ -5388,6 +5388,10 @@ static bool usymtab_isGuardedAux (sRef s)
   
   while (tab->lexlevel >= lowlevel)
     {
+      DPRINTF (("Is guarded? [%s] %s", 
+		guardSet_unparse (tab->guards),
+		sRef_unparseFull (s)));
+
       if (guardSet_isGuarded (tab->guards, s))
 	{
 	  /*
@@ -5431,7 +5435,7 @@ void usymtab_unguard (sRef s) /*@modifies utab@*/
 
 bool usymtab_isGuarded (sRef s)
 {
-  
+  DPRINTF (("Is guarded? %s", sRef_unparseFull (s)));
   return (sRef_aliasCompleteSimplePred (usymtab_isGuardedAux, s));
 }
 

@@ -221,7 +221,8 @@ backup:
 #drl 09-25-001 fixed so that betarelease nolonger assumes
 #the source is in ~/LCLintDev/src
 
-SRCPWD = ~/reTmp/LCLintDev/src
+SRCPWD = ~/LCLintDev/src
+
 betarelease:
 	echo ${SRCPWD}
 	mkdir ~/temp/lclint-`cat ${VERSION_NUMBER}`

@@ -1501,7 +1501,14 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  /*@switchbreak@*/ break;
 			  
 			case 'c': /* int converted to char (check its a char?) */
-			  expecttype = ctype_makeConj (ctype_char, ctype_uchar);
+			  expecttype = ctype_makeConj (ctype_int, 
+						       ctype_makeConj (ctype_char,
+								       ctype_uchar));
+			  /*@i231@*/
+			  /* evans 2001-10-05 - changed to reflect correct ISO spec:
+			     int converted to char */
+			  
+			  /* expecttype = ctype_makeConj (ctype_char, ctype_uchar); */
 			  /*@switchbreak@*/ break;
 			      
 			case 's': /* string */
@@ -4568,8 +4575,11 @@ exprNode_preOp (/*@only@*/ exprNode e, /*@only@*/ lltok op)
       
       if (sRef_isKnown (e->sref))
 	{
+	  DPRINTF (("Checking possibly null: %s", sRef_unparseFull (e->sref)));
+
 	  if (sRef_possiblyNull (e->sref))
 	    {
+	      DPRINTF (("Checking possibly null: %s", sRef_unparse (e->sref)));
 	      if (!usymtab_isGuarded (e->sref) && !context_inProtectVars ())
 		{
 		  if (optgenerror 
@@ -5365,59 +5375,58 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 
 	      ret->sref = sRef_copy (e2->sref);
 
-		  /* start modifications */
-		  /* added by Seejo on 4/16/2000 */
-
-		  /* Arithmetic operations on pointers wil modify the size/len/null terminated 
-				 status */
-
- 	    if ((sRef_isPossiblyNullTerminated (e2->sref)) || (sRef_isNullTerminated(e2->sref))) {
-	      int val = (int) multiVal_forceInt (e1->val);
+	      /* start modifications */
+	      /* added by Seejo on 4/16/2000 */
 	      
-	      /* Operator : + or += */
-	      if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
-		if (sRef_getSize(e2->sref) >= val) {/* Incrementing the pointer by 
-						       val should not result in a 
-						       size < 0 (size = 0 is ok !) */
-		  
-		  sRef_setSize (ret->sref, sRef_getSize(e2->sref) - val);
-		  
-		  if (sRef_getLen(e2->sref) == val) { /* i.e. the character at posn val is \0 */
-		    sRef_setNotNullTerminatedState(ret->sref);
-		    sRef_resetLen (ret->sref);
-		  } else {
-		    sRef_setNullTerminatedState(ret->sref);
-		    sRef_setLen (ret->sref, sRef_getLen(e2->sref) - val);
+	      /* Arithmetic operations on pointers wil modify the size/len/null terminated 
+		 status */
+	      
+	      if ((sRef_isPossiblyNullTerminated (e2->sref)) || (sRef_isNullTerminated(e2->sref))) {
+		int val = (int) multiVal_forceInt (e1->val);
+		
+		/* Operator : + or += */
+		if ((lltok_getTok (op) == TPLUS) || (lltok_getTok(op) == ADD_ASSIGN)) {
+		  if (sRef_getSize(e2->sref) >= val) {/* Incrementing the pointer by 
+							 val should not result in a 
+							 size < 0 (size = 0 is ok !) */
+		    
+		    sRef_setSize (ret->sref, sRef_getSize(e2->sref) - val);
+		    
+		    if (sRef_getLen(e2->sref) == val) { /* i.e. the character at posn val is \0 */
+		      sRef_setNotNullTerminatedState(ret->sref);
+		      sRef_resetLen (ret->sref);
+		    } else {
+		      sRef_setNullTerminatedState(ret->sref);
+		      sRef_setLen (ret->sref, sRef_getLen(e2->sref) - val);
+		    }
+		  }
+		}
+		
+		/* Operator : - or -= */
+		if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
+		  if (sRef_getSize(e2->sref) >= 0) {
+		    sRef_setSize (ret->sref, sRef_getSize(e2->sref) + val);
+		    sRef_setLen (ret->sref, sRef_getLen(e2->sref) + val);
 		  }
 		}
 	      }
+	      /* end modifications */
 	      
-	      /* Operator : - or -= */
-	      if ((lltok_getTok (op) == TMINUS) || (lltok_getTok (op) == SUB_ASSIGN)) {
-		if (sRef_getSize(e2->sref) >= 0) {
-		  sRef_setSize (ret->sref, sRef_getSize(e2->sref) + val);
-		  sRef_setLen (ret->sref, sRef_getLen(e2->sref) + val);
-		}
+	      sRef_setNullError (ret->sref);
+	      
+	      /*
+	      ** Fixed for 2.2c: the alias state of ptr + int is dependent,
+	      ** since is points to storage that should not be deallocated
+	      ** through this pointer.
+	      */
+	      
+	      if (sRef_isOnly (ret->sref) 
+		  || sRef_isFresh (ret->sref)) {
+		sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
 	      }
-	    }
-	    
- 	    /* end modifications */
-	    
-	    sRef_setNullError (ret->sref);
-	    
-	    /*
-	    ** Fixed for 2.2c: the alias state of ptr + int is dependent,
-	    ** since is points to storage that should not be deallocated
-	    ** through this pointer.
-	    */
-	    
-	    if (sRef_isOnly (ret->sref) 
-		|| sRef_isFresh (ret->sref)) {
-	      sRef_setAliasKind (ret->sref, AK_DEPENDENT, exprNode_loc (ret));
-	    }
-	    
-	    tret = e2->typ;
-	    ret->sref = e2->sref;
+	      
+	      tret = e2->typ;
+	      ret->sref = e2->sref;
 	    }
 	  else
 	    {
@@ -5798,6 +5807,7 @@ exprNode_assign (/*@only@*/ exprNode e1,
 {
   bool isalloc = FALSE;
   bool isjustalloc = FALSE;
+  bool noalias = FALSE;
   exprNode ret;
 
   DPRINTF (("%s [%s] <- %s [%s]",
@@ -5809,6 +5819,17 @@ exprNode_assign (/*@only@*/ exprNode e1,
   if (lltok_getTok (op) != TASSIGN) 
     {
       ret = exprNode_makeOp (e1, e2, op);
+
+      DPRINTF (("Here goes: %s %s",
+		ctype_unparse (e1->typ),
+		ctype_unparse (e2->typ)));
+
+      if (ctype_isNumeric (e2->typ)
+	  || ctype_isNumeric (e1->typ))
+	{
+	  /* Its a pointer arithmetic expression like ptr += i */
+	  noalias = TRUE;
+	}
     } 
   else 
     {
@@ -5931,7 +5952,16 @@ exprNode_assign (/*@only@*/ exprNode e1,
 	  exprNode_mergeUSs (ret, e2);
 	  exprNode_checkUse (ret, e2->sref, e2->loc);
 	  
-	  doAssign (e1, e2, FALSE); 
+	  DPRINTF (("Do assign! %s %s", exprNode_unparse (e1), exprNode_unparse (e2)));
+	  if (noalias)
+	    {
+	      ;
+	    }
+	  else
+	    {
+	      doAssign (e1, e2, FALSE); 
+	    }
+
 	  ret->sref = e1->sref;
 	}
       else
@@ -5939,7 +5969,7 @@ exprNode_assign (/*@only@*/ exprNode e1,
 	  if (exprNode_isDefined (e2))
 	    {
 	      exprNode_mergeUSs (ret, e2);
-	      	      exprNode_checkUse (ret, e2->sref, e2->loc);
+	      exprNode_checkUse (ret, e2->sref, e2->loc);
 	    }
 	}
 
@@ -6448,7 +6478,7 @@ exprNode exprNode_concat (/*@only@*/ exprNode e1, /*@only@*/ exprNode e2)
 		{
 		  voptgenerror (FLG_CASEBREAK,
 				cstring_makeLiteral 
-				("Fall through case (no preceeding break)"),
+				("Fall through case (no preceding break)"),
 				e2->loc);
 		}
 	    }

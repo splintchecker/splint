@@ -3312,7 +3312,9 @@ checkTransferExposure (sRef fref, exprNode fexp, /*@unused@*/ bool ffix,
 	      ;
 	    }
 	}
-      else if (transferType == TT_DOASSIGN)
+      else if (transferType == TT_DOASSIGN
+	       /* evans 2001-10-05: added TT_FIELDASSIGN: */
+	       || transferType == TT_FIELDASSIGN)
 	{
 	  if (!(sRef_isExposed (tref) 
 		|| !sRef_isCvar (tref)

@@ -798,7 +798,9 @@ ctype_isSigned (ctype c)
 bool
 ctype_isNumeric (ctype c)
 {
-  return (ctype_isInt (c) || ctype_isReal (c) || ctype_isEnum (c));
+  return (ctype_isInt (c) || ctype_isReal (c) || ctype_isEnum (c)
+	  /* evans 2001-10-05: added this: */
+	  || ctype_isArbitraryIntegral (c));
 }
 
 
