@@ -664,7 +664,29 @@
 0 s346|&
 0 s347|&
 0 s348|&
-0 a349|&
+0 s349|&
+0 s350|&
+0 s351|&
+0 s352|&
+0 s353|&
+0 s354|&
+0 s355|&
+0 s356|&
+0 s357|&
+0 s358|&
+0 s359|&
+0 s360|&
+0 s361|&
+0 s362|&
+0 s363|&
+0 s364|&
+0 s365|&
+0 s366|&
+0 s367|&
+0 s368|&
+0 s369|&
+0 s370|&
+0 a409|&
 ;;tistable
 0
 28
@@ -676,7 +698,7 @@
 141
 28,123,138,141,142
 142
-349
+409
 ;;symTable
 *0 (Datatype)
 ^0 2@+@-@0@0@0@0@2#lltX_bool
@@ -1027,13 +1049,39 @@
 ^341 653@6@5@1@0@0@0@g22@6@0@1@g22@19@3@0#localtime
 ^342 655$@0@@1@tp0$@0#strftime
 *0 (Datatype)
-^343 4@-@-@0@0@0@0@656#int8_t
-^344 7@-@-@0@0@0@0@657#int16_t
-^345 5@-@-@0@0@0@0@658#int32_t
-^346 3@-@-@0@0@0@0@659#u_int8_t
-^347 8@-@-@0@0@0@0@660#u_int16_t
-^348 6@-@-@0@0@0@0@661#u_int32_t
-^349 0@+@+@0@7@0@0@662#mnull
+^343 13@-@-@0@0@0@0@656#int8_t
+^344 13@-@-@0@0@0@0@657#int16_t
+^345 13@-@-@0@0@0@0@658#int32_t
+^346 13@-@-@0@0@0@0@659#int64_t
+^347 14@-@-@0@0@0@0@660#uint8_t
+^348 14@-@-@0@0@0@0@661#uint16_t
+^349 14@-@-@0@0@0@0@662#uint32_t
+^350 14@-@-@0@0@0@0@663#uint64_t
+^351 13@-@-@0@0@0@0@664#int_least8_t
+^352 13@-@-@0@0@0@0@665#int_least16_t
+^353 13@-@-@0@0@0@0@666#int_least32_t
+^354 13@-@-@0@0@0@0@667#int_least64_t
+^355 14@-@-@0@0@0@0@668#uint_least8_t
+^356 14@-@-@0@0@0@0@669#uint_least16_t
+^357 14@-@-@0@0@0@0@670#uint_least32_t
+^358 14@-@-@0@0@0@0@671#uint_least64_t
+^359 13@-@-@0@0@0@0@672#int_fast8_t
+^360 13@-@-@0@0@0@0@673#int_fast16_t
+^361 13@-@-@0@0@0@0@674#int_fast32_t
+^362 13@-@-@0@0@0@0@675#int_fast64_t
+^363 14@-@-@0@0@0@0@676#uint_fast8_t
+^364 14@-@-@0@0@0@0@677#uint_fast16_t
+^365 14@-@-@0@0@0@0@678#uint_fast32_t
+^366 14@-@-@0@0@0@0@679#uint_fast64_t
+^367 24@-@+@0@0@0@0@680#intptr_t
+^368 25@-@+@0@0@0@0@681#uintptr_t
+^369 15@-@-@0@0@0@0@682#intmax_t
+^370 14@-@-@0@0@0@0@683#uintmax_t
+*1 (Constant)
+^371 5$#INT8_MIN#INT16_MIN#INT32_MIN#INT64_MIN#INT8_MAX#INT16_MAX#INT32_MAX#INT64_MAX#UINT8_MIN#UINT16_MIN#UINT32_MIN#UINT64_MIN#INT_LEAST8_MIN#INT_LEAST16_MIN#INT_LEAST32_MIN#INT_LEAST64_MIN#INT_LEAST8_MAX#INT_LEAST16_MAX#INT_LEAST32_MAX#INT_LEAST64_MAX#UINT_LEAST8_MAX#UINT_LEAST16_MAX#UINT_LEAST32_MAX#UINT_LEAST64_MAX#INT_FAST8_MIN#INT_FAST16_MIN#INT_FAST32_MIN#INT_FAST64_MIN#INT_FAST8_MAX#INT_FAST16_MAX#INT_FAST32_MAX#INT_FAST64_MAX#UINT_FAST8_MAX#UINT_FAST16_MAX#UINT_FAST32_MAX#UINT_FAST64_MAX
+^407 63$#INTPTR_MIN#INTPTR_MAX
+*0 (Datatype)
+^409 0@+@+@0@7@0@0@684#mnull
 ;; Library constraints
 vsnprintf
 pre:

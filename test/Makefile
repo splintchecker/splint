@@ -75,7 +75,7 @@ test: fulltest
 
 GREP = grep
 DIFF = diff
-CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e" | $(GREP) -v $(LCLINT)
+CLEANOUTPUT = $(GREP) -v "LCLint 3." | $(GREP) -v "make -e" | $(GREP) -v "make\[" | $(GREP) -v "lclint -nof" | $(GREP) -v "make  -e" | $(GREP) -v $(LCLINT) | $(GREP) -v $(HOME)
 
 ### not real .c
 

@@ -42,11 +42,11 @@ external.c:5:5: External identifier small2 is not distinguishable from small1
    external.c:4:5: Declaration of small1
 external.c:7:5: External identifier longfunction1 is not distinguishable from
     LONG_MAX in the first 3 characters because alphabetical case is ignored
-   load file ansi.lcd:763:1: Specification of LONG_MAX
+   load file ansi.lcd:785:1: Specification of LONG_MAX
    One or more additional indistinguishable external names not reported
 external.c:8:5: External identifier longfunction2 is not distinguishable from
     LONG_MAX in the first 3 characters because alphabetical case is ignored
-   load file ansi.lcd:763:1: Specification of LONG_MAX
+   load file ansi.lcd:785:1: Specification of LONG_MAX
    One or more additional indistinguishable external names not reported
 
 Finished LCLint checking --- 4 code errors found, as expected

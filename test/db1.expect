@@ -1,5 +1,4 @@
 
-< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
@@ -57,7 +56,6 @@ drive.c:123: Return value (type db_status) ignored: hire(e)
 
 Finished LCLint checking --- 16 code errors found, as expected
 
-< loading standard library /af10/evans/LCLintDev/lib/ansi.lcd .... >
 < reading spec bool.lcl >
 < reading spec employee.lcl >
 < reading spec eref.lcl >
