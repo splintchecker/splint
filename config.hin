@@ -32,6 +32,29 @@
 /* Define if you're on a Unixy system */
 #undef UNIX
 
+/* drl: can't get autoheader to work so I had to enter these manually.
+ figure out autoheader at some point... */
+
+#undef BUILD
+#undef HOST
+#undef TARGET
+
+#undef BUILD_ALIAS
+#undef HOST_ALIAS
+#undef TARGET_ALIAS
+
+#undef BUILD_CPU
+#undef HOST_CPU
+#undef TARGET_CPU
+
+#undef BUILD_VENDOR
+#undef HOST_VENDOR
+#undef TARGET_VENDOR
+
+#undef BUILD_OS
+#undef HOST_OS
+#undef TARGET_OS
+
 /* Define if `lex' declares `yytext' as a `char *' by default, not a `char[]'.
    */
 #undef YYTEXT_POINTER

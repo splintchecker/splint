@@ -9,7 +9,7 @@ dnl Set up the source directory
 AC_CONFIG_SRCDIR([src/lclinit.c])
 
 dnl Deduce host
-AC_CANONICAL_HOST
+AC_CANONICAL_SYSTEM
 
 dnl Set up automake & the configuration header
 AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
@@ -154,8 +154,33 @@ AC_DEFINE_UNQUOTED(LCL_COMPILE,
                    "Compiled using $CC $CFLAGS on `uname -a` by `whoami`",
                    [String describing who compiled this binary and how])
 
-dnl TODO: Use result AC_CANONICAL_HOST to figure out what to define
+dnl TODO: Use result AC_CANONICAL_SYSTEM to figure out what to define 
+
 AC_DEFINE(UNIX, 1, [Define if you're on a Unixy system])
+
+#just define some Header constants for now...
+
+AC_DEFINE_UNQUOTED(BUILD, "${build}")
+AC_DEFINE_UNQUOTED(HOST, "${host}")
+AC_DEFINE_UNQUOTED(TARGET, "${target}")
+
+AC_DEFINE_UNQUOTED(BUILD_ALIAS, "${build_alias}")
+AC_DEFINE_UNQUOTED(HOST_ALIAS, "${host_alias}")
+AC_DEFINE_UNQUOTED(TARGET_ALIAS, "${TARGET_ALIAS}")
+
+AC_DEFINE_UNQUOTED(BUILD_CPU, "${build_cpu}")
+AC_DEFINE_UNQUOTED(HOST_CPU, "$host_cpu")
+AC_DEFINE_UNQUOTED(TARGET_CPU, "${target_cpu}")
+
+AC_DEFINE_UNQUOTED(BUILD_VENDOR, "${build_vendor}")
+AC_DEFINE_UNQUOTED(HOST_VENDOR, "${host_vendor}")
+AC_DEFINE_UNQUOTED(TARGET_VENDOR, "${target_vendor}")
+
+AC_DEFINE_UNQUOTED(BUILD_OS, "${build_os}")
+AC_DEFINE_UNQUOTED(HOST_OS, "${host_os}")
+AC_DEFINE_UNQUOTED(TARGET_OS,"${target_os}")
+
+
 
 dnl AC_CONFIG_FILES([test/Makefile
 dnl                  test/ensuresclauses/Makefile

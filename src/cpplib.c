@@ -3703,6 +3703,12 @@ initialize_builtins (cppReader *pfile)
   cpplib_installBuiltin ("S_SPLINT_S", ctype_int, -1, T_CONST, 2, NULL, -1);
   cpplib_installBuiltin ("__LCLINT__", ctype_int, -1, T_CONST, 2, NULL, -1);
 
+  /*drl 1/9/2001/ try to define the right symbol for the architecture
+    We use autoconf to determine the target cpu 
+   */
+  cpplib_installBuiltin ("__" TARGET_CPU, ctype_int, -1, T_CONST, 2, NULL, -1);
+
+  
   if (CPPOPTIONS (pfile)->debug_output)
     {
       dump_special_to_buffer (pfile, "__BASE_FILE__");

@@ -369,7 +369,7 @@ lslProcess (fileIdList lclfiles)
 	      lldiagmsg (message ("< reading spec %s >", g_currentSpec));
 	    }
 	  
-	  /* Open source file */
+	  /* Open the source file */
 	  
 	  if (!inputStream_open (specFile))
 	    {
