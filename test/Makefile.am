@@ -103,6 +103,8 @@ help:
 .PHONY: clean-local
 clean-local:
 	-rm -f *~ #*# *.o *.lcs a.out
+	-rm -f *.out
+	-rm  *.lcd *.lh
 	-cd db1; $(MAKE) clean
 	-cd db2; $(MAKE) clean
 	-cd db3; $(MAKE) clean
@@ -933,10 +935,10 @@ $(SUBDIRTESTS):
 	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)"
 
 #drl 11/29/2001 This is a very ugly hack to get make dist to work
-EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
-              ./abstptr.lcl ./abstptr.lcs \
-              ./alias.lcl ./alias.lcs \
-              ./alias2.lcl ./alias2.lcs \
+EXTRA_DIST =  ./abst_t.lcl \
+              ./abstptr.lcl \
+              ./alias.lcl \
+              ./alias2.lcl \
               ./alias3.lcl  \
               ./db1/erc.lcl \
               ./db1/bool.lcl \
@@ -945,42 +947,22 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./db1/empset.lcl \
               ./db1/eref.lcl \
               ./db1/ereftab.lcl \
-              ./alias3.lcs \
-              ./alias3.lh  \
               ./alias4.lcl  \
-              ./alias4.lcs \
-              ./alias4.lh \
               ./alias5.lcl \
-              ./alias5.lcs \
-              ./alias5.lh \
               ./argorder2.lcl \
-              ./argorder2.lcs \
               ./argorder4.lcl \
-              ./argorder4.lcs \
               ./args.lcl \
-              ./args.lcs \
               ./cast.lcl \
-              ./cast.lcs \
               ./decl2.lcl \
-              ./decl2.lcs \
               ./empty.lcl \
               ./enum.lcl \
-              ./enum.lcs \
               ./glob.lcl \
-              ./glob.lcs \
               ./impabstract.lcl \
-              ./impabstract.lcs \
               ./iter.lcl \
-              ./iter.lcs \
               ./macros.lcl \
-              ./macros.lcs \
               ./macrosef.lcl \
-              ./macrosef.lcs \
               ./modtest.lcl \
-              ./modtest.lcs \
               ./mut.lcl \
-              ./mut.lcs \
-              ./mut.lh \
               ./mut.lh.expect \
               ./db2/dbase.lcl \
               ./db2/employee.lcl \
@@ -989,27 +971,18 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./db2/eref.lcl \
               ./db2/ereftab.lcl \
               ./db2/etest.lcl \
-              ./null6.lcd \
               ./null6.lcl \
-              ./null6.lcs \
               ./observer.lcl \
-              ./observer.lcs \
               ./oldstyle.lcl \
-              ./oldstyle.lcs \
               ./outglob.lcl \
-              ./outglob.lcs \
               ./outparam.lcl \
-              ./outparam.lcs \
               ./rc1.splintrc \
               ./rc2.splintrc \
               ./rc3.splintrc \
               ./rc3.splintrc.os2 \
               ./repexpose.lcl \
-              ./repexpose.lcs \
-              ./repexpose.lh \
               ./repexpose.lh.expect \
               ./special.lcl \
-              ./special.lcs \
               ./db3/.splintrc \
               ./db3/bool.lcl \
               ./db3/check.lcl \
@@ -1020,23 +993,13 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
               ./db3/eref.lcl \
               ./db3/ereftab.lcl \
               ./tq.lcl \
-              ./tq.lcs \
               ./ud2.lcl \
-              ./ud2.lcs \
               ./for/.splintrc \
               ./globalbufferannotation/.splintrc \
               ./maxset/.splintrc \
               ./strchr/.splintrc \
               ./tests2.2/bool.lcl \
-              ./tests2.2/bool.lcs \
-              ./tests2.2/libraries.lcd \
-              ./tests2.2/obsolete.lcd \
-              ./tests2.2/oldversion.lcd \
               ./tests2.4/subdir/main.lcl \
-              ./tests2.4/subdir/main.lcs \
-              ./tests2.5/newlint.lcd \
-              ./warnuse/warnuse.lcd \
-              ./empty.lcs \
               ./abstptr.c \
               ./alias.c \
               ./alias2.c \
@@ -1569,7 +1532,7 @@ EXTRA_DIST =  ./abst_t.lcl ./abst_t.lcs  \
                 utypes.expect widestrings.expect  widestrings.c  \
                 functionmacro.expect functionmacro.c  info.c info.expect \
                 loopexec.c looptesteffect.c mergenull.c shifts.c \
-		sizesigns.c sizesigns.expect \ 
+		sizesigns.c sizesigns.expect \
                 manual.expect ./manual/Makefile \
                 ./manual/annotglobs.c  ./manual/bool.c  ./manual/bool.h  ./manual/clauses.c  ./manual/employee.h  ./manual/exposure.c  ./manual/globals.c  ./manual/ignore.c  ./manual/implicit.c  ./manual/intSet.h  ./manual/list.c  ./manual/loop.c  ./manual/macros.c  ./manual/modify.c  ./manual/mstring.c  ./manual/mstring.h  ./manual/mstringnn.c  ./manual/multiError.c  ./manual/names.c  ./manual/noeffect.c  ./manual/null.c  ./manual/only.c  ./manual/order.c  ./manual/palindrome.c  ./manual/palindrome.h  ./manual/refs.c  ./manual/returned.c  ./manual/rgb.c  ./manual/rstring.c  ./manual/rstring.h  ./manual/sample.c  ./manual/setChar.c  ./manual/setname.c  ./manual/setname.h  ./manual/special.c  ./manual/stack.c  ./manual/sumsquares.c  ./manual/switch.c  ./manual/testpal.c  ./manual/types.c  ./manual/unique.c  ./manual/usedef.c  ./manual/bounds.c \
                   arraydims.expect arraydims.c \
