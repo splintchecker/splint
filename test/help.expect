@@ -72,6 +72,7 @@ Finished checking --- no code processed
    allglobs                    
    allimponly                  
    allmacros                   
+   allocmismatch               
    alwaysexits                 
    annotationerror             
    ansi89limits                
@@ -217,6 +218,7 @@ Finished checking --- no code processed
    ignoresigns                 
    immediatetrans              
    impabstract                 
+   impboundsconstraints        
    impcheckedglobs             
    impcheckedspecglobs         
    impcheckedstatics           
@@ -229,7 +231,6 @@ Finished checking --- no code processed
    impcheckmodstatics          
    impconj                     
    implementationoptional      
-   implictconstraint           
    impouts                     
    imptype                     
    includenest                 
@@ -292,6 +293,7 @@ Finished checking --- no code processed
    loopswitchbreak             
    macroassign                 
    macroconstdecl              
+   macroconstdistance          
    macrodecl                   
    macroempty                  
    macrofcndecl                
@@ -406,6 +408,7 @@ Finished checking --- no code processed
    readonlystrings             
    readonlytrans               
    realcompare                 
+   realrelatecompare           
    redecl                      
    redef                       
    redundantconstraints        

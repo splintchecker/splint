@@ -1,6 +1,6 @@
 /* config.hin.  Generated from configure.ac by autoheader.  */
 
-/*@ -constmacros@*/
+/*@ -macroconstdecl@*/
 
 /* build */
 #undef BUILD
@@ -102,4 +102,4 @@
 /* needed to expose mode_t on some machines */
 #undef _ALL_SOURCE
 
-/*@ =constmacros@*/
+/*@ =macroconstdecl@*/
