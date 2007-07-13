@@ -632,7 +632,7 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in TODO
+DIST_COMMON = Makefile.am Makefile.in
 SOURCES = $(lcl_SOURCES) $(splint_SOURCES)
 
 all: $(BUILT_SOURCES)
@@ -1111,11 +1111,11 @@ nocheck:
 
 .PHONY: test
 test:
-	${MAKE} ; cd ../test; ${MAKE} --no-print-directory
+	cd ../test; ${MAKE} --no-print-directory
 
 .PHONY: libs
 libs:
-	${MAKE} ; cd ../lib; ${MAKE} --no-print-directory
+	cd ../lib; ${MAKE} --no-print-directory
 
 ### Automake generates wrong tags
 .PHONY: etags

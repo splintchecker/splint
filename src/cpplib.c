@@ -373,7 +373,7 @@ typedef unsigned int mode_t;
 
 # endif
 
-static int file_size_and_mode (int p_fd, /*@out@*/ __mode_t *p_mode_pointer,
+static int file_size_and_mode (int p_fd, /*@out@*/ mode_t *p_mode_pointer,
 			       /*@out@*/ size_t *p_size_pointer);
 static int safe_read (int p_desc, /*@out@*/ char *p_ptr, int p_len);
 
@@ -1563,6 +1563,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
   defn->predefined = NULL;
 
   exp_p = defn->expansion = (char *) defn + sizeof (*defn);
+  *defn->expansion = '\0'; /* convince splint it is initialized */
 
   defn->line = 0;
   defn->rest_args = NULL;
@@ -1830,7 +1831,7 @@ collect_expansion (cppReader *pfile, char *buf, char *limit,
       llfatalbug (cstring_makeLiteral ("Maximum definition size exceeded."));
     }
 
-  /*@i1@*/ return defn; /* Spurious warning here */
+  return defn; /* Spurious warning here */
 }
 
 /*
@@ -2175,8 +2176,10 @@ collect_expansionLoc (fileloc loc, char *buf, char *limit,
     {
       llfatalbug (cstring_makeLiteral ("Maximum definition size exceeded."));
     }
-
-  /*@i1@*/ return defn; /* Spurious warning here */
+  
+  /*@-compdef@*/ /* defn->expansion defined? */
+  return defn; 
+  /*@=compdef@*/
 }
 
 /*
@@ -7073,7 +7076,7 @@ finclude (cppReader *pfile, int f,
 	  bool system_header_p,
 	  /*@dependent@*/ struct file_name_list *dirptr)
 {
-  __mode_t st_mode;
+  mode_t st_mode; /* was __mode_t */
   size_t st_size;
   long i;
   int length = 0;
@@ -7276,19 +7279,23 @@ cppCleanup (/*@special@*/ cppReader *pfile)
 */
 
 static int
-file_size_and_mode (int fd, __mode_t *mode_pointer, size_t *size_pointer)
+file_size_and_mode (int fd, mode_t *mode_pointer, size_t *size_pointer)
 {
   struct stat sbuf;
 
   if (fstat (fd, &sbuf) < 0) {
     *mode_pointer = 0;
     *size_pointer = 0;
-    /*@i2@*/ return (-1); /* Spurious warnings! */
+    /*@-compdestroy@*/ /* possibly spurious warnings here (or memory leak) */
+    return (-1);
+    /*@=compdestroy@*/
   }
 
   if (mode_pointer != NULL)
     {
+      /*@-type@*/ /* confusion between __mode_t and mode_t types */
       *mode_pointer = sbuf.st_mode;
+      /*@=type@*/
     }
 
   if (size_pointer != NULL)
@@ -7296,7 +7303,9 @@ file_size_and_mode (int fd, __mode_t *mode_pointer, size_t *size_pointer)
       *size_pointer = (size_t) sbuf.st_size;
     }
 
-  /*@i4@*/ return 0; /* spurious warnings here */
+  /*@-compdestroy@*/ /* possibly spurious warnings here (or memory leak) */
+  return 0;
+  /*@=compdestroy@*/
 }
 
 /* Read LEN bytes at PTR from descriptor DESC, for file FILENAME,

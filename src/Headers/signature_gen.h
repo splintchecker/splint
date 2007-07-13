@@ -52,6 +52,8 @@
 /*drl added 12/11/2002*/
 /*@-type@*/
 
+/*@-enummemuse@*/
+
 /* < end of bison.head > */
 
 /* A Bison parser, made by GNU Bison 2.3.  */
@@ -266,3 +268,5 @@ typedef union YYSTYPE
 
 /*drl added 12/11/2002*/
 /*@=type@*/
+
+/*@=enummemuse@*/

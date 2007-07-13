@@ -99,7 +99,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 %token <ltok> LST_COMMA             /* , */
 %token <ltok> LST_EOL LST_COMMENTSYM LST_WHITESPACE 
 
-%token LST_WHITESPACE
+ /* %token LST_WHITESPACE */ /* Duplicate tokey removed */
 %token LST_QUANTIFIERSYM
 %token LST_EQUATIONSYM
 %token LST_EQSEPSYM

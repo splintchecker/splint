@@ -338,13 +338,15 @@ osd_fileExists (cstring filespec)
 bool
 osd_executableFileExists (/*@unused@*/ char *filespec)
 {
+  /*@-compdestroy@*/ /* possible memory leaks here? */
 # ifdef UNIX
   struct stat buf;
   if (stat (filespec, &buf) == 0)
     { 
       /* mask by file type */
-      /*@-unrecog@*/ /* S_IFMT is not defined */
-      /*@i32@*/ if ((buf.st_mode & S_IFMT) != S_IFDIR /*@=unrecog@*/) /* not a directory */ /* spurious */
+      /*@-type@*/ /* confusion about __mode_t and mode_t types */
+      if ((buf.st_mode & S_IFMT) != S_IFDIR) /* not a directory */ 
+	/*@=type@*/
 	{
 	  /* as long as it is an executable file */
 # if defined(__IBMC__) && defined(OS2)
@@ -359,13 +361,13 @@ osd_executableFileExists (/*@unused@*/ char *filespec)
 		   | (buf.st_mode & S_IXGRP) |
 		   (buf.st_mode & S_IXOTH)
 # endif
-		   /*@i4@*/ ) != 0); /* spurious */
+		   ) != 0); /* spurious */
 # endif
 	}
     }
 # endif
-  /*@i4@*/ return (FALSE); /* spurious */
-
+  return (FALSE); 
+  /*@=compdestroy@*/
 }
 
 /*

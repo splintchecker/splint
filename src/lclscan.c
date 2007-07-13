@@ -69,7 +69,7 @@ static /*@dependent@*/ /*@null@*/ char *line;  /* input text */
 static unsigned int lineNumber;	               /* current line number */
 
 ltokenCode yllex (void)
-  /*@globals killed restoretok@*/ 
+  /*@globals killed restoretok@*/ /* only if restore is TRUE */
 {
   lsymbol tokenSym;
 
@@ -80,7 +80,9 @@ ltokenCode yllex (void)
     }
   else
     {
+      /*@-onlyunqglobaltrans@*/
       yllval.ltok = ltoken_copy (LCLScanNextToken ());
+      /*@=onlyunqglobaltrans@*/
     }
 
   tokenSym = ltoken_getText (yllval.ltok);
@@ -109,7 +111,11 @@ ltokenCode yllex (void)
 	}
     }
 
+  /*@-onlyunqglobaltrans@*/ /* restoretok not released on non-restore path */
+  /*@-globstate@*/
   return (ltoken_getCode (yllval.ltok));
+  /*@=onlyunqglobaltrans@*/
+  /*@=globstate@*/
 }
 
 /* useful for scanning LCL init files and LSL init files ? */

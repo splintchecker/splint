@@ -52,6 +52,8 @@
 /*drl added 12/11/2002*/
 /*@-type@*/
 
+/*@-enummemuse@*/
+
 /* < end of bison.head > */
 
 /* A Bison parser, made by GNU Bison 2.3.  */
@@ -602,3 +604,5 @@ extern cgrammar_YYSTYPE yylval;
 
 /*drl added 12/11/2002*/
 /*@=type@*/
+
+/*@=enummemuse@*/
