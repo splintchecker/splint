@@ -24,7 +24,7 @@ SPLINTP = $(SPLINT) -nof
 SPLINTRN = $(SPLINTP) -hints -booltype "bool"
 SPLINTR = $(SPLINTRN) -exportlocal +debugfcnconstraint
 
-SPLINTRNNEST = $(SPLINTPNEST) -hints -booltype "bool"
+SPLINTRNNEST = $(SPLINTPNEST) -hints -booltype bool
 SPLINTRNEST = $(SPLINTRNNEST) -exportlocal +debugfcnconstraint
 
 ###
@@ -211,7 +211,7 @@ compdestroy:
 	$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader -expect 1
 	$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy -expect 2
 	$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
-	$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 3
+	$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 4
 
 .PHONY: compoundliterals
 compoundliterals:
@@ -274,7 +274,7 @@ deadparam:
 .PHONY: decl
 decl:
 	$(SPLINTR) decl.c -expect 2
-	$(SPLINTRN) decl.c +strict -exportlocal -expect 5
+	$(SPLINTRN) decl.c +strict -exportlocal -expect 6
 	$(SPLINTR) decl2 -expect 4
 
 .PHONY: divzero
@@ -480,7 +480,7 @@ modtest:
 .PHONY: moduncon
 moduncon:
 	$(SPLINTR) moduncon.c +moduncon -memchecks -expect 4
-	$(SPLINTRN) moduncon.c +strict -exportlocal -expect 22
+	$(SPLINTRN) moduncon.c +strict +impboundsconstraints -exportlocal -expect 22 
 
 .PHONY: mongoincludes
 mongoincludes:
@@ -578,7 +578,7 @@ parentype:
 preds:
 	$(SPLINTR) +hints preds.c -expect 6
 	$(SPLINTRN) +hints preds.c -weak -expect 1
-	$(SPLINTRN) +hints preds.c -strict -exportlocal -exportheader -expect 10
+	$(SPLINTRN) +hints preds.c -strict +impboundsconstraints -exportlocal -exportheader -expect 10
 
 .PHONY: prefixes
 prefixes:
@@ -847,11 +847,11 @@ buffertest:
 
 .PHONY: $(SUBDIRTESTS1)
 $(SUBDIRTESTS1):
-	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)"
+	$(MAKE) -C $@ SPLINT="$(SPLINTRNNEST)"
 
 .PHONY: $(SUBDIRTESTS2)
 $(SUBDIRTESTS2):
-	cd $@; $(MAKE) SPLINT="$(SPLINTRNNEST)" -f Makefile.os2
+	$(MAKE) -C $@ SPLINT="$(SPLINTRNNEST)" -f Makefile.os2
 
 #		sizesigns.c sizesigns.expect \
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

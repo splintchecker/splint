@@ -859,10 +859,19 @@ static /*@only@*/ cstring osd_cwd = cstring_undefined;
 
 static void osd_setWorkingDirectory (void)
 {
-# if defined (UNIX) || defined (OS2)
+# if defined (UNIX)
   char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
   char *cwd = getcwd (buf, MAXPATHLEN);
-
+#else if defined (OS2)
+  char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
+  char *cwd = _getcwd2 (buf, MAXPATHLEN);
+  char *slash;
+  while ((slash = strchr (cwd, '/')) != NULL)
+    {
+      *slash = '\\';
+    }
+#endif
+# if defined (UNIX) || defined (OS2)
   llassert (cstring_isUndefined (osd_cwd));
 
   if (cwd == NULL)

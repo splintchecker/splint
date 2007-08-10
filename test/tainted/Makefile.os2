@@ -7,7 +7,7 @@ all: tainted
 tainted:
 	${SPLINT} -mts tainted tainted.c -mustfree -exportlocal -expect 4
 #	herbert: TODO
-	${SPLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 9
+	@echo TODO ${SPLINT} tainted-bad.mts tainted.xh tainted.c -mustfree -exportlocal -expect 9
 	${SPLINT} -mts tainted tainted2.c -mustfree -exportlocal -expect 1
 	${SPLINT} -mts tainted tainted3.c -mustfree -exportlocal -expect 1
 	${SPLINT} -mts tainted tainted4.c -mustfree -exportlocal -expect 1

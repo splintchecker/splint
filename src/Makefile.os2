@@ -7,17 +7,6 @@
 SHELL = /usr/bin/ksh
 
 include ../os2/make.vars
-binDir = ../bin
-
-
-.SUFFIXES = 
-.SUFFIXES = .c .h $O $(EXEEXT) .l .check
-
-# Some preferences
-### We use the no-lines option to prevent confusion with splint flag settings.
-### Should fix splint to avoid this...
-YFLAGS = -v -t -d --debug --no-lines
-LFLAGS = -L
 
 BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
 
@@ -110,13 +99,14 @@ COMMONSRC =  $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
 
 LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(COMMONSRC) $(LCLONLYSRC) 
 
-ALLSRC = $(GRAMSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(LCLSRC) snprintf.c
+ALLSRC = $(GRAMSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(LCLSRC)
+# snprintf.c
 
 #files to run Splint on
 LINTSRC = $(COMMONSRC) $(SPLINTSRC)
 
 lcl_SOURCES = $(LCLSRC)
-CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_HEADER = ../config.h
 
 splint_SOURCES = $(ALLSRC)
 splint_OBJECTS = $(splint_SOURCES:.c=$O)
@@ -124,7 +114,7 @@ splint_OBJECTS = $(splint_SOURCES:.c=$O)
 # Keep it fake
 .PHONY: lcl$(EXEEXT)
 
-DEFS = -DHAVE_CONFIG_H
+DEFS = -DHAVE_CONFIG_H -D__pid_t=pid_t
 DEFAULT_INCLUDES =  -I. -I..
 
 ## Sources that need to be built
@@ -134,7 +124,26 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
                 llgrammar.c mtgrammar.c Headers/flag_codes.gen \
                 $(DER_FILES)
 
-all: $(BUILT_SOURCES) splint$(EXEEXT) $(binDir)/splint$(EXEEXT)
+all: $(binDir)/splint$(EXEEXT) ../os2/setenv.cmd
+	$(MAKE) -C ../lib -f Makefile.os2
+
+$(CONFIG_HEADER): ../os2/os2config.h.in
+	$(SED) -e 's|@DEFAULT_LARCHPATH@|$(DEFAULT_LARCHPATH)|' \
+	-e 's|@DEFAULT_LCLIMPORTDIR@|$(DEFAULT_LCLIMPORTDIR)|' \
+	-e 's|@GCC_INCLUDE_DIR@|$(GCC_INCLUDE_DIR)|' \
+	-e 's|@GCC_INCLUDE_DIR2@|$(GCC_INCLUDE_DIR2)|' \
+	-e 's|@TARGET_CPU@|$(TARGET_CPU)|' \
+	-e 's|@UNAME@|$(UNAME)|' \
+	-e 's|@LCL_COMPILE@|$(LCL_COMPILE)|' \
+	-e 's|@LCL_PARSE_VERSION@|$(LCL_PARSE_VERSION)|' \
+	-e 's|@SPLINT_VERSION@|$(SPLINT_VERSION)|' \
+	-e 's|@SYSTEM_LIBDIR@|$(SYSTEM_LIBDIR)|' \
+	$< >$@
+
+../os2/setenv.cmd: ../os2/setenv.cmd.in
+	$(SED) -e 's|@LCL_VERSION@|$(LCL_VERSION)|' \
+	-e 's|@BASEDIR@|$(BASEDIR)|' \
+	$< | tr '/' '\\\\\\' >$@
 
 Headers/signature_gen.h signature.c: signature.c.der signature.y
 ifndef BISON
@@ -205,8 +214,6 @@ cscanner.c: cscanner.l
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
-	$(MAKE)
-	cd ../lib; $(MAKE)
 
 $(binDir)/splint$(EXEEXT):  splint$(EXEEXT)
 	-$(RM) -f $(binDir)/splint$(EXEEXT)
@@ -225,8 +232,8 @@ snprintf$O: snprintf.c
 %$O: %.c
 	$(CC) $(CFLAGS) $(DEFS) $(DEFAULT_INCLUDES) $(CPPFLAGS) -c $<
 
-splint$(EXEEXT) : $(splint_OBJECTS) 
-	$(CC) $(OFLAG)$@ $^ $(LDFLAGS)
+splint$(EXEEXT) : $(CONFIG_HEADER) $(BUILT_SOURCES) $(splint_OBJECTS) 
+	$(CC) $(OFLAG)$@ $(splint_OBJECTS) $(LDFLAGS)
 
 list:
 	@echo "$(splint_OBJECTS)"
