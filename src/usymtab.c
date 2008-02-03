@@ -2009,11 +2009,7 @@ void usymtab_load (FILE *f)
 
       while ((c = *s) != '\0' && (c !='\n'))
 	{
-	  if (c != ' ' || c != '\t') 
-	    {
-	      llbuglit ("Junk in load file");
-	    }
-
+	  llbuglit ("Junk in load file");
 	  s++;
 	}
 
