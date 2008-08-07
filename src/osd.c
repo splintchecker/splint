@@ -516,7 +516,7 @@ osd_getPid ()
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   int pid = _getpid ();
 # else
-  __pid_t pid = getpid ();
+  pid_t pid = getpid ();
 # endif
 
   return (int) pid;
@@ -862,7 +862,7 @@ static void osd_setWorkingDirectory (void)
 # if defined (UNIX)
   char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
   char *cwd = getcwd (buf, MAXPATHLEN);
-#else if defined (OS2)
+#elif defined (OS2)
   char *buf = dmalloc (sizeof (*buf) * MAXPATHLEN);
   char *cwd = _getcwd2 (buf, MAXPATHLEN);
   char *slash;
