@@ -3077,7 +3077,7 @@ uentry_isSpecialFunction (uentry ue)
   uentry ue = uentry_makeVariableSrefParam (idDecl_observeId (t), ct, loc, pref);
 
   DPRINTF (("Make param: %s", uentry_unparseFull (ue)));
-  DPRINTF (("Base: %s [%d]", ctype_unparse (base), ctype_isFixedArray (base)));
+  DPRINTF (("Base: %s [%d]", ctype_unparse (ct), ctype_isFixedArray (ct)));
   uentry_reflectQualifiers (ue, idDecl_getQuals (t));
   uentry_implicitParamAnnots (ue);
 
