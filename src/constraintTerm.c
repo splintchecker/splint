@@ -467,7 +467,7 @@ bool constraintTerm_probSame (constraintTerm term1, constraintTerm term2)
   llassert (term1 !=NULL && term2 !=NULL);
      
  DPRINTF ((message
-	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
+	    ("Comparing srefs for %s and  %s ", constraintTerm_getName(term1), constraintTerm_getName(term2)
 	     )
 	    )
 	   );
@@ -527,19 +527,19 @@ bool constraintTerm_similar (constraintTerm term1, constraintTerm term2)
     }
   
   DPRINTF((message
-	    ("Comparing srefs for %s and  %s ", constraintTerm_print(term1), constraintTerm_print(term2)
+	    ("Comparing srefs for %s and  %s ", constraintTerm_getName(term1), constraintTerm_getName(term2)
 	     )
 	    )
 	   );
   
   if (sRef_similarRelaxed(s1, s2)   || sRef_sameName (s1, s2) )
     {
-      DPRINTF ((message (" %s and %s are same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+      DPRINTF ((message (" %s and %s are same", constraintTerm_getName(term1), constraintTerm_getName(term2)  )  ));
       return TRUE;
     }
   else
     {
-      DPRINTF ((message (" %s and %s are not same", constraintTerm_print(term1), constraintTerm_print(term2)  )  ));
+      DPRINTF ((message (" %s and %s are not same", constraintTerm_getName(term1), constraintTerm_getName(term2)  )  ));
       return FALSE;
     }       
 }

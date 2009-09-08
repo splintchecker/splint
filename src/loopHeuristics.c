@@ -212,7 +212,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
 	
 	if ( (constraint_isDefined (el ) ) && ( increments (el2, el->lexpr) ) )
 	  {
-	    DPRINTF (( message ("getForTimes: %s increments %s", constraint_print (el2), constraint_print (el) ) ));
+	    DPRINTF (( message ("getForTimes: %s increments %s", constraint_printLocation (el2), constraint_printLocation (el) ) ));
 	    ret =  constraintExpr_copy (el->expr);
 	    constraintList_free (ltCon);
 	    constraintList_free (incCon);
@@ -222,7 +222,7 @@ static /*@only@*/ constraintExpr getForTimes (/*@notnull@*/ exprNode forPred, /*
 	else
 	  {
 	    ;
-	    DPRINTF (( message ("getForTimes: %s doesn't increment %s", constraint_print (el2), constraint_print (el) )   ));
+	    DPRINTF (( message ("getForTimes: %s doesn't increment %s", constraint_printLocation (el2), constraint_printLocation (el) )   ));
 	  }
       }
       end_constraintList_elements;
@@ -341,7 +341,7 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
  
   llassert (constraint_search (c, find)  );
   DPRINTF (( message ("Doing constraint_searchAndAdd  %s %s %s ",
-		     constraint_print (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
+		     constraint_printLocation (c), constraintExpr_unparse (find), constraintExpr_unparse (add) ) ) );
   
   c->lexpr = constraintExpr_searchAndAdd (c->lexpr, find, add);
   c->expr =  constraintExpr_searchAndAdd (c->expr, find, add);
@@ -369,7 +369,7 @@ static constraint  constraint_searchAndAdd (/*@returned@*/ constraint c, /*@obse
 	  newExpr = constraint_copy (el);
 
 	  newExpr = constraint_searchAndAdd (newExpr, find, add);
-	  	  DPRINTF (( (message ("Adding constraint %s ", constraint_print (newExpr)) )  ));
+	  	  DPRINTF (( (message ("Adding constraint %s ", constraint_printLocation (newExpr)) )  ));
 	  newConstraints = constraintList_add (newConstraints, newExpr);
 	}
 
@@ -391,7 +391,7 @@ static void doAdjust (/*@unused@*/ exprNode e, /*@unused@*/ exprNode forPred, /*
       /* look for var = var + 1 */
       if (constraint_isDefined (el) && incVar (el) )
 	{
-	  DPRINTF ((message ("Found inc variable constraint : %s", constraint_print (el) )  ));
+	  DPRINTF ((message ("Found inc variable constraint : %s", constraint_printLocation (el) )  ));
 	  forBody->requiresConstraints = constraintList_searchAndAdd (forBody->requiresConstraints, el->lexpr, iterations);
 	}
     }

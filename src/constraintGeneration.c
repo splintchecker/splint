@@ -849,7 +849,7 @@ void exprNode_multiStatement (/*@dependent@*/ exprNode e)
   constraintList temp;
 
   DPRINTF((message ("exprNode_multistatement Analysising %s %s at", exprNode_unparse(e),
-		    fileloc_unparse(exprNode_getfileloc(e)))));
+		    fileloc_unparse(exprNode_getNextSequencePoint(e)))));
   
   if (exprNode_handleError (e))
     {

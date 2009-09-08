@@ -994,7 +994,7 @@ constraint constraint_preserveOrig (/*@returned@*/ constraint c) /*@modifies c @
 {
   if (constraint_isDefined (c))
     {
-      DPRINTF (("Doing constraint_preserverOrig for %q", constraint_printDetailed (c)));
+      DPRINTF (("Doing constraint_preserverOrig for %q", constraint_printLocation (c)));
       
       if (c->orig == constraint_undefined)
 	{
