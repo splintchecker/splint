@@ -374,7 +374,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-
+#line 72 "llgrammar.y"
 {
   ltoken ltok;  /* a leaf is also an ltoken */
   qual typequal;
@@ -441,8 +441,8 @@ typedef union YYSTYPE
   /*@only@*/ CTypesNode ctypes;
   /*@-redef@*/
 }
-/* Line 1529 of yacc.c.  */
-
+/* Line 1489 of yacc.c.  */
+#line 388 "llgrammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

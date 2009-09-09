@@ -494,7 +494,7 @@
 
 #if ! defined cgrammar_YYSTYPE && ! defined cgrammar_YYSTYPE_IS_DECLARED
 typedef union cgrammar_YYSTYPE
-
+#line 81 "cgrammar.y"
 {
   lltok tok;
   int count;
@@ -544,8 +544,8 @@ typedef union cgrammar_YYSTYPE
   constraintExpr conE;
   /* drl */  
 }
-/* Line 1529 of yacc.c.  */
-
+/* Line 1489 of yacc.c.  */
+#line 491 "cgrammar.tab.h"
 	cgrammar_YYSTYPE;
 # define yystype cgrammar_YYSTYPE /* obsolescent; will be withdrawn */
 # define cgrammar_YYSTYPE_IS_DECLARED 1

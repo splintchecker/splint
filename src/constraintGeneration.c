@@ -1428,6 +1428,10 @@ void exprNode_exprTraverse (/*@dependent@*/ exprNode e,
 	{
 	  break;
 	}
+      else if (lltok_isPlus_Op (tok))
+	{
+	  break;
+	}
       else if (lltok_isExcl_Op (tok))
 	{
 	  break;

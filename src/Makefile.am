@@ -10,7 +10,7 @@ CHECK = 1
 # Some preferences
 ### We use the no-lines option to prevent confusion with splint flag settings.
 ### Should fix splint to avoid this...
-YFLAGS = -v -t -d --debug --no-lines
+YFLAGS = -v -t -d --debug
 LFLAGS = -L
 
 BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y

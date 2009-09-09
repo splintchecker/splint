@@ -196,7 +196,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-
+#line 71 "signature.y"
 {
   ltoken ltok;  /* a leaf is also an ltoken */
   unsigned int count;
@@ -208,8 +208,8 @@ typedef union YYSTYPE
   /*@only@*/  lslOpList operators;
   /*@-redef@*/ /*@-matchfields@*/ 
 }
-/* Line 1529 of yacc.c.  */
-
+/* Line 1489 of yacc.c.  */
+#line 155 "signature.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

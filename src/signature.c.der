@@ -230,7 +230,7 @@
 
 
 /* Copy the first part of user declarations.  */
-
+#line 32 "signature.y"
 
 
 # include <stdio.h>
@@ -278,7 +278,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-
+#line 71 "signature.y"
 {
   ltoken ltok;  /* a leaf is also an ltoken */
   unsigned int count;
@@ -290,8 +290,8 @@ typedef union YYSTYPE
   /*@only@*/  lslOpList operators;
   /*@-redef@*/ /*@-matchfields@*/ 
 }
-/* Line 193 of yacc.c.  */
-
+/* Line 187 of yacc.c.  */
+#line 237 "signature.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -304,7 +304,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-
+#line 250 "signature.tab.c"
 
 #ifdef short
 # undef short
@@ -1559,12 +1559,12 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-
+#line 139 "signature.y"
     { lslOpList_free ((yyvsp[(1) - (1)].operators)); ;}
     break;
 
   case 3:
-
+#line 143 "signature.y"
     { lslOpList x = lslOpList_new ();
 		g_importedlslOp = (yyvsp[(1) - (1)].operator);
 		lslOpList_add (x, (yyvsp[(1) - (1)].operator));
@@ -1572,186 +1572,186 @@ yyreduce:
     break;
 
   case 4:
-
+#line 148 "signature.y"
     { lslOpList_add ((yyvsp[(1) - (2)].operators), (yyvsp[(2) - (2)].operator));
 		(yyval.operators) = (yyvsp[(1) - (2)].operators); ;}
     break;
 
   case 5:
-
+#line 153 "signature.y"
     { (yyval.operator) = makelslOpNode ((yyvsp[(1) - (3)].name), (yyvsp[(3) - (3)].signature)); ;}
     break;
 
   case 6:
-
+#line 160 "signature.y"
     { (yyval.name) = makeNameNodeId ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 7:
-
+#line 162 "signature.y"
     { (yyval.name) = makeNameNodeForm ((yyvsp[(1) - (1)].opform)); ;}
     break;
 
   case 8:
-
+#line 167 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (6)].ltok), OPF_IF, opFormUnion_createMiddle (0), ltoken_undefined); ;}
     break;
 
   case 9:
-
+#line 169 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (1)].ltok), OPF_ANYOP, opFormUnion_createAnyOp ((yyvsp[(1) - (1)].ltok)), ltoken_undefined); ;}
     break;
 
   case 10:
-
+#line 171 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_MANYOP, opFormUnion_createAnyOp ((yyvsp[(2) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 11:
-
+#line 173 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_ANYOPM, opFormUnion_createAnyOp ((yyvsp[(1) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 12:
-
+#line 175 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MANYOPM, opFormUnion_createAnyOp ((yyvsp[(2) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 13:
-
+#line 177 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MIDDLE, opFormUnion_createMiddle ((yyvsp[(2) - (3)].count)), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 14:
-
+#line 179 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (4)].ltok), OPF_MMIDDLE, opFormUnion_createMiddle ((yyvsp[(3) - (4)].count)), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 15:
-
+#line 181 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (4)].ltok), OPF_MIDDLEM, opFormUnion_createMiddle ((yyvsp[(2) - (4)].count)), (yyvsp[(3) - (4)].ltok)); ;}
     break;
 
   case 16:
-
+#line 183 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (5)].ltok), OPF_MMIDDLEM, 
 			      opFormUnion_createMiddle ((yyvsp[(3) - (5)].count)), (yyvsp[(4) - (5)].ltok)); ;}
     break;
 
   case 17:
-
+#line 186 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_BMIDDLE, 
 			      opFormUnion_createMiddle ((yyvsp[(2) - (3)].count)), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 18:
-
+#line 189 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (4)].ltok), OPF_BMMIDDLE, 
 			      opFormUnion_createMiddle ((yyvsp[(3) - (4)].count)), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 19:
-
+#line 192 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (4)].ltok), OPF_BMIDDLEM, 
 			    opFormUnion_createMiddle ((yyvsp[(2) - (4)].count)), (yyvsp[(3) - (4)].ltok)); ;}
     break;
 
   case 20:
-
+#line 195 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (5)].ltok), OPF_BMMIDDLEM, 
 			    opFormUnion_createMiddle ((yyvsp[(3) - (5)].count)), (yyvsp[(4) - (5)].ltok)); ;}
     break;
 
   case 21:
-
+#line 198 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_SELECT, 
 			    opFormUnion_createAnyOp ((yyvsp[(2) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 22:
-
+#line 201 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MSELECT, 
 			    opFormUnion_createAnyOp ((yyvsp[(3) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 23:
-
+#line 206 "signature.y"
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MMAP, 
 			    opFormUnion_createAnyOp ((yyvsp[(3) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 24:
-
+#line 211 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
   case 25:
-
+#line 213 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
   case 26:
-
+#line 215 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
   case 27:
-
+#line 219 "signature.y"
     { (yyval.count) = 0; ;}
     break;
 
   case 28:
-
+#line 221 "signature.y"
     { (yyval.count) = (yyvsp[(1) - (1)].count); ;}
     break;
 
   case 29:
-
+#line 225 "signature.y"
     { (yyval.count) = 1; ;}
     break;
 
   case 30:
-
+#line 227 "signature.y"
     { (yyval.count) = (yyvsp[(1) - (3)].count) + 1; ;}
     break;
 
   case 31:
-
+#line 231 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
   case 32:
-
+#line 233 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
   case 33:
-
+#line 237 "signature.y"
     { (yyval.signature) = makesigNode ((yyvsp[(2) - (3)].ltok), (yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 34:
-
+#line 241 "signature.y"
     { (yyval.ltokenList) = ltokenList_new (); ;}
     break;
 
   case 35:
-
+#line 243 "signature.y"
     { (yyval.ltokenList) = (yyvsp[(1) - (1)].ltokenList); ;}
     break;
 
   case 36:
-
+#line 247 "signature.y"
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 37:
-
+#line 249 "signature.y"
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 38:
-
+#line 253 "signature.y"
     { 
 	  (yyval.ltok) = (yyvsp[(1) - (1)].ltok); 
 	  ltoken_setText ((yyval.ltok), processTraitSortId (ltoken_getText ((yyvsp[(1) - (1)].ltok)))); 
@@ -1759,13 +1759,13 @@ yyreduce:
     break;
 
   case 39:
-
+#line 260 "signature.y"
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-
+#line 1711 "signature.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1979,7 +1979,7 @@ yyreturn:
 }
 
 
-
+#line 263 "signature.y"
 
 
 # include "bison.reset"

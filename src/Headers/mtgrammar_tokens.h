@@ -52,13 +52,156 @@
 /*drl added 12/11/2002*/
 /*@-type@*/
 
+/*@-enummemuse@*/
+
 /* < end of bison.head > */
 
-#ifndef BISON_MTGRAMMAR_TAB_H
-# define BISON_MTGRAMMAR_TAB_H
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-#ifndef YYSTYPE
-typedef union {
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     MT_BADTOK = 258,
+     MT_END = 259,
+     MT_STATE = 260,
+     MT_GLOBAL = 261,
+     MT_CONTEXT = 262,
+     MT_ONEOF = 263,
+     MT_DEFAULTS = 264,
+     MT_DEFAULT = 265,
+     MT_REFERENCE = 266,
+     MT_PARAMETER = 267,
+     MT_RESULT = 268,
+     MT_CLAUSE = 269,
+     MT_LITERAL = 270,
+     MT_NULL = 271,
+     MT_ANNOTATIONS = 272,
+     MT_ARROW = 273,
+     MT_MERGE = 274,
+     MT_TRANSFERS = 275,
+     MT_PRECONDITIONS = 276,
+     MT_POSTCONDITIONS = 277,
+     MT_LOSEREFERENCE = 278,
+     MT_AS = 279,
+     MT_ERROR = 280,
+     MT_PLUS = 281,
+     MT_STAR = 282,
+     MT_BAR = 283,
+     MT_LPAREN = 284,
+     MT_RPAREN = 285,
+     MT_LBRACKET = 286,
+     MT_RBRACKET = 287,
+     MT_LBRACE = 288,
+     MT_RBRACE = 289,
+     MT_COMMA = 290,
+     MT_CHAR = 291,
+     MT_INT = 292,
+     MT_FLOAT = 293,
+     MT_DOUBLE = 294,
+     MT_VOID = 295,
+     MT_ANYTYPE = 296,
+     MT_INTEGRALTYPE = 297,
+     MT_UNSIGNEDINTEGRALTYPE = 298,
+     MT_SIGNEDINTEGRALTYPE = 299,
+     MT_CONST = 300,
+     MT_VOLATILE = 301,
+     MT_RESTRICT = 302,
+     MT_STRINGLIT = 303,
+     MT_IDENT = 304
+   };
+#endif
+/* Tokens.  */
+#define MT_BADTOK 258
+#define MT_END 259
+#define MT_STATE 260
+#define MT_GLOBAL 261
+#define MT_CONTEXT 262
+#define MT_ONEOF 263
+#define MT_DEFAULTS 264
+#define MT_DEFAULT 265
+#define MT_REFERENCE 266
+#define MT_PARAMETER 267
+#define MT_RESULT 268
+#define MT_CLAUSE 269
+#define MT_LITERAL 270
+#define MT_NULL 271
+#define MT_ANNOTATIONS 272
+#define MT_ARROW 273
+#define MT_MERGE 274
+#define MT_TRANSFERS 275
+#define MT_PRECONDITIONS 276
+#define MT_POSTCONDITIONS 277
+#define MT_LOSEREFERENCE 278
+#define MT_AS 279
+#define MT_ERROR 280
+#define MT_PLUS 281
+#define MT_STAR 282
+#define MT_BAR 283
+#define MT_LPAREN 284
+#define MT_RPAREN 285
+#define MT_LBRACKET 286
+#define MT_RBRACKET 287
+#define MT_LBRACE 288
+#define MT_RBRACE 289
+#define MT_COMMA 290
+#define MT_CHAR 291
+#define MT_INT 292
+#define MT_FLOAT 293
+#define MT_DOUBLE 294
+#define MT_VOID 295
+#define MT_ANYTYPE 296
+#define MT_INTEGRALTYPE 297
+#define MT_UNSIGNEDINTEGRALTYPE 298
+#define MT_SIGNEDINTEGRALTYPE 299
+#define MT_CONST 300
+#define MT_VOLATILE 301
+#define MT_RESTRICT 302
+#define MT_STRINGLIT 303
+#define MT_IDENT 304
+
+
+
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
+#line 62 "mtgrammar.y"
+{
   mttok tok; 
   mtDeclarationNode mtdecl;
   mtDeclarationPiece mtpiece;
@@ -85,60 +228,17 @@ typedef union {
   /*@only@*/ qtype qtyp;
   qual qual;
   qualList quals;
-} yystype;
-# define YYSTYPE yystype
+}
+/* Line 1489 of yacc.c.  */
+#line 176 "mtgrammar.tab.h"
+	YYSTYPE;
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
-# define	MT_BADTOK	257
-# define	MT_END	258
-# define	MT_STATE	259
-# define	MT_GLOBAL	260
-# define	MT_CONTEXT	261
-# define	MT_ONEOF	262
-# define	MT_DEFAULTS	263
-# define	MT_DEFAULT	264
-# define	MT_REFERENCE	265
-# define	MT_PARAMETER	266
-# define	MT_RESULT	267
-# define	MT_CLAUSE	268
-# define	MT_LITERAL	269
-# define	MT_NULL	270
-# define	MT_ANNOTATIONS	271
-# define	MT_ARROW	272
-# define	MT_MERGE	273
-# define	MT_TRANSFERS	274
-# define	MT_PRECONDITIONS	275
-# define	MT_POSTCONDITIONS	276
-# define	MT_LOSEREFERENCE	277
-# define	MT_AS	278
-# define	MT_ERROR	279
-# define	MT_PLUS	280
-# define	MT_STAR	281
-# define	MT_BAR	282
-# define	MT_LPAREN	283
-# define	MT_RPAREN	284
-# define	MT_LBRACKET	285
-# define	MT_RBRACKET	286
-# define	MT_LBRACE	287
-# define	MT_RBRACE	288
-# define	MT_COMMA	289
-# define	MT_CHAR	290
-# define	MT_INT	291
-# define	MT_FLOAT	292
-# define	MT_DOUBLE	293
-# define	MT_VOID	294
-# define	MT_ANYTYPE	295
-# define	MT_INTEGRALTYPE	296
-# define	MT_UNSIGNEDINTEGRALTYPE	297
-# define	MT_SIGNEDINTEGRALTYPE	298
-# define	MT_CONST	299
-# define	MT_VOLATILE	300
-# define	MT_RESTRICT	301
-# define	MT_STRINGLIT	302
-# define	MT_IDENT	303
 
 
-#endif /* not BISON_MTGRAMMAR_TAB_H */
+
 /*
 ** Resets all flags in bison.head
 */
@@ -189,3 +289,5 @@ typedef union {
 
 /*drl added 12/11/2002*/
 /*@=type@*/
+
+/*@=enummemuse@*/
