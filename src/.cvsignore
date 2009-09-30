@@ -1,0 +1,10 @@
+*.out
+*.output
+splint
+.deps
+Makefile
+cgrammar.c
+cscanner.c
+lex.yy.c
+llgrammar.c
+signature.c
