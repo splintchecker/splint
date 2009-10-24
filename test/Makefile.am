@@ -1597,4 +1597,3 @@ EXTRA_DIST =  ./abst_t.lcl \
 stringliteral.expect  stringliteral.c \
   numabstract.c sizesigns.c typeof.c   nullassign.expect 
 
-#		sizesigns.c sizesigns.expect \
