@@ -13,7 +13,7 @@ bin_PROGRAMS = splint
 
 EXTRA_DIST = splint
 
-DIST_SOURCES =
+#DIST_SOURCES =
 
 #chessy hack so it doesn't try to build splint
 splint$(EXEEXT): ;
