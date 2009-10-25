@@ -1,0 +1,7 @@
+Makefile
+posix.lcd
+posixstrict.lcd
+standard.lcd
+standardstrict.lcd
+unix.lcd
+unixstrict.lcd
