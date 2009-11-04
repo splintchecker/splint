@@ -214,10 +214,6 @@ extern size_t cpplib_getWritten (/*@sef@*/ cppReader *) /*@*/ ;
 extern /*@exposed@*/ char *cpplib_getPWritten (cppReader *) /*@*/ ;
 # define cpplib_getPWritten(PFILE) ((PFILE)->limit)
 
-extern /*@null@*/ macroDef 
-cpplib_createDefinition (/*@dependent@*/ cstring p_def, fileloc p_loc,
-			 bool p_predefinition, bool p_noExpand) ;
-  
 /* Make sure PFILE->token_buffer has space for at least N more characters. */
 
 extern void cpplib_reserve (/*@sef@*/ cppReader *, /*@sef@*/ size_t);
