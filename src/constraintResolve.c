@@ -325,7 +325,7 @@ static constraint constraint_addOr (/*@returned@*/ constraint orig, /*@observer@
 {
   constraint c;
 
-  llassert(constraint_isDefined(orig) );
+  llassertfatal(constraint_isDefined(orig) );
   
   c = orig;
 
@@ -352,7 +352,7 @@ static bool resolveOr ( /*@temp@*/ constraint c, /*@observer@*/ /*@temp@*/ const
 
   numberOr = 0;
 
-    llassert(constraint_isDefined(c) );
+    llassertfatal(constraint_isDefined(c) );
 
   DPRINTF(( message("resolveOr: constraint %s and list %s", constraint_unparseOr(c), constraintList_unparse(list) ) ));
   
@@ -509,7 +509,7 @@ static /*@only@*/ constraint doResolveOr (/*@observer@*/ /*@temp@*/ constraint c
 
   *resolved = FALSE;
   
-  llassert(constraint_isDefined(c) );
+  llassertfatal(constraint_isDefined(c) );
 
   ret = constraint_copy(c);
 
@@ -688,11 +688,11 @@ static bool constraint_conflict (constraint c1, constraint c2)
 
 static void constraint_fixConflict (/*@temp@*/ constraint good, /*@temp@*/ /*@observer@*/ constraint conflicting) /*@modifies good@*/
 {
-  llassert(constraint_isDefined(conflicting) );
+  llassertfatal(constraint_isDefined(conflicting) );
   
   if (conflicting->ar == EQ)
     {
-      llassert (constraint_isDefined(good));
+      llassertfatal (constraint_isDefined(good));
       DPRINTF (("Replacing here!"));
       good->expr = constraintExpr_searchandreplace (good->expr, conflicting->lexpr, conflicting->expr);
       good = constraint_simplify (good);
@@ -832,7 +832,8 @@ static bool sizeofBufComp(constraintExpr buf1, constraintExpr expr2)
   exprNode e, t;
   sRef s1, s2;
 
-  llassert(constraintExpr_isDefined(buf1) && constraintExpr_isDefined(expr2) );
+  llassertfatal(constraintExpr_isDefined(buf1) &&
+                constraintExpr_isDefined(expr2) );
 
   /*@access constraintExpr@*/
   
@@ -885,7 +886,7 @@ static bool sizeOfMaxSet( /*@observer@*/ /*@temp@*/ constraint c)
   DPRINTF(( message("sizeOfMaxSet: checking %s ", constraint_unparse(c) )
 	    ));
 
-  llassert (constraint_isDefined(c) );
+  llassertfatal (constraint_isDefined(c) );
     
   l = c->lexpr;
   r = c->expr;
@@ -1180,7 +1181,7 @@ static bool rangeCheck (arithType ar1, /*@observer@*/ constraintExpr expr1, arit
 
 static constraint constraint_searchandreplace (/*@returned@*/ constraint c, constraintExpr old, constraintExpr newExpr)
 {
-  llassert (constraint_isDefined(c));
+  llassertfatal (constraint_isDefined(c));
   
   DPRINTF (("Starting replace lexpr [%p]: %s < %s ==> %s > in %s", c, 
 	    constraintExpr_unparse (c->lexpr), 

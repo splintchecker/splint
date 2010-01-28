@@ -69,7 +69,7 @@ constraintList_grow (constraintList s)
   int i;
   constraint *newelements; 
 
-  llassert (constraintList_isDefined (s));
+  llassertfatal (constraintList_isDefined (s));
 
   s->nspace += constraintListBASESIZE;
   newelements = (constraint *) dmalloc (sizeof (*newelements)
@@ -88,7 +88,7 @@ constraintList_grow (constraintList s)
 constraintList 
 constraintList_add (/*@returned@*/ constraintList s, /*@only@*/ constraint el)
 {
-  llassert (constraintList_isDefined (s));
+  llassertfatal (constraintList_isDefined (s));
 
   /*drl7x */
 
