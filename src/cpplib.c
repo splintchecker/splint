@@ -7412,7 +7412,7 @@ parseMoveMark (struct parse_marker *pmark, cppReader *pfile)
     }
 
   pmark->position = pbuf->cur - pbuf->buf;
-  DPRINTF (("move mark: %s", pmark->position));
+  DPRINTF (("move mark: %d", pmark->position));
 }
 
 void cpplib_initializeReader (cppReader *pfile) /* Must be done after library is loaded. */
