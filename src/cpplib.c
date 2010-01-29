@@ -7865,7 +7865,6 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
 {
   bool checkmacro = FALSE;
   bool hasParams = FALSE;
-  bool noexpand = FALSE;
   cstring sname;
   char c;
 
@@ -7941,17 +7940,6 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
     }
   else
     {
-      if (noexpand)
-	{
-	  checkmacro = TRUE;
-
-	  if (!expectenditer)
-	    {
-	      noexpand = FALSE;
-	    }
-	}
-      else
-	{
 	  if (usymtab_existsReal (sname))
 	    {
 	      uentry ue = usymtab_lookup (sname);
@@ -8106,7 +8094,6 @@ static bool cpp_shouldCheckMacro (cppReader *pfile, char *p) /*@modifies p*/
 		  incLine ();
 		}
 	    }
-	}
     }
 
   if (!checkmacro)
