@@ -1541,8 +1541,15 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
             {
               modtype = ctype_sint;  /* short */
               key = *(++code);
-	      codetext = cstring_appendChar (codetext, key);
-	      fileloc_incColumn (formatloc);
+	          codetext = cstring_appendChar (codetext, key);
+	          fileloc_incColumn (formatloc);
+	          if (key == 'h')
+	            {
+	              modtype = ctype_char;  /* char */
+	              key = *(++code);
+		          codetext = cstring_appendChar (codetext, key);
+		          fileloc_incColumn (formatloc);
+	            }
             }
           else if (key == 'l' || key == 'L') 
             {
@@ -1850,8 +1857,15 @@ checkScanfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
             {
               modtype = ctype_sint;  /* short */
               key = *(++code);
-	      codetext = cstring_appendChar (codetext, key);
-	      fileloc_incColumn (formatloc);
+	          codetext = cstring_appendChar (codetext, key);
+	          fileloc_incColumn (formatloc);
+	          if (key == 'h')
+	            {
+	              modtype = ctype_char;  /* char */
+	              key = *(++code);
+		          codetext = cstring_appendChar (codetext, key);
+		          fileloc_incColumn (formatloc);
+	            }
             }
           else if (key == 'l' || key == 'L') 
             {
