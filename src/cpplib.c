@@ -2202,6 +2202,13 @@ static char rest_extension[] = "...";
 /*@notfunction@*/
 #define REST_EXTENSION_LENGTH	(sizeof (rest_extension) - 1)
 
+/*@-readonlytrans@*/
+static char rest_name[] = "__VA_ARGS__";
+/*:=readonlytrans@*/
+
+/*@notfunction@*/
+#define REST_NAME_LENGTH	(sizeof (rest_name) - 1)
+
 /* Create a DEFINITION node from a #define directive.  Arguments are
    as for do_define.  */
 
@@ -2272,6 +2279,28 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 				  cstring_fromChars (rest_extension)));
 	  }
 
+	if (limit - bp > size_toInt (REST_EXTENSION_LENGTH)
+	    && strncmp (rest_extension, bp, REST_EXTENSION_LENGTH) == 0)
+          {
+              fileloc loc = cppReader_getLoc(pfile);
+              if (!context_flagOn (FLG_GNUEXTENSIONS, loc))
+                {
+                    (void) llgenhinterror 
+                        (FLG_SYNTAX,
+                         message ("VAR_ARG macros are not supported by ISO C99"),
+                         message ("Use +gnuextensions to allow VAR_ARG macros "
+                                  "(and other GNU language extensions) "
+                                  "without this warning"),
+                         loc);
+                }
+              rest_args = 1;
+              temp->rest_args = 1;
+              temp->name = rest_name;
+              temp->length = REST_NAME_LENGTH;
+          }
+	else
+	  {
+
 	if (!is_idstart[(int) *bp])
 	  {
 	    cppReader_pedwarnLit (pfile,
@@ -2293,7 +2322,8 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
 	  }
 
 	temp->length = size_fromInt (bp - temp->name);
-
+          }
+    
 	if (rest_args != 0)
 	  {
 	    bp += REST_EXTENSION_LENGTH;
