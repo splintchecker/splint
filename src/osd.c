@@ -516,10 +516,10 @@ osd_getPid ()
 # if defined (WIN32) || defined (OS2) && defined (__IBMC__)
   int pid = _getpid ();
 # else
-  pid_t pid = getpid ();
+  int pid = (int)getpid ();
 # endif
 
-  return (int) pid;
+  return pid;
 }
   
 cstring osd_fixDefine (cstring x)
