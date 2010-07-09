@@ -62,8 +62,8 @@ unsigned int lsllex (YYSTYPE *lval)
 {
   /* This is important!  Bison expects this */
   /* splint doesn't know the type of YYSTYPE, so we need to ignore warnings here */
-  /*@i1@*/ lval->ltok = LSLScanNextToken ();
-  /*@i1@*/ return (ltoken_getCode (lval->ltok));
+  lval->ltok = LSLScanNextToken ();
+  return (ltoken_getCode (lval->ltok));
 }
 
 ltoken LSLScanNextToken (void)
