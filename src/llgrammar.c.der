@@ -408,7 +408,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 27 "llgrammar.y"
+
 
 
 # include "splintMacros.nf"
@@ -471,7 +471,7 @@ bool g_inTypeDef = FALSE;
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 72 "llgrammar.y"
+
 {
   ltoken ltok;  /* a leaf is also an ltoken */
   qual typequal;
@@ -539,7 +539,7 @@ typedef union YYSTYPE
   /*@-redef@*/
 }
 /* Line 187 of yacc.c.  */
-#line 485 "llgrammar.tab.c"
+
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -552,7 +552,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 498 "llgrammar.tab.c"
+
 
 #ifdef short
 # undef short
@@ -2996,209 +2996,209 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 382 "llgrammar.y"
+
     { lhExternals ((yyvsp[(1) - (1)].interfacelist)); ;}
     break;
 
   case 3:
-#line 383 "llgrammar.y"
+
     { interfaceNodeList_free ((yyvsp[(1) - (3)].interfacelist)); interfaceNodeList_free ((yyvsp[(3) - (3)].interfacelist)); ;}
     break;
 
   case 4:
-#line 387 "llgrammar.y"
+
     { (yyval.interfacelist) = interfaceNodeList_new (); ;}
     break;
 
   case 5:
-#line 388 "llgrammar.y"
+
     { (yyval.interfacelist) = interfaceNodeList_addh ((yyvsp[(1) - (2)].interfacelist), (yyvsp[(2) - (2)].iface));;}
     break;
 
   case 8:
-#line 397 "llgrammar.y"
+
     { (yyval.interfacelist) = interfaceNodeList_new (); ;}
     break;
 
   case 9:
-#line 398 "llgrammar.y"
+
     { (yyval.interfacelist) = consInterfaceNode ((yyvsp[(1) - (2)].iface), (yyvsp[(2) - (2)].interfacelist));;}
     break;
 
   case 10:
-#line 399 "llgrammar.y"
+
     { (yyval.interfacelist) = consInterfaceNode ((yyvsp[(1) - (2)].iface), (yyvsp[(2) - (2)].interfacelist));;}
     break;
 
   case 11:
-#line 403 "llgrammar.y"
+
     { (yyval.interfacelist) = interfaceNodeList_new (); ;}
     break;
 
   case 12:
-#line 404 "llgrammar.y"
+
     { (yyval.interfacelist) = interfaceNodeList_addh ((yyvsp[(1) - (2)].interfacelist), (yyvsp[(2) - (2)].iface));;}
     break;
 
   case 16:
-#line 415 "llgrammar.y"
+
     { (yyval.iface) = makeInterfaceNodeImports ((yyvsp[(2) - (3)].importlist));
      /* assume subspecs are already processed, symbol table info in external file */
    ;}
     break;
 
   case 17:
-#line 422 "llgrammar.y"
+
     { (yyval.iface) = makeInterfaceNodeUses ((yyvsp[(2) - (3)].traitreflist)); readlsignatures ((yyval.iface));;}
     break;
 
   case 18:
-#line 427 "llgrammar.y"
+
     { declareConstant ((yyvsp[(1) - (1)].constdeclaration)); (yyval.iface) = interfaceNode_makeConst ((yyvsp[(1) - (1)].constdeclaration)); ;}
     break;
 
   case 19:
-#line 429 "llgrammar.y"
+
     { declareVar ((yyvsp[(1) - (1)].vardeclaration)); (yyval.iface) = interfaceNode_makeVar ((yyvsp[(1) - (1)].vardeclaration)); ;}
     break;
 
   case 20:
-#line 431 "llgrammar.y"
+
     { declareType ((yyvsp[(1) - (1)].type)); (yyval.iface) = interfaceNode_makeType ((yyvsp[(1) - (1)].type)); ;}
     break;
 
   case 21:
-#line 433 "llgrammar.y"
+
     { declareFcn ((yyvsp[(1) - (1)].fcn), typeId_invalid); (yyval.iface) = interfaceNode_makeFcn ((yyvsp[(1) - (1)].fcn)); ;}
     break;
 
   case 22:
-#line 435 "llgrammar.y"
+
     { (yyval.iface) = interfaceNode_makeClaim ((yyvsp[(1) - (1)].claim)); ;}
     break;
 
   case 23:
-#line 437 "llgrammar.y"
+
     { declareIter ((yyvsp[(1) - (1)].iter)); (yyval.iface) = interfaceNode_makeIter ((yyvsp[(1) - (1)].iter)); ;}
     break;
 
   case 24:
-#line 442 "llgrammar.y"
+
     { (yyval.iter) = makeIterNode ((yyvsp[(2) - (6)].ltok), (yyvsp[(4) - (6)].paramlist)); ;}
     break;
 
   case 25:
-#line 446 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_new (); ;}
     break;
 
   case 26:
-#line 447 "llgrammar.y"
+
     { (yyval.paramlist) = (yyvsp[(1) - (1)].paramlist); ;}
     break;
 
   case 27:
-#line 452 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_add (paramNodeList_new (),  (yyvsp[(1) - (1)].param)); ;}
     break;
 
   case 28:
-#line 454 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_add ((yyvsp[(1) - (3)].paramlist),(yyvsp[(3) - (3)].param)); ;}
     break;
 
   case 29:
-#line 458 "llgrammar.y"
+
     { (yyval.param) = markYieldParamNode ((yyvsp[(2) - (2)].param)); ;}
     break;
 
   case 30:
-#line 459 "llgrammar.y"
+
     { (yyval.param) = (yyvsp[(1) - (1)].param); ;}
     break;
 
   case 31:
-#line 463 "llgrammar.y"
+
     { symtable_export (g_symtab, FALSE); ;}
     break;
 
   case 32:
-#line 464 "llgrammar.y"
+
     { (yyval.iface) = (yyvsp[(3) - (3)].iface); symtable_export (g_symtab, TRUE); ;}
     break;
 
   case 33:
-#line 469 "llgrammar.y"
+
     { declarePrivConstant ((yyvsp[(1) - (1)].constdeclaration)); (yyval.iface) =  interfaceNode_makePrivConst ((yyvsp[(1) - (1)].constdeclaration)); ;}
     break;
 
   case 34:
-#line 471 "llgrammar.y"
+
     { declarePrivVar ((yyvsp[(1) - (1)].vardeclaration)); (yyval.iface) = interfaceNode_makePrivVar ((yyvsp[(1) - (1)].vardeclaration)); ;}
     break;
 
   case 35:
-#line 473 "llgrammar.y"
+
     { declarePrivType ((yyvsp[(1) - (1)].type)); (yyval.iface) = interfaceNode_makePrivType ((yyvsp[(1) - (1)].type)); ;}
     break;
 
   case 36:
-#line 475 "llgrammar.y"
+
     { declarePrivFcn ((yyvsp[(1) - (1)].fcn), typeId_invalid); (yyval.iface) = interfaceNode_makePrivFcn ((yyvsp[(1) - (1)].fcn)); ;}
     break;
 
   case 37:
-#line 480 "llgrammar.y"
+
     { (yyval.constdeclaration) = makeConstDeclarationNode ((yyvsp[(2) - (4)].lcltypespec), (yyvsp[(3) - (4)].initdecls)); ;}
     break;
 
   case 38:
-#line 485 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeVarDeclarationNode ((yyvsp[(1) - (3)].lcltypespec), (yyvsp[(2) - (3)].initdecls), FALSE, FALSE); (yyval.vardeclaration)->qualifier = QLF_NONE; ;}
     break;
 
   case 39:
-#line 487 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeVarDeclarationNode ((yyvsp[(2) - (4)].lcltypespec), (yyvsp[(3) - (4)].initdecls), FALSE, FALSE); (yyval.vardeclaration)->qualifier = QLF_CONST; ;}
     break;
 
   case 40:
-#line 489 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeVarDeclarationNode ((yyvsp[(2) - (4)].lcltypespec), (yyvsp[(3) - (4)].initdecls), FALSE, FALSE); (yyval.vardeclaration)->qualifier = QLF_VOLATILE; ;}
     break;
 
   case 41:
-#line 493 "llgrammar.y"
+
     { (yyval.type) = makeAbstractTypeNode ((yyvsp[(1) - (1)].abstract)); ;}
     break;
 
   case 42:
-#line 494 "llgrammar.y"
+
     { (yyval.type) = makeExposedTypeNode ((yyvsp[(1) - (1)].exposed)); ;}
     break;
 
   case 43:
-#line 498 "llgrammar.y"
+
     { (yyval.typequal) = qual_createPrintfLike (); ;}
     break;
 
   case 44:
-#line 499 "llgrammar.y"
+
     { (yyval.typequal) = qual_createScanfLike (); ;}
     break;
 
   case 45:
-#line 500 "llgrammar.y"
+
     { (yyval.typequal) = qual_createMessageLike (); ;}
     break;
 
   case 46:
-#line 504 "llgrammar.y"
+
     { enteringFcnScope ((yyvsp[(1) - (3)].lcltypespec), (yyvsp[(2) - (3)].declare), (yyvsp[(3) - (3)].globals)); ;}
     break;
 
   case 47:
-#line 506 "llgrammar.y"
+
     { (yyval.fcn) = makeFcnNode (qual_createUnknown (),  (yyvsp[(1) - (13)].lcltypespec), (yyvsp[(2) - (13)].declare), (yyvsp[(3) - (13)].globals), (yyvsp[(6) - (13)].vardeclarationlist), (yyvsp[(7) - (13)].letdecls), 
 		       (yyvsp[(8) - (13)].lclpredicate), (yyvsp[(9) - (13)].lclpredicate), (yyvsp[(10) - (13)].modify), (yyvsp[(11) - (13)].lclpredicate), (yyvsp[(12) - (13)].lclpredicate)); 
      /* type, declarator, glovbls, privateinits,
@@ -3208,12 +3208,12 @@ yyreduce:
     break;
 
   case 48:
-#line 512 "llgrammar.y"
+
     { enteringFcnScope ((yyvsp[(2) - (4)].lcltypespec), (yyvsp[(3) - (4)].declare), (yyvsp[(4) - (4)].globals)); ;}
     break;
 
   case 49:
-#line 516 "llgrammar.y"
+
     { (yyval.fcn) = makeFcnNode ((yyvsp[(1) - (14)].typequal), (yyvsp[(2) - (14)].lcltypespec), (yyvsp[(3) - (14)].declare), (yyvsp[(4) - (14)].globals), (yyvsp[(7) - (14)].vardeclarationlist), 
 		       (yyvsp[(8) - (14)].letdecls), (yyvsp[(9) - (14)].lclpredicate), (yyvsp[(10) - (14)].lclpredicate), (yyvsp[(11) - (14)].modify), (yyvsp[(12) - (14)].lclpredicate), (yyvsp[(13) - (14)].lclpredicate)); 
      /* type, declarator, glovbls, privateinits,
@@ -3223,484 +3223,484 @@ yyreduce:
     break;
 
   case 50:
-#line 526 "llgrammar.y"
+
     { enteringClaimScope ((yyvsp[(4) - (6)].paramlist), (yyvsp[(6) - (6)].globals)); ;}
     break;
 
   case 51:
-#line 528 "llgrammar.y"
+
     {      (yyval.claim) = makeClaimNode ((yyvsp[(2) - (13)].ltok), (yyvsp[(4) - (13)].paramlist), (yyvsp[(6) - (13)].globals), (yyvsp[(9) - (13)].letdecls), (yyvsp[(10) - (13)].lclpredicate), (yyvsp[(11) - (13)].program), (yyvsp[(12) - (13)].lclpredicate)); 
      symtable_exitScope (g_symtab); ;}
     break;
 
   case 52:
-#line 531 "llgrammar.y"
+
     { (yyval.claim) = (claimNode) 0; ;}
     break;
 
   case 53:
-#line 535 "llgrammar.y"
+
     {g_inTypeDef = TRUE; ;}
     break;
 
   case 54:
-#line 535 "llgrammar.y"
+
     {g_inTypeDef = FALSE; ;}
     break;
 
   case 55:
-#line 536 "llgrammar.y"
+
     { (yyval.abstract) = makeAbstractNode ((yyvsp[(1) - (6)].ltok), (yyvsp[(4) - (6)].ltok), TRUE, FALSE, (yyvsp[(6) - (6)].abstbody)); ;}
     break;
 
   case 56:
-#line 537 "llgrammar.y"
+
     {g_inTypeDef = TRUE; ;}
     break;
 
   case 57:
-#line 538 "llgrammar.y"
+
     {g_inTypeDef = FALSE; ;}
     break;
 
   case 58:
-#line 539 "llgrammar.y"
+
     { (yyval.abstract) = makeAbstractNode ((yyvsp[(1) - (7)].ltok), (yyvsp[(5) - (7)].ltok), TRUE, TRUE, (yyvsp[(7) - (7)].abstbody)); ;}
     break;
 
   case 59:
-#line 540 "llgrammar.y"
+
     {g_inTypeDef = TRUE; ;}
     break;
 
   case 60:
-#line 541 "llgrammar.y"
+
     {g_inTypeDef = FALSE; ;}
     break;
 
   case 61:
-#line 542 "llgrammar.y"
+
     { (yyval.abstract) = makeAbstractNode ((yyvsp[(2) - (7)].ltok), (yyvsp[(5) - (7)].ltok), TRUE, TRUE, (yyvsp[(7) - (7)].abstbody)); ;}
     break;
 
   case 62:
-#line 543 "llgrammar.y"
+
     {g_inTypeDef = TRUE; ;}
     break;
 
   case 63:
-#line 543 "llgrammar.y"
+
     {g_inTypeDef = FALSE; ;}
     break;
 
   case 64:
-#line 544 "llgrammar.y"
+
     { (yyval.abstract) = makeAbstractNode ((yyvsp[(1) - (6)].ltok), (yyvsp[(4) - (6)].ltok), FALSE, FALSE, (yyvsp[(6) - (6)].abstbody)); ;}
     break;
 
   case 65:
-#line 548 "llgrammar.y"
+
     { g_inTypeDef = TRUE; setExposedType ((yyvsp[(2) - (2)].lcltypespec)); ;}
     break;
 
   case 66:
-#line 549 "llgrammar.y"
+
     { g_inTypeDef = FALSE; ;}
     break;
 
   case 67:
-#line 550 "llgrammar.y"
+
     { (yyval.exposed) = makeExposedNode ((yyvsp[(1) - (6)].ltok), (yyvsp[(2) - (6)].lcltypespec), (yyvsp[(4) - (6)].declaratorinvs)); /* to support mutually recursive types */ ;}
     break;
 
   case 68:
-#line 552 "llgrammar.y"
+
     { (yyval.exposed) = makeExposedNode ((yyvsp[(2) - (2)].ltok), makeLclTypeSpecNodeSU ((yyvsp[(1) - (2)].structorunion)), declaratorInvNodeList_new ()); ;}
     break;
 
   case 69:
-#line 554 "llgrammar.y"
+
     { (yyval.exposed) = makeExposedNode ((yyvsp[(2) - (2)].ltok), makeLclTypeSpecNodeEnum ((yyvsp[(1) - (2)].enumspec)), declaratorInvNodeList_new ()); ;}
     break;
 
   case 70:
-#line 571 "llgrammar.y"
+
     { (yyval.importlist) = importNodeList_add (importNodeList_new (),  (yyvsp[(1) - (1)].import)); ;}
     break;
 
   case 71:
-#line 573 "llgrammar.y"
+
     { (yyval.importlist) = importNodeList_add ((yyvsp[(1) - (3)].importlist), (yyvsp[(3) - (3)].import)); ;}
     break;
 
   case 72:
-#line 577 "llgrammar.y"
+
     { (yyval.import) = importNode_makePlain ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 73:
-#line 579 "llgrammar.y"
+
     { checkBrackets ((yyvsp[(1) - (3)].ltok), (yyvsp[(3) - (3)].ltok)); (yyval.import) = importNode_makeBracketed ((yyvsp[(2) - (3)].ltok)); ;}
     break;
 
   case 74:
-#line 580 "llgrammar.y"
+
     { (yyval.import) = importNode_makeQuoted ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 75:
-#line 584 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 76:
-#line 585 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 78:
-#line 595 "llgrammar.y"
+
     { (yyval.traitreflist) = traitRefNodeList_add (traitRefNodeList_new (),  (yyvsp[(1) - (1)].traitref)); ;}
     break;
 
   case 79:
-#line 597 "llgrammar.y"
+
     { (yyval.traitreflist) = traitRefNodeList_add ((yyvsp[(1) - (3)].traitreflist), (yyvsp[(3) - (3)].traitref)); ;}
     break;
 
   case 80:
-#line 602 "llgrammar.y"
+
     { (yyval.traitref) = makeTraitRefNode (ltokenList_singleton ((yyvsp[(1) - (1)].ltok)), (renamingNode)0); ;}
     break;
 
   case 81:
-#line 604 "llgrammar.y"
+
     { (yyval.traitref) = makeTraitRefNode (ltokenList_singleton ((yyvsp[(1) - (4)].ltok)), (yyvsp[(3) - (4)].renaming)); ;}
     break;
 
   case 82:
-#line 606 "llgrammar.y"
+
     { (yyval.traitref) = makeTraitRefNode ((yyvsp[(2) - (3)].ltokenList), (renamingNode)0); ;}
     break;
 
   case 83:
-#line 608 "llgrammar.y"
+
     { (yyval.traitref) = makeTraitRefNode ((yyvsp[(2) - (6)].ltokenList), (yyvsp[(5) - (6)].renaming)); ;}
     break;
 
   case 84:
-#line 612 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 85:
-#line 613 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 86:
-#line 618 "llgrammar.y"
+
     { (yyval.renaming) = makeRenamingNode (typeNameNodeList_new (),  (yyvsp[(1) - (1)].replacelist)); ;}
     break;
 
   case 87:
-#line 620 "llgrammar.y"
+
     { (yyval.renaming) = makeRenamingNode ((yyvsp[(1) - (1)].namelist), replaceNodeList_new ()); ;}
     break;
 
   case 88:
-#line 621 "llgrammar.y"
+
     { (yyval.renaming) = makeRenamingNode ((yyvsp[(1) - (3)].namelist), (yyvsp[(3) - (3)].replacelist)); ;}
     break;
 
   case 89:
-#line 626 "llgrammar.y"
+
     { (yyval.namelist) = typeNameNodeList_add (typeNameNodeList_new (),  (yyvsp[(1) - (1)].typname)); ;}
     break;
 
   case 90:
-#line 627 "llgrammar.y"
+
     { (yyval.namelist) = typeNameNodeList_add ((yyvsp[(1) - (3)].namelist), (yyvsp[(3) - (3)].typname)); ;}
     break;
 
   case 91:
-#line 632 "llgrammar.y"
+
     { (yyval.replacelist) = replaceNodeList_add (replaceNodeList_new (),  (yyvsp[(1) - (1)].replace)); ;}
     break;
 
   case 92:
-#line 633 "llgrammar.y"
+
     { (yyval.replacelist) = replaceNodeList_add ((yyvsp[(1) - (3)].replacelist), (yyvsp[(3) - (3)].replace)); ;}
     break;
 
   case 93:
-#line 637 "llgrammar.y"
+
     { (yyval.replace) = makeReplaceNode ((yyvsp[(2) - (3)].ltok), (yyvsp[(1) - (3)].typname), TRUE, (yyvsp[(3) - (3)].ltok), NULL, NULL); ;}
     break;
 
   case 94:
-#line 638 "llgrammar.y"
+
     { (yyval.replace) = makeReplaceNameNode ((yyvsp[(2) - (3)].ltok), (yyvsp[(1) - (3)].typname), (yyvsp[(3) - (3)].name)); ;}
     break;
 
   case 95:
-#line 639 "llgrammar.y"
+
     { (yyval.replace) = makeReplaceNode ((yyvsp[(2) - (4)].ltok), (yyvsp[(1) - (4)].typname), FALSE, ltoken_undefined,
 							 (yyvsp[(3) - (4)].name), (yyvsp[(4) - (4)].signature)); ;}
     break;
 
   case 96:
-#line 644 "llgrammar.y"
+
     { (yyval.name) = makeNameNodeId ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 97:
-#line 645 "llgrammar.y"
+
     { (yyval.name) = makeNameNodeForm ((yyvsp[(1) - (1)].opform)); ;}
     break;
 
   case 100:
-#line 656 "llgrammar.y"
+
     { (yyval.initdecls) = initDeclNodeList_add (initDeclNodeList_new (),  (yyvsp[(1) - (1)].initdecl)); ;}
     break;
 
   case 101:
-#line 658 "llgrammar.y"
+
     { (yyval.initdecls) = initDeclNodeList_add ((yyvsp[(1) - (3)].initdecls), (yyvsp[(3) - (3)].initdecl)); ;}
     break;
 
   case 102:
-#line 662 "llgrammar.y"
+
     { (yyval.initdecl) = makeInitDeclNode ((yyvsp[(1) - (1)].declare), (termNode)0); ;}
     break;
 
   case 103:
-#line 663 "llgrammar.y"
+
     { (yyval.initdecl) = makeInitDeclNode ((yyvsp[(1) - (3)].declare), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 104:
-#line 668 "llgrammar.y"
+
     { (yyval.globals) = varDeclarationNodeList_new (); ;}
     break;
 
   case 105:
-#line 670 "llgrammar.y"
+
     { varDeclarationNodeList_addh ((yyvsp[(1) - (2)].globals), (yyvsp[(2) - (2)].vardeclaration)); (yyval.globals) = (yyvsp[(1) - (2)].globals); ;}
     break;
 
   case 106:
-#line 674 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeVarDeclarationNode ((yyvsp[(1) - (3)].lcltypespec), (yyvsp[(2) - (3)].initdecls), TRUE, FALSE); ;}
     break;
 
   case 107:
-#line 675 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeInternalStateNode (); ;}
     break;
 
   case 108:
-#line 676 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeFileSystemNode (); ;}
     break;
 
   case 109:
-#line 680 "llgrammar.y"
+
     { (yyval.vardeclarationlist) = varDeclarationNodeList_new (); ;}
     break;
 
   case 110:
-#line 681 "llgrammar.y"
+
     { varDeclarationNodeList_addh ((yyvsp[(1) - (2)].vardeclarationlist), (yyvsp[(2) - (2)].vardeclaration)); (yyval.vardeclarationlist) = (yyvsp[(1) - (2)].vardeclarationlist); ;}
     break;
 
   case 111:
-#line 686 "llgrammar.y"
+
     { (yyval.vardeclaration) = makeVarDeclarationNode ((yyvsp[(2) - (4)].lcltypespec), (yyvsp[(3) - (4)].initdecls), FALSE, TRUE); ;}
     break;
 
   case 112:
-#line 690 "llgrammar.y"
+
     { (yyval.letdecls) = letDeclNodeList_new (); ;}
     break;
 
   case 113:
-#line 691 "llgrammar.y"
+
     { (yyval.letdecls) = (yyvsp[(2) - (3)].letdecls); ;}
     break;
 
   case 114:
-#line 695 "llgrammar.y"
+
     { (yyval.letdecls) = letDeclNodeList_add (letDeclNodeList_new (),  (yyvsp[(1) - (1)].letdecl)); ;}
     break;
 
   case 115:
-#line 696 "llgrammar.y"
+
     { (yyval.letdecls) = letDeclNodeList_add ((yyvsp[(1) - (3)].letdecls), (yyvsp[(3) - (3)].letdecl)); ;}
     break;
 
   case 116:
-#line 700 "llgrammar.y"
+
     { (yyval.letdecl) = makeLetDeclNode ((yyvsp[(1) - (5)].ltok), (yyvsp[(3) - (5)].lcltypespec), (yyvsp[(5) - (5)].term)); ;}
     break;
 
   case 117:
-#line 701 "llgrammar.y"
+
     { (yyval.letdecl) = makeLetDeclNode ((yyvsp[(1) - (3)].ltok), (lclTypeSpecNode)0, (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 119:
-#line 708 "llgrammar.y"
+
     { (yyval.lclpredicate) = (lclPredicateNode)0; ;}
     break;
 
   case 120:
-#line 709 "llgrammar.y"
+
     { checkLclPredicate ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); (yyval.lclpredicate) = makeChecksNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); ;}
     break;
 
   case 121:
-#line 713 "llgrammar.y"
+
     { (yyval.lclpredicate) = (lclPredicateNode)0; ;}
     break;
 
   case 122:
-#line 714 "llgrammar.y"
+
     { checkLclPredicate ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); (yyval.lclpredicate) = makeRequiresNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate));;}
     break;
 
   case 123:
-#line 718 "llgrammar.y"
+
     { (yyval.modify) = (modifyNode)0; ;}
     break;
 
   case 124:
-#line 719 "llgrammar.y"
+
     { (yyval.modify) = makeModifyNodeSpecial ((yyvsp[(1) - (3)].ltok), TRUE); ;}
     break;
 
   case 125:
-#line 720 "llgrammar.y"
+
     { (yyval.modify) = makeModifyNodeSpecial ((yyvsp[(1) - (3)].ltok), FALSE); ;}
     break;
 
   case 126:
-#line 721 "llgrammar.y"
+
     { (yyval.modify) = makeModifyNodeRef ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].storereflist)); ;}
     break;
 
   case 127:
-#line 725 "llgrammar.y"
+
     { (yyval.storereflist) = storeRefNodeList_add (storeRefNodeList_new (),  (yyvsp[(1) - (1)].storeref)); ;}
     break;
 
   case 128:
-#line 726 "llgrammar.y"
+
     { (yyval.storereflist) = storeRefNodeList_add ((yyvsp[(1) - (3)].storereflist), (yyvsp[(3) - (3)].storeref)); ;}
     break;
 
   case 129:
-#line 730 "llgrammar.y"
+
     { (yyval.storeref) = makeStoreRefNodeTerm ((yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 130:
-#line 731 "llgrammar.y"
+
     { (yyval.storeref) = makeStoreRefNodeType ((yyvsp[(1) - (1)].lcltypespec), FALSE); ;}
     break;
 
   case 131:
-#line 732 "llgrammar.y"
+
     { (yyval.storeref) = makeStoreRefNodeType ((yyvsp[(2) - (2)].lcltypespec), TRUE); ;}
     break;
 
   case 132:
-#line 733 "llgrammar.y"
+
     { (yyval.storeref) = makeStoreRefNodeInternal (); ;}
     break;
 
   case 133:
-#line 734 "llgrammar.y"
+
     { (yyval.storeref) = makeStoreRefNodeSystem (); ;}
     break;
 
   case 134:
-#line 738 "llgrammar.y"
+
     { (yyval.lclpredicate) = (lclPredicateNode)0; ;}
     break;
 
   case 135:
-#line 739 "llgrammar.y"
+
     { checkLclPredicate ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); (yyval.lclpredicate) = makeEnsuresNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate));;}
     break;
 
   case 136:
-#line 743 "llgrammar.y"
+
     { (yyval.lclpredicate) = (lclPredicateNode)0; ;}
     break;
 
   case 137:
-#line 744 "llgrammar.y"
+
     { checkLclPredicate ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); (yyval.lclpredicate) = makeIntraClaimNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate));;}
     break;
 
   case 138:
-#line 748 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_new (); ;}
     break;
 
   case 139:
-#line 749 "llgrammar.y"
+
     { (yyval.paramlist) = (yyvsp[(1) - (1)].paramlist); ;}
     break;
 
   case 141:
-#line 754 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_add (paramNodeList_new (),  paramNode_elipsis ()); ;}
     break;
 
   case 142:
-#line 755 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_add ((yyvsp[(1) - (3)].paramlist), paramNode_elipsis ()); ;}
     break;
 
   case 143:
-#line 759 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_single ((yyvsp[(1) - (1)].param)); ;}
     break;
 
   case 144:
-#line 760 "llgrammar.y"
+
     { (yyval.paramlist) = paramNodeList_add ((yyvsp[(1) - (3)].paramlist), (yyvsp[(3) - (3)].param)); ;}
     break;
 
   case 145:
-#line 764 "llgrammar.y"
+
     { (yyval.program) = (programNode)0; ;}
     break;
 
   case 146:
-#line 765 "llgrammar.y"
+
     { (yyval.program) = (yyvsp[(3) - (4)].program); ;}
     break;
 
   case 147:
-#line 766 "llgrammar.y"
+
     { (yyval.program) = (yyvsp[(3) - (5)].program); ;}
     break;
 
   case 148:
-#line 770 "llgrammar.y"
+
     { (yyval.program) = makeProgramNode ((yyvsp[(1) - (1)].stmt)); ;}
     break;
 
   case 149:
-#line 773 "llgrammar.y"
+
     { (yyval.program) = (yyvsp[(2) - (3)].program); (yyval.program)->wrapped = (yyval.program)->wrapped + 1; ;}
     break;
 
   case 150:
-#line 775 "llgrammar.y"
+
     { programNodeList x = programNodeList_new ();
      programNodeList_addh (x, (yyvsp[(1) - (2)].program));
      (yyval.program) = makeProgramNodeAction (x, ACT_ITER); 
@@ -3708,7 +3708,7 @@ yyreduce:
     break;
 
   case 151:
-#line 780 "llgrammar.y"
+
     { programNodeList x = programNodeList_new ();
      programNodeList_addh (x, (yyvsp[(1) - (3)].program));
      programNodeList_addh (x, (yyvsp[(3) - (3)].program));
@@ -3717,7 +3717,7 @@ yyreduce:
     break;
 
   case 152:
-#line 786 "llgrammar.y"
+
     { programNodeList x = programNodeList_new ();
      programNodeList_addh (x, (yyvsp[(1) - (3)].program));
      programNodeList_addh (x, (yyvsp[(3) - (3)].program));
@@ -3726,112 +3726,112 @@ yyreduce:
     break;
 
   case 153:
-#line 795 "llgrammar.y"
+
     { (yyval.stmt) = makeStmtNode (ltoken_undefined, (yyvsp[(1) - (4)].ltok), (yyvsp[(3) - (4)].termlist)); ;}
     break;
 
   case 154:
-#line 797 "llgrammar.y"
+
     { (yyval.stmt) = makeStmtNode (ltoken_undefined, (yyvsp[(1) - (3)].ltok), termNodeList_new ()); ;}
     break;
 
   case 155:
-#line 799 "llgrammar.y"
+
     { (yyval.stmt) = makeStmtNode ((yyvsp[(1) - (5)].ltok), (yyvsp[(3) - (5)].ltok), termNodeList_new ()); ;}
     break;
 
   case 156:
-#line 801 "llgrammar.y"
+
     { (yyval.stmt) = makeStmtNode ((yyvsp[(1) - (6)].ltok), (yyvsp[(3) - (6)].ltok), (yyvsp[(5) - (6)].termlist)); ;}
     break;
 
   case 157:
-#line 805 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push (termNodeList_new (),  (yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 158:
-#line 806 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push ((yyvsp[(1) - (3)].termlist), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 160:
-#line 811 "llgrammar.y"
+
     { (yyval.term) = makeSimpleTermNode ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 161:
-#line 812 "llgrammar.y"
+
     { (yyval.term) = makePrefixTermNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].term)); ;}
     break;
 
   case 162:
-#line 813 "llgrammar.y"
+
     { (yyval.term) = makePostfixTermNode2 ((yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 163:
-#line 814 "llgrammar.y"
+
     { (yyval.term) = makeInfixTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 164:
-#line 815 "llgrammar.y"
+
     { (yyval.term) = (yyvsp[(2) - (3)].term); (yyval.term)->wrapped = (yyval.term)->wrapped + 1; ;}
     break;
 
   case 165:
-#line 817 "llgrammar.y"
+
     { (yyval.term) = makeOpCallTermNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].ltok), termNodeList_new (),  (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 166:
-#line 819 "llgrammar.y"
+
     { (yyval.term) = makeOpCallTermNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].termlist), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 167:
-#line 823 "llgrammar.y"
+
     { (yyval.abstbody) = (abstBodyNode)0; ;}
     break;
 
   case 168:
-#line 824 "llgrammar.y"
+
     { (yyval.abstbody) = makeAbstBodyNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].fcns)); ;}
     break;
 
   case 169:
-#line 825 "llgrammar.y"
+
     { (yyval.abstbody) = makeAbstBodyNode2 ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltokenList)); ;}
     break;
 
   case 170:
-#line 826 "llgrammar.y"
+
     { (yyval.abstbody) = (abstBodyNode)0; ;}
     break;
 
   case 171:
-#line 830 "llgrammar.y"
+
     { (yyval.fcns) = fcnNodeList_new (); ;}
     break;
 
   case 172:
-#line 831 "llgrammar.y"
+
     { (yyval.fcns) = fcnNodeList_add ((yyvsp[(1) - (2)].fcns), (yyvsp[(2) - (2)].fcn)); ;}
     break;
 
   case 173:
-#line 835 "llgrammar.y"
+
     { (yyval.lclpredicate) = (lclPredicateNode)0; ;}
     break;
 
   case 175:
-#line 840 "llgrammar.y"
+
     { g_inTypeDef = FALSE; ;}
     break;
 
   case 176:
-#line 841 "llgrammar.y"
+
     { (yyvsp[(5) - (6)].lclpredicate)->tok = (yyvsp[(1) - (6)].ltok); (yyvsp[(5) - (6)].lclpredicate)->kind = LPD_CONSTRAINT;
      checkLclPredicate ((yyvsp[(1) - (6)].ltok), (yyvsp[(5) - (6)].lclpredicate));
      (yyval.lclpredicate) = (yyvsp[(5) - (6)].lclpredicate);
@@ -3841,954 +3841,954 @@ yyreduce:
     break;
 
   case 177:
-#line 850 "llgrammar.y"
+
     { (yyval.declaratorinvs) = declaratorInvNodeList_add (declaratorInvNodeList_new (),  (yyvsp[(1) - (1)].declaratorinv)); ;}
     break;
 
   case 178:
-#line 852 "llgrammar.y"
+
     { (yyval.declaratorinvs) = declaratorInvNodeList_add ((yyvsp[(1) - (3)].declaratorinvs), (yyvsp[(3) - (3)].declaratorinv)); ;}
     break;
 
   case 179:
-#line 856 "llgrammar.y"
+
     { declareForwardType ((yyvsp[(1) - (1)].declare)); ;}
     break;
 
   case 180:
-#line 857 "llgrammar.y"
+
     { (yyval.declaratorinv) = makeDeclaratorInvNode ((yyvsp[(1) - (3)].declare), (yyvsp[(3) - (3)].abstbody)); ;}
     break;
 
   case 181:
-#line 861 "llgrammar.y"
+
     { (yyval.abstbody) = (abstBodyNode)0; ;}
     break;
 
   case 182:
-#line 862 "llgrammar.y"
+
     { (yyval.abstbody) = makeExposedBodyNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].lclpredicate)); ;}
     break;
 
   case 183:
-#line 866 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_VOID, 0)); ;}
     break;
 
   case 184:
-#line 867 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_CHAR, 0)); ;}
     break;
 
   case 185:
-#line 868 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_DOUBLE, 0)); ;}
     break;
 
   case 186:
-#line 869 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_FLOAT, 0)); ;}
     break;
 
   case 187:
-#line 870 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_INT, 0)); ;}
     break;
 
   case 188:
-#line 871 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_LONG, 0)); ;}
     break;
 
   case 189:
-#line 872 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_SHORT, 0)); ;}
     break;
 
   case 190:
-#line 873 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_SIGNED, 0)); ;}
     break;
 
   case 191:
-#line 874 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_UNSIGNED, 0)); ;}
     break;
 
   case 192:
-#line 875 "llgrammar.y"
+
     { (yyval.ltok) = (yyvsp[(1) - (1)].ltok); ltoken_setIntField ((yyval.ltok), fixBits (TS_UNKNOWN, 0)); ;}
     break;
 
   case 193:
-#line 884 "llgrammar.y"
+
     { (yyval.ctypes) = makeCTypesNode ((CTypesNode)0, (yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 194:
-#line 885 "llgrammar.y"
+
     { (yyval.ctypes) = makeCTypesNode ((yyvsp[(1) - (2)].ctypes), (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 195:
-#line 892 "llgrammar.y"
+
     { (yyval.ctypes) = makeTypeSpecifier ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 196:
-#line 894 "llgrammar.y"
+
     { (yyval.ctypes) = (yyvsp[(1) - (1)].ctypes); (yyval.ctypes)->sort = sort_lookupName (lclctype_toSort ((yyvsp[(1) - (1)].ctypes)->intfield)); ;}
     break;
 
   case 197:
-#line 900 "llgrammar.y"
+
     { (yyval.typequal) = qual_createOut (); ;}
     break;
 
   case 198:
-#line 901 "llgrammar.y"
+
     { (yyval.typequal) = qual_createUnused (); ;}
     break;
 
   case 199:
-#line 902 "llgrammar.y"
+
     { (yyval.typequal) = qual_createSef (); ;}
     break;
 
   case 200:
-#line 903 "llgrammar.y"
+
     { (yyval.typequal) = qual_createOnly (); ;}
     break;
 
   case 201:
-#line 904 "llgrammar.y"
+
     { (yyval.typequal) = qual_createOwned (); ;}
     break;
 
   case 202:
-#line 905 "llgrammar.y"
+
     { (yyval.typequal) = qual_createDependent (); ;}
     break;
 
   case 203:
-#line 906 "llgrammar.y"
+
     { (yyval.typequal) = qual_createKeep (); ;}
     break;
 
   case 204:
-#line 907 "llgrammar.y"
+
     { (yyval.typequal) = qual_createKept (); ;}
     break;
 
   case 205:
-#line 908 "llgrammar.y"
+
     { (yyval.typequal) = qual_createObserver (); ;}
     break;
 
   case 206:
-#line 909 "llgrammar.y"
+
     { (yyval.typequal) = qual_createExits (); ;}
     break;
 
   case 207:
-#line 910 "llgrammar.y"
+
     { (yyval.typequal) = qual_createMayExit (); ;}
     break;
 
   case 208:
-#line 911 "llgrammar.y"
+
     { (yyval.typequal) = qual_createTrueExit (); ;}
     break;
 
   case 209:
-#line 912 "llgrammar.y"
+
     { (yyval.typequal) = qual_createFalseExit (); ;}
     break;
 
   case 210:
-#line 913 "llgrammar.y"
+
     { (yyval.typequal) = qual_createNeverExit (); ;}
     break;
 
   case 211:
-#line 914 "llgrammar.y"
+
     { (yyval.typequal) = qual_createOnly (); ;}
     break;
 
   case 212:
-#line 915 "llgrammar.y"
+
     { (yyval.typequal) = qual_createShared (); ;}
     break;
 
   case 213:
-#line 916 "llgrammar.y"
+
     { (yyval.typequal) = qual_createUnique (); ;}
     break;
 
   case 214:
-#line 917 "llgrammar.y"
+
     { (yyval.typequal) = qual_createChecked (); ;}
     break;
 
   case 215:
-#line 918 "llgrammar.y"
+
     { (yyval.typequal) = qual_createUnchecked (); ;}
     break;
 
   case 216:
-#line 919 "llgrammar.y"
+
     { (yyval.typequal) = qual_createCheckedStrict (); ;}
     break;
 
   case 217:
-#line 920 "llgrammar.y"
+
     { (yyval.typequal) = qual_createTrueNull (); ;}
     break;
 
   case 218:
-#line 921 "llgrammar.y"
+
     { (yyval.typequal) = qual_createFalseNull (); ;}
     break;
 
   case 219:
-#line 922 "llgrammar.y"
+
     { (yyval.typequal) = qual_createRelNull (); ;}
     break;
 
   case 220:
-#line 923 "llgrammar.y"
+
     { (yyval.typequal) = qual_createRelDef (); ;}
     break;
 
   case 221:
-#line 924 "llgrammar.y"
+
     { (yyval.typequal) = qual_createRefCounted (); ;}
     break;
 
   case 222:
-#line 925 "llgrammar.y"
+
     { (yyval.typequal) = qual_createRefs (); ;}
     break;
 
   case 223:
-#line 926 "llgrammar.y"
+
     { (yyval.typequal) = qual_createNewRef (); ;}
     break;
 
   case 224:
-#line 927 "llgrammar.y"
+
     { (yyval.typequal) = qual_createKillRef (); ;}
     break;
 
   case 225:
-#line 928 "llgrammar.y"
+
     { (yyval.typequal) = qual_createNull (); ;}
     break;
 
   case 226:
-#line 929 "llgrammar.y"
+
     { (yyval.typequal) = qual_createNotNull (); ;}
     break;
 
   case 227:
-#line 930 "llgrammar.y"
+
     { (yyval.typequal) = qual_createReturned (); ;}
     break;
 
   case 228:
-#line 931 "llgrammar.y"
+
     { (yyval.typequal) = qual_createExposed (); ;}
     break;
 
   case 229:
-#line 932 "llgrammar.y"
+
     { (yyval.typequal) = qual_createPartial (); ;}
     break;
 
   case 230:
-#line 933 "llgrammar.y"
+
     { (yyval.typequal) = qual_createNullTerminated () ; ;}
     break;
 
   case 231:
-#line 934 "llgrammar.y"
+
     { (yyval.typequal) = qual_createUndef (); ;}
     break;
 
   case 232:
-#line 935 "llgrammar.y"
+
     { (yyval.typequal) = qual_createKilled (); ;}
     break;
 
   case 233:
-#line 940 "llgrammar.y"
+
     { (yyval.lcltypespec) = makeLclTypeSpecNodeType ((yyvsp[(1) - (1)].ctypes)); ;}
     break;
 
   case 234:
-#line 942 "llgrammar.y"
+
     { (yyval.lcltypespec) = makeLclTypeSpecNodeSU ((yyvsp[(1) - (1)].structorunion)); ;}
     break;
 
   case 235:
-#line 944 "llgrammar.y"
+
     { (yyval.lcltypespec) = makeLclTypeSpecNodeEnum ((yyvsp[(1) - (1)].enumspec)); ;}
     break;
 
   case 236:
-#line 946 "llgrammar.y"
+
     { (yyval.lcltypespec) = lclTypeSpecNode_addQual ((yyvsp[(2) - (2)].lcltypespec), (yyvsp[(1) - (2)].typequal)); ;}
     break;
 
   case 237:
-#line 948 "llgrammar.y"
+
     { (yyval.lcltypespec) = makeLclTypeSpecNodeConj ((yyvsp[(2) - (5)].lcltypespec), (yyvsp[(4) - (5)].lcltypespec)); ;}
     break;
 
   case 239:
-#line 959 "llgrammar.y"
+
     { llassert (lclTypeSpecNode_isDefined ((yyvsp[(1) - (2)].lcltypespec)));
      (yyvsp[(1) - (2)].lcltypespec)->pointers = (yyvsp[(2) - (2)].pointers); (yyval.lcltypespec) = (yyvsp[(1) - (2)].lcltypespec); ;}
     break;
 
   case 240:
-#line 964 "llgrammar.y"
+
     { (yyval.pointers) = pointers_createLt ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 241:
-#line 965 "llgrammar.y"
+
     { (yyval.pointers) = pointers_extend ((yyvsp[(1) - (2)].pointers), pointers_createLt ((yyvsp[(2) - (2)].ltok))); ;}
     break;
 
   case 242:
-#line 970 "llgrammar.y"
+
     { (void) checkAndEnterTag (TAG_FWDSTRUCT, ltoken_copy ((yyvsp[(2) - (2)].ltok))); ;}
     break;
 
   case 243:
-#line 972 "llgrammar.y"
+
     { (yyval.structorunion) = makestrOrUnionNode ((yyvsp[(1) - (6)].ltok), SU_STRUCT, (yyvsp[(2) - (6)].ltok), (yyvsp[(5) - (6)].structdecls)); ;}
     break;
 
   case 244:
-#line 974 "llgrammar.y"
+
     { (void) checkAndEnterTag (TAG_FWDUNION, ltoken_copy ((yyvsp[(2) - (2)].ltok))); ;}
     break;
 
   case 245:
-#line 976 "llgrammar.y"
+
     { (yyval.structorunion) = makestrOrUnionNode ((yyvsp[(1) - (6)].ltok), SU_UNION, (yyvsp[(2) - (6)].ltok), (yyvsp[(5) - (6)].structdecls)); ;}
     break;
 
   case 246:
-#line 978 "llgrammar.y"
+
     { (yyval.structorunion) = makeForwardstrOrUnionNode ((yyvsp[(1) - (2)].ltok), SU_STRUCT, (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 247:
-#line 980 "llgrammar.y"
+
     { (yyval.structorunion) = makeForwardstrOrUnionNode ((yyvsp[(1) - (2)].ltok), SU_UNION, (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 248:
-#line 984 "llgrammar.y"
+
     { (yyval.ltok) = ltoken_undefined; ;}
     break;
 
   case 250:
-#line 989 "llgrammar.y"
+
     { (yyval.structdecls) = stDeclNodeList_add (stDeclNodeList_new (),  (yyvsp[(1) - (1)].structdecl)); ;}
     break;
 
   case 251:
-#line 990 "llgrammar.y"
+
     { (yyval.structdecls) = stDeclNodeList_add ((yyvsp[(1) - (2)].structdecls), (yyvsp[(2) - (2)].structdecl)); ;}
     break;
 
   case 252:
-#line 996 "llgrammar.y"
+
     { (yyval.structdecl) = makestDeclNode ((yyvsp[(1) - (3)].lcltypespec), (yyvsp[(2) - (3)].declarelist)); ;}
     break;
 
   case 253:
-#line 1001 "llgrammar.y"
+
     { (yyval.declarelist) = declaratorNodeList_add (declaratorNodeList_new (),  (yyvsp[(1) - (1)].declare)); ;}
     break;
 
   case 254:
-#line 1003 "llgrammar.y"
+
     { (yyval.declarelist) = declaratorNodeList_add ((yyvsp[(1) - (3)].declarelist), (yyvsp[(3) - (3)].declare)); ;}
     break;
 
   case 255:
-#line 1007 "llgrammar.y"
+
     { ; ;}
     break;
 
   case 256:
-#line 1008 "llgrammar.y"
+
     { ; ;}
     break;
 
   case 257:
-#line 1013 "llgrammar.y"
+
     { (yyval.enumspec) = makeEnumSpecNode ((yyvsp[(1) - (6)].ltok), (yyvsp[(2) - (6)].ltok), (yyvsp[(4) - (6)].ltokenList)); ;}
     break;
 
   case 258:
-#line 1015 "llgrammar.y"
+
     { (yyval.enumspec) = makeEnumSpecNode2 ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 259:
-#line 1019 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 260:
-#line 1020 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 261:
-#line 1031 "llgrammar.y"
+
     { (yyval.declare) = makeDeclaratorNode ((yyvsp[(1) - (1)].typeexpr)); ;}
     break;
 
   case 262:
-#line 1032 "llgrammar.y"
+
     { (yyval.declare) = makeDeclaratorNode ((yyvsp[(1) - (1)].typeexpr)); ;}
     break;
 
   case 263:
-#line 1036 "llgrammar.y"
+
     { (yyval.typeexpr) = makeTypeExpr ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 264:
-#line 1037 "llgrammar.y"
+
     { (yyval.typeexpr) = (yyvsp[(2) - (3)].typeexpr); (yyval.typeexpr)->wrapped = (yyval.typeexpr)->wrapped + 1; ;}
     break;
 
   case 265:
-#line 1038 "llgrammar.y"
+
     { (yyval.typeexpr) = makePointerNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 266:
-#line 1039 "llgrammar.y"
+
     { (yyval.typeexpr) = makeArrayNode ((yyvsp[(1) - (2)].typeexpr), (yyvsp[(2) - (2)].array)); ;}
     break;
 
   case 267:
-#line 1040 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (3)].typeexpr), paramNodeList_new ()); ;}
     break;
 
   case 268:
-#line 1041 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (4)].typeexpr), (yyvsp[(3) - (4)].paramlist)); ;}
     break;
 
   case 269:
-#line 1045 "llgrammar.y"
+
     { (yyval.typeexpr) = makeTypeExpr ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 270:
-#line 1046 "llgrammar.y"
+
     { (yyval.typeexpr) = (yyvsp[(2) - (3)].typeexpr); (yyval.typeexpr)->wrapped = (yyval.typeexpr)->wrapped + 1; ;}
     break;
 
   case 271:
-#line 1047 "llgrammar.y"
+
     { (yyval.typeexpr) = makePointerNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 272:
-#line 1048 "llgrammar.y"
+
     { (yyval.typeexpr) = makeArrayNode ((yyvsp[(1) - (2)].typeexpr), (yyvsp[(2) - (2)].array)); ;}
     break;
 
   case 273:
-#line 1049 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (3)].typeexpr), paramNodeList_new ()); ;}
     break;
 
   case 274:
-#line 1050 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (4)].typeexpr), (yyvsp[(3) - (4)].paramlist)); ;}
     break;
 
   case 275:
-#line 1060 "llgrammar.y"
+
     { (yyval.typeexpr) = makeTypeExpr ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 276:
-#line 1061 "llgrammar.y"
+
     { (yyval.typeexpr) = makePointerNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 277:
-#line 1062 "llgrammar.y"
+
     { (yyval.typeexpr) = makeArrayNode ((yyvsp[(1) - (2)].typeexpr), (yyvsp[(2) - (2)].array)); ;}
     break;
 
   case 278:
-#line 1063 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (3)].typeexpr), paramNodeList_new ()); ;}
     break;
 
   case 279:
-#line 1064 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (4)].typeexpr), (yyvsp[(3) - (4)].paramlist)); ;}
     break;
 
   case 280:
-#line 1071 "llgrammar.y"
+
     { (yyval.param) = makeParamNode ((yyvsp[(1) - (2)].lcltypespec), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 281:
-#line 1072 "llgrammar.y"
+
     { (yyval.param) = makeParamNode ((yyvsp[(1) - (2)].lcltypespec), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 282:
-#line 1073 "llgrammar.y"
+
     { (yyval.param) = makeParamNode ((yyvsp[(1) - (2)].lcltypespec), (yyvsp[(2) - (2)].abstDecl)); ;}
     break;
 
   case 283:
-#line 1084 "llgrammar.y"
+
     { (yyval.typname) = makeTypeNameNode (FALSE, (yyvsp[(1) - (2)].lcltypespec), (yyvsp[(2) - (2)].abstDecl)); ;}
     break;
 
   case 284:
-#line 1085 "llgrammar.y"
+
     { (yyval.typname) = makeTypeNameNode (TRUE, (yyvsp[(2) - (3)].lcltypespec), (yyvsp[(3) - (3)].abstDecl)); ;}
     break;
 
   case 285:
-#line 1086 "llgrammar.y"
+
     { (yyval.typname) = makeTypeNameNodeOp ((yyvsp[(1) - (1)].opform)); ;}
     break;
 
   case 286:
-#line 1092 "llgrammar.y"
+
     { (yyval.abstDecl) = (abstDeclaratorNode)0; ;}
     break;
 
   case 287:
-#line 1093 "llgrammar.y"
+
     { (yyval.abstDecl) = (abstDeclaratorNode)(yyvsp[(1) - (1)].typeexpr); ;}
     break;
 
   case 288:
-#line 1097 "llgrammar.y"
+
     { (yyval.typeexpr) = (yyvsp[(2) - (3)].typeexpr); (yyval.typeexpr)->wrapped = (yyval.typeexpr)->wrapped + 1; ;}
     break;
 
   case 289:
-#line 1098 "llgrammar.y"
+
     { (yyval.typeexpr) = makePointerNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].typeexpr)); ;}
     break;
 
   case 290:
-#line 1099 "llgrammar.y"
+
     { (yyval.typeexpr) = makePointerNode ((yyvsp[(1) - (1)].ltok), (typeExpr)0); ;}
     break;
 
   case 291:
-#line 1100 "llgrammar.y"
+
     { (yyval.typeexpr) = makeArrayNode ((typeExpr)0, (yyvsp[(1) - (1)].array)); ;}
     break;
 
   case 292:
-#line 1101 "llgrammar.y"
+
     { (yyval.typeexpr) = makeArrayNode ((yyvsp[(1) - (2)].typeexpr), (yyvsp[(2) - (2)].array)); ;}
     break;
 
   case 293:
-#line 1102 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (3)].typeexpr), paramNodeList_new ()); ;}
     break;
 
   case 294:
-#line 1103 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((typeExpr)0, (yyvsp[(2) - (3)].paramlist)); ;}
     break;
 
   case 295:
-#line 1104 "llgrammar.y"
+
     { (yyval.typeexpr) = makeFunctionNode ((yyvsp[(1) - (4)].typeexpr), (yyvsp[(3) - (4)].paramlist)); ;}
     break;
 
   case 296:
-#line 1108 "llgrammar.y"
+
     { (yyval.array) = makeArrayQualNode ((yyvsp[(1) - (2)].ltok), (termNode)0); ;}
     break;
 
   case 297:
-#line 1109 "llgrammar.y"
+
     { (yyval.array) = makeArrayQualNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].term)); ;}
     break;
 
   case 298:
-#line 1114 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (6)].ltok), OPF_IF, opFormUnion_createMiddle (0), ltoken_undefined); ;}
     break;
 
   case 299:
-#line 1116 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (1)].ltok), OPF_ANYOP, opFormUnion_createAnyOp ((yyvsp[(1) - (1)].ltok)), ltoken_undefined); ;}
     break;
 
   case 300:
-#line 1118 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_MANYOP, opFormUnion_createAnyOp ((yyvsp[(2) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 301:
-#line 1120 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_ANYOPM, opFormUnion_createAnyOp ((yyvsp[(1) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 302:
-#line 1122 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MANYOPM, 
 			  opFormUnion_createAnyOp ((yyvsp[(2) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 303:
-#line 1125 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MIDDLE, opFormUnion_createMiddle ((yyvsp[(2) - (3)].count)), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 304:
-#line 1127 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (4)].ltok), OPF_MMIDDLE, opFormUnion_createMiddle ((yyvsp[(3) - (4)].count)), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 305:
-#line 1129 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (4)].ltok), OPF_MIDDLEM, opFormUnion_createMiddle ((yyvsp[(2) - (4)].count)), (yyvsp[(3) - (4)].ltok)); ;}
     break;
 
   case 306:
-#line 1131 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (5)].ltok), OPF_MMIDDLEM, opFormUnion_createMiddle ((yyvsp[(3) - (5)].count)), (yyvsp[(4) - (5)].ltok)); ;}
     break;
 
   case 307:
-#line 1133 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_BMIDDLE, opFormUnion_createMiddle ((yyvsp[(2) - (3)].count)), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 308:
-#line 1135 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (4)].ltok), OPF_BMIDDLEM, opFormUnion_createMiddle ((yyvsp[(2) - (4)].count)), (yyvsp[(3) - (4)].ltok)); ;}
     break;
 
   case 309:
-#line 1143 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (4)].ltok), OPF_BMMIDDLE, opFormUnion_createMiddle ((yyvsp[(3) - (4)].count)), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 310:
-#line 1145 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(2) - (5)].ltok), OPF_BMMIDDLEM, opFormUnion_createMiddle ((yyvsp[(3) - (5)].count)), (yyvsp[(4) - (5)].ltok)); ;}
     break;
 
   case 311:
-#line 1147 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_SELECT, 
 			  opFormUnion_createAnyOp ((yyvsp[(2) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 312:
-#line 1150 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (2)].ltok), OPF_MAP, 
 			  opFormUnion_createAnyOp ((yyvsp[(2) - (2)].ltok)), ltoken_undefined); ;}
     break;
 
   case 313:
-#line 1153 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MSELECT, 
 			  opFormUnion_createAnyOp ((yyvsp[(3) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 314:
-#line 1156 "llgrammar.y"
+
     { (yyval.opform) = makeOpFormNode ((yyvsp[(1) - (3)].ltok), OPF_MMAP, 
 			  opFormUnion_createAnyOp ((yyvsp[(3) - (3)].ltok)), ltoken_undefined); ;}
     break;
 
   case 322:
-#line 1177 "llgrammar.y"
+
     { (yyval.count) = 0; ;}
     break;
 
   case 324:
-#line 1182 "llgrammar.y"
+
     { (yyval.count) = 1; ;}
     break;
 
   case 325:
-#line 1183 "llgrammar.y"
+
     { (yyval.count) = (yyvsp[(1) - (3)].count) + 1; ;}
     break;
 
   case 328:
-#line 1192 "llgrammar.y"
+
     { (yyval.signature) = makesigNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltokenList), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 329:
-#line 1196 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_new (); ;}
     break;
 
   case 331:
-#line 1201 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 332:
-#line 1202 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (3)].ltokenList), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 333:
-#line 1206 "llgrammar.y"
+
     { (yyval.lclpredicate) = makeLclPredicateNode (ltoken_undefined, (yyvsp[(1) - (1)].term), LPD_PLAIN);;}
     break;
 
   case 334:
-#line 1210 "llgrammar.y"
+
     { (yyval.term) = checkSort ((yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 335:
-#line 1218 "llgrammar.y"
+
     { (yyval.term) = makeIfTermNode ((yyvsp[(1) - (6)].ltok),(yyvsp[(2) - (6)].term),(yyvsp[(3) - (6)].ltok),(yyvsp[(4) - (6)].term),(yyvsp[(5) - (6)].ltok),(yyvsp[(6) - (6)].term)); ;}
     break;
 
   case 337:
-#line 1220 "llgrammar.y"
+
     { (yyval.term) = makeInfixTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 339:
-#line 1227 "llgrammar.y"
+
     { checkLclPredicate ((yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].lclpredicate)); (yyval.term) = makeQuantifiedTermNode ((yyvsp[(1) - (4)].quantifiers), (yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].lclpredicate)->predicate, (yyvsp[(4) - (4)].ltok));
      symtable_exitScope (g_symtab); 
    ;}
     break;
 
   case 340:
-#line 1231 "llgrammar.y"
+
     { (yyval.term) = makeInfixTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].term));;}
     break;
 
   case 341:
-#line 1233 "llgrammar.y"
+
     { (yyval.term) = makeInfixTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].term));;}
     break;
 
   case 343:
-#line 1238 "llgrammar.y"
+
     { (yyval.term) = makePostfixTermNode ((yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].ltokenList)); ;}
     break;
 
   case 344:
-#line 1239 "llgrammar.y"
+
     { (yyval.term) = CollapseInfixTermNode ((yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].termlist)); ;}
     break;
 
   case 348:
-#line 1249 "llgrammar.y"
+
     { (yyval.term) = makePrefixTermNode ((yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].term)); ;}
     break;
 
   case 349:
-#line 1253 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_singleton ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 350:
-#line 1254 "llgrammar.y"
+
     { (yyval.ltokenList) = ltokenList_push ((yyvsp[(1) - (2)].ltokenList), (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 351:
-#line 1258 "llgrammar.y"
+
     { (yyval.termlist) = pushInfixOpPartNode (termNodeList_new (),  (yyvsp[(1) - (2)].ltok), (yyvsp[(2) - (2)].term)); ;}
     break;
 
   case 352:
-#line 1259 "llgrammar.y"
+
     { (yyval.termlist) = pushInfixOpPartNode ((yyvsp[(1) - (3)].termlist), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 354:
-#line 1264 "llgrammar.y"
+
     { (yyval.term) = computePossibleSorts ((yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 355:
-#line 1265 "llgrammar.y"
+
     { (yyval.term) = updateMatchedNode ((termNode)0, (yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].term)); ;}
     break;
 
   case 356:
-#line 1266 "llgrammar.y"
+
     { (yyval.term) = updateMatchedNode ((yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].term), (termNode)0); ;}
     break;
 
   case 357:
-#line 1267 "llgrammar.y"
+
     { (yyval.term) = updateMatchedNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].term), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 358:
-#line 1268 "llgrammar.y"
+
     { (yyval.term) = computePossibleSorts ((yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 359:
-#line 1269 "llgrammar.y"
+
     { (yyval.term) = updateSqBracketedNode ((termNode)0, (yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].term)); ;}
     break;
 
   case 360:
-#line 1273 "llgrammar.y"
+
     { (yyval.term) = (yyvsp[(1) - (3)].term); (yyval.term)->sort = sort_lookupName (ltoken_getText ((yyvsp[(3) - (3)].ltok))); ;}
     break;
 
   case 362:
-#line 1279 "llgrammar.y"
+
     { (yyval.term) = makeSqBracketedNode ((yyvsp[(1) - (5)].ltok), (yyvsp[(2) - (5)].termlist), (yyvsp[(3) - (5)].ltok)); 
      (yyval.term)->given = sort_lookupName (ltoken_getText ((yyvsp[(5) - (5)].ltok))); ;}
     break;
 
   case 363:
-#line 1282 "llgrammar.y"
+
     { (yyval.term) = makeSqBracketedNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].termlist), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 364:
-#line 1284 "llgrammar.y"
+
     { (yyval.term) = makeSqBracketedNode ((yyvsp[(1) - (4)].ltok), termNodeList_new (),  (yyvsp[(2) - (4)].ltok)); 
      (yyval.term)->given = sort_lookupName (ltoken_getText ((yyvsp[(4) - (4)].ltok))); 
    ;}
     break;
 
   case 365:
-#line 1288 "llgrammar.y"
+
     { (yyval.term) = makeSqBracketedNode ((yyvsp[(1) - (2)].ltok), termNodeList_new (),  (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 366:
-#line 1292 "llgrammar.y"
+
     { (yyval.term) = makeMatchedNode ((yyvsp[(1) - (3)].ltok), (yyvsp[(2) - (3)].termlist), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 367:
-#line 1293 "llgrammar.y"
+
     { (yyval.term) = makeMatchedNode ((yyvsp[(1) - (2)].ltok), termNodeList_new (),  (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 368:
-#line 1297 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push (termNodeList_new (),  (yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 369:
-#line 1298 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push ((yyvsp[(1) - (3)].termlist), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 370:
-#line 1303 "llgrammar.y"
+
     { (yyval.term) = (yyvsp[(2) - (3)].term); (yyval.term)->wrapped = (yyval.term)->wrapped + 1; ;}
     break;
 
   case 371:
-#line 1305 "llgrammar.y"
+
     { (yyval.term) = makeSimpleTermNode ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 372:
-#line 1307 "llgrammar.y"
+
     { (yyval.term) = makeOpCallTermNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].termlist), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 374:
-#line 1310 "llgrammar.y"
+
     { (yyval.term) = makePostfixTermNode2 ((yyvsp[(1) - (2)].term), (yyvsp[(2) - (2)].ltok)); ;}
     break;
 
   case 375:
-#line 1312 "llgrammar.y"
+
     { ltoken_markOwned ((yyvsp[(3) - (3)].ltok)); (yyval.term) = makeSelectTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 376:
-#line 1314 "llgrammar.y"
+
     { ltoken_markOwned ((yyvsp[(3) - (3)].ltok)); (yyval.term) = makeMapTermNode ((yyvsp[(1) - (3)].term), (yyvsp[(2) - (3)].ltok), (yyvsp[(3) - (3)].ltok)); ;}
     break;
 
   case 377:
-#line 1316 "llgrammar.y"
+
     { (yyval.term) = updateSqBracketedNode ((yyvsp[(1) - (3)].term), makeSqBracketedNode ((yyvsp[(2) - (3)].ltok), termNodeList_new (),  (yyvsp[(3) - (3)].ltok)), 
 				(termNode)0); ;}
     break;
 
   case 378:
-#line 1319 "llgrammar.y"
+
     { (yyval.term) = updateSqBracketedNode ((yyvsp[(1) - (4)].term), makeSqBracketedNode ((yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].termlist), (yyvsp[(4) - (4)].ltok)), (termNode)0); ;}
     break;
 
   case 379:
-#line 1321 "llgrammar.y"
+
     { (yyval.term) = (yyvsp[(1) - (3)].term); (yyval.term)->given = sort_lookupName (ltoken_getText ((yyvsp[(3) - (3)].ltok))); ;}
     break;
 
   case 380:
-#line 1325 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push (termNodeList_new (),  (yyvsp[(1) - (1)].term)); ;}
     break;
 
   case 381:
-#line 1326 "llgrammar.y"
+
     { (yyval.termlist) = termNodeList_push ((yyvsp[(1) - (3)].termlist), (yyvsp[(3) - (3)].term)); ;}
     break;
 
   case 387:
-#line 1338 "llgrammar.y"
+
     { (yyval.term) = makeSimpleTermNode ((yyvsp[(1) - (1)].ltok)); ;}
     break;
 
   case 388:
-#line 1339 "llgrammar.y"
+
     { (yyval.term) = makeOpCallTermNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltok), (yyvsp[(3) - (4)].termlist), (yyvsp[(4) - (4)].ltok)); ;}
     break;
 
   case 389:
-#line 1340 "llgrammar.y"
+
     { (yyval.term) = makeUnchangedTermNode1 ((yyvsp[(1) - (4)].ltok), (yyvsp[(3) - (4)].ltok)); ;}
     break;
 
   case 390:
-#line 1341 "llgrammar.y"
+
     { (yyval.term) = makeUnchangedTermNode2 ((yyvsp[(1) - (4)].ltok), (yyvsp[(3) - (4)].storereflist)); ;}
     break;
 
   case 391:
-#line 1343 "llgrammar.y"
+
     { termNodeList x = termNodeList_new (); 
      termNodeList_addh (x, (yyvsp[(3) - (4)].term));
      (yyval.term) = makeOpCallTermNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(2) - (4)].ltok), x, (yyvsp[(4) - (4)].ltok)); 
@@ -4796,7 +4796,7 @@ yyreduce:
     break;
 
   case 392:
-#line 1348 "llgrammar.y"
+
     { termNodeList x = termNodeList_new ();
      termNodeList_addh (x, (yyvsp[(3) - (6)].term));
      termNodeList_addh (x, (yyvsp[(5) - (6)].term));
@@ -4805,75 +4805,75 @@ yyreduce:
     break;
 
   case 393:
-#line 1353 "llgrammar.y"
+
     { (yyval.term) = makeSizeofTermNode ((yyvsp[(1) - (4)].ltok), (yyvsp[(3) - (4)].lcltypespec)); ;}
     break;
 
   case 394:
-#line 1364 "llgrammar.y"
+
     { (yyval.term) = makeLiteralTermNode ((yyvsp[(1) - (1)].ltok), g_sortInt); ;}
     break;
 
   case 395:
-#line 1365 "llgrammar.y"
+
     { (yyval.term) = makeLiteralTermNode ((yyvsp[(1) - (1)].ltok), g_sortCstring); ;}
     break;
 
   case 396:
-#line 1366 "llgrammar.y"
+
     { (yyval.term) = makeLiteralTermNode ((yyvsp[(1) - (1)].ltok), g_sortChar); ;}
     break;
 
   case 397:
-#line 1367 "llgrammar.y"
+
     { (yyval.term) = makeLiteralTermNode ((yyvsp[(1) - (1)].ltok), g_sortDouble); ;}
     break;
 
   case 398:
-#line 1372 "llgrammar.y"
+
     { (yyval.quantifiers) = quantifierNodeList_add (quantifierNodeList_new (),  (yyvsp[(1) - (1)].quantifier)); ;}
     break;
 
   case 399:
-#line 1374 "llgrammar.y"
+
     { (yyval.quantifiers) = quantifierNodeList_add ((yyvsp[(1) - (2)].quantifiers), (yyvsp[(2) - (2)].quantifier)); ;}
     break;
 
   case 400:
-#line 1378 "llgrammar.y"
+
     { scopeInfo si = (scopeInfo) dmalloc (sizeof (*si));
 		   si->kind = SPE_QUANT;
 		   symtable_enterScope (g_symtab, si); ;}
     break;
 
   case 401:
-#line 1382 "llgrammar.y"
+
     { (yyval.quantifier) = makeQuantifierNode ((yyvsp[(3) - (3)].vars), (yyvsp[(1) - (3)].ltok)); ;}
     break;
 
   case 402:
-#line 1386 "llgrammar.y"
+
     { (yyval.vars) = varNodeList_add (varNodeList_new (),  (yyvsp[(1) - (1)].var)); ;}
     break;
 
   case 403:
-#line 1387 "llgrammar.y"
+
     { (yyval.vars) = varNodeList_add ((yyvsp[(1) - (3)].vars), (yyvsp[(3) - (3)].var)); ;}
     break;
 
   case 404:
-#line 1391 "llgrammar.y"
+
     { (yyval.var) = makeVarNode ((yyvsp[(1) - (3)].ltok), FALSE, (yyvsp[(3) - (3)].lcltypespec)); ;}
     break;
 
   case 405:
-#line 1392 "llgrammar.y"
+
     { (yyval.var) = makeVarNode ((yyvsp[(1) - (4)].ltok), TRUE, (yyvsp[(4) - (4)].lcltypespec)); ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 4819 "llgrammar.tab.c"
+
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -5087,7 +5087,7 @@ yyreturn:
 }
 
 
-#line 1409 "llgrammar.y"
+
 
 
 # include "bison.reset"
