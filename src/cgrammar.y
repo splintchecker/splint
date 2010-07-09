@@ -307,7 +307,7 @@ extern void yyerror (char *);
 %type <expr> init macroBody iterBody endBody partialIterStmt iterSelectionStmt
 %type <expr> stmt stmtList fcnBody iterStmt iterDefStmt iterDefStmtList debugStmt
 %type <expr> labeledStmt caseStmt defaultStmt 
-%type <expr> compoundStmt compoundStmtAux compoundStmtRest compoundStmtAuxErr
+%type <expr> compoundStmt compoundStmtAux compoundStmtRest compoundStmtListNext compoundInitListNext compoundStmtAuxErr
 %type <expr> expressionStmt selectionStmt iterationStmt jumpStmt iterDefIterationStmt 
 %type <expr> stmtErr stmtListErr compoundStmtErr expressionStmtErr 
 %type <expr> iterationStmtErr initializerList typeInitializerList initializer
@@ -1868,21 +1868,25 @@ DeleteInnerScopeSafe
  : { context_exitInnerSafe (); }
 ;
 
+compoundInitListNext
+ : initializerList
+ | initializerList compoundStmtListNext { $$ = exprNode_concat($1, $2); }
+;
+
+compoundStmtListNext
+ : stmtList
+ | stmtList compoundInitListNext { $$ = exprNode_concat($1, $2); }
+;
+
 compoundStmtRest
  : TRBRACE { $$ = exprNode_createTok ($1); }
  | QNOTREACHED TRBRACE { $$ = exprNode_notReached (exprNode_createTok ($2)); }
- | stmtList TRBRACE { $$ = exprNode_updateLocation ($1, lltok_getLoc ($2)); }
- | stmtList QNOTREACHED TRBRACE 
+ | compoundInitListNext TRBRACE { $$ = exprNode_updateLocation ($1, lltok_getLoc ($2)); }
+ | compoundInitListNext QNOTREACHED TRBRACE 
    { $$ = exprNode_notReached (exprNode_updateLocation ($1, lltok_getLoc ($3))); }
- | initializerList TRBRACE { $$ = exprNode_updateLocation ($1, lltok_getLoc ($2)); }
- | initializerList QNOTREACHED TRBRACE 
+ | compoundStmtListNext TRBRACE { $$ = exprNode_updateLocation ($1, lltok_getLoc ($2)); }
+ | compoundStmtListNext QNOTREACHED TRBRACE 
    { $$ = exprNode_notReached (exprNode_updateLocation ($1, lltok_getLoc ($3))); }
- | initializerList stmtList TRBRACE
-   { $$ = exprNode_updateLocation (exprNode_concat ($1, $2), lltok_getLoc ($3)); }
- | initializerList stmtList QNOTREACHED TRBRACE
-   { $$ = exprNode_notReached (exprNode_updateLocation (exprNode_concat ($1, $2), 
-							lltok_getLoc ($3))); 
-   }
 ;
 
 compoundStmtAux
