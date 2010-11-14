@@ -647,7 +647,8 @@ struct operation cppexp_lex (cppReader *pfile)
   }
 
   BADEXIT;
-  /*@notreached@*/ 
+  /*@notreached@*/
+  ;
 }
 
 

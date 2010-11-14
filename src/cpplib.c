@@ -6746,6 +6746,7 @@ get_next:
 
   BADBRANCH;
   /*@notreached@*/
+  ;
 }
 
 /* Parse an identifier starting with C.  */
