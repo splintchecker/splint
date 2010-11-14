@@ -2471,6 +2471,10 @@ ctype ctype_combine (ctype dominant, ctype modifier)
 	    {
 	      return ctype_llint;
 	    }
+	  if (dominant == ctype_uint)
+	    {
+	      return ctype_ullint;
+	    }
 	  
 	  voptgenerror (FLG_DUPLICATEQUALS, 
 			message ("Duplicate long qualifier on non-int"),
