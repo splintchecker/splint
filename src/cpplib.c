@@ -2293,6 +2293,7 @@ create_definition (/*@exposed@*/ char *buf, char *limit,
                                   "without this warning"),
                          loc);
                 }
+              fileloc_free (loc);
               rest_args = 1;
               temp->rest_args = 1;
               temp->name = rest_name;
