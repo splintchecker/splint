@@ -1,32 +1,23 @@
-dnl Process with autoconf to create a configure script  -*- Autoconf -*-
-AC_PREREQ(2.50)
-
-AC_INIT([Splint], [3.1.2], [splint-bug@splint.org], [splint])
-
+AC_INIT([Splint], [3.1.2-rav], [splint-bug@splint.org])
 dnl This MUST precede any other macro
-AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_AUX_DIR([config-aux])
+
+dnl Set up automake & the configuration header
+AM_INIT_AUTOMAKE([foreign])
+AC_CONFIG_HEADERS([config.h])
 
 dnl Set up the source directory
 AC_CONFIG_SRCDIR([src/lclinit.c])
-
-dnl Deduce host
-AC_CANONICAL_SYSTEM
-
-dnl Set up automake & the configuration header
-AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
-AM_CONFIG_HEADER([config.h:config.hin])
 
 dnl Prepare for Splint processing of config.h
 AH_TOP([/*@ -macroconstdecl@*/])
 AH_BOTTOM([/*@ =macroconstdecl@*/])
 
 dnl Checks for programs.
-#drl 12-19-2001 commented out so Splint won't depend on C++
-#AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
-dnl This produces a warning.  See http://mail.gnu.org/pipermail/bug-automake/2001-August/000213.html
-AM_PROG_LEX
+AC_PROG_LEX
+AC_PROG_YACC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S

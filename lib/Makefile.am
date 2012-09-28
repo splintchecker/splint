@@ -4,8 +4,6 @@
 
 .PHONY: all standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
 
-AUTOMAKE_OPTIONS = 1.5 foreign
-
 ## Put these files in $prefix/share/splint/lib
 splintlibdir = $(pkgdatadir)/lib
 

@@ -1,8 +1,6 @@
 ## This file currently uses GNU Make features; those should really be replaced
 ## by configure-time handling.
 
-AUTOMAKE_OPTIONS = 1.5 foreign
-
 ## Use this to configure diff output
 DIFFFLAGS = 
 

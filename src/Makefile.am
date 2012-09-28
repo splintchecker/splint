@@ -1,7 +1,5 @@
 ## Note: starting comments with ## means they don't end up in Makefile
 
-AUTOMAKE_OPTIONS = 1.5 foreign
-
 SUFFIXES = .h .c .o .l .check
 
 # Check files before compiling; requires splint!

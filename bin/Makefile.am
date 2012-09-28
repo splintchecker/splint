@@ -1,7 +1,5 @@
 ## Note: starting comments with ## means they don't end up in Makefile
 
-AUTOMAKE_OPTIONS = 1.6.3 foreign no-dependencies
-
 SUFFIXES = .h .c .o .l .check
 
 binaryDir = bin

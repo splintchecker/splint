@@ -1,7 +1,5 @@
 ## Note: starting comments with ## means they don't end up in Makefile
 
-AUTOMAKE_OPTIONS = 1.5 foreign
-
 ## Put these files in $prefix/share/lclint/imports
 importsdir = $(pkgdatadir)/imports
 

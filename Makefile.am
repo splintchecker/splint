@@ -26,8 +26,6 @@
 
 .PHONY: test
 
-AUTOMAKE_OPTIONS = 1.5 foreign
-
 binaryfixscript = ./fixBinaryDist.sh
 SUBDIRS =   src lib imports test doc
 
