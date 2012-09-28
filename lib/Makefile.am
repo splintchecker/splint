@@ -1,9 +1,3 @@
-## Note: starting comments with ## means they don't end up in Makefile
-
-### Make phony, always remake everything.
-
-.PHONY: all standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
-
 ## Put these files in $prefix/share/splint/lib
 splintlibdir = $(pkgdatadir)/lib
 

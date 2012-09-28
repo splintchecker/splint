@@ -1,15 +1,33 @@
-## Note: starting comments with ## means they don't end up in Makefile
+IMPORTS_LCL = stdlib.lcl \
+  assert.lcl ctype.lcl errno.lcl \
+  limits.lcl locale.lcl math.lcl \
+  setjmp.lcl signal.lcl stdarg.lcl \
+  stdio.lcl string.lcl \
+  strings.lcl time.lcl
+
+IMPORTS_LCS = stdlib.lcs \
+  assert.lcs ctype.lcs errno.lcs \
+  limits.lcs locale.lcs math.lcs \
+  setjmp.lcs signal.lcs stdarg.lcs \
+  stdio.lcs string.lcs \
+  strings.lcs time.lcs
+
+## List of files
+imports_DATA = $(IMPORTS_LCL) $(IMPORTS_LCS)
+
+all: $(IMPORTS_LCS)
+
+## Rules to make splint & the dumps
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
+
+%.lcs: %.lcl
+	$(SPLINT) $<
 
 ## Put these files in $prefix/share/lclint/imports
 importsdir = $(pkgdatadir)/imports
 
-## List of files
-imports_DATA = \
-  assert.lcl  assert.lcs  ctype.lcl  ctype.lcs  errno.lcl  errno.lcs  \
-  limits.lcl  limits.lcs  locale.lcl locale.lcs math.lcl   math.lcs   \
-  setjmp.lcl  setjmp.lcs  signal.lcl signal.lcs stdarg.lcl stdarg.lcs \
-  stdio.lcl   stdio.lcs   stdlib.lcl stdlib.lcs string.lcl string.lcs \
-  strings.lcl strings.lcs time.lcl   time.lcs
-
 ## Include them in the distribution
 EXTRA_DIST = $(imports_DATA)
+
+## Clean generated files
+CLEANFILES = $(IMPORTS_LCS)
