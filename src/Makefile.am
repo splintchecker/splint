@@ -239,19 +239,11 @@ EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
             .splintrc LICENSE \
             Headers/cscannerHelp.h \
  Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
-#Makefile.binary.am   Makefile.binary.in
-
-
-#Files that are used on systems that do not have bison or yacc
-DER_BISON_FILES = signature.c.der  cgrammar.c.der  mtgrammar.c.der \
-                  llgrammar.c.der 
-DER_FILES = $(DER_BISON_FILES)
-
 
 COMMONSRC =  $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
             $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
 
-ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(DER_FILES) $(HEADERSRC)
+ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(HEADERSRC)
 
 #files to run Splint on
 LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
@@ -283,91 +275,44 @@ BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
 
 ## Grammars
 
-signature.c.der:
-	@if test x$(BISON) = xno; then \
-	  echo "Cannot make signature.c.der because bison is not here" \
-	else \
-	  echo '* Making signature.c'; \
-	  $(BISON) $(YFLAGS) -p lsl signature.y; \
-	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
-	  $(CP) signature.c signature.c.der; \
-	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak || true; \
-	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
-	  $(RM) signature.tab.c signature.tab.h; \
-	fi
+Headers/signature_gen.h signature.c: signature.y
+	echo '* Making signature.c'
+	$(BISON) $(YFLAGS) -p lsl signature.y
+	$(CAT) bison.head signature.tab.c bison.reset >signature.c
+	$(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h
+	$(RM) signature.tab.c signature.tab.h
 
-Headers/signature_gen.h signature.c: signature.c.der signature.y
-	@if test x$(BISON) = xno; then \
-	  $(CP) signature.c.der signature.c; \
-	else \
-	  echo '* Making signature.c'; \
-	  $(BISON) $(YFLAGS) -p lsl signature.y; \
-	  $(CAT) bison.head signature.tab.c bison.reset >signature.c; \
-	  $(CP) signature.c signature.c.der; \
-	  $(MV) Headers/signature_gen.h Headers/signature_gen.bak; \
-	  $(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h; \
-	  $(RM) signature.tab.c signature.tab.h; \
-	fi
-
-## 11/29/001 drl added copy so that the file cgrammar.c.der is created
-
-Headers/cgrammar_tokens.h cgrammar.c: cgrammar.c.der cgrammar.y bison.head bison.reset
-	@if test x$(BISON) = xno; then \
-	  $(CP) cgrammar.c.der cgrammar.c; \
-	else \
-	  echo '* Making cgrammar.c'; \
-          echo '*      Note: Expect 159 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'; \
-	  $(BISON) $(YFLAGS) cgrammar.y; \
-	  $(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c; \
-	  $(CP) cgrammar.c cgrammar.c.der; \
-	  $(MV) Headers/cgrammar_tokens.h Headers/cgrammar_tokens.bak || true; \
-	  $(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h; \
-	  $(RM) cgrammar.tab.c cgrammar.tab.h; \
-	fi
-
-## 10/16/001 drl added copy so that the file mtgrammar.c.der is created
-## also removed the dependency for this file on mtgrammary.c  
+Headers/cgrammar_tokens.h cgrammar.c: cgrammar.y
+	echo '* Making cgrammar.c'
+	echo '*      Note: Expect 159 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'
+	$(BISON) $(YFLAGS) cgrammar.y
+	$(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c
+	$(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h
+	$(RM) cgrammar.tab.c cgrammar.tab.h
 
 Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
-	@if test x$(BISON) = xno; then \
-	  $(CP) mtgrammar.c.der mtgrammar.c; \
-	else \
-	  echo '* Making mtgrammar.c'; \
-	  echo '*       Note: Expect 11 shift/reduce conflicts.'; \
-	  $(BISON) $(YFLAGS) -p mt mtgrammar.y; \
-	  $(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c; \
-	  $(CP) mtgrammar.c mtgrammar.c.der; \
-	  $(MV) Headers/mtgrammar_tokens.h Headers/mtgrammar_tokens.bak; \
-	  $(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h; \
-	  $(RM) mtgrammar.tab.c mtgrammar.tab.h; \
-	fi
+	echo '* Making mtgrammar.c'
+	echo '*       Note: Expect 11 shift/reduce conflicts.'
+	$(BISON) $(YFLAGS) -p mt mtgrammar.y
+	$(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c
+	$(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h
+	$(RM) mtgrammar.tab.c mtgrammar.tab.h
 
-## 11/29/001 drl added copy so that the file llgrammar.c.der is created
-
-Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.c.der llgrammar.y
-	@if test x$(BISON) = xno; then \
-	  $(CP) llgrammar.c.der llgrammar.c; \
-	else \
-	  echo '* Making llgrammar.c'; \
-	  echo '*       Note: Expect 2 shift/reduce conflicts'; \
-	  $(BISON) $(YFLAGS) -p yl llgrammar.y; \
-	  $(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c; \
-	  $(CP) llgrammar.c llgrammar.c.der; \
-	  $(MV) Headers/llgrammar_gen2.h Headers/llgrammar_gen2.bak; \
-	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h; \
-	  $(MV) Headers/llgrammar_gen.h Headers/llgrammar_gen.bak; \
-	  $(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h; \
-	  $(RM) llgrammar.tab.c llgrammar.tab.h; \
-	fi
+Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.y
+	echo '* Making llgrammar.c'
+	echo '*       Note: Expect 2 shift/reduce conflicts'
+	$(BISON) $(YFLAGS) -p yl llgrammar.y
+	$(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c
+	$(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h
+	$(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h
+	$(RM) llgrammar.tab.c llgrammar.tab.h
 
 cscanner.c: cscanner.l
-	$(LEX) $(LFLAGS) cscanner.l 
+	$(LEX) $(LFLAGS) cscanner.l
 	$(CAT) flex.head @LEX_OUTPUT_ROOT@.c flex.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g'  | $(SED) 's/lsllex/cgrammar_lsllex/g' > cscanner.c
 
 Headers/flag_codes.gen: flags.def
 	grep "FLG_" flags.def > Headers/flag_codes.gen
-	$(MAKE)
-	cd ../lib; $(MAKE)
 
 ## Checking rules
 
