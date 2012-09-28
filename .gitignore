@@ -10,7 +10,6 @@
 .deps
 Makefile
 Makefile.in
-config-aux
 configure
 config.h
 config.h.in
