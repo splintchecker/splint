@@ -23,31 +23,22 @@ CLEANFILES = posix.lcd standard.lcd unix.lcd \
 
 SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
-$(SPLINT):
-	cd $(top_builddir)/src; $(MAKE)
-
 all: standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
 
-standard.lcd: standard.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard
-	@touch $@
+standard.lcd: standard.h
+	$(SPLINT) -nof -nolib +impconj $^ -dump standard
 
-standardstrict.lcd: standard.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h -dump standardstrict
-	@touch $@
+standardstrict.lcd: standard.h
+	$(SPLINT) -nof -nolib +impconj -DSTRICT $^ -dump standardstrict
 
-posix.lcd: standard.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj standard.h posix.h -dump posix
-	@touch $@
+posix.lcd: standard.h posix.h
+	$(SPLINT) -nof -nolib +impconj $^ -dump posix
 
-posixstrict.lcd: standard.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h posix.h -dump posixstrict
-	@touch $@
+posixstrict.lcd: standard.h posix.h
+	$(SPLINT) -nof -nolib +impconj -DSTRICT $^ -dump posixstrict
 
-unix.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj standard.h posix.h unix.h stdio.h stdlib.h -dump unix
-	@touch $@
+unix.lcd: standard.h posix.h unix.h $(UnixHeaders)
+	$(SPLINT) -supcounts -nof -incondefs -nolib +impconj $^ -dump unix
 
-unixstrict.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT standard.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
-	@touch $@
+unixstrict.lcd: standard.h posix.h unix.h $(UnixHeaders)
+	$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT $^ -dump unixstrict
