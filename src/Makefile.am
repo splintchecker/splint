@@ -10,17 +10,17 @@ CHECK = 1
 ### Should fix splint to avoid this...
 YFLAGS = -v -t -d --debug --no-lines
 LFLAGS = -L
-
-BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
-
+LEXLIB = -lfl
 
 ## We only build Splint
 bin_PROGRAMS = splint
 
-## This is a fake program, so we can easily substitute in the extra LCL objects
-EXTRA_PROGRAMS = lcl
+AM_CPPFLAGS = -I$(srcdir)/Headers -I$(builddir)
 
-AM_CPPFLAGS = -IHeaders
+## Grammar sources
+
+FLEX_SRC = cscanner.l
+BISON_SRC = cgrammar.y  llgrammar.y  mtgrammar.y  signature.y
 
 ## The main sources
 
@@ -39,14 +39,14 @@ CSRC = context.c uentry.c cprim.c macrocache.c qual.c qtype.c stateClause.c \
        globalsClause.c modifiesClause.c warnClause.c functionClause.c \
        functionClauseList.c metaStateConstraint.c metaStateConstraintList.c \
        metaStateExpression.c metaStateSpecifier.c functionConstraint.c \
-       pointers.c cscannerHelp.c	
+       pointers.c cscannerHelp.c
 
 SPLINTSRC = exprNode.c exprChecks.c llmain.c help.c rcfiles.c
 CHECKSRC = structNames.c transferChecks.c varKinds.c nameChecks.c
 
 GLOBSRC = globals.c flags.c general.c osd.c reader.c mtreader.c
 
-GRAMSRC = cgrammar.c cscanner.c mtscanner.c mtgrammar.c llgrammar.c signature.c
+GRAMSRC = cscanner.c cgrammar.c mtgrammar.c llgrammar.c signature.c
 
 OVERFLOWCHSRC = constraintList.c constraintResolve.c \
                 constraintGeneration.c constraintTerm.c \
@@ -59,7 +59,7 @@ GENERALSRC = exprData.c cstring.c fileloc.c message.c inputStream.c \
              sRefTable.c genericTable.c ekind.c usymtab.c multiVal.c \
              lltok.c sRef.c lcllib.c randomNumbers.c fileLib.c
 
-METASTATESRC = stateInfo.c stateCombinationTable.c metaStateTable.c \
+METASTATESRC = mtscanner.c stateInfo.c stateCombinationTable.c metaStateTable.c \
                metaStateInfo.c annotationTable.c annotationInfo.c mttok.c \
                mtDeclarationNode.c mtDeclarationPieces.c mtDeclarationPiece.c \
                mtContextNode.c mtValuesNode.c mtDefaultsNode.c \
@@ -89,10 +89,13 @@ LCLLISTSRC = initDeclNodeList.c sortList.c declaratorInvNodeList.c \
              varDeclarationNodeList.c varNodeList.c quantifierNodeList.c \
              replaceNodeList.c importNodeList.c
 
-HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
+GRAMHEADERSRC = signature_gen.h cgrammar_tokens.h \
+                llgrammar_gen.h mtgrammar_tokens.h
+
+HEADERSRC = Headers/abstBodyNode.h         Headers/ltokenList.h \
           Headers/abstract.h               Headers/macrocache.h \
           Headers/abstractNode.h           Headers/mapping.h \
-          Headers/message.h \
+          Headers/message.h                \
           Headers/aliasStack.h             Headers/messageLog.h \
           Headers/aliasTable.h             Headers/metaStateConstraint.h \
           Headers/annotationInfo.h         Headers/metaStateConstraintList.h \
@@ -102,7 +105,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/bool.h                   Headers/metaStateTable.h \
           Headers/boolStack.h              Headers/misc.h \
           Headers/cgrammar.h               Headers/modifiesClause.h \
-          Headers/cgrammar_tokens.h        Headers/modifyNode.h \
+          Headers/modifyNode.h             \
           Headers/checking.h               Headers/mtAnnotationDecl.h \
           Headers/clabstract.h             Headers/mtAnnotationList.h \
           Headers/claimNode.h              Headers/mtAnnotationsNode.h \
@@ -114,8 +117,8 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/constraintExprData.h     Headers/mtDefaultsDeclList.h \
           Headers/constraintExpr.h         Headers/mtDefaultsNode.h \
           Headers/constraint.h             Headers/mtgrammar.h \
-          Headers/constraintList2.h        Headers/mtgrammar.tab.h \
-          Headers/constraintList.h         Headers/mtgrammar_tokens.h \
+          Headers/constraintList2.h        \
+          Headers/constraintList.h         \
           Headers/constraintOutput.h       Headers/mtincludes.h \
           Headers/constraintResolve.h      Headers/mtLoseReference.h \
           Headers/constraintTerm.h         Headers/mtLoseReferenceList.h \
@@ -163,7 +166,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/flag_codes.h             Headers/sHerald.h \
           Headers/flagMarker.h             Headers/shift.h \
           Headers/flagMarkerList.h         Headers/signature2.h \
-          Headers/flags.h                  Headers/signature_gen.h \
+          Headers/flags.h                  \
           Headers/flagSpec.h               Headers/signature.h \
           Headers/forwardTypes.h           Headers/signNode.h \
           Headers/functionClause.h         Headers/sigNode.h \
@@ -178,7 +181,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/gram.h                   Headers/sRefList.h \
           Headers/guardSet.h               Headers/sRefSet.h \
           Headers/handle.h                 Headers/sRefSetList.h \
-          Headers/sRefSetStack.h \
+          Headers/sRefSetStack.h           \
           Headers/idDecl.h                 Headers/sRefTable.h \
           Headers/idDeclList.h             Headers/stateClause.h \
           Headers/importNode.h             Headers/stateClauseList.h \
@@ -209,12 +212,10 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/letDeclNodeList.h        Headers/typeNameNodeList.h \
           Headers/lh.h                     Headers/typeNamePack.h \
           Headers/limwr.h                  Headers/typeNode.h \
-          Headers/uentry.h \
+          Headers/uentry.h                 Headers/usymtab.h \
           Headers/llerror.h                Headers/uentryList.h \
           Headers/llglobals.h              Headers/usymId.h \
-          Headers/llgrammar2.h             Headers/usymIdSet.h \
-          Headers/llgrammar_gen2.h        \
-          Headers/llgrammar_gen.h          Headers/usymtab.h \
+          Headers/usymIdSet.h              \
           Headers/llgrammar.h              Headers/usymtab_interface.h \
           Headers/llmain.h                 Headers/valueMatrix.h \
           Headers/lltok.h                  Headers/valueTable.h \
@@ -226,7 +227,7 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
           Headers/lsymbol.h                Headers/version.h \
           Headers/lsymbolList.h            Headers/warnClause.h \
           Headers/lsymbolSet.h             Headers/ynm.h \
-          Headers/ltoken.h   Headers/splintMacros.nf  \
+          Headers/ltoken.h                 Headers/splintMacros.nf  \
           Headers/typeId.h \
           Headers/pointers.h   Headers/mstring.h   Headers/help.h
 
@@ -234,8 +235,8 @@ HEADERSRC = Headers/abstBodyNode.h           Headers/ltokenList.h \
 IFILES =  ctbase.i  cttable.i  exprDataQuite.i
 
 ## Non-built files we need to distribute
-EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
-            flags.def cscanner.l flex.head flex.reset $(IFILES) \
+EXTRA_DIST = $(BISON_SRC) $(FLEX_SRC) bison.head bison.reset \
+            flags.def flex.head flex.reset $(IFILES) \
             .splintrc LICENSE \
             Headers/cscannerHelp.h \
  Headers/256_random_numbers.nf  Headers/splintMacros.nf	Headers/reservedNames.nf
@@ -243,76 +244,89 @@ EXTRA_DIST =  $(BISON_SRC) bison.head bison.reset $(HEADERSRC)  \
 COMMONSRC =  $(CPPSRC) $(CSRC) $(CHECKSRC) $(GENERALSRC) \
             $(GLOBSRC) $(IFACESRC) $(LISTSRC) $(SETSRC) $(METASTATESRC)
 
-ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(HEADERSRC)
+LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
+
+ALLSRC = $(GRAMSRC) $(COMMONSRC) $(SPLINTSRC) $(OVERFLOWCHSRC) $(HEADERSRC) $(LCLSRC)
 
 #files to run Splint on
 LINTSRC = $(COMMONSRC) $(SPLINTSRC) 
-# cscanner.c cgrammar.c
-
-#ALLSRC = $(COMMONSRC) $(SPLINTSRC) $(DER_FILES) $(HEADERSRC)
-
-LCLSRC = $(LCLSETSRC) $(LCLLISTSRC) $(LSLSRC) $(CMNSRC) $(LCLONLYSRC) 
-lcl_SOURCES = $(LCLSRC)
 
 splint_SOURCES = $(ALLSRC)
-splint_LDADD = $(LCLOBJ) @LEXLIB@
-
-# Ensure the LCL objects get built if needed
-splint_DEPENDENCIES = $(LCLOBJ)
-
-# Keep it fake
-.PHONY: lcl$(EXEEXT)
-lcl$(EXEEXT):
-	@echo "This is a fake target"; \
-	 echo "Use configure's --with-lcl option to enable lcl"
+splint_LDADD = $(LEXLIB)
 
 ## Sources that need to be built
-BUILT_SOURCES = Headers/signature_gen.h Headers/cgrammar_tokens.h \
-                Headers/llgrammar_gen.h Headers/llgrammar_gen2.h \
-                Headers/mtgrammar_tokens.h signature.c cgrammar.c \
-                llgrammar.c mtgrammar.c Headers/flag_codes.gen \
-                $(DER_FILES)
+BUILT_SOURCES = $(GRAMHEADERSRC) $(GRAMSRC) flag_codes.gen
 
 ## Grammars
 
-Headers/signature_gen.h signature.c: signature.y
-	echo '* Making signature.c'
-	$(BISON) $(YFLAGS) -p lsl signature.y
-	$(CAT) bison.head signature.tab.c bison.reset >signature.c
-	$(CAT) bison.head signature.tab.h bison.reset >Headers/signature_gen.h
-	$(RM) signature.tab.c signature.tab.h
+# Signature
+signature.tab.c: signature.y
+	$(BISON) $(YFLAGS) -p lsl $<
 
-Headers/cgrammar_tokens.h cgrammar.c: cgrammar.y
-	echo '* Making cgrammar.c'
-	echo '*      Note: Expect 159 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'
-	$(BISON) $(YFLAGS) cgrammar.y
-	$(CAT) bison.head cgrammar.tab.c bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > cgrammar.c
-	$(CAT) bison.head cgrammar.tab.h bison.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' > Headers/cgrammar_tokens.h
-	$(RM) cgrammar.tab.c cgrammar.tab.h
+signature.tab.h: signature.tab.c
+	@echo $@ generated
 
-Headers/mtgrammar_tokens.h mtgrammar.c: mtgrammar.y
-	echo '* Making mtgrammar.c'
-	echo '*       Note: Expect 11 shift/reduce conflicts.'
-	$(BISON) $(YFLAGS) -p mt mtgrammar.y
-	$(CAT) bison.head mtgrammar.tab.c bison.reset >mtgrammar.c
-	$(CAT) bison.head mtgrammar.tab.h bison.reset >Headers/mtgrammar_tokens.h
-	$(RM) mtgrammar.tab.c mtgrammar.tab.h
+signature_gen.h: bison.head signature.tab.h bison.reset
+	cat $^ >$@
 
-Headers/llgrammar_gen.h Headers/llgrammar_gen2.h llgrammar.c: llgrammar.y
-	echo '* Making llgrammar.c'
-	echo '*       Note: Expect 2 shift/reduce conflicts'
-	$(BISON) $(YFLAGS) -p yl llgrammar.y
-	$(CAT) bison.head llgrammar.tab.c bison.reset >llgrammar.c
-	$(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen2.h
-	$(CAT) bison.head llgrammar.tab.h bison.reset >Headers/llgrammar_gen.h
-	$(RM) llgrammar.tab.c llgrammar.tab.h
+signature.c: bison.head signature.tab.c bison.reset
+	cat $^ >$@
 
-cscanner.c: cscanner.l
-	$(LEX) $(LFLAGS) cscanner.l
-	$(CAT) flex.head @LEX_OUTPUT_ROOT@.c flex.reset | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g'  | $(SED) 's/lsllex/cgrammar_lsllex/g' > cscanner.c
+# CGrammar
+cgrammar.tab.c: cgrammar.y
+	$(BISON) $(YFLAGS) $<
+	@echo '*      Note: Expect 159 shift/reduce conflicts and 123 reduce/reduce conflicts. (see cgrammar.y for explanation)'
 
-Headers/flag_codes.gen: flags.def
-	grep "FLG_" flags.def > Headers/flag_codes.gen
+cgrammar.tab.h: cgrammar.tab.c
+	@echo $@ generated
+
+cgrammar_tokens.h: bison.head cgrammar.tab.h bison.reset
+	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+
+cgrammar.c: bison.head cgrammar.tab.c bison.reset
+	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+
+# MTGrammar
+mtgrammar.tab.c: mtgrammar.y
+	$(BISON) $(YFLAGS) -p mt $<
+	@echo '*       Note: Expect 11 shift/reduce conflicts.'
+
+mtgrammar.tab.h: mtgrammar.tab.c
+	@echo $@ generated
+
+mtgrammar_tokens.h: bison.head mtgrammar.tab.h bison.reset
+	cat $^ >$@
+
+mtgrammar.c: bison.head mtgrammar.tab.c bison.reset
+	cat $^ >$@
+
+# LLGrammar
+
+llgrammar.tab.c: llgrammar.y
+	$(BISON) $(YFLAGS) -p yl $<
+	@echo '*       Note: Expect 2 shift/reduce conflicts'
+
+llgrammar.tab.h: llgrammar.tab.c
+	@echo $@ generated
+
+llgrammar_gen.h: bison.head llgrammar.tab.h bison.reset
+	cat $^ >$@
+
+llgrammar.c: bison.head llgrammar.tab.c bison.reset
+	cat $^ >$@
+
+# CScanner
+
+cscanner.lex.c: cscanner.l cgrammar_tokens.h
+	$(FLEX) $(LFLAGS) -o $@ $<
+
+cscanner.c: flex.head cscanner.lex.c flex.reset
+	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g'  | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+
+## Flag codes
+
+flag_codes.gen: flags.def
+	$(GREP) "FLG_" $< >$@
 
 ## Checking rules
 
@@ -325,19 +339,12 @@ nocheck:
 	$(MAKE) CHECK=0
 
 .PHONY: test
-test:
-	${MAKE} ; cd ../test; ${MAKE} --no-print-directory
+test: splint
+	$(MAKE) -C ../test
 
 .PHONY: libs
-libs:
-	${MAKE} ; cd ../lib; ${MAKE} --no-print-directory
-
-### Automake generates wrong tags
-.PHONY: etags
-etags:
-	maketags
-
-lintnew: splintme
+libs: splint
+	$(MAKE) -C ../lib
 
 splintme: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude  $(OVERFLOWCHSRC) $(LINTSRC) $(LCLSRC) -dump lclint +forcehints -misplacedsharequal +showsourceloc -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw -mts tainted
@@ -358,29 +365,7 @@ valsplint:
 splintsome: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude lcllib.c  -dump lclint +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -supcounts -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +partial
 
-# drl changed to use # for comment
-#/* $(LINTSRC) $(LCLSRC)*/
-
 splinttest: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude test.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +keep +supcounts +partial -null
 
-binDir = bin
-
-all: splint$(EXEEXT) ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
-
-../$(top_builddir)/$(binDir)/splint$(EXEEXT):  splint$(EXEEXT)
-	-$(RM) -f $(top_builddir)/$(binDir)/splint$(EXEEXT)
-	ln -s $(top_builddir)/src/splint$(EXEEXT)  $(top_builddir)/$(binDir)/splint$(EXEEXT)
-
-up: 
-	-rm cgrammar.c llgrammar.c mtgrammar.c signature.c cscanner.c
-	$(MAKE) clean
-
-CLEANFILES = splint$(EXEEXT)  ../$(top_builddir)/$(binDir)/splint$(EXEEXT)
-
-.c.o:
-	@echo "Compiling "$<"..."; \
-	source='$<' object='$@' libtool=no \
-	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' \
-	$(CCDEPMODE) $(depcomp) \
-	$(COMPILE) -c `test -f $< || echo '$(srcdir)/'`$<
+CLEANFILES = splint$(EXEEXT) *.output *.tab.h *.tab.c *.lex.c

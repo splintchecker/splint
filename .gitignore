@@ -19,25 +19,20 @@ stamp-h1
 aclocal.m4
 autom4te.cache
 
-bin/splint
 src/splint
 
-lex.yy.c
-src/cscanner.c
+*.lex.c
+*.tab.c
+*.tab.h
 
-src/cgrammar.c
-src/cgrammar.c.der
-src/mtgrammar.c
-src/mtgrammar.c.der
+cgrammar_tokens.h
+llgrammar_gen.h
+mtgrammar_tokens.h
+signature_gen.h
 
-src/llgrammar.c
-src/llgrammar.c.der
+cscanner.c
 
-src/signature.c
-src/signature.c.der
-
-src/Headers/cgrammar_tokens.h
-src/Headers/llgrammar_gen.h
-src/Headers/llgrammar_gen2.h
-src/Headers/mtgrammar_tokens.h
-src/Headers/signature_gen.h
+cgrammar.c
+mtgrammar.c
+llgrammar.c
+signature.c
