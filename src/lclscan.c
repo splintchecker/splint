@@ -50,7 +50,7 @@ extern bool g_inTypeDef;
 /*@=redecl@*/
 
 /*@ignore@*/
-# include "llgrammar2.h" /* hack to force real include */
+# include "llgrammar.h"
 /*@end@*/
 
 # include "lclscan.h"
