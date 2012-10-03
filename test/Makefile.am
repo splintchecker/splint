@@ -71,7 +71,11 @@ SPLINTTESTS = $(UNITTESTS) $(SUBDIRTESTS)
 QUICKTESTS = db3
 
 .PHONY: all check
-all check: fulltest
+
+all:
+	@echo Use make check to run the test suite
+
+check: fulltest
 
 .PHONY: version
 version:
@@ -101,16 +105,9 @@ clean-local:
 	-rm -f *~ #*# *.o *.lcs a.out
 	-rm -f *.out
 	-rm  *.lcd *.lh
-	-cd db1; $(MAKE) clean
-	-cd db2; $(MAKE) clean
-	-cd db3; $(MAKE) clean
-
-## All tests need splint to be built
-
-$(SPLINTTESTS): $(SPLINT)
-
-$(SPLINT):
-	cd $(top_builddir)/src; $(MAKE)
+	-$(MAKE) -C db1 clean
+	-$(MAKE) -C db2 clean
+	-$(MAKE) -C db3 clean
 
 ## This is a kludgey way of processing the output to make it match exactly
 ## The last matcher is the most annoying, as it can differ (the first two are
@@ -1569,9 +1566,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./tainted/Makefile \
               ./temp/Makefile \
               ./tests2.2/Makefile \
-              ./tests2.2/Makefile-tests2.2.os2 \
               ./tests2.4/Makefile \
-              ./tests2.4/Makefile-tests2.4.os2 \
               ./tests2.5/Makefile \
               ./warnuse/Makefile \
               ./Makefile.am \
