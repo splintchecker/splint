@@ -368,4 +368,4 @@ splintsome:
 splinttest: 
 	./splint $(DEFAULT_INCLUDES) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) +singleinclude test.c +forcehints -misplacedsharequal +showsourceloc -unrecogcomments -fcnuse -incondefs -exportlocal -constuse -mts file -mts filerw +keep +supcounts +partial -null
 
-CLEANFILES = splint$(EXEEXT) *.output *.tab.h *.tab.c *.lex.c
+CLEANFILES = splint$(EXEEXT) *.output *.tab.h *.tab.c *.lex.c $(BUILT_SOURCES)
