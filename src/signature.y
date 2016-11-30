@@ -56,7 +56,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 
 %}
 
-%pure_parser 
+%pure-parser 
 
 /* CONVENTIONS:  Reserved words are in ALL CAPS (plus markerSym)
 		Characters appearing in the grammar are reserved:

@@ -57,7 +57,7 @@ static void yyprint (/*FILE *p_file, int p_type, YYSTYPE p_value */);
 
 %}
 
-%pure_parser 
+%pure-parser 
 
 %union {
   mttok tok; 

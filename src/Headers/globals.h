@@ -35,7 +35,6 @@ extern /*@owned@*/ fileloc g_currentloc;
 /*@-declundef@*/ /* Might not process grammar files */
 extern /*@dependent@*/ /*@open@*/ FILE *yyin;
 extern /*@dependent@*/ /*@open@*/ /*@unused@*/ FILE *yyout;
-extern /*@unused@*/ int yyleng;
 /*@=incondefs@*/ 
 
 extern int yydebug;
