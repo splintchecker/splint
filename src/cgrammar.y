@@ -877,7 +877,7 @@ specClauseListExpr
 ;
 
 optSpecClauseList
- : /* empty */ { DPRINTF ((message("Empty optSpecClauseList") )); $$ = sRefSet_undefined }
+ : /* empty */ { DPRINTF ((message("Empty optSpecClauseList") )); $$ = sRefSet_undefined; }
  | specClauseList
  ;
 
@@ -963,10 +963,10 @@ sizeofExpr
    sizeofExprAux { context_sizeofReleaseVars (); $$ = $3; }
 ;
 
-processSizeof: {context_enterSizeof()};
+processSizeof: {context_enterSizeof();};
 
 
-endprocessSizeof: {context_leaveSizeof()};
+endprocessSizeof: {context_leaveSizeof();};
 
 
 sizeofExprAux 
