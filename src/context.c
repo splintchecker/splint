@@ -3302,7 +3302,7 @@ context_exitInner (exprNode exp)
 {
    if (context_getFlag (FLG_GRAMMAR))
     {
-      lldiagmsg (message ("Enter inner context: %q", context_unparse ()));
+      lldiagmsg (message ("Exit inner context: %q", context_unparse ()));
     }
  
   llassertprint (gc.inclause == NOCLAUSE || gc.inclause == CASECLAUSE,
