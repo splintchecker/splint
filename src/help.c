@@ -181,7 +181,7 @@ printAnnotations (void)
   llmsglit ("   /*@noreturn@*/ - function never returns");
   llmsglit ("   /*@maynotreturn@*/ - function may or may not return");
   llmsglit ("   /*@noreturnwhentrue@*/ - function does not return if first parameter is TRUE");
-  llmsglit ("   /*@noreturnwhenfalse@*/ - function does not return if first parameter if FALSE");
+  llmsglit ("   /*@noreturnwhenfalse@*/ - function does not return if first parameter is FALSE");
   llmsglit ("   /*@alwaysreturns@*/ - function always returns");
   llmsglit ("");
   llmsglit ("Side-Effects:");
