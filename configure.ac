@@ -1,4 +1,4 @@
-AC_INIT([Splint], [3.2.0-rav], [splint-bug@splint.org])
+AC_INIT([Splint], [3.1.2], [splint-bug@splint.org])
 dnl This MUST precede any other macro
 AC_CONFIG_AUX_DIR([config-aux])
 
