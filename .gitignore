@@ -1,0 +1,12 @@
+Makefile
+*.o
+config.h
+config.log
+config.status
+src/.deps/
+src/Headers/flag_codes.gen
+src/cgrammar.c
+src/cscanner.c
+src/lex.yy.c
+src/llgrammar.c
+src/signature.c
