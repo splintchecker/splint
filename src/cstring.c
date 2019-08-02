@@ -925,19 +925,14 @@ static mstring doMergeString (cstring s)
   ptr++;
   */
 
+  escape = FALSE;
   while (*ptr != '\0')
     {
-      escape = FALSE;
       
       if (*ptr == '\\')
 	{
 	  *retPtr = *ptr;
-	  
-	  if (!escape)
-	    escape = TRUE;
-	  else
-	    /* case of escaped \ ('\\')  */
-	    escape = FALSE;
+          escape = !escape; /* multiple slashes */
 	}
       else if ( (*ptr == '\"') && (!escape) )
 	{
@@ -962,6 +957,7 @@ static mstring doMergeString (cstring s)
 	}
       else
 	{
+	  escape = FALSE;
 	  *retPtr = *ptr;
 	}
 
