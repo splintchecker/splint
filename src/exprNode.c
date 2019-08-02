@@ -5685,6 +5685,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
     case OR_ASSIGN:
       {
 	bool reported = FALSE;
+        bool shifted = FALSE;
 	
 	/*
 	** Shift Operator 
@@ -5693,6 +5694,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	if (opid == LEFT_OP || opid == LEFT_ASSIGN
 	    || opid == RIGHT_OP || opid == RIGHT_ASSIGN) 
 	  {
+	    shifted = TRUE;
 	    /*
 	    ** evans 2002-01-01: fixed this to follow ISO 6.5.7.
 	    */
@@ -5772,7 +5774,7 @@ exprNode_makeOp (/*@keep@*/ exprNode e1, /*@keep@*/ exprNode e2,
 	** tret is the widest type of te1 and te2 
 	*/
 	
-	tret = ctype_widest (te1, te2);
+	tret = shifted ? te1 : ctype_widest (te1, te2);
 	break;
       }
     case MOD_ASSIGN:
