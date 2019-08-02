@@ -225,12 +225,12 @@ lslProcess (fileIdList lclfiles)
 		{
 		  if (overallStatus)
 		    {
- 		      outputLCSFile (path, "%FAILED Output from ",
+		      outputLCSFile ("./", "%FAILED Output from ",
 				     g_currentSpecName);
 		    }
 		  else
 		    {
-		      outputLCSFile (path, "%PASSED Output from ", 
+		      outputLCSFile ("./", "%PASSED Output from ",
 				     g_currentSpecName);
 		    }
 		}

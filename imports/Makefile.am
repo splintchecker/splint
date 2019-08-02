@@ -1,17 +1,33 @@
-## Note: starting comments with ## means they don't end up in Makefile
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
-AUTOMAKE_OPTIONS = 1.5 foreign
+IMPORTS_STDLIB_LCS = stdlib.lcs
+
+IMPORTS_LIB_LCS = \
+  assert.lcs ctype.lcs errno.lcs \
+  limits.lcs locale.lcs math.lcs \
+  setjmp.lcs signal.lcs stdarg.lcs \
+  stdio.lcs string.lcs \
+  strings.lcs time.lcs
+
+IMPORTS_LCS = $(IMPORTS_STDLIB_LCS) $(IMPORTS_LIB_LCS)
+
+IMPORTS_LCL = $(IMPORTS_LCS:.lcs=.lcl)
+
+## List of files
+imports_DATA = $(IMPORTS_LCL) $(IMPORTS_LCS)
+
+# stdlib.lcs must be built first
+$(IMPORTS_LIB_LCS): $(IMPORTS_STDLIB_LCS)
+
+# Build .lcs files in-place
+%.lcs: %.lcl
+	LARCH_PATH="$(top_builddir)/lib:$(top_srcdir)/lib" $(SPLINT) $<
 
 ## Put these files in $prefix/share/lclint/imports
 importsdir = $(pkgdatadir)/imports
 
-## List of files
-imports_DATA = \
-  assert.lcl  assert.lcs  ctype.lcl  ctype.lcs  errno.lcl  errno.lcs  \
-  limits.lcl  limits.lcs  locale.lcl locale.lcs math.lcl   math.lcs   \
-  setjmp.lcl  setjmp.lcs  signal.lcl signal.lcs stdarg.lcl stdarg.lcs \
-  stdio.lcl   stdio.lcs   stdlib.lcl stdlib.lcs string.lcl string.lcs \
-  strings.lcl strings.lcs time.lcl   time.lcs
-
 ## Include them in the distribution
 EXTRA_DIST = $(imports_DATA)
+
+## Clean generated files
+CLEANFILES = *.lcs

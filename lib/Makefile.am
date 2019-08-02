@@ -1,15 +1,4 @@
-## Note: starting comments with ## means they don't end up in Makefile
-
-### Make phony, always remake everything.
-
-.PHONY: all standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
-
-AUTOMAKE_OPTIONS = 1.5 foreign
-
-## Put these files in $prefix/share/splint/lib
-splintlibdir = $(pkgdatadir)/lib
-
-UnixHeaders = stdio.h stdlib.h
+SPLINT = $(top_builddir)/src/splint$(EXEEXT)
 
 ## List of files
 splintlib_DATA = \
@@ -17,45 +6,31 @@ splintlib_DATA = \
   unix.h unix.lcd unixstrict.lcd CTrait.syms CTraitGen.lcl bool.h \
   file.mts file.xh filerw.mts filerw.xh \
   lclinit.lci linux.h lslinit.lsi tainted.mts tainted.xh \
-  stdio.h stdlib.h $(UnixHeaders)
+  stdio.h stdlib.h
+
+## Put these files in $prefix/share/splint/lib
+splintlibdir = $(pkgdatadir)/lib
 
 ## Include them in the distribution
 EXTRA_DIST = $(splintlib_DATA)
 
-##get rid of lcd files if the user does a make clean
-CLEANFILES = posix.lcd standard.lcd unix.lcd \
-             posixstrict.lcd  standardstrict.lcd  unixstrict.lcd
+# Get rid of lcd files if the user does a make clean
+CLEANFILES = *.lcd
 
+standard.lcd: standard.h
+	$(SPLINT) -nof -nolib +impconj $^ -dump standard
 
-## Rules to make splint & the dumps
+standardstrict.lcd: standard.h
+	$(SPLINT) -nof -nolib +impconj -DSTRICT $^ -dump standardstrict
 
-SPLINT = $(top_builddir)/src/splint$(EXEEXT)
+posix.lcd: standard.h posix.h
+	$(SPLINT) -nof -nolib +impconj $^ -dump posix
 
-$(SPLINT):
-	cd $(top_builddir)/src; $(MAKE)
+posixstrict.lcd: standard.h posix.h
+	$(SPLINT) -nof -nolib +impconj -DSTRICT $^ -dump posixstrict
 
-all: standard.lcd standardstrict.lcd posix.lcd posixstrict.lcd unix.lcd unixstrict.lcd
+unix.lcd: standard.h posix.h unix.h stdio.h stdlib.h
+	$(SPLINT) -supcounts -nof -incondefs -nolib +impconj $^ -dump unix
 
-standard.lcd: standard.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj standard.h -dump standard
-	@touch $@
-
-standardstrict.lcd: standard.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h -dump standardstrict
-	@touch $@
-
-posix.lcd: standard.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj standard.h posix.h -dump posix
-	@touch $@
-
-posixstrict.lcd: standard.h posix.h $(SPLINT)
-	-$(SPLINT) -nof -nolib +impconj -DSTRICT standard.h posix.h -dump posixstrict
-	@touch $@
-
-unix.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj standard.h posix.h unix.h stdio.h stdlib.h -dump unix
-	@touch $@
-
-unixstrict.lcd: standard.h posix.h unix.h $(UnixHeaders) $(SPLINT)
-	-$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT standard.h posix.h unix.h  stdio.h stdlib.h  -dump unixstrict
-	@touch $@
+unixstrict.lcd: standard.h posix.h unix.h stdio.h stdlib.h
+	$(SPLINT) -supcounts -nof -incondefs -nolib +impconj -DSTRICT $^ -dump unixstrict

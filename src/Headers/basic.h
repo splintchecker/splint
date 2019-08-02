@@ -17,7 +17,7 @@
 # include "../../winconfig.h"
 # endif 
 # else 
-# include "../../config.h"
+# include <config.h>
 # endif
 # else
 # error "No config.h file!"

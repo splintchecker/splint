@@ -1,43 +1,27 @@
-dnl Process with autoconf to create a configure script  -*- Autoconf -*-
-AC_PREREQ(2.50)
-
-AC_INIT([Splint], [3.1.2], [splint-bug@splint.org], [splint])
-
+AC_INIT([Splint], [3.2.0-rav], [splint-bug@splint.org])
 dnl This MUST precede any other macro
-AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_AUX_DIR([config-aux])
 
-dnl Set up the source directory
-AC_CONFIG_SRCDIR([src/lclinit.c])
-
-dnl Deduce host
 AC_CANONICAL_SYSTEM
 
 dnl Set up automake & the configuration header
-AM_INIT_AUTOMAKE(AC_PACKAGE_TARNAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
-AM_CONFIG_HEADER([config.h:config.hin])
+AM_INIT_AUTOMAKE([foreign])
+AC_CONFIG_HEADERS([config.h])
+
+dnl Set up the source directory
+AC_CONFIG_SRCDIR([src/lclinit.c])
 
 dnl Prepare for Splint processing of config.h
 AH_TOP([/*@ -macroconstdecl@*/])
 AH_BOTTOM([/*@ =macroconstdecl@*/])
 
 dnl Checks for programs.
-#drl 12-19-2001 commented out so Splint won't depend on C++
-#AC_PROG_CXX
-AC_PROG_CC
-AC_PROG_CPP
-dnl This produces a warning.  See http://mail.gnu.org/pipermail/bug-automake/2001-August/000213.html
-AM_PROG_LEX
-AC_PROG_INSTALL
-AC_PROG_MAKE_SET
-AC_PROG_LN_S
+AC_PROG_GREP
+AC_PROG_SED
+AC_CHECK_PROG(DIFF, diff, diff, no)
+AC_CHECK_PROG(FLEX, flex, flex, no)
 AC_CHECK_PROG(BISON, bison, bison, no)
-AC_CHECK_PROG(GREP, grep, grep, grep-is-missing)
-AC_CHECK_PROG(DIFF, diff, diff, diff-is-missing)
-AC_CHECK_PROG(CAT, cat, cat, cat-is-missing)
-AC_CHECK_PROG(RM, rm, rm, rm-is-missing)
-AC_CHECK_PROG(MV, mv, mv, mv-is-missing)
-AC_CHECK_PROG(CP, cp, cp, cp-is-missing)
-AC_CHECK_PROG(SED, sed, sed, sed-is-missing)
+AC_PROG_CC
 
 dnl Checks for header files.
 dnl Currently all disable, as the source files don't care about the results
@@ -81,44 +65,9 @@ dnl AC_FUNC_VPRINTF
 dnl AC_FUNC_WAIT3
 dnl AC_CHECK_FUNCS([alarm atexit btowc bzero dup2 endgrent endpwent fchdir floor ftruncate getcwd getgroups gethostname gettimeofday isascii iswprint lchown localeconv mblen mbrlen mbrtowc memchr memmove memset mkdir mkfifo modf munmap pathconf pow putenv realpath regcomp rint rmdir rpmatch select setenv socket sqrt strcasecmp strchr strcspn strdup strerror strftime strncasecmp strpbrk strrchr strspn strstr strtod strtol strtoul strtoull tzset uname utime vprintf])
 
-dnl This was provided by Nelson Beebe for dealing with problems on IBM
-dnl AIX 4.3 with defining mode_t.
-
-dnl Checks for _ALL_SOURCE (IBM RS/6000 c89 needs this)
-AC_MSG_CHECKING(whether we need _ALL_SOURCE to expose mode_t)
-all=no
-AC_TRY_COMPILE([
-#include <stdio.h>
-mode_t x;
-], , , all=maybe)
-if test $all = maybe ; then
-AC_TRY_COMPILE([
-#define _ALL_SOURCE
-#include <stdio.h>
-mode_t x;
-], , AC_DEFINE(_ALL_SOURCE) all=yes)
-fi
-if test $all = maybe ; then all=no ; fi
-AC_MSG_RESULT($all)
-AH_TEMPLATE([_ALL_SOURCE], [needed to expose mode_t on some machines])
-
-LCLOBJ='$(lcl_OBJECTS)'
-AC_ARG_WITH([lcl],
-            AC_HELP_STRING([--without-lcl],
-                           [don't include support for LCL files]),
-            ac_cv_use_lcl=$withval, 
-            AC_CACHE_CHECK([whether to include support for LCL files],
-                           ac_cv_use_lcl, ac_cv_use_lcl=yes))
-if test x$ac_cv_use_lcl != xyes; then
-  LCLOBJ=
-  AC_DEFINE(NOLCL, 1, [Define to disable support LCL files])
-fi
-AC_SUBST(LCLOBJ)
-
 # Make sure we have an actual value for $prefix
 myprefix=$prefix
 test x$myprefix = xNONE && myprefix=$ac_default_prefix
-
 
 ### Yuck!  This is really kludgey, but I don't understand autoconf well
 ### enough to do something simple that always works.  Hopefully this does.
@@ -195,8 +144,6 @@ AC_DEFINE_UNQUOTED(BUILD_OS, "${build_os}", build_os)
 AC_DEFINE_UNQUOTED(HOST_OS, "${host_os}", host_os)
 AC_DEFINE_UNQUOTED(TARGET_OS,"${target_os}", target_os)
 
-
-
 dnl AC_CONFIG_FILES([test/Makefile
 dnl                  test/ensuresclauses/Makefile
 dnl                  test/conditions/Makefile
@@ -213,14 +160,5 @@ dnl                  test/tests2.2/Makefile
 dnl                  test/db1/Makefile])
 
 AC_CONFIG_FILES([Makefile imports/Makefile lib/Makefile src/Makefile
-                 test/Makefile doc/Makefile bin/Makefile])
-AC_OUTPUT 
-
-
-
-
-
-
-
-
-
+                 test/Makefile doc/Makefile])
+AC_OUTPUT
