@@ -1976,101 +1976,90 @@ double cscannerHelp_processFloat ()
     return (ret);
 }
 
+static void processSuffix(int index, /*@notnull@*/ char *type)
+{
+    char c  = yytext[index];
+    if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
+        while (c != '\0') {
+            if (c != 'U' && c != 'L' && c != 'u' && c != 'l') {
+                voptgenerror
+                    (FLG_SYNTAX,
+                     message ("Invalid character (%c)"
+                              " following specifier in %s constant: %s",
+                              c, type, cstring_fromChars (yytext)),
+                     g_currentloc);
+                return; /* FALSE : bad value. */
+            }
+            index++;
+            c = yytext[index];
+        }
+
+        return; /* TRUE : good suffix */
+    } else {
+        /* The lexer should not allow this case. */
+        voptgenerror
+            (FLG_SYNTAX,
+             message ("Invalid character (%c) in %s constant: %s",
+                      c, type, cstring_fromChars (yytext)),
+             g_currentloc);
+        return; /* FALSE : bad value. */
+    }
+}
+
 long cscannerHelp_processHex ()
 {
-  int index = 2;
-  long val = 0;
+    int  index = 2;
+    long val   = 0;
 
-  llassert (yytext[0] == '0'
-	    && (yytext[1] == 'X' || yytext[1] == 'x'));
+    llassert (yytext[0] == '0'
+              && (yytext[1] == 'X' || yytext[1] == 'x'));
 
-  while (yytext[index] != '\0') {
-    int tval;
-    char c = yytext[index];
+    while (yytext[index] != '\0') {
+        int tval;
+        char c = yytext[index];
 
-    if (c >= '0' && c <= '9') {
-      tval = (int) c - (int) '0';
-    } else if (c >= 'A' && c <= 'F') {
-      tval = (int) c - (int) 'A' + 10;
-    } else if (c >= 'a' && c <= 'f') {
-      tval = (int) c - (int) 'a' + 10;
-    } else if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
-      index++;
-      while (yytext[index] != '\0') {
-	if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
-	  ;
-	} else {
-	  voptgenerror
-	    (FLG_SYNTAX, 
-	     message ("Invalid character (%c) following specifier in hex constant: %s",
-		      c, cstring_fromChars (yytext)),
-	     g_currentloc);
-	}
-	index++;
-      }
+        if (c >= '0' && c <= '9') {
+            tval = (int) c - (int) '0';
+        } else if (c >= 'A' && c <= 'F') {
+            tval = (int) c - (int) 'A' + 10;
+        } else if (c >= 'a' && c <= 'f') {
+            tval = (int) c - (int) 'a' + 10;
+        } else {
+            processSuffix(index, "hex");
+            break;
+        }
 
-      break;
-    } else {
-      voptgenerror
-	(FLG_SYNTAX, 
-	 message ("Invalid character (%c) in hex constant: %s",
-		  c, cstring_fromChars (yytext)),
-	 g_currentloc);
-      break;
+        val = (val * 16) + tval;
+        index++;
     }
 
-    val = (val * 16) + tval;
-    index++;
-  }
-
-  DPRINTF (("Hex constant: %s = %ld", yytext, val));
-  return val;
+    DPRINTF (("Hex constant: %s = %ld", yytext, val));
+    return val;
 }
 
 long cscannerHelp_processOctal ()
 {
-  int index = 1;
-  long val = 0;
+    int  index = 1;
+    long val   = 0;
 
-  llassert (yytext[0] == '0' && yytext[1] != 'X' && yytext[1] != 'x');
-    
-  while (yytext[index] != '\0') {
-    int tval;
-    char c = yytext[index];
-    
-    if (c >= '0' && c <= '7') {
-      tval = (int) c - (int) '0';
-    } else if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
-      index++;
-      while (yytext[index] != '\0') {
-	if (c == 'U' || c == 'L' || c == 'u' || c == 'l') {
-	  ;
-	} else {
-	  voptgenerror
-	    (FLG_SYNTAX, 
-	     message ("Invalid character (%c) following specifier in octal constant: %s",
-		      c, cstring_fromChars (yytext)),
-	     g_currentloc);
-	}
-	index++;
-      }
+    llassert (yytext[0] == '0' && yytext[1] != 'X' && yytext[1] != 'x');
 
-      break;
-    } else {
-      voptgenerror
-	(FLG_SYNTAX, 
-	 message ("Invalid character (%c) in octal constant: %s",
-		  c, cstring_fromChars (yytext)),
-	 g_currentloc);
-      break;
+    while (yytext[index] != '\0') {
+        int tval;
+        char c = yytext[index];
+
+        if (c >= '0' && c <= '7') {
+            tval = (int) c - (int) '0';
+            val = (val * 8) + tval;
+            index++;
+        } else {
+            processSuffix(index, "octal");
+            break;
+        }
     }
 
-    val = (val * 8) + tval;
-    index++;
-  }
-
-  DPRINTF (("Octal constant: %s = %ld", yytext, val));
-  return val;
+    DPRINTF (("Octal constant: %s = %ld", yytext, val));
+    return val;
 }
 
 long cscannerHelp_processDec ()
