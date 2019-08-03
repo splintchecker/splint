@@ -67,6 +67,7 @@ extern /*@only@*/ exprNode cscannerHelp_processWideString (void)  /*@modifies in
 extern long cscannerHelp_processDec (void) /*@modifies internalState@*/ ;
 extern long cscannerHelp_processHex (void) /*@modifies internalState@*/ ;
 extern long cscannerHelp_processOctal (void) /*@modifies internalState@*/ ;
+extern long cscannerHelp_processBinary (void) /*@modifies internalState@*/ ;
 
 extern void cscannerHelp_expectingMetaStateName (void) 
    /*@modifies internalState@*/ ;

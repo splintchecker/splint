@@ -2062,6 +2062,41 @@ long cscannerHelp_processOctal ()
     return val;
 }
 
+long cscannerHelp_processBinary ()
+{
+    int index = 2;
+    long val = 0;
+
+    llassert (yytext[0] == '0' && yytext[1] == 'b' || yytext[1] == 'B');
+
+    if (!context_getFlag(FLG_GNUEXTENSIONS)) {
+        (void) llgenhinterror
+            (FLG_SYNTAX,
+             message ("Binary constants are not supported by ISO C99"),
+             message ("Use +gnuextensions to allow binary constants "
+                      "(and other GNU language extensions) "
+                      "without this warning"),
+             g_currentloc);
+    }
+
+    while (yytext[index] != '\0') {
+        int tval;
+        char c = yytext[index];
+
+        if (c >= '0' && c <= '1') {
+            tval = (int) c - (int) '0';
+            val = (val * 2) + tval;
+            index++;
+        } else {
+            processSuffix(index, "binary");
+            break;
+        }
+    }
+
+    DPRINTF (("Binary constant: %s = %ld", yytext, val));
+    return val;
+}
+
 long cscannerHelp_processDec ()
 {
   return (atol (yytext));
