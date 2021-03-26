@@ -82,7 +82,7 @@ static flaglist flags =
     FK_NULL, FK_MEMORY, modeFlag,
     "nullderef",
     FLG_NULLDEREF,
-    "possible dereferencce of null pointer",
+    "possible dereference of null pointer",
     "A possibly null pointer is dereferenced.  Value is "
     "either the result of a function which may return null "
     "(in which case, code should check it is not null), or a "
@@ -238,7 +238,7 @@ static flaglist flags =
     FK_TYPE, FK_NONE, modeFlag,
     "fcnderef",
     FLG_FCNDEREF,
-    "dereferencce of a function type",
+    "dereference of a function type",
     "A function type is dereferenced.  The ANSI standard allows this "
     "because of implicit conversion of function designators, however the "
     "dereference is unnecessary.", 
