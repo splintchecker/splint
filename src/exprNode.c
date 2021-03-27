@@ -4206,7 +4206,14 @@ exprNode_arrowAccessAux (/*@only@*/ exprNode s, /*@observer@*/ fileloc loc,
       
       checkMacroParen (s);
       
-      (void) ctype_fixArrayPtr (tr); /* REWRITE THIS */
+      /* CBS, 2014-03-25
+       * treat single-element arrays as equivalent to pointers
+       * (consider making this optional)
+       */
+      if (ctype_isFixedArray(tr) && ctype_getArraySize(tr) == 1)
+      {
+         tr = ctype_makePointer (ctype_baseArrayPtr (tr));
+      }
       
       if (ctype_isRealPointer (tr)) 
 	{
