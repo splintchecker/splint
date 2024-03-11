@@ -55,6 +55,7 @@ extern void yyerror (char *);
 # include "cscannerHelp.h"
 # include "cgrammar.h"
 # include "exprChecks.h"
+# include "cgrammar_tokens.h"
 
 /*@-allmacros@*/
 /*@-matchfields@*/
@@ -1094,7 +1095,7 @@ expr
 optExpr
  : /* empty */ { $$ = exprNode_undefined; }
  | expr 
- ;
+;
 
 constantExpr
  : conditionalExpr 
@@ -1746,6 +1747,15 @@ forPred
    TRPAREN 
    { $$ = exprNode_forPred ($3, $5, $8); 
      context_enterForClause ($5); }
+ | CFOR TLPAREN completeTypeSpecifier NotType namedDecl NotType TASSIGN 
+   { setProcessingVars ($3); processNamedDecl ($5); }
+   IsType init NotType TSEMI
+   { exprNode_makeInitialization ($5, $10); unsetProcessingVars (); }
+   optExpr TSEMI
+   { context_setProtectVars (); } optExpr { context_sizeofReleaseVars (); }
+   TRPAREN 
+   { $$ = exprNode_forPred (exprNode_undefined, $14, $17); 
+     context_enterForClause ($14); }
 ;
 
 partialIterStmt
