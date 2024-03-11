@@ -55,6 +55,7 @@ extern void yyerror (char *);
 # include "cscannerHelp.h"
 # include "cgrammar.h"
 # include "exprChecks.h"
+# include "cgrammar_tokens.h"
 
 /*@-allmacros@*/
 /*@-matchfields@*/
