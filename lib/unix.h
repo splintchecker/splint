@@ -1828,6 +1828,11 @@ int getopt(int, char * const [], const char *)
      /*@modifies optind, opterr, optopt, errno@*/
      /*:errorcode -1:*/ ;
 
+int getopt_long(int argc, char * const argv[], const char *optstring,
+		const struct option *longopts, /*@out@*/ int *longindex)
+     /*@modifies optarg, optind, optopt, errno@*/
+     /*:errorcode -1:*/ ;
+
 int getpagesize(void)
      /*@warn legacy "getpagesize is obsolete"@*/ ;
 
