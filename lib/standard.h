@@ -701,6 +701,9 @@ double atof (char *s) /*@*/ ;
 int atoi (char *s) /*@*/ ;
 long int atol (char *s) /*@*/ ;
 
+float strtof (char *s, /*@null@*/ /*@out@*/ char **endp)
+  /*@modifies *endp, errno@*/ ;
+
 double strtod (char *s, /*@null@*/ /*@out@*/ char **endp)
   /*@modifies *endp, errno@*/ ;
 
@@ -709,6 +712,13 @@ long strtol (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
 
 unsigned long 
   strtoul (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
+  /*@modifies *endp, errno@*/ ;
+
+long long strtoll(char *s, /*@null@*/ /*@out@*/ char **endp, int base)
+  /*@modifies *endp, errno@*/ ;
+
+unsigned long long
+  strtoull(char *s, /*@null@*/ /*@out@*/ char **endp, int base)
   /*@modifies *endp, errno@*/ ;
 
 /*@constant int RAND_MAX; @*/
@@ -1245,6 +1255,11 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
 /*@constant int UINT16_MIN@*/
 /*@constant int UINT32_MIN@*/
 /*@constant int UINT64_MIN@*/
+
+/*@constant int UINT8_MAX@*/
+/*@constant int UINT16_MAX@*/
+/*@constant int UINT32_MAX@*/
+/*@constant int UINT64_MAX@*/
 
 /*@constant int INT_LEAST8_MIN@*/
 /*@constant int INT_LEAST16_MIN@*/
