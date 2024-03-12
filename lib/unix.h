@@ -746,6 +746,24 @@ settimeofday (const struct timeval *t, const struct timezone *z)
 utimes (const char *file, /*@null@*/ const struct timeval *times)
 	/*@modifies fileSystem, errno*/;
 
+/*
+** time.h
+*/
+
+/*@constant clockid_t CLOCK_REALTIME@*/
+/*@constant clockid_t CLOCK_REALTIME_ALARM@*/
+/*@constant clockid_t CLOCK_REALTIME_COARSE@*/
+/*@constant clockid_t CLOCK_TAI@*/
+/*@constant clockid_t CLOCK_MONOTONIC@*/
+/*@constant clockid_t CLOCK_MONOTONIC_COARSE@*/
+/*@constant clockid_t CLOCK_MONOTONIC_RAW@*/
+/*@constant clockid_t CLOCK_BOOTTIME@*/
+/*@constant clockid_t CLOCK_BOOTTIME_ALARM@*/
+/*@constant clockid_t CLOCK_PROCESS_CPUTIME_ID@*/
+/*@constant clockid_t CLOCK_THREAD_CPUTIME_ID@*/
+
+int clock_gettime(clockid_t clock, /*@out@ */ struct timespec *tp);
+
 /*________________________________________________________________________
  * sys/mman.h
  */
