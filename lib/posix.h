@@ -438,6 +438,10 @@ sigprocmask (int how, /*@null@*/ const sigset_t *set, /*@null@*/ /*@out@*/ sigse
 sigsuspend (const sigset_t *sigmask)
 	/*@modifies errno, systemState@*/;
 
+	extern int
+sigwait (const sigset_t *set, /*@out@*/ int *sig)
+	/*@modifies *sig, errno, systemState@*/ ;
+
 /*
 ** stdio.h
 */

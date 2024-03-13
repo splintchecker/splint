@@ -92,6 +92,24 @@ int getopt (int argc, char * const *argv, const char *optstring)
    /*@requires maxRead(argv) >= (argc - 1) @*/
    ;
 
+/*@constant int no_argument@*/
+/*@constant int required_argument@*/
+/*@constant int optional_argument@*/
+
+struct option {
+    /*@observer@*/ /*@null@*/ const char *name;
+    int has_arg;
+    /*@null@*/ int *flag;
+    int val;
+};
+
+int getopt_long(int argc, char * const argv[], const char *optstring,
+		const struct option *longopts, /*@out@*/ int *longindex)
+     /*@globals optarg, optind, optopt, opterr, optreset@*/
+     /*@modifies optarg, optind, optopt@*/
+     /*@requires maxRead(argv) >= (argc - 1)@*/
+     ;
+
 int getw (FILE *stream)
    /*@warn legacy@*/ 
    /*:errorcode EOF:*/

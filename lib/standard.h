@@ -701,6 +701,9 @@ double atof (char *s) /*@*/ ;
 int atoi (char *s) /*@*/ ;
 long int atol (char *s) /*@*/ ;
 
+float strtof (char *s, /*@null@*/ /*@out@*/ char **endp)
+  /*@modifies *endp, errno@*/ ;
+
 double strtod (char *s, /*@null@*/ /*@out@*/ char **endp)
   /*@modifies *endp, errno@*/ ;
 
@@ -709,6 +712,13 @@ long strtol (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
 
 unsigned long 
   strtoul (char *s, /*@null@*/ /*@out@*/ char **endp, int base)
+  /*@modifies *endp, errno@*/ ;
+
+long long strtoll(char *s, /*@null@*/ /*@out@*/ char **endp, int base)
+  /*@modifies *endp, errno@*/ ;
+
+unsigned long long
+  strtoull(char *s, /*@null@*/ /*@out@*/ char **endp, int base)
   /*@modifies *endp, errno@*/ ;
 
 /*@constant int RAND_MAX; @*/
@@ -1100,6 +1110,12 @@ size_t strspn (char *s, char *t) /*@*/ ;
   strtok (/*@returned@*/ /*@null@*/ char *s, char *t)
   /*@modifies *s, internalState, errno@*/ ;
 
+/*@null@*/ /*@exposed@*/ char *
+  strtok_r(/*@returned@*/ /*@null@*/ char *s,
+	   /*@observer@*/ const char *t,
+	   char **saveptr)
+       /*@modifies *s, *saveptr, errno@*/ ;
+
 void /*@alt void *@*/ memset (/*@out@*/ /*@returned@*/ void *s, 
 				     int c, size_t n)
      /*@modifies *s@*/ /*@requires maxSet(s) >= (n - 1) @*/ /*@ensures maxRead(s) >= (n - 1) @*/ ;
@@ -1107,7 +1123,11 @@ void /*@alt void *@*/ memset (/*@out@*/ /*@returned@*/ void *s,
 /*@observer@*/ char *strerror (int errnum) /*@*/ ;
 
 /*drl */
-size_t strlen (char *s) /*@*/ /*@ensures result == maxRead(s); @*/; 
+size_t strlen (char *s) /*@*/ /*@ensures result == maxRead(s); @*/;
+
+size_t strnlen(const char *s, size_t n) /*@*/
+     /*@ensures result == maxRead(s); @*/
+     /*@ensures maxRead(s) >= (n - 1) @*/ ;
 
 /*
 ** time.h
@@ -1235,6 +1255,11 @@ typedef /*@unsignedintegraltype@*/ uintmax_t;
 /*@constant int UINT16_MIN@*/
 /*@constant int UINT32_MIN@*/
 /*@constant int UINT64_MIN@*/
+
+/*@constant int UINT8_MAX@*/
+/*@constant int UINT16_MAX@*/
+/*@constant int UINT32_MAX@*/
+/*@constant int UINT64_MAX@*/
 
 /*@constant int INT_LEAST8_MIN@*/
 /*@constant int INT_LEAST16_MIN@*/

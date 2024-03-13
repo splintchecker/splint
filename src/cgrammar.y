@@ -1745,15 +1745,19 @@ forPred
  : CFOR TLPAREN optExpr TSEMI optExpr TSEMI 
    { context_setProtectVars (); } optExpr { context_sizeofReleaseVars (); }
    TRPAREN 
-   { $$ = exprNode_forPred ($3, $5, $8); 
+   { context_enterInnerContext ();
+     $$ = exprNode_forPred ($3, $5, $8); 
      context_enterForClause ($5); }
- | CFOR TLPAREN completeTypeSpecifier NotType namedDecl NotType TASSIGN 
-   { setProcessingVars ($3); processNamedDecl ($5); }
-   IsType init NotType TSEMI
-   { exprNode_makeInitialization ($5, $10); unsetProcessingVars (); }
+ | CFOR TLPAREN completeTypeSpecifier NotType namedDecl NotType
+   { context_enterInnerContext ();
+     setProcessingVars ($3);
+     processNamedDecl ($5); }
+   TASSIGN IsType init TSEMI IsType
+   { exprNode_makeInitialization ($5, $10);
+     unsetProcessingVars (); }
    optExpr TSEMI
    { context_setProtectVars (); } optExpr { context_sizeofReleaseVars (); }
-   TRPAREN 
+   TRPAREN
    { $$ = exprNode_forPred (exprNode_undefined, $14, $17); 
      context_enterForClause ($14); }
 ;
@@ -2167,7 +2171,8 @@ iterationStmt
  | doHeader stmt WHILE TLPAREN expr TRPAREN TSEMI 
    { $$ = exprNode_statement (exprNode_doWhile ($2, $5), $7); }
  | forPred stmt 
-   { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }
+   { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2);
+     context_exitInnerPlain (); }
 ;
 
 iterationStmtErr 
@@ -2176,7 +2181,9 @@ iterationStmtErr
    { $$ = exprNode_statement (exprNode_doWhile ($2, $5), $7); }
  | doHeader stmtErr WHILE TLPAREN expr TRPAREN 
    { $$ = exprNode_doWhile ($2, $5); }
- | forPred stmtErr { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2); }
+ | forPred stmtErr
+   { $$ = exprNode_for ($1, $2); context_exitForClause ($1, $2);
+     context_exitInnerPlain (); }
 ;
  
 jumpStmt
