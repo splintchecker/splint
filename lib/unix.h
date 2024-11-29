@@ -2189,6 +2189,7 @@ int usleep (useconds_t useconds) /*@modifies systemState, errno@*/
      /*@ensures maxSet(result) <= 15 /\ maxRead(result) <= 15 @*/
      ;
 
+     extern int inet_aton(const char *cp, /*@out@*/ struct in_addr *inp) /*@modifies errno@*/ ;
 
      extern  double hypot(double x, double y) /*@modifies errno@*/ /*error errno only*/;
 
