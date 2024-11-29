@@ -294,7 +294,7 @@ extern void yyerror (char *);
 
 %type <expr> sizeofExpr sizeofExprAux offsetofExpr
 %type <expr> openScope closeScope 
-%type <expr> instanceDecl namedInitializer optDeclarators namedInitializerType
+%type <expr> instanceDecl instanceDeclInitializer namedInitializer optDeclarators namedInitializerType
 %type <expr> primaryExpr postfixExpr primaryIterExpr postfixIterExpr
 %type <expr> unaryExpr castExpr timesExpr plusExpr
 %type <expr> unaryIterExpr castIterExpr timesIterExpr plusIterExpr
@@ -1135,7 +1135,11 @@ instanceDecl
      $$ = exprNode_makeEmptyInitialization ($3); 
      DPRINTF (("Empty initialization: %s", exprNode_unparse ($$)));
    }
- | completeTypeSpecifier NotType namedDecl NotType TASSIGN 
+ | instanceDeclInitializer { $$ = $1; }
+;
+
+instanceDeclInitializer
+ : completeTypeSpecifier NotType namedDecl NotType TASSIGN 
    { setProcessingVars ($1); processNamedDecl ($3); }
    IsType init optDeclarators TSEMI IsType 
    { $$ = exprNode_concat ($9, exprNode_makeInitialization ($3, $8)); 
@@ -1742,24 +1746,20 @@ iterDefIterationStmt
 ;
 
 forPred
- : CFOR TLPAREN optExpr TSEMI optExpr TSEMI 
+ : CFOR TLPAREN
+   { context_enterInnerContext (); }
+   optExpr TSEMI optExpr TSEMI 
    { context_setProtectVars (); } optExpr { context_sizeofReleaseVars (); }
    TRPAREN 
-   { context_enterInnerContext ();
-     $$ = exprNode_forPred ($3, $5, $8); 
-     context_enterForClause ($5); }
- | CFOR TLPAREN completeTypeSpecifier NotType namedDecl NotType
-   { context_enterInnerContext ();
-     setProcessingVars ($3);
-     processNamedDecl ($5); }
-   TASSIGN IsType init TSEMI IsType
-   { exprNode_makeInitialization ($5, $10);
-     unsetProcessingVars (); }
-   optExpr TSEMI
+   { $$ = exprNode_forPred ($4, $6, $9); 
+     context_enterForClause ($6); }
+ | CFOR TLPAREN
+   { context_enterInnerContext (); }
+   instanceDeclInitializer optExpr TSEMI
    { context_setProtectVars (); } optExpr { context_sizeofReleaseVars (); }
    TRPAREN
-   { $$ = exprNode_forPred (exprNode_undefined, $14, $17); 
-     context_enterForClause ($14); }
+   { $$ = exprNode_forPred ($4, $5, $8); 
+     context_enterForClause ($5); }
 ;
 
 partialIterStmt
