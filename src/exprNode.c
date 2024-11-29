@@ -1687,6 +1687,18 @@ checkPrintfArgs (/*@notnull@*/ /*@dependent@*/ exprNode f, uentry fcn,
 			  
 			  /*@switchbreak@*/ break;
 
+			case 'z': /* size_t & ssize_t */
+			  key = *code++;
+			  if(key == 'd')
+			    expecttype = ctype_signedintegral;
+			  else if(key == 'u')
+			    expecttype = ctype_unsignedintegral;
+			  else
+			    /* error */
+			    llfatalerrorLoc(message ("Bad character set format for %%z: %s",
+						     cstring_fromChars (origcode)));
+
+			  /*@switchbreak@*/ break;
 			  
 			default:
 			  expecttype = ctype_unknown;
