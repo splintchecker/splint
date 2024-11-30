@@ -270,7 +270,7 @@ signature_gen.h: bison.head signature.tab.h bison.reset
 	cat $^ >$@
 
 signature.c: bison.head signature.tab.c bison.reset
-	cat $^ >$@
+	cat $^ | $(SED) 's/signature\.tab\.h/signature_gen.h/g' >$@
 
 # CGrammar
 cgrammar.tab.c: cgrammar.y
@@ -281,10 +281,10 @@ cgrammar.tab.h: cgrammar.tab.c
 	@echo $@ generated
 
 cgrammar_tokens.h: bison.head cgrammar.tab.h bison.reset
-	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+	cat $^ | $(SED) -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' >$@
 
 cgrammar.c: bison.head cgrammar.tab.c bison.reset
-	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g' | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+	cat $^ | $(SED) -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' -e 's/cgrammar\.tab\.h/cgrammar_tokens.h/g' >$@
 
 # MTGrammar
 mtgrammar.tab.c: mtgrammar.y
@@ -298,7 +298,7 @@ mtgrammar_tokens.h: bison.head mtgrammar.tab.h bison.reset
 	cat $^ >$@
 
 mtgrammar.c: bison.head mtgrammar.tab.c bison.reset
-	cat $^ >$@
+	cat $^ | $(SED) 's/mtgrammar\.tab\.h/mtgrammar_tokens.h/g' >$@
 
 # LLGrammar
 
@@ -313,7 +313,7 @@ llgrammar_gen.h: bison.head llgrammar.tab.h bison.reset
 	cat $^ >$@
 
 llgrammar.c: bison.head llgrammar.tab.c bison.reset
-	cat $^ >$@
+	cat $^ | $(SED) 's/llgrammar\.tab\.h/llgrammar_gen.h/g' >$@
 
 # CScanner
 
@@ -321,7 +321,7 @@ cscanner.lex.c: cscanner.l cgrammar_tokens.h
 	$(FLEX) $(LFLAGS) -o $@ $<
 
 cscanner.c: flex.head cscanner.lex.c flex.reset
-	cat $^ | $(SED) 's/YYSTYPE/cgrammar_YYSTYPE/g'  | $(SED) 's/lsllex/cgrammar_lsllex/g' >$@
+	cat $^ | $(SED) -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' >$@
 
 ## Flag codes
 
