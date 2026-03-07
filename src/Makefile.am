@@ -321,7 +321,7 @@ cscanner.lex.c: cscanner.l cgrammar_tokens.h
 	$(FLEX) $(LFLAGS) -o $@ $<
 
 cscanner.c: flex.head cscanner.lex.c flex.reset
-	cat $^ | $(SED) -e 's/YYSTYPE/cgrammar_YYSTYPE/g' -e 's/lsllex/cgrammar_lsllex/g' >$@
+	cat $^ >$@
 
 ## Flag codes
 
