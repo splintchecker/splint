@@ -753,7 +753,7 @@ uentryList_lookupField (uentryList f, cstring name)
 	{
 	  uentry old = uentryList_lookupField (f1, uentry_rawName (current));
 	  
-	  if (uentry_isValid (old))
+	  if (uentry_isValid (old) && uentry_rawName(current))
 	    {
 	      voptgenerror
 		(FLG_SYNTAX,
