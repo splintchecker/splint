@@ -218,6 +218,7 @@ L\"(\\.|[^\\"])*\"([ \t\n]*\"(\\.|[^\\"])*\")* { return cscannerHelp_returnExpr 
 "MaxRead"               { return (cscannerHelp_processSpec (QMAXREAD));}
 "maxSet"                { return (cscannerHelp_processSpec (QMAXSET));}
 "maxRead"               { return (cscannerHelp_processSpec (QMAXREAD));}
+\$[1-9][0-9]*           { return (cscannerHelp_processSpec (PARAMANON));}
 
 {Letter}({Letter}|{Digit})* { int tok = cscannerHelp_processTextIdentifier (yytext);
                               if (tok != BADTOK)
