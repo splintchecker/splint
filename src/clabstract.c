@@ -2311,6 +2311,31 @@ void checkModifiesId (uentry ue)
   return ret;
 }
 
+/*@expsed@*/ sRef fixParamAnonId (cstring paramRefStr)
+{
+  char *str = cstring_toCharsSafe (paramRefStr);
+  int param_index = atoi (str + 1);
+  int idx = param_index - 1;
+  uentryList params = currentParamList;
+  uentry param;
+
+  cstring_free (paramRefStr);
+
+  if (idx < 0 || idx >= uentryList_size (params))
+    {
+      voptgenerror (FLG_SYNTAX,
+                   message ("Parameter index %s is out of bounds", str),
+                   g_currentloc);
+
+      return sRef_undefined;
+    }
+
+  param = uentryList_getN (params, idx);
+  uentry_setParamNo (param, idx);
+
+  return uentry_getSref (param);
+}
+
 sRef fixStateClausesId (cstring s) 
 {
   sRef ret;
