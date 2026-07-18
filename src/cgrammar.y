@@ -918,6 +918,8 @@ postfixExpr
  | postfixExpr TLSQBR expr TRSQBR { $$ = exprNode_arrayFetch ($1, $3); }
  | postfixExpr TLPAREN TRPAREN { $$ = exprNode_functionCall ($1, exprNodeList_new ()); }
  | postfixExpr TLPAREN argumentExprList TRPAREN { $$ = exprNode_functionCall ($1, $3); }
+ // Compound literal support for function call in C99
+ | postfixExpr TLPAREN TLPAREN typeExpression TRPAREN TLBRACE typeInitializerList optComma TRBRACE TRPAREN { $$ = exprNode_undefined; /*@i87 no checking */ }
  | VA_ARG TLPAREN assignExpr TCOMMA typeExpression TRPAREN { $$ = exprNode_vaArg ($1, $3, $5); }
  | postfixExpr NotType TDOT newId IsType { $$ = exprNode_fieldAccess ($1, $3, $4); }
  | postfixExpr NotType ARROW_OP newId IsType { $$ = exprNode_arrowAccess ($1, $3, $4); }
