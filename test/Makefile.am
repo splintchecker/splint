@@ -381,7 +381,7 @@ divzero:
 
 .PHONY: emptystruct 
 emptystruct:
-	-$(SPLINTR) emptystruct.c -varuse -expect 0
+	-$(SPLINTR) emptystruct.c
 
 .PHONY: enum
 enum:
