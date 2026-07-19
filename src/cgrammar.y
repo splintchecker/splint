@@ -1507,7 +1507,7 @@ suSpc
    { sRef_clearGlobalScopeSafe (); }
    TRBRACE 
    { $$ = declareUnnamedUnion ($7); } 
- | NotType CSTRUCT IsType TLBRACE TRBRACE
+ | NotType CSTRUCT IsType TLBRACE optSemi TRBRACE
    { $$ = ctype_createUnnamedStruct (uentryList_new ()); }
  | NotType CUNION IsType TLBRACE TRBRACE 
    { $$ = ctype_createUnnamedUnion (uentryList_new ()); } 

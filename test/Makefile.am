@@ -40,8 +40,8 @@ UNITTESTS = \
   help \
   abstptr abstract alias alttypes ansireserved argorder \
   args arraydims arrayinit arraylit blocks break cases cast chararraylit charlit clauses commentchar compdestroy \
-  compoundfct compoundliterals compoundstmt condifomit constannot controldepth csyntax czechnames czechoslovaknames deadparam \
-  decl divzero enum enumtag exports external fields flags forbody format freearray \
+  compoundliterals compoundstmt condifomit constannot controldepth csyntax czechnames czechoslovaknames deadparam \
+  decl divzero emptystruct enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init innerarray inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
   macros macrosef malloc merge mergenull modifies modtest moduncon \
@@ -382,6 +382,10 @@ decl:
 .PHONY: divzero
 divzero:
 	-$(SPLINTR) divzero.c -varuse -expect 0
+
+.PHONY: emptystruct 
+emptystruct:
+	-$(SPLINTR) emptystruct.c
 
 .PHONY: enum
 enum:
@@ -1124,6 +1128,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./dkf5kEnum.c \
               ./dkf5kRange.c \
               ./dkf5kSprintf.c \
+              ./emptystruct.c \
               ./ensures.c \
               ./enum.c \
               ./enumtag.c \
@@ -1426,6 +1431,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               db3.expect \
               deadparam.expect \
               decl.expect \
+              emptystruct.expect \
               enum.expect \
               enumtag.expect \
               exports.expect \
