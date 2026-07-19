@@ -306,6 +306,10 @@ compdestroy:
 	-$(SPLINTRN) compdestroy.c +checks -exportlocal -exportheader +strictdestroy +strictusereleased -expect 3
 	-$(SPLINTRN) compdestroy.c +strict +partial -exportheader -expect 4
 
+.PHONY: compoundfct
+compoundfct:
+	${SPLINTRN} compoundfct.c 
+
 .PHONY: compoundliterals
 compoundliterals:
 	${SPLINTRN} compoundliterals.c 
@@ -1093,8 +1097,9 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./commentchar.c \
               ./commentcmd.c \
               ./compdestroy.c \
+              ./compoundftc.c      ./compoundfct.expect \
               ./compoundliterals.c ./compoundliterals.expect \
-              ./compoundstmt.c ./compoundstmt.expect \
+              ./compoundstmt.c     ./compoundstmt.expect \
               ./condifomit.c \
               ./csyntax.c \
               ./constannot.c \
