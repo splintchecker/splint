@@ -30,6 +30,7 @@
 
 # include "splintMacros.nf"
 # include "basic.h"
+# include <errno.h>
 # include "cgrammar.h"
 # include "usymtab_interface.h"
 
@@ -2308,6 +2309,41 @@ void checkModifiesId (uentry ue)
 	}
     }
   
+  return ret;
+}
+
+/*@exposed@*/ sRef fixParamAnonId (/*@only@*/ cstring paramRefStr)
+{
+  char *str = cstring_toCharsSafe (paramRefStr);
+  long paramIndex;
+  uentryList params = currentParamList;
+  sRef ret = sRef_undefined;
+
+  errno = 0;
+  paramIndex = strtol (str + 1, NULL, 10);
+
+  if (errno != ERANGE && paramIndex > 0
+      && paramIndex <= uentryList_size (params))
+    {
+      int idx = (int) (paramIndex - 1);
+      uentry param = uentryList_getN (params, idx);
+
+      /* The trailing ellipsis is a list entry, not a parameter. */
+      if (uentry_isAnyParam (param) && sRef_isParam (uentry_getSref (param)))
+        {
+          uentry_setParamNo (param, idx);
+          ret = uentry_getSref (param);
+        }
+    }
+
+  if (!sRef_isValid (ret))
+    {
+      voptgenerror (FLG_SYNTAX,
+                   message ("Parameter index %s is out of bounds", paramRefStr),
+                   g_currentloc);
+    }
+
+  cstring_free (paramRefStr);
   return ret;
 }
 

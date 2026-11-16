@@ -50,6 +50,7 @@ extern void setCurrentParams (/*@dependent@*/ uentryList p_ue);
 extern void clearCurrentParams (void);
 
 extern /*@exposed@*/ sRef fixModifiesId (cstring p_s);
+extern /*@exposed@*/ sRef fixParamAnonId (/*@only@*/ cstring p_s);
 extern /*@exposed@*/ sRef fixStateClausesId (cstring p_s);
 
 extern void setFlipOldStyle(void);

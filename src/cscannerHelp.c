@@ -2113,7 +2113,20 @@ int cscannerHelp_processSpec (int tok)
 	patched to fix assert failures in constraint code.
 	Added the else if test so that splint does not treat MaxSet and MaxRead
 	as identifies*/
-	
+
+      if (tok == PARAMANON)
+        {
+          if (s_whichSpecPart == QMODIFIES)
+            {
+              context_saveLocation ();
+              cscannerHelp_setTokLengthT (mstring_length (yytext));
+              yylval.cname = cstring_fromCharsNew (yytext);
+              s_tokLength = 0;
+              s_lastWasString = FALSE;
+              return PARAMANON;
+            }
+	}
+
       if (s_whichSpecPart == QMODIFIES
 	  || s_whichSpecPart == QDEFINES
 	  || s_whichSpecPart == QUSES 

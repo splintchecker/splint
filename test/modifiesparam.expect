@@ -1,0 +1,16 @@
+
+modifiesparam.c: (in function disallowed)
+modifiesparam.c:27:3: Undocumented modification of *p possible from call to
+                         anon_second: anon_second(0, p)
+
+Finished checking --- 1 code warning, as expected
+
+modifiesparambad.c:1:35: Parameter index $2 is out of bounds
+modifiesparambad.c:2:42: Parameter index $2 is out of bounds
+modifiesparambad.c:3:37: Parameter index $1 is out of bounds
+modifiesparambad.c:4:38: Parameter index $1 is out of bounds
+modifiesparambad.c:5:50: Parameter index $4294967297 is out of bounds
+modifiesparambad.c:6:71: Parameter index $999999999999999999999999999999 is out
+                            of bounds
+
+Finished checking --- 6 code warnings, as expected

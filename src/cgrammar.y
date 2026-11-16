@@ -212,7 +212,7 @@ extern void yyerror (char *);
 
 /* identifiers, literals */
 %token <entry> IDENTIFIER
-%token <cname> NEW_IDENTIFIER TYPE_NAME_OR_ID 
+%token <cname> NEW_IDENTIFIER TYPE_NAME_OR_ID PARAMANON
 %token <annotation> CANNOTATION
 %token <expr> CCONSTANT
 %type <cname> flagId
@@ -843,6 +843,7 @@ modListExpr
  : id                              { $$ = uentry_getSref ($1); checkModifiesId ($1); }
  | NEW_IDENTIFIER                  { $$ = fixModifiesId ($1); }
  | TYPE_NAME_OR_ID                 { $$ = fixModifiesId ($1); }
+ | PARAMANON                       { $$ = fixParamAnonId ($1); }
  | modListExpr TLSQBR TRSQBR       { $$ = modListArrayFetch ($1, sRef_undefined); }
  | modListExpr TLSQBR mExpr TRSQBR { $$ = modListArrayFetch ($1, $3); }
  | TMULT modListExpr               { $$ = modListPointer ($2); }
