@@ -44,7 +44,7 @@ UNITTESTS = \
   decl divzero enum enumtag exports external fields flags forbody format freearray \
   funcpointer functionmacro glob globals impabstract info init innerarray inparam internal iter keep libs \
   linked lintcomments list longint loopexec looptesteffect \
-  macros macrosef malloc merge mergenull modifies modtest moduncon \
+  macros macrosef malloc merge mergenull modifies modifiesparam modtest moduncon \
   mongoincludes mystrncat noeffect null nullret nullassign numabstract observer oldstyle outglob outparam \
   parentype postnotnull preds prefixes printflike rc refcounts release repexpose \
   returned russian sharing shifts sizesigns slovaknames \
@@ -580,6 +580,11 @@ mergenull:
 .PHONY: modifies
 modifies:
 	-$(SPLINTR) modifies.c modclient.c +impcheckedstatics +mustmod -expect 7
+
+.PHONY: modifiesparam
+modifiesparam:
+	-$(SPLINTR) modifiesparam.c -expect 1
+	-$(SPLINTR) modifiesparambad.c -expect 6
 
 .PHONY: modtest
 modtest:
@@ -1159,6 +1164,8 @@ EXTRA_DIST =  ./abst_t.lcl \
               ./merge.c \
               ./modclient.c \
               ./modifies.c \
+              ./modifiesparam.c \
+              ./modifiesparambad.c \
               ./modtest.c \
               ./moduncon.c \
               ./mongoincludes.c \
@@ -1455,6 +1462,7 @@ EXTRA_DIST =  ./abst_t.lcl \
               mergestate.expect \
               metastate.expect \
               modifies.expect \
+              modifiesparam.expect \
               modtest.expect \
               moduncon.expect \
               mongoincludes.expect \

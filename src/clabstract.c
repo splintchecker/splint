@@ -30,6 +30,7 @@
 
 # include "splintMacros.nf"
 # include "basic.h"
+# include <errno.h>
 # include "cgrammar.h"
 # include "usymtab_interface.h"
 
@@ -2311,29 +2312,39 @@ void checkModifiesId (uentry ue)
   return ret;
 }
 
-/*@expsed@*/ sRef fixParamAnonId (cstring paramRefStr)
+/*@exposed@*/ sRef fixParamAnonId (/*@only@*/ cstring paramRefStr)
 {
   char *str = cstring_toCharsSafe (paramRefStr);
-  int param_index = atoi (str + 1);
-  int idx = param_index - 1;
+  long paramIndex;
   uentryList params = currentParamList;
-  uentry param;
+  sRef ret = sRef_undefined;
 
-  cstring_free (paramRefStr);
+  errno = 0;
+  paramIndex = strtol (str + 1, NULL, 10);
 
-  if (idx < 0 || idx >= uentryList_size (params))
+  if (errno != ERANGE && paramIndex > 0
+      && paramIndex <= uentryList_size (params))
     {
-      voptgenerror (FLG_SYNTAX,
-                   message ("Parameter index %s is out of bounds", str),
-                   g_currentloc);
+      int idx = (int) (paramIndex - 1);
+      uentry param = uentryList_getN (params, idx);
 
-      return sRef_undefined;
+      /* The trailing ellipsis is a list entry, not a parameter. */
+      if (uentry_isAnyParam (param) && sRef_isParam (uentry_getSref (param)))
+        {
+          uentry_setParamNo (param, idx);
+          ret = uentry_getSref (param);
+        }
     }
 
-  param = uentryList_getN (params, idx);
-  uentry_setParamNo (param, idx);
+  if (!sRef_isValid (ret))
+    {
+      voptgenerror (FLG_SYNTAX,
+                   message ("Parameter index %s is out of bounds", paramRefStr),
+                   g_currentloc);
+    }
 
-  return uentry_getSref (param);
+  cstring_free (paramRefStr);
+  return ret;
 }
 
 sRef fixStateClausesId (cstring s) 
